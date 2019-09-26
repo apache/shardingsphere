@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.segment.select.item;
+package org.apache.shardingsphere.core.optimize.segment.select.projection;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationSelectItem;
-import org.apache.shardingsphere.core.optimize.segment.select.item.impl.ShorthandSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.AggregationDistinctProjection;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 
 import java.util.ArrayList;
@@ -50,30 +50,30 @@ public final class ProjectionsContext {
     
     private final boolean distinctRow;
     
-    private final Collection<SelectItem> items;
+    private final Collection<Projection> projections;
     
     /**
-     * Judge is unqualified shorthand item or not.
+     * Judge is unqualified shorthand projection or not.
      * 
-     * @return is unqualified shorthand item or not
+     * @return is unqualified shorthand projection or not
      */
-    public boolean isUnqualifiedShorthandItem() {
-        if (1 != items.size()) {
+    public boolean isUnqualifiedShorthandProjection() {
+        if (1 != projections.size()) {
             return false;
         }
-        SelectItem item = items.iterator().next();
-        return item instanceof ShorthandSelectItem && !((ShorthandSelectItem) item).getOwner().isPresent();
+        Projection projection = projections.iterator().next();
+        return projection instanceof ShorthandProjection && !((ShorthandProjection) projection).getOwner().isPresent();
     }
     
     /**
      * Find alias.
      * 
-     * @param itemName item name
-     * @return item alias
+     * @param projectionName projection name
+     * @return projection alias
      */
-    public Optional<String> findAlias(final String itemName) {
-        for (SelectItem each : items) {
-            if (itemName.equalsIgnoreCase(each.getExpression())) {
+    public Optional<String> findAlias(final String projectionName) {
+        for (Projection each : projections) {
+            if (projectionName.equalsIgnoreCase(each.getExpression())) {
                 return each.getAlias();
             }
         }
@@ -81,15 +81,15 @@ public final class ProjectionsContext {
     }
     
     /**
-     * Find item index.
+     * Find projection index.
      *
-     * @param itemName item name
-     * @return item index
+     * @param projectionName projection name
+     * @return projection index
      */
-    public Optional<Integer> findItemIndex(final String itemName) {
+    public Optional<Integer> findProjectionIndex(final String projectionName) {
         int result = 1;
-        for (SelectItem each : items) {
-            if (itemName.equalsIgnoreCase(each.getExpression())) {
+        for (Projection each : projections) {
+            if (projectionName.equalsIgnoreCase(each.getExpression())) {
                 return Optional.of(result);
             }
             result++;
@@ -98,32 +98,32 @@ public final class ProjectionsContext {
     }
     
     /**
-     * Get aggregation select items.
+     * Get aggregation projections.
      *
-     * @return aggregation select items
+     * @return aggregation projections
      */
-    public List<AggregationSelectItem> getAggregationSelectItems() {
-        List<AggregationSelectItem> result = new LinkedList<>();
-        for (SelectItem each : items) {
-            if (each instanceof AggregationSelectItem) {
-                AggregationSelectItem aggregationSelectItem = (AggregationSelectItem) each;
-                result.add(aggregationSelectItem);
-                result.addAll(aggregationSelectItem.getDerivedAggregationItems());
+    public List<AggregationProjection> getAggregationProjections() {
+        List<AggregationProjection> result = new LinkedList<>();
+        for (Projection each : projections) {
+            if (each instanceof AggregationProjection) {
+                AggregationProjection aggregationProjection = (AggregationProjection) each;
+                result.add(aggregationProjection);
+                result.addAll(aggregationProjection.getDerivedAggregationProjections());
             }
         }
         return result;
     }
     
     /**
-     * Get aggregation distinct select items.
+     * Get aggregation distinct projections.
      *
-     * @return aggregation distinct select items
+     * @return aggregation distinct projections
      */
-    public List<AggregationDistinctSelectItem> getAggregationDistinctSelectItems() {
-        List<AggregationDistinctSelectItem> result = new LinkedList<>();
-        for (SelectItem each : items) {
-            if (each instanceof AggregationDistinctSelectItem) {
-                result.add((AggregationDistinctSelectItem) each);
+    public List<AggregationDistinctProjection> getAggregationDistinctProjections() {
+        List<AggregationDistinctProjection> result = new LinkedList<>();
+        for (Projection each : projections) {
+            if (each instanceof AggregationDistinctProjection) {
+                result.add((AggregationDistinctProjection) each);
             }
         }
         return result;
@@ -137,10 +137,10 @@ public final class ProjectionsContext {
      * @return column labels
      */
     public List<String> getColumnLabels(final TableMetas tableMetas, final Collection<TableSegment> tables) {
-        List<String> result = new ArrayList<>(items.size());
-        for (SelectItem each : items) {
-            if (each instanceof ShorthandSelectItem) {
-                result.addAll(getShorthandColumnLabels(tableMetas, tables, (ShorthandSelectItem) each));
+        List<String> result = new ArrayList<>(projections.size());
+        for (Projection each : projections) {
+            if (each instanceof ShorthandProjection) {
+                result.addAll(getShorthandColumnLabels(tableMetas, tables, (ShorthandProjection) each));
             } else {
                 result.add(each.getColumnLabel());
             }
@@ -148,9 +148,9 @@ public final class ProjectionsContext {
         return result;
     }
     
-    private Collection<String> getShorthandColumnLabels(final TableMetas tableMetas, final Collection<TableSegment> tables, final ShorthandSelectItem shorthandSelectItem) {
-        return shorthandSelectItem.getOwner().isPresent()
-                ? getQualifiedShorthandColumnLabels(tableMetas, tables, shorthandSelectItem.getOwner().get()) : getUnqualifiedShorthandColumnLabels(tableMetas, tables);
+    private Collection<String> getShorthandColumnLabels(final TableMetas tableMetas, final Collection<TableSegment> tables, final ShorthandProjection shorthandProjection) {
+        return shorthandProjection.getOwner().isPresent()
+                ? getQualifiedShorthandColumnLabels(tableMetas, tables, shorthandProjection.getOwner().get()) : getUnqualifiedShorthandColumnLabels(tableMetas, tables);
     }
     
     private Collection<String> getQualifiedShorthandColumnLabels(final TableMetas tableMetas, final Collection<TableSegment> tables, final String owner) {

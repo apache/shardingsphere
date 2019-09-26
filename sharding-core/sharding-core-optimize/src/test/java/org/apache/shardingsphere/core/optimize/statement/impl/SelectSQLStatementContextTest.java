@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.optimize.statement.impl;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
-import org.apache.shardingsphere.core.optimize.segment.select.item.ProjectionsContext;
-import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.segment.select.item.impl.ColumnSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.Projection;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
@@ -60,7 +60,7 @@ public final class SelectSQLStatementContextTest {
     public void assertSetIndexForItemsByIndexOrderBy() {
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
                 new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), createOrderBy(INDEX_ORDER_BY), createProjectionsContext(), null);
-        selectSQLStatementContext.setIndexForItems(Collections.<String, Integer>emptyMap());
+        selectSQLStatementContext.setIndexes(Collections.<String, Integer>emptyMap());
         assertThat(selectSQLStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(4));
     }
     
@@ -68,7 +68,7 @@ public final class SelectSQLStatementContextTest {
     public void assertSetIndexForItemsByColumnOrderByWithOwner() {
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
                 new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITH_OWNER), createProjectionsContext(), null);
-        selectSQLStatementContext.setIndexForItems(Collections.<String, Integer>emptyMap());
+        selectSQLStatementContext.setIndexes(Collections.<String, Integer>emptyMap());
         assertThat(selectSQLStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(1));
     }
     
@@ -78,7 +78,7 @@ public final class SelectSQLStatementContextTest {
                 new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITH_ALIAS), createProjectionsContext(), null);
         Map<String, Integer> columnLabelIndexMap = new HashMap<>();
         columnLabelIndexMap.put("n", 2);
-        selectSQLStatementContext.setIndexForItems(columnLabelIndexMap);
+        selectSQLStatementContext.setIndexes(columnLabelIndexMap);
         assertThat(selectSQLStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(2));
     }
     
@@ -88,7 +88,7 @@ public final class SelectSQLStatementContextTest {
                 new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS), createProjectionsContext(), null);
         Map<String, Integer> columnLabelIndexMap = new HashMap<>();
         columnLabelIndexMap.put("id", 3);
-        selectSQLStatementContext.setIndexForItems(columnLabelIndexMap);
+        selectSQLStatementContext.setIndexes(columnLabelIndexMap);
         assertThat(selectSQLStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(3));
     }
     
@@ -145,11 +145,11 @@ public final class SelectSQLStatementContextTest {
         return new ProjectionsContext(0, 0, true, Arrays.asList(getColumnSelectItemWithoutOwner(), getColumnSelectItemWithoutOwner(true), getColumnSelectItemWithoutOwner(false)));
     }
     
-    private SelectItem getColumnSelectItemWithoutOwner() {
-        return new ColumnSelectItem("table", "name", null);
+    private Projection getColumnSelectItemWithoutOwner() {
+        return new ColumnProjection("table", "name", null);
     }
     
-    private SelectItem getColumnSelectItemWithoutOwner(final boolean hasAlias) {
-        return new ColumnSelectItem(null, hasAlias ? "name" : "id", hasAlias ? "n" : null);
+    private Projection getColumnSelectItemWithoutOwner(final boolean hasAlias) {
+        return new ColumnProjection(null, hasAlias ? "name" : "id", hasAlias ? "n" : null);
     }
 }

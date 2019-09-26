@@ -15,23 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.segment.select.item.impl;
+package org.apache.shardingsphere.core.optimize.segment.select.projection.impl;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
-import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
-import org.apache.shardingsphere.core.parse.util.SQLUtil;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.Projection;
 
 /**
- * Aggregation select item.
+ * Shorthand projection.
  *
  * @author zhangliang
  */
@@ -39,36 +34,31 @@ import java.util.List;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class AggregationSelectItem implements SelectItem {
+public final class ShorthandProjection implements Projection {
     
-    private final AggregationType type;
-    
-    private final String innerExpression;
-    
-    private final String alias;
-    
-    private final List<AggregationSelectItem> derivedAggregationItems = new ArrayList<>(2);
-    
-    @Setter
-    private int index = -1;
+    private final String owner;
     
     @Override
-    public final String getExpression() {
-        return SQLUtil.getExactlyValue(type.name() + innerExpression);
+    public String getExpression() {
+        return Strings.isNullOrEmpty(owner) ? "*" : owner + ".*";
+    }
+    
+    @Override
+    public Optional<String> getAlias() {
+        return Optional.absent();
     }
 
     @Override
-    public final Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
+    public String getColumnLabel() {
+        return getAlias().or("*");
     }
 
     /**
-     * Get column label.
-     *
-     * @return column label
+     * Get owner.
+     * 
+     * @return owner
      */
-    @Override
-    public String getColumnLabel() {
-        return getAlias().or(getExpression());
+    public Optional<String> getOwner() {
+        return Optional.fromNullable(owner);
     }
 }

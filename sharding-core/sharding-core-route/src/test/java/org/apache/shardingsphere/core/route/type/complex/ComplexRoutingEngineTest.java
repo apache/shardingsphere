@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.route.type.complex;
 
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
-import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.segment.select.item.ProjectionsContext;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.Projection;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
@@ -48,7 +48,7 @@ public final class ComplexRoutingEngineTest extends AbstractRoutingEngineTest {
         ShardingRule shardingRule = createBindingShardingRule();
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(),
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false), 
-                new ProjectionsContext(0, 0, false, Collections.<SelectItem>emptyList()),
+                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()),
                 new PaginationContext(null, null, Collections.emptyList()));
         ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(shardingRule, Arrays.asList("t_order", "t_order_item"), selectSQLStatementContext, createShardingConditions("t_order"));
         RoutingResult routingResult = complexRoutingEngine.route();
@@ -66,7 +66,7 @@ public final class ComplexRoutingEngineTest extends AbstractRoutingEngineTest {
         ShardingRule shardingRule = createBroadcastShardingRule();
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(),
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false), 
-                new ProjectionsContext(0, 0, false, Collections.<SelectItem>emptyList()),
+                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()),
                 new PaginationContext(null, null, Collections.emptyList()));
         ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(shardingRule, Arrays.asList("t_order", "t_config"), selectSQLStatementContext, createShardingConditions("t_order"));
         RoutingResult routingResult = complexRoutingEngine.route();

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.core.rewrite.token;
 
 import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
-import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.segment.select.item.ProjectionsContext;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.AggregationDistinctProjection;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.Projection;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.rewrite.encrypt.EncryptCondition;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptConditions;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemPrefixToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.ProjectionPrefixToken;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -61,7 +61,7 @@ public final class SQLTokenGenerateEngineTest {
     public void setUp() {
         SelectStatement selectStatement = new SelectStatement();
         ProjectionsContext projectionsContext = new ProjectionsContext(1, 20, false, 
-                Collections.<SelectItem>singletonList(new AggregationDistinctSelectItem(1, 2, AggregationType.COUNT, "(DISTINCT id)", "c", "id")));
+                Collections.<Projection>singletonList(new AggregationDistinctProjection(1, 2, AggregationType.COUNT, "(DISTINCT id)", "c", "id")));
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(selectStatement,  
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false), 
                 projectionsContext, new PaginationContext(null, null, Collections.emptyList()));
@@ -81,7 +81,7 @@ public final class SQLTokenGenerateEngineTest {
     public void assertGetSQLTokenGeneratorsWithShardingTokenGenerateEngineWithoutSingleRoute() {
         List<SQLToken> actual = shardingTokenGenerateEngine.generateSQLTokens(rewriteStatement, null, mock(ShardingRule.class), false, false);
         assertThat(actual.size(), is(2));
-        assertThat(actual.get(0), CoreMatchers.<SQLToken>instanceOf(SelectItemPrefixToken.class));
+        assertThat(actual.get(0), CoreMatchers.<SQLToken>instanceOf(ProjectionPrefixToken.class));
     }
     
     @SuppressWarnings("unchecked")

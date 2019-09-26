@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.segment.select.item;
+package org.apache.shardingsphere.core.optimize.segment.select.projection;
 
-import org.apache.shardingsphere.core.optimize.segment.select.item.DerivedColumn;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

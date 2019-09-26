@@ -15,35 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.segment.select.item;
+package org.apache.shardingsphere.core.optimize.segment.select.projection.impl;
 
 import com.google.common.base.Optional;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.Projection;
 
 /**
- * Select item interface.
+ * Derived projection.
  *
  * @author zhangliang
+ * @author sunbufu
  */
-public interface SelectItem {
-    
-    /**
-     * Get expression.
-     * 
-     * @return expression
-     */
-    String getExpression();
-    
-    /**
-     * Get alias.
-     * 
-     * @return alias
-     */
-    Optional<String> getAlias();
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
+@ToString
+public final class DerivedProjection implements Projection {
 
-    /**
-     * Get columnLabel.
-     *
-     * @return columnLabel
-     */
-    String getColumnLabel();
+    private final String expression;
+
+    private final String alias;
+
+    @Override
+    public Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
+    }
+
+    @Override
+    public String getColumnLabel() {
+        return getAlias().or(getExpression());
+    }
 }

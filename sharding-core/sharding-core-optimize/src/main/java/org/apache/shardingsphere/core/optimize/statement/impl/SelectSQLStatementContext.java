@@ -24,10 +24,10 @@ import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.groupby.engine.GroupByContextEngine;
-import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationSelectItem;
-import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.segment.select.item.ProjectionsContext;
-import org.apache.shardingsphere.core.optimize.segment.select.item.engine.SelectItemsContextEngine;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.Projection;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.engine.ProjectionsContextEngine;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.engine.OrderByContextEngine;
@@ -79,7 +79,7 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
         super(sqlStatement);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
-        projectionsContext = new SelectItemsContextEngine(tableMetas).createProjectionsContext(sql, sqlStatement, groupByContext, orderByContext);
+        projectionsContext = new ProjectionsContextEngine(tableMetas).createProjectionsContext(sql, sqlStatement, groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
         containsSubquery = containsSubquery();
     }
@@ -95,21 +95,21 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
     }
     
     /**
-     * Set index for select items.
+     * Set indexes.
      *
      * @param columnLabelIndexMap map for column label and index
      */
-    public void setIndexForItems(final Map<String, Integer> columnLabelIndexMap) {
-        setIndexForAggregationItem(columnLabelIndexMap);
+    public void setIndexes(final Map<String, Integer> columnLabelIndexMap) {
+        setIndexForAggregationProjection(columnLabelIndexMap);
         setIndexForOrderItem(columnLabelIndexMap, orderByContext.getItems());
         setIndexForOrderItem(columnLabelIndexMap, groupByContext.getItems());
     }
     
-    private void setIndexForAggregationItem(final Map<String, Integer> columnLabelIndexMap) {
-        for (AggregationSelectItem each : projectionsContext.getAggregationSelectItems()) {
+    private void setIndexForAggregationProjection(final Map<String, Integer> columnLabelIndexMap) {
+        for (AggregationProjection each : projectionsContext.getAggregationProjections()) {
             Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), "Can't find index: %s, please add alias for aggregate selections", each);
             each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
-            for (AggregationSelectItem derived : each.getDerivedAggregationItems()) {
+            for (AggregationProjection derived : each.getDerivedAggregationProjections()) {
                 Preconditions.checkState(columnLabelIndexMap.containsKey(derived.getColumnLabel()), "Can't find index: %s", derived);
                 derived.setIndex(columnLabelIndexMap.get(derived.getColumnLabel()));
             }
@@ -123,7 +123,7 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
                 continue;
             }
             if (each.getSegment() instanceof ColumnOrderByItemSegment && ((ColumnOrderByItemSegment) each.getSegment()).getColumn().getOwner().isPresent()) {
-                Optional<Integer> itemIndex = projectionsContext.findItemIndex(((ColumnOrderByItemSegment) each.getSegment()).getText());
+                Optional<Integer> itemIndex = projectionsContext.findProjectionIndex(((ColumnOrderByItemSegment) each.getSegment()).getText());
                 if (itemIndex.isPresent()) {
                     each.setIndex(itemIndex.get());
                     continue;
@@ -139,11 +139,11 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
     }
     
     private Optional<String> getAlias(final String name) {
-        if (projectionsContext.isUnqualifiedShorthandItem()) {
+        if (projectionsContext.isUnqualifiedShorthandProjection()) {
             return Optional.absent();
         }
         String rawName = SQLUtil.getExactlyValue(name);
-        for (SelectItem each : projectionsContext.getItems()) {
+        for (Projection each : projectionsContext.getProjections()) {
             if (SQLUtil.getExactlyExpression(rawName).equalsIgnoreCase(SQLUtil.getExactlyExpression(SQLUtil.getExactlyValue(each.getExpression())))) {
                 return each.getAlias();
             }

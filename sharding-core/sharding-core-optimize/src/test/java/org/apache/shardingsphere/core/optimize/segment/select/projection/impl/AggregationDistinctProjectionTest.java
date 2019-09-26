@@ -15,37 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token.pojo;
+package org.apache.shardingsphere.core.optimize.segment.select.projection.impl;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
+import org.junit.Test;
 
-import java.util.Collection;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * Select items token.
- *
- * @author zhangliang
- * @author panjuan
- */
-@Getter
-@EqualsAndHashCode(callSuper = true)
-public final class SelectItemsToken extends SQLToken implements Attachable {
+public final class AggregationDistinctProjectionTest {
     
-    private final Collection<String> items;
+    private final AggregationDistinctProjection aggregationDistinctProjection = new AggregationDistinctProjection(0, 0, AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
     
-    public SelectItemsToken(final int startIndex, final Collection<String> items) {
-        super(startIndex);
-        this.items = items;
+    @Test
+    public void assertGetDistinctColumnLabel() {
+        assertThat(aggregationDistinctProjection.getDistinctColumnLabel(), is("c"));
     }
     
-    @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder();
-        for (String item : items) {
-            result.append(", ");
-            result.append(item);
-        }
-        return result.toString();
+    @Test
+    public void assertGetDistinctColumnName() {
+        assertThat(aggregationDistinctProjection.getDistinctInnerExpression(), is("order_id"));
     }
 }

@@ -15,28 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token.pojo;
+package org.apache.shardingsphere.core.optimize.segment.select.projection.impl;
 
+import com.google.common.base.Optional;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.Projection;
 
 /**
- * Select item prefix token.
+ * Common projection.
  *
- * @author panjuan
+ * @author zhangliang
+ * @author sunbufu
  */
+@RequiredArgsConstructor
 @Getter
-public final class SelectItemPrefixToken extends SQLToken implements Attachable {
-    
-    @Setter
-    private boolean isToAppendDistinct;
-    
-    public SelectItemPrefixToken(final int startIndex) {
-        super(startIndex);
-    }
-    
+@EqualsAndHashCode
+@ToString
+public final class ColumnProjection implements Projection {
+
+    private final String owner;
+
+    private final String name;
+
+    private final String alias;
+
     @Override
-    public String toString() {
-        return "DISTINCT ";
+    public String getExpression() {
+        return null == owner ? name : owner + "." + name;
+    }
+
+    @Override
+    public String getColumnLabel() {
+        return getAlias().or(name);
+    }
+
+    @Override
+    public Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
     }
 }

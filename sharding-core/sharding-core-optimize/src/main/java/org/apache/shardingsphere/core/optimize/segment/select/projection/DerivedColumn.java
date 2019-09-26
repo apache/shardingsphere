@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.segment.select.item;
+package org.apache.shardingsphere.core.optimize.segment.select.projection;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
