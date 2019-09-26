@@ -17,14 +17,20 @@
 
 package info.avalon566.shardingscaling.sync.jdbc;
 
-import info.avalon566.shardingscaling.sync.core.*;
+import info.avalon566.shardingscaling.sync.core.AbstractRunner;
+import info.avalon566.shardingscaling.sync.core.Channel;
+import info.avalon566.shardingscaling.sync.core.FinishedRecord;
+import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
+import info.avalon566.shardingscaling.sync.core.Reader;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
