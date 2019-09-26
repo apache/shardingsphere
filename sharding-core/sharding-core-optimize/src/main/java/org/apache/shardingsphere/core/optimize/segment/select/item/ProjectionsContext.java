@@ -34,7 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Select items context.
+ * Projections context.
  *
  * @author zhangliang
  * @author sunbufu
@@ -42,7 +42,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class SelectItemsContext {
+public final class ProjectionsContext {
     
     private final int startIndex;
     

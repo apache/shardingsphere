@@ -43,51 +43,51 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class SelectItemsContextTest {
+public final class ProjectionsContextTest {
     
     @Test
     public void assertUnqualifiedShorthandItemWithEmptyItems() {
-        SelectItemsContext selectItemsContext = new SelectItemsContext(0, 0, true, Collections.<SelectItem>emptySet());
-        assertFalse(selectItemsContext.isUnqualifiedShorthandItem());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.<SelectItem>emptySet());
+        assertFalse(projectionsContext.isUnqualifiedShorthandItem());
     }
     
     @Test
     public void assertUnqualifiedShorthandItemWithWrongSelectItem() {
-        SelectItemsContext selectItemsContext = new SelectItemsContext(0, 0, true, Collections.singleton((SelectItem) getColumnSelectItem()));
-        assertFalse(selectItemsContext.isUnqualifiedShorthandItem());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton((SelectItem) getColumnSelectItem()));
+        assertFalse(projectionsContext.isUnqualifiedShorthandItem());
     }
     
     @Test
     public void assertUnqualifiedShorthandItemWithWrongShortSelectItem() {
-        SelectItemsContext selectItemsContext = new SelectItemsContext(0, 0, true, Collections.singleton((SelectItem) getShorthandSelectItem()));
-        assertFalse(selectItemsContext.isUnqualifiedShorthandItem());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton((SelectItem) getShorthandSelectItem()));
+        assertFalse(projectionsContext.isUnqualifiedShorthandItem());
     }
     
     @Test
     public void assertUnqualifiedShorthandItem() {
         SelectItem selectItem = new ShorthandSelectItem(null);
-        SelectItemsContext selectItemsContext = new SelectItemsContext(0, 0, true, Collections.singleton(selectItem));
-        assertTrue(selectItemsContext.isUnqualifiedShorthandItem());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(selectItem));
+        assertTrue(projectionsContext.isUnqualifiedShorthandItem());
     }
     
     @Test
     public void assertFindAliasWithOutAlias() {
-        SelectItemsContext selectItemsContext = new SelectItemsContext(0, 0, true, Collections.<SelectItem>emptyList());
-        assertFalse(selectItemsContext.findAlias("").isPresent());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.<SelectItem>emptyList());
+        assertFalse(projectionsContext.findAlias("").isPresent());
     }
     
     @Test
     public void assertFindAlias() {
         SelectItem selectItem = getColumnSelectItemWithAlias();
-        SelectItemsContext selectItemsContext = new SelectItemsContext(0, 0, true, Collections.singleton(selectItem));
-        assertTrue(selectItemsContext.findAlias(selectItem.getExpression()).isPresent());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(selectItem));
+        assertTrue(projectionsContext.findAlias(selectItem.getExpression()).isPresent());
     }
     
     @Test
     public void assertFindItemIndex() {
         SelectItem selectItem = getColumnSelectItem();
-        SelectItemsContext selectItemsContext = new SelectItemsContext(0, 0, true, Collections.singleton(selectItem));
-        Optional<Integer> actual = selectItemsContext.findItemIndex(selectItem.getExpression());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(selectItem));
+        Optional<Integer> actual = projectionsContext.findItemIndex(selectItem.getExpression());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(1));
     }
@@ -95,15 +95,15 @@ public final class SelectItemsContextTest {
     @Test
     public void assertFindItemIndexFailure() {
         SelectItem selectItem = getColumnSelectItem();
-        SelectItemsContext selectItemsContext = new SelectItemsContext(0, 0, true, Collections.singleton(selectItem));
-        Optional<Integer> actual = selectItemsContext.findItemIndex("");
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(selectItem));
+        Optional<Integer> actual = projectionsContext.findItemIndex("");
         assertFalse(actual.isPresent());
     }
     
     @Test
     public void assertGetAggregationSelectItems() {
         SelectItem aggregationSelectItem = getAggregationSelectItem();
-        List<AggregationSelectItem> items = new SelectItemsContext(0, 0, true, Arrays.asList(aggregationSelectItem, getColumnSelectItem())).getAggregationSelectItems();
+        List<AggregationSelectItem> items = new ProjectionsContext(0, 0, true, Arrays.asList(aggregationSelectItem, getColumnSelectItem())).getAggregationSelectItems();
         assertTrue(items.contains(aggregationSelectItem));
         assertEquals(items.size(), 1);
     }
@@ -111,7 +111,7 @@ public final class SelectItemsContextTest {
     @Test
     public void assertGetAggregationDistinctSelectItems() {
         SelectItem aggregationDistinctSelectItem = getAggregationDistinctSelectItem();
-        List<AggregationDistinctSelectItem> items = new SelectItemsContext(0, 0, true, Arrays.asList(aggregationDistinctSelectItem, getColumnSelectItem())).getAggregationDistinctSelectItems();
+        List<AggregationDistinctSelectItem> items = new ProjectionsContext(0, 0, true, Arrays.asList(aggregationDistinctSelectItem, getColumnSelectItem())).getAggregationDistinctSelectItems();
         assertTrue(items.contains(aggregationDistinctSelectItem));
         assertEquals(items.size(), 1);
     }
@@ -119,7 +119,7 @@ public final class SelectItemsContextTest {
     @Test
     public void assertGetColumnLabelWithShorthandSelectItem() {
         SelectItem selectItem = getShorthandSelectItem();
-        List<String> columnLabels = new SelectItemsContext(
+        List<String> columnLabels = new ProjectionsContext(
                 0, 0, true, Collections.singletonList(selectItem)).getColumnLabels(createTableMetas(), Collections.singletonList(new TableSegment(0, 0, "table")));
         assertEquals(columnLabels, Arrays.asList("id", "name"));
     }
@@ -127,7 +127,7 @@ public final class SelectItemsContextTest {
     @Test
     public void assertGetColumnLabelWithShorthandSelectItem2() {
         SelectItem selectItem = getShorthandSelectItemWithOutOwner();
-        List<String> columnLabels = new SelectItemsContext(
+        List<String> columnLabels = new ProjectionsContext(
                 0, 0, true, Collections.singletonList(selectItem)).getColumnLabels(createTableMetas(), Collections.singletonList(new TableSegment(0, 0, "table")));
         assertEquals(columnLabels, Arrays.asList("id", "name"));
     }
@@ -135,56 +135,56 @@ public final class SelectItemsContextTest {
     @Test
     public void assertGetColumnLabelsWithCommonSelectItem() {
         SelectItem selectItem = getColumnSelectItem();
-        List<String> columnLabels = new SelectItemsContext(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
+        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
         assertTrue(columnLabels.contains(selectItem.getColumnLabel()));
     }
     
     @Test
     public void assertGetColumnLabelsWithCommonSelectItemAlias() {
         SelectItem selectItem = getColumnSelectItemWithAlias();
-        List<String> columnLabels = new SelectItemsContext(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
+        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
         assertTrue(columnLabels.contains(selectItem.getAlias().or("")));
     }
     
     @Test
     public void assertGetColumnLabelsWithExpressionSelectItem() {
         SelectItem selectItem = getExpressionSelectItem();
-        List<String> columnLabels = new SelectItemsContext(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
+        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
         assertTrue(columnLabels.contains(selectItem.getColumnLabel()));
     }
     
     @Test
     public void assertGetColumnLabelsWithExpressionSelectItemAlias() {
         SelectItem selectItem = getExpressionSelectItemWithAlias();
-        List<String> columnLabels = new SelectItemsContext(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
+        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
         assertTrue(columnLabels.contains(selectItem.getAlias().or("")));
     }
     
     @Test
     public void assertGetColumnLabelsWithDerivedSelectItem() {
         SelectItem selectItem = getDerivedSelectItem();
-        List<String> columnLabels = new SelectItemsContext(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
+        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
         assertTrue(columnLabels.contains(selectItem.getColumnLabel()));
     }
     
     @Test
     public void assertGetColumnLabelsWithDerivedSelectItemAlias() {
         SelectItem selectItem = getDerivedSelectItemWithAlias();
-        List<String> columnLabels = new SelectItemsContext(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
+        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
         assertTrue(columnLabels.contains(selectItem.getAlias().or("")));
     }
     
     @Test
     public void assertGetColumnLabelsWithAggregationSelectItem() {
         SelectItem selectItem = getAggregationSelectItem();
-        List<String> columnLabels = new SelectItemsContext(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
+        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
         assertTrue(columnLabels.contains(selectItem.getColumnLabel()));
     }
     
     @Test
     public void assertGetColumnLabelsWithAggregationDistinctSelectItem() {
         SelectItem selectItem = getAggregationDistinctSelectItem();
-        List<String> columnLabels = new SelectItemsContext(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
+        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(selectItem)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
         assertTrue(columnLabels.contains(selectItem.getColumnLabel()));
     }
     

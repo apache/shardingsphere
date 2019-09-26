@@ -78,7 +78,7 @@ public final class DQLMergeEngine implements MergeEngine {
         if (1 == result.size()) {
             return result;
         }
-        List<AggregationDistinctSelectItem> aggregationDistinctSelectItems = selectSQLStatementContext.getSelectItemsContext().getAggregationDistinctSelectItems();
+        List<AggregationDistinctSelectItem> aggregationDistinctSelectItems = selectSQLStatementContext.getProjectionsContext().getAggregationDistinctSelectItems();
         if (!aggregationDistinctSelectItems.isEmpty()) {
             result = getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, aggregationDistinctSelectItems));
         }
@@ -99,7 +99,7 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private boolean isDistinctRowSelectItems() {
-        return selectSQLStatementContext.getSelectItemsContext().isDistinctRow() && selectSQLStatementContext.getGroupByContext().getItems().isEmpty();
+        return selectSQLStatementContext.getProjectionsContext().isDistinctRow() && selectSQLStatementContext.getGroupByContext().getItems().isEmpty();
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
@@ -120,7 +120,7 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private MergedResult build() throws SQLException {
-        if (!selectSQLStatementContext.getGroupByContext().getItems().isEmpty() || !selectSQLStatementContext.getSelectItemsContext().getAggregationSelectItems().isEmpty()) {
+        if (!selectSQLStatementContext.getGroupByContext().getItems().isEmpty() || !selectSQLStatementContext.getProjectionsContext().getAggregationSelectItems().isEmpty()) {
             return getGroupByMergedResult();
         }
         if (!selectSQLStatementContext.getOrderByContext().getItems().isEmpty()) {

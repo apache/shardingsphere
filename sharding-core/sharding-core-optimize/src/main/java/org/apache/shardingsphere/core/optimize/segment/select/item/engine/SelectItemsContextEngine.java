@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.optimize.segment.table.Table;
 import org.apache.shardingsphere.core.optimize.segment.table.TablesContext;
 import org.apache.shardingsphere.core.optimize.segment.select.item.DerivedColumn;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItemsContext;
+import org.apache.shardingsphere.core.optimize.segment.select.item.ProjectionsContext;
 import org.apache.shardingsphere.core.optimize.segment.select.item.impl.ShorthandSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.impl.DerivedSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
@@ -56,18 +56,18 @@ public final class SelectItemsContextEngine {
     private final SelectItemEngine selectItemEngine = new SelectItemEngine();
     
     /**
-     * Create select items context.
+     * Create projections context.
      *
      * @param sql SQL
      * @param selectStatement SQL statement
      * @param groupByContext group by context
      * @param orderByContext order by context
-     * @return select items context
+     * @return projections context
      */
-    public SelectItemsContext createSelectItemsContext(final String sql, final SelectStatement selectStatement, final GroupByContext groupByContext, final OrderByContext orderByContext) {
+    public ProjectionsContext createProjectionsContext(final String sql, final SelectStatement selectStatement, final GroupByContext groupByContext, final OrderByContext orderByContext) {
         SelectItemsSegment selectItemsSegment = selectStatement.getSelectItems();
         Collection<SelectItem> items = getSelectItemList(sql, selectItemsSegment);
-        SelectItemsContext result = new SelectItemsContext(selectItemsSegment.getStartIndex(), selectItemsSegment.getStopIndex(), selectItemsSegment.isDistinctRow(), items);
+        ProjectionsContext result = new ProjectionsContext(selectItemsSegment.getStartIndex(), selectItemsSegment.getStopIndex(), selectItemsSegment.isDistinctRow(), items);
         TablesContext tablesContext = new TablesContext(selectStatement);
         result.getItems().addAll(getDerivedGroupByColumns(tablesContext, items, groupByContext));
         result.getItems().addAll(getDerivedOrderByColumns(tablesContext, items, orderByContext));
