@@ -72,14 +72,30 @@ public final class DataTypesCodec {
         for (int bit = 0; bit < length; bit += 8) {
             int flag = ((int) in.readByte()) & 0xff;
             if (flag != 0) {
-                if ((flag & 0x01) != 0) bitSet.set(bit);
-                if ((flag & 0x02) != 0) bitSet.set(bit + 1);
-                if ((flag & 0x04) != 0) bitSet.set(bit + 2);
-                if ((flag & 0x08) != 0) bitSet.set(bit + 3);
-                if ((flag & 0x10) != 0) bitSet.set(bit + 4);
-                if ((flag & 0x20) != 0) bitSet.set(bit + 5);
-                if ((flag & 0x40) != 0) bitSet.set(bit + 6);
-                if ((flag & 0x80) != 0) bitSet.set(bit + 7);
+                if ((flag & 0x01) != 0) {
+                    bitSet.set(bit);
+                }
+                if ((flag & 0x02) != 0) {
+                    bitSet.set(bit + 1);
+                }
+                if ((flag & 0x04) != 0) {
+                    bitSet.set(bit + 2);
+                }
+                if ((flag & 0x08) != 0) {
+                    bitSet.set(bit + 3);
+                }
+                if ((flag & 0x10) != 0) {
+                    bitSet.set(bit + 4);
+                }
+                if ((flag & 0x20) != 0) {
+                    bitSet.set(bit + 5);
+                }
+                if ((flag & 0x40) != 0) {
+                    bitSet.set(bit + 6);
+                }
+                if ((flag & 0x80) != 0) {
+                    bitSet.set(bit + 7);
+                }
             }
         }
         return bitSet;

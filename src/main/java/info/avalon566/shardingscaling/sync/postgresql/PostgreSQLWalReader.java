@@ -17,15 +17,37 @@
 
 package info.avalon566.shardingscaling.sync.postgresql;
 
+import info.avalon566.shardingscaling.sync.core.AbstractRunner;
+import info.avalon566.shardingscaling.sync.core.Channel;
 import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
-import info.avalon566.shardingscaling.sync.jdbc.AbstractJdbcWriter;
+import info.avalon566.shardingscaling.sync.core.Reader;
+import lombok.Setter;
+
+import java.util.List;
 
 /**
+ * PostgreSQL WAL reader.
+ *
  * @author avalon566
  */
-public class PostgresqlWriter extends AbstractJdbcWriter {
+public final class PostgreSQLWalReader extends AbstractRunner implements Reader {
 
-    public PostgresqlWriter(RdbmsConfiguration rdbmsConfiguration) {
-        super(rdbmsConfiguration);
+    @Setter
+    private Channel channel;
+
+    @Override
+    public void run() {
+        //TODO:
+        read(channel);
+    }
+
+    @Override
+    public void read(final Channel channel) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<RdbmsConfiguration> split(final int concurrency) {
+        throw new UnsupportedOperationException();
     }
 }
