@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.optimize.segment.select.orderby.engine;
 
-import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupBy;
-import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderBy;
+import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
+import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
@@ -28,22 +28,22 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Order by engine.
+ * Order by context engine.
  *
  * @author zhangliang
  */
-public final class OrderByEngine {
+public final class OrderByContextEngine {
     
     /**
-     * Create order by.
+     * Create order by context.
      * 
      * @param selectStatement select statement
-     * @param groupBy group by
-     * @return order by
+     * @param groupByContext group by context
+     * @return order by context
      */
-    public OrderBy createOrderBy(final SelectStatement selectStatement, final GroupBy groupBy) {
+    public OrderByContext createOrderBy(final SelectStatement selectStatement, final GroupByContext groupByContext) {
         if (!selectStatement.getOrderBy().isPresent() || selectStatement.getOrderBy().get().getOrderByItems().isEmpty()) {
-            return new OrderBy(groupBy.getItems(), !groupBy.getItems().isEmpty());
+            return new OrderByContext(groupByContext.getItems(), !groupByContext.getItems().isEmpty());
         }
         List<OrderByItem> orderByItems = new LinkedList<>();
         for (OrderByItemSegment each : selectStatement.getOrderBy().get().getOrderByItems()) {
@@ -53,6 +53,6 @@ public final class OrderByEngine {
             }
             orderByItems.add(orderByItem);
         }
-        return new OrderBy(orderByItems, false);
+        return new OrderByContext(orderByItems, false);
     }
 }

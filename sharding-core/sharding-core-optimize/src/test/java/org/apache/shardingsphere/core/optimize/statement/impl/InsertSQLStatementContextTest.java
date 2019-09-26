@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.optimize.statement.impl;
 
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.statement.impl.InsertOptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
@@ -35,27 +34,27 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class InsertOptimizeStatementTest {
+public final class InsertSQLStatementContextTest {
     
     @Test
-    public void assertInsertOptimizedStatementWithColumnNames() {
+    public void assertInsertSQLStatementContextWithColumnNames() {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
         insertStatement.getColumns().addAll(Arrays.asList(new ColumnSegment(0, 0, "id"), new ColumnSegment(0, 0, "name"), new ColumnSegment(0, 0, "status")));
         setUpInsertValues(insertStatement);
-        InsertOptimizedStatement actual = new InsertOptimizedStatement(mock(TableMetas.class), Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
-        assertInsertOptimizeStatement(actual);
+        InsertSQLStatementContext actual = new InsertSQLStatementContext(mock(TableMetas.class), Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
+        assertInsertSQLStatementContext(actual);
     }
     
     @Test
-    public void assertInsertOptimizedStatementWithoutColumnNames() {
+    public void assertInsertSQLStatementContextWithoutColumnNames() {
         TableMetas tableMetas = mock(TableMetas.class);
         when(tableMetas.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
         setUpInsertValues(insertStatement);
-        InsertOptimizedStatement actual = new InsertOptimizedStatement(tableMetas, Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
-        assertInsertOptimizeStatement(actual);
+        InsertSQLStatementContext actual = new InsertSQLStatementContext(tableMetas, Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
+        assertInsertSQLStatementContext(actual);
     }
     
     private void setUpInsertValues(final InsertStatement insertStatement) {
@@ -65,15 +64,15 @@ public final class InsertOptimizeStatementTest {
                 new ParameterMarkerExpressionSegment(0, 0, 3), new ParameterMarkerExpressionSegment(0, 0, 4), new LiteralExpressionSegment(0, 0, "init"))));
     }
     
-    private void assertInsertOptimizeStatement(final InsertOptimizedStatement actual) {
-        assertThat(actual.getTables().getSingleTableName(), is("tbl"));
+    private void assertInsertSQLStatementContext(final InsertSQLStatementContext actual) {
+        assertThat(actual.getTablesContext().getSingleTableName(), is("tbl"));
         assertThat(actual.getColumnNames(), is(Arrays.asList("id", "name", "status")));
-        assertThat(actual.getInsertValues().size(), is(2));
-        assertThat(actual.getInsertValues().get(0).getValue(0), is((Object) 1));
-        assertThat(actual.getInsertValues().get(0).getValue(1), is((Object) "Tom"));
-        assertThat(actual.getInsertValues().get(0).getValue(2), is((Object) "init"));
-        assertThat(actual.getInsertValues().get(1).getValue(0), is((Object) 2));
-        assertThat(actual.getInsertValues().get(1).getValue(1), is((Object) "Jerry"));
-        assertThat(actual.getInsertValues().get(1).getValue(2), is((Object) "init"));
+        assertThat(actual.getInsertValueContexts().size(), is(2));
+        assertThat(actual.getInsertValueContexts().get(0).getValue(0), is((Object) 1));
+        assertThat(actual.getInsertValueContexts().get(0).getValue(1), is((Object) "Tom"));
+        assertThat(actual.getInsertValueContexts().get(0).getValue(2), is((Object) "init"));
+        assertThat(actual.getInsertValueContexts().get(1).getValue(0), is((Object) 2));
+        assertThat(actual.getInsertValueContexts().get(1).getValue(1), is((Object) "Jerry"));
+        assertThat(actual.getInsertValueContexts().get(1).getValue(2), is((Object) "init"));
     }
 }

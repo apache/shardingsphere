@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.statement.impl.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
@@ -42,23 +42,23 @@ public final class InsertCipherNameTokenGenerator implements CollectionSQLTokenG
     @Override
     public Collection<InsertCipherNameToken> generateSQLTokens(final RewriteStatement rewriteStatement,
                                                                final ParameterBuilder parameterBuilder, final EncryptRule rule, final boolean isQueryWithCipherColumn) {
-        if (!isNeedToGenerateSQLToken(rewriteStatement.getOptimizedStatement())) {
+        if (!isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext())) {
             return Collections.emptyList();
         }
-        return createInsertColumnTokens((InsertOptimizedStatement) rewriteStatement.getOptimizedStatement(), rule);
+        return createInsertColumnTokens((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext(), rule);
     }
     
-    private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
-        return optimizedStatement instanceof InsertOptimizedStatement && insertColumnsSegment.isPresent() && !insertColumnsSegment.get().getColumns().isEmpty();
+    private boolean isNeedToGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+        Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
+        return sqlStatementContext instanceof InsertSQLStatementContext && insertColumnsSegment.isPresent() && !insertColumnsSegment.get().getColumns().isEmpty();
     }
     
-    private Collection<InsertCipherNameToken> createInsertColumnTokens(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
+    private Collection<InsertCipherNameToken> createInsertColumnTokens(final InsertSQLStatementContext insertSQLStatementContext, final EncryptRule encryptRule) {
+        Optional<InsertColumnsSegment> insertColumnsSegment = insertSQLStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         if (!insertColumnsSegment.isPresent()) {
             return Collections.emptyList();
         }
-        Map<String, String> logicAndCipherColumns = encryptRule.getLogicAndCipherColumns(optimizedStatement.getTables().getSingleTableName());
+        Map<String, String> logicAndCipherColumns = encryptRule.getLogicAndCipherColumns(insertSQLStatementContext.getTablesContext().getSingleTableName());
         Collection<InsertCipherNameToken> result = new LinkedList<>();
         for (ColumnSegment each : insertColumnsSegment.get().getColumns()) {
             if (logicAndCipherColumns.keySet().contains(each.getName())) {

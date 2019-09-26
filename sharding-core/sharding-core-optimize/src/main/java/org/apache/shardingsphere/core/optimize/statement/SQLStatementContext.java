@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.core.optimize.statement;
 
-import org.apache.shardingsphere.core.optimize.segment.Tables;
+import org.apache.shardingsphere.core.optimize.segment.table.TablesContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
- * Optimized statement.
+ * SQL statement context.
  *
  * @author zhangliang
  */
-public interface OptimizedStatement {
+public interface SQLStatementContext {
     
     /**
      * Get SQL statement.
@@ -35,9 +35,9 @@ public interface OptimizedStatement {
     SQLStatement getSqlStatement();
     
     /**
-     * Get tables.
+     * Get tables context.
      *
-     * @return tables
+     * @return tables context
      */
-    Tables getTables();
+    TablesContext getTablesContext();
 }

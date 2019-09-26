@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationU
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnitFactory;
 import org.apache.shardingsphere.core.merge.dql.orderby.OrderByStreamMergedResult;
 import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationSelectItem;
-import org.apache.shardingsphere.core.optimize.statement.impl.SelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -44,20 +44,20 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
     private final Map<String, Integer> labelAndIndexMap;
     
-    private final SelectOptimizedStatement optimizedStatement;
+    private final SelectSQLStatementContext selectSQLStatementContext;
     
     private final List<Object> currentRow;
     
     private List<?> currentGroupByValues;
     
     public GroupByStreamMergedResult(
-            final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final SelectOptimizedStatement optimizedStatement) throws SQLException {
-        super(queryResults, optimizedStatement.getOrderBy().getItems());
+            final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final SelectSQLStatementContext selectSQLStatementContext) throws SQLException {
+        super(queryResults, selectSQLStatementContext.getOrderByContext().getItems());
         this.labelAndIndexMap = labelAndIndexMap;
-        this.optimizedStatement = optimizedStatement;
+        this.selectSQLStatementContext = selectSQLStatementContext;
         currentRow = new ArrayList<>(labelAndIndexMap.size());
         currentGroupByValues = getOrderByValuesQueue().isEmpty()
-                ? Collections.emptyList() : new GroupByValue(getCurrentQueryResult(), optimizedStatement.getGroupBy().getItems()).getGroupValues();
+                ? Collections.emptyList() : new GroupByValue(getCurrentQueryResult(), selectSQLStatementContext.getGroupByContext().getItems()).getGroupValues();
     }
     
     @Override
@@ -70,7 +70,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
             super.next();
         }
         if (aggregateCurrentGroupByRowAndNext()) {
-            currentGroupByValues = new GroupByValue(getCurrentQueryResult(), optimizedStatement.getGroupBy().getItems()).getGroupValues();
+            currentGroupByValues = new GroupByValue(getCurrentQueryResult(), selectSQLStatementContext.getGroupByContext().getItems()).getGroupValues();
         }
         return true;
     }
@@ -78,14 +78,14 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     private boolean aggregateCurrentGroupByRowAndNext() throws SQLException {
         boolean result = false;
         Map<AggregationSelectItem, AggregationUnit> aggregationUnitMap = Maps.toMap(
-                optimizedStatement.getSelectItems().getAggregationSelectItems(), new Function<AggregationSelectItem, AggregationUnit>() {
+                selectSQLStatementContext.getSelectItemsContext().getAggregationSelectItems(), new Function<AggregationSelectItem, AggregationUnit>() {
                     
                     @Override
                     public AggregationUnit apply(final AggregationSelectItem input) {
                         return AggregationUnitFactory.create(input.getType());
                     }
                 });
-        while (currentGroupByValues.equals(new GroupByValue(getCurrentQueryResult(), optimizedStatement.getGroupBy().getItems()).getGroupValues())) {
+        while (currentGroupByValues.equals(new GroupByValue(getCurrentQueryResult(), selectSQLStatementContext.getGroupByContext().getItems()).getGroupValues())) {
             aggregate(aggregationUnitMap);
             cacheCurrentRow();
             result = super.next();

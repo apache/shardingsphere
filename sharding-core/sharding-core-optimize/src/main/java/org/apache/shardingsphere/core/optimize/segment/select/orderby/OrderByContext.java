@@ -15,29 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.statement.impl;
+package org.apache.shardingsphere.core.optimize.segment.select.orderby;
 
 import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.core.optimize.segment.Tables;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
 
 /**
- * Common optimized statement.
+ * Order by context.
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
-@ToString
-public class CommonOptimizedStatement implements OptimizedStatement {
+public final class OrderByContext {
     
-    private final SQLStatement sqlStatement;
+    private final Collection<OrderByItem> items;
     
-    private final Tables tables;
-    
-    public CommonOptimizedStatement(final SQLStatement sqlStatement) {
-        this.sqlStatement = sqlStatement;
-        tables = new Tables(sqlStatement);
-    }
+    private final boolean generated;
 }

@@ -18,77 +18,112 @@
 package org.apache.shardingsphere.core.optimize.segment.select.pagination.engine;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.segment.select.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItemsContext;
+import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.RowNumberValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.top.TopSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Pagination engine for top.
+ * Pagination context engine for row number.
  *
  * @author zhangliang
  */
-public final class TopPaginationEngine {
+public final class RowNumberPaginationContextEngine {
     
-    /**
-     * Create pagination.
-     * 
-     * @param topSegment top segment
-     * @param andPredicates and predicates
-     * @param parameters SQL parameters
-     * @return pagination
-     */
-    public Pagination createPagination(final TopSegment topSegment, final Collection<AndPredicate> andPredicates, final List<Object> parameters) {
-        Optional<PredicateSegment> rowNumberPredicate = getRowNumberPredicate(andPredicates, topSegment.getRowNumberAlias());
-        Optional<PaginationValueSegment> offset = rowNumberPredicate.isPresent() ? createOffsetWithRowNumber(rowNumberPredicate.get()) : Optional.<PaginationValueSegment>absent();
-        PaginationValueSegment rowCount = topSegment.getTop();
-        return new Pagination(offset.orNull(), rowCount, parameters);
+    // TODO recognize database type, only oracle and sqlserver can use row number
+    private static final Collection<String> ROW_NUMBER_IDENTIFIERS = new HashSet<>();
+    
+    static {
+        ROW_NUMBER_IDENTIFIERS.add("rownum");
+        ROW_NUMBER_IDENTIFIERS.add("ROW_NUMBER");
     }
     
-    private Optional<PredicateSegment> getRowNumberPredicate(final Collection<AndPredicate> andPredicates, final String rowNumberAlias) {
+    /**
+     * Create pagination context.
+     * 
+     * @param andPredicates and predicates
+     * @param selectItems select items
+     * @param parameters SQL parameters
+     * @return pagination context
+     */
+    public PaginationContext createPaginationContext(final Collection<AndPredicate> andPredicates, final SelectItemsContext selectItems, final List<Object> parameters) {
+        Optional<String> rowNumberAlias = isRowNumberAlias(selectItems);
+        if (!rowNumberAlias.isPresent()) {
+            return new PaginationContext(null, null, parameters);
+        }
+        Collection<PredicateSegment> rowNumberPredicates = getRowNumberPredicates(andPredicates, rowNumberAlias.get());
+        return rowNumberPredicates.isEmpty() ? new PaginationContext(null, null, parameters) : createPaginationWithRowNumber(rowNumberPredicates, parameters);
+    }
+    
+    private Collection<PredicateSegment> getRowNumberPredicates(final Collection<AndPredicate> andPredicates, final String rowNumberAlias) {
+        Collection<PredicateSegment> result = new LinkedList<>();
         for (AndPredicate each : andPredicates) {
             for (PredicateSegment predicate : each.getPredicates()) {
                 if (isRowNumberColumn(predicate, rowNumberAlias) && isCompareCondition(predicate)) {
-                    return Optional.of(predicate);
+                    result.add(predicate);
                 }
+            }
+        }
+        return result;
+    }
+    
+    private Optional<String> isRowNumberAlias(final SelectItemsContext selectItems) {
+        for (String each : ROW_NUMBER_IDENTIFIERS) {
+            Optional<String> result = selectItems.findAlias(each);
+            if (result.isPresent()) {
+                return result;
             }
         }
         return Optional.absent();
     }
     
     private boolean isRowNumberColumn(final PredicateSegment predicate, final String rowNumberAlias) {
-        return predicate.getColumn().getName().equalsIgnoreCase(rowNumberAlias);
+        return ROW_NUMBER_IDENTIFIERS.contains(predicate.getColumn().getName()) || predicate.getColumn().getName().equalsIgnoreCase(rowNumberAlias);
     }
     
     private boolean isCompareCondition(final PredicateSegment predicate) {
         if (predicate.getRightValue() instanceof PredicateCompareRightValue) {
             String operator = ((PredicateCompareRightValue) predicate.getRightValue()).getOperator();
-            return ">".equals(operator) || ">=".equals(operator);
+            return "<".equals(operator) || "<=".equals(operator) || ">".equals(operator) || ">=".equals(operator);
         }
         return false;
     }
     
-    private Optional<PaginationValueSegment> createOffsetWithRowNumber(final PredicateSegment predicateSegment) {
-        ExpressionSegment expression = ((PredicateCompareRightValue) predicateSegment.getRightValue()).getExpression();
-        switch (((PredicateCompareRightValue) predicateSegment.getRightValue()).getOperator()) {
-            case ">":
-                return Optional.<PaginationValueSegment>of(createRowNumberValueSegment(expression, false));
-            case ">=":
-                return Optional.<PaginationValueSegment>of(createRowNumberValueSegment(expression, true));
-            default:
-                return Optional.absent();
+    private PaginationContext createPaginationWithRowNumber(final Collection<PredicateSegment> rowNumberPredicates, final List<Object> parameters) {
+        RowNumberValueSegment offset = null;
+        RowNumberValueSegment rowCount = null;
+        for (PredicateSegment each : rowNumberPredicates) {
+            ExpressionSegment expression = ((PredicateCompareRightValue) each.getRightValue()).getExpression();
+            switch (((PredicateCompareRightValue) each.getRightValue()).getOperator()) {
+                case ">":
+                    offset = createRowNumberValueSegment(expression, false);
+                    break;
+                case ">=":
+                    offset = createRowNumberValueSegment(expression, true);
+                    break;
+                case "<":
+                    rowCount = createRowNumberValueSegment(expression, false);
+                    break;
+                case "<=":
+                    rowCount = createRowNumberValueSegment(expression, true);
+                    break;
+                default:
+                    break;
+            }
         }
+        return new PaginationContext(offset, rowCount, parameters);
     }
     
     private RowNumberValueSegment createRowNumberValueSegment(final ExpressionSegment expression, final boolean boundOpened) {

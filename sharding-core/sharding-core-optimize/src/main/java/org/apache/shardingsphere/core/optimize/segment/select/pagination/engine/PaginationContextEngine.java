@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.optimize.segment.select.pagination.engine;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
-import org.apache.shardingsphere.core.optimize.segment.select.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItemsContext;
+import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.top.TopSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
@@ -30,33 +30,34 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Pagination engine.
+ * Pagination context engine.
  *
  * @author zhangliang
  */
-public final class PaginationEngine {
+public final class PaginationContextEngine {
     
     /**
-     * Create pagination.
+     * Create pagination context.
      * 
      * @param selectStatement SQL statement
      * @param selectItems select items
      * @param parameters SQL parameters
-     * @return pagination
+     * @return pagination context
      */
-    public Pagination createPagination(final SelectStatement selectStatement, final SelectItems selectItems, final List<Object> parameters) {
+    public PaginationContext createPaginationContext(final SelectStatement selectStatement, final SelectItemsContext selectItems, final List<Object> parameters) {
         Optional<LimitSegment> limitSegment = selectStatement.findSQLSegment(LimitSegment.class);
         if (limitSegment.isPresent()) {
-            return new LimitPaginationEngine().createPagination(limitSegment.get(), parameters);
+            return new LimitPaginationContextEngine().createPaginationContext(limitSegment.get(), parameters);
         }
         Optional<TopSegment> topSegment = selectStatement.findSQLSegment(TopSegment.class);
         Optional<WhereSegment> whereSegment = selectStatement.findSQLSegment(WhereSegment.class);
         if (topSegment.isPresent()) {
-            return new TopPaginationEngine().createPagination(topSegment.get(), whereSegment.isPresent() ? whereSegment.get().getAndPredicates() : Collections.<AndPredicate>emptyList(), parameters);
+            return new TopPaginationContextEngine().createPaginationContext(
+                    topSegment.get(), whereSegment.isPresent() ? whereSegment.get().getAndPredicates() : Collections.<AndPredicate>emptyList(), parameters);
         }
         if (whereSegment.isPresent()) {
-            return new RowNumberPaginationEngine().createPagination(whereSegment.get().getAndPredicates(), selectItems, parameters);
+            return new RowNumberPaginationContextEngine().createPaginationContext(whereSegment.get().getAndPredicates(), selectItems, parameters);
         }
-        return new Pagination(null, null, parameters);
+        return new PaginationContext(null, null, parameters);
     }
 }

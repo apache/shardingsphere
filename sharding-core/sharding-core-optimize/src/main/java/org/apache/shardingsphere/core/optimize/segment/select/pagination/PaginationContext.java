@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimize.segment.select.pagination;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import org.apache.shardingsphere.core.optimize.statement.impl.SelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
@@ -28,13 +28,13 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.Lim
 import java.util.List;
 
 /**
- * Pagination.
+ * Pagination context.
  *
  * @author zhangliang
  * @author caohao
  * @author zhangyonglun
  */
-public final class Pagination {
+public final class PaginationContext {
     
     @Getter
     private final boolean hasPagination;
@@ -47,7 +47,7 @@ public final class Pagination {
     
     private final Long actualRowCount;
     
-    public Pagination(final PaginationValueSegment offsetSegment, final PaginationValueSegment rowCountSegment, final List<Object> parameters) {
+    public PaginationContext(final PaginationValueSegment offsetSegment, final PaginationValueSegment rowCountSegment, final List<Object> parameters) {
         hasPagination = null != offsetSegment || null != rowCountSegment;
         this.offsetSegment = offsetSegment;
         this.rowCountSegment = rowCountSegment;
@@ -140,15 +140,15 @@ public final class Pagination {
      * @param shardingStatement sharding optimized statement
      * @return revised row count
      */
-    public long getRevisedRowCount(final SelectOptimizedStatement shardingStatement) {
+    public long getRevisedRowCount(final SelectSQLStatementContext shardingStatement) {
         if (isMaxRowCount(shardingStatement)) {
             return Integer.MAX_VALUE;
         }
         return rowCountSegment instanceof LimitValueSegment ? actualOffset + actualRowCount : actualRowCount;
     }
     
-    private boolean isMaxRowCount(final SelectOptimizedStatement shardingStatement) {
-        return (!shardingStatement.getGroupBy().getItems().isEmpty()
-                || !shardingStatement.getSelectItems().getAggregationSelectItems().isEmpty()) && !shardingStatement.isSameGroupByAndOrderByItems();
+    private boolean isMaxRowCount(final SelectSQLStatementContext shardingStatement) {
+        return (!shardingStatement.getGroupByContext().getItems().isEmpty()
+                || !shardingStatement.getSelectItemsContext().getAggregationSelectItems().isEmpty()) && !shardingStatement.isSameGroupByAndOrderByItems();
     }
 }

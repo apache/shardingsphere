@@ -24,13 +24,13 @@ import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByIte
 import java.util.Collection;
 
 /**
- * Group by.
+ * Group by context.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class GroupBy {
+public final class GroupByContext {
     
     private final Collection<OrderByItem> items;
     

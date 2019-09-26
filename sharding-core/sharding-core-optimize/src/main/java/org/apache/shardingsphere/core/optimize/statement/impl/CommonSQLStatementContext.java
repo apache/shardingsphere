@@ -15,23 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.segment.select.orderby;
+package org.apache.shardingsphere.core.optimize.statement.impl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Collection;
+import lombok.ToString;
+import org.apache.shardingsphere.core.optimize.segment.table.TablesContext;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 
 /**
- * Order by.
+ * Common SQL statement context.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
-public final class OrderBy {
+@ToString
+public class CommonSQLStatementContext implements SQLStatementContext {
     
-    private final Collection<OrderByItem> items;
+    private final SQLStatement sqlStatement;
     
-    private final boolean generated;
+    private final TablesContext tablesContext;
+    
+    public CommonSQLStatementContext(final SQLStatement sqlStatement) {
+        this.sqlStatement = sqlStatement;
+        tablesContext = new TablesContext(sqlStatement);
+    }
 }

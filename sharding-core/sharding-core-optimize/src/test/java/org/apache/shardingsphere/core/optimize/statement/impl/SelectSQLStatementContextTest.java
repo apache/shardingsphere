@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.core.optimize.statement.impl;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupBy;
+import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.item.impl.ColumnSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
-import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderBy;
+import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItemsContext;
+import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
@@ -46,7 +46,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class SelectOptimizedStatementTest {
+public final class SelectSQLStatementContextTest {
     
     private static final String INDEX_ORDER_BY = "IndexOrderBy";
     
@@ -58,38 +58,38 @@ public final class SelectOptimizedStatementTest {
     
     @Test
     public void assertSetIndexForItemsByIndexOrderBy() {
-        SelectOptimizedStatement selectOptimizedStatement = new SelectOptimizedStatement(
-                new SelectStatement(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), createOrderBy(INDEX_ORDER_BY), createSelectItems(), null);
-        selectOptimizedStatement.setIndexForItems(Collections.<String, Integer>emptyMap());
-        assertThat(selectOptimizedStatement.getOrderBy().getItems().iterator().next().getIndex(), is(4));
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
+                new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), createOrderBy(INDEX_ORDER_BY), createSelectItems(), null);
+        selectSQLStatementContext.setIndexForItems(Collections.<String, Integer>emptyMap());
+        assertThat(selectSQLStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(4));
     }
     
     @Test
     public void assertSetIndexForItemsByColumnOrderByWithOwner() {
-        SelectOptimizedStatement selectOptimizedStatement = new SelectOptimizedStatement(
-                new SelectStatement(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITH_OWNER), createSelectItems(), null);
-        selectOptimizedStatement.setIndexForItems(Collections.<String, Integer>emptyMap());
-        assertThat(selectOptimizedStatement.getOrderBy().getItems().iterator().next().getIndex(), is(1));
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
+                new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITH_OWNER), createSelectItems(), null);
+        selectSQLStatementContext.setIndexForItems(Collections.<String, Integer>emptyMap());
+        assertThat(selectSQLStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(1));
     }
     
     @Test
     public void assertSetIndexForItemsByColumnOrderByWithAlias() {
-        SelectOptimizedStatement selectOptimizedStatement = new SelectOptimizedStatement(
-                new SelectStatement(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITH_ALIAS), createSelectItems(), null);
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
+                new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITH_ALIAS), createSelectItems(), null);
         Map<String, Integer> columnLabelIndexMap = new HashMap<>();
         columnLabelIndexMap.put("n", 2);
-        selectOptimizedStatement.setIndexForItems(columnLabelIndexMap);
-        assertThat(selectOptimizedStatement.getOrderBy().getItems().iterator().next().getIndex(), is(2));
+        selectSQLStatementContext.setIndexForItems(columnLabelIndexMap);
+        assertThat(selectSQLStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(2));
     }
     
     @Test
     public void assertSetIndexForItemsByColumnOrderByWithoutAlias() {
-        SelectOptimizedStatement selectOptimizedStatement = new SelectOptimizedStatement(
-                new SelectStatement(), new GroupBy(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS), createSelectItems(), null);
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
+                new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS), createSelectItems(), null);
         Map<String, Integer> columnLabelIndexMap = new HashMap<>();
         columnLabelIndexMap.put("id", 3);
-        selectOptimizedStatement.setIndexForItems(columnLabelIndexMap);
-        assertThat(selectOptimizedStatement.getOrderBy().getItems().iterator().next().getIndex(), is(3));
+        selectSQLStatementContext.setIndexForItems(columnLabelIndexMap);
+        assertThat(selectSQLStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(3));
     }
     
     @Test
@@ -98,16 +98,16 @@ public final class SelectOptimizedStatementTest {
         selectStatement.setSelectItems(new SelectItemsSegment(0, 0, false));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.<OrderByItemSegment>singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.<OrderByItemSegment>singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
-        SelectOptimizedStatement selectOptimizedStatement = new SelectOptimizedStatement(null, "", Collections.emptyList(), selectStatement);
-        assertTrue(selectOptimizedStatement.isSameGroupByAndOrderByItems());
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(null, "", Collections.emptyList(), selectStatement);
+        assertTrue(selectSQLStatementContext.isSameGroupByAndOrderByItems());
     }
     
     @Test
     public void assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupBy() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setSelectItems(new SelectItemsSegment(0, 0, false));
-        SelectOptimizedStatement selectOptimizedStatement = new SelectOptimizedStatement(null, "", Collections.emptyList(), selectStatement);
-        assertFalse(selectOptimizedStatement.isSameGroupByAndOrderByItems());
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(null, "", Collections.emptyList(), selectStatement);
+        assertFalse(selectSQLStatementContext.isSameGroupByAndOrderByItems());
     }
     
     @Test
@@ -116,14 +116,14 @@ public final class SelectOptimizedStatementTest {
         selectStatement.setSelectItems(new SelectItemsSegment(0, 0, false));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.<OrderByItemSegment>singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.DESC))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.<OrderByItemSegment>singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
-        SelectOptimizedStatement selectOptimizedStatement = new SelectOptimizedStatement(null, "", Collections.emptyList(), selectStatement);
-        assertFalse(selectOptimizedStatement.isSameGroupByAndOrderByItems());
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(null, "", Collections.emptyList(), selectStatement);
+        assertFalse(selectSQLStatementContext.isSameGroupByAndOrderByItems());
     }
     
-    private OrderBy createOrderBy(final String type) {
+    private OrderByContext createOrderBy(final String type) {
         OrderByItemSegment orderByItemSegment = createOrderByItemSegment(type);
         OrderByItem orderByItem = new OrderByItem(orderByItemSegment);
-        return new OrderBy(Lists.newArrayList(orderByItem), true);
+        return new OrderByContext(Lists.newArrayList(orderByItem), true);
     }
     
     private OrderByItemSegment createOrderByItemSegment(final String type) {
@@ -141,9 +141,9 @@ public final class SelectOptimizedStatementTest {
         }
     }
     
-    private SelectItems createSelectItems() {
+    private SelectItemsContext createSelectItems() {
         Collection<SelectItem> selectItems = Lists.newArrayList(getColumnSelectItemWithoutOwner(), getColumnSelectItemWithoutOwner(true), getColumnSelectItemWithoutOwner(false));
-        return new SelectItems(0, 0, true, selectItems);
+        return new SelectItemsContext(0, 0, true, selectItems);
     }
     
     private SelectItem getColumnSelectItemWithoutOwner() {

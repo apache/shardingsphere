@@ -22,17 +22,17 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupBy;
-import org.apache.shardingsphere.core.optimize.segment.select.groupby.engine.GroupByEngine;
+import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
+import org.apache.shardingsphere.core.optimize.segment.select.groupby.engine.GroupByContextEngine;
 import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationSelectItem;
 import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItems;
-import org.apache.shardingsphere.core.optimize.segment.select.item.engine.SelectItemsEngine;
-import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderBy;
+import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItemsContext;
+import org.apache.shardingsphere.core.optimize.segment.select.item.engine.SelectItemsContextEngine;
+import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.core.optimize.segment.select.orderby.engine.OrderByEngine;
-import org.apache.shardingsphere.core.optimize.segment.select.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.segment.select.pagination.engine.PaginationEngine;
+import org.apache.shardingsphere.core.optimize.segment.select.orderby.engine.OrderByContextEngine;
+import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.core.optimize.segment.select.pagination.engine.PaginationContextEngine;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
@@ -46,40 +46,41 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Select optimized statement.
+ * Select SQL statement context.
  *
  * @author zhangliang
  */
 @Getter
 @ToString(callSuper = true)
-public final class SelectOptimizedStatement extends CommonOptimizedStatement {
+public final class SelectSQLStatementContext extends CommonSQLStatementContext {
     
-    private final GroupBy groupBy;
+    private final GroupByContext groupByContext;
     
-    private final OrderBy orderBy;
+    private final OrderByContext orderByContext;
     
-    private final SelectItems selectItems;
+    private final SelectItemsContext selectItemsContext;
     
-    private final Pagination pagination;
+    private final PaginationContext paginationContext;
     
     private final boolean containsSubquery;
     
     // TODO to be remove, for test case only
-    public SelectOptimizedStatement(final SelectStatement sqlStatement, final GroupBy groupBy, final OrderBy orderBy, final SelectItems selectItems, final Pagination pagination) {
+    public SelectSQLStatementContext(final SelectStatement sqlStatement,
+                                     final GroupByContext groupByContext, final OrderByContext orderByContext, final SelectItemsContext selectItemsContext, final PaginationContext paginationContext) {
         super(sqlStatement);
-        this.groupBy = groupBy;
-        this.orderBy = orderBy;
-        this.selectItems = selectItems;
-        this.pagination = pagination;
+        this.groupByContext = groupByContext;
+        this.orderByContext = orderByContext;
+        this.selectItemsContext = selectItemsContext;
+        this.paginationContext = paginationContext;
         containsSubquery = containsSubquery();
     }
     
-    public SelectOptimizedStatement(final TableMetas tableMetas, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
+    public SelectSQLStatementContext(final TableMetas tableMetas, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
         super(sqlStatement);
-        this.groupBy = new GroupByEngine().createGroupBy(sqlStatement);
-        this.orderBy = new OrderByEngine().createOrderBy(sqlStatement, groupBy);
-        this.selectItems = new SelectItemsEngine(tableMetas).createSelectItems(sql, sqlStatement, groupBy, orderBy);
-        this.pagination = new PaginationEngine().createPagination(sqlStatement, selectItems, parameters);
+        groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
+        orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
+        selectItemsContext = new SelectItemsContextEngine(tableMetas).createSelectItemsContext(sql, sqlStatement, groupByContext, orderByContext);
+        paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, selectItemsContext, parameters);
         containsSubquery = containsSubquery();
     }
     
@@ -100,12 +101,12 @@ public final class SelectOptimizedStatement extends CommonOptimizedStatement {
      */
     public void setIndexForItems(final Map<String, Integer> columnLabelIndexMap) {
         setIndexForAggregationItem(columnLabelIndexMap);
-        setIndexForOrderItem(columnLabelIndexMap, orderBy.getItems());
-        setIndexForOrderItem(columnLabelIndexMap, groupBy.getItems());
+        setIndexForOrderItem(columnLabelIndexMap, orderByContext.getItems());
+        setIndexForOrderItem(columnLabelIndexMap, groupByContext.getItems());
     }
     
     private void setIndexForAggregationItem(final Map<String, Integer> columnLabelIndexMap) {
-        for (AggregationSelectItem each : selectItems.getAggregationSelectItems()) {
+        for (AggregationSelectItem each : selectItemsContext.getAggregationSelectItems()) {
             Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), "Can't find index: %s, please add alias for aggregate selections", each);
             each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
             for (AggregationSelectItem derived : each.getDerivedAggregationItems()) {
@@ -122,7 +123,7 @@ public final class SelectOptimizedStatement extends CommonOptimizedStatement {
                 continue;
             }
             if (each.getSegment() instanceof ColumnOrderByItemSegment && ((ColumnOrderByItemSegment) each.getSegment()).getColumn().getOwner().isPresent()) {
-                Optional<Integer> itemIndex = selectItems.findItemIndex(((ColumnOrderByItemSegment) each.getSegment()).getText());
+                Optional<Integer> itemIndex = selectItemsContext.findItemIndex(((ColumnOrderByItemSegment) each.getSegment()).getText());
                 if (itemIndex.isPresent()) {
                     each.setIndex(itemIndex.get());
                     continue;
@@ -138,11 +139,11 @@ public final class SelectOptimizedStatement extends CommonOptimizedStatement {
     }
     
     private Optional<String> getAlias(final String name) {
-        if (selectItems.isUnqualifiedShorthandItem()) {
+        if (selectItemsContext.isUnqualifiedShorthandItem()) {
             return Optional.absent();
         }
         String rawName = SQLUtil.getExactlyValue(name);
-        for (SelectItem each : selectItems.getItems()) {
+        for (SelectItem each : selectItemsContext.getItems()) {
             if (SQLUtil.getExactlyExpression(rawName).equalsIgnoreCase(SQLUtil.getExactlyExpression(SQLUtil.getExactlyValue(each.getExpression())))) {
                 return each.getAlias();
             }
@@ -165,7 +166,7 @@ public final class SelectOptimizedStatement extends CommonOptimizedStatement {
      * @return column labels
      */
     public List<String> getColumnLabels(final TableMetas tableMetas) {
-        return selectItems.getColumnLabels(tableMetas, ((SelectStatement) getSqlStatement()).getTables());
+        return selectItemsContext.getColumnLabels(tableMetas, ((SelectStatement) getSqlStatement()).getTables());
     }
     
     /**
@@ -174,6 +175,6 @@ public final class SelectOptimizedStatement extends CommonOptimizedStatement {
      * @return group by and order by sequence is same or not
      */
     public boolean isSameGroupByAndOrderByItems() {
-        return !groupBy.getItems().isEmpty() && groupBy.getItems().equals(orderBy.getItems());
+        return !groupByContext.getItems().isEmpty() && groupByContext.getItems().equals(orderByContext.getItems());
     }
 }

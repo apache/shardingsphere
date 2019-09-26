@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.route.router.sharding.condition.engine;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.segment.insert.InsertValue;
-import org.apache.shardingsphere.core.optimize.statement.impl.InsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.segment.insert.InsertValueContext;
+import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -49,16 +49,16 @@ public final class InsertClauseShardingConditionEngine {
     /**
      * Create sharding conditions.
      * 
-     * @param shardingStatement sharding insert optimized statement
+     * @param insertSQLStatementContext insert SQL statement context
      * @param generatedKey generated key
      * @param parameters SQL parameters
      * @return sharding conditions
      */
-    public List<ShardingCondition> createShardingConditions(final InsertOptimizedStatement shardingStatement, final GeneratedKey generatedKey, final List<Object> parameters) {
+    public List<ShardingCondition> createShardingConditions(final InsertSQLStatementContext insertSQLStatementContext, final GeneratedKey generatedKey, final List<Object> parameters) {
         List<ShardingCondition> result = new LinkedList<>();
-        String tableName = shardingStatement.getTables().getSingleTableName();
-        Collection<String> columnNames = getColumnNames(shardingStatement, generatedKey);
-        for (InsertValue each : shardingStatement.getInsertValues()) {
+        String tableName = insertSQLStatementContext.getTablesContext().getSingleTableName();
+        Collection<String> columnNames = getColumnNames(insertSQLStatementContext, generatedKey);
+        for (InsertValueContext each : insertSQLStatementContext.getInsertValueContexts()) {
             result.add(createShardingCondition(tableName, columnNames.iterator(), each, parameters));
         }
         if (null != generatedKey && generatedKey.isGenerated() && shardingRule.isShardingColumn(generatedKey.getColumnName(), tableName)) {
@@ -67,18 +67,18 @@ public final class InsertClauseShardingConditionEngine {
         return result;
     }
     
-    private Collection<String> getColumnNames(final InsertOptimizedStatement shardingStatement, final GeneratedKey generatedKey) {
+    private Collection<String> getColumnNames(final InsertSQLStatementContext insertSQLStatementContext, final GeneratedKey generatedKey) {
         if (null == generatedKey || !generatedKey.isGenerated()) {
-            return shardingStatement.getColumnNames();
+            return insertSQLStatementContext.getColumnNames();
         }
-        Collection<String> result = new LinkedList<>(shardingStatement.getColumnNames());
+        Collection<String> result = new LinkedList<>(insertSQLStatementContext.getColumnNames());
         result.remove(generatedKey.getColumnName());
         return result;
     }
     
-    private ShardingCondition createShardingCondition(final String tableName, final Iterator<String> columnNames, final InsertValue insertValue, final List<Object> parameters) {
+    private ShardingCondition createShardingCondition(final String tableName, final Iterator<String> columnNames, final InsertValueContext insertValueContext, final List<Object> parameters) {
         ShardingCondition result = new ShardingCondition();
-        for (ExpressionSegment each : insertValue.getValueExpressions()) {
+        for (ExpressionSegment each : insertValueContext.getValueExpressions()) {
             String columnName = columnNames.next();
             if (each instanceof SimpleExpressionSegment && shardingRule.isShardingColumn(columnName, tableName)) {
                 result.getRouteValues().add(new ListRouteValue<>(columnName, tableName, Collections.singletonList(getRouteValue((SimpleExpressionSegment) each, parameters))));

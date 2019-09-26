@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.optimize.statement.impl;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.segment.insert.InsertValue;
+import org.apache.shardingsphere.core.optimize.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 
@@ -29,31 +29,31 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Insert optimized statement.
+ * Insert SQL statement context.
  *
  * @author zhangliang
  */
 @Getter
 @ToString(callSuper = true)
-public final class InsertOptimizedStatement extends CommonOptimizedStatement {
+public final class InsertSQLStatementContext extends CommonSQLStatementContext {
     
     private final List<String> columnNames;
     
-    private final List<InsertValue> insertValues;
+    private final List<InsertValueContext> insertValueContexts;
     
-    public InsertOptimizedStatement(final TableMetas tableMetas, final List<Object> parameters, final InsertStatement sqlStatement) {
+    public InsertSQLStatementContext(final TableMetas tableMetas, final List<Object> parameters, final InsertStatement sqlStatement) {
         super(sqlStatement);
-        columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(getTables().getSingleTableName()) : sqlStatement.getColumnNames();
-        insertValues = getInsertValues(parameters);
+        columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(this.getTablesContext().getSingleTableName()) : sqlStatement.getColumnNames();
+        insertValueContexts = getInsertValueContexts(parameters);
     }
     
-    private List<InsertValue> getInsertValues(final List<Object> parameters) {
-        List<InsertValue> result = new LinkedList<>();
+    private List<InsertValueContext> getInsertValueContexts(final List<Object> parameters) {
+        List<InsertValueContext> result = new LinkedList<>();
         int parametersOffset = 0;
         for (Collection<ExpressionSegment> each : ((InsertStatement) getSqlStatement()).getAllValueExpressions()) {
-            InsertValue insertValue = new InsertValue(each, parameters, parametersOffset);
-            result.add(insertValue);
-            parametersOffset += insertValue.getParametersCount();
+            InsertValueContext insertValueContext = new InsertValueContext(each, parameters, parametersOffset);
+            result.add(insertValueContext);
+            parametersOffset += insertValueContext.getParametersCount();
         }
         return result;
     }
