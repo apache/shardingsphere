@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.impl.InsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
@@ -52,12 +52,12 @@ public final class InsertSetCipherColumnTokenGenerator implements CollectionSQLT
     }
     
     private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement) {
-        Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SetAssignmentsSegment.class);
-        return optimizedStatement.getSQLStatement() instanceof InsertStatement && setAssignmentsSegment.isPresent();
+        Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
+        return optimizedStatement.getSqlStatement() instanceof InsertStatement && setAssignmentsSegment.isPresent();
     }
     
     private Collection<InsertSetCipherColumnToken> createInsertSetEncryptValueTokens(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
-        Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SetAssignmentsSegment.class);
+        Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
         if (!setAssignmentsSegment.isPresent()) {
             return Collections.emptyList();
         }

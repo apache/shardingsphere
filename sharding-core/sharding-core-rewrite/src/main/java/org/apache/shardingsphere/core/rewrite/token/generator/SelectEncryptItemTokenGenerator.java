@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ColumnSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegment;
@@ -54,17 +54,17 @@ public final class SelectEncryptItemTokenGenerator implements CollectionSQLToken
         if (!isSelectStatementWithTable(optimizedStatement)) {
             return false;
         }
-        Optional<SelectItemsSegment> selectItemsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SelectItemsSegment.class);
+        Optional<SelectItemsSegment> selectItemsSegment = optimizedStatement.getSqlStatement().findSQLSegment(SelectItemsSegment.class);
         return selectItemsSegment.isPresent() && !selectItemsSegment.get().getSelectItems().isEmpty();
     }
     
     private boolean isSelectStatementWithTable(final OptimizedStatement optimizedStatement) {
-        return optimizedStatement.getSQLStatement() instanceof SelectStatement && !optimizedStatement.getTables().isEmpty();
+        return optimizedStatement.getSqlStatement() instanceof SelectStatement && !optimizedStatement.getTables().isEmpty();
     }
     
     private Collection<SelectEncryptItemToken> createSelectCipherItemTokens(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement, final boolean isQueryWithCipherColumn) {
         Collection<SelectEncryptItemToken> result = new LinkedList<>();
-        Optional<SelectItemsSegment> selectItemsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SelectItemsSegment.class);
+        Optional<SelectItemsSegment> selectItemsSegment = optimizedStatement.getSqlStatement().findSQLSegment(SelectItemsSegment.class);
         if (!selectItemsSegment.isPresent()) {
             return Collections.emptyList();
         }
