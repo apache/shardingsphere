@@ -23,20 +23,19 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.optimize.api.statement.CommonOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.segment.groupby.GroupBy;
-import org.apache.shardingsphere.core.optimize.sharding.segment.item.AggregationSelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItems;
-import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderBy;
-import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderByItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.api.statement.SelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
+import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
+import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItemsContext;
+import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByContext;
+import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.impl.CommonSQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
@@ -89,12 +88,12 @@ public final class GroupByStreamMergedResultTest {
         AggregationSelectItem derivedAggregationSelectItem2 = new AggregationSelectItem(AggregationType.SUM, "(num)", "AVG_DERIVED_SUM_0");
         aggregationSelectItem2.setIndex(6);
         aggregationSelectItem2.getDerivedAggregationItems().add(derivedAggregationSelectItem2);
-        SelectItems selectItems = new SelectItems(0, 0, false, Arrays.<SelectItem>asList(aggregationSelectItem1, aggregationSelectItem2), Collections.<TableSegment>emptyList(), null);
-        OptimizedStatement shardingStatement = new SelectOptimizedStatement(new SelectStatement(), 
-                new GroupBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), 0),
-                new OrderBy(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), false),
-                selectItems, new Pagination(null, null, Collections.emptyList()));
-        routeResult = new SQLRouteResult(shardingStatement, new CommonOptimizedStatement(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+        SelectItemsContext selectItemsContext = new SelectItemsContext(0, 0, false, Arrays.<SelectItem>asList(aggregationSelectItem1, aggregationSelectItem2));
+        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
+                new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), 0),
+                new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), false),
+                selectItemsContext, new PaginationContext(null, null, Collections.emptyList()));
+        routeResult = new SQLRouteResult(selectSQLStatementContext, new CommonSQLStatementContext(new SelectStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
     }
     
     private ResultSet mockResultSet() throws SQLException {
@@ -113,14 +112,14 @@ public final class GroupByStreamMergedResultTest {
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, queryResults);
         when(resultSets.get(0).next()).thenReturn(true, false);
         when(resultSets.get(0).getObject(1)).thenReturn(20);
         when(resultSets.get(0).getObject(2)).thenReturn(0);
@@ -162,7 +161,7 @@ public final class GroupByStreamMergedResultTest {
     
     @Test
     public void assertNextForMix() throws SQLException {
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, queryResults);
         when(resultSets.get(0).next()).thenReturn(true, false);
         when(resultSets.get(0).getObject(1)).thenReturn(20);
         when(resultSets.get(0).getObject(2)).thenReturn(0);

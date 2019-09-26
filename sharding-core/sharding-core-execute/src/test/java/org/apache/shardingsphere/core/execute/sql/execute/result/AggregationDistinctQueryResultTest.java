@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
-import org.apache.shardingsphere.core.optimize.sharding.segment.item.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 import org.junit.Before;
 import org.junit.Test;

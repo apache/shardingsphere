@@ -19,16 +19,15 @@ package org.apache.shardingsphere.core.route.type.standard;
 
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.optimize.api.segment.Tables;
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.segment.groupby.GroupBy;
-import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItems;
-import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderBy;
-import org.apache.shardingsphere.core.optimize.sharding.segment.orderby.OrderByItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.api.statement.SelectOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.core.optimize.segment.table.TablesContext;
+import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
+import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
+import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItemsContext;
+import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByContext;
+import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.fixture.AbstractRoutingEngineTest;
@@ -59,12 +58,12 @@ public final class StandardRoutingEngineTest extends AbstractRoutingEngineTest {
     
     @Test(expected = ShardingException.class)
     public void assertRouteByUnsupported() {
-        OptimizedStatement optimizedStatement = mock(OptimizedStatement.class);
-        when(optimizedStatement.getSqlStatement()).thenReturn(new InsertStatement());
-        Tables tables = mock(Tables.class);
-        when(tables.isSingleTable()).thenReturn(false);
-        when(optimizedStatement.getTables()).thenReturn(tables);
-        StandardRoutingEngine standardRoutingEngine = new StandardRoutingEngine(null, null, optimizedStatement, null);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new InsertStatement());
+        TablesContext tablesContext = mock(TablesContext.class);
+        when(tablesContext.isSingleTable()).thenReturn(false);
+        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
+        StandardRoutingEngine standardRoutingEngine = new StandardRoutingEngine(null, null, sqlStatementContext, null);
         standardRoutingEngine.route();
     }
     
@@ -191,9 +190,9 @@ public final class StandardRoutingEngineTest extends AbstractRoutingEngineTest {
     }
     
     private StandardRoutingEngine createStandardRoutingEngine(final ShardingRule shardingRule, final String logicTableName, final ShardingConditions shardingConditions) {
-        return new StandardRoutingEngine(shardingRule, logicTableName, new SelectOptimizedStatement(new SelectStatement(),
-                new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-                new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null),
-                new Pagination(null, null, Collections.emptyList())), shardingConditions);
+        return new StandardRoutingEngine(shardingRule, logicTableName, new SelectSQLStatementContext(new SelectStatement(),
+                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
+                new SelectItemsContext(0, 0, false, Collections.<SelectItem>emptyList()),
+                new PaginationContext(null, null, Collections.emptyList())), shardingConditions);
     }
 }

@@ -21,11 +21,11 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.optimize.sharding.segment.item.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.item.AggregationSelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.item.DerivedSelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.api.statement.SelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.select.item.impl.DerivedSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
+import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectItemsToken;
@@ -44,18 +44,18 @@ public final class SelectItemsTokenGenerator implements OptionalSQLTokenGenerato
     @Override
     public Optional<SelectItemsToken> generateSQLToken(
             final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
-        if (!(rewriteStatement.getOptimizedStatement() instanceof SelectOptimizedStatement)) {
+        if (!(rewriteStatement.getSqlStatementContext() instanceof SelectSQLStatementContext)) {
             return Optional.absent();
         }
-        Collection<String> derivedItemTexts = getDerivedItemTexts((SelectOptimizedStatement) rewriteStatement.getOptimizedStatement());
+        Collection<String> derivedItemTexts = getDerivedItemTexts((SelectSQLStatementContext) rewriteStatement.getSqlStatementContext());
         return derivedItemTexts.isEmpty() ? Optional.<SelectItemsToken>absent()
                 : Optional.of(
-                        new SelectItemsToken(((SelectOptimizedStatement) rewriteStatement.getOptimizedStatement()).getSelectItems().getStopIndex() + 1 + " ".length(), derivedItemTexts));
+                        new SelectItemsToken(((SelectSQLStatementContext) rewriteStatement.getSqlStatementContext()).getSelectItemsContext().getStopIndex() + 1 + " ".length(), derivedItemTexts));
     }
     
-    private Collection<String> getDerivedItemTexts(final SelectOptimizedStatement optimizedStatement) {
+    private Collection<String> getDerivedItemTexts(final SelectSQLStatementContext selectSQLStatementContext) {
         Collection<String> result = new LinkedList<>();
-        for (SelectItem each : optimizedStatement.getSelectItems().getItems()) {
+        for (SelectItem each : selectSQLStatementContext.getSelectItemsContext().getItems()) {
             if (each instanceof AggregationSelectItem && !((AggregationSelectItem) each).getDerivedAggregationItems().isEmpty()) {
                 result.addAll(Lists.transform(((AggregationSelectItem) each).getDerivedAggregationItems(), new Function<AggregationSelectItem, String>() {
                     
