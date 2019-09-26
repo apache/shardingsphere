@@ -43,9 +43,9 @@ public final class QueryCommandPacket extends AbstractCommandPacket {
 
     @Override
     public ByteBuf toByteBuf() {
-        var out = ByteBufAllocator.DEFAULT.heapBuffer();
-        DataTypesCodec.writeByte(getCommand(), out);
-        DataTypesCodec.writeBytes(getQueryString().getBytes(StandardCharsets.UTF_8), out);
-        return out;
+        var result = ByteBufAllocator.DEFAULT.heapBuffer();
+        DataTypesCodec.writeByte(getCommand(), result);
+        DataTypesCodec.writeBytes(getQueryString().getBytes(StandardCharsets.UTF_8), result);
+        return result;
     }
 }
