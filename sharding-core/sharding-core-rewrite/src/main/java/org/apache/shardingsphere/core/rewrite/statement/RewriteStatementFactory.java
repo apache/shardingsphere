@@ -51,8 +51,8 @@ public final class RewriteStatementFactory {
      * @return rewrite statement
      */
     public static RewriteStatement newInstance(final ShardingRule shardingRule, final TableMetas tableMetas, final SQLRouteResult sqlRouteResult) {
-        EncryptConditions encryptConditions = sqlRouteResult.getEncryptStatementContext().getSqlStatement() instanceof DMLStatement
-                ? createEncryptConditions(shardingRule.getEncryptRule(), tableMetas, (DMLStatement) sqlRouteResult.getEncryptStatementContext().getSqlStatement())
+        EncryptConditions encryptConditions = sqlRouteResult.getShardingStatementContext().getSqlStatement() instanceof DMLStatement
+                ? createEncryptConditions(shardingRule.getEncryptRule(), tableMetas, (DMLStatement) sqlRouteResult.getShardingStatementContext().getSqlStatement())
                 : new EncryptConditions(Collections.<EncryptCondition>emptyList());
         return sqlRouteResult.getShardingStatementContext() instanceof InsertSQLStatementContext
                 ? new InsertRewriteStatement(

@@ -100,7 +100,7 @@ public class ShardingMasterSlaveRouterTest {
     
     private SQLRouteResult mockSQLRouteResult(final SQLStatement sqlStatement) {
         when(shardingStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        SQLRouteResult result = new SQLRouteResult(shardingStatementContext, null, null, null);
+        SQLRouteResult result = new SQLRouteResult(shardingStatementContext, null, null);
         result.setRoutingResult(mockRoutingResult());
         return result;
     }

@@ -43,8 +43,6 @@ public final class SQLRouteResult {
     
     private final SQLStatementContext shardingStatementContext;
     
-    private final SQLStatementContext encryptStatementContext;
-    
     private final ShardingConditions shardingConditions;
     
     private final GeneratedKey generatedKey;
@@ -53,8 +51,8 @@ public final class SQLRouteResult {
     
     private RoutingResult routingResult;
     
-    public SQLRouteResult(final SQLStatementContext shardingStatementContext, final SQLStatementContext encryptStatementContext, final ShardingConditions shardingConditions) {
-        this(shardingStatementContext, encryptStatementContext, shardingConditions, null);
+    public SQLRouteResult(final SQLStatementContext shardingStatementContext, final ShardingConditions shardingConditions) {
+        this(shardingStatementContext, shardingConditions, null);
     }
     
     /**

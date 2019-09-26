@@ -108,8 +108,7 @@ public final class ShardingRouter {
         if (needMergeShardingValues) {
             Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");
         }
-        SQLStatementContext encryptStatement = SQLStatementContextFactory.newInstance(metaData.getTables(), logicSQL, parameters, sqlStatement);
-        SQLRouteResult result = new SQLRouteResult(sqlStatementContext, encryptStatement, shardingConditions, generatedKey.orNull());
+        SQLRouteResult result = new SQLRouteResult(sqlStatementContext, shardingConditions, generatedKey.orNull());
         result.setRoutingResult(routingResult);
         if (sqlStatementContext instanceof InsertSQLStatementContext) {
             setGeneratedValues(result);
