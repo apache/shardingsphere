@@ -36,7 +36,7 @@ import lombok.Data;
 @Data
 public final class EofPacket extends AbstractPacket {
     
-    private byte fieldCount;
+    private short fieldCount;
     
     private int warningCount;
     
@@ -44,8 +44,8 @@ public final class EofPacket extends AbstractPacket {
 
     @Override
     public void fromByteBuf(final ByteBuf data) {
-        fieldCount = DataTypesCodec.readByte(data);
-        warningCount = DataTypesCodec.readShort(data);
-        this.statusFlag = DataTypesCodec.readShort(data);
+        fieldCount = DataTypesCodec.readUnsignedInt1(data);
+        warningCount = DataTypesCodec.readUnsignedInt2LE(data);
+        this.statusFlag = DataTypesCodec.readUnsignedInt2LE(data);
     }
 }

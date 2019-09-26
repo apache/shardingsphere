@@ -50,12 +50,12 @@ public final class BinlogDumpCommandPacket extends AbstractCommandPacket {
     public ByteBuf toByteBuf() {
         var result = ByteBufAllocator.DEFAULT.heapBuffer();
         DataTypesCodec.writeByte(getCommand(), result);
-        DataTypesCodec.writeInt((int) binlogPosition, result);
+        DataTypesCodec.writeInt4LE((int) binlogPosition, result);
         byte binlogFlags = 0;
         binlogFlags |= BINLOG_SEND_ANNOTATE_ROWS_EVENT;
         DataTypesCodec.writeByte(binlogFlags, result);
         DataTypesCodec.writeByte((byte) 0x00, result);
-        DataTypesCodec.writeInt(this.slaveServerId, result);
+        DataTypesCodec.writeInt4LE(this.slaveServerId, result);
         if (!Strings.isNullOrEmpty(this.binlogFileName)) {
             DataTypesCodec.writeBytes(this.binlogFileName.getBytes(), result);
         }

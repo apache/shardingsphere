@@ -36,11 +36,11 @@ import lombok.Data;
 @Data
 public final class ErrorPacket extends AbstractPacket {
     
-    private byte fieldCount;
+    private short fieldCount;
     
     private int errorNumber;
     
-    private byte sqlStateMarker;
+    private short sqlStateMarker;
     
     private byte[] sqlState;
     
@@ -48,9 +48,9 @@ public final class ErrorPacket extends AbstractPacket {
 
     @Override
     public void fromByteBuf(final ByteBuf data) {
-        this.fieldCount = DataTypesCodec.readByte(data);
-        this.errorNumber = DataTypesCodec.readShort(data);
-        this.sqlStateMarker = DataTypesCodec.readByte(data);
+        this.fieldCount = DataTypesCodec.readUnsignedInt1(data);
+        this.errorNumber = DataTypesCodec.readUnsignedInt2LE(data);
+        this.sqlStateMarker = DataTypesCodec.readUnsignedInt1(data);
         this.sqlState = DataTypesCodec.readBytes(5, data);
         this.message = new String(DataTypesCodec.readBytes(data.readableBytes(), data));
     }

@@ -84,8 +84,8 @@ public final class ClientAuthenticationPacket extends AbstractPacket {
     @Override
     public ByteBuf toByteBuf() {
         var result = ByteBufAllocator.DEFAULT.heapBuffer();
-        DataTypesCodec.writeInt(clientCapability, result);
-        DataTypesCodec.writeInt(1 << 24, result);
+        DataTypesCodec.writeInt4LE(clientCapability, result);
+        DataTypesCodec.writeInt4LE(1 << 24, result);
         DataTypesCodec.writeByte(charsetNumber, result);
         DataTypesCodec.writeBytes(new byte[23], result);
         DataTypesCodec.writeBytes(getUsername().getBytes(), result);
@@ -101,10 +101,10 @@ public final class ClientAuthenticationPacket extends AbstractPacket {
             }
         }
         if (getDatabaseName() != null) {
-            DataTypesCodec.writeNullTerminatedString(getDatabaseName(), result);
+            DataTypesCodec.writeNulTerminatedString(getDatabaseName(), result);
         }
         if (getAuthPluginName() != null) {
-            DataTypesCodec.writeNullTerminatedString(getAuthPluginName(), result);
+            DataTypesCodec.writeNulTerminatedString(getAuthPluginName(), result);
         }
         return result;
     }
