@@ -71,6 +71,23 @@ public final class MySQLConnector {
     
     private Promise<Object> responseCallback;
 
+    class MySQLCommandResponHandler extends ChannelInboundHandlerAdapter {
+        @Override
+        public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
+            if (null != responseCallback) {
+                responseCallback.setSuccess(msg);
+            }
+        }
+
+        @Override
+        public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
+            if (null != responseCallback) {
+                responseCallback.setFailure(cause);
+                log.error("protocol resolution error", cause);
+            }
+        }
+    }
+
     public MySQLConnector(final int serverId, final String host, final int port, final String username, final String password) {
         this.serverId = serverId;
         this.host = host;
@@ -94,23 +111,7 @@ public final class MySQLConnector {
                         socketChannel.pipeline().addLast(MySQLLengthFieldBasedFrameEncoder.class.getSimpleName(), new MySQLLengthFieldBasedFrameEncoder());
                         socketChannel.pipeline().addLast(new MySQLCommandPacketDecoder());
                         socketChannel.pipeline().addLast(new MySQLNegotiateHandler(username, password, responseCallback));
-                        socketChannel.pipeline().addLast(new ChannelInboundHandlerAdapter() {
-                            
-                            @Override
-                            public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
-                                if (null != responseCallback) {
-                                    responseCallback.setSuccess(msg);
-                                }
-                            }
-
-                            @Override
-                            public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
-                                if (null != responseCallback) {
-                                    responseCallback.setFailure(cause);
-                                    log.error("protocol resolution error", cause);
-                                }
-                            }
-                        });
+                        socketChannel.pipeline().addLast(new MySQLCommandResponHandler());
                     }
                 })
                 .option(ChannelOption.AUTO_READ, true)
@@ -175,6 +176,7 @@ public final class MySQLConnector {
         binlogDumpCmd.setBinlogPosition(binlogPosition);
         binlogDumpCmd.setSlaveServerId(serverId);
         channel.pipeline().remove(MySQLCommandPacketDecoder.class);
+        channel.pipeline().remove(MySQLCommandResponHandler.class);
         channel.pipeline().addAfter(
                 MySQLLengthFieldBasedFrameEncoder.class.getSimpleName(),
                 MySQLBinlogEventPacketDecoder.class.getSimpleName(),
