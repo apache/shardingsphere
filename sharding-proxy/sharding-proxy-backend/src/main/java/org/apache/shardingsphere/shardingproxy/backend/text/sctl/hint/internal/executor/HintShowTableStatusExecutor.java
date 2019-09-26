@@ -71,16 +71,13 @@ public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor
     
     private void fillShardingValues(final Map<String, HintShowTableStatusResult> results, final String logicTable,
                                     final Collection<Comparable<?>> databaseShardingValues, final Collection<Comparable<?>> tableShardingValues) {
+        if (!results.containsKey(logicTable)) {
+            results.put(logicTable, new HintShowTableStatusResult(logicTable));
+        }
         for (Comparable<?> each : databaseShardingValues) {
-            if (!results.containsKey(logicTable)) {
-                results.put(logicTable, new HintShowTableStatusResult(logicTable));
-            }
             results.get(logicTable).getDatabaseShardingValues().add(each.toString());
         }
         for (Comparable<?> each : tableShardingValues) {
-            if (!results.containsKey(logicTable)) {
-                results.put(logicTable, new HintShowTableStatusResult(logicTable));
-            }
             results.get(logicTable).getTableShardingValues().add(each.toString());
         }
     }

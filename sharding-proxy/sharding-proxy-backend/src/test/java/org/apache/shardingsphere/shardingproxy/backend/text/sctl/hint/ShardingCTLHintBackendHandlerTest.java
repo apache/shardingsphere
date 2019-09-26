@@ -172,6 +172,11 @@ public final class ShardingCTLHintBackendHandlerTest {
         assertEquals(((QueryResponse) backendResponse).getQueryHeaders().get(0).getColumnLabel(), "table_name");
         assertEquals(((QueryResponse) backendResponse).getQueryHeaders().get(1).getColumnLabel(), "database_sharding_values");
         assertEquals(((QueryResponse) backendResponse).getQueryHeaders().get(2).getColumnLabel(), "table_sharding_values");
+        assertTrue(defaultShardingCTLHintBackendHandler.next());
+        QueryData defaultQueryData = defaultShardingCTLHintBackendHandler.getQueryData();
+        assertEquals(defaultQueryData.getData().get(0), "user");
+        assertEquals(defaultQueryData.getData().get(1), "");
+        assertEquals(defaultQueryData.getData().get(2), "");
         assertFalse(defaultShardingCTLHintBackendHandler.next());
         String addDatabaseShardingValueSql = "sctl:hint addDatabaseshardingvalue user=100";
         String addTableShardingValueSql1 = "sctl:hint addTableshardingvalue user=200";
