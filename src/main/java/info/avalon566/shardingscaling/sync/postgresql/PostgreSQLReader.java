@@ -23,9 +23,9 @@ import info.avalon566.shardingscaling.sync.jdbc.AbstractJdbcReader;
 /**
  * @author avalon566
  */
-public class PostgresqlReader extends AbstractJdbcReader {
+public class PostgreSQLReader extends AbstractJdbcReader {
 
-    public PostgresqlReader(RdbmsConfiguration rdbmsConfiguration) {
+    public PostgreSQLReader(RdbmsConfiguration rdbmsConfiguration) {
         super(rdbmsConfiguration);
     }
 }
