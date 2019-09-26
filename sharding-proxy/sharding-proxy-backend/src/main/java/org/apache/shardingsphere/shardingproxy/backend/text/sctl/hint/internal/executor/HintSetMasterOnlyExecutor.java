@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintManagerHolder;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintSetMasterOnlyCommand;
 
@@ -29,13 +27,10 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.c
  *
  * @author liya
  */
-@RequiredArgsConstructor
-public final class HintSetMasterOnlyExecutor implements HintCommandExecutor {
-    
-    private final HintSetMasterOnlyCommand command;
+public final class HintSetMasterOnlyExecutor extends AbstractHintUpdateExecutor<HintSetMasterOnlyCommand> {
     
     @Override
-    public BackendResponse execute() {
+    public BackendResponse execute(final HintSetMasterOnlyCommand command) {
         if (command.isMasterOnly()) {
             HintManagerHolder.get().setMasterRouteOnly();
         }

@@ -38,7 +38,7 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<B
     public Collection<RemoveToken> generateSQLTokens(
             final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final BaseRule baseRule, final boolean isQueryWithCipherColumn) {
         Collection<RemoveToken> result = new LinkedList<>();
-        for (SQLSegment each : rewriteStatement.getOptimizedStatement().getSQLStatement().getAllSQLSegments()) {
+        for (SQLSegment each : rewriteStatement.getSqlStatementContext().getSqlStatement().getAllSQLSegments()) {
             if (each instanceof RemoveAvailable) {
                 result.add(new RemoveToken(each.getStartIndex(), each.getStopIndex()));
             }

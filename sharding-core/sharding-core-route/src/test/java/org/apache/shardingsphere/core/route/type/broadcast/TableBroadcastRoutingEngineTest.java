@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.core.route.type.broadcast;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.api.segment.Tables;
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.segment.table.TablesContext;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
@@ -44,16 +45,14 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.google.common.collect.Lists;
-
 @RunWith(MockitoJUnitRunner.class)
 public final class TableBroadcastRoutingEngineTest {
     
     @Mock
-    private OptimizedStatement optimizedStatement;
+    private SQLStatementContext sqlStatementContext;
     
     @Mock
-    private Tables tables;
+    private TablesContext tablesContext;
     
     @Mock
     private TableMetas tableMetas;
@@ -69,18 +68,18 @@ public final class TableBroadcastRoutingEngineTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1"));
-        when(optimizedStatement.getTables()).thenReturn(tables);
-        when(tables.getTableNames()).thenReturn(Lists.newArrayList("t_order"));
+        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
+        when(tablesContext.getTableNames()).thenReturn(Lists.newArrayList("t_order"));
         when(tableMetas.getAllTableNames()).thenReturn(Lists.newArrayList("t_order"));
         when(tableMetas.get("t_order")).thenReturn(tableMetaData);
         when(tableMetaData.containsIndex("index_name")).thenReturn(true);
-        tableBroadcastRoutingEngine = new TableBroadcastRoutingEngine(shardingRule, tableMetas, optimizedStatement);
+        tableBroadcastRoutingEngine = new TableBroadcastRoutingEngine(shardingRule, tableMetas, sqlStatementContext);
     }
     
     @Test
     public void assertRouteForNormalDDL() {
         DDLStatement ddlStatement = mock(DDLStatement.class);
-        when(optimizedStatement.getSQLStatement()).thenReturn(ddlStatement);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(ddlStatement);
         RoutingResult actual = tableBroadcastRoutingEngine.route();
         assertRoutingResult(actual);
     }
@@ -91,7 +90,7 @@ public final class TableBroadcastRoutingEngineTest {
         IndexSegment indexSegment = mock(IndexSegment.class);
         when(indexSegment.getName()).thenReturn("no_index");
         when(indexStatement.getIndexes()).thenReturn(Lists.newArrayList(indexSegment));
-        when(optimizedStatement.getSQLStatement()).thenReturn(indexStatement);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(indexStatement);
         tableBroadcastRoutingEngine.route();
     }
     
@@ -101,7 +100,7 @@ public final class TableBroadcastRoutingEngineTest {
         IndexSegment indexSegment = mock(IndexSegment.class);
         when(indexSegment.getName()).thenReturn("index_name");
         when(indexStatement.getIndexes()).thenReturn(Lists.newArrayList(indexSegment));
-        when(optimizedStatement.getSQLStatement()).thenReturn(indexStatement);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(indexStatement);
         RoutingResult actual = tableBroadcastRoutingEngine.route();
         assertRoutingResult(actual);
     }

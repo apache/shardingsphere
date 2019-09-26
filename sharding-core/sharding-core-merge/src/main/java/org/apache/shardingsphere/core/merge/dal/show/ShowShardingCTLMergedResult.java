@@ -26,13 +26,14 @@ import java.util.List;
  * Show sharding CTL merged result.
  *
  * @author zhaojun
+ * @author liya
  */
 @RequiredArgsConstructor
 public final class ShowShardingCTLMergedResult extends LocalMergedResultAdapter implements MergedResult {
     
     private int currentIndex;
     
-    private final List<Object> values;
+    private final List<List<Object>> values;
     
     @Override
     public boolean next() {
@@ -41,6 +42,6 @@ public final class ShowShardingCTLMergedResult extends LocalMergedResultAdapter 
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) {
-        return values.get(currentIndex - 1);
+        return values.get(currentIndex - 1).get(columnIndex - 1);
     }
 }

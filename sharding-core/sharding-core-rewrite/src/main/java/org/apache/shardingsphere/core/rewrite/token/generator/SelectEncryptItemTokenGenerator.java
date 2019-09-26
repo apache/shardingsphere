@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ColumnSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegment;
@@ -44,31 +44,31 @@ public final class SelectEncryptItemTokenGenerator implements CollectionSQLToken
     @Override
     public Collection<SelectEncryptItemToken> generateSQLTokens(final RewriteStatement rewriteStatement,
                                                                 final ParameterBuilder parameterBuilder, final EncryptRule rule, final boolean isQueryWithCipherColumn) {
-        if (!isNeedToGenerateSQLToken(rewriteStatement.getOptimizedStatement())) {
+        if (!isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext())) {
             return Collections.emptyList();
         }
-        return createSelectCipherItemTokens(rule, rewriteStatement.getOptimizedStatement(), isQueryWithCipherColumn);
+        return createSelectCipherItemTokens(rule, rewriteStatement.getSqlStatementContext(), isQueryWithCipherColumn);
     }
     
-    private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement) {
-        if (!isSelectStatementWithTable(optimizedStatement)) {
+    private boolean isNeedToGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+        if (!isSelectStatementWithTable(sqlStatementContext)) {
             return false;
         }
-        Optional<SelectItemsSegment> selectItemsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SelectItemsSegment.class);
+        Optional<SelectItemsSegment> selectItemsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(SelectItemsSegment.class);
         return selectItemsSegment.isPresent() && !selectItemsSegment.get().getSelectItems().isEmpty();
     }
     
-    private boolean isSelectStatementWithTable(final OptimizedStatement optimizedStatement) {
-        return optimizedStatement.getSQLStatement() instanceof SelectStatement && !optimizedStatement.getTables().isEmpty();
+    private boolean isSelectStatementWithTable(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext.getSqlStatement() instanceof SelectStatement && !sqlStatementContext.getTablesContext().isEmpty();
     }
     
-    private Collection<SelectEncryptItemToken> createSelectCipherItemTokens(final EncryptRule encryptRule, final OptimizedStatement optimizedStatement, final boolean isQueryWithCipherColumn) {
+    private Collection<SelectEncryptItemToken> createSelectCipherItemTokens(final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext, final boolean isQueryWithCipherColumn) {
         Collection<SelectEncryptItemToken> result = new LinkedList<>();
-        Optional<SelectItemsSegment> selectItemsSegment = optimizedStatement.getSQLStatement().findSQLSegment(SelectItemsSegment.class);
+        Optional<SelectItemsSegment> selectItemsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(SelectItemsSegment.class);
         if (!selectItemsSegment.isPresent()) {
             return Collections.emptyList();
         }
-        String tableName = optimizedStatement.getTables().getSingleTableName();
+        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
         if (!encryptTable.isPresent()) {
             return Collections.emptyList();

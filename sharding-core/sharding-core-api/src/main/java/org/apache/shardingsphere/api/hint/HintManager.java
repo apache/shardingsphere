@@ -67,6 +67,7 @@ public final class HintManager implements AutoCloseable {
      */
     public void setDatabaseShardingValue(final Comparable<?> value) {
         databaseShardingValues.clear();
+        tableShardingValues.clear();
         databaseShardingValues.put("", value);
         databaseShardingOnly = true;
     }
@@ -80,6 +81,9 @@ public final class HintManager implements AutoCloseable {
      * @param value sharding value
      */
     public void addDatabaseShardingValue(final String logicTable, final Comparable<?> value) {
+        if (databaseShardingOnly) {
+            databaseShardingValues.removeAll("");
+        }
         databaseShardingValues.put(logicTable, value);
         databaseShardingOnly = false;
     }
@@ -93,6 +97,9 @@ public final class HintManager implements AutoCloseable {
      * @param value sharding value
      */
     public void addTableShardingValue(final String logicTable, final Comparable<?> value) {
+        if (databaseShardingOnly) {
+            databaseShardingValues.removeAll("");
+        }
         tableShardingValues.put(logicTable, value);
         databaseShardingOnly = false;
     }
@@ -105,7 +112,7 @@ public final class HintManager implements AutoCloseable {
     public static Collection<Comparable<?>> getDatabaseShardingValues() {
         return getDatabaseShardingValues("");
     }
-
+    
     /**
      * Get database sharding values.
      *

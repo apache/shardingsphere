@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.route.router.masterslave;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -55,7 +56,7 @@ public class ShardingMasterSlaveRouterTest {
     private MasterSlaveRule masterSlaveRule;
     
     @Mock
-    private ShardingOptimizedStatement shardingOptimizedStatement;
+    private SQLStatementContext shardingStatementContext;
     
     @Mock
     private InsertStatement insertStatement;
@@ -66,7 +67,7 @@ public class ShardingMasterSlaveRouterTest {
     private ShardingMasterSlaveRouter shardingMasterSlaveRouter;
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         shardingMasterSlaveRouter = new ShardingMasterSlaveRouter(Lists.newArrayList(masterSlaveRule));
         when(masterSlaveRule.getName()).thenReturn(DATASOURCE_NAME);
         when(masterSlaveRule.getMasterDataSourceName()).thenReturn(MASTER_DATASOURCE);
@@ -98,8 +99,8 @@ public class ShardingMasterSlaveRouterTest {
     }
     
     private SQLRouteResult mockSQLRouteResult(final SQLStatement sqlStatement) {
-        when(shardingOptimizedStatement.getSQLStatement()).thenReturn(sqlStatement);
-        SQLRouteResult result = new SQLRouteResult(shardingOptimizedStatement, null, null);
+        when(shardingStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        SQLRouteResult result = new SQLRouteResult(shardingStatementContext, null, null, null);
         result.setRoutingResult(mockRoutingResult());
         return result;
     }

@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.statement.InsertRewriteStatement;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertGeneratedKeyNameToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -35,21 +36,21 @@ public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTo
     @Override
     public Optional<InsertGeneratedKeyNameToken> generateSQLToken(
             final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = rewriteStatement.getOptimizedStatement().getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
+        Optional<InsertColumnsSegment> insertColumnsSegment = rewriteStatement.getSqlStatementContext().getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         if (!insertColumnsSegment.isPresent() || insertColumnsSegment.get().getColumns().isEmpty()) {
             return Optional.absent();
         }
-        if (rewriteStatement.getOptimizedStatement() instanceof ShardingInsertOptimizedStatement) {
-            return createInsertGeneratedKeyToken((ShardingInsertOptimizedStatement) rewriteStatement.getOptimizedStatement(), insertColumnsSegment.get(), shardingRule);
+        if (rewriteStatement.getSqlStatementContext() instanceof InsertSQLStatementContext) {
+            return createInsertGeneratedKeyToken((InsertRewriteStatement) rewriteStatement, insertColumnsSegment.get(), shardingRule);
         }
         return Optional.absent();
     }
     
     private Optional<InsertGeneratedKeyNameToken> createInsertGeneratedKeyToken(
-            final ShardingInsertOptimizedStatement optimizedStatement, final InsertColumnsSegment segment, final ShardingRule shardingRule) {
-        String tableName = optimizedStatement.getTables().getSingleTableName();
+            final InsertRewriteStatement rewriteStatement, final InsertColumnsSegment segment, final ShardingRule shardingRule) {
+        String tableName = rewriteStatement.getSqlStatementContext().getTablesContext().getSingleTableName();
         Optional<String> generatedKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName);
-        return generatedKeyColumnName.isPresent() && optimizedStatement.getGeneratedKey().isPresent() && optimizedStatement.getGeneratedKey().get().isGenerated()
+        return generatedKeyColumnName.isPresent() && rewriteStatement.getGeneratedKey().isPresent() && rewriteStatement.getGeneratedKey().get().isGenerated()
                 ? Optional.of(new InsertGeneratedKeyNameToken(segment.getStopIndex(), generatedKeyColumnName.get(), isToAddCloseParenthesis(tableName, segment, shardingRule)))
                 : Optional.<InsertGeneratedKeyNameToken>absent();
     }

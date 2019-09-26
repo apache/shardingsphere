@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.merge.dal.show.ShowDatabasesMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowOtherMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowTablesMergedResult;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.DescribeStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowCreateTableStatement;
@@ -57,46 +57,46 @@ public final class DALMergeEngineTest {
     @Test
     public void assertMergeForShowDatabasesStatement() throws SQLException {
         DALStatement dalStatement = new ShowDatabasesStatement();
-        OptimizedStatement optimizedStatement = mockOptimizedStatement(dalStatement);
-        DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, optimizedStatement, null);
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext(dalStatement);
+        DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, sqlStatementContext, null);
         assertThat(dalMergeEngine.merge(), instanceOf(ShowDatabasesMergedResult.class));
     }
     
     @Test
     public void assertMergeForShowShowTablesStatement() throws SQLException {
         DALStatement dalStatement = new ShowTablesStatement();
-        OptimizedStatement optimizedStatement = mockOptimizedStatement(dalStatement);
-        DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, optimizedStatement, null);
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext(dalStatement);
+        DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, sqlStatementContext, null);
         assertThat(dalMergeEngine.merge(), instanceOf(ShowTablesMergedResult.class));
     }
     
     @Test
     public void assertMergeForShowCreateTableStatement() throws SQLException {
         DALStatement dalStatement = new ShowCreateTableStatement();
-        OptimizedStatement optimizedStatement = mockOptimizedStatement(dalStatement);
-        DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, optimizedStatement, null);
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext(dalStatement);
+        DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, sqlStatementContext, null);
         assertThat(dalMergeEngine.merge(), instanceOf(ShowCreateTableMergedResult.class));
     }
     
     @Test
     public void assertMergeForShowOtherStatement() throws SQLException {
         DALStatement dalStatement = new ShowOtherStatement();
-        OptimizedStatement optimizedStatement = mockOptimizedStatement(dalStatement);
-        DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, optimizedStatement, null);
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext(dalStatement);
+        DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, sqlStatementContext, null);
         assertThat(dalMergeEngine.merge(), instanceOf(ShowOtherMergedResult.class));
     }
     
     @Test
     public void assertMergeForDescribeStatement() throws SQLException {
         DALStatement dalStatement = new DescribeStatement();
-        OptimizedStatement optimizedStatement = mockOptimizedStatement(dalStatement);
-        DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, optimizedStatement, null);
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext(dalStatement);
+        DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, sqlStatementContext, null);
         assertThat(dalMergeEngine.merge(), instanceOf(DescribeTableMergedResult.class));
     }
     
-    private OptimizedStatement mockOptimizedStatement(final DALStatement dalStatement) {
-        OptimizedStatement optimizedStatement = mock(OptimizedStatement.class);
-        when(optimizedStatement.getSQLStatement()).thenReturn(dalStatement);
-        return optimizedStatement;
+    private SQLStatementContext mockSQLStatementContext(final DALStatement dalStatement) {
+        SQLStatementContext result = mock(SQLStatementContext.class);
+        when(result.getSqlStatement()).thenReturn(dalStatement);
+        return result;
     }
 }

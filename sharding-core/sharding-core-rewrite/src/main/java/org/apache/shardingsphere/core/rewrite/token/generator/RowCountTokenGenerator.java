@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
@@ -36,12 +36,12 @@ public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator<S
     @Override
     public Optional<RowCountToken> generateSQLToken(
             final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
-        if (!(rewriteStatement.getOptimizedStatement() instanceof ShardingSelectOptimizedStatement)) {
+        if (!(rewriteStatement.getSqlStatementContext() instanceof SelectSQLStatementContext)) {
             return Optional.absent();
         }
-        Pagination pagination = ((ShardingSelectOptimizedStatement) rewriteStatement.getOptimizedStatement()).getPagination();
+        PaginationContext pagination = ((SelectSQLStatementContext) rewriteStatement.getSqlStatementContext()).getPaginationContext();
         return pagination.getRowCountSegment().isPresent() && pagination.getRowCountSegment().get() instanceof NumberLiteralPaginationValueSegment
                 ? Optional.of(new RowCountToken(pagination.getRowCountSegment().get().getStartIndex(), pagination.getRowCountSegment().get().getStopIndex(), 
-                pagination.getRevisedRowCount((ShardingSelectOptimizedStatement) rewriteStatement.getOptimizedStatement()))) : Optional.<RowCountToken>absent();
+                pagination.getRevisedRowCount((SelectSQLStatementContext) rewriteStatement.getSqlStatementContext()))) : Optional.<RowCountToken>absent();
     }
 }
