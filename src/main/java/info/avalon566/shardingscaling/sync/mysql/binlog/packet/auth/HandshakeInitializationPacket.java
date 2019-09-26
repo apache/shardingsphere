@@ -17,13 +17,14 @@
 
 package info.avalon566.shardingscaling.sync.mysql.binlog.packet.auth;
 
+import info.avalon566.shardingscaling.sync.mysql.binlog.codec.CapabilityFlags;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.AbstractPacket;
 import io.netty.buffer.ByteBuf;
 import lombok.Data;
 
 /**
- * MySQL handshake initializetion packet.
+ * MySQL handshake initialization packet.
  *
  * <p>
  *     https://github.com/mysql/mysql-server/blob/5.7/sql/auth/sql_authentication.cc
@@ -85,11 +86,11 @@ public final class HandshakeInitializationPacket extends AbstractPacket {
             int capabilities = (serverCapabilities2 << 16) | serverCapabilities;
             DataTypesCodec.readUnsignedInt1(data);
             DataTypesCodec.readBytes(10, data);
-            if ((capabilities & 0x00008000) != 0) {
+            if ((capabilities & CapabilityFlags.CLIENT_SECURE_CONNECTION) != 0) {
                 restOfScramble = DataTypesCodec.readBytes(12, data);
             }
             DataTypesCodec.readNul(data);
-            if ((capabilities & 0x00080000) != 0) {
+            if ((capabilities & CapabilityFlags.CLIENT_PLUGIN_AUTH) != 0) {
                 authPluginName = DataTypesCodec.readNulTerminatedString(data);
             }
         }

@@ -74,11 +74,11 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
     }
 
     private byte[] joinAndCreateScrumbleBuff(final HandshakeInitializationPacket handshakePacket) {
-        byte[] dest = new byte[handshakePacket.getScramble().length + handshakePacket.getRestOfScramble().length];
-        System.arraycopy(handshakePacket.getScramble(), 0, dest, 0, handshakePacket.getScramble().length);
+        byte[] result = new byte[handshakePacket.getScramble().length + handshakePacket.getRestOfScramble().length];
+        System.arraycopy(handshakePacket.getScramble(), 0, result, 0, handshakePacket.getScramble().length);
         System.arraycopy(handshakePacket.getRestOfScramble(),
-                0, dest, handshakePacket.getScramble().length,
+                0, result, handshakePacket.getScramble().length,
                 handshakePacket.getRestOfScramble().length);
-        return dest;
+        return result;
     }
 }

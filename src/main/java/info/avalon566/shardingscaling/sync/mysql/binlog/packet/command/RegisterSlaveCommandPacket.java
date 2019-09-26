@@ -49,18 +49,18 @@ public final class RegisterSlaveCommandPacket extends AbstractCommandPacket {
 
     @Override
     public ByteBuf toByteBuf() {
-        var out = ByteBufAllocator.DEFAULT.heapBuffer();
-        DataTypesCodec.writeByte(getCommand(), out);
-        DataTypesCodec.writeInt4LE(serverId, out);
-        DataTypesCodec.writeByte((byte) reportHost.getBytes().length, out);
-        DataTypesCodec.writeBytes(reportHost.getBytes(), out);
-        DataTypesCodec.writeByte((byte) reportUser.getBytes().length, out);
-        DataTypesCodec.writeBytes(reportUser.getBytes(), out);
-        DataTypesCodec.writeByte((byte) reportPassword.getBytes().length, out);
-        DataTypesCodec.writeBytes(reportPassword.getBytes(), out);
-        DataTypesCodec.writeInt2LE(reportPort, out);
-        DataTypesCodec.writeInt4LE(0, out);
-        DataTypesCodec.writeInt4LE(0, out);
-        return out;
+        var result = ByteBufAllocator.DEFAULT.heapBuffer();
+        DataTypesCodec.writeByte(getCommand(), result);
+        DataTypesCodec.writeInt4LE(serverId, result);
+        DataTypesCodec.writeByte((byte) reportHost.getBytes().length, result);
+        DataTypesCodec.writeBytes(reportHost.getBytes(), result);
+        DataTypesCodec.writeByte((byte) reportUser.getBytes().length, result);
+        DataTypesCodec.writeBytes(reportUser.getBytes(), result);
+        DataTypesCodec.writeByte((byte) reportPassword.getBytes().length, result);
+        DataTypesCodec.writeBytes(reportPassword.getBytes(), result);
+        DataTypesCodec.writeInt2LE(reportPort, result);
+        DataTypesCodec.writeInt4LE(0, result);
+        DataTypesCodec.writeInt4LE(0, result);
+        return result;
     }
 }
