@@ -61,7 +61,7 @@ public final class ShardingMasterSlaveRouter {
             }
             toBeRemoved.add(each);
             String actualDataSourceName;
-            if (isMasterRoute(sqlRouteResult.getShardingStatementContext().getSqlStatement())) {
+            if (isMasterRoute(sqlRouteResult.getSqlStatementContext().getSqlStatement())) {
                 MasterVisitedManager.setMasterVisited();
                 actualDataSourceName = masterSlaveRule.getMasterDataSourceName();
             } else {

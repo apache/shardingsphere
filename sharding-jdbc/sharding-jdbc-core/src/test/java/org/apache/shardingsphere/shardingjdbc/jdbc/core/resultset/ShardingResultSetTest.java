@@ -79,7 +79,7 @@ public final class ShardingResultSetTest {
         TablesContext tablesContext = mock(TablesContext.class);
         when(tablesContext.getTableNames()).thenReturn(Collections.<String>emptyList());
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
-        when(result.getShardingStatementContext()).thenReturn(sqlStatementContext);
+        when(result.getSqlStatementContext()).thenReturn(sqlStatementContext);
         return result;
     }
     

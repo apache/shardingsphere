@@ -85,14 +85,14 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (routeResult.getRouteUnits().isEmpty()) {
             return new UpdateResponse();
         }
-        SQLStatementContext shardingStatementContext = routeResult.getShardingStatementContext();
-        if (isExecuteDDLInXATransaction(shardingStatementContext.getSqlStatement())) {
+        SQLStatementContext sqlStatementContext = routeResult.getSqlStatementContext();
+        if (isExecuteDDLInXATransaction(sqlStatementContext.getSqlStatement())) {
             return new ErrorResponse(new TableModifyInTransactionException(
-                    shardingStatementContext.getTablesContext().isSingleTable() ? shardingStatementContext.getTablesContext().getSingleTableName() : "unknown_table"));
+                    sqlStatementContext.getTablesContext().isSingleTable() ? sqlStatementContext.getTablesContext().getSingleTableName() : "unknown_table"));
         }
         response = executeEngine.execute(routeResult);
         if (logicSchema instanceof ShardingSchema) {
-            logicSchema.refreshTableMetaData(routeResult.getShardingStatementContext());
+            logicSchema.refreshTableMetaData(routeResult.getSqlStatementContext());
         }
         return merge(routeResult);
     }
@@ -114,7 +114,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private void mergeUpdateCount(final SQLRouteResult routeResult) {
-        if (!isAllBroadcastTables(routeResult.getShardingStatementContext())) {
+        if (!isAllBroadcastTables(routeResult.getSqlStatementContext())) {
             ((UpdateResponse) response).mergeUpdateCount();
         }
     }
@@ -166,7 +166,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     private Collection<String> getAssistedQueryColumns(final SQLRouteResult routeResult) {
         Collection<String> result = new LinkedList<>();
         EncryptRule encryptRule = getEncryptRule();
-        for (String each : routeResult.getShardingStatementContext().getTablesContext().getTableNames()) {
+        for (String each : routeResult.getSqlStatementContext().getTablesContext().getTableNames()) {
             result.addAll(encryptRule.getAssistedQueryColumns(each));
         }
         return result;

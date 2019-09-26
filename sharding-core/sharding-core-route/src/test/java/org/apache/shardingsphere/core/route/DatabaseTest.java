@@ -92,12 +92,12 @@ public final class DatabaseTest {
         String originSQL = "select user_id from tbl_pagination limit 0,5";
         SQLParseEngine parseEngine = new SQLParseEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
         SQLRouteResult actual = new StatementRoutingEngine(shardingRule, getMetaDataForPagination(), parseEngine).route(originSQL);
-        assertThat(((SelectSQLStatementContext) actual.getShardingStatementContext()).getPaginationContext().getActualOffset(), is(0L));
-        assertThat(((SelectSQLStatementContext) actual.getShardingStatementContext()).getPaginationContext().getActualRowCount().orNull(), is(5L));
+        assertThat(((SelectSQLStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualOffset(), is(0L));
+        assertThat(((SelectSQLStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualRowCount().orNull(), is(5L));
         originSQL = "select user_id from tbl_pagination limit 5,5";
         actual = new StatementRoutingEngine(shardingRule, getMetaDataForPagination(), parseEngine).route(originSQL);
-        assertThat(((SelectSQLStatementContext) actual.getShardingStatementContext()).getPaginationContext().getActualOffset(), is(5L));
-        assertThat(((SelectSQLStatementContext) actual.getShardingStatementContext()).getPaginationContext().getActualRowCount().orNull(), is(5L));
+        assertThat(((SelectSQLStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualOffset(), is(5L));
+        assertThat(((SelectSQLStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualRowCount().orNull(), is(5L));
     }
     
     private ShardingSphereMetaData getMetaDataForPagination() {
@@ -131,12 +131,12 @@ public final class DatabaseTest {
         when(metaData.getTables()).thenReturn(mock(TableMetas.class));
         SQLParseEngine parseEngine = new SQLParseEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
         SQLRouteResult actual = new PreparedStatementRoutingEngine(originSQL, rule, metaData, parseEngine).route(Lists.<Object>newArrayList(13, 173));
-        assertThat(((SelectSQLStatementContext) actual.getShardingStatementContext()).getPaginationContext().getActualOffset(), is(5L));
-        assertThat(((SelectSQLStatementContext) actual.getShardingStatementContext()).getPaginationContext().getActualRowCount().orNull(), is(10L));
+        assertThat(((SelectSQLStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualOffset(), is(5L));
+        assertThat(((SelectSQLStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualRowCount().orNull(), is(10L));
         assertThat(actual.getRoutingResult().getRoutingUnits().size(), is(1));
         originSQL = "select city_id from t_user where city_id in (?,?) limit 5,10";
         actual = new PreparedStatementRoutingEngine(originSQL, rule, metaData, parseEngine).route(Lists.<Object>newArrayList(89, 84));
-        assertThat(((SelectSQLStatementContext) actual.getShardingStatementContext()).getPaginationContext().getActualOffset(), is(5L));
-        assertThat(((SelectSQLStatementContext) actual.getShardingStatementContext()).getPaginationContext().getActualRowCount().orNull(), is(10L));
+        assertThat(((SelectSQLStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualOffset(), is(5L));
+        assertThat(((SelectSQLStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualRowCount().orNull(), is(10L));
     }
 }
