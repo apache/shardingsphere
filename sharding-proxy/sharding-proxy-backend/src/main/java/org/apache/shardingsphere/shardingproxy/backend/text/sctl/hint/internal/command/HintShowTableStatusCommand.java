@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor;
+package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command;
 
-import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintManagerHolder;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintClearCommand;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommand;
 
 /**
- * Hint clear command executor.
+ * Hint show table status command.
+ *
+ * <p>
+ * example: sctl:hint show table status.
+ * </p>
  *
  * @author liya
  */
-public final class HintClearExecutor extends AbstractHintUpdateExecutor<HintClearCommand> {
-    
-    @Override
-    public BackendResponse execute(final HintClearCommand command) {
-        HintManagerHolder.get().close();
-        HintManagerHolder.remove();
-        return new UpdateResponse();
-    }
+public final class HintShowTableStatusCommand implements HintCommand {
 }

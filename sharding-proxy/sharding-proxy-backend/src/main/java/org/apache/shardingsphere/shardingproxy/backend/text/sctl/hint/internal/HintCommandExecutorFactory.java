@@ -17,23 +17,24 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal;
 
-import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.ShardingCTLHintParser;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.ShardingCTLHintStatement;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintAddDatabaseShardingValueCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintAddTableShardingValueCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintClearCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintSetDatabaseShardingValueCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintSetMasterOnlyCommand;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintShowStatusCommand;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintShowTableStatusCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintAddDatabaseShardingValueExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintAddTableShardingValueExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintClearExecutor;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintErrorFormatExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintErrorParameterExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintSetDatabaseShardingValueExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintSetMasterOnlyExecutor;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintShowStatusExecutor;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor.HintShowTableStatusExecutor;
 
 /**
  * Hint command executor factory.
@@ -46,29 +47,32 @@ public final class HintCommandExecutorFactory {
     /**
      * Create hint command executor instance.
      *
+     * @param hintCommand hint command
+     * @param backendConnection backend connection
      * @param sql SQL
      * @return hint command executor
      */
-    public static HintCommandExecutor newInstance(final String sql) {
-        Optional<ShardingCTLHintStatement> shardingTCLStatement = new ShardingCTLHintParser(sql).doParse();
-        if (!shardingTCLStatement.isPresent()) {
-            return new HintErrorFormatExecutor(sql);
-        }
-        HintCommand hintCommand = shardingTCLStatement.get().getHintCommand();
+    public static HintCommandExecutor newInstance(final HintCommand hintCommand, final BackendConnection backendConnection, final String sql) {
         if (hintCommand instanceof HintSetMasterOnlyCommand) {
-            return new HintSetMasterOnlyExecutor((HintSetMasterOnlyCommand) hintCommand);
+            return new HintSetMasterOnlyExecutor();
         }
         if (hintCommand instanceof HintSetDatabaseShardingValueCommand) {
-            return new HintSetDatabaseShardingValueExecutor((HintSetDatabaseShardingValueCommand) hintCommand);
+            return new HintSetDatabaseShardingValueExecutor();
         }
         if (hintCommand instanceof HintAddDatabaseShardingValueCommand) {
-            return new HintAddDatabaseShardingValueExecutor((HintAddDatabaseShardingValueCommand) hintCommand);
+            return new HintAddDatabaseShardingValueExecutor();
         }
         if (hintCommand instanceof HintAddTableShardingValueCommand) {
-            return new HintAddTableShardingValueExecutor((HintAddTableShardingValueCommand) hintCommand);
+            return new HintAddTableShardingValueExecutor();
         }
         if (hintCommand instanceof HintClearCommand) {
             return new HintClearExecutor();
+        }
+        if (hintCommand instanceof HintShowStatusCommand) {
+            return new HintShowStatusExecutor();
+        }
+        if (hintCommand instanceof HintShowTableStatusCommand) {
+            return new HintShowTableStatusExecutor(backendConnection);
         }
         return new HintErrorParameterExecutor(sql);
     }

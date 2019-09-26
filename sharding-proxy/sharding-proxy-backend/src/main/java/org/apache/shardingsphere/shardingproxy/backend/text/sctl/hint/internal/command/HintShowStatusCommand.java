@@ -15,26 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor;
+package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutor;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommand;
 
 /**
- * Hint error format command executor.
+ * Hint show status command.
+ *
+ * <p>
+ * example: sctl:hint show status.
+ * </p>
  *
  * @author liya
  */
-@RequiredArgsConstructor
-public final class HintErrorFormatExecutor implements HintCommandExecutor {
-    
-    private final String sql;
-    
-    @Override
-    public BackendResponse execute() {
-        return new ErrorResponse(new InvalidShardingCTLFormatException(sql));
-    }
+public final class HintShowStatusCommand implements HintCommand {
 }

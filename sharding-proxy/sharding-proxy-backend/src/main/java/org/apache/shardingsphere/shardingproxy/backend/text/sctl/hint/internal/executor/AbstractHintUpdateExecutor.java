@@ -17,22 +17,24 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor;
 
-import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintManagerHolder;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintClearCommand;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommand;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutor;
 
 /**
- * Hint clear command executor.
+ * Abstract hint update command.
  *
  * @author liya
  */
-public final class HintClearExecutor extends AbstractHintUpdateExecutor<HintClearCommand> {
+public abstract class AbstractHintUpdateExecutor<T extends HintCommand> implements HintCommandExecutor<T> {
     
     @Override
-    public BackendResponse execute(final HintClearCommand command) {
-        HintManagerHolder.get().close();
-        HintManagerHolder.remove();
-        return new UpdateResponse();
+    public final boolean next() {
+        return false;
+    }
+    
+    @Override
+    public final QueryData getQueryData() {
+        return null;
     }
 }

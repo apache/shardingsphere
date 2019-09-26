@@ -15,24 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor;
-
-import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintManagerHolder;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintClearCommand;
+package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal;
 
 /**
- * Hint clear command executor.
+ * Hint sharding type.
  *
  * @author liya
  */
-public final class HintClearExecutor extends AbstractHintUpdateExecutor<HintClearCommand> {
+public enum HintShardingType {
     
-    @Override
-    public BackendResponse execute(final HintClearCommand command) {
-        HintManagerHolder.get().close();
-        HintManagerHolder.remove();
-        return new UpdateResponse();
-    }
+    DATABASES_ONLY, DATABASES_TABLES;
 }
