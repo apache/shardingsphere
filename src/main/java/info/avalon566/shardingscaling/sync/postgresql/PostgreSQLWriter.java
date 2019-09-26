@@ -31,3 +31,4 @@ public class PostgreSQLWriter extends AbstractJdbcWriter {
         super(rdbmsConfiguration);
     }
 }
+

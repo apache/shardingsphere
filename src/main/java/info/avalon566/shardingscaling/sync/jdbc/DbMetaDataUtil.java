@@ -21,6 +21,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
+import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 
 import java.sql.DriverManager;
@@ -32,6 +33,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * @author avalon566
  */
+@Slf4j
 public final class DbMetaDataUtil {
 
     private final RdbmsConfiguration rdbmsConfiguration;

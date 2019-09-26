@@ -17,13 +17,20 @@
 
 package info.avalon566.shardingscaling.sync.jdbc;
 
-import info.avalon566.shardingscaling.sync.core.*;
+import info.avalon566.shardingscaling.sync.core.AbstractRunner;
+import info.avalon566.shardingscaling.sync.core.Channel;
+import info.avalon566.shardingscaling.sync.core.FinishedRecord;
+import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
+import info.avalon566.shardingscaling.sync.core.Reader;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import lombok.var;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,9 +40,8 @@ import static java.sql.ResultSet.TYPE_FORWARD_ONLY;
 /**
  * @author avalon566
  */
+@Slf4j
 public abstract class AbstractJdbcReader extends AbstractRunner implements Reader {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractJdbcReader.class);
 
     protected final RdbmsConfiguration rdbmsConfiguration;
 
@@ -85,15 +91,19 @@ public abstract class AbstractJdbcReader extends AbstractRunner implements Reade
     @Override
     public List<RdbmsConfiguration> split(int concurrency) {
         var primaryKeys = new DbMetaDataUtil(rdbmsConfiguration).getPrimaryKeys(rdbmsConfiguration.getTableName());
+        if (primaryKeys == null || primaryKeys.size() == 0) {
+            log.warn("{} 表主键不存在, 不支持并发执行", rdbmsConfiguration.getTableName());
+            return Arrays.asList(rdbmsConfiguration);
+        }
         if (1 < primaryKeys.size()) {
-            LOGGER.warn("%s 为联合主键,不支持并发执行");
+            log.warn("{} 表为联合主键, 不支持并发执行", rdbmsConfiguration.getTableName());
             return Arrays.asList(rdbmsConfiguration);
         }
         var metaData = new DbMetaDataUtil(rdbmsConfiguration).getColumNames(rdbmsConfiguration.getTableName());
         var index = DbMetaDataUtil.findColumnIndex(metaData, primaryKeys.get(0));
         try {
             if (Types.INTEGER != metaData.get(index).getColumnType()) {
-                LOGGER.warn("%s 不是整形,不支持并发执行");
+                log.warn("{} 主键不是整形,不支持并发执行", rdbmsConfiguration.getTableName());
                 return Arrays.asList(rdbmsConfiguration);
             }
         } catch (Exception e) {
