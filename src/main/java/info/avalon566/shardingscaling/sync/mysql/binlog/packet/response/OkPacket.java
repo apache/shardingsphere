@@ -36,7 +36,7 @@ import lombok.Data;
 @Data
 public final class OkPacket extends AbstractPacket {
     
-    private byte fieldCount;
+    private short fieldCount;
     
     private long affectedRows;
     
@@ -50,11 +50,11 @@ public final class OkPacket extends AbstractPacket {
 
     @Override
     public void fromByteBuf(final ByteBuf data) {
-        this.fieldCount = DataTypesCodec.readByte(data);
-        this.affectedRows = DataTypesCodec.readLengthCoded(data);
-        this.insertId = DataTypesCodec.readLengthCoded(data);
-        this.serverStatus = DataTypesCodec.readShort(data);
-        this.warningCount = DataTypesCodec.readShort(data);
+        this.fieldCount = DataTypesCodec.readUnsignedInt1(data);
+        this.affectedRows = DataTypesCodec.readLengthCodedIntLE(data);
+        this.insertId = DataTypesCodec.readLengthCodedIntLE(data);
+        this.serverStatus = DataTypesCodec.readUnsignedInt2LE(data);
+        this.warningCount = DataTypesCodec.readUnsignedInt2LE(data);
         this.message = new String(DataTypesCodec.readBytes(data.readableBytes(), data));
     }
 }

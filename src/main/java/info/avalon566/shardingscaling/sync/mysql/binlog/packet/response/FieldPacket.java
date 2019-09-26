@@ -52,11 +52,11 @@ public final class FieldPacket extends AbstractPacket {
     
     private long length;
     
-    private byte type;
+    private short type;
     
     private int flags;
     
-    private byte decimals;
+    private short decimals;
     
     private String definition;
 
@@ -68,11 +68,11 @@ public final class FieldPacket extends AbstractPacket {
         originalTable = DataTypesCodec.readLengthCodedString(data);
         name = DataTypesCodec.readLengthCodedString(data);
         originalName = DataTypesCodec.readLengthCodedString(data);
-        character = DataTypesCodec.readShort(data);
-        length = DataTypesCodec.readInt(data);
-        type = DataTypesCodec.readByte(data);
-        flags = DataTypesCodec.readShort(data);
-        decimals = DataTypesCodec.readByte(data);
+        character = DataTypesCodec.readUnsignedInt2LE(data);
+        length = DataTypesCodec.readUnsignedInt4LE(data);
+        type = DataTypesCodec.readUnsignedInt1(data);
+        flags = DataTypesCodec.readUnsignedInt2LE(data);
+        decimals = DataTypesCodec.readUnsignedInt1(data);
         // fill
         data.readerIndex(data.readerIndex() + 2);
         definition = DataTypesCodec.readLengthCodedString(data);

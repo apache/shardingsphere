@@ -44,9 +44,9 @@ public final class ResultSetHeaderPacket extends AbstractPacket {
     
     @Override
     public void fromByteBuf(final ByteBuf data) {
-        columnCount = DataTypesCodec.readLengthCoded(data);
+        columnCount = DataTypesCodec.readLengthCodedIntLE(data);
         if (data.readableBytes() > 0) {
-            extra = DataTypesCodec.readLengthCoded(data);
+            extra = DataTypesCodec.readLengthCodedIntLE(data);
         }
     }
 }

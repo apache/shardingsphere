@@ -51,16 +51,16 @@ public final class RegisterSlaveCommandPacket extends AbstractCommandPacket {
     public ByteBuf toByteBuf() {
         var out = ByteBufAllocator.DEFAULT.heapBuffer();
         DataTypesCodec.writeByte(getCommand(), out);
-        DataTypesCodec.writeInt(serverId, out);
+        DataTypesCodec.writeInt4LE(serverId, out);
         DataTypesCodec.writeByte((byte) reportHost.getBytes().length, out);
         DataTypesCodec.writeBytes(reportHost.getBytes(), out);
         DataTypesCodec.writeByte((byte) reportUser.getBytes().length, out);
         DataTypesCodec.writeBytes(reportUser.getBytes(), out);
         DataTypesCodec.writeByte((byte) reportPassword.getBytes().length, out);
         DataTypesCodec.writeBytes(reportPassword.getBytes(), out);
-        DataTypesCodec.writeShort(reportPort, out);
-        DataTypesCodec.writeInt(0, out);
-        DataTypesCodec.writeInt(0, out);
+        DataTypesCodec.writeInt2LE(reportPort, out);
+        DataTypesCodec.writeInt4LE(0, out);
+        DataTypesCodec.writeInt4LE(0, out);
         return out;
     }
 }

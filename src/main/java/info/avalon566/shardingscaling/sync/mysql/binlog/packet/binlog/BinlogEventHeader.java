@@ -38,17 +38,17 @@ import lombok.Data;
 @Data
 public final class BinlogEventHeader {
     
-    private int timeStamp;
+    private long timeStamp;
     
-    private byte typeCode;
+    private short typeCode;
     
-    private int serverId;
+    private long serverId;
     
-    private int eventLength;
+    private long eventLength;
     
-    private int endLogPos;
+    private long endLogPos;
     
-    private short flags;
+    private int flags;
     
     /**
      * Init values from {@code ByteBuf}.
@@ -56,11 +56,11 @@ public final class BinlogEventHeader {
      * @param data byte buffer
      */
     public void fromBytes(final ByteBuf data) {
-        timeStamp = DataTypesCodec.readInt(data);
-        typeCode = DataTypesCodec.readByte(data);
-        serverId = DataTypesCodec.readInt(data);
-        eventLength = DataTypesCodec.readInt(data);
-        endLogPos = DataTypesCodec.readInt(data);
-        flags = DataTypesCodec.readShort(data);
+        timeStamp = DataTypesCodec.readUnsignedInt4LE(data);
+        typeCode = DataTypesCodec.readUnsignedInt1(data);
+        serverId = DataTypesCodec.readUnsignedInt4LE(data);
+        eventLength = DataTypesCodec.readUnsignedInt4LE(data);
+        endLogPos = DataTypesCodec.readUnsignedInt4LE(data);
+        flags = DataTypesCodec.readUnsignedInt2LE(data);
     }
 }

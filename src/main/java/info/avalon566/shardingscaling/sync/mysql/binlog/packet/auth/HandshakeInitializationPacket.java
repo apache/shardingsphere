@@ -50,7 +50,7 @@ import lombok.Data;
 @Data
 public final class HandshakeInitializationPacket extends AbstractPacket {
     
-    private byte protocolVersion = 0x0a;
+    private short protocolVersion = 0x0a;
     
     private String serverVersion;
     
@@ -60,7 +60,7 @@ public final class HandshakeInitializationPacket extends AbstractPacket {
     
     private int serverCapabilities;
     
-    private byte serverCharsetSet;
+    private short serverCharsetSet;
     
     private int serverStatus;
     
@@ -72,30 +72,26 @@ public final class HandshakeInitializationPacket extends AbstractPacket {
 
     @Override
     public void fromByteBuf(final ByteBuf data) {
-        protocolVersion = DataTypesCodec.readByte(data);
-        serverVersion = DataTypesCodec.readNullTerminatedString(data);
-        threadId = DataTypesCodec.readInt(data);
+        protocolVersion = DataTypesCodec.readUnsignedInt1(data);
+        serverVersion = DataTypesCodec.readNulTerminatedString(data);
+        threadId = DataTypesCodec.readUnsignedInt4LE(data);
         scramble = DataTypesCodec.readBytes(8, data);
-        readTerminated(data);
-        serverCapabilities = DataTypesCodec.readShort(data);
+        DataTypesCodec.readNul(data);
+        serverCapabilities = DataTypesCodec.readUnsignedInt2LE(data);
         if (data.isReadable()) {
-            serverCharsetSet = DataTypesCodec.readByte(data);
-            serverStatus = DataTypesCodec.readShort(data);
-            serverCapabilities2 = DataTypesCodec.readShort(data);
+            serverCharsetSet = DataTypesCodec.readUnsignedInt1(data);
+            serverStatus = DataTypesCodec.readUnsignedInt2LE(data);
+            serverCapabilities2 = DataTypesCodec.readUnsignedInt2LE(data);
             int capabilities = (serverCapabilities2 << 16) | serverCapabilities;
-            DataTypesCodec.readByte(data);
+            DataTypesCodec.readUnsignedInt1(data);
             DataTypesCodec.readBytes(10, data);
             if ((capabilities & 0x00008000) != 0) {
                 restOfScramble = DataTypesCodec.readBytes(12, data);
             }
-            readTerminated(data);
+            DataTypesCodec.readNul(data);
             if ((capabilities & 0x00080000) != 0) {
-                authPluginName = DataTypesCodec.readNullTerminatedString(data);
+                authPluginName = DataTypesCodec.readNulTerminatedString(data);
             }
         }
-    }
-    
-    private void readTerminated(final ByteBuf data) {
-        DataTypesCodec.readByte(data);
     }
 }

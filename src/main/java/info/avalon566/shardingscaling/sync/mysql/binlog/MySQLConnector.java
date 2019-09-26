@@ -107,6 +107,7 @@ public final class MySQLConnector {
                             public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
                                 if (null != responseCallback) {
                                     responseCallback.setFailure(cause);
+                                    log.error("protocol resolution error", cause);
                                 }
                             }
                         });
