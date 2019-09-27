@@ -39,8 +39,8 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         in.readByte();
         BinlogEventHeader eventHeader = new BinlogEventHeader();
         eventHeader.fromBytes(in);
-        log.info(Byte.toString(eventHeader.getTypeCode()));
+        log.info(Short.toString(eventHeader.getTypeCode()));
         log.info("readable:{},length:{}", in.readableBytes(), eventHeader.getEventLength() - 19);
-        in.readBytes(eventHeader.getEventLength() - 19);
+//        in.readBytes(eventHeader.getEventLength() - 19);
     }
 }
