@@ -76,7 +76,7 @@ public final class SelectEncryptItemTokenGenerator implements CollectionSQLToken
         }
         for (SelectItemSegment each : selectItemsSegment.get().getSelectItems()) {
             if (isLogicColumn(each, encryptTable.get())) {
-                result.add(createSelectCipherItemToken(each, tableName, encryptRule, isQueryWithCipherColumn));
+                result.add(createSelectCipherItemToken((ColumnSelectItemSegment) each, tableName, encryptRule, isQueryWithCipherColumn));
             }
         }
         return result;
@@ -86,14 +86,11 @@ public final class SelectEncryptItemTokenGenerator implements CollectionSQLToken
         return selectItemSegment instanceof ColumnSelectItemSegment && encryptTable.getLogicColumns().contains(((ColumnSelectItemSegment) selectItemSegment).getName());
     }
     
-    private SelectEncryptItemToken createSelectCipherItemToken(final SelectItemSegment selectItemSegment, 
+    private SelectEncryptItemToken createSelectCipherItemToken(final ColumnSelectItemSegment columnSelectItemSegment, 
                                                                final String tableName, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
-        String columnName = ((ColumnSelectItemSegment) selectItemSegment).getName();
-        Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, columnName);
-        if (!isQueryWithCipherColumn && plainColumn.isPresent()) {
-            return createSelectEncryptItemToken(selectItemSegment, plainColumn.get());
-        }
-        return createSelectEncryptItemToken(selectItemSegment, encryptRule.getCipherColumn(tableName, columnName));
+        Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, columnSelectItemSegment.getName());
+        String columnName = plainColumn.isPresent() && !isQueryWithCipherColumn ? plainColumn.get() : encryptRule.getCipherColumn(tableName, columnSelectItemSegment.getName());
+        return createSelectEncryptItemToken(columnSelectItemSegment, columnName);
     }
     
     private SelectEncryptItemToken createSelectEncryptItemToken(final SelectItemSegment selectItemSegment, final String columnName) {
