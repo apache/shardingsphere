@@ -24,7 +24,10 @@ import lombok.Data;
  */
 @Data
 public class ColumnMetaData {
+
     private String columnName;
+
     private int columnType;
+
     private String columnTypeName;
 }

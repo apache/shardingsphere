@@ -24,9 +24,8 @@ import info.avalon566.shardingscaling.job.schedule.Reporter;
 import info.avalon566.shardingscaling.job.schedule.standalone.InProcessScheduler;
 import info.avalon566.shardingscaling.sync.jdbc.DbMetaDataUtil;
 import info.avalon566.shardingscaling.sync.mysql.MySQLJdbcReader;
+import lombok.extern.slf4j.Slf4j;
 import lombok.var;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +33,8 @@ import java.util.List;
 /**
  * @author avalon566
  */
+@Slf4j
 public class HistoryDataSyncer {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(HistoryDataSyncer.class);
 
     private final SyncConfiguration syncConfiguration;
 
@@ -73,7 +71,7 @@ public class HistoryDataSyncer {
                 counter++;
             }
             if (syncConfigurations.size() == counter) {
-                LOGGER.info("history data sync finish");
+                log.info("history data sync finish");
                 break;
             }
         }
