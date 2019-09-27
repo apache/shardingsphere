@@ -25,6 +25,10 @@
     </parent>
     <artifactId>sharding-proxy-backend</artifactId>
     <name>${project.artifactId}</name>
+
+    <properties>
+        <powermock.version>1.7.4</powermock.version>
+    </properties>
     
     <dependencies>
         <dependency>
@@ -49,5 +53,24 @@
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
+
+
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito2</artifactId>
+            <version>2.0.2</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>mockito-core</artifactId>
+                    <groupId>org.mockito</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>objenesis</artifactId>
+                    <groupId>org.objenesis</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
     </dependencies>
 </project>
