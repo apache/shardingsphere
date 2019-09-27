@@ -20,13 +20,17 @@ package info.avalon566.shardingscaling.sync.mysql.binlog.codec;
 import info.avalon566.shardingscaling.sync.mysql.binlog.event.DeleteRowsEvent;
 import info.avalon566.shardingscaling.sync.mysql.binlog.event.UpdateRowsEvent;
 import info.avalon566.shardingscaling.sync.mysql.binlog.event.WriteRowsEvent;
-import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.BinlogEventHeader;
+import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.EventTypes;
+import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.FormatDescriptionEvent;
+import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.RotateEvent;
+import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.RowsEvent;
+import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.TableMapEvent;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
-
 import java.util.List;
 
 /**
