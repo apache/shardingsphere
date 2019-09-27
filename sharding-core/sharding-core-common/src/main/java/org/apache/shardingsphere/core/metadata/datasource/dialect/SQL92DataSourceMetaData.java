@@ -40,7 +40,7 @@ public final class SQL92DataSourceMetaData implements DataSourceMetaData {
     
     private final String schemaName;
     
-    private final Pattern pattern = Pattern.compile(".*", Pattern.CASE_INSENSITIVE);
+    private final Pattern pattern = Pattern.compile("jdbc:.*", Pattern.CASE_INSENSITIVE);
     
     public SQL92DataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);
