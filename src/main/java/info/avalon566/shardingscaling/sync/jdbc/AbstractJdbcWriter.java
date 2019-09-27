@@ -19,6 +19,7 @@ package info.avalon566.shardingscaling.sync.jdbc;
 
 import info.avalon566.shardingscaling.sync.core.*;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 
 import java.sql.DriverManager;
@@ -30,10 +31,13 @@ import java.util.ArrayList;
 /**
  * @author avalon566
  */
+@Slf4j
 public abstract class AbstractJdbcWriter extends AbstractRunner implements Writer {
 
     private final RdbmsConfiguration rdbmsConfiguration;
+
     private DbMetaDataUtil dbMetaDataUtil;
+
     private final SqlBuilder sqlBuilder;
 
     @Setter
@@ -80,6 +84,7 @@ public abstract class AbstractJdbcWriter extends AbstractRunner implements Write
                 flush(rdbmsConfiguration, buffer);
             }
         } catch (Exception ex) {
+            log.error(null, ex);
             throw new RuntimeException(ex);
         }
     }

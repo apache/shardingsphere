@@ -17,10 +17,6 @@
 
 package info.avalon566.shardingscaling.sync.mysql;
 
-import com.github.shyiko.mysql.binlog.BinaryLogClient;
-import com.github.shyiko.mysql.binlog.event.*;
-import com.github.shyiko.mysql.binlog.event.deserialization.EventDeserializer;
-import com.github.shyiko.mysql.binlog.event.deserialization.json.JsonBinary;
 import info.avalon566.shardingscaling.sync.core.AbstractRunner;
 import info.avalon566.shardingscaling.sync.core.Channel;
 import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
@@ -29,7 +25,12 @@ import info.avalon566.shardingscaling.sync.jdbc.Column;
 import info.avalon566.shardingscaling.sync.jdbc.DataRecord;
 import info.avalon566.shardingscaling.sync.jdbc.DbMetaDataUtil;
 import info.avalon566.shardingscaling.sync.jdbc.JdbcUri;
+import info.avalon566.shardingscaling.sync.mysql.binlog.MySQLConnector;
+import info.avalon566.shardingscaling.sync.mysql.binlog.event.DeleteRowsEvent;
+import info.avalon566.shardingscaling.sync.mysql.binlog.event.UpdateRowsEvent;
+import info.avalon566.shardingscaling.sync.mysql.binlog.event.WriteRowsEvent;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,9 +50,8 @@ import java.util.Map;
  * @author avalon566
  * @author yangyi
  */
+@Slf4j
 public final class MySQLBinlogReader extends AbstractRunner implements Reader {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MySQLBinlogReader.class);
 
     private final Map<Long, String> tableMapCache = new HashMap<>();
 
@@ -74,7 +74,7 @@ public final class MySQLBinlogReader extends AbstractRunner implements Reader {
         start();
         read(channel);
     }
-    
+
     /**
      * mark binlog position.
      */
@@ -99,70 +99,66 @@ public final class MySQLBinlogReader extends AbstractRunner implements Reader {
     @Override
     public void read(final Channel channel) {
         final var uri = new JdbcUri(rdbmsConfiguration.getJdbcUrl());
-        BinaryLogClient client = new BinaryLogClient(uri.getHostname(), uri.getPort(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword());
-        client.setBinlogFilename(binlogPosition.getFilename());
-        client.setBinlogPosition(binlogPosition.getPosition());
-        EventDeserializer eventDeserializer = new EventDeserializer();
-        client.setEventDeserializer(eventDeserializer);
-        client.registerEventListener(new BinaryLogClient.EventListener() {
-            @Override
-            public void onEvent(final Event event) {
-                if (null != event.getData()) {
-                    if (event.getData() instanceof WriteRowsEventData) {
-                        var wred = (WriteRowsEventData) event.getData();
-                        for (Serializable[] row : wred.getRows()) {
-                            if (filter(uri.getDatabase(), tableMapCache.get(wred.getTableId()))) {
-                                return;
-                            }
-                            var record = new DataRecord(row.length);
-                            record.setFullTableName(tableMapCache.get(wred.getTableId()));
-                            record.setType("insert");
-                            for (int i = 0; i < row.length; i++) {
-                                record.addColumn(new Column(getColumnValue(record.getTableName(), i, row[i]), true));
-                            }
-                            channel.pushRecord(record);
-                        }
-                    } else if (event.getData() instanceof UpdateRowsEventData) {
-                        var ured = (UpdateRowsEventData) event.getData();
-                        for (Map.Entry<Serializable[], Serializable[]> row : ured.getRows()) {
-                            if (filter(uri.getDatabase(), tableMapCache.get(ured.getTableId()))) {
-                                return;
-                            }
-                            var record = new DataRecord(row.getValue().length);
-                            record.setFullTableName(tableMapCache.get(ured.getTableId()));
-                            record.setType("update");
-                            for (int i = 0; i < row.getValue().length; i++) {
-                                var oldValue = getColumnValue(record.getTableName(), i, row.getKey()[i]);
-                                var newValue = getColumnValue(record.getTableName(), i, row.getValue()[i]);
-                                record.addColumn(new Column(newValue, newValue.equals(oldValue)));
-                            }
-                            channel.pushRecord(record);
-                        }
-                    } else if (event.getData() instanceof DeleteRowsEventData) {
-                        var dred = (DeleteRowsEventData) event.getData();
-                        for (Serializable[] row : dred.getRows()) {
-                            if (filter(uri.getDatabase(), tableMapCache.get(dred.getTableId()))) {
-                                return;
-                            }
-                            var record = new DataRecord(row.length);
-                            record.setFullTableName(tableMapCache.get(dred.getTableId()));
-                            record.setType("delete");
-                            for (int i = 0; i < row.length; i++) {
-                                record.addColumn(new Column(getColumnValue(record.getTableName(), i, row[i]), true));
-                            }
-                            channel.pushRecord(record);
-                        }
-                    } else if (event.getData() instanceof TableMapEventData) {
-                        var tmed = (TableMapEventData) event.getData();
-                        tableMapCache.put(tmed.getTableId(), String.format("%s.%s", tmed.getDatabase(), tmed.getTable()));
+        var client = new MySQLConnector(123456, uri.getHostname(), uri.getPort(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword());
+        client.connect();
+        client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
+        while (true) {
+            var event = client.poll();
+            if(null == event) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    // ignore
+                }
+                continue;
+            }
+            if (event instanceof WriteRowsEvent) {
+                var wred = (WriteRowsEvent) event;
+                for (Serializable[] row : wred.getAfterColumns()) {
+                    if (filter(uri.getDatabase(), wred.getTableName())) {
+                        return;
                     }
+                    var record = new DataRecord(row.length);
+                    record.setFullTableName(wred.getTableName());
+                    record.setType("insert");
+                    for (int i = 0; i < row.length; i++) {
+                        record.addColumn(new Column(getColumnValue(record.getTableName(), i, row[i]), true));
+                    }
+                    channel.pushRecord(record);
+                }
+            } else if (event instanceof UpdateRowsEvent) {
+                var ured = (UpdateRowsEvent) event;
+                for (int i = 0; i < ured.getBeforeColumns().size(); i++) {
+                    if (filter(uri.getDatabase(), ((UpdateRowsEvent) event).getTableName())) {
+                        return;
+                    }
+                    var beforeValues = ured.getBeforeColumns().get(i);
+                    var afterValues = ured.getAfterColumns().get(i);
+                    var record = new DataRecord(beforeValues.length);
+                    record.setFullTableName(((UpdateRowsEvent) event).getTableName());
+                    record.setType("update");
+                    for (int j = 0; j < beforeValues.length; j++) {
+                        var oldValue = getColumnValue(record.getTableName(), j, beforeValues[j]);
+                        var newValue = getColumnValue(record.getTableName(), j, afterValues[j]);
+                        record.addColumn(new Column(newValue, newValue.equals(oldValue)));
+                    }
+                    channel.pushRecord(record);
+                }
+            } else if (event instanceof DeleteRowsEvent) {
+                var dred = (DeleteRowsEvent) event;
+                for (Serializable[] row : dred.getBeforeColumns()) {
+                    if (filter(uri.getDatabase(), dred.getTableName())) {
+                        return;
+                    }
+                    var record = new DataRecord(row.length);
+                    record.setFullTableName(dred.getTableName());
+                    record.setType("delete");
+                    for (int i = 0; i < row.length; i++) {
+                        record.addColumn(new Column(getColumnValue(record.getTableName(), i, row[i]), true));
+                    }
+                    channel.pushRecord(record);
                 }
             }
-        });
-        try {
-            client.connect();
-        } catch (IOException ex) {
-            // retry
         }
     }
 
@@ -176,16 +172,7 @@ public final class MySQLBinlogReader extends AbstractRunner implements Reader {
     }
 
     private Object getColumnValue(final String tableName, final int index, final Serializable data) {
-        var columns = dbMetaDataUtil.getColumNames(tableName);
-        try {
-            var type = columns.get(index).getColumnTypeName();
-            if ("JSON".equals(type)) {
-                return JsonBinary.parseAsString((byte[]) data);
-            } else {
-                return data;
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        //var columns = dbMetaDataUtil.getColumNames(tableName);
+        return data;
     }
 }

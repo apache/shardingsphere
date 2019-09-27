@@ -32,6 +32,16 @@ import java.util.BitSet;
 public final class DataTypesCodec {
 
     /**
+     * Skip length byte in {@code ByteBuf}.
+     *
+     * @param length to skip
+     * @param in byte buffer
+     */
+    public static void skipBytes(final int length, final ByteBuf in) {
+        in.skipBytes(length);
+    }
+
+    /**
      * Read nul from {@code ByteBuf}.
      *
      * @param in byte buffer

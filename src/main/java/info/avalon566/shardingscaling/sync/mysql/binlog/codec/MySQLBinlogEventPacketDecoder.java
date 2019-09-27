@@ -69,7 +69,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
                 out.add(deleteRowsEvent);
                 break;
             default:
-                in.readBytes(in.readableBytes());
+                DataTypesCodec.skipBytes(in.readableBytes(), in);
         }
         if (in.isReadable()) {
             throw new UnsupportedOperationException();
