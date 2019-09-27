@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 public class MemoryChannel implements Channel {
 
     public static final int PUSH_TIMEOUT = 1000;
+
     private final BlockingQueue<Record> queue = new ArrayBlockingQueue<>(1000);
 
     @Override
