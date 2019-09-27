@@ -27,7 +27,7 @@
     <name>${project.artifactId}</name>
 
     <properties>
-        <powermock.version>1.7.4</powermock.version>
+        <powermock.version>2.0.2</powermock.version>
     </properties>
     
     <dependencies>
@@ -58,7 +58,7 @@
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-mockito2</artifactId>
-            <version>2.0.2</version>
+            <version>${powermock.version}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
