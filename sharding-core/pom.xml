@@ -31,7 +31,7 @@
         <module>sharding-core-api</module>
         <module>sharding-core-common</module>
         <module>sharding-core-parse</module>
-        <module>sharding-core-optimize</module>
+        <module>sharding-core-preprocessor</module>
         <module>sharding-core-route</module>
         <module>sharding-core-rewrite</module>
         <module>sharding-core-execute</module>
