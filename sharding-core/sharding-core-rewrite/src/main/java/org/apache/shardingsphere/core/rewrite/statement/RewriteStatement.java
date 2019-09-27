@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.rewrite.statement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.encrypt.EncryptConditions;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 
 /**
@@ -35,6 +34,4 @@ public class RewriteStatement {
     private final SQLStatementContext sqlStatementContext;
     
     private final ShardingConditions shardingConditions;
-    
-    private final EncryptConditions encryptConditions;
 }

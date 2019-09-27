@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.encrypt.EncryptConditions;
 import org.apache.shardingsphere.core.rewrite.statement.constant.EncryptDerivedColumnType;
 import org.apache.shardingsphere.core.rewrite.statement.constant.ShardingDerivedColumnType;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
@@ -43,8 +42,8 @@ public final class InsertRewriteStatement extends RewriteStatement {
     private final GeneratedKey generatedKey;
     
     public InsertRewriteStatement(final InsertSQLStatementContext insertSQLStatementContext, 
-                                  final ShardingConditions shardingConditions, final EncryptConditions encryptConditions, final GeneratedKey generatedKey, final EncryptRule encryptRule) {
-        super(insertSQLStatementContext, shardingConditions, encryptConditions);
+                                  final ShardingConditions shardingConditions, final GeneratedKey generatedKey, final EncryptRule encryptRule) {
+        super(insertSQLStatementContext, shardingConditions);
         this.generatedKey = generatedKey;
         processGeneratedKey(insertSQLStatementContext);
         processEncrypt(insertSQLStatementContext, encryptRule);

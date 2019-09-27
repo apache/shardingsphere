@@ -22,8 +22,6 @@ import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilderFactory;
 import org.apache.shardingsphere.core.rewrite.builder.sql.SQLBuilder;
-import org.apache.shardingsphere.core.rewrite.encrypt.EncryptCondition;
-import org.apache.shardingsphere.core.rewrite.encrypt.EncryptConditions;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatementFactory;
 import org.apache.shardingsphere.core.rewrite.token.BaseTokenGenerateEngine;
@@ -66,7 +64,7 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final ShardingRule shardingRule, final TableMetas tableMetas, 
                             final SQLRouteResult sqlRouteResult, final String sql, final List<Object> parameters, final boolean isSingleRoute, final boolean isQueryWithCipherColumn) {
         baseRule = shardingRule;
-        rewriteStatement = RewriteStatementFactory.newInstance(shardingRule, tableMetas, sqlRouteResult);
+        rewriteStatement = RewriteStatementFactory.newInstance(shardingRule, sqlRouteResult);
         parameterBuilder = ParameterBuilderFactory.newInstance(rewriteStatement, parameters, sqlRouteResult);
         sqlTokens = createSQLTokens(tableMetas, isSingleRoute, isQueryWithCipherColumn);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
@@ -75,7 +73,7 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final EncryptRule encryptRule, final TableMetas tableMetas,
                             final SQLStatementContext encryptStatement, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
         baseRule = encryptRule;
-        rewriteStatement = RewriteStatementFactory.newInstance(encryptRule, tableMetas, encryptStatement);
+        rewriteStatement = RewriteStatementFactory.newInstance(encryptRule, encryptStatement);
         parameterBuilder = ParameterBuilderFactory.newInstance(rewriteStatement, parameters);
         sqlTokens = createSQLTokens(tableMetas, false, isQueryWithCipherColumn);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
@@ -83,8 +81,7 @@ public final class SQLRewriteEngine {
     
     public SQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final SQLStatementContext sqlStatementContext, final String sql) {
         baseRule = masterSlaveRule;
-        rewriteStatement = new RewriteStatement(
-                sqlStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()), new EncryptConditions(Collections.<EncryptCondition>emptyList()));
+        rewriteStatement = new RewriteStatement(sqlStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         parameterBuilder = ParameterBuilderFactory.newInstance(rewriteStatement, Collections.emptyList());
         sqlTokens = createSQLTokens(null, false, false);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
