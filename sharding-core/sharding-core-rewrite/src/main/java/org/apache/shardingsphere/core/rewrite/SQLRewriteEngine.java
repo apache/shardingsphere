@@ -18,12 +18,9 @@
 package org.apache.shardingsphere.core.rewrite;
 
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.segment.insert.InsertValueContext;
-import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.builder.parameter.group.GroupedParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.builder.parameter.standard.StandardParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilderFactory;
 import org.apache.shardingsphere.core.rewrite.builder.sql.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptCondition;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptConditions;
@@ -70,7 +67,7 @@ public final class SQLRewriteEngine {
                             final SQLRouteResult sqlRouteResult, final String sql, final List<Object> parameters, final boolean isSingleRoute, final boolean isQueryWithCipherColumn) {
         baseRule = shardingRule;
         rewriteStatement = RewriteStatementFactory.newInstance(shardingRule, tableMetas, sqlRouteResult);
-        parameterBuilder = createParameterBuilder(parameters, sqlRouteResult);
+        parameterBuilder = ParameterBuilderFactory.newInstance(rewriteStatement, parameters, sqlRouteResult);
         sqlTokens = createSQLTokens(isSingleRoute, isQueryWithCipherColumn);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
     }
@@ -79,7 +76,7 @@ public final class SQLRewriteEngine {
                             final SQLStatementContext encryptStatement, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
         baseRule = encryptRule;
         rewriteStatement = RewriteStatementFactory.newInstance(encryptRule, tableMetas, encryptStatement);
-        parameterBuilder = createParameterBuilder(parameters);
+        parameterBuilder = ParameterBuilderFactory.newInstance(rewriteStatement, parameters);
         sqlTokens = createSQLTokens(false, isQueryWithCipherColumn);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
     }
@@ -88,27 +85,9 @@ public final class SQLRewriteEngine {
         baseRule = masterSlaveRule;
         rewriteStatement = new RewriteStatement(
                 sqlStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()), new EncryptConditions(Collections.<EncryptCondition>emptyList()));
-        parameterBuilder = createParameterBuilder(Collections.emptyList());
+        parameterBuilder = ParameterBuilderFactory.newInstance(rewriteStatement, Collections.emptyList());
         sqlTokens = createSQLTokens(false, false);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
-    }
-    
-    private ParameterBuilder createParameterBuilder(final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        return rewriteStatement.getSqlStatementContext() instanceof InsertSQLStatementContext
-                ? new GroupedParameterBuilder(parameters, getGroupedParameters(), rewriteStatement.getShardingConditions()) : new StandardParameterBuilder(parameters, sqlRouteResult);
-    }
-    
-    private ParameterBuilder createParameterBuilder(final List<Object> parameters) {
-        return rewriteStatement.getSqlStatementContext() instanceof InsertSQLStatementContext
-                ? new GroupedParameterBuilder(parameters, getGroupedParameters(), null) : new StandardParameterBuilder(parameters);
-    }
-    
-    private List<List<Object>> getGroupedParameters() {
-        List<List<Object>> result = new LinkedList<>();
-        for (InsertValueContext each : ((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext()).getInsertValueContexts()) {
-            result.add(each.getParameters());
-        }
-        return result;
     }
     
     private List<SQLToken> createSQLTokens(final boolean isSingleRoute, final boolean isQueryWithCipherColumn) {

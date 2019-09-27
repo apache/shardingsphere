@@ -47,7 +47,7 @@ public final class RewriteStatementFactory {
      * 
      * @param shardingRule sharding rule
      * @param tableMetas table metas
-     * @param sqlRouteResult sql route result
+     * @param sqlRouteResult SQL route result
      * @return rewrite statement
      */
     public static RewriteStatement newInstance(final ShardingRule shardingRule, final TableMetas tableMetas, final SQLRouteResult sqlRouteResult) {
