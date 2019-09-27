@@ -57,7 +57,7 @@ public final class StandardParameterBuilder implements ParameterBuilder {
     
     private void setReplacedIndexAndParameters(final SQLRouteResult sqlRouteResult) {
         if (isNeedRewritePagination(sqlRouteResult)) {
-            PaginationContext pagination = ((SelectSQLStatementContext) sqlRouteResult.getShardingStatementContext()).getPaginationContext();
+            PaginationContext pagination = ((SelectSQLStatementContext) sqlRouteResult.getSqlStatementContext()).getPaginationContext();
             Optional<Integer> offsetParameterIndex = pagination.getOffsetParameterIndex();
             if (offsetParameterIndex.isPresent()) {
                 rewriteOffset(pagination, offsetParameterIndex.get());
@@ -70,8 +70,8 @@ public final class StandardParameterBuilder implements ParameterBuilder {
     }
     
     private boolean isNeedRewritePagination(final SQLRouteResult sqlRouteResult) {
-        return sqlRouteResult.getShardingStatementContext() instanceof SelectSQLStatementContext
-                && ((SelectSQLStatementContext) sqlRouteResult.getShardingStatementContext()).getPaginationContext().isHasPagination() && !sqlRouteResult.getRoutingResult().isSingleRouting();
+        return sqlRouteResult.getSqlStatementContext() instanceof SelectSQLStatementContext
+                && ((SelectSQLStatementContext) sqlRouteResult.getSqlStatementContext()).getPaginationContext().isHasPagination() && !sqlRouteResult.getRoutingResult().isSingleRouting();
     }
     
     private void rewriteOffset(final PaginationContext pagination, final int offsetParameterIndex) {
@@ -79,7 +79,7 @@ public final class StandardParameterBuilder implements ParameterBuilder {
     }
     
     private void rewriteRowCount(final PaginationContext pagination, final int rowCountParameterIndex, final SQLRouteResult sqlRouteResult) {
-        replacedIndexAndParameters.put(rowCountParameterIndex, pagination.getRevisedRowCount((SelectSQLStatementContext) sqlRouteResult.getShardingStatementContext()));
+        replacedIndexAndParameters.put(rowCountParameterIndex, pagination.getRevisedRowCount((SelectSQLStatementContext) sqlRouteResult.getSqlStatementContext()));
     }
     
     @Override

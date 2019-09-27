@@ -15,37 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.segment.select.item.impl;
+package org.apache.shardingsphere.core.optimize.segment.select.projection;
 
 import com.google.common.base.Optional;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
 
 /**
- * Expression select item.
+ * Projection interface.
  *
- * @author sunbufu
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-@ToString
-public final class ExpressionSelectItem implements SelectItem {
+public interface Projection {
+    
+    /**
+     * Get expression.
+     * 
+     * @return expression
+     */
+    String getExpression();
+    
+    /**
+     * Get alias.
+     * 
+     * @return alias
+     */
+    Optional<String> getAlias();
 
-    private final String expression;
-
-    private final String alias;
-
-    @Override
-    public Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
-    }
-
-    @Override
-    public String getColumnLabel() {
-        return getAlias().or(getExpression());
-    }
+    /**
+     * Get columnLabel.
+     *
+     * @return columnLabel
+     */
+    String getColumnLabel();
 }

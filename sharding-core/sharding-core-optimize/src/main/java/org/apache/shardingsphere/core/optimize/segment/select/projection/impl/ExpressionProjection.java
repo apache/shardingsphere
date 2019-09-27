@@ -15,37 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token.pojo;
+package org.apache.shardingsphere.core.optimize.segment.select.projection.impl;
 
+import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-
-import java.util.Collection;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.Projection;
 
 /**
- * Select items token.
+ * Expression projection.
  *
- * @author zhangliang
- * @author panjuan
+ * @author sunbufu
  */
+@RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(callSuper = true)
-public final class SelectItemsToken extends SQLToken implements Attachable {
-    
-    private final Collection<String> items;
-    
-    public SelectItemsToken(final int startIndex, final Collection<String> items) {
-        super(startIndex);
-        this.items = items;
-    }
-    
+@EqualsAndHashCode
+@ToString
+public final class ExpressionProjection implements Projection {
+
+    private final String expression;
+
+    private final String alias;
+
     @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder();
-        for (String item : items) {
-            result.append(", ");
-            result.append(item);
-        }
-        return result.toString();
+    public Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
+    }
+
+    @Override
+    public String getColumnLabel() {
+        return getAlias().or(getExpression());
     }
 }

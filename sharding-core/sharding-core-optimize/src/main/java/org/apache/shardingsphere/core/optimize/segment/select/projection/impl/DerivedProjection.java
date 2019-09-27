@@ -15,58 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.segment.select.item.impl;
+package org.apache.shardingsphere.core.optimize.segment.select.projection.impl;
 
 import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
-import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
-import org.apache.shardingsphere.core.parse.util.SQLUtil;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.Projection;
 
 /**
- * Aggregation select item.
+ * Derived projection.
  *
  * @author zhangliang
+ * @author sunbufu
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public class AggregationSelectItem implements SelectItem {
-    
-    private final AggregationType type;
-    
-    private final String innerExpression;
-    
+public final class DerivedProjection implements Projection {
+
+    private final String expression;
+
     private final String alias;
-    
-    private final List<AggregationSelectItem> derivedAggregationItems = new ArrayList<>(2);
-    
-    @Setter
-    private int index = -1;
-    
-    @Override
-    public final String getExpression() {
-        return SQLUtil.getExactlyValue(type.name() + innerExpression);
-    }
 
     @Override
-    public final Optional<String> getAlias() {
+    public Optional<String> getAlias() {
         return Optional.fromNullable(alias);
     }
 
-    /**
-     * Get column label.
-     *
-     * @return column label
-     */
     @Override
     public String getColumnLabel() {
         return getAlias().or(getExpression());

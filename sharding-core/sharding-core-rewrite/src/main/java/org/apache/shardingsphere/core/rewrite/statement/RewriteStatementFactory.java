@@ -51,14 +51,14 @@ public final class RewriteStatementFactory {
      * @return rewrite statement
      */
     public static RewriteStatement newInstance(final ShardingRule shardingRule, final TableMetas tableMetas, final SQLRouteResult sqlRouteResult) {
-        EncryptConditions encryptConditions = sqlRouteResult.getEncryptStatementContext().getSqlStatement() instanceof DMLStatement
-                ? createEncryptConditions(shardingRule.getEncryptRule(), tableMetas, (DMLStatement) sqlRouteResult.getEncryptStatementContext().getSqlStatement())
+        EncryptConditions encryptConditions = sqlRouteResult.getSqlStatementContext().getSqlStatement() instanceof DMLStatement
+                ? createEncryptConditions(shardingRule.getEncryptRule(), tableMetas, (DMLStatement) sqlRouteResult.getSqlStatementContext().getSqlStatement())
                 : new EncryptConditions(Collections.<EncryptCondition>emptyList());
-        return sqlRouteResult.getShardingStatementContext() instanceof InsertSQLStatementContext
+        return sqlRouteResult.getSqlStatementContext() instanceof InsertSQLStatementContext
                 ? new InsertRewriteStatement(
-                        (InsertSQLStatementContext) sqlRouteResult.getShardingStatementContext(), sqlRouteResult.getShardingConditions(), encryptConditions, 
+                        (InsertSQLStatementContext) sqlRouteResult.getSqlStatementContext(), sqlRouteResult.getShardingConditions(), encryptConditions, 
                         sqlRouteResult.getGeneratedKey().orNull(), shardingRule.getEncryptRule())
-                : new RewriteStatement(sqlRouteResult.getShardingStatementContext(), sqlRouteResult.getShardingConditions(), encryptConditions);
+                : new RewriteStatement(sqlRouteResult.getSqlStatementContext(), sqlRouteResult.getShardingConditions(), encryptConditions);
     }
     
     /**

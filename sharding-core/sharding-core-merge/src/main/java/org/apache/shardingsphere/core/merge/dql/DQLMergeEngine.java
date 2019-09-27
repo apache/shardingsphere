@@ -34,7 +34,7 @@ import org.apache.shardingsphere.core.merge.dql.pagination.LimitDecoratorMergedR
 import org.apache.shardingsphere.core.merge.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.util.SQLUtil;
@@ -68,7 +68,7 @@ public final class DQLMergeEngine implements MergeEngine {
     public DQLMergeEngine(final DatabaseType databaseType, final TableMetas tableMetas, final SQLRouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
         this.databaseType = databaseType;
         this.routeResult = routeResult;
-        this.selectSQLStatementContext = (SelectSQLStatementContext) routeResult.getShardingStatementContext();
+        this.selectSQLStatementContext = (SelectSQLStatementContext) routeResult.getSqlStatementContext();
         this.queryResults = getRealQueryResults(tableMetas, queryResults);
         columnLabelIndexMap = getColumnLabelIndexMap(this.queryResults.get(0));
     }
@@ -78,9 +78,9 @@ public final class DQLMergeEngine implements MergeEngine {
         if (1 == result.size()) {
             return result;
         }
-        List<AggregationDistinctSelectItem> aggregationDistinctSelectItems = selectSQLStatementContext.getSelectItemsContext().getAggregationDistinctSelectItems();
-        if (!aggregationDistinctSelectItems.isEmpty()) {
-            result = getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, aggregationDistinctSelectItems));
+        List<AggregationDistinctProjection> aggregationDistinctProjections = selectSQLStatementContext.getProjectionsContext().getAggregationDistinctProjections();
+        if (!aggregationDistinctProjections.isEmpty()) {
+            result = getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, aggregationDistinctProjections));
         }
         if (isDistinctRowSelectItems()) {
             result = getDividedQueryResults(new DistinctQueryResult(queryResults, selectSQLStatementContext.getColumnLabels(tableMetas)));
@@ -99,7 +99,7 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private boolean isDistinctRowSelectItems() {
-        return selectSQLStatementContext.getSelectItemsContext().isDistinctRow() && selectSQLStatementContext.getGroupByContext().getItems().isEmpty();
+        return selectSQLStatementContext.getProjectionsContext().isDistinctRow() && selectSQLStatementContext.getGroupByContext().getItems().isEmpty();
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
@@ -115,12 +115,12 @@ public final class DQLMergeEngine implements MergeEngine {
         if (1 == queryResults.size()) {
             return new IteratorStreamMergedResult(queryResults);
         }
-        selectSQLStatementContext.setIndexForItems(columnLabelIndexMap);
+        selectSQLStatementContext.setIndexes(columnLabelIndexMap);
         return decorate(build());
     }
     
     private MergedResult build() throws SQLException {
-        if (!selectSQLStatementContext.getGroupByContext().getItems().isEmpty() || !selectSQLStatementContext.getSelectItemsContext().getAggregationSelectItems().isEmpty()) {
+        if (!selectSQLStatementContext.getGroupByContext().getItems().isEmpty() || !selectSQLStatementContext.getProjectionsContext().getAggregationProjections().isEmpty()) {
             return getGroupByMergedResult();
         }
         if (!selectSQLStatementContext.getOrderByContext().getItems().isEmpty()) {
@@ -136,7 +136,7 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private MergedResult decorate(final MergedResult mergedResult) throws SQLException {
-        PaginationContext paginationContext = ((SelectSQLStatementContext) routeResult.getShardingStatementContext()).getPaginationContext();
+        PaginationContext paginationContext = ((SelectSQLStatementContext) routeResult.getSqlStatementContext()).getPaginationContext();
         if (!paginationContext.isHasPagination() || 1 == queryResults.size()) {
             return mergedResult;
         }

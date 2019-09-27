@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.AggregationDistinctProjection;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,19 +42,19 @@ public final class AggregationDistinctQueryMetaDataTest {
     
     @Before
     public void setUp() throws SQLException {
-        Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems = new LinkedList<>();
-        AggregationDistinctSelectItem distinctCountSelectItem = new AggregationDistinctSelectItem(0, 0, AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
-        AggregationDistinctSelectItem distinctAvgSelectItem = new AggregationDistinctSelectItem(0, 0, AggregationType.AVG, "(DISTINCT order_id)", "a", "order_id");
-        distinctAvgSelectItem.getDerivedAggregationItems().add(new AggregationSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", "AVG_DERIVED_COUNT_0"));
-        distinctAvgSelectItem.getDerivedAggregationItems().add(new AggregationSelectItem(AggregationType.SUM, "(DISTINCT order_id)", "AVG_DERIVED_SUM_0"));
-        aggregationDistinctSelectItems.add(distinctCountSelectItem);
-        aggregationDistinctSelectItems.add(distinctAvgSelectItem);
+        Collection<AggregationDistinctProjection> aggregationDistinctProjections = new LinkedList<>();
+        AggregationDistinctProjection distinctCountProjection = new AggregationDistinctProjection(0, 0, AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
+        AggregationDistinctProjection distinctAvgProjection = new AggregationDistinctProjection(0, 0, AggregationType.AVG, "(DISTINCT order_id)", "a", "order_id");
+        distinctAvgProjection.getDerivedAggregationProjections().add(new AggregationProjection(AggregationType.COUNT, "(DISTINCT order_id)", "AVG_DERIVED_COUNT_0"));
+        distinctAvgProjection.getDerivedAggregationProjections().add(new AggregationProjection(AggregationType.SUM, "(DISTINCT order_id)", "AVG_DERIVED_SUM_0"));
+        aggregationDistinctProjections.add(distinctCountProjection);
+        aggregationDistinctProjections.add(distinctAvgProjection);
         Multimap<String, Integer> columnLabelAndIndexMap = HashMultimap.create();
         columnLabelAndIndexMap.put("c", 1);
         columnLabelAndIndexMap.put("a", 2);
         columnLabelAndIndexMap.put("AVG_DERIVED_COUNT_0", 3);
         columnLabelAndIndexMap.put("AVG_DERIVED_SUM_0", 4);
-        distinctQueryMetaData = new AggregationDistinctQueryMetaData(aggregationDistinctSelectItems, getQueryResultMetaData());
+        distinctQueryMetaData = new AggregationDistinctQueryMetaData(aggregationDistinctProjections, getQueryResultMetaData());
     }
     
     private QueryResultMetaData getQueryResultMetaData() throws SQLException {

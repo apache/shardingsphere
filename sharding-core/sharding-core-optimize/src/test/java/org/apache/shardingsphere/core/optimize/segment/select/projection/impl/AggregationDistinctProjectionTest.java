@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.segment.select.item.impl;
+package org.apache.shardingsphere.core.optimize.segment.select.projection.impl;
 
-import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class AggregationDistinctSelectItemTest {
+public final class AggregationDistinctProjectionTest {
     
-    private final AggregationDistinctSelectItem aggregationDistinctSelectItem = new AggregationDistinctSelectItem(0, 0, AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
+    private final AggregationDistinctProjection aggregationDistinctProjection = new AggregationDistinctProjection(0, 0, AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
     
     @Test
     public void assertGetDistinctColumnLabel() {
-        assertThat(aggregationDistinctSelectItem.getDistinctColumnLabel(), is("c"));
+        assertThat(aggregationDistinctProjection.getDistinctColumnLabel(), is("c"));
     }
     
     @Test
     public void assertGetDistinctColumnName() {
-        assertThat(aggregationDistinctSelectItem.getDistinctInnerExpression(), is("order_id"));
+        assertThat(aggregationDistinctProjection.getDistinctInnerExpression(), is("order_id"));
     }
 }

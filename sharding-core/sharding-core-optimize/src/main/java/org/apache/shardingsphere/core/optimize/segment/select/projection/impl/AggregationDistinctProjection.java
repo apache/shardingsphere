@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.segment.select.item.impl;
+package org.apache.shardingsphere.core.optimize.segment.select.projection.impl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 
 /**
- * Aggregation distinct select item.
+ * Aggregation distinct projection.
  *
  * @author panjuan
  */
 @Getter
-public final class AggregationDistinctSelectItem extends AggregationSelectItem {
+public final class AggregationDistinctProjection extends AggregationProjection {
     
     private final int startIndex;
     
@@ -34,7 +34,7 @@ public final class AggregationDistinctSelectItem extends AggregationSelectItem {
     
     private final String distinctInnerExpression;
     
-    public AggregationDistinctSelectItem(final int startIndex, final int stopIndex, 
+    public AggregationDistinctProjection(final int startIndex, final int stopIndex,
                                          final AggregationType type, final String innerExpression, final String alias, final String distinctInnerExpression) {
         super(type, innerExpression, alias);
         this.startIndex = startIndex;

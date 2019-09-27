@@ -15,50 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimize.segment.select.item.impl;
+package org.apache.shardingsphere.core.optimize.segment.select.projection.impl;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItem;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.Projection;
 
 /**
- * Shorthand select item.
+ * Common projection.
  *
  * @author zhangliang
+ * @author sunbufu
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class ShorthandSelectItem implements SelectItem {
-    
+public final class ColumnProjection implements Projection {
+
     private final String owner;
-    
+
+    private final String name;
+
+    private final String alias;
+
     @Override
     public String getExpression() {
-        return Strings.isNullOrEmpty(owner) ? "*" : owner + ".*";
-    }
-    
-    @Override
-    public Optional<String> getAlias() {
-        return Optional.absent();
+        return null == owner ? name : owner + "." + name;
     }
 
     @Override
     public String getColumnLabel() {
-        return getAlias().or("*");
+        return getAlias().or(name);
     }
 
-    /**
-     * Get owner.
-     * 
-     * @return owner
-     */
-    public Optional<String> getOwner() {
-        return Optional.fromNullable(owner);
+    @Override
+    public Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
     }
 }

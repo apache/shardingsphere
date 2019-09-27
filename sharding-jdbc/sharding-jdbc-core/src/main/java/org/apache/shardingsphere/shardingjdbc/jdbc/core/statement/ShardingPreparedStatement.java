@@ -128,7 +128,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             resultSets.add(resultSet);
             queryResults.add(new StreamQueryResult(resultSet, connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getProps()));
         }
-        if (sqlRouteResult.getShardingStatementContext() instanceof SelectSQLStatementContext || sqlRouteResult.getShardingStatementContext().getSqlStatement() instanceof DALStatement) {
+        if (sqlRouteResult.getSqlStatementContext() instanceof SelectSQLStatementContext || sqlRouteResult.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getRuntimeContext().getDatabaseType(),
                     connection.getRuntimeContext().getRule(), sqlRouteResult, connection.getRuntimeContext().getMetaData().getTables(), queryResults);
             currentResultSet = getCurrentResultSet(resultSets, mergeEngine);
@@ -182,7 +182,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private Optional<GeneratedKey> getGeneratedKey() {
-        return null != sqlRouteResult && sqlRouteResult.getShardingStatementContext().getSqlStatement() instanceof InsertStatement
+        return null != sqlRouteResult && sqlRouteResult.getSqlStatementContext().getSqlStatement() instanceof InsertStatement
                 ? sqlRouteResult.getGeneratedKey() : Optional.<GeneratedKey>absent();
     }
     
@@ -274,7 +274,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     @Override
     public boolean isAccumulate() {
-        return !connection.getRuntimeContext().getRule().isAllBroadcastTables(sqlRouteResult.getShardingStatementContext().getTablesContext().getTableNames());
+        return !connection.getRuntimeContext().getRule().isAllBroadcastTables(sqlRouteResult.getSqlStatementContext().getTablesContext().getTableNames());
     }
     
     @Override

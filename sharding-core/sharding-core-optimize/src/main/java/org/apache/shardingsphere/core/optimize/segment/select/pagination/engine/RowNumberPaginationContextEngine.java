@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.optimize.segment.select.pagination.engine;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItemsContext;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -54,12 +54,12 @@ public final class RowNumberPaginationContextEngine {
      * Create pagination context.
      * 
      * @param andPredicates and predicates
-     * @param selectItems select items
+     * @param projectionsContext projections context
      * @param parameters SQL parameters
      * @return pagination context
      */
-    public PaginationContext createPaginationContext(final Collection<AndPredicate> andPredicates, final SelectItemsContext selectItems, final List<Object> parameters) {
-        Optional<String> rowNumberAlias = isRowNumberAlias(selectItems);
+    public PaginationContext createPaginationContext(final Collection<AndPredicate> andPredicates, final ProjectionsContext projectionsContext, final List<Object> parameters) {
+        Optional<String> rowNumberAlias = isRowNumberAlias(projectionsContext);
         if (!rowNumberAlias.isPresent()) {
             return new PaginationContext(null, null, parameters);
         }
@@ -79,9 +79,9 @@ public final class RowNumberPaginationContextEngine {
         return result;
     }
     
-    private Optional<String> isRowNumberAlias(final SelectItemsContext selectItems) {
+    private Optional<String> isRowNumberAlias(final ProjectionsContext projectionsContext) {
         for (String each : ROW_NUMBER_IDENTIFIERS) {
-            Optional<String> result = selectItems.findAlias(each);
+            Optional<String> result = projectionsContext.findAlias(each);
             if (result.isPresent()) {
                 return result;
             }

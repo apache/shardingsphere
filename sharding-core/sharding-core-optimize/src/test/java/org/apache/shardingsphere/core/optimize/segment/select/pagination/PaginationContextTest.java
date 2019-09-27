@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimize.segment.select.pagination;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
-import org.apache.shardingsphere.core.optimize.segment.select.item.SelectItemsContext;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
@@ -127,7 +127,7 @@ public final class PaginationContextTest {
     @Test
     public void getRevisedRowCount() {
         SelectSQLStatementContext selectSQLStatementContext = mock(SelectSQLStatementContext.class);
-        when(selectSQLStatementContext.getSelectItemsContext()).thenReturn(mock(SelectItemsContext.class));
+        when(selectSQLStatementContext.getProjectionsContext()).thenReturn(mock(ProjectionsContext.class));
         when(selectSQLStatementContext.getGroupByContext()).thenReturn(new GroupByContext(Collections.<OrderByItem>emptyList(), 0));
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectSQLStatementContext), is(50L));
     }
@@ -135,7 +135,7 @@ public final class PaginationContextTest {
     @Test
     public void getRevisedRowCountWithMax() {
         SelectSQLStatementContext selectSQLStatementContext = mock(SelectSQLStatementContext.class);
-        when(selectSQLStatementContext.getSelectItemsContext()).thenReturn(mock(SelectItemsContext.class));
+        when(selectSQLStatementContext.getProjectionsContext()).thenReturn(mock(ProjectionsContext.class));
         when(selectSQLStatementContext.getGroupByContext()).thenReturn(new GroupByContext(Collections.singletonList(mock(OrderByItem.class)), 1));
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectSQLStatementContext), is((long) Integer.MAX_VALUE));
     }
