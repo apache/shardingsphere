@@ -42,12 +42,10 @@ public final class LogicSchemaTest {
         backendDataSourceField.setAccessible(true);
         backendDataSourceField.set(absSchema, jdbcBackendDataSource);
 
-
         Map<String, YamlDataSourceParameter> expectedMap = Maps.newHashMap();
         when(jdbcBackendDataSource.getDataSourceParameters()).thenReturn(expectedMap);
 
         Map<String, YamlDataSourceParameter> dataSourceParameterMap = absSchema.getDataSources();
-
 
         assertNotNull(dataSourceParameterMap);
         assertThat(dataSourceParameterMap, is(expectedMap));
