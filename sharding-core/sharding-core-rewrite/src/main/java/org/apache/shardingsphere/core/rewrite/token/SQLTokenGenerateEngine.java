@@ -76,5 +76,8 @@ public abstract class SQLTokenGenerateEngine<T extends BaseRule> {
         return result;
     }
     
+    protected void setAutowaredProperties(final SQLTokenGenerator sqlTokenGenerator) {
+    }
+    
     protected abstract Collection<SQLTokenGenerator> getSQLTokenGenerators();
 }

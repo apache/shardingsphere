@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.core.rewrite.token;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.rewrite.token.generator.ShardingRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.AggregationDistinctTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.IndexTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertGeneratedKeyNameTokenGenerator;
@@ -37,9 +39,12 @@ import java.util.LinkedList;
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public final class ShardingTokenGenerateEngine extends SQLTokenGenerateEngine<ShardingRule> {
     
     private static final Collection<SQLTokenGenerator> SQL_TOKEN_GENERATORS = new LinkedList<>();
+    
+    private final ShardingRule shardingRule;
     
     static {
         SQL_TOKEN_GENERATORS.add(new SelectItemPrefixTokenGenerator());
@@ -51,6 +56,13 @@ public final class ShardingTokenGenerateEngine extends SQLTokenGenerateEngine<Sh
         SQL_TOKEN_GENERATORS.add(new RowCountTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new InsertGeneratedKeyNameTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new InsertSetGeneratedKeyColumnTokenGenerator());
+    }
+    
+    @Override
+    protected void setAutowaredProperties(final SQLTokenGenerator sqlTokenGenerator) {
+        if (sqlTokenGenerator instanceof ShardingRuleAware) {
+            ((ShardingRuleAware) sqlTokenGenerator).setShardingRule(shardingRule);
+        }
     }
     
     @Override

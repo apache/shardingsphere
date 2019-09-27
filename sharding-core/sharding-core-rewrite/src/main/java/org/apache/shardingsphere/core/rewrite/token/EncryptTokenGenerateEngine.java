@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.core.rewrite.token;
 
-import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.InsertCipherNameTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertQueryAndPlainNamesTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.InsertSetCipherColumnTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertSetQueryAndPlainColumnsTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertValuesTokenGenerator;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.InsertCipherNameTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.InsertSetCipherColumnTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.SelectEncryptItemTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.UpdateEncryptColumnTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.WhereEncryptColumnTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertQueryAndPlainNamesTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertSetQueryAndPlainColumnsTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertValuesTokenGenerator;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
@@ -35,10 +37,14 @@ import java.util.LinkedList;
  * SQL token generator for encrypt.
  *
  * @author panjuan
+ * @author zhangliang
  */
+@RequiredArgsConstructor
 public final class EncryptTokenGenerateEngine extends SQLTokenGenerateEngine<EncryptRule> {
     
     private static final Collection<SQLTokenGenerator> SQL_TOKEN_GENERATORS = new LinkedList<>();
+    
+    private final EncryptRule encryptRule;
     
     static {
         SQL_TOKEN_GENERATORS.add(new SelectEncryptItemTokenGenerator());
@@ -49,6 +55,13 @@ public final class EncryptTokenGenerateEngine extends SQLTokenGenerateEngine<Enc
         SQL_TOKEN_GENERATORS.add(new InsertSetCipherColumnTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new InsertSetQueryAndPlainColumnsTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new InsertValuesTokenGenerator());
+    }
+    
+    @Override
+    protected void setAutowaredProperties(final SQLTokenGenerator sqlTokenGenerator) {
+        if (sqlTokenGenerator instanceof EncryptRuleAware) {
+            ((EncryptRuleAware) sqlTokenGenerator).setEncryptRule(encryptRule);
+        }
     }
     
     @Override

@@ -48,11 +48,11 @@ import static org.mockito.Mockito.mock;
 
 public final class SQLTokenGenerateEngineTest {
     
-    private SQLTokenGenerateEngine shardingTokenGenerateEngine = new ShardingTokenGenerateEngine();
+    private SQLTokenGenerateEngine shardingTokenGenerateEngine = new ShardingTokenGenerateEngine(mock(ShardingRule.class));
     
     private SQLTokenGenerateEngine baseTokenGenerateEngine = new BaseTokenGenerateEngine();
     
-    private SQLTokenGenerateEngine encryptTokenGenerateEngine = new EncryptTokenGenerateEngine();
+    private SQLTokenGenerateEngine encryptTokenGenerateEngine = new EncryptTokenGenerateEngine(mock(EncryptRule.class));
     
     private RewriteStatement rewriteStatement;
     
