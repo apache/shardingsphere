@@ -18,9 +18,8 @@
 package info.avalon566.shardingscaling.sync.core;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lombok.var;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +30,8 @@ import java.util.concurrent.Future;
  * @author avalon566
  */
 @AllArgsConstructor
+@Slf4j
 public class SyncExecutor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SyncExecutor.class);
 
     private Future<?> readerFuture;
     private final List<Future<?>> writerFutures;
@@ -51,16 +49,16 @@ public class SyncExecutor {
     }
 
     public void run() {
-        var pool1 = Executors.newSingleThreadExecutor();
+        var readThreadExecutor = Executors.newSingleThreadExecutor();
         reader.setChannel(channel);
-        readerFuture = pool1.submit(reader);
-        pool1.shutdown();
-        var pool2 = Executors.newFixedThreadPool(writers.size());
+        readerFuture = readThreadExecutor.submit(reader);
+        readThreadExecutor.shutdown();
+        var writeThreadExecutor = Executors.newFixedThreadPool(writers.size());
         for (Writer writer : writers) {
             writer.setChannel(channel);
-            writerFutures.add(pool2.submit(writer));
+            writerFutures.add(writeThreadExecutor.submit(writer));
         }
-        pool2.shutdown();
+        writeThreadExecutor.shutdown();
     }
 
     public void waitFinish() {
