@@ -21,11 +21,14 @@ import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
 import info.avalon566.shardingscaling.sync.jdbc.AbstractJdbcWriter;
 
 /**
+ * postgreSQL writer.
+ *
  * @author avalon566
  */
 public class PostgreSQLWriter extends AbstractJdbcWriter {
 
-    public PostgreSQLWriter(RdbmsConfiguration rdbmsConfiguration) {
+    public PostgreSQLWriter(final RdbmsConfiguration rdbmsConfiguration) {
         super(rdbmsConfiguration);
     }
 }
+

@@ -94,7 +94,7 @@ public final class ClientAuthenticationPacket extends AbstractPacket {
             DataTypesCodec.writeByte((byte) 0x00, result);
         } else {
             try {
-                byte[] encryptedPassword = MySQLPasswordEncryptor.scramble411(getPassword().getBytes(), scrumbleBuff);
+                byte[] encryptedPassword = MySQLPasswordEncryptor.encryptWithMySQL41(getPassword().getBytes(), scrumbleBuff);
                 DataTypesCodec.writeLengthCodedBinary(encryptedPassword, result);
             } catch (NoSuchAlgorithmException e) {
                 throw new RuntimeException("can't encrypt password that will be sent to MySQL server.", e);

@@ -29,24 +29,36 @@ import java.security.NoSuchAlgorithmException;
 public class MySQLPasswordEncryptor {
     
     /**
-     * Encrypt password.
+     * Encrypt password with MySQL protocol 41.
+     *
+     * <p>
+     *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Authentication Method  /  Secure Password Authentication
+     *     https://dev.mysql.com/doc/internals/en/secure-password-authentication.html
+     * </p>
      *
      * @param password password
-     * @param seed seed
+     * @param seed 20-bytes random data from server
      * @return encrypted password
      * @throws NoSuchAlgorithmException no such algorithm exception
      */
-    public static byte[] scramble411(final byte[] password, final byte[] seed) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("SHA-1");
-        byte[] pass1 = md.digest(password);
-        md.reset();
-        byte[] pass2 = md.digest(pass1);
-        md.reset();
-        md.update(seed);
-        byte[] pass3 = md.digest(pass2);
-        for (int i = 0; i < pass3.length; i++) {
-            pass3[i] = (byte) (pass3[i] ^ pass1[i]);
+    public static byte[] encryptWithMySQL41(final byte[] password, final byte[] seed) throws NoSuchAlgorithmException {
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
+        byte[] passwordSha1 = messageDigest.digest(password);
+        byte[] concatSeed = concatSeed(messageDigest, seed, messageDigest.digest(passwordSha1));
+        return xorPassword(passwordSha1, concatSeed);
+    }
+    
+    private static byte[] concatSeed(final MessageDigest messageDigest, final byte[] seed, final byte[] passwordSha1) {
+        messageDigest.update(seed);
+        messageDigest.update(passwordSha1);
+        return messageDigest.digest();
+    }
+    
+    private static byte[] xorPassword(final byte[] passwordSha1, final byte[] concatSeed) {
+        byte[] result = new byte[concatSeed.length];
+        for (int i = 0; i < concatSeed.length; i++) {
+            result[i] = (byte) (concatSeed[i] ^ passwordSha1[i]);
         }
-        return pass3;
+        return result;
     }
 }

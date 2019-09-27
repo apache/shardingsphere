@@ -42,12 +42,12 @@ public final class HeaderPacket implements Packet {
 
     @Override
     public ByteBuf toByteBuf() {
-        var data = ByteBufAllocator.DEFAULT.heapBuffer(4);
-        data.writeByte((byte) (packetBodyLength & 0xFF));
-        data.writeByte((byte) (packetBodyLength >>> 8));
-        data.writeByte((byte) (packetBodyLength >>> 16));
-        data.writeByte(getPacketSequenceNumber());
-        return data;
+        var result = ByteBufAllocator.DEFAULT.heapBuffer(4);
+        result.writeByte((byte) (packetBodyLength & 0xFF));
+        result.writeByte((byte) (packetBodyLength >>> 8));
+        result.writeByte((byte) (packetBodyLength >>> 16));
+        result.writeByte(getPacketSequenceNumber());
+        return result;
     }
 
     @Override
