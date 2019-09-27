@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.segment.insert.InsertValue;
-import org.apache.shardingsphere.core.optimize.statement.impl.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.segment.insert.InsertValueContext;
+import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
@@ -44,22 +44,22 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
     @Override
     public Optional<InsertValuesToken> generateSQLToken(final RewriteStatement rewriteStatement, 
                                                         final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
-        Collection<InsertValuesSegment> insertValuesSegments = rewriteStatement.getOptimizedStatement().getSqlStatement().findSQLSegments(InsertValuesSegment.class);
-        return isNeedToGenerateSQLToken(rewriteStatement.getOptimizedStatement(), insertValuesSegments)
+        Collection<InsertValuesSegment> insertValuesSegments = rewriteStatement.getSqlStatementContext().getSqlStatement().findSQLSegments(InsertValuesSegment.class);
+        return isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext(), insertValuesSegments)
                 ? Optional.of(createInsertValuesToken(rewriteStatement, insertValuesSegments)) : Optional.<InsertValuesToken>absent();
     }
     
-    private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
-        return optimizedStatement.getSqlStatement() instanceof InsertStatement && !insertValuesSegments.isEmpty();
+    private boolean isNeedToGenerateSQLToken(final SQLStatementContext sqlStatementContext, final Collection<InsertValuesSegment> insertValuesSegments) {
+        return sqlStatementContext.getSqlStatement() instanceof InsertStatement && !insertValuesSegments.isEmpty();
     }
     
     private InsertValuesToken createInsertValuesToken(final RewriteStatement rewriteStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
         InsertValuesToken result = new InsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
         Iterator<ShardingCondition> shardingConditions = null;
-        if (rewriteStatement.getOptimizedStatement() instanceof InsertOptimizedStatement) {
+        if (rewriteStatement.getSqlStatementContext() instanceof InsertSQLStatementContext) {
             shardingConditions = rewriteStatement.getShardingConditions().getConditions().isEmpty() ? null : rewriteStatement.getShardingConditions().getConditions().iterator();
         }
-        for (InsertValue each : ((InsertOptimizedStatement) rewriteStatement.getOptimizedStatement()).getInsertValues()) {
+        for (InsertValueContext each : ((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext()).getInsertValueContexts()) {
             Collection<DataNode> dataNodes = null == shardingConditions ? Collections.<DataNode>emptyList() : shardingConditions.next().getDataNodes();
             result.addInsertValueToken(each.getValueExpressions(), dataNodes);
         }

@@ -22,10 +22,10 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.optimize.statement.impl.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.OptimizedStatementFactory;
-import org.apache.shardingsphere.core.optimize.statement.impl.SelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.optimize.SQLStatementContextFactory;
+import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
@@ -94,47 +94,46 @@ public final class ShardingRouter {
         if (shardingStatementValidator.isPresent()) {
             shardingStatementValidator.get().validate(shardingRule, sqlStatement);
         }
-        OptimizedStatement shardingStatement = OptimizedStatementFactory.newInstance(metaData.getTables(), logicSQL, parameters, sqlStatement);
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getTables(), logicSQL, parameters, sqlStatement);
         Optional<GeneratedKey> generatedKey = sqlStatement instanceof InsertStatement
                 ? GeneratedKey.getGenerateKey(shardingRule, metaData.getTables(), parameters, (InsertStatement) sqlStatement) : Optional.<GeneratedKey>absent();
-        ShardingConditions shardingConditions = getShardingConditions(parameters, shardingStatement, generatedKey.orNull());
-        boolean needMergeShardingValues = isNeedMergeShardingValues(shardingStatement);
-        if (shardingStatement.getSqlStatement() instanceof DMLStatement && needMergeShardingValues) {
-            checkSubqueryShardingValues(shardingStatement, shardingConditions);
+        ShardingConditions shardingConditions = getShardingConditions(parameters, sqlStatementContext, generatedKey.orNull());
+        boolean needMergeShardingValues = isNeedMergeShardingValues(sqlStatementContext);
+        if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && needMergeShardingValues) {
+            checkSubqueryShardingValues(sqlStatementContext, shardingConditions);
             mergeShardingConditions(shardingConditions);
         }
-        RoutingEngine routingEngine = RoutingEngineFactory.newInstance(shardingRule, metaData, shardingStatement, shardingConditions);
+        RoutingEngine routingEngine = RoutingEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions);
         RoutingResult routingResult = routingEngine.route();
         if (needMergeShardingValues) {
             Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");
         }
-        OptimizedStatement encryptStatement = OptimizedStatementFactory.newInstance(metaData.getTables(), logicSQL, parameters, sqlStatement);
-        SQLRouteResult result = new SQLRouteResult(shardingStatement, encryptStatement, shardingConditions, generatedKey.orNull());
+        SQLRouteResult result = new SQLRouteResult(sqlStatementContext, shardingConditions, generatedKey.orNull());
         result.setRoutingResult(routingResult);
-        if (shardingStatement instanceof InsertOptimizedStatement) {
+        if (sqlStatementContext instanceof InsertSQLStatementContext) {
             setGeneratedValues(result);
         }
         return result;
     }
     
-    private ShardingConditions getShardingConditions(final List<Object> parameters, final OptimizedStatement shardingStatement, final GeneratedKey generatedKey) {
-        if (shardingStatement.getSqlStatement() instanceof DMLStatement) {
-            if (shardingStatement instanceof InsertOptimizedStatement) {
-                InsertOptimizedStatement shardingInsertStatement = (InsertOptimizedStatement) shardingStatement;
+    private ShardingConditions getShardingConditions(final List<Object> parameters, final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
+        if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
+            if (sqlStatementContext instanceof InsertSQLStatementContext) {
+                InsertSQLStatementContext shardingInsertStatement = (InsertSQLStatementContext) sqlStatementContext;
                 return new ShardingConditions(new InsertClauseShardingConditionEngine(shardingRule).createShardingConditions(shardingInsertStatement, generatedKey, parameters));
             }
-            return new ShardingConditions(new WhereClauseShardingConditionEngine(shardingRule, metaData.getTables()).createShardingConditions(shardingStatement.getSqlStatement(), parameters));
+            return new ShardingConditions(new WhereClauseShardingConditionEngine(shardingRule, metaData.getTables()).createShardingConditions(sqlStatementContext.getSqlStatement(), parameters));
         }
         return new ShardingConditions(Collections.<ShardingCondition>emptyList());
     }
     
-    private boolean isNeedMergeShardingValues(final OptimizedStatement optimizedStatement) {
-        return optimizedStatement instanceof SelectOptimizedStatement && ((SelectOptimizedStatement) optimizedStatement).isContainsSubquery() 
-                && !shardingRule.getShardingLogicTableNames(optimizedStatement.getTables().getTableNames()).isEmpty();
+    private boolean isNeedMergeShardingValues(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext instanceof SelectSQLStatementContext && ((SelectSQLStatementContext) sqlStatementContext).isContainsSubquery() 
+                && !shardingRule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames()).isEmpty();
     }
     
-    private void checkSubqueryShardingValues(final OptimizedStatement optimizedStatement, final ShardingConditions shardingConditions) {
-        for (String each : optimizedStatement.getTables().getTableNames()) {
+    private void checkSubqueryShardingValues(final SQLStatementContext sqlStatementContext, final ShardingConditions shardingConditions) {
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
             if (tableRule.isPresent() && shardingRule.isRoutingByHint(tableRule.get()) && !HintManager.getDatabaseShardingValues(each).isEmpty()
                     && !HintManager.getTableShardingValues(each).isEmpty()) {

@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintManagerHolder;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintAddTableShardingValueCommand;
 
@@ -29,13 +27,10 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.c
  *
  * @author liya
  */
-@RequiredArgsConstructor
-public final class HintAddTableShardingValueExecutor implements HintCommandExecutor {
-    
-    private final HintAddTableShardingValueCommand command;
+public final class HintAddTableShardingValueExecutor extends AbstractHintUpdateExecutor<HintAddTableShardingValueCommand> {
     
     @Override
-    public BackendResponse execute() {
+    public BackendResponse execute(final HintAddTableShardingValueCommand command) {
         HintManagerHolder.get().addTableShardingValue(command.getLogicTable(), command.getValue());
         return new UpdateResponse();
     }

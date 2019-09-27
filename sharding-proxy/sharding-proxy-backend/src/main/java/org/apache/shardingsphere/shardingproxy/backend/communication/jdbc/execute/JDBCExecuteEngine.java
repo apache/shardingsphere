@@ -73,7 +73,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     @SuppressWarnings("unchecked")
     @Override
     public BackendResponse execute(final SQLRouteResult routeResult) throws SQLException {
-        boolean isReturnGeneratedKeys = routeResult.getShardingStatement().getSqlStatement() instanceof InsertStatement;
+        boolean isReturnGeneratedKeys = routeResult.getSqlStatementContext().getSqlStatement() instanceof InsertStatement;
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> sqlExecuteGroups = sqlExecutePrepareTemplate.getExecuteUnitGroups(
                 routeResult.getRouteUnits(), new ProxyJDBCExecutePrepareCallback(backendConnection, jdbcExecutorWrapper, isReturnGeneratedKeys));
