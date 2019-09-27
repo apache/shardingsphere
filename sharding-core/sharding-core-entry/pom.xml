@@ -64,7 +64,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-optimize</artifactId>
+            <artifactId>sharding-core-preprocessor</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
