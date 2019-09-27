@@ -32,7 +32,13 @@
             <artifactId>sharding-core-preprocessor</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+    
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-core-parse-sql92</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-core-parse-mysql</artifactId>

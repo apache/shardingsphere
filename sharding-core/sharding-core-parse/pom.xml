@@ -30,6 +30,7 @@
     <modules>
         <module>sharding-core-parse-spi</module>
         <module>sharding-core-parse-common</module>
+        <module>sharding-core-parse-sql92</module>
         <module>sharding-core-parse-mysql</module>
         <module>sharding-core-parse-postgresql</module>
         <module>sharding-core-parse-oracle</module>
