@@ -75,7 +75,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      * @throws SQLException SQL exception
      */
     public void init(final SQLRouteResult routeResult) throws SQLException {
-        setOptimizedStatement(routeResult.getShardingStatement());
+        setSqlStatementContext(routeResult.getSqlStatementContext());
         getExecuteGroups().addAll(obtainExecuteGroups(routeUnits));
     }
     

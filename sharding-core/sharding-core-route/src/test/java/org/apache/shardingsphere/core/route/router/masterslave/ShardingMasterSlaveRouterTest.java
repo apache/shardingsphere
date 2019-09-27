@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.route.router.masterslave;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
@@ -56,7 +56,7 @@ public class ShardingMasterSlaveRouterTest {
     private MasterSlaveRule masterSlaveRule;
     
     @Mock
-    private OptimizedStatement shardingOptimizedStatement;
+    private SQLStatementContext sqlStatementContext;
     
     @Mock
     private InsertStatement insertStatement;
@@ -99,8 +99,8 @@ public class ShardingMasterSlaveRouterTest {
     }
     
     private SQLRouteResult mockSQLRouteResult(final SQLStatement sqlStatement) {
-        when(shardingOptimizedStatement.getSqlStatement()).thenReturn(sqlStatement);
-        SQLRouteResult result = new SQLRouteResult(shardingOptimizedStatement, null, null, null);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        SQLRouteResult result = new SQLRouteResult(sqlStatementContext, null, null);
         result.setRoutingResult(mockRoutingResult());
         return result;
     }

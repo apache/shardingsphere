@@ -302,3 +302,173 @@ dropResourceGroup
 setResourceGroup
     : SET RESOURCE GROUP groupName (FOR NUMBER_ (COMMA_ NUMBER_)*)?
     ;
+
+alterUser
+    : ALTER USER (IF EXISTS)? userName userAuthOption_? (COMMA_ userName userAuthOption_?)* 
+    (REQUIRE (NONE | tlsOption_ (AND? tlsOption_)*))? (WITH resourceOption_ resourceOption_*)? (passwordOption_ | lockOption_)*   
+    | ALTER USER (IF EXISTS)? USER LP_ RP_ userFuncAuthOption_
+    | ALTER USER (IF EXISTS)? userName DEFAULT ROLE (NONE | ALL | roleName (COMMA_ roleName)*)
+    ;
+
+userAuthOption_
+    : IDENTIFIED BY STRING_ (REPLACE STRING_)? (RETAIN CURRENT PASSWORD)?
+    | IDENTIFIED BY RANDOM PASSWORD (REPLACE STRING_)? (RETAIN CURRENT PASSWORD)?
+    | IDENTIFIED WITH pluginName
+    | IDENTIFIED WITH pluginName BY stringLiterals (REPLACE stringLiterals)? (RETAIN CURRENT PASSWORD)?
+    | IDENTIFIED WITH pluginName BY RANDOM PASSWORD (REPLACE stringLiterals)? (RETAIN CURRENT PASSWORD)?
+    | IDENTIFIED WITH pluginName AS stringLiterals
+    | DISCARD OLD PASSWORD
+    ;
+
+lockOption_
+    : ACCOUNT LOCK | ACCOUNT UNLOCK
+    ;
+
+
+passwordOption_
+    : PASSWORD EXPIRE (DEFAULT | NEVER | INTERVAL NUMBER_ DAY)?
+    | PASSWORD HISTORY (DEFAULT | NUMBER_)
+    | PASSWORD REUSE INTERVAL (DEFAULT | NUMBER_ DAY)
+    | PASSWORD REQUIRE CURRENT (DEFAULT | OPTIONAL)
+    ;
+
+resourceOption_
+    : MAX_QUERIES_PER_HOUR NUMBER_
+    | MAX_UPDATES_PER_HOUR NUMBER_
+    | MAX_CONNECTIONS_PER_HOUR NUMBER_
+    | MAX_USER_CONNECTIONS NUMBER_
+    ;
+
+tlsOption_
+    : SSL | X509 | CIPHER STRING_ | ISSUER STRING_ | SUBJECT STRING_
+    ;
+
+
+userFuncAuthOption_
+    : IDENTIFIED BY 'auth_string' (REPLACE 'current_auth_string')? (RETAIN CURRENT PASSWORD)?
+    | DISCARD OLD PASSWORD
+    ;
+
+createRole
+    : CREATE ROLE (IF NOT EXISTS)? roleName (COMMA_ roleName)*
+    ;
+
+createUser
+    : CREATE USER (IF NOT EXISTS)? userName userAuthOption_? (COMMA_ userName userAuthOption_?)*
+    DEFAULT ROLE roleName (COMMA_ roleName)* (REQUIRE (NONE | tlsOption_ (AND? tlsOption_)*))?
+    (WITH resourceOption_ resourceOption_*)? (passwordOption_ | lockOption_)*
+    ;
+
+dropRole
+    : DROP ROLE (IF EXISTS)? roleName (COMMA_ roleName)*
+    ;
+
+dropUser
+    : DROP USER (IF EXISTS)? userName (COMMA_ userName)*
+    ;
+
+grant
+    : GRANT privilegeType_ columnNames? (COMMA_ privilegeType_ columnNames?)* ON objectType_? privilegeLevel_
+    TO userOrRole (COMMA_ userOrRole)* (WITH GRANT OPTION)?
+    (AS userName (WITH ROLE DEFAULT | NONE | ALL | ALL EXCEPT roleName (COMMA_ roleName)* )?)?
+    | GRANT PROXY ON userOrRole TO userOrRole (COMMA_ userOrRole)* (WITH GRANT OPTION)?
+    | GRANT roleName (COMMA_ roleName)* TO userOrRole userOrRole* (WITH GRANT OPTION) 
+    ;
+
+objectType_
+    : TABLE | FUNCTION | PROCEDURE
+    ;
+
+privilegeType_
+    : IDENTIFIER_
+    ;
+
+privilegeLevel_
+    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | schemaName DOT_ASTERISK_ | tableName 
+    ;
+
+renameUser
+    : RENAME USER userName TO userName (COMMA_ userName TO userName)*
+    ;
+
+revoke
+    : REVOKE privilegeType_ columnNames? (COMMA_ privilegeType_ columnNames?)* ON objectType_? privilegeLevel_
+    FROM userOrRole (COMMA_ userOrRole)*
+    | REVOKE ALL PRIVILEGES COMMA_ GRANT OPTION FROM userOrRole (COMMA_ userOrRole)*
+    | REVOKE PROXY ON userOrRole FROM userOrRole (COMMA_ userOrRole)*
+    | REVOKE roleName (COMMA_ roleName)* FROM userOrRole (COMMA_ userOrRole)*
+    ;
+
+setDefaultRole
+    : SET DEFAULT ROLE (NONE | ALL | roleName (COMMA_ roleName)*) TO userName (COMMA_ userName)*
+    ;
+
+setPassword
+    : SET PASSWORD (FOR userName)? authOption_ (REPLACE stringLiterals)? (RETAIN CURRENT PASSWORD)?
+    ;
+
+authOption_
+    : EQ_ stringLiterals | TO RANDOM
+    ;
+
+setRole
+    : SET ROLE (DEFAULT | NONE | ALL | ALL EXCEPT roleName (COMMA_ roleName)* | roleName (COMMA_ roleName)*)
+    ;
+
+binlog
+    : BINLOG stringLiterals
+    ;
+
+cacheIndex
+    : CACHE INDEX (tableIndexList (COMMA_ tableIndexList)* | tableName PARTITION LP_ partitionList RP_) IN IDENTIFIER_
+    ;
+
+tableIndexList
+    : tableName (PARTITION LP_ partitionList RP_)? ((INDEX | KEY) LP_ indexName (COMMA_ indexName)* RP_)?
+    ;
+
+partitionList
+    : partitionName (COMMA_ partitionName)* | ALL
+    ;
+
+flush
+    : FLUSH (NO_WRITE_TO_BINLOG | LOCAL)? (flushOption_ (COMMA_ flushOption_) * | tablesOption_)
+    ;
+
+flushOption_
+    : BINARY LOGS | ENGINE LOGS | ERROR LOGS | GENERAL LOGS | HOSTS | LOGS | PRIVILEGES | OPTIMIZER_COSTS
+    | RELAY LOGS (FOR CHANNEL channelName)? | SLOW LOGS | STATUS | USER_RESOURCES 
+    ;
+
+tablesOption_
+    : TABLES |TABLES tableName (COMMA_ tableName)* | TABLES WITH READ LOCK | TABLES tableName (COMMA_ tableName)* WITH READ LOCK
+    | TABLES tableName (COMMA_ tableName)* FOR EXPORT
+    ;
+
+kill
+    : KILL (CONNECTION | QUERY)? NUMBER_+
+    ;
+
+loadIndexInfo
+    : LOAD INDEX INTO CACHE tableIndexList (COMMA_ tableIndexList)*
+    ;
+
+resetStatement
+    : RESET resetOption_ (COMMA_ resetOption_)*
+    ;
+
+resetOption_
+    : MASTER | SLAVE
+    ;
+
+resetPersist
+    : RESET PERSIST ((IF EXISTS)? IDENTIFIER_)
+    ;
+
+restart
+    : RESTART
+    ;
+
+shutdown
+    : SHUTDOWN
+    ;

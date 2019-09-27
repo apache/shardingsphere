@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.rewrite.token.generator;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.segment.insert.expression.DerivedSimpleExpressionSegment;
-import org.apache.shardingsphere.core.optimize.statement.impl.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.statement.constant.EncryptDerivedColumnType;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
@@ -47,24 +47,24 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
     @Override
     public Optional<InsertSetQueryAndPlainColumnsToken> generateSQLToken(
             final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
-        if (!isNeedToGenerateSQLToken(rewriteStatement.getOptimizedStatement())) {
+        if (!isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext())) {
             return Optional.absent();
         }
-        return createInsertSetAddItemsToken((InsertOptimizedStatement) rewriteStatement.getOptimizedStatement(), encryptRule);
+        return createInsertSetAddItemsToken((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext(), encryptRule);
     }
     
-    private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement) {
-        Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
-        return optimizedStatement instanceof InsertOptimizedStatement && setAssignmentsSegment.isPresent();
+    private boolean isNeedToGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+        Optional<SetAssignmentsSegment> setAssignmentsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
+        return sqlStatementContext instanceof InsertSQLStatementContext && setAssignmentsSegment.isPresent();
     }
     
-    private Optional<InsertSetQueryAndPlainColumnsToken> createInsertSetAddItemsToken(final InsertOptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
-        String tableName = optimizedStatement.getTables().getSingleTableName();
+    private Optional<InsertSetQueryAndPlainColumnsToken> createInsertSetAddItemsToken(final InsertSQLStatementContext insertSQLStatementContext, final EncryptRule encryptRule) {
+        String tableName = insertSQLStatementContext.getTablesContext().getSingleTableName();
         if (encryptRule.getAssistedQueryAndPlainColumns(tableName).isEmpty()) {
             return Optional.absent();
         }
         List<String> encryptDerivedColumnNames = getEncryptDerivedColumnNames(tableName, encryptRule);
-        return Optional.of(new InsertSetQueryAndPlainColumnsToken(getStartIndex(optimizedStatement), encryptDerivedColumnNames, getEncryptDerivedValues(optimizedStatement)));
+        return Optional.of(new InsertSetQueryAndPlainColumnsToken(getStartIndex(insertSQLStatementContext), encryptDerivedColumnNames, getEncryptDerivedValues(insertSQLStatementContext)));
     }
     
     private List<String> getEncryptDerivedColumnNames(final String tableName, final EncryptRule encryptRule) {
@@ -86,16 +86,16 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
         return result;
     }
     
-    private int getStartIndex(final InsertOptimizedStatement optimizedStatement) {
-        Optional<SetAssignmentsSegment> setAssignmentsSegment = optimizedStatement.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
+    private int getStartIndex(final InsertSQLStatementContext insertSQLStatementContext) {
+        Optional<SetAssignmentsSegment> setAssignmentsSegment = insertSQLStatementContext.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
         Preconditions.checkState(setAssignmentsSegment.isPresent());
         List<AssignmentSegment> assignments = new ArrayList<>(setAssignmentsSegment.get().getAssignments());
         return assignments.get(assignments.size() - 1).getStopIndex() + 1;
     }
     
-    private List<ExpressionSegment> getEncryptDerivedValues(final InsertOptimizedStatement optimizedStatement) {
+    private List<ExpressionSegment> getEncryptDerivedValues(final InsertSQLStatementContext insertSQLStatementContext) {
         List<ExpressionSegment> result = new LinkedList<>();
-        for (ExpressionSegment each : optimizedStatement.getInsertValues().get(0).getValueExpressions()) {
+        for (ExpressionSegment each : insertSQLStatementContext.getInsertValueContexts().get(0).getValueExpressions()) {
             if (each instanceof DerivedSimpleExpressionSegment && EncryptDerivedColumnType.ENCRYPT.equals(((DerivedSimpleExpressionSegment) each).getType())) { 
                 result.add(each);
             }
