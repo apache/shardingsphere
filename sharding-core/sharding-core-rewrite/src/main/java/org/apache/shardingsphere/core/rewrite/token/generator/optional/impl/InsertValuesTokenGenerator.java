@@ -43,8 +43,7 @@ import java.util.Iterator;
 public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
     
     @Override
-    public Optional<InsertValuesToken> generateSQLToken(final RewriteStatement rewriteStatement, 
-                                                        final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
+    public Optional<InsertValuesToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
         Collection<InsertValuesSegment> insertValuesSegments = rewriteStatement.getSqlStatementContext().getSqlStatement().findSQLSegments(InsertValuesSegment.class);
         return isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext(), insertValuesSegments)
                 ? Optional.of(createInsertValuesToken(rewriteStatement, insertValuesSegments)) : Optional.<InsertValuesToken>absent();

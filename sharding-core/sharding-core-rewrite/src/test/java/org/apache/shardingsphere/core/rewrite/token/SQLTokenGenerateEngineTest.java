@@ -52,7 +52,7 @@ public final class SQLTokenGenerateEngineTest {
     
     private SQLTokenGenerateEngine baseTokenGenerateEngine = new BaseTokenGenerateEngine();
     
-    private SQLTokenGenerateEngine encryptTokenGenerateEngine = new EncryptTokenGenerateEngine(mock(EncryptRule.class));
+    private SQLTokenGenerateEngine encryptTokenGenerateEngine = new EncryptTokenGenerateEngine(mock(EncryptRule.class), false);
     
     private RewriteStatement rewriteStatement;
     
@@ -70,14 +70,14 @@ public final class SQLTokenGenerateEngineTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateSQLTokensWithBaseTokenGenerateEngine() {
-        List<SQLToken> actual = baseTokenGenerateEngine.generateSQLTokens(rewriteStatement, null, mock(ShardingRule.class), mock(TableMetas.class), true, false);
+        List<SQLToken> actual = baseTokenGenerateEngine.generateSQLTokens(rewriteStatement, null, mock(ShardingRule.class), mock(TableMetas.class), true);
         assertThat(actual.size(), is(0));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertGetSQLTokenGeneratorsWithShardingTokenGenerateEngineWithoutSingleRoute() {
-        List<SQLToken> actual = shardingTokenGenerateEngine.generateSQLTokens(rewriteStatement, null, mock(ShardingRule.class), mock(TableMetas.class), false, false);
+        List<SQLToken> actual = shardingTokenGenerateEngine.generateSQLTokens(rewriteStatement, null, mock(ShardingRule.class), mock(TableMetas.class), false);
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0), CoreMatchers.<SQLToken>instanceOf(ProjectionPrefixToken.class));
     }
@@ -85,14 +85,14 @@ public final class SQLTokenGenerateEngineTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGetSQLTokenGeneratorsWithShardingTokenGenerateEngineWithSingleRoute() {
-        List<SQLToken> actual = shardingTokenGenerateEngine.generateSQLTokens(rewriteStatement, null, mock(ShardingRule.class), mock(TableMetas.class), true, false);
+        List<SQLToken> actual = shardingTokenGenerateEngine.generateSQLTokens(rewriteStatement, null, mock(ShardingRule.class), mock(TableMetas.class), true);
         assertThat(actual.size(), is(0));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateSQLTokensWithEncryptTokenGenerateEngine() {
-        List<SQLToken> actual = encryptTokenGenerateEngine.generateSQLTokens(rewriteStatement, null, mock(EncryptRule.class), mock(TableMetas.class), true, false);
+        List<SQLToken> actual = encryptTokenGenerateEngine.generateSQLTokens(rewriteStatement, null, mock(EncryptRule.class), mock(TableMetas.class), true);
         assertThat(actual.size(), is(0));
     }
 }

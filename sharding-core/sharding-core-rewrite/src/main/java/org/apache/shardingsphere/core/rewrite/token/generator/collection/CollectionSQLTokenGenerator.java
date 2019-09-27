@@ -41,8 +41,7 @@ public interface CollectionSQLTokenGenerator<T extends BaseRule> extends SQLToke
      * @param rewriteStatement rewrite statement
      * @param parameterBuilder SQL parameter builder
      * @param rule rule
-     * @param isQueryWithCipherColumn is query with cipher column
      * @return SQL tokens
      */
-    Collection<? extends SQLToken> generateSQLTokens(RewriteStatement rewriteStatement, ParameterBuilder parameterBuilder, T rule, boolean isQueryWithCipherColumn);
+    Collection<? extends SQLToken> generateSQLTokens(RewriteStatement rewriteStatement, ParameterBuilder parameterBuilder, T rule);
 }

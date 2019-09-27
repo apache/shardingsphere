@@ -50,12 +50,11 @@ public abstract class SQLTokenGenerateEngine<T extends BaseRule> {
      * @param rule rule
      * @param tableMetas table metas
      * @param isSingleRoute is single route
-     * @param isQueryWithCipherColumn  is query with cipher column
      * @return SQL tokens
      */
     @SuppressWarnings("unchecked")
-    public final List<SQLToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, 
-                                                  final T rule, final TableMetas tableMetas, final boolean isSingleRoute, final boolean isQueryWithCipherColumn) {
+    public final List<SQLToken> generateSQLTokens(final RewriteStatement rewriteStatement, 
+                                                  final ParameterBuilder parameterBuilder, final T rule, final TableMetas tableMetas, final boolean isSingleRoute) {
         List<SQLToken> result = new LinkedList<>();
         for (SQLTokenGenerator each : getSQLTokenGenerators()) {
             if (isSingleRoute && each instanceof IgnoreForSingleRoute) {
@@ -64,13 +63,14 @@ public abstract class SQLTokenGenerateEngine<T extends BaseRule> {
             if (each instanceof TableMetasAware) {
                 ((TableMetasAware) each).setTableMetas(tableMetas);
             }
+            setAutowaredProperties(each);
             if (each instanceof OptionalSQLTokenGenerator) {
-                Optional<? extends SQLToken> sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(rewriteStatement, parameterBuilder, rule, isQueryWithCipherColumn);
+                Optional<? extends SQLToken> sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(rewriteStatement, parameterBuilder, rule);
                 if (sqlToken.isPresent()) {
                     result.add(sqlToken.get());
                 }
             } else {
-                result.addAll(((CollectionSQLTokenGenerator) each).generateSQLTokens(rewriteStatement, parameterBuilder, rule, isQueryWithCipherColumn));
+                result.addAll(((CollectionSQLTokenGenerator) each).generateSQLTokens(rewriteStatement, parameterBuilder, rule));
             }
         }
         return result;

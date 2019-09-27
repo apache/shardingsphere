@@ -40,8 +40,7 @@ public interface OptionalSQLTokenGenerator<T extends BaseRule> extends SQLTokenG
      * @param rewriteStatement rewrite statement
      * @param parameterBuilder SQL parameter builder
      * @param rule rule
-     * @param isQueryWithCipherColumn is query with cipher column
      * @return SQL token
      */
-    Optional<? extends SQLToken> generateSQLToken(RewriteStatement rewriteStatement, ParameterBuilder parameterBuilder, T rule, boolean isQueryWithCipherColumn);
+    Optional<? extends SQLToken> generateSQLToken(RewriteStatement rewriteStatement, ParameterBuilder parameterBuilder, T rule);
 }

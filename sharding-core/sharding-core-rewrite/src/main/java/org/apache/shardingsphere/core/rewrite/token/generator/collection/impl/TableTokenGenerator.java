@@ -50,8 +50,7 @@ import java.util.LinkedList;
 public final class TableTokenGenerator implements CollectionSQLTokenGenerator<BaseRule> {
     
     @Override
-    public Collection<TableToken> generateSQLTokens(
-            final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final BaseRule baseRule, final boolean isQueryWithCipherColumn) {
+    public Collection<TableToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final BaseRule baseRule) {
         Collection<TableToken> result = new LinkedList<>();
         for (SQLSegment each : rewriteStatement.getSqlStatementContext().getSqlStatement().getAllSQLSegments()) {
             if (each instanceof SelectItemsSegment) {

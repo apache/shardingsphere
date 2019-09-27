@@ -89,15 +89,15 @@ public final class SQLRewriteEngine {
     
     private List<SQLToken> createSQLTokens(final TableMetas tableMetas, final boolean isSingleRoute, final boolean isQueryWithCipherColumn) {
         List<SQLToken> result = new LinkedList<>();
-        result.addAll(new BaseTokenGenerateEngine().generateSQLTokens(rewriteStatement, parameterBuilder, baseRule, tableMetas, isSingleRoute, isQueryWithCipherColumn));
+        result.addAll(new BaseTokenGenerateEngine().generateSQLTokens(rewriteStatement, parameterBuilder, baseRule, tableMetas, isSingleRoute));
         if (baseRule instanceof ShardingRule) {
             ShardingRule shardingRule = (ShardingRule) baseRule;
-            result.addAll(new ShardingTokenGenerateEngine(shardingRule).generateSQLTokens(rewriteStatement, parameterBuilder, shardingRule, tableMetas, isSingleRoute, isQueryWithCipherColumn));
-            result.addAll(new EncryptTokenGenerateEngine(shardingRule.getEncryptRule()).generateSQLTokens(
-                    rewriteStatement, parameterBuilder, shardingRule.getEncryptRule(), tableMetas, isSingleRoute, isQueryWithCipherColumn));
+            result.addAll(new ShardingTokenGenerateEngine(shardingRule).generateSQLTokens(rewriteStatement, parameterBuilder, shardingRule, tableMetas, isSingleRoute));
+            result.addAll(new EncryptTokenGenerateEngine(shardingRule.getEncryptRule(), isQueryWithCipherColumn).generateSQLTokens(
+                    rewriteStatement, parameterBuilder, shardingRule.getEncryptRule(), tableMetas, isSingleRoute));
         } else if (baseRule instanceof EncryptRule) {
-            result.addAll(new EncryptTokenGenerateEngine((EncryptRule) baseRule).generateSQLTokens(
-                    rewriteStatement, parameterBuilder, (EncryptRule) baseRule, tableMetas, isSingleRoute, isQueryWithCipherColumn));
+            result.addAll(new EncryptTokenGenerateEngine((EncryptRule) baseRule, isQueryWithCipherColumn).generateSQLTokens(
+                    rewriteStatement, parameterBuilder, (EncryptRule) baseRule, tableMetas, isSingleRoute));
         }
         Collections.sort(result);
         return result;

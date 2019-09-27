@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.rewrite.token;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
+import org.apache.shardingsphere.core.rewrite.token.generator.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.InsertCipherNameTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.InsertSetCipherColumnTokenGenerator;
@@ -46,6 +47,8 @@ public final class EncryptTokenGenerateEngine extends SQLTokenGenerateEngine<Enc
     
     private final EncryptRule encryptRule;
     
+    private final boolean queryWithCipherColumn;
+    
     static {
         SQL_TOKEN_GENERATORS.add(new SelectEncryptItemTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new UpdateEncryptColumnTokenGenerator());
@@ -61,6 +64,9 @@ public final class EncryptTokenGenerateEngine extends SQLTokenGenerateEngine<Enc
     protected void setAutowaredProperties(final SQLTokenGenerator sqlTokenGenerator) {
         if (sqlTokenGenerator instanceof EncryptRuleAware) {
             ((EncryptRuleAware) sqlTokenGenerator).setEncryptRule(encryptRule);
+        }
+        if (sqlTokenGenerator instanceof QueryWithCipherColumnAware) {
+            ((QueryWithCipherColumnAware) sqlTokenGenerator).setQueryWithCipherColumn(queryWithCipherColumn);
         }
     }
     

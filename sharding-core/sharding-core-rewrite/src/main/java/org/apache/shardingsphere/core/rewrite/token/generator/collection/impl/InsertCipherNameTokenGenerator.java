@@ -41,8 +41,7 @@ import java.util.Map;
 public final class InsertCipherNameTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
     
     @Override
-    public Collection<InsertCipherNameToken> generateSQLTokens(final RewriteStatement rewriteStatement,
-                                                               final ParameterBuilder parameterBuilder, final EncryptRule rule, final boolean isQueryWithCipherColumn) {
+    public Collection<InsertCipherNameToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final EncryptRule rule) {
         if (!isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext())) {
             return Collections.emptyList();
         }

@@ -39,8 +39,7 @@ import java.util.List;
 public final class InsertSetGeneratedKeyColumnTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Optional<InsertSetGeneratedKeyColumnToken> generateSQLToken(final RewriteStatement rewriteStatement, 
-                                                                       final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
+    public Optional<InsertSetGeneratedKeyColumnToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule) {
         Optional<SetAssignmentsSegment> setAssignmentsSegment = rewriteStatement.getSqlStatementContext().getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
         if (!(rewriteStatement.getSqlStatementContext() instanceof InsertSQLStatementContext && setAssignmentsSegment.isPresent())) {
             return Optional.absent();

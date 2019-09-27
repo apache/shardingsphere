@@ -43,8 +43,7 @@ import java.util.Map;
 public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenGenerator<BaseRule> {
     
     @Override
-    public Optional<InsertRegularNamesToken> generateSQLToken(final RewriteStatement rewriteStatement,
-                                                              final ParameterBuilder parameterBuilder, final BaseRule baseRule, final boolean isQueryWithCipherColumn) {
+    public Optional<InsertRegularNamesToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final BaseRule baseRule) {
         if (!isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext(), baseRule)) {
             return Optional.absent();
         }

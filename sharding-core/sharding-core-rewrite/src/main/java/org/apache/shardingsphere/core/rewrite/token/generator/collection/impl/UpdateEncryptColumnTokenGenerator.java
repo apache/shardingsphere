@@ -44,8 +44,7 @@ import java.util.LinkedList;
 public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
     
     @Override
-    public Collection<EncryptColumnToken> generateSQLTokens(
-            final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
+    public Collection<EncryptColumnToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
         return rewriteStatement.getSqlStatementContext().getSqlStatement() instanceof UpdateStatement 
                 ? createUpdateEncryptColumnTokens(parameterBuilder, encryptRule, rewriteStatement.getSqlStatementContext()) : Collections.<EncryptColumnToken>emptyList();
     }

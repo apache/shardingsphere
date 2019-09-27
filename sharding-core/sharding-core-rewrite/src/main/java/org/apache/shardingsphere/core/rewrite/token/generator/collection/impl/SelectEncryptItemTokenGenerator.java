@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token.generator.collection.impl;
 
 import com.google.common.base.Optional;
+import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ColumnSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
+import org.apache.shardingsphere.core.rewrite.token.generator.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SelectEncryptItemToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -40,15 +42,17 @@ import java.util.LinkedList;
  *
  * @author panjuan
  */
-public final class SelectEncryptItemTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
+@Setter
+public final class SelectEncryptItemTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule>, QueryWithCipherColumnAware {
+    
+    private boolean queryWithCipherColumn;
     
     @Override
-    public Collection<SelectEncryptItemToken> generateSQLTokens(final RewriteStatement rewriteStatement,
-                                                                final ParameterBuilder parameterBuilder, final EncryptRule rule, final boolean isQueryWithCipherColumn) {
+    public Collection<SelectEncryptItemToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final EncryptRule rule) {
         if (!isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext())) {
             return Collections.emptyList();
         }
-        return createSelectCipherItemTokens(rule, rewriteStatement.getSqlStatementContext(), isQueryWithCipherColumn);
+        return createSelectCipherItemTokens(rule, rewriteStatement.getSqlStatementContext());
     }
     
     private boolean isNeedToGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -63,7 +67,7 @@ public final class SelectEncryptItemTokenGenerator implements CollectionSQLToken
         return sqlStatementContext.getSqlStatement() instanceof SelectStatement && !sqlStatementContext.getTablesContext().isEmpty();
     }
     
-    private Collection<SelectEncryptItemToken> createSelectCipherItemTokens(final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext, final boolean isQueryWithCipherColumn) {
+    private Collection<SelectEncryptItemToken> createSelectCipherItemTokens(final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext) {
         Collection<SelectEncryptItemToken> result = new LinkedList<>();
         Optional<SelectItemsSegment> selectItemsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(SelectItemsSegment.class);
         if (!selectItemsSegment.isPresent()) {
@@ -76,7 +80,7 @@ public final class SelectEncryptItemTokenGenerator implements CollectionSQLToken
         }
         for (SelectItemSegment each : selectItemsSegment.get().getSelectItems()) {
             if (isLogicColumn(each, encryptTable.get())) {
-                result.add(createSelectCipherItemToken((ColumnSelectItemSegment) each, tableName, encryptRule, isQueryWithCipherColumn));
+                result.add(createSelectCipherItemToken((ColumnSelectItemSegment) each, tableName, encryptRule));
             }
         }
         return result;
@@ -86,10 +90,9 @@ public final class SelectEncryptItemTokenGenerator implements CollectionSQLToken
         return selectItemSegment instanceof ColumnSelectItemSegment && encryptTable.getLogicColumns().contains(((ColumnSelectItemSegment) selectItemSegment).getName());
     }
     
-    private SelectEncryptItemToken createSelectCipherItemToken(final ColumnSelectItemSegment columnSelectItemSegment, 
-                                                               final String tableName, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
+    private SelectEncryptItemToken createSelectCipherItemToken(final ColumnSelectItemSegment columnSelectItemSegment, final String tableName, final EncryptRule encryptRule) {
         Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, columnSelectItemSegment.getName());
-        String columnName = plainColumn.isPresent() && !isQueryWithCipherColumn ? plainColumn.get() : encryptRule.getCipherColumn(tableName, columnSelectItemSegment.getName());
+        String columnName = plainColumn.isPresent() && !queryWithCipherColumn ? plainColumn.get() : encryptRule.getCipherColumn(tableName, columnSelectItemSegment.getName());
         return createSelectEncryptItemToken(columnSelectItemSegment, columnName);
     }
     
