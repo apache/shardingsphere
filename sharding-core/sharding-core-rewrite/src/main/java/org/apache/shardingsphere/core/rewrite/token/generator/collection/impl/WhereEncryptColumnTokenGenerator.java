@@ -52,7 +52,7 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
     @Override
     public Collection<EncryptColumnToken> generateSQLTokens(final RewriteStatement rewriteStatement, 
                                                             final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
-        List<EncryptCondition> encryptConditions = new EncryptConditionEngine(encryptRule, tableMetas).createEncryptConditions(rewriteStatement.getSqlStatementContext().getSqlStatement());
+        List<EncryptCondition> encryptConditions = new EncryptConditionEngine(encryptRule, tableMetas).createEncryptConditions(rewriteStatement.getSqlStatementContext());
         return encryptConditions.isEmpty()
                 ? Collections.<EncryptColumnToken>emptyList() : createWhereEncryptColumnTokens(parameterBuilder, encryptRule, isQueryWithCipherColumn, encryptConditions);
     }

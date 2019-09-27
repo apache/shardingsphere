@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.segment.table.TablesContext;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.WhereSegme
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.generic.WhereSegmentAvailable;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
@@ -56,25 +56,24 @@ public final class EncryptConditionEngine {
     /**
      * Create encrypt conditions.
      *
-     * @param sqlStatement SQL statement
+     * @param sqlStatementContext SQL statement context
      * @return encrypt conditions
      */
-    public List<EncryptCondition> createEncryptConditions(final SQLStatement sqlStatement) {
-        if (!(sqlStatement instanceof WhereSegmentAvailable)) {
+    public List<EncryptCondition> createEncryptConditions(final SQLStatementContext sqlStatementContext) {
+        if (!(sqlStatementContext.getSqlStatement() instanceof WhereSegmentAvailable)) {
             return Collections.emptyList();
         }
-        Optional<WhereSegment> whereSegment = ((WhereSegmentAvailable) sqlStatement).getWhere();
+        Optional<WhereSegment> whereSegment = ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere();
         if (!whereSegment.isPresent()) {
             return Collections.emptyList();
         }
         List<EncryptCondition> result = new LinkedList<>();
-        TablesContext tablesContext = new TablesContext(sqlStatement);
         for (AndPredicate each : whereSegment.get().getAndPredicates()) {
-            result.addAll(createEncryptConditions(each, tablesContext));
+            result.addAll(createEncryptConditions(each, sqlStatementContext.getTablesContext()));
         }
-        for (SubqueryPredicateSegment each : sqlStatement.findSQLSegments(SubqueryPredicateSegment.class)) {
+        for (SubqueryPredicateSegment each : sqlStatementContext.getSqlStatement().findSQLSegments(SubqueryPredicateSegment.class)) {
             for (AndPredicate andPredicate : each.getAndPredicates()) {
-                result.addAll(createEncryptConditions(andPredicate, tablesContext));
+                result.addAll(createEncryptConditions(andPredicate, sqlStatementContext.getTablesContext()));
             }
         }
         return result;
