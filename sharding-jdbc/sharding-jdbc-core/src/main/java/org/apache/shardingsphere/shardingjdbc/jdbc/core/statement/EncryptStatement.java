@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.optimize.encrypt.EncryptOptimizeEngineFactory;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.optimize.SQLStatementContextFactory;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.route.SQLLogger;
@@ -45,7 +45,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     
     private final Statement statement;
     
-    private EncryptOptimizedStatement encryptStatement;
+    private SQLStatementContext sqlStatementContext;
     
     private EncryptResultSet resultSet;
     
@@ -67,7 +67,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     @Override
     public ResultSet executeQuery(final String sql) throws SQLException {
         ResultSet resultSet = statement.executeQuery(getRewriteSQL(sql));
-        this.resultSet = new EncryptResultSet(connection.getRuntimeContext(), encryptStatement, this, resultSet);
+        this.resultSet = new EncryptResultSet(connection.getRuntimeContext(), sqlStatementContext, this, resultSet);
         return this.resultSet;
     }
     
@@ -79,10 +79,8 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     @SuppressWarnings("unchecked")
     private String getRewriteSQL(final String sql) {
         SQLStatement sqlStatement = connection.getRuntimeContext().getParseEngine().parse(sql, false);
-        encryptStatement = EncryptOptimizeEngineFactory.newInstance(
-                sqlStatement).optimize(connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getTableMetas(), sql, Collections.emptyList(), sqlStatement);
-        SQLRewriteEngine encryptSQLRewriteEngine = new SQLRewriteEngine(connection.getRuntimeContext().getRule(), 
-                encryptStatement, sql, Collections.emptyList(), connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
+        sqlStatementContext = SQLStatementContextFactory.newInstance(connection.getRuntimeContext().getTableMetas(), sql, Collections.emptyList(), sqlStatement);
+        SQLRewriteEngine encryptSQLRewriteEngine = new SQLRewriteEngine(connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getTableMetas(), sqlStatementContext, sql, Collections.emptyList(), connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         String result = encryptSQLRewriteEngine.generateSQL().getSql();
         showSQL(result);
         return result;
@@ -144,7 +142,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     }
     
     private EncryptResultSet createEncryptResultSet(final Statement statement) throws SQLException {
-        return null == statement.getResultSet() ? null : new EncryptResultSet(connection.getRuntimeContext(), encryptStatement, this, statement.getResultSet());
+        return null == statement.getResultSet() ? null : new EncryptResultSet(connection.getRuntimeContext(), sqlStatementContext, this, statement.getResultSet());
     }
     
     @Override

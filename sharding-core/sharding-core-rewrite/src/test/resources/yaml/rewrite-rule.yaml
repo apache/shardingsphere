@@ -80,4 +80,4 @@ shardingRule:
             plainColumn: plain
             cipherColumn: cipher
             assistedQueryColumn: query
-            encryptor: k_encryptor                      
+            encryptor: k_encryptor

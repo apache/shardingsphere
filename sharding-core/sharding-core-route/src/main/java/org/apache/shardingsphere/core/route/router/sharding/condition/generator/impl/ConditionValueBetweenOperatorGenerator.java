@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.route.router.sharding.condition.generator
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.core.optimize.api.segment.Column;
+import org.apache.shardingsphere.core.route.router.sharding.condition.Column;
 import org.apache.shardingsphere.core.route.router.sharding.condition.generator.ConditionValue;
 import org.apache.shardingsphere.core.route.router.sharding.condition.generator.ConditionValueGenerator;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateBetweenRightValue;

@@ -69,4 +69,13 @@ public class SQLRouteTest extends AbstractSQLRouteTest {
         parameters.add(1);
         assertRoute(sql, parameters);
     }
+    
+    @Test
+    public void assertInsertTable() {
+        String sql = "INSERT INTO t_order (order_id, user_id) VALUES (?, ?)";
+        List<Object> parameters = new LinkedList<>();
+        parameters.add(1);
+        parameters.add(1);
+        assertRoute(sql, parameters);
+    }
 }

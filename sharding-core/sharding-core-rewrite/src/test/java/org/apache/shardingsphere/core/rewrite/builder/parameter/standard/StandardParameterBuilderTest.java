@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.core.rewrite.builder.parameter.standard;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.junit.Before;
@@ -51,15 +50,14 @@ public final class StandardParameterBuilderTest {
     }
     
     private SQLRouteResult createSQLRouteResult() {
-        Pagination pagination = mock(Pagination.class);
+        PaginationContext pagination = mock(PaginationContext.class);
         when(pagination.isHasPagination()).thenReturn(true);
         when(pagination.getOffsetParameterIndex()).thenReturn(Optional.of(2));
         when(pagination.getRowCountParameterIndex()).thenReturn(Optional.of(3));
-        when(pagination.getRevisedRowCount(any(ShardingSelectOptimizedStatement.class))).thenReturn(6L);
-        ShardingSelectOptimizedStatement shardingStatement = mock(ShardingSelectOptimizedStatement.class);
-        when(shardingStatement.getPagination()).thenReturn(pagination);
-        EncryptOptimizedStatement encryptStatement = mock(EncryptOptimizedStatement.class);
-        SQLRouteResult result = new SQLRouteResult(shardingStatement, encryptStatement, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+        when(pagination.getRevisedRowCount(any(SelectSQLStatementContext.class))).thenReturn(6L);
+        SelectSQLStatementContext selectSQLStatementContext = mock(SelectSQLStatementContext.class);
+        when(selectSQLStatementContext.getPaginationContext()).thenReturn(pagination);
+        SQLRouteResult result = new SQLRouteResult(selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()), null);
         result.setRoutingResult(new RoutingResult());
         return result;
     }

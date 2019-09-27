@@ -595,10 +595,6 @@ MESSAGE
     : M E S S A G E
     ;
 
-TYPE
-    : T Y P E
-    ;
-
 REMOTE
     : R E M O T E
     ;

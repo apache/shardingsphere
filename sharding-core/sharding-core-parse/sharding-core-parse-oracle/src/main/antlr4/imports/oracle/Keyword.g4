@@ -510,3 +510,27 @@ NEXT
 NAME
     : N A M E
     ;
+
+COLLATION
+    : C O L L A T I O N
+    ;
+
+NAMES
+    : N A M E S
+    ;
+
+INTEGER
+    : I N T E G E R
+    ;
+
+REAL
+    : R E A L
+    ;
+
+DECIMAL
+    : D E C I M A L
+    ;
+
+TYPE
+    : T Y P E
+    ;

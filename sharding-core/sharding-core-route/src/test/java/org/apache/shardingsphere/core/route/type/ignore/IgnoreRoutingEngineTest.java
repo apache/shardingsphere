@@ -26,7 +26,7 @@ import static org.junit.Assert.assertThat;
 public final class IgnoreRoutingEngineTest {
 
     @Test
-    public void route() {
+    public void assertRoute() {
         IgnoreRoutingEngine ignoreRoutingEngine = new IgnoreRoutingEngine();
         ignoreRoutingEngine.route();
         assertThat(ignoreRoutingEngine.route(), instanceOf(RoutingResult.class));

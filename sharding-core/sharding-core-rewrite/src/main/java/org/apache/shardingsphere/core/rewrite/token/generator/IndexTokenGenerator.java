@@ -39,7 +39,7 @@ public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<Sh
     public Collection<IndexToken> generateSQLTokens(
             final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
         Collection<IndexToken> result = new LinkedList<>();
-        for (SQLSegment each : rewriteStatement.getOptimizedStatement().getSQLStatement().getAllSQLSegments()) {
+        for (SQLSegment each : rewriteStatement.getSqlStatementContext().getSqlStatement().getAllSQLSegments()) {
             if (each instanceof IndexSegment) {
                 result.add(createIndexToken((IndexSegment) each));
             }

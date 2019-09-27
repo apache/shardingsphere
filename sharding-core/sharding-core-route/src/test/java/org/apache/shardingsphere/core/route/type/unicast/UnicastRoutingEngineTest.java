@@ -39,7 +39,7 @@ public final class UnicastRoutingEngineTest {
     private ShardingRule shardingRule;
     
     @Before
-    public void setEngineContext() {
+    public void setUp() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..2}"));
         shardingRuleConfig.getBroadcastTables().add("t_config");

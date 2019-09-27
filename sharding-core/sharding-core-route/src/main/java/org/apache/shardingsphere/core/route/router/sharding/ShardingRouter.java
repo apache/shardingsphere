@@ -22,14 +22,10 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.encrypt.EncryptOptimizeEngineFactory;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.ShardingOptimizeEngineFactory;
-import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingConditionOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.optimize.SQLStatementContextFactory;
+import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
@@ -39,9 +35,9 @@ import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCo
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.router.sharding.condition.engine.InsertClauseShardingConditionEngine;
 import org.apache.shardingsphere.core.route.router.sharding.condition.engine.WhereClauseShardingConditionEngine;
-import org.apache.shardingsphere.core.route.router.sharding.validator.routingresult.RoutingResultValidatorFactory;
-import org.apache.shardingsphere.core.route.router.sharding.validator.statement.ShardingStatementValidator;
-import org.apache.shardingsphere.core.route.router.sharding.validator.statement.ShardingStatementValidatorFactory;
+import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
+import org.apache.shardingsphere.core.route.router.sharding.validator.ShardingStatementValidator;
+import org.apache.shardingsphere.core.route.router.sharding.validator.ShardingStatementValidatorFactory;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
@@ -98,48 +94,46 @@ public final class ShardingRouter {
         if (shardingStatementValidator.isPresent()) {
             shardingStatementValidator.get().validate(shardingRule, sqlStatement);
         }
-        ShardingOptimizedStatement shardingStatement = ShardingOptimizeEngineFactory.newInstance(sqlStatement).optimize(shardingRule, metaData.getTables(), logicSQL, parameters, sqlStatement);
-        ShardingConditions shardingConditions = getShardingConditions(parameters, shardingStatement);
-        boolean needMergeShardingValues = isNeedMergeShardingValues(shardingStatement);
-        if (shardingStatement instanceof ShardingConditionOptimizedStatement && needMergeShardingValues) {
-            checkSubqueryShardingValues(shardingStatement, shardingConditions);
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getTables(), logicSQL, parameters, sqlStatement);
+        Optional<GeneratedKey> generatedKey = sqlStatement instanceof InsertStatement
+                ? GeneratedKey.getGenerateKey(shardingRule, metaData.getTables(), parameters, (InsertStatement) sqlStatement) : Optional.<GeneratedKey>absent();
+        ShardingConditions shardingConditions = getShardingConditions(parameters, sqlStatementContext, generatedKey.orNull());
+        boolean needMergeShardingValues = isNeedMergeShardingValues(sqlStatementContext);
+        if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && needMergeShardingValues) {
+            checkSubqueryShardingValues(sqlStatementContext, shardingConditions);
             mergeShardingConditions(shardingConditions);
         }
-        RoutingEngine routingEngine = RoutingEngineFactory.newInstance(shardingRule, metaData, shardingStatement, shardingConditions);
+        RoutingEngine routingEngine = RoutingEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions);
         RoutingResult routingResult = routingEngine.route();
-        RoutingResultValidatorFactory.newInstance(routingEngine, shardingRule, metaData).validate(shardingStatement, shardingConditions, routingResult);
         if (needMergeShardingValues) {
             Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");
         }
-        if (shardingStatement instanceof ShardingInsertOptimizedStatement) {
-            setGeneratedValues((ShardingInsertOptimizedStatement) shardingStatement);
-        }
-        EncryptOptimizedStatement encryptStatement = EncryptOptimizeEngineFactory.newInstance(sqlStatement).optimize(
-                shardingRule.getEncryptRule(), metaData.getTables(), logicSQL, parameters, sqlStatement);
-        SQLRouteResult result = new SQLRouteResult(shardingStatement, encryptStatement, shardingConditions);
+        SQLRouteResult result = new SQLRouteResult(sqlStatementContext, shardingConditions, generatedKey.orNull());
         result.setRoutingResult(routingResult);
+        if (sqlStatementContext instanceof InsertSQLStatementContext) {
+            setGeneratedValues(result);
+        }
         return result;
     }
     
-    private ShardingConditions getShardingConditions(final List<Object> parameters, final ShardingOptimizedStatement shardingStatement) {
-        if (shardingStatement.getSQLStatement() instanceof DMLStatement) {
-            if (shardingStatement instanceof ShardingInsertOptimizedStatement) {
-                ShardingInsertOptimizedStatement shardingInsertStatement = (ShardingInsertOptimizedStatement) shardingStatement;
-                return new ShardingConditions(new InsertClauseShardingConditionEngine(shardingRule).createShardingConditions(
-                        (InsertStatement) shardingInsertStatement.getSQLStatement(), parameters, shardingInsertStatement.getColumnNames(), shardingInsertStatement.getGeneratedKey().orNull()));
+    private ShardingConditions getShardingConditions(final List<Object> parameters, final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
+        if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
+            if (sqlStatementContext instanceof InsertSQLStatementContext) {
+                InsertSQLStatementContext shardingInsertStatement = (InsertSQLStatementContext) sqlStatementContext;
+                return new ShardingConditions(new InsertClauseShardingConditionEngine(shardingRule).createShardingConditions(shardingInsertStatement, generatedKey, parameters));
             }
-            return new ShardingConditions(new WhereClauseShardingConditionEngine(shardingRule, metaData.getTables()).createShardingConditions(shardingStatement.getSQLStatement(), parameters));
+            return new ShardingConditions(new WhereClauseShardingConditionEngine(shardingRule, metaData.getTables()).createShardingConditions(sqlStatementContext.getSqlStatement(), parameters));
         }
         return new ShardingConditions(Collections.<ShardingCondition>emptyList());
     }
     
-    private boolean isNeedMergeShardingValues(final OptimizedStatement optimizedStatement) {
-        return optimizedStatement instanceof ShardingSelectOptimizedStatement && ((ShardingSelectOptimizedStatement) optimizedStatement).isContainsSubquery() 
-                && !shardingRule.getShardingLogicTableNames(optimizedStatement.getTables().getTableNames()).isEmpty();
+    private boolean isNeedMergeShardingValues(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext instanceof SelectSQLStatementContext && ((SelectSQLStatementContext) sqlStatementContext).isContainsSubquery() 
+                && !shardingRule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames()).isEmpty();
     }
     
-    private void checkSubqueryShardingValues(final OptimizedStatement optimizedStatement, final ShardingConditions shardingConditions) {
-        for (String each : optimizedStatement.getTables().getTableNames()) {
+    private void checkSubqueryShardingValues(final SQLStatementContext sqlStatementContext, final ShardingConditions shardingConditions) {
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
             if (tableRule.isPresent() && shardingRule.isRoutingByHint(tableRule.get()) && !HintManager.getDatabaseShardingValues(each).isEmpty()
                     && !HintManager.getTableShardingValues(each).isEmpty()) {
@@ -198,11 +192,11 @@ public final class ShardingRouter {
         }
     }
     
-    private void setGeneratedValues(final ShardingInsertOptimizedStatement optimizedStatement) {
-        if (optimizedStatement.getGeneratedKey().isPresent()) {
-            generatedValues.addAll(optimizedStatement.getGeneratedKey().get().getGeneratedValues());
-            optimizedStatement.getGeneratedKey().get().getGeneratedValues().clear();
-            optimizedStatement.getGeneratedKey().get().getGeneratedValues().addAll(generatedValues);
+    private void setGeneratedValues(final SQLRouteResult sqlRouteResult) {
+        if (sqlRouteResult.getGeneratedKey().isPresent()) {
+            generatedValues.addAll(sqlRouteResult.getGeneratedKey().get().getGeneratedValues());
+            sqlRouteResult.getGeneratedKey().get().getGeneratedValues().clear();
+            sqlRouteResult.getGeneratedKey().get().getGeneratedValues().addAll(generatedValues);
         }
     }
 }

@@ -55,6 +55,15 @@ public final class QueryRowTest {
         assertTrue(queryRow.equals(queryRow1));
         assertFalse(queryRow.equals(queryRow2));
     }
+
+    @Test
+    public void assertEqualPartlyWithNull() {
+        QueryRow queryRowWithNull = new QueryRow(Collections.singletonList(null), Collections.singletonList(1));
+        QueryRow queryRowWithNull2 = new QueryRow(Collections.singletonList(null), Collections.singletonList(1));
+        QueryRow queryRowWithNonNull = new QueryRow(Collections.singletonList((Object) 8), Collections.singletonList(1));
+        assertTrue(queryRowWithNull.equals(queryRowWithNull2));
+        assertFalse(queryRowWithNull.equals(queryRowWithNonNull));
+    }
     
     @Test
     public void assertHashCode() {

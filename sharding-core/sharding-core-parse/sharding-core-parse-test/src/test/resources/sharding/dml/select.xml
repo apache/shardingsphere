@@ -838,7 +838,7 @@
         </tokens>
     </parser-result>
     
-    <parser-result sql-case-id="select_distinct_function" >
+    <parser-result sql-case-id="select_distinct_function">
         <tables>
             <table name="t_order_item" />
         </tables>
@@ -1004,7 +1004,7 @@
             </column-select-items>
         </select-items>
     </parser-result>
-    <parser-result sql-case-id="select_special_function_nested">
+    <parser-result sql-case-id="select_special_function_nested" parameters="12, 1000">
         <tables>
             <table name="t_order"/>
         </tables>
@@ -1013,9 +1013,19 @@
         </tokens>
         <select-items start-index="7" stop-index="29">
             <aggregation-select-items>
-                <aggregation-select-item start-index="7" stop-index="29" type="SUM" text="sum(if(status=0,1,0))" innerExpressionStartIndex="10" />
+                <aggregation-select-item start-index="7" stop-index="29" type="SUM" text="sum(if(status=0,1,0))" innerExpressionStartIndex="10" alias="func_status" />
             </aggregation-select-items>
         </select-items>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="12" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1000" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
     </parser-result>
     <parser-result sql-case-id="select_with_row_subquery_without_row_keyword">
         <tables>
@@ -1043,7 +1053,7 @@
             </shorthand-select-items>
         </select-items>
     </parser-result>
-    <parser-result sql-case-id="select_with_interval_function">
+    <parser-result sql-case-id="select_with_interval_function" parameters="12, 1000">
         <tables>
             <table name="t_order"/>
         </tables>
@@ -1052,8 +1062,18 @@
         </tokens>
         <select-items start-index="7" stop-index="26">
             <expression-items>
-                <expression-item start-index="7" stop-index="26" text="INTERVAL(status,1,5)" alias="inSales" />
+                <expression-item start-index="7" stop-index="26" text="INTERVAL(status,1,5)" alias="func_status" />
             </expression-items>
         </select-items>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="12" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1000" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
     </parser-result>
 </parser-result-sets>

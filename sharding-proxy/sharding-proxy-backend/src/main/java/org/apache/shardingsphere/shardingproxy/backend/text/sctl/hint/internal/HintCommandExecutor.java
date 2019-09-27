@@ -18,18 +18,38 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal;
 
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
+
+import java.sql.SQLException;
 
 /**
  * Hint command executor.
  *
  * @author liya
  */
-public interface HintCommandExecutor {
+public interface HintCommandExecutor<T extends HintCommand> {
     
     /**
      * Execute hint command.
      *
+     * @param hintCommand hint command
      * @return backend response
      */
-    BackendResponse execute();
+    BackendResponse execute(T hintCommand);
+    
+    /**
+     * Goto next result value.
+     *
+     * @return has more result value or not
+     * @throws SQLException SQL exception
+     */
+    boolean next() throws SQLException;
+    
+    /**
+     * Get query data.
+     *
+     * @return query data
+     * @throws SQLException SQL exception
+     */
+    QueryData getQueryData() throws SQLException;
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -45,14 +45,14 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
     @Override
     public Collection<EncryptColumnToken> generateSQLTokens(
             final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
-        return rewriteStatement.getOptimizedStatement().getSQLStatement() instanceof UpdateStatement 
-                ? createUpdateEncryptColumnTokens(parameterBuilder, encryptRule, rewriteStatement.getOptimizedStatement()) : Collections.<EncryptColumnToken>emptyList();
+        return rewriteStatement.getSqlStatementContext().getSqlStatement() instanceof UpdateStatement 
+                ? createUpdateEncryptColumnTokens(parameterBuilder, encryptRule, rewriteStatement.getSqlStatementContext()) : Collections.<EncryptColumnToken>emptyList();
     }
     
-    private Collection<EncryptColumnToken> createUpdateEncryptColumnTokens(final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final OptimizedStatement optimizedStatement) {
+    private Collection<EncryptColumnToken> createUpdateEncryptColumnTokens(final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext) {
         Collection<EncryptColumnToken> result = new LinkedList<>();
-        String tableName = optimizedStatement.getTables().getSingleTableName();
-        for (AssignmentSegment each : ((UpdateStatement) optimizedStatement.getSQLStatement()).getSetAssignment().getAssignments()) {
+        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
+        for (AssignmentSegment each : ((UpdateStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().getAssignments()) {
             if (encryptRule.findShardingEncryptor(tableName, each.getColumn().getName()).isPresent()) {
                 result.add(createUpdateEncryptColumnToken(parameterBuilder, encryptRule, tableName, each));
             }

@@ -38,6 +38,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -106,7 +107,7 @@ public final class MasterSlaveDataSourceTest {
         when(masterDataSource.getConnection()).thenReturn(masterConnection);
         when(slaveDataSource1.getConnection()).thenReturn(slaveConnection1);
         when(slaveDataSource2.getConnection()).thenReturn(slaveConnection2);
-        Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
+        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(3, 1);
         dataSourceMap.put("masterDataSource", masterDataSource);
         dataSourceMap.put("slaveDataSource1", slaveDataSource1);
         dataSourceMap.put("slaveDataSource2", slaveDataSource2);

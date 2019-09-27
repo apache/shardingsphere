@@ -219,6 +219,10 @@ dropLogfileGroup
     : DROP LOGFILE GROUP identifier_ ENGINE EQ_ identifier_
     ;
 
+createTrigger
+    :  CREATE ownerStatement? TRIGGER triggerName triggerTime triggerEvent ON tableName FOR EACH ROW triggerOrder? routineBody
+    ;
+
 createTableSpecification_
     : TEMPORARY
     ;

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.api.statement.InsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
@@ -41,23 +41,23 @@ public final class InsertQueryAndPlainNamesTokenGenerator implements OptionalSQL
     @Override
     public Optional<InsertQueryAndPlainNamesToken> generateSQLToken(
             final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
-        if (!isNeedToGenerateSQLToken(rewriteStatement.getOptimizedStatement())) {
+        if (!isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext())) {
             return Optional.absent();
         }
-        return createInsertAssistedColumnsToken(rewriteStatement.getOptimizedStatement(), encryptRule);
+        return createInsertAssistedColumnsToken(rewriteStatement.getSqlStatementContext(), encryptRule);
     }
     
-    private boolean isNeedToGenerateSQLToken(final OptimizedStatement optimizedStatement) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
-        return optimizedStatement instanceof InsertOptimizedStatement && insertColumnsSegment.isPresent();
+    private boolean isNeedToGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+        Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
+        return sqlStatementContext instanceof InsertSQLStatementContext && insertColumnsSegment.isPresent();
     }
     
-    private Optional<InsertQueryAndPlainNamesToken> createInsertAssistedColumnsToken(final OptimizedStatement optimizedStatement, final EncryptRule encryptRule) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = optimizedStatement.getSQLStatement().findSQLSegment(InsertColumnsSegment.class);
+    private Optional<InsertQueryAndPlainNamesToken> createInsertAssistedColumnsToken(final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
+        Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         if (!insertColumnsSegment.isPresent()) {
             return Optional.absent();
         }
-        String tableName = optimizedStatement.getTables().getSingleTableName();
+        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         return encryptRule.getAssistedQueryAndPlainColumns(tableName).isEmpty() ? Optional.<InsertQueryAndPlainNamesToken>absent()
                 : Optional.of(new InsertQueryAndPlainNamesToken(
                         insertColumnsSegment.get().getStopIndex(), getEncryptDerivedColumnNames(tableName, encryptRule), insertColumnsSegment.get().getColumns().isEmpty()));

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesCons
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.core.merge.dql.iterator.IteratorStreamMergedResult;
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
@@ -55,7 +55,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     private final EncryptRule encryptRule;
     
-    private final OptimizedStatement optimizedStatement;
+    private final SQLStatementContext sqlStatementContext;
     
     private final Statement encryptStatement;
     
@@ -65,10 +65,10 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     private final Map<String, String> logicAndActualColumns;
     
-    public EncryptResultSet(final EncryptRuntimeContext encryptRuntimeContext, 
-                            final OptimizedStatement optimizedStatement, final Statement encryptStatement, final ResultSet resultSet) throws SQLException {
+    public EncryptResultSet(final EncryptRuntimeContext encryptRuntimeContext,
+                            final SQLStatementContext sqlStatementContext, final Statement encryptStatement, final ResultSet resultSet) throws SQLException {
         this.encryptRule = encryptRuntimeContext.getRule();
-        this.optimizedStatement = optimizedStatement;
+        this.sqlStatementContext = sqlStatementContext;
         this.encryptStatement = encryptStatement;
         originalResultSet = resultSet;
         QueryResult queryResult = new StreamQueryResult(resultSet, encryptRule, encryptRuntimeContext.getProps());
@@ -82,7 +82,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     private Map<String, String> createLogicAndCipherColumns() {
         Map<String, String> result = new LinkedHashMap<>();
-        for (String each : optimizedStatement.getTables().getTableNames()) {
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             result.putAll(encryptRule.getLogicAndCipherColumns(each));
         }
         return result;
@@ -90,7 +90,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     private Map<String, String> createLogicAndPlainColumns() {
         Map<String, String> result = new LinkedHashMap<>();
-        for (String each : optimizedStatement.getTables().getTableNames()) {
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             result.putAll(encryptRule.getLogicAndPlainColumns(each));
         }
         return result;
@@ -372,7 +372,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public ResultSetMetaData getMetaData() throws SQLException {
-        return new EncryptResultSetMetaData(originalResultSet.getMetaData(), encryptRule, optimizedStatement, logicAndActualColumns);
+        return new EncryptResultSetMetaData(originalResultSet.getMetaData(), encryptRule, sqlStatementContext, logicAndActualColumns);
     }
     
     @Override

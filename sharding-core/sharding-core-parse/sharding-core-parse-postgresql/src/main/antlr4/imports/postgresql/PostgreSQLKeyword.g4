@@ -423,10 +423,6 @@ TEMPORARY
     : T E M P O R A R Y
     ;
 
-TYPE
-    : T Y P E
-    ;
-
 UNBOUNDED
     : U N B O U N D E D
     ;

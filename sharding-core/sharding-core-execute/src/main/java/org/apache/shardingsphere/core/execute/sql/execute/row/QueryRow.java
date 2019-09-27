@@ -66,7 +66,10 @@ public final class QueryRow {
     
     private boolean isEqualPartly(final QueryRow queryRow) {
         for (int i = 0; i < distinctColumnIndexes.size(); i++) {
-            if (!rowData.get(i).equals(queryRow.getRowData().get(i))) {
+            if (null == rowData.get(i) && null != queryRow.getRowData().get(i)) {
+                return false;
+            }
+            if (null != rowData.get(i) && !rowData.get(i).equals(queryRow.getRowData().get(i))) {
                 return false;
             }
         }

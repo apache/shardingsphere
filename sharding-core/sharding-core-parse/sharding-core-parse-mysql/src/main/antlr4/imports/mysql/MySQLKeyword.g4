@@ -1211,3 +1211,295 @@ OUTFILE
 SHARE
     : S H A R E
     ;
+
+LOGS
+    : L O G S
+    ;
+
+EVENTS
+    : E V E N T S
+    ;
+
+BEFORE
+    : B E F O R E
+    ;
+
+EACH
+    : E A C H
+    ;
+
+MUTEX
+    : M U T E X
+    ;
+
+ENGINES
+    : E N G I N E S
+    ;
+
+ERRORS
+    : E R R O R S
+    ;
+
+CODE
+    : C O D E
+    ;
+
+GRANTS
+    : G R A N T S
+    ;
+
+PLUGINS
+    : P L U G I N S
+    ;
+
+PROCESSLIST
+    : P R O C E S S L I S T
+    ;
+
+BLOCK
+    : B L O C K
+    ;
+
+IO
+    : I O
+    ;
+
+CONTEXT
+    : C O N T E X T
+    ;
+
+SWITCHES
+    : S W I T C H E S
+    ; 
+
+CPU
+    : C P U
+    ;
+
+IPC
+    : I P C
+    ;
+
+PAGE
+    : P A G E
+    ;
+
+FAULTS
+    : F A U L T S
+    ;
+
+SOURCE
+    : S O U R C E
+    ;
+
+SWAPS
+    : S W A P S
+    ;
+
+PROFILE
+    : P R O F I L E
+    ;
+
+PROFILES
+    : P R O F I L E S
+    ;
+
+RELAYLOG
+    : R E L A Y L O G
+    ;
+
+CHANNEL
+    : C H A N N E L
+    ;
+
+VARIABLES
+    : V A R I A B L E S
+    ;
+
+WARNINGS
+    : W A R N I N G S
+    ;
+
+SSL
+    : S S L
+    ;
+
+CLONE
+    : C L O N E
+    ;
+
+AGGREGATE
+    : A G G R E G A T E
+    ;
+
+STRING
+    : S T R I N G
+    ;
+
+SONAME
+    : S O N A M E
+    ;
+
+INSTALL
+    : I N S T A L L
+    ;
+
+COMPONENT
+    : C O M P O N E N T
+    ;
+
+PLUGIN
+    : P L U G I N
+    ;
+
+UNINSTALL
+    : U N I N S T A L L
+    ;
+
+NO_WRITE_TO_BINLOG
+    : N O UL_ W R I T E UL_ T O UL_ B I N L O G
+    ;
+
+HISTOGRAM
+    : H I S T O G R A M
+    ;
+
+BUCKETS
+    : B U C K E T S
+    ;
+
+FAST 
+    : F A S T
+    ;
+
+MEDIUM
+    : M E D I U M
+    ;
+
+USE_FRM
+    : U S E UL_ F R M
+    ;
+
+RESOURCE
+    : R E S O U R C E
+    ;
+
+VCPU
+    : V C P U
+    ;
+
+THREAD_PRIORITY
+    : T H R E A D UL_ P R I O R I T Y
+    ;
+
+SYSTEM
+    : S Y S T E M
+    ;
+
+EXPIRE
+    : E X P I R E
+    ;
+
+NEVER
+    : N E V E R
+    ;
+
+HISTORY
+    : H I S T O R Y
+    ;
+
+OPTIONAL
+    : O P T I O N A L
+    ;
+
+REUSE
+    : R E U S E
+    ;
+
+MAX_QUERIES_PER_HOUR
+    : M A X UL_ Q U E R I E S UL_ P E R UL_ H O U R
+    ;
+
+MAX_UPDATES_PER_HOUR
+    : M A X UL_ U P D A T E S UL_ P E R UL_ H O U R
+    ;
+
+MAX_CONNECTIONS_PER_HOUR
+    : M A X UL_ C O N N E C T I O N S UL_ P E R UL_ H O U R
+    ;
+
+MAX_USER_CONNECTIONS
+    : M A X UL_ U S E R UL_ C O N N E C T I O N S
+    ; 
+
+RETAIN
+    : R E T A I N
+    ;
+
+RANDOM
+    : R A N D O M
+    ;
+
+OLD
+    : O L D
+    ;
+
+X509
+    : X '509'
+    ;
+
+ISSUER
+    : I S S U E R
+    ;
+
+SUBJECT
+    : S U B J E C T
+    ;
+
+CACHE
+    : C A C H E
+    ;
+
+GENERAL
+    : G E N E R A L
+    ;
+
+OPTIMIZER_COSTS
+    : O P T I M I Z E R UL_ C O S T S
+    ;
+
+SLOW
+    : S L O W
+    ;
+
+USER_RESOURCES
+    : U S E R UL_ R E S O U R C E S
+    ;
+
+EXPORT
+    : E X P O R T
+    ;
+
+RELAY
+    : R E L A Y
+    ;
+
+HOSTS
+    : H O S T S
+    ;
+
+KILL
+    : K I L L
+    ;
+
+FLUSH
+    : F L U S H
+    ;
+
+RESET
+    : R E S E T
+    ;
+
+RESTART
+    : R E S T A R T
+    ;

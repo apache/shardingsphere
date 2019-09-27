@@ -403,10 +403,6 @@ NO
     : N O
     ;
 
-TYPE
-    : T Y P E
-    ;
-
 UNUSED
     : U N U S E D
     ;
