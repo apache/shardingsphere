@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,6 +36,14 @@ import java.util.concurrent.ExecutionException;
  */
 @Slf4j
 public final class DbMetaDataUtil {
+
+    private static final String COLUMN_NAME = "COLUMN_NAME";
+
+    private static final String TYPE_NAME = "TYPE_NAME";
+
+    private static final String DATA_TYPE = "DATA_TYPE";
+
+    private static final String TABLE_NAME = "TABLE_NAME";
 
     private final RdbmsConfiguration rdbmsConfiguration;
 
@@ -78,7 +87,7 @@ public final class DbMetaDataUtil {
                 var rs = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), null, tableName);
                 var primaryKeys = new ArrayList<String>(rs.getRow());
                 while (rs.next()) {
-                    primaryKeys.add(rs.getString("COLUMN_NAME"));
+                    primaryKeys.add(rs.getString(COLUMN_NAME));
                 }
                 return primaryKeys;
             }
@@ -93,7 +102,7 @@ public final class DbMetaDataUtil {
                 var rs = connection.getMetaData().getTables(connection.getCatalog(), null, "%", new String[]{"TABLE"});
                 var tableNames = new LinkedList<String>();
                 while (rs.next()) {
-                    tableNames.add(rs.getString("TABLE_NAME"));
+                    tableNames.add(rs.getString(TABLE_NAME));
                 }
                 return tableNames;
             }
@@ -113,15 +122,15 @@ public final class DbMetaDataUtil {
     public List<ColumnMetaData> getColumNamesInternal(String tableName) {
         try {
             try (var connection = DriverManager.getConnection(rdbmsConfiguration.getJdbcUrl(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword())) {
-                var ps = connection.prepareStatement(String.format("select * from %s limit 1", tableName));
-                var metaData = ps.executeQuery().getMetaData();
-                var result = new ArrayList<ColumnMetaData>(metaData.getColumnCount());
-                for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                    var columnMetaData = new ColumnMetaData();
-                    columnMetaData.setColumnName(metaData.getColumnName(i));
-                    columnMetaData.setColumnType(metaData.getColumnType(i));
-                    columnMetaData.setColumnTypeName(metaData.getColumnTypeName(i));
-                    result.add(columnMetaData);
+                var result = new ArrayList<ColumnMetaData>();
+                try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), connection.getSchema(), tableName, "%")) {
+                    while (resultSet.next()) {
+                        var columnMetaData = new ColumnMetaData();
+                        columnMetaData.setColumnName(resultSet.getString(COLUMN_NAME));
+                        columnMetaData.setColumnType(resultSet.getInt(DATA_TYPE));
+                        columnMetaData.setColumnTypeName(resultSet.getString(TYPE_NAME));
+                        result.add(columnMetaData);
+                    }
                 }
                 return result;
             }
