@@ -21,10 +21,9 @@ import com.google.common.base.Optional;
 import lombok.Setter;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptCondition;
-import org.apache.shardingsphere.core.rewrite.encrypt.WhereClauseEncryptConditionEngine;
+import org.apache.shardingsphere.core.rewrite.encrypt.EncryptConditionEngine;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.TableMetasAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
@@ -53,14 +52,9 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
     @Override
     public Collection<EncryptColumnToken> generateSQLTokens(final RewriteStatement rewriteStatement, 
                                                             final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final boolean isQueryWithCipherColumn) {
-        List<EncryptCondition> encryptConditions = rewriteStatement.getSqlStatementContext().getSqlStatement() instanceof DMLStatement
-                ? createEncryptConditions(encryptRule, (DMLStatement) rewriteStatement.getSqlStatementContext().getSqlStatement()) : Collections.<EncryptCondition>emptyList();
+        List<EncryptCondition> encryptConditions = new EncryptConditionEngine(encryptRule, tableMetas).createEncryptConditions(rewriteStatement.getSqlStatementContext().getSqlStatement());
         return encryptConditions.isEmpty()
                 ? Collections.<EncryptColumnToken>emptyList() : createWhereEncryptColumnTokens(parameterBuilder, encryptRule, isQueryWithCipherColumn, encryptConditions);
-    }
-    
-    private List<EncryptCondition> createEncryptConditions(final EncryptRule encryptRule, final DMLStatement sqlStatement) {
-        return new WhereClauseEncryptConditionEngine(encryptRule, tableMetas).createEncryptConditions(sqlStatement);
     }
     
     private Collection<EncryptColumnToken> createWhereEncryptColumnTokens(final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, 

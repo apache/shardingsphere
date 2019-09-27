@@ -42,12 +42,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Encrypt condition engine for where clause.
+ * Encrypt condition engine.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class WhereClauseEncryptConditionEngine {
+public final class EncryptConditionEngine {
     
     private final EncryptRule encryptRule;
     
