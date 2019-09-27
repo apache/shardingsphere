@@ -122,6 +122,16 @@ public final class DataTypesCodec {
     }
 
     /**
+     * Read unsigned big endian byte order 2 byte integer from {@code ByteBuf}.
+     *
+     * @param in byte buffer
+     * @return int value
+     */
+    public static int readUnsignedInt2BE(final ByteBuf in) {
+        return in.readUnsignedShort();
+    }
+
+    /**
      * Read unsigned little endian byte order 2 byte integer from {@code ByteBuf}.
      *
      * @param in byte buffer

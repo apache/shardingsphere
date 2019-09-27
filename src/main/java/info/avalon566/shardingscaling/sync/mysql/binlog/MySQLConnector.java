@@ -20,6 +20,7 @@ package info.avalon566.shardingscaling.sync.mysql.binlog;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.MySQLBinlogEventPacketDecoder;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.MySQLCommandPacketDecoder;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.MySQLLengthFieldBasedFrameEncoder;
+import info.avalon566.shardingscaling.sync.mysql.binlog.event.AbstractBinlogEvent;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.command.BinlogDumpCommandPacket;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.command.QueryCommandPacket;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.command.RegisterSlaveCommandPacket;
@@ -44,6 +45,7 @@ import lombok.var;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteOrder;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -71,6 +73,8 @@ public final class MySQLConnector {
     
     private Promise<Object> responseCallback;
 
+    private ArrayBlockingQueue<AbstractBinlogEvent> blockingEventQueue = new ArrayBlockingQueue(1000);
+
     class MySQLCommandResponHandler extends ChannelInboundHandlerAdapter {
         @Override
         public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
@@ -85,6 +89,20 @@ public final class MySQLConnector {
                 responseCallback.setFailure(cause);
                 log.error("protocol resolution error", cause);
             }
+        }
+    }
+
+    class MySQLBinlogEventHandler extends ChannelInboundHandlerAdapter {
+        @Override
+        public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+            if(msg instanceof AbstractBinlogEvent) {
+                blockingEventQueue.put((AbstractBinlogEvent) msg);
+            }
+        }
+
+        @Override
+        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+            log.error("protocol resolution error", cause);
         }
     }
 
@@ -162,12 +180,12 @@ public final class MySQLConnector {
     }
     
     /**
-     * Dump binlog.
+     * Start dump binlog.
      *
      * @param binlogFileName binlog file name
      * @param binlogPosition binlog position
      */
-    public synchronized void dump(final String binlogFileName, final long binlogPosition) {
+    public synchronized void subscribe(final String binlogFileName, final long binlogPosition) {
         initDumpConnectSession();
         registerSlave();
         responseCallback = null;
@@ -177,16 +195,18 @@ public final class MySQLConnector {
         binlogDumpCmd.setSlaveServerId(serverId);
         channel.pipeline().remove(MySQLCommandPacketDecoder.class);
         channel.pipeline().remove(MySQLCommandResponHandler.class);
-        channel.pipeline().addAfter(
-                MySQLLengthFieldBasedFrameEncoder.class.getSimpleName(),
-                MySQLBinlogEventPacketDecoder.class.getSimpleName(),
-                new MySQLBinlogEventPacketDecoder());
+        channel.pipeline().addLast(new MySQLBinlogEventPacketDecoder());
+        channel.pipeline().addLast(new MySQLBinlogEventHandler());
         channel.writeAndFlush(binlogDumpCmd);
-        try {
-            Thread.sleep(Long.MAX_VALUE);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    }
+
+    /**
+     * Poll binlog event.
+     *
+     * @return binlog event
+     */
+    public synchronized AbstractBinlogEvent poll() {
+        return blockingEventQueue.poll();
     }
 
     private void initDumpConnectSession() {
