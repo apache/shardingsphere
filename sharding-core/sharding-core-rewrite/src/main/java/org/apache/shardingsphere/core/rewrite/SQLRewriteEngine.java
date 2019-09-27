@@ -68,7 +68,7 @@ public final class SQLRewriteEngine {
         baseRule = shardingRule;
         rewriteStatement = RewriteStatementFactory.newInstance(shardingRule, tableMetas, sqlRouteResult);
         parameterBuilder = ParameterBuilderFactory.newInstance(rewriteStatement, parameters, sqlRouteResult);
-        sqlTokens = createSQLTokens(isSingleRoute, isQueryWithCipherColumn);
+        sqlTokens = createSQLTokens(tableMetas, isSingleRoute, isQueryWithCipherColumn);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
     }
     
@@ -77,7 +77,7 @@ public final class SQLRewriteEngine {
         baseRule = encryptRule;
         rewriteStatement = RewriteStatementFactory.newInstance(encryptRule, tableMetas, encryptStatement);
         parameterBuilder = ParameterBuilderFactory.newInstance(rewriteStatement, parameters);
-        sqlTokens = createSQLTokens(false, isQueryWithCipherColumn);
+        sqlTokens = createSQLTokens(tableMetas, false, isQueryWithCipherColumn);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
     }
     
@@ -86,19 +86,19 @@ public final class SQLRewriteEngine {
         rewriteStatement = new RewriteStatement(
                 sqlStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()), new EncryptConditions(Collections.<EncryptCondition>emptyList()));
         parameterBuilder = ParameterBuilderFactory.newInstance(rewriteStatement, Collections.emptyList());
-        sqlTokens = createSQLTokens(false, false);
+        sqlTokens = createSQLTokens(null, false, false);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
     }
     
-    private List<SQLToken> createSQLTokens(final boolean isSingleRoute, final boolean isQueryWithCipherColumn) {
+    private List<SQLToken> createSQLTokens(final TableMetas tableMetas, final boolean isSingleRoute, final boolean isQueryWithCipherColumn) {
         List<SQLToken> result = new LinkedList<>();
-        result.addAll(new BaseTokenGenerateEngine().generateSQLTokens(rewriteStatement, parameterBuilder, baseRule, isSingleRoute, isQueryWithCipherColumn));
+        result.addAll(new BaseTokenGenerateEngine().generateSQLTokens(rewriteStatement, parameterBuilder, baseRule, tableMetas, isSingleRoute, isQueryWithCipherColumn));
         if (baseRule instanceof ShardingRule) {
             ShardingRule shardingRule = (ShardingRule) baseRule;
-            result.addAll(new ShardingTokenGenerateEngine().generateSQLTokens(rewriteStatement, parameterBuilder, shardingRule, isSingleRoute, isQueryWithCipherColumn));
-            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(rewriteStatement, parameterBuilder, shardingRule.getEncryptRule(), isSingleRoute, isQueryWithCipherColumn));
+            result.addAll(new ShardingTokenGenerateEngine().generateSQLTokens(rewriteStatement, parameterBuilder, shardingRule, tableMetas, isSingleRoute, isQueryWithCipherColumn));
+            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(rewriteStatement, parameterBuilder, shardingRule.getEncryptRule(), tableMetas, isSingleRoute, isQueryWithCipherColumn));
         } else if (baseRule instanceof EncryptRule) {
-            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(rewriteStatement, parameterBuilder, (EncryptRule) baseRule, isSingleRoute, isQueryWithCipherColumn));
+            result.addAll(new EncryptTokenGenerateEngine().generateSQLTokens(rewriteStatement, parameterBuilder, (EncryptRule) baseRule, tableMetas, isSingleRoute, isQueryWithCipherColumn));
         }
         Collections.sort(result);
         return result;

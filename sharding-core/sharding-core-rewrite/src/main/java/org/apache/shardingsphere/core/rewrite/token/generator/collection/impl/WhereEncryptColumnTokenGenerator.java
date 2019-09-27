@@ -18,10 +18,13 @@
 package org.apache.shardingsphere.core.rewrite.token.generator.collection.impl;
 
 import com.google.common.base.Optional;
+import lombok.Setter;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.rewrite.encrypt.EncryptCondition;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.encrypt.EncryptCondition;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
+import org.apache.shardingsphere.core.rewrite.token.generator.TableMetasAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.EncryptColumnToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.WhereEncryptColumnToken;
@@ -40,7 +43,10 @@ import java.util.Map.Entry;
  *
  * @author panjuan
  */
-public final class WhereEncryptColumnTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
+@Setter
+public final class WhereEncryptColumnTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule>, TableMetasAware {
+    
+    private TableMetas tableMetas;
     
     @Override
     public Collection<EncryptColumnToken> generateSQLTokens(

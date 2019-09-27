@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.core.rewrite.token;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
+import org.apache.shardingsphere.core.rewrite.token.generator.TableMetasAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
@@ -46,17 +48,21 @@ public abstract class SQLTokenGenerateEngine<T extends BaseRule> {
      * @param rewriteStatement rewrite statement
      * @param parameterBuilder SQL parameter builder
      * @param rule rule
+     * @param tableMetas table metas
      * @param isSingleRoute is single route
      * @param isQueryWithCipherColumn  is query with cipher column
      * @return SQL tokens
      */
     @SuppressWarnings("unchecked")
-    public final List<SQLToken> generateSQLTokens(
-            final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final T rule, final boolean isSingleRoute, final boolean isQueryWithCipherColumn) {
+    public final List<SQLToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, 
+                                                  final T rule, final TableMetas tableMetas, final boolean isSingleRoute, final boolean isQueryWithCipherColumn) {
         List<SQLToken> result = new LinkedList<>();
         for (SQLTokenGenerator each : getSQLTokenGenerators()) {
             if (isSingleRoute && each instanceof IgnoreForSingleRoute) {
                 continue;
+            }
+            if (each instanceof TableMetasAware) {
+                ((TableMetasAware) each).setTableMetas(tableMetas);
             }
             if (each instanceof OptionalSQLTokenGenerator) {
                 Optional<? extends SQLToken> sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(rewriteStatement, parameterBuilder, rule, isQueryWithCipherColumn);
