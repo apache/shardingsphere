@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.core.rewrite.token;
 
-import org.apache.shardingsphere.core.rewrite.token.generator.AggregationDistinctTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.IndexTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.InsertGeneratedKeyNameTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.InsertSetGeneratedKeyColumnTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.OffsetTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.OrderByTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.RowCountTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.AggregationDistinctTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.IndexTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertGeneratedKeyNameTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertSetGeneratedKeyColumnTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.OffsetTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.OrderByTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.RowCountTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.SelectItemPrefixTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.ProjectionsTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.SelectItemPrefixTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.ProjectionsTokenGenerator;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;

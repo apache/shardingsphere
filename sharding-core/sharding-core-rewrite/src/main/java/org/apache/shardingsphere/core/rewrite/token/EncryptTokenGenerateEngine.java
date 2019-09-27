@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.core.rewrite.token;
 
-import org.apache.shardingsphere.core.rewrite.token.generator.InsertCipherNameTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.InsertQueryAndPlainNamesTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.InsertSetCipherColumnTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.InsertSetQueryAndPlainColumnsTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.InsertValuesTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.InsertCipherNameTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertQueryAndPlainNamesTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.InsertSetCipherColumnTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertSetQueryAndPlainColumnsTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertValuesTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.SelectEncryptItemTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.UpdateEncryptColumnTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.WhereEncryptColumnTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.SelectEncryptItemTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.UpdateEncryptColumnTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.WhereEncryptColumnTokenGenerator;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;

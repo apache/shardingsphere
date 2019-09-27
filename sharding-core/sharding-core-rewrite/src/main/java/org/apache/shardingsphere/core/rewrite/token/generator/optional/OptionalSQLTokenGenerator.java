@@ -15,33 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token.generator;
+package org.apache.shardingsphere.core.rewrite.token.generator.optional;
 
+import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
+import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rule.BaseRule;
 
-import java.util.Collection;
-
 /**
- * SQL token generator for collection.
+ * SQL token generator for optional.
  *
  * @author zhangliang
  * @author panjuan
  * 
  * @param <T> type of rule 
  */
-public interface CollectionSQLTokenGenerator<T extends BaseRule> extends SQLTokenGenerator {
+public interface OptionalSQLTokenGenerator<T extends BaseRule> extends SQLTokenGenerator {
     
     /**
-     * Generate SQL tokens.
+     * Generate SQL token.
      * 
      * @param rewriteStatement rewrite statement
      * @param parameterBuilder SQL parameter builder
      * @param rule rule
      * @param isQueryWithCipherColumn is query with cipher column
-     * @return SQL tokens
+     * @return SQL token
      */
-    Collection<? extends SQLToken> generateSQLTokens(RewriteStatement rewriteStatement, ParameterBuilder parameterBuilder, T rule, boolean isQueryWithCipherColumn);
+    Optional<? extends SQLToken> generateSQLToken(RewriteStatement rewriteStatement, ParameterBuilder parameterBuilder, T rule, boolean isQueryWithCipherColumn);
 }

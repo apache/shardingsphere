@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.core.rewrite.token;
 
-import org.apache.shardingsphere.core.rewrite.token.generator.InsertRegularNamesTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.RemoveTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertRegularNamesTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.RemoveTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.TableTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.TableTokenGenerator;
 import org.apache.shardingsphere.core.rule.BaseRule;
 
 import java.util.Collection;

@@ -15,34 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token.generator;
+package org.apache.shardingsphere.core.rewrite.token.generator.collection.impl;
 
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.RemoveAvailable;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
-import org.apache.shardingsphere.core.rewrite.token.pojo.RemoveToken;
-import org.apache.shardingsphere.core.rule.BaseRule;
+import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.pojo.IndexToken;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Remove token generator.
+ * Index token generator.
  *
  * @author zhangliang
+ * @author panjuan
  */
-public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<BaseRule> {
+public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<ShardingRule> {
     
     @Override
-    public Collection<RemoveToken> generateSQLTokens(
-            final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final BaseRule baseRule, final boolean isQueryWithCipherColumn) {
-        Collection<RemoveToken> result = new LinkedList<>();
+    public Collection<IndexToken> generateSQLTokens(
+            final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, final boolean isQueryWithCipherColumn) {
+        Collection<IndexToken> result = new LinkedList<>();
         for (SQLSegment each : rewriteStatement.getSqlStatementContext().getSqlStatement().getAllSQLSegments()) {
-            if (each instanceof RemoveAvailable) {
-                result.add(new RemoveToken(each.getStartIndex(), each.getStopIndex()));
+            if (each instanceof IndexSegment) {
+                result.add(createIndexToken((IndexSegment) each));
             }
         }
         return result;
+    }
+    
+    private IndexToken createIndexToken(final IndexSegment segment) {
+        return new IndexToken(segment.getStartIndex(), segment.getStopIndex(), segment.getName(), segment.getQuoteCharacter());
     }
 }
