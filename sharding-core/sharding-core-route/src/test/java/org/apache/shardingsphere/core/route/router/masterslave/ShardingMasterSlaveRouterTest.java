@@ -56,7 +56,7 @@ public class ShardingMasterSlaveRouterTest {
     private MasterSlaveRule masterSlaveRule;
     
     @Mock
-    private SQLStatementContext shardingStatementContext;
+    private SQLStatementContext sqlStatementContext;
     
     @Mock
     private InsertStatement insertStatement;
@@ -99,8 +99,8 @@ public class ShardingMasterSlaveRouterTest {
     }
     
     private SQLRouteResult mockSQLRouteResult(final SQLStatement sqlStatement) {
-        when(shardingStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        SQLRouteResult result = new SQLRouteResult(shardingStatementContext, null, null, null);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        SQLRouteResult result = new SQLRouteResult(sqlStatementContext, null, null);
         result.setRoutingResult(mockRoutingResult());
         return result;
     }

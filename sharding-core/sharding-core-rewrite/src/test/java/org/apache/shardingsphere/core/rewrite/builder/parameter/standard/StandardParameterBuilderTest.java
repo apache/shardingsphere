@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.builder.parameter.standard;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -58,8 +57,7 @@ public final class StandardParameterBuilderTest {
         when(pagination.getRevisedRowCount(any(SelectSQLStatementContext.class))).thenReturn(6L);
         SelectSQLStatementContext selectSQLStatementContext = mock(SelectSQLStatementContext.class);
         when(selectSQLStatementContext.getPaginationContext()).thenReturn(pagination);
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        SQLRouteResult result = new SQLRouteResult(selectSQLStatementContext, sqlStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()), null);
+        SQLRouteResult result = new SQLRouteResult(selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()), null);
         result.setRoutingResult(new RoutingResult());
         return result;
     }

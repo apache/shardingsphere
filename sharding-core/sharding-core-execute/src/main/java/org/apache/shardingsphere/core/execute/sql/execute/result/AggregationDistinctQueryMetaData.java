@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.AggregationDistinctProjection;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 
 import java.util.Collection;
@@ -48,32 +48,33 @@ public final class AggregationDistinctQueryMetaData {
     
     private final Map<Integer, Integer> aggregationDistinctColumnIndexAndSumColumnIndexes = new HashMap<>();
     
-    public AggregationDistinctQueryMetaData(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems, final QueryResultMetaData queryResultMetaData) {
-        aggregationDistinctColumnMetaDataList.addAll(getColumnMetaDataList(aggregationDistinctSelectItems, queryResultMetaData));
+    public AggregationDistinctQueryMetaData(final Collection<AggregationDistinctProjection> aggregationDistinctProjections, final QueryResultMetaData queryResultMetaData) {
+        aggregationDistinctColumnMetaDataList.addAll(getColumnMetaDataList(aggregationDistinctProjections, queryResultMetaData));
         aggregationDistinctColumnIndexAndLabels.putAll(getAggregationDistinctColumnIndexAndLabels());
         aggregationDistinctColumnIndexAndAggregationTypes.putAll(getAggregationDistinctColumnIndexAndAggregationTypes());
         aggregationDistinctColumnIndexAndCountColumnIndexes.putAll(getAggregationDistinctColumnIndexAndCountColumnIndexes());
         aggregationDistinctColumnIndexAndSumColumnIndexes.putAll(getAggregationDistinctColumnIndexAndSumColumnIndexes());
     }
     
-    private Collection<AggregationDistinctColumnMetaData> getColumnMetaDataList(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems, 
+    private Collection<AggregationDistinctColumnMetaData> getColumnMetaDataList(final Collection<AggregationDistinctProjection> aggregationDistinctProjections, 
                                                                                 final QueryResultMetaData queryResultMetaData) {
         Collection<AggregationDistinctColumnMetaData> result = new LinkedList<>();
-        for (AggregationDistinctSelectItem each : aggregationDistinctSelectItems) {
+        for (AggregationDistinctProjection each : aggregationDistinctProjections) {
             result.add(getAggregationDistinctColumnMetaData(each, queryResultMetaData.getColumnIndex(each.getColumnLabel()), queryResultMetaData));
         }
         return result;
     }
     
-    private AggregationDistinctColumnMetaData getAggregationDistinctColumnMetaData(final AggregationDistinctSelectItem selectItem, 
+    private AggregationDistinctColumnMetaData getAggregationDistinctColumnMetaData(final AggregationDistinctProjection aggregationDistinctProjection, 
                                                                                    final int aggregationDistinctColumnIndex, final QueryResultMetaData queryResultMetaData) {
-        List<AggregationSelectItem> derivedSelectItems = selectItem.getDerivedAggregationItems();
-        if (derivedSelectItems.isEmpty()) {
-            return new AggregationDistinctColumnMetaData(aggregationDistinctColumnIndex, selectItem.getColumnLabel(), selectItem.getType());
+        List<AggregationProjection> derivedProjections = aggregationDistinctProjection.getDerivedAggregationProjections();
+        if (derivedProjections.isEmpty()) {
+            return new AggregationDistinctColumnMetaData(aggregationDistinctColumnIndex, aggregationDistinctProjection.getColumnLabel(), aggregationDistinctProjection.getType());
         }
-        int countDerivedIndex = queryResultMetaData.getColumnIndex(derivedSelectItems.get(0).getColumnLabel());
-        int sumDerivedIndex = queryResultMetaData.getColumnIndex(derivedSelectItems.get(1).getColumnLabel());
-        return new AggregationDistinctColumnMetaData(aggregationDistinctColumnIndex, selectItem.getColumnLabel(), selectItem.getType(), countDerivedIndex, sumDerivedIndex);
+        int countDerivedIndex = queryResultMetaData.getColumnIndex(derivedProjections.get(0).getColumnLabel());
+        int sumDerivedIndex = queryResultMetaData.getColumnIndex(derivedProjections.get(1).getColumnLabel());
+        return new AggregationDistinctColumnMetaData(
+                aggregationDistinctColumnIndex, aggregationDistinctProjection.getColumnLabel(), aggregationDistinctProjection.getType(), countDerivedIndex, sumDerivedIndex);
     }
     
     private Map<Integer, String> getAggregationDistinctColumnIndexAndLabels() {

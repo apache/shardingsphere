@@ -78,10 +78,10 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     
     private SQLRouteResult doMasterSlaveRoute(final String sql) {
         SQLStatement sqlStatement = logicSchema.getParseEngine().parse(sql, true);
-        CommonSQLStatementContext commonSQLStatementContext = new CommonSQLStatementContext(sqlStatement);
-        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), commonSQLStatementContext, sql);
+        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
+        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), sqlStatementContext, sql);
         String rewriteSQL = sqlRewriteEngine.generateSQL().getSql();
-        SQLRouteResult result = new SQLRouteResult(commonSQLStatementContext, new CommonSQLStatementContext(sqlStatement), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+        SQLRouteResult result = new SQLRouteResult(sqlStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         for (String each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), logicSchema.getParseEngine(),
                 SHARDING_PROXY_CONTEXT.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW)).route(rewriteSQL, true)) {
             result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(rewriteSQL, parameters)));
@@ -96,7 +96,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(logicSchema.getMetaData().getTables(), sql, parameters, sqlStatement);
         SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(encryptSchema.getEncryptRule(), logicSchema.getMetaData().getTables(), 
                 sqlStatementContext, sql, parameters, ShardingProxyContext.getInstance().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
-        SQLRouteResult result = new SQLRouteResult(new CommonSQLStatementContext(sqlStatement), sqlStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+        SQLRouteResult result = new SQLRouteResult(sqlStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         result.getRouteUnits().add(new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sqlRewriteEngine.generateSQL().getSql(), parameters)));
         return result;
     }

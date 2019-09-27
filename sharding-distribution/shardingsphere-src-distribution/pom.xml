@@ -49,6 +49,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-core-parse-sql92</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-core-parse-mysql</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -69,7 +74,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-optimize</artifactId>
+            <artifactId>sharding-core-preprocessor</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

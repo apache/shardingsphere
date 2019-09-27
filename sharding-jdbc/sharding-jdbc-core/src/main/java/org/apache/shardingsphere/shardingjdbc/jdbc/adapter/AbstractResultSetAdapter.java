@@ -72,7 +72,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final ResultSetMetaData getMetaData() throws SQLException {
-        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData(), getShardingRule(), sqlRouteResult.getShardingStatementContext(), logicAndActualColumns);
+        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData(), getShardingRule(), sqlRouteResult.getSqlStatementContext(), logicAndActualColumns);
     }
     
     private Map<String, String> createLogicAndActualColumns() {
@@ -81,7 +81,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     private Map<String, String> createLogicAndCipherColumns() {
         Map<String, String> result = new LinkedHashMap<>();
-        for (String each : sqlRouteResult.getShardingStatementContext().getTablesContext().getTableNames()) {
+        for (String each : sqlRouteResult.getSqlStatementContext().getTablesContext().getTableNames()) {
             result.putAll(getShardingRule().getEncryptRule().getLogicAndCipherColumns(each));
         }
         return result;
@@ -89,7 +89,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     private Map<String, String> createLogicAndPlainColumns() {
         Map<String, String> result = new LinkedHashMap<>();
-        for (String each : sqlRouteResult.getShardingStatementContext().getTablesContext().getTableNames()) {
+        for (String each : sqlRouteResult.getSqlStatementContext().getTablesContext().getTableNames()) {
             result.putAll(getShardingRule().getEncryptRule().getLogicAndPlainColumns(each));
         }
         return result;
