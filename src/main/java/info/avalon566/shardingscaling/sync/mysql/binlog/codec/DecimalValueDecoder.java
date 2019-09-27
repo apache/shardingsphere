@@ -24,6 +24,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
+ * Decimal Value decoder.
+ *
  * @author avalon566
  */
 public class DecimalValueDecoder {
@@ -31,7 +33,14 @@ public class DecimalValueDecoder {
     private static final int DIG_PER_DEC = 9;
 
     private static final int[] DIG_TO_BYTES = {0, 1, 1, 2, 2, 3, 3, 4, 4, 4};
-
+    
+    /**
+     * decode new Decimal.
+     *
+     * @param meta meta
+     * @param in byte buffer
+     * @return decimal value
+     */
     public static Serializable decodeNewDecimal(final int meta, final ByteBuf in) {
         var precision = meta >> 8;
         var scale = meta & 0xFF;
