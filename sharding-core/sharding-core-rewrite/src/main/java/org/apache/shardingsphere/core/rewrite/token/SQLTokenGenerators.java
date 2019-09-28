@@ -29,6 +29,7 @@ import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalS
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -73,8 +74,7 @@ public final class SQLTokenGenerators {
      * @return SQL tokens
      */
     @SuppressWarnings("unchecked")
-    public List<SQLToken> generateSQLTokens(final RewriteStatement rewriteStatement, 
-                                            final ParameterBuilder parameterBuilder, final TableMetas tableMetas, final boolean isSingleRoute) {
+    public List<SQLToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final TableMetas tableMetas, final boolean isSingleRoute) {
         List<SQLToken> result = new LinkedList<>();
         for (SQLTokenGenerator each : sqlTokenGenerators) {
             if (isSingleRoute && each instanceof IgnoreForSingleRoute) {
@@ -92,6 +92,7 @@ public final class SQLTokenGenerators {
                 result.addAll(((CollectionSQLTokenGenerator) each).generateSQLTokens(rewriteStatement, parameterBuilder));
             }
         }
+        Collections.sort(result);
         return result;
     }
 }

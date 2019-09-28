@@ -88,21 +88,15 @@ public final class SQLRewriteEngine {
     }
     
     private List<SQLToken> createSQLTokens(final TableMetas tableMetas, final boolean isSingleRoute, final boolean isQueryWithCipherColumn) {
-        List<SQLToken> result = getSQLTokenGenerators(isQueryWithCipherColumn).generateSQLTokens(rewriteStatement, parameterBuilder, tableMetas, isSingleRoute);
-        Collections.sort(result);
-        return result;
-    }
-    
-    private SQLTokenGenerators getSQLTokenGenerators(final boolean isQueryWithCipherColumn) {
-        SQLTokenGenerators result = new SQLTokenGenerators();
-        result.addAll(new BaseTokenGenerateEngine().getSQLTokenGenerators());
+        SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
+        sqlTokenGenerators.addAll(new BaseTokenGenerateEngine().getSQLTokenGenerators());
         if (baseRule instanceof ShardingRule) {
-            result.addAll(new ShardingTokenGenerateEngine((ShardingRule) baseRule).getSQLTokenGenerators());
-            result.addAll(new EncryptTokenGenerateEngine(((ShardingRule) baseRule).getEncryptRule(), isQueryWithCipherColumn).getSQLTokenGenerators());
+            sqlTokenGenerators.addAll(new ShardingTokenGenerateEngine((ShardingRule) baseRule).getSQLTokenGenerators());
+            sqlTokenGenerators.addAll(new EncryptTokenGenerateEngine(((ShardingRule) baseRule).getEncryptRule(), isQueryWithCipherColumn).getSQLTokenGenerators());
         } else if (baseRule instanceof EncryptRule) {
-            result.addAll(new EncryptTokenGenerateEngine((EncryptRule) baseRule, isQueryWithCipherColumn).getSQLTokenGenerators());
+            sqlTokenGenerators.addAll(new EncryptTokenGenerateEngine((EncryptRule) baseRule, isQueryWithCipherColumn).getSQLTokenGenerators());
         }
-        return result;
+        return sqlTokenGenerators.generateSQLTokens(rewriteStatement, parameterBuilder, tableMetas, isSingleRoute);
     }
     
     /**
