@@ -43,30 +43,31 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 public final class ShardingTokenGenerateEngine extends SQLTokenGenerateEngine<ShardingRule> {
     
-    private static final Collection<SQLTokenGenerator> SQL_TOKEN_GENERATORS = new LinkedList<>();
-    
     private final ShardingRule shardingRule;
-    
-    static {
-        SQL_TOKEN_GENERATORS.add(new TableTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new SelectItemPrefixTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new ProjectionsTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new OrderByTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new AggregationDistinctTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new IndexTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new OffsetTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new RowCountTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new InsertGeneratedKeyNameTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new InsertSetGeneratedKeyColumnTokenGenerator());
-    }
     
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
-        for (SQLTokenGenerator each : SQL_TOKEN_GENERATORS) {
+        Collection<SQLTokenGenerator> result = buildSQLTokenGenerators();
+        for (SQLTokenGenerator each : result) {
             if (each instanceof ShardingRuleAware) {
                 ((ShardingRuleAware) each).setShardingRule(shardingRule);
             }
         }
-        return SQL_TOKEN_GENERATORS;
+        return result;
+    }
+    
+    private Collection<SQLTokenGenerator> buildSQLTokenGenerators() {
+        Collection<SQLTokenGenerator> result = new LinkedList<>();
+        result.add(new TableTokenGenerator());
+        result.add(new SelectItemPrefixTokenGenerator());
+        result.add(new ProjectionsTokenGenerator());
+        result.add(new OrderByTokenGenerator());
+        result.add(new AggregationDistinctTokenGenerator());
+        result.add(new IndexTokenGenerator());
+        result.add(new OffsetTokenGenerator());
+        result.add(new RowCountTokenGenerator());
+        result.add(new InsertGeneratedKeyNameTokenGenerator());
+        result.add(new InsertSetGeneratedKeyColumnTokenGenerator());
+        return result;
     }
 }

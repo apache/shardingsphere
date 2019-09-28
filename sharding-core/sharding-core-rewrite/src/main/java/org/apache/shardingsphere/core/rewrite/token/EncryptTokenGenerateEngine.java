@@ -44,27 +44,14 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 public final class EncryptTokenGenerateEngine extends SQLTokenGenerateEngine<EncryptRule> {
     
-    private static final Collection<SQLTokenGenerator> SQL_TOKEN_GENERATORS = new LinkedList<>();
-    
     private final EncryptRule encryptRule;
     
     private final boolean queryWithCipherColumn;
     
-    static {
-        SQL_TOKEN_GENERATORS.add(new InsertRegularNamesTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new SelectEncryptItemTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new UpdateEncryptColumnTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new WhereEncryptColumnTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new InsertCipherNameTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new InsertQueryAndPlainNamesTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new InsertSetCipherColumnTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new InsertSetQueryAndPlainColumnsTokenGenerator());
-        SQL_TOKEN_GENERATORS.add(new InsertValuesTokenGenerator());
-    }
-    
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
-        for (SQLTokenGenerator each : SQL_TOKEN_GENERATORS) {
+        Collection<SQLTokenGenerator> result = buildSQLTokenGenerators();
+        for (SQLTokenGenerator each : result) {
             if (each instanceof EncryptRuleAware) {
                 ((EncryptRuleAware) each).setEncryptRule(encryptRule);
             }
@@ -72,6 +59,20 @@ public final class EncryptTokenGenerateEngine extends SQLTokenGenerateEngine<Enc
                 ((QueryWithCipherColumnAware) each).setQueryWithCipherColumn(queryWithCipherColumn);
             }
         }
-        return SQL_TOKEN_GENERATORS;
+        return result;
+    }
+    
+    private Collection<SQLTokenGenerator> buildSQLTokenGenerators() {
+        Collection<SQLTokenGenerator> result = new LinkedList<>();
+        result.add(new InsertRegularNamesTokenGenerator());
+        result.add(new SelectEncryptItemTokenGenerator());
+        result.add(new UpdateEncryptColumnTokenGenerator());
+        result.add(new WhereEncryptColumnTokenGenerator());
+        result.add(new InsertCipherNameTokenGenerator());
+        result.add(new InsertQueryAndPlainNamesTokenGenerator());
+        result.add(new InsertSetCipherColumnTokenGenerator());
+        result.add(new InsertSetQueryAndPlainColumnsTokenGenerator());
+        result.add(new InsertValuesTokenGenerator());
+        return result;
     }
 }

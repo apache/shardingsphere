@@ -25,20 +25,16 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * SQL token generator for common.
+ * Base SQL token generator.
  *
  * @author panjuan
  */
 public final class BaseTokenGenerateEngine extends SQLTokenGenerateEngine<BaseRule> {
     
-    private static final Collection<SQLTokenGenerator> SQL_TOKEN_GENERATORS = new LinkedList<>();
-    
-    static {
-        SQL_TOKEN_GENERATORS.add(new RemoveTokenGenerator());
-    }
-    
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
-        return SQL_TOKEN_GENERATORS;
+        Collection<SQLTokenGenerator> result = new LinkedList<>();
+        result.add(new RemoveTokenGenerator());
+        return result;
     }
 }
