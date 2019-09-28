@@ -50,9 +50,4 @@ public class NacosRegistryCenterTest {
         nacosRegistryCenter.update("sharding/test", "value2");
     }
 
-    @Test
-    public void nacosAssertThat(){
-        assertThat(nacosRegistryCenter.get("sharding/test"), is("value1"));
-    }
-
 }
