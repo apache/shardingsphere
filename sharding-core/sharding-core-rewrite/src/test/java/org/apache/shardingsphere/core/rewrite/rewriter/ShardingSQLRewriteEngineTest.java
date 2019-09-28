@@ -1111,7 +1111,7 @@ public final class ShardingSQLRewriteEngineTest {
     }
     
     private SQLRewriteEngine createSQLRewriteEngine(final SQLRouteResult routeResult, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
-        return new SQLRewriteEngine(shardingRule, null, routeResult, sql, parameters, routeResult.getRoutingResult().isSingleRouting(), isQueryWithCipherColumn);
+        return new SQLRewriteEngine(shardingRule, null, routeResult, sql, parameters, isQueryWithCipherColumn);
     }
     
     @SneakyThrows

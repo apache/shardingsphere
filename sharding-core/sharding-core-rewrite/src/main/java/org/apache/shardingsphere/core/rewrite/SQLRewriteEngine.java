@@ -62,11 +62,11 @@ public final class SQLRewriteEngine {
     private final ParameterBuilder parameterBuilder;
     
     public SQLRewriteEngine(final ShardingRule shardingRule, final TableMetas tableMetas, 
-                            final SQLRouteResult sqlRouteResult, final String sql, final List<Object> parameters, final boolean isSingleRoute, final boolean isQueryWithCipherColumn) {
+                            final SQLRouteResult sqlRouteResult, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
         baseRule = shardingRule;
         rewriteStatement = RewriteStatementFactory.newInstance(shardingRule, sqlRouteResult);
         parameterBuilder = ParameterBuilderFactory.newInstance(rewriteStatement, parameters, sqlRouteResult);
-        sqlTokens = createSQLTokens(tableMetas, isSingleRoute, isQueryWithCipherColumn);
+        sqlTokens = createSQLTokens(tableMetas, sqlRouteResult.getRoutingResult().isSingleRouting(), isQueryWithCipherColumn);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
     }
     
