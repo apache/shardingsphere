@@ -22,25 +22,21 @@ import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rule.BaseRule;
 
 /**
  * SQL token generator for optional.
  *
  * @author zhangliang
  * @author panjuan
- * 
- * @param <T> type of rule 
  */
-public interface OptionalSQLTokenGenerator<T extends BaseRule> extends SQLTokenGenerator {
+public interface OptionalSQLTokenGenerator extends SQLTokenGenerator {
     
     /**
      * Generate SQL token.
      * 
      * @param rewriteStatement rewrite statement
      * @param parameterBuilder SQL parameter builder
-     * @param rule rule
      * @return SQL token
      */
-    Optional<? extends SQLToken> generateSQLToken(RewriteStatement rewriteStatement, ParameterBuilder parameterBuilder, T rule);
+    Optional<? extends SQLToken> generateSQLToken(RewriteStatement rewriteStatement, ParameterBuilder parameterBuilder);
 }

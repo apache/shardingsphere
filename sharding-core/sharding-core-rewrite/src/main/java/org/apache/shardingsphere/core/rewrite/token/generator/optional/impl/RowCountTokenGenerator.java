@@ -26,17 +26,16 @@ import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.RowCountToken;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
  * Row count token generator.
  *
  * @author panjuan
  */
-public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule>, IgnoreForSingleRoute {
+public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
     
     @Override
-    public Optional<RowCountToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule) {
+    public Optional<RowCountToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
         if (!(rewriteStatement.getSqlStatementContext() instanceof SelectSQLStatementContext)) {
             return Optional.absent();
         }

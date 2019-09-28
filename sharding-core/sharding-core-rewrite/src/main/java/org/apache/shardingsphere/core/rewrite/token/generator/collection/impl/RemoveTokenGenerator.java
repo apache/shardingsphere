@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.RemoveToken;
-import org.apache.shardingsphere.core.rule.BaseRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -33,10 +32,10 @@ import java.util.LinkedList;
  *
  * @author zhangliang
  */
-public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<BaseRule> {
+public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator {
     
     @Override
-    public Collection<RemoveToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final BaseRule baseRule) {
+    public Collection<RemoveToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
         Collection<RemoveToken> result = new LinkedList<>();
         for (SQLSegment each : rewriteStatement.getSqlStatementContext().getSqlStatement().getAllSQLSegments()) {
             if (each instanceof RemoveAvailable) {

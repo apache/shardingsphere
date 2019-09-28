@@ -18,18 +18,17 @@
 package org.apache.shardingsphere.core.rewrite.token.generator.optional.impl;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
+import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.InsertRewriteStatement;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
+import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertRegularNamesToken;
-import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -40,33 +39,35 @@ import java.util.Map;
  *
  * @author panjuan
  */
-public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenGenerator<BaseRule> {
+@Setter
+public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenGenerator, EncryptRuleAware {
+    
+    private EncryptRule encryptRule;
     
     @Override
-    public Optional<InsertRegularNamesToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final BaseRule baseRule) {
-        if (!isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext(), baseRule)) {
+    public Optional<InsertRegularNamesToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
+        if (!isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext())) {
             return Optional.absent();
         }
-        return createInsertColumnsToken(rewriteStatement, baseRule);
+        return createInsertColumnsToken(rewriteStatement);
     }
     
-    private boolean isNeedToGenerateSQLToken(final SQLStatementContext sqlStatementContext, final BaseRule baseRule) {
+    private boolean isNeedToGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
-        return !(baseRule instanceof MasterSlaveRule) 
-                && sqlStatementContext instanceof InsertSQLStatementContext && insertColumnsSegment.isPresent() && insertColumnsSegment.get().getColumns().isEmpty();
+        return sqlStatementContext instanceof InsertSQLStatementContext && insertColumnsSegment.isPresent() && insertColumnsSegment.get().getColumns().isEmpty();
     }
     
-    private Optional<InsertRegularNamesToken> createInsertColumnsToken(final RewriteStatement rewriteStatement, final BaseRule baseRule) {
+    private Optional<InsertRegularNamesToken> createInsertColumnsToken(final RewriteStatement rewriteStatement) {
         Optional<InsertColumnsSegment> insertColumnsSegment = rewriteStatement.getSqlStatementContext().getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         return insertColumnsSegment.isPresent()
                 ? Optional.of(new InsertRegularNamesToken(insertColumnsSegment.get().getStopIndex(), 
-                getActualInsertColumns((InsertRewriteStatement) rewriteStatement, baseRule), !isNeedToAppendColumns((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext(), baseRule)))
+                getActualInsertColumns((InsertRewriteStatement) rewriteStatement), !isNeedToAppendColumns((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext())))
                 : Optional.<InsertRegularNamesToken>absent();
     }
     
-    private Collection<String> getActualInsertColumns(final InsertRewriteStatement rewriteStatement, final BaseRule baseRule) {
+    private Collection<String> getActualInsertColumns(final InsertRewriteStatement rewriteStatement) {
         Collection<String> result = new LinkedList<>();
-        Map<String, String> logicAndCipherColumns = getEncryptRule(baseRule).getLogicAndCipherColumns(rewriteStatement.getSqlStatementContext().getTablesContext().getSingleTableName());
+        Map<String, String> logicAndCipherColumns = encryptRule.getLogicAndCipherColumns(rewriteStatement.getSqlStatementContext().getTablesContext().getSingleTableName());
         boolean isGeneratedKey = rewriteStatement.getSqlStatementContext() instanceof InsertSQLStatementContext 
                 && (rewriteStatement.getGeneratedKey().isPresent() && (rewriteStatement.getGeneratedKey().get().isGenerated()));
         for (String each : ((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext()).getColumnNames()) {
@@ -80,20 +81,8 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
         return result;
     }
     
-    private EncryptRule getEncryptRule(final BaseRule baseRule) {
-        return baseRule instanceof ShardingRule ? ((ShardingRule) baseRule).getEncryptRule() : (EncryptRule) baseRule;
+    private boolean isNeedToAppendColumns(final InsertSQLStatementContext insertSQLStatementContext) {
+        return !encryptRule.getAssistedQueryAndPlainColumns(insertSQLStatementContext.getTablesContext().getSingleTableName()).isEmpty();
     }
     
-    private boolean isNeedToAppendColumns(final InsertSQLStatementContext insertSQLStatementContext, final BaseRule baseRule) {
-        return baseRule instanceof ShardingRule
-                ? isNeedToAppendColumns(insertSQLStatementContext, (ShardingRule) baseRule) : isNeedToAppendAssistedQueryAndPlainColumns(insertSQLStatementContext, (EncryptRule) baseRule);
-    }
-    
-    private boolean isNeedToAppendColumns(final InsertSQLStatementContext insertSQLStatementContext, final ShardingRule shardingRule) {
-        return isNeedToAppendAssistedQueryAndPlainColumns(insertSQLStatementContext, shardingRule.getEncryptRule());
-    }
-    
-    private boolean isNeedToAppendAssistedQueryAndPlainColumns(final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
-        return !encryptRule.getAssistedQueryAndPlainColumns(sqlStatementContext.getTablesContext().getSingleTableName()).isEmpty();
-    }
 }

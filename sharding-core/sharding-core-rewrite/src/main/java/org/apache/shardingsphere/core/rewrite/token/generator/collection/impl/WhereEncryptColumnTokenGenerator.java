@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptCondition;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptConditionEngine;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
+import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.TableMetasAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
@@ -46,52 +47,53 @@ import java.util.Map.Entry;
  * @author panjuan
  */
 @Setter
-public final class WhereEncryptColumnTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule>, TableMetasAware, QueryWithCipherColumnAware {
+public final class WhereEncryptColumnTokenGenerator implements CollectionSQLTokenGenerator, TableMetasAware, EncryptRuleAware, QueryWithCipherColumnAware {
     
     private TableMetas tableMetas;
+    
+    private EncryptRule encryptRule;
     
     private boolean queryWithCipherColumn;
     
     @Override
-    public Collection<EncryptColumnToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
+    public Collection<EncryptColumnToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
         List<EncryptCondition> encryptConditions = new EncryptConditionEngine(encryptRule, tableMetas).createEncryptConditions(rewriteStatement.getSqlStatementContext());
         return encryptConditions.isEmpty()
-                ? Collections.<EncryptColumnToken>emptyList() : createWhereEncryptColumnTokens(parameterBuilder, encryptRule, encryptConditions);
+                ? Collections.<EncryptColumnToken>emptyList() : createWhereEncryptColumnTokens(parameterBuilder, encryptConditions);
     }
     
-    private Collection<EncryptColumnToken> createWhereEncryptColumnTokens(final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final List<EncryptCondition> encryptConditions) {
+    private Collection<EncryptColumnToken> createWhereEncryptColumnTokens(final ParameterBuilder parameterBuilder, final List<EncryptCondition> encryptConditions) {
         Collection<EncryptColumnToken> result = new LinkedList<>();
         for (EncryptCondition each : encryptConditions) {
-            result.add(createWhereEncryptColumnToken(parameterBuilder, encryptRule, each));
+            result.add(createWhereEncryptColumnToken(parameterBuilder, each));
         }
         return result;
     }
     
-    private WhereEncryptColumnToken createWhereEncryptColumnToken(final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final EncryptCondition encryptCondition) {
+    private WhereEncryptColumnToken createWhereEncryptColumnToken(final ParameterBuilder parameterBuilder, final EncryptCondition encryptCondition) {
         List<Object> originalValues = encryptCondition.getValues(parameterBuilder.getOriginalParameters());
         if (queryWithCipherColumn) {
-            return createWhereEncryptColumnToken(parameterBuilder, encryptRule, encryptCondition, originalValues);
+            return createWhereEncryptColumnToken(parameterBuilder, encryptCondition, originalValues);
         }
-        return new WhereEncryptColumnToken(encryptCondition.getStartIndex(), encryptCondition.getStopIndex(), getPlainColumn(encryptRule, encryptCondition),
+        return new WhereEncryptColumnToken(encryptCondition.getStartIndex(), encryptCondition.getStopIndex(), getPlainColumn(encryptCondition),
                 getPositionValues(encryptCondition.getPositionValueMap().keySet(), originalValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
     
-    private WhereEncryptColumnToken createWhereEncryptColumnToken(final ParameterBuilder parameterBuilder, 
-                                                                  final EncryptRule encryptRule, final EncryptCondition encryptCondition, final List<Object> originalValues) {
-        String encryptedColumnName = getEncryptedColumnName(encryptRule, encryptCondition);
-        List<Object> encryptedValues = getEncryptedValues(encryptRule, encryptCondition, originalValues);
+    private WhereEncryptColumnToken createWhereEncryptColumnToken(final ParameterBuilder parameterBuilder, final EncryptCondition encryptCondition, final List<Object> originalValues) {
+        String encryptedColumnName = getEncryptedColumnName(encryptCondition);
+        List<Object> encryptedValues = getEncryptedValues(encryptCondition, originalValues);
         encryptParameters(encryptCondition.getPositionIndexMap(), encryptedValues, parameterBuilder);
         return new WhereEncryptColumnToken(encryptCondition.getStartIndex(), encryptCondition.getStopIndex(), encryptedColumnName,
                 getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptedValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
     
-    private String getEncryptedColumnName(final EncryptRule encryptRule, final EncryptCondition encryptCondition) {
+    private String getEncryptedColumnName(final EncryptCondition encryptCondition) {
         Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
         return assistedQueryColumn.isPresent() 
                 ? assistedQueryColumn.get() : encryptRule.getCipherColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
     }
     
-    private List<Object> getEncryptedValues(final EncryptRule encryptRule, final EncryptCondition encryptCondition, final List<Object> originalValues) {
+    private List<Object> getEncryptedValues(final EncryptCondition encryptCondition, final List<Object> originalValues) {
         Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
         return assistedQueryColumn.isPresent() 
                 ? encryptRule.getEncryptAssistedQueryValues(encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues) 
@@ -114,7 +116,7 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
         return result;
     }
     
-    private String getPlainColumn(final EncryptRule encryptRule, final EncryptCondition encryptCondition) {
+    private String getPlainColumn(final EncryptCondition encryptCondition) {
         Optional<String> result = encryptRule.findPlainColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
         if (result.isPresent()) {
             return result.get();

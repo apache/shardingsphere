@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.rewrite.token.generator.optional.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.segment.insert.expression.DerivedSimpleExpressionSegment;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssign
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
+import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetQueryAndPlainColumnsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -43,14 +45,17 @@ import java.util.List;
  *
  * @author panjuan
  */
-public final class InsertSetQueryAndPlainColumnsTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
+@Setter
+public final class InsertSetQueryAndPlainColumnsTokenGenerator implements OptionalSQLTokenGenerator, EncryptRuleAware {
+    
+    private EncryptRule encryptRule;
     
     @Override
-    public Optional<InsertSetQueryAndPlainColumnsToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
+    public Optional<InsertSetQueryAndPlainColumnsToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
         if (!isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext())) {
             return Optional.absent();
         }
-        return createInsertSetAddItemsToken((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext(), encryptRule);
+        return createInsertSetAddItemsToken((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext());
     }
     
     private boolean isNeedToGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -58,16 +63,16 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
         return sqlStatementContext instanceof InsertSQLStatementContext && setAssignmentsSegment.isPresent();
     }
     
-    private Optional<InsertSetQueryAndPlainColumnsToken> createInsertSetAddItemsToken(final InsertSQLStatementContext insertSQLStatementContext, final EncryptRule encryptRule) {
+    private Optional<InsertSetQueryAndPlainColumnsToken> createInsertSetAddItemsToken(final InsertSQLStatementContext insertSQLStatementContext) {
         String tableName = insertSQLStatementContext.getTablesContext().getSingleTableName();
         if (encryptRule.getAssistedQueryAndPlainColumns(tableName).isEmpty()) {
             return Optional.absent();
         }
-        List<String> encryptDerivedColumnNames = getEncryptDerivedColumnNames(tableName, encryptRule);
+        List<String> encryptDerivedColumnNames = getEncryptDerivedColumnNames(tableName);
         return Optional.of(new InsertSetQueryAndPlainColumnsToken(getStartIndex(insertSQLStatementContext), encryptDerivedColumnNames, getEncryptDerivedValues(insertSQLStatementContext)));
     }
     
-    private List<String> getEncryptDerivedColumnNames(final String tableName, final EncryptRule encryptRule) {
+    private List<String> getEncryptDerivedColumnNames(final String tableName) {
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
         if (!encryptTable.isPresent()) {
             return Collections.emptyList();

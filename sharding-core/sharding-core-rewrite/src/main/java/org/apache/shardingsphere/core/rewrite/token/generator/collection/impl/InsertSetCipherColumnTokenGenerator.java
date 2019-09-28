@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.core.rewrite.token.generator.collection.impl;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
+import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.Paramete
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
+import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetCipherColumnToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -41,14 +43,17 @@ import java.util.LinkedList;
  *
  * @author panjuan
  */
-public final class InsertSetCipherColumnTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
+@Setter
+public final class InsertSetCipherColumnTokenGenerator implements CollectionSQLTokenGenerator, EncryptRuleAware {
+    
+    private EncryptRule encryptRule;
     
     @Override
-    public Collection<InsertSetCipherColumnToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
+    public Collection<InsertSetCipherColumnToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
         if (!isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext())) {
             return Collections.emptyList();
         }
-        return createInsertSetEncryptValueTokens((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext(), encryptRule);
+        return createInsertSetEncryptValueTokens((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext());
     }
     
     private boolean isNeedToGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -56,14 +61,14 @@ public final class InsertSetCipherColumnTokenGenerator implements CollectionSQLT
         return sqlStatementContext.getSqlStatement() instanceof InsertStatement && setAssignmentsSegment.isPresent();
     }
     
-    private Collection<InsertSetCipherColumnToken> createInsertSetEncryptValueTokens(final InsertSQLStatementContext insertSQLStatementContext, final EncryptRule encryptRule) {
+    private Collection<InsertSetCipherColumnToken> createInsertSetEncryptValueTokens(final InsertSQLStatementContext insertSQLStatementContext) {
         Optional<SetAssignmentsSegment> setAssignmentsSegment = insertSQLStatementContext.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
         if (!setAssignmentsSegment.isPresent()) {
             return Collections.emptyList();
         }
         Collection<InsertSetCipherColumnToken> result = new LinkedList<>();
         for (AssignmentSegment each : setAssignmentsSegment.get().getAssignments()) {
-            Optional<InsertSetCipherColumnToken> insertSetEncryptValueToken = createInsertSetEncryptValueToken(insertSQLStatementContext, encryptRule, each);
+            Optional<InsertSetCipherColumnToken> insertSetEncryptValueToken = createInsertSetEncryptValueToken(insertSQLStatementContext, each);
             if (insertSetEncryptValueToken.isPresent()) {
                 result.add(insertSetEncryptValueToken.get());
             }
@@ -71,8 +76,7 @@ public final class InsertSetCipherColumnTokenGenerator implements CollectionSQLT
         return result;
     }
     
-    private Optional<InsertSetCipherColumnToken> createInsertSetEncryptValueToken(final InsertSQLStatementContext insertSQLStatementContext, 
-                                                                                  final EncryptRule encryptRule, final AssignmentSegment segment) {
+    private Optional<InsertSetCipherColumnToken> createInsertSetEncryptValueToken(final InsertSQLStatementContext insertSQLStatementContext, final AssignmentSegment segment) {
         String tableName = insertSQLStatementContext.getTablesContext().getSingleTableName();
         Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(tableName, segment.getColumn().getName());
         if (shardingEncryptor.isPresent()) {

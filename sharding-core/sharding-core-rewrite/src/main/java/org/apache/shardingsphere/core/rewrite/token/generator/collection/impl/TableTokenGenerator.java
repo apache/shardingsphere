@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token.generator.collection.impl;
 
 import com.google.common.base.Optional;
+import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.segment.table.Table;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
@@ -32,10 +33,9 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
+import org.apache.shardingsphere.core.rewrite.token.generator.ShardingRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.TableToken;
-import org.apache.shardingsphere.core.rule.BaseRule;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
@@ -47,21 +47,24 @@ import java.util.LinkedList;
  * @author zhangliang
  * @author panjuan
  */
-public final class TableTokenGenerator implements CollectionSQLTokenGenerator<BaseRule> {
+@Setter
+public final class TableTokenGenerator implements CollectionSQLTokenGenerator, ShardingRuleAware {
+    
+    private ShardingRule shardingRule;
     
     @Override
-    public Collection<TableToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final BaseRule baseRule) {
+    public Collection<TableToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
         Collection<TableToken> result = new LinkedList<>();
         for (SQLSegment each : rewriteStatement.getSqlStatementContext().getSqlStatement().getAllSQLSegments()) {
             if (each instanceof SelectItemsSegment) {
-                result.addAll(createTableTokens(rewriteStatement.getSqlStatementContext(), baseRule, (SelectItemsSegment) each));
+                result.addAll(createTableTokens(rewriteStatement.getSqlStatementContext(), (SelectItemsSegment) each));
             } else if (each instanceof ColumnSegment) {
-                Optional<TableToken> tableToken = createTableToken(rewriteStatement.getSqlStatementContext(), baseRule, (ColumnSegment) each);
+                Optional<TableToken> tableToken = createTableToken(rewriteStatement.getSqlStatementContext(), (ColumnSegment) each);
                 if (tableToken.isPresent()) {
                     result.add(tableToken.get());
                 }
             } else if (each instanceof TableAvailable) {
-                Optional<TableToken> tableToken = createTableToken(rewriteStatement.getSqlStatementContext().getSqlStatement(), baseRule, (TableAvailable) each);
+                Optional<TableToken> tableToken = createTableToken(rewriteStatement.getSqlStatementContext().getSqlStatement(), (TableAvailable) each);
                 if (tableToken.isPresent()) {
                     result.add(tableToken.get());
                 }
@@ -70,11 +73,11 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator<Ba
         return result;
     }
     
-    private Collection<TableToken> createTableTokens(final SQLStatementContext sqlStatementContext, final BaseRule baseRule, final SelectItemsSegment selectItemsSegment) {
+    private Collection<TableToken> createTableTokens(final SQLStatementContext sqlStatementContext, final SelectItemsSegment selectItemsSegment) {
         Collection<TableToken> result = new LinkedList<>();
         for (SelectItemSegment each : selectItemsSegment.getSelectItems()) {
             if (each instanceof ShorthandSelectItemSegment) {
-                Optional<TableToken> tableToken = createTableToken(sqlStatementContext, baseRule, (ShorthandSelectItemSegment) each);
+                Optional<TableToken> tableToken = createTableToken(sqlStatementContext, (ShorthandSelectItemSegment) each);
                 if (tableToken.isPresent()) {
                     result.add(tableToken.get());
                 }
@@ -83,36 +86,30 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator<Ba
         return result;
     }
     
-    private Optional<TableToken> createTableToken(final SQLStatementContext sqlStatementContext, final BaseRule baseRule, final OwnerAvailable<TableSegment> segment) {
+    private Optional<TableToken> createTableToken(final SQLStatementContext sqlStatementContext, final OwnerAvailable<TableSegment> segment) {
         Optional<TableSegment> owner = segment.getOwner();
         if (!owner.isPresent()) {
             return Optional.absent();
         }
-        if (isToGenerateTableToken(sqlStatementContext, baseRule, owner.get())) {
+        if (isToGenerateTableToken(sqlStatementContext, owner.get())) {
             return Optional.of(new TableToken(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getTableName(), owner.get().getQuoteCharacter()));
         }
         return Optional.absent();
     }
     
-    private Optional<TableToken> createTableToken(final SQLStatement sqlStatement, final BaseRule baseRule, final TableAvailable segment) {
-        if (isToGenerateTableToken(sqlStatement, baseRule, segment)) {
+    private Optional<TableToken> createTableToken(final SQLStatement sqlStatement, final TableAvailable segment) {
+        if (isToGenerateTableToken(sqlStatement, segment)) {
             return Optional.of(new TableToken(segment.getStartIndex(), segment.getStopIndex(), segment.getTableName(), segment.getTableQuoteCharacter()));
         }
         return Optional.absent();
     }
     
-    private boolean isToGenerateTableToken(final SQLStatementContext sqlStatementContext, final BaseRule baseRule, final TableSegment tableSegment) {
-        if (baseRule instanceof ShardingRule) {
-            Optional<Table> table = sqlStatementContext.getTablesContext().find(tableSegment.getTableName());
-            return table.isPresent() && !table.get().getAlias().isPresent() && ((ShardingRule) baseRule).findTableRule(table.get().getName()).isPresent(); 
-        }
-        return baseRule instanceof MasterSlaveRule;
+    private boolean isToGenerateTableToken(final SQLStatementContext sqlStatementContext, final TableSegment tableSegment) {
+        Optional<Table> table = sqlStatementContext.getTablesContext().find(tableSegment.getTableName());
+        return table.isPresent() && !table.get().getAlias().isPresent() && shardingRule.findTableRule(table.get().getName()).isPresent();
     }
     
-    private boolean isToGenerateTableToken(final SQLStatement sqlStatement, final BaseRule baseRule, final TableAvailable segment) {
-        if (baseRule instanceof ShardingRule) {
-            return ((ShardingRule) baseRule).findTableRule(segment.getTableName()).isPresent() || !(sqlStatement instanceof SelectStatement);
-        }
-        return baseRule instanceof MasterSlaveRule;
+    private boolean isToGenerateTableToken(final SQLStatement sqlStatement, final TableAvailable segment) {
+        return shardingRule.findTableRule(segment.getTableName()).isPresent() || !(sqlStatement instanceof SelectStatement);
     }
 }

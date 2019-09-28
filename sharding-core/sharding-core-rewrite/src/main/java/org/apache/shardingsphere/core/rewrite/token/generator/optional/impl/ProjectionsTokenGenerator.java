@@ -21,17 +21,16 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.Projection;
 import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.DerivedProjection;
-import org.apache.shardingsphere.core.optimize.segment.select.projection.Projection;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.ProjectionsToken;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -41,10 +40,10 @@ import java.util.LinkedList;
  *
  * @author zhangliang
  */
-public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerator<ShardingRule>, IgnoreForSingleRoute {
+public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
     
     @Override
-    public Optional<ProjectionsToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule) {
+    public Optional<ProjectionsToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
         if (!(rewriteStatement.getSqlStatementContext() instanceof SelectSQLStatementContext)) {
             return Optional.absent();
         }

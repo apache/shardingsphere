@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.Se
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.UpdateEncryptColumnTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.WhereEncryptColumnTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertQueryAndPlainNamesTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertRegularNamesTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertSetQueryAndPlainColumnsTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertValuesTokenGenerator;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -50,6 +51,7 @@ public final class EncryptTokenGenerateEngine extends SQLTokenGenerateEngine<Enc
     private final boolean queryWithCipherColumn;
     
     static {
+        SQL_TOKEN_GENERATORS.add(new InsertRegularNamesTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new SelectEncryptItemTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new UpdateEncryptColumnTokenGenerator());
         SQL_TOKEN_GENERATORS.add(new WhereEncryptColumnTokenGenerator());
@@ -61,17 +63,15 @@ public final class EncryptTokenGenerateEngine extends SQLTokenGenerateEngine<Enc
     }
     
     @Override
-    protected void setAutowaredProperties(final SQLTokenGenerator sqlTokenGenerator) {
-        if (sqlTokenGenerator instanceof EncryptRuleAware) {
-            ((EncryptRuleAware) sqlTokenGenerator).setEncryptRule(encryptRule);
+    public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
+        for (SQLTokenGenerator each : SQL_TOKEN_GENERATORS) {
+            if (each instanceof EncryptRuleAware) {
+                ((EncryptRuleAware) each).setEncryptRule(encryptRule);
+            }
+            if (each instanceof QueryWithCipherColumnAware) {
+                ((QueryWithCipherColumnAware) each).setQueryWithCipherColumn(queryWithCipherColumn);
+            }
         }
-        if (sqlTokenGenerator instanceof QueryWithCipherColumnAware) {
-            ((QueryWithCipherColumnAware) sqlTokenGenerator).setQueryWithCipherColumn(queryWithCipherColumn);
-        }
-    }
-    
-    @Override
-    protected Collection<SQLTokenGenerator> getSQLTokenGenerators() {
         return SQL_TOKEN_GENERATORS;
     }
 }

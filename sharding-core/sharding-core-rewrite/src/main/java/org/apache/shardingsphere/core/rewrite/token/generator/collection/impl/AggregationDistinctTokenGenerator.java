@@ -18,15 +18,14 @@
 package org.apache.shardingsphere.core.rewrite.token.generator.collection.impl;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.core.optimize.segment.select.projection.DerivedColumn;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.AggregationDistinctToken;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -37,10 +36,10 @@ import java.util.LinkedList;
  *
  * @author panjuan
  */
-public final class AggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator<ShardingRule>, IgnoreForSingleRoute {
+public final class AggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator, IgnoreForSingleRoute {
     
     @Override
-    public Collection<AggregationDistinctToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final ShardingRule shardingRule) {
+    public Collection<AggregationDistinctToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
         if (!(rewriteStatement.getSqlStatementContext() instanceof SelectSQLStatementContext)) {
             return Collections.emptyList();
         }

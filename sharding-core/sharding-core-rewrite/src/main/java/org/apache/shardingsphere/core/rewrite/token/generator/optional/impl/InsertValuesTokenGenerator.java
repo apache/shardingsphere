@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.rewrite.token.generator.optional.impl;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.segment.insert.InsertValueContext;
-import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
@@ -29,7 +29,6 @@ import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalS
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValuesToken;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.rule.DataNode;
-import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,10 +39,10 @@ import java.util.Iterator;
  *
  * @author panjuan
  */
-public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerator<EncryptRule> {
+public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerator {
     
     @Override
-    public Optional<InsertValuesToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final EncryptRule encryptRule) {
+    public Optional<InsertValuesToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
         Collection<InsertValuesSegment> insertValuesSegments = rewriteStatement.getSqlStatementContext().getSqlStatement().findSQLSegments(InsertValuesSegment.class);
         return isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext(), insertValuesSegments)
                 ? Optional.of(createInsertValuesToken(rewriteStatement, insertValuesSegments)) : Optional.<InsertValuesToken>absent();

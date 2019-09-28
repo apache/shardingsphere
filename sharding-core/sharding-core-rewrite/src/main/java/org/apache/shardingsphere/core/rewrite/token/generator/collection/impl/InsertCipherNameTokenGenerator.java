@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.core.rewrite.token.generator.collection.impl;
 
 import com.google.common.base.Optional;
+import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
+import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertCipherNameToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -38,14 +40,17 @@ import java.util.Map;
  *
  * @author panjuan
  */
-public final class InsertCipherNameTokenGenerator implements CollectionSQLTokenGenerator<EncryptRule> {
+@Setter
+public final class InsertCipherNameTokenGenerator implements CollectionSQLTokenGenerator, EncryptRuleAware {
+    
+    private EncryptRule encryptRule;
     
     @Override
-    public Collection<InsertCipherNameToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final EncryptRule rule) {
+    public Collection<InsertCipherNameToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
         if (!isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext())) {
             return Collections.emptyList();
         }
-        return createInsertColumnTokens((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext(), rule);
+        return createInsertColumnTokens((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext());
     }
     
     private boolean isNeedToGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -53,7 +58,7 @@ public final class InsertCipherNameTokenGenerator implements CollectionSQLTokenG
         return sqlStatementContext instanceof InsertSQLStatementContext && insertColumnsSegment.isPresent() && !insertColumnsSegment.get().getColumns().isEmpty();
     }
     
-    private Collection<InsertCipherNameToken> createInsertColumnTokens(final InsertSQLStatementContext insertSQLStatementContext, final EncryptRule encryptRule) {
+    private Collection<InsertCipherNameToken> createInsertColumnTokens(final InsertSQLStatementContext insertSQLStatementContext) {
         Optional<InsertColumnsSegment> insertColumnsSegment = insertSQLStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         if (!insertColumnsSegment.isPresent()) {
             return Collections.emptyList();
