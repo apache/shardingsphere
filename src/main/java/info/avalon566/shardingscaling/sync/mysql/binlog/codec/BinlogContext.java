@@ -32,6 +32,8 @@ public class BinlogContext {
 
     private String fileName;
 
+    private int checksumLength;
+
     private HashMap<Long, TableMapEvent> tableMap = new HashMap<>();
 
     public void putTableMapEvent(final long tableId, final TableMapEvent tableMapEvent) {

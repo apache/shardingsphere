@@ -20,6 +20,7 @@ package info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import io.netty.buffer.ByteBuf;
 import lombok.Data;
+import lombok.var;
 
 /**
  * https://dev.mysql.com/doc/internals/en/format-description-event.html
@@ -37,14 +38,23 @@ public class FormatDescriptionEvent {
 
     private short eventHeaderLength;
 
-    private short checksumType = 1;
+    private short checksumType = 0;
+
+    private int checksumLength = 0;
 
     public void parse(final ByteBuf in) {
         binglogVersion = DataTypesCodec.readUnsignedInt2LE(in);
         mysqlServerVersion = DataTypesCodec.readFixedLengthString(50, in);
         createTimestamp = DataTypesCodec.readUnsignedInt4LE(in);
         eventHeaderLength = DataTypesCodec.readUnsignedInt1(in);
-        // skip remain data
-        in.readBytes(in.readableBytes());
+        DataTypesCodec.skipBytes(EventTypes.FORMAT_DESCRIPTION_EVENT - 1, in);
+        var eventLength = DataTypesCodec.readUnsignedInt1(in);
+        var remainLength = eventLength - 2 - 50 - 4 - 1 - (EventTypes.FORMAT_DESCRIPTION_EVENT - 1) - 1;
+        DataTypesCodec.skipBytes(remainLength, in);
+        checksumType = DataTypesCodec.readUnsignedInt1(in);
+        if(0 < checksumType) {
+            checksumLength = in.readableBytes();
+        }
+        DataTypesCodec.skipBytes(in.readableBytes(), in);
     }
 }

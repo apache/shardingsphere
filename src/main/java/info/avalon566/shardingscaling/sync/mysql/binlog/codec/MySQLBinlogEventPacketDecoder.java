@@ -31,6 +31,7 @@ import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.RowsEvent;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.TableMapEvent;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
+
 import java.util.List;
 
 /**
@@ -49,7 +50,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         in.readByte();
         var binlogEventHeader = new BinlogEventHeader();
         binlogEventHeader.fromBytes(in);
-        handleChecksum(in);
+        removeChecksum(binlogEventHeader.getTypeCode(), in);
         switch (binlogEventHeader.getTypeCode()) {
             case EventTypes.ROTATE_EVENT:
                 decodeRotateEvent(in);
@@ -80,10 +81,12 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         }
     }
 
-    private void handleChecksum(final ByteBuf in) {
-        //TODO: detect checksum length
-        var checksumLength = 4;
-        in.writerIndex(in.writerIndex() - 4);
+    private void removeChecksum(final short eventType, final ByteBuf in) {
+        if (0 < binlogContext.getChecksumLength()
+                && EventTypes.ROTATE_EVENT != eventType
+                && EventTypes.FORMAT_DESCRIPTION_EVENT != eventType) {
+            in.writerIndex(in.writerIndex() - binlogContext.getChecksumLength());
+        }
     }
 
     private void decodeRotateEvent(final ByteBuf in) {
@@ -133,5 +136,6 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     private void decodeFormatDescriptionEvent(final ByteBuf in) {
         var formatDescriptionEvent = new FormatDescriptionEvent();
         formatDescriptionEvent.parse(in);
+        binlogContext.setChecksumLength(formatDescriptionEvent.getChecksumLength());
     }
 }
