@@ -38,16 +38,13 @@ import java.util.Iterator;
  */
 public final class InsertRewriteStatement extends RewriteStatement {
     
-    private final GeneratedKey generatedKey;
-    
     public InsertRewriteStatement(final InsertSQLStatementContext insertSQLStatementContext, final GeneratedKey generatedKey, final EncryptRule encryptRule) {
         super(insertSQLStatementContext);
-        this.generatedKey = generatedKey;
-        processGeneratedKey(insertSQLStatementContext);
+        processGeneratedKey(insertSQLStatementContext, generatedKey);
         processEncrypt(insertSQLStatementContext, encryptRule);
     }
     
-    private void processGeneratedKey(final InsertSQLStatementContext insertSQLStatementContext) {
+    private void processGeneratedKey(final InsertSQLStatementContext insertSQLStatementContext, final GeneratedKey generatedKey) {
         if (null != generatedKey && generatedKey.isGenerated()) {
             Iterator<Comparable<?>> generatedValues = generatedKey.getGeneratedValues().descendingIterator();
             for (InsertValueContext each : insertSQLStatementContext.getInsertValueContexts()) {
