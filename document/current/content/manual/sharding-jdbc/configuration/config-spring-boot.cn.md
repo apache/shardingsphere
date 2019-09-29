@@ -95,7 +95,7 @@ spring.shardingsphere.encrypt.tables.t_order.columns.user_id.assistedQueryColumn
 spring.shardingsphere.encrypt.tables.t_order.columns.user_id.encryptor=encryptor_aes
 
 spring.shardingsphere.props.sql.show=true
-spring.shardingsphere.props.query.with.cipher.comlum=true
+spring.shardingsphere.props.query.with.cipher.column=true
 ```
 
 ### 数据分片 + 读写分离

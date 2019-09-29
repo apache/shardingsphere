@@ -114,7 +114,7 @@ spring.shardingsphere.encrypt.tables.t_order.columns.user_id.assistedQueryColumn
 spring.shardingsphere.encrypt.tables.t_order.columns.user_id.encryptor=encryptor_aes
 
 spring.shardingsphere.props.sql.show=true
-spring.shardingsphere.props.query.with.cipher.comlum=true
+spring.shardingsphere.props.query.with.cipher.column=true
 ```
 
 #### 基于Spring boot + JNDI的规则配置
@@ -134,7 +134,7 @@ spring.shardingsphere.encrypt.tables.t_order.columns.user_id.assistedQueryColumn
 spring.shardingsphere.encrypt.tables.t_order.columns.user_id.encryptor=encryptor_aes
 
 spring.shardingsphere.props.sql.show=true
-spring.shardingsphere.props.query.with.cipher.comlum=true
+spring.shardingsphere.props.query.with.cipher.column=true
 ```
 
 ### 基于Spring命名空间的规则配置
