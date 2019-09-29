@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.core.rewrite.token.generator.optional.impl;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.InsertRewriteStatement;
@@ -47,26 +48,25 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
     
     @Override
     public Optional<InsertRegularNamesToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
-        return isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext()) ? createInsertColumnsToken(rewriteStatement) : Optional.<InsertRegularNamesToken>absent();
+        return isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext().getSqlStatement())
+                ? Optional.of(createInsertColumnsToken(rewriteStatement)) : Optional.<InsertRegularNamesToken>absent();
     }
     
-    private boolean isNeedToGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext.getSqlStatement() instanceof InsertStatement && ((InsertStatement) sqlStatementContext.getSqlStatement()).useDefaultColumns();
+    private boolean isNeedToGenerateSQLToken(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof InsertStatement && ((InsertStatement) sqlStatement).useDefaultColumns() && sqlStatement.findSQLSegment(InsertColumnsSegment.class).isPresent();
     }
     
-    private Optional<InsertRegularNamesToken> createInsertColumnsToken(final RewriteStatement rewriteStatement) {
+    private InsertRegularNamesToken createInsertColumnsToken(final RewriteStatement rewriteStatement) {
         Optional<InsertColumnsSegment> insertColumnsSegment = rewriteStatement.getSqlStatementContext().getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
-        return insertColumnsSegment.isPresent()
-                ? Optional.of(new InsertRegularNamesToken(insertColumnsSegment.get().getStopIndex(), 
-                getActualInsertColumns((InsertRewriteStatement) rewriteStatement), !isNeedToAppendColumns((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext())))
-                : Optional.<InsertRegularNamesToken>absent();
+        Preconditions.checkState(insertColumnsSegment.isPresent());
+        return new InsertRegularNamesToken(insertColumnsSegment.get().getStopIndex(),
+                getActualInsertColumns((InsertRewriteStatement) rewriteStatement), !hasMoreDerivedColumns(rewriteStatement.getSqlStatementContext().getTablesContext().getSingleTableName()));
     }
     
     private Collection<String> getActualInsertColumns(final InsertRewriteStatement rewriteStatement) {
         Collection<String> result = new LinkedList<>();
         Map<String, String> logicAndCipherColumns = encryptRule.getLogicAndCipherColumns(rewriteStatement.getSqlStatementContext().getTablesContext().getSingleTableName());
-        boolean isGeneratedKey = rewriteStatement.getSqlStatementContext() instanceof InsertSQLStatementContext 
-                && (rewriteStatement.getGeneratedKey().isPresent() && (rewriteStatement.getGeneratedKey().get().isGenerated()));
+        boolean isGeneratedKey = rewriteStatement.getGeneratedKey().isPresent() && (rewriteStatement.getGeneratedKey().get().isGenerated());
         for (String each : ((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext()).getColumnNames()) {
             if (!isGeneratedKey || !each.equalsIgnoreCase(rewriteStatement.getGeneratedKey().get().getColumnName())) {
                 result.add(logicAndCipherColumns.keySet().contains(each) ? logicAndCipherColumns.get(each) : each);
@@ -78,8 +78,8 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
         return result;
     }
     
-    private boolean isNeedToAppendColumns(final InsertSQLStatementContext insertSQLStatementContext) {
-        return !encryptRule.getAssistedQueryAndPlainColumns(insertSQLStatementContext.getTablesContext().getSingleTableName()).isEmpty();
+    private boolean hasMoreDerivedColumns(final String tableName) {
+        return !encryptRule.getAssistedQueryAndPlainColumns(tableName).isEmpty();
     }
     
 }
