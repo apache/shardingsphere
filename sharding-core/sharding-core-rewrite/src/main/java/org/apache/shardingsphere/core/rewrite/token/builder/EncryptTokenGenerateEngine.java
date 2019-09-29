@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token;
+package org.apache.shardingsphere.core.rewrite.token.builder;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
@@ -42,7 +42,7 @@ import java.util.LinkedList;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class EncryptTokenGenerateEngine extends SQLTokenGenerateEngine<EncryptRule> {
+public final class EncryptTokenGenerateEngine implements SQLTokenGenerateEngine {
     
     private final EncryptRule encryptRule;
     

@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token;
+package org.apache.shardingsphere.core.rewrite.token.builder;
 
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
-import org.apache.shardingsphere.core.rule.BaseRule;
+import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.RemoveTokenGenerator;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * SQL token generator.
+ * Base SQL token generator.
  *
- * @author zhangliang
- * 
- * @param <T> type of rule 
+ * @author panjuan
  */
-public abstract class SQLTokenGenerateEngine<T extends BaseRule> {
+public final class BaseTokenGenerateEngine implements SQLTokenGenerateEngine {
     
-    /**
-     * Get SQL token generators.
-     * 
-     * @return SQL token generators
-     */
-    public abstract Collection<SQLTokenGenerator> getSQLTokenGenerators();
+    @Override
+    public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
+        Collection<SQLTokenGenerator> result = new LinkedList<>();
+        result.add(new RemoveTokenGenerator());
+        return result;
+    }
 }

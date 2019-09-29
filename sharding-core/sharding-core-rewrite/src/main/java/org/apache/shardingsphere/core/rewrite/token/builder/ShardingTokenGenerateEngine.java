@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token;
+package org.apache.shardingsphere.core.rewrite.token.builder;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
@@ -41,7 +41,7 @@ import java.util.LinkedList;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ShardingTokenGenerateEngine extends SQLTokenGenerateEngine<ShardingRule> {
+public final class ShardingTokenGenerateEngine implements SQLTokenGenerateEngine {
     
     private final ShardingRule shardingRule;
     

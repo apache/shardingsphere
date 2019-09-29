@@ -24,10 +24,10 @@ import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder
 import org.apache.shardingsphere.core.rewrite.builder.sql.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatementFactory;
-import org.apache.shardingsphere.core.rewrite.token.BaseTokenGenerateEngine;
-import org.apache.shardingsphere.core.rewrite.token.EncryptTokenGenerateEngine;
+import org.apache.shardingsphere.core.rewrite.token.builder.BaseTokenGenerateEngine;
+import org.apache.shardingsphere.core.rewrite.token.builder.EncryptTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.SQLTokenGenerators;
-import org.apache.shardingsphere.core.rewrite.token.ShardingTokenGenerateEngine;
+import org.apache.shardingsphere.core.rewrite.token.builder.ShardingTokenGenerateEngine;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
