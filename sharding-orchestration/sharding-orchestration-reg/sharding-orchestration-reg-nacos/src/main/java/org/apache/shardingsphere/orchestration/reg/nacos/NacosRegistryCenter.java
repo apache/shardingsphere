@@ -36,6 +36,7 @@ import java.util.concurrent.Executor;
 
 @Slf4j
 public class NacosRegistryCenter implements RegistryCenter {
+
     private ConfigService configService;
 
     @Getter
@@ -58,21 +59,11 @@ public class NacosRegistryCenter implements RegistryCenter {
 
     @Override
     public String getDirectly(String key) {
-        /**
-         * getConfig(String dataId, String group, long timeoutMs)
-         * dataId:
-         * 配置 ID，采用类似 package.class（如org.apache.shardingsphere）的命名规则保证全局唯一性，
-         * class 部分建议是配置的业务含义。 全部字符小写。只允许英文字符和 4 种特殊字符（"."、":"、"-"、"_"）。不超过 256 字节
-         * group:
-         * 配置分组，建议填写产品名：模块名（如 Nacos:Test）保证唯一性。 只允许英文字符和4种特殊字符（"."、":"、"-"、"_"），不超过128字节
-         * timeoutMs:
-         * 读取配置超时时间，单位 ms，推荐值 3000
-         */
         try {
             String dataId = key.replace("/",".");
             String group = properties.getProperty("group","SHARDING_SPHERE_DEFAULT_GROUP");
             long timeoutMs = Long.parseLong(properties.getProperty("timeout","3000"));
-            return configService.getConfig(dataId,group,timeoutMs);
+            return configService.getConfig(dataId, group, timeoutMs);
         } catch (NacosException e) {
             log.debug("exception for: {}", e.toString());
             return null;
@@ -91,25 +82,15 @@ public class NacosRegistryCenter implements RegistryCenter {
 
     @Override
     public void persist(String key, String value) {
-        update(key,value);
+        update(key, value);
     }
 
     @Override
     public void update(String key, String value) {
-        /**
-         * publishConfig(String dataId, String group, String content)
-         * dataId:
-         * 配置 ID，采用类似 package.class（如org.apache.shardingsphere）的命名规则保证全局唯一性，
-         * class 部分建议是配置的业务含义。 全部字符小写。只允许英文字符和 4 种特殊字符（"."、":"、"-"、"_"）。不超过 256 字节
-         * group:
-         * 配置分组，建议填写产品名：模块名（如 Nacos:Test）保证唯一性。 只允许英文字符和4种特殊字符（"."、":"、"-"、"_"），不超过128字节
-         * content:
-         * 配置内容，不超过 100K 字节
-         */
         try {
             String dataId = key.replace("/",".");
             String group = properties.getProperty("group","SHARDING_SPHERE_DEFAULT_GROUP");
-            configService.publishConfig(dataId,group,value);
+            configService.publishConfig(dataId, group, value);
         } catch (NacosException e) {
             log.debug("exception for: {}", e.toString());
         }
@@ -122,18 +103,10 @@ public class NacosRegistryCenter implements RegistryCenter {
 
     @Override
     public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
-        /**
-         * addListener(String dataId, String group, Listener listener)
-         * dataId:
-         * 配置 ID，采用类似 package.class（如org.apache.shardingsphere）的命名规则保证全局唯一性，
-         * class 部分建议是配置的业务含义。 全部字符小写。只允许英文字符和 4 种特殊字符（"."、":"、"-"、"_"）。不超过 256 字节
-         * group:
-         * 配置分组，建议填写产品名：模块名（如 Nacos:Test）保证唯一性。 只允许英文字符和4种特殊字符（"."、":"、"-"、"_"），不超过128字节
-         */
         try {
             String dataId = key.replace("/",".");
             String group = properties.getProperty("group","SHARDING_SPHERE_DEFAULT_GROUP");
-            configService.addListener(dataId,group,new Listener(){
+            configService.addListener(dataId, group, new Listener() {
 
                 @Override
                 public Executor getExecutor() {
@@ -142,10 +115,7 @@ public class NacosRegistryCenter implements RegistryCenter {
 
                 @Override
                 public void receiveConfigInfo(String configInfo) {
-                    /**
-                     *Nacos只有UPDATED状态
-                     */
-                    dataChangedEventListener.onChange(new DataChangedEvent(key,configInfo, DataChangedEvent.ChangedType.UPDATED));
+                    dataChangedEventListener.onChange(new DataChangedEvent(key, configInfo, DataChangedEvent.ChangedType.UPDATED));
                 }
             });
         } catch (NacosException e) {

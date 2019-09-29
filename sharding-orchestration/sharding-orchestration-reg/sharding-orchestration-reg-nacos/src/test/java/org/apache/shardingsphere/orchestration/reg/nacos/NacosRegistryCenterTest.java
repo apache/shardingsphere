@@ -24,17 +24,15 @@ import org.junit.Test;
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 public class NacosRegistryCenterTest {
+
     private static RegistryCenter nacosRegistryCenter = new NacosRegistryCenter();
 
     @BeforeClass
     public static void init() {
         Properties properties = new Properties();
-        properties.setProperty("group","SHARDING_SPHERE_DEFAULT_GROUP");
-        properties.setProperty("timeout","3000");
+        properties.setProperty("group", "SHARDING_SPHERE_DEFAULT_GROUP");
+        properties.setProperty("timeout", "3000");
         RegistryCenterConfiguration configuration = new RegistryCenterConfiguration(nacosRegistryCenter.getType(), properties);
         configuration.setServerLists("127.0.0.1:8848");
         nacosRegistryCenter.init(configuration);
@@ -49,5 +47,4 @@ public class NacosRegistryCenterTest {
     public void assertUpdate() {
         nacosRegistryCenter.update("sharding/test", "value2");
     }
-
 }
