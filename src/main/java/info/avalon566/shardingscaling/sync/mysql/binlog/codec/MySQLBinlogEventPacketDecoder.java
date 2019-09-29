@@ -47,7 +47,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
 
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
-        in.readByte();
+        checkError(in);
         var binlogEventHeader = new BinlogEventHeader();
         binlogEventHeader.fromBytes(in);
         removeChecksum(binlogEventHeader.getTypeCode(), in);
@@ -61,14 +61,17 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
             case EventTypes.TABLE_MAP_EVENT:
                 decodeTableMapEvent(in);
                 break;
+            case EventTypes.WRITE_ROWS_EVENTv1:
             case EventTypes.WRITE_ROWS_EVENTv2:
                 WriteRowsEvent writeRowsEvent = decodeWriteRowsEventV2(binlogEventHeader, in);
                 out.add(writeRowsEvent);
                 break;
+            case EventTypes.UPDATE_ROWS_EVENTv1:
             case EventTypes.UPDATE_ROWS_EVENTv2:
                 UpdateRowsEvent updateRowsEvent = decodeUpdateRowsEventV2(binlogEventHeader, in);
                 out.add(updateRowsEvent);
                 break;
+            case EventTypes.DELETE_ROWS_EVENTv1:
             case EventTypes.DELETE_ROWS_EVENTv2:
                 DeleteRowsEvent deleteRowsEvent = decodeDeleteRowsEventV2(binlogEventHeader, in);
                 out.add(deleteRowsEvent);
@@ -78,6 +81,19 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         }
         if (in.isReadable()) {
             throw new UnsupportedOperationException();
+        }
+    }
+
+    private void checkError(final ByteBuf in) {
+        var errorCode = DataTypesCodec.readUnsignedInt1(in);
+        if (0 == errorCode) {
+            return;
+        }
+        if(255 == errorCode) {
+            var errorNo = DataTypesCodec.readUnsignedInt2LE(in);
+            DataTypesCodec.skipBytes(1, in);
+            var sqlState = DataTypesCodec.readFixedLengthString(5, in);
+            throw new RuntimeException(DataTypesCodec.readFixedLengthString(in.readableBytes(), in));
         }
     }
 

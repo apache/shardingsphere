@@ -72,7 +72,8 @@ public class RowsEvent {
     public void parsePaylod(final BinlogContext binlogContext, final ByteBuf in) {
         var columnsLength = (int) DataTypesCodec.readLengthCodedIntLE(in);
         columnsPresentBitmap = DataTypesCodec.readBitmap(columnsLength, in);
-        if (EventTypes.UPDATE_ROWS_EVENTv2 == binlogEventHeader.getTypeCode()) {
+        if (EventTypes.UPDATE_ROWS_EVENTv1 == binlogEventHeader.getTypeCode()
+                || EventTypes.UPDATE_ROWS_EVENTv2 == binlogEventHeader.getTypeCode()) {
             columnsPresentBitmap2 = DataTypesCodec.readBitmap(columnsLength, in);
         }
         var columnDefs = binlogContext.getColumnDefs(tableId);
@@ -88,7 +89,8 @@ public class RowsEvent {
                 }
             }
             columnValues1.add(columnValues);
-            if (EventTypes.UPDATE_ROWS_EVENTv2 == binlogEventHeader.getTypeCode()) {
+            if (EventTypes.UPDATE_ROWS_EVENTv1 == binlogEventHeader.getTypeCode()
+                    || EventTypes.UPDATE_ROWS_EVENTv2 == binlogEventHeader.getTypeCode()) {
                 nullBitmap = DataTypesCodec.readBitmap(columnsLength, in);
                 columnValues = new Serializable[columnsLength];
                 for (int i = 0; i < columnsLength; i++) {

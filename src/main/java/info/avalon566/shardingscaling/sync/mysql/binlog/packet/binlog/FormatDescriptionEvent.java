@@ -51,10 +51,13 @@ public class FormatDescriptionEvent {
         var eventLength = DataTypesCodec.readUnsignedInt1(in);
         var remainLength = eventLength - 2 - 50 - 4 - 1 - (EventTypes.FORMAT_DESCRIPTION_EVENT - 1) - 1;
         DataTypesCodec.skipBytes(remainLength, in);
-        checksumType = DataTypesCodec.readUnsignedInt1(in);
-        if(0 < checksumType) {
-            checksumLength = in.readableBytes();
+        if(0 < in.readableBytes()) {
+            // checksum add after 5.6
+            checksumType = DataTypesCodec.readUnsignedInt1(in);
+            if (0 < checksumType) {
+                checksumLength = in.readableBytes();
+            }
+            DataTypesCodec.skipBytes(in.readableBytes(), in);
         }
-        DataTypesCodec.skipBytes(in.readableBytes(), in);
     }
 }
