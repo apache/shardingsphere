@@ -17,22 +17,12 @@
 
 package org.apache.shardingsphere.core.rewrite.statement;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.core.optimize.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.statement.constant.EncryptDerivedColumnType;
-import org.apache.shardingsphere.core.rewrite.statement.constant.ShardingDerivedColumnType;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
-import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
-import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
-
-import java.util.Iterator;
 
 /**
- * Insert Statement for rewrite.
+ * Insert statement for rewrite.
  *
  * @author zhangliang
  */
@@ -40,52 +30,5 @@ public final class InsertRewriteStatement extends RewriteStatement {
     
     public InsertRewriteStatement(final InsertSQLStatementContext insertSQLStatementContext, final GeneratedKey generatedKey, final EncryptRule encryptRule) {
         super(insertSQLStatementContext);
-        processGeneratedKey(insertSQLStatementContext, generatedKey);
-        processEncrypt(insertSQLStatementContext, encryptRule);
-    }
-    
-    private void processGeneratedKey(final InsertSQLStatementContext insertSQLStatementContext, final GeneratedKey generatedKey) {
-        if (null != generatedKey && generatedKey.isGenerated()) {
-            Iterator<Comparable<?>> generatedValues = generatedKey.getGeneratedValues().descendingIterator();
-            for (InsertValueContext each : insertSQLStatementContext.getInsertValueContexts()) {
-                each.appendValue(generatedValues.next(), ShardingDerivedColumnType.KEY_GEN);
-            }
-        }
-    }
-    
-    private void processEncrypt(final InsertSQLStatementContext insertSQLStatementContext, final EncryptRule encryptRule) {
-        String tableName = insertSQLStatementContext.getTablesContext().getSingleTableName();
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        if (!encryptTable.isPresent()) {
-            return;
-        }
-        for (String each : encryptTable.get().getLogicColumns()) {
-            Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(tableName, each);
-            if (shardingEncryptor.isPresent()) {
-                encryptInsertValues(insertSQLStatementContext, encryptRule, shardingEncryptor.get(), tableName, each);
-            }
-        }
-    }
-    
-    private void encryptInsertValues(final InsertSQLStatementContext insertSQLStatementContext, final EncryptRule encryptRule, final ShardingEncryptor shardingEncryptor,
-                                     final String tableName, final String encryptLogicColumnName) {
-        int columnIndex = insertSQLStatementContext.getColumnNames().indexOf(encryptLogicColumnName);
-        for (InsertValueContext each : insertSQLStatementContext.getInsertValueContexts()) {
-            encryptInsertValue(encryptRule, shardingEncryptor, tableName, columnIndex, each, encryptLogicColumnName);
-        }
-    }
-    
-    private void encryptInsertValue(final EncryptRule encryptRule, final ShardingEncryptor shardingEncryptor,
-                                    final String tableName, final int columnIndex, final InsertValueContext insertValueContext, final String encryptLogicColumnName) {
-        Object originalValue = insertValueContext.getValue(columnIndex);
-        insertValueContext.setValue(columnIndex, shardingEncryptor.encrypt(originalValue));
-        if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
-            Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, encryptLogicColumnName);
-            Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            insertValueContext.appendValue(((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()), EncryptDerivedColumnType.ENCRYPT);
-        }
-        if (encryptRule.findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
-            insertValueContext.appendValue(originalValue, EncryptDerivedColumnType.ENCRYPT);
-        }
     }
 }
