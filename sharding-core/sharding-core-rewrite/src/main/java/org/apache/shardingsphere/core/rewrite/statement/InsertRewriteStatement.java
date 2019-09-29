@@ -91,13 +91,4 @@ public final class InsertRewriteStatement extends RewriteStatement {
             insertValueContext.appendValue(originalValue, EncryptDerivedColumnType.ENCRYPT);
         }
     }
-    
-    /**
-     * Get generated key.
-     *
-     * @return generated key
-     */
-    public Optional<GeneratedKey> getGeneratedKey() {
-        return Optional.fromNullable(generatedKey);
-    }
 }

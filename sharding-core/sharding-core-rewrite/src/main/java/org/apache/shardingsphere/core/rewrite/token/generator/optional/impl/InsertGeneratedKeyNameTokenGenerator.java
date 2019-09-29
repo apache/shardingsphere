@@ -24,9 +24,11 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumns
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.InsertRewriteStatement;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
+import org.apache.shardingsphere.core.rewrite.token.generator.GeneratedKeyAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.ShardingRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertGeneratedKeyNameToken;
+import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -35,9 +37,11 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  * @author panjuan
  */
 @Setter
-public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTokenGenerator, ShardingRuleAware {
+public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTokenGenerator, ShardingRuleAware, GeneratedKeyAware {
     
     private ShardingRule shardingRule;
+    
+    private GeneratedKey generatedKey;
     
     @Override
     public Optional<InsertGeneratedKeyNameToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
@@ -53,8 +57,8 @@ public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTo
     
     private Optional<InsertGeneratedKeyNameToken> createInsertGeneratedKeyToken(final InsertRewriteStatement rewriteStatement, final InsertColumnsSegment segment) {
         String tableName = rewriteStatement.getSqlStatementContext().getTablesContext().getSingleTableName();
-        return rewriteStatement.getGeneratedKey().isPresent() && rewriteStatement.getGeneratedKey().get().isGenerated()
-                ? Optional.of(new InsertGeneratedKeyNameToken(segment.getStopIndex(), rewriteStatement.getGeneratedKey().get().getColumnName(), isToAddCloseParenthesis(tableName, segment)))
+        return null != generatedKey && generatedKey.isGenerated()
+                ? Optional.of(new InsertGeneratedKeyNameToken(segment.getStopIndex(), generatedKey.getColumnName(), isToAddCloseParenthesis(tableName, segment)))
                 : Optional.<InsertGeneratedKeyNameToken>absent();
     }
     

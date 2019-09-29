@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.rewrite.token.generator.optional.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.InsertRewriteStatement;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
+import org.apache.shardingsphere.core.rewrite.token.generator.GeneratedKeyAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertRegularNamesToken;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
@@ -38,7 +40,10 @@ import java.util.List;
  *
  * @author panjuan
  */
-public final class InsertGeneratedKeyFromMetadataTokenGenerator implements OptionalSQLTokenGenerator {
+@Setter
+public final class InsertGeneratedKeyFromMetadataTokenGenerator implements OptionalSQLTokenGenerator, GeneratedKeyAware {
+    
+    private GeneratedKey generatedKey;
     
     @Override
     public Optional<InsertRegularNamesToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
@@ -54,7 +59,7 @@ public final class InsertGeneratedKeyFromMetadataTokenGenerator implements Optio
         Optional<InsertColumnsSegment> insertColumnsSegment = rewriteStatement.getSqlStatementContext().getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         Preconditions.checkState(insertColumnsSegment.isPresent());
         return new InsertRegularNamesToken(insertColumnsSegment.get().getStopIndex(), 
-                getActualInsertColumns((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext(), rewriteStatement.getGeneratedKey().orNull()), true);
+                getActualInsertColumns((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext(), generatedKey), true);
     }
     
     private List<String> getActualInsertColumns(final InsertSQLStatementContext insertSQLStatementContext, final GeneratedKey generatedKey) {
