@@ -54,11 +54,11 @@ import java.util.Map;
 @ToString(callSuper = true)
 public final class SelectSQLStatementContext extends CommonSQLStatementContext {
     
+    private final ProjectionsContext projectionsContext;
+    
     private final GroupByContext groupByContext;
     
     private final OrderByContext orderByContext;
-    
-    private final ProjectionsContext projectionsContext;
     
     private final PaginationContext paginationContext;
     
