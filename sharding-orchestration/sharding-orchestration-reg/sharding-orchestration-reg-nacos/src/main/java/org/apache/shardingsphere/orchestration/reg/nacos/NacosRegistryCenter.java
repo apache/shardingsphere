@@ -44,7 +44,7 @@ public class NacosRegistryCenter implements RegistryCenter {
     private Properties properties = new Properties();
 
     @Override
-    public void init(RegistryCenterConfiguration config) {
+    public void init(final RegistryCenterConfiguration config) {
         try {
             configService = NacosFactory.createConfigService(config.getServerLists());
         } catch (NacosException e) {
@@ -53,16 +53,16 @@ public class NacosRegistryCenter implements RegistryCenter {
     }
 
     @Override
-    public String get(String key) {
+    public String get(final String key) {
         return getDirectly(key);
     }
 
     @Override
-    public String getDirectly(String key) {
+    public String getDirectly(final String key) {
         try {
-            String dataId = key.replace("/",".");
-            String group = properties.getProperty("group","SHARDING_SPHERE_DEFAULT_GROUP");
-            long timeoutMs = Long.parseLong(properties.getProperty("timeout","3000"));
+            String dataId = key.replace("/", ".");
+            String group = properties.getProperty("group", "SHARDING_SPHERE_DEFAULT_GROUP");
+            long timeoutMs = Long.parseLong(properties.getProperty("timeout", "3000"));
             return configService.getConfig(dataId, group, timeoutMs);
         } catch (NacosException e) {
             log.debug("exception for: {}", e.toString());
@@ -71,25 +71,25 @@ public class NacosRegistryCenter implements RegistryCenter {
     }
 
     @Override
-    public boolean isExisted(String key) {
+    public boolean isExisted(final String key) {
         return !Strings.isNullOrEmpty(getDirectly(key));
     }
 
     @Override
-    public List<String> getChildrenKeys(String key) {
+    public List<String> getChildrenKeys(final String key) {
         return null;
     }
 
     @Override
-    public void persist(String key, String value) {
+    public void persist(final String key, final String value) {
         update(key, value);
     }
 
     @Override
-    public void update(String key, String value) {
+    public void update(final String key, final String value) {
         try {
-            String dataId = key.replace("/",".");
-            String group = properties.getProperty("group","SHARDING_SPHERE_DEFAULT_GROUP");
+            String dataId = key.replace("/", ".");
+            String group = properties.getProperty("group", "SHARDING_SPHERE_DEFAULT_GROUP");
             configService.publishConfig(dataId, group, value);
         } catch (NacosException e) {
             log.debug("exception for: {}", e.toString());
@@ -97,15 +97,15 @@ public class NacosRegistryCenter implements RegistryCenter {
     }
 
     @Override
-    public void persistEphemeral(String key, String value) {
+    public void persistEphemeral(final String key, final String value) {
 
     }
 
     @Override
     public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
         try {
-            String dataId = key.replace("/",".");
-            String group = properties.getProperty("group","SHARDING_SPHERE_DEFAULT_GROUP");
+            String dataId = key.replace("/", ".");
+            String group = properties.getProperty("group", "SHARDING_SPHERE_DEFAULT_GROUP");
             configService.addListener(dataId, group, new Listener() {
 
                 @Override
@@ -114,7 +114,7 @@ public class NacosRegistryCenter implements RegistryCenter {
                 }
 
                 @Override
-                public void receiveConfigInfo(String configInfo) {
+                public void receiveConfigInfo(final String configInfo) {
                     dataChangedEventListener.onChange(new DataChangedEvent(key, configInfo, DataChangedEvent.ChangedType.UPDATED));
                 }
             });
@@ -128,7 +128,7 @@ public class NacosRegistryCenter implements RegistryCenter {
     }
 
     @Override
-    public void initLock(String key) {
+    public void initLock(final String key) {
 
     }
 
