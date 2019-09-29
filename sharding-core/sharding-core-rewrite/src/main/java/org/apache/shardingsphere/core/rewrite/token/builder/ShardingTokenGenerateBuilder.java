@@ -19,17 +19,20 @@ package org.apache.shardingsphere.core.rewrite.token.builder;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.ShardingConditionsAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.ShardingRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.AggregationDistinctTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.IndexTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.TableTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertGeneratedKeyNameTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertSetGeneratedKeyColumnTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertValuesTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.OffsetTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.OrderByTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.ProjectionsTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.RowCountTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.SelectItemPrefixTokenGenerator;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
@@ -45,12 +48,17 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
     
     private final ShardingRule shardingRule;
     
+    private final ShardingConditions shardingConditions;
+    
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
         Collection<SQLTokenGenerator> result = buildSQLTokenGenerators();
         for (SQLTokenGenerator each : result) {
             if (each instanceof ShardingRuleAware) {
                 ((ShardingRuleAware) each).setShardingRule(shardingRule);
+            }
+            if (each instanceof ShardingConditionsAware) {
+                ((ShardingConditionsAware) each).setShardingConditions(shardingConditions);
             }
         }
         return result;
@@ -68,6 +76,7 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
         result.add(new RowCountTokenGenerator());
         result.add(new InsertGeneratedKeyNameTokenGenerator());
         result.add(new InsertSetGeneratedKeyColumnTokenGenerator());
+        result.add(new InsertValuesTokenGenerator());
         return result;
     }
 }

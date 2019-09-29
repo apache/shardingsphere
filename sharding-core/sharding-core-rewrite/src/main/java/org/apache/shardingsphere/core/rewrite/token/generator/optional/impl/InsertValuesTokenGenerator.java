@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token.generator.optional.impl;
 
 import com.google.common.base.Optional;
+import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
@@ -25,9 +26,11 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertVal
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
+import org.apache.shardingsphere.core.rewrite.token.generator.ShardingConditionsAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValuesToken;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.rule.DataNode;
 
 import java.util.Collection;
@@ -39,7 +42,10 @@ import java.util.Iterator;
  *
  * @author panjuan
  */
-public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerator {
+@Setter
+public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerator, ShardingConditionsAware {
+    
+    private ShardingConditions shardingConditions;
     
     @Override
     public Optional<InsertValuesToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
@@ -54,12 +60,12 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
     
     private InsertValuesToken createInsertValuesToken(final RewriteStatement rewriteStatement, final Collection<InsertValuesSegment> insertValuesSegments) {
         InsertValuesToken result = new InsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
-        Iterator<ShardingCondition> shardingConditions = null;
+        Iterator<ShardingCondition> shardingConditionIterator = null;
         if (rewriteStatement.getSqlStatementContext() instanceof InsertSQLStatementContext) {
-            shardingConditions = rewriteStatement.getShardingConditions().getConditions().isEmpty() ? null : rewriteStatement.getShardingConditions().getConditions().iterator();
+            shardingConditionIterator = null == shardingConditions || shardingConditions.getConditions().isEmpty() ? null : shardingConditions.getConditions().iterator();
         }
         for (InsertValueContext each : ((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext()).getInsertValueContexts()) {
-            Collection<DataNode> dataNodes = null == shardingConditions ? Collections.<DataNode>emptyList() : shardingConditions.next().getDataNodes();
+            Collection<DataNode> dataNodes = null == shardingConditionIterator ? Collections.<DataNode>emptyList() : shardingConditionIterator.next().getDataNodes();
             result.addInsertValueToken(each.getValueExpressions(), dataNodes);
         }
         return result;
