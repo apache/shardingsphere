@@ -25,9 +25,9 @@ import org.apache.shardingsphere.core.optimize.segment.select.projection.Project
 import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.DerivedProjection;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.ProjectionsToken;
@@ -43,13 +43,13 @@ import java.util.LinkedList;
 public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
     
     @Override
-    public Optional<ProjectionsToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
-        if (!(rewriteStatement.getSqlStatementContext() instanceof SelectSQLStatementContext)) {
+    public Optional<ProjectionsToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+        if (!(sqlStatementContext instanceof SelectSQLStatementContext)) {
             return Optional.absent();
         }
-        Collection<String> derivedProjectionTexts = getDerivedProjectionTexts((SelectSQLStatementContext) rewriteStatement.getSqlStatementContext());
+        Collection<String> derivedProjectionTexts = getDerivedProjectionTexts((SelectSQLStatementContext) sqlStatementContext);
         return derivedProjectionTexts.isEmpty() ? Optional.<ProjectionsToken>absent() : Optional.of(new ProjectionsToken(
-                ((SelectSQLStatementContext) rewriteStatement.getSqlStatementContext()).getProjectionsContext().getStopIndex() + 1 + " ".length(), derivedProjectionTexts));
+                ((SelectSQLStatementContext) sqlStatementContext).getProjectionsContext().getStopIndex() + 1 + " ".length(), derivedProjectionTexts));
     }
     
     private Collection<String> getDerivedProjectionTexts(final SelectSQLStatementContext selectSQLStatementContext) {

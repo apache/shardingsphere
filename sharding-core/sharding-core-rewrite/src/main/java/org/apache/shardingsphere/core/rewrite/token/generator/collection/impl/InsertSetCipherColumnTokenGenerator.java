@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetCipherColumnToken;
@@ -49,11 +48,11 @@ public final class InsertSetCipherColumnTokenGenerator implements CollectionSQLT
     private EncryptRule encryptRule;
     
     @Override
-    public Collection<InsertSetCipherColumnToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
-        if (!isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext())) {
+    public Collection<InsertSetCipherColumnToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+        if (!isNeedToGenerateSQLToken(sqlStatementContext)) {
             return Collections.emptyList();
         }
-        return createInsertSetEncryptValueTokens((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext());
+        return createInsertSetEncryptValueTokens((InsertSQLStatementContext) sqlStatementContext);
     }
     
     private boolean isNeedToGenerateSQLToken(final SQLStatementContext sqlStatementContext) {

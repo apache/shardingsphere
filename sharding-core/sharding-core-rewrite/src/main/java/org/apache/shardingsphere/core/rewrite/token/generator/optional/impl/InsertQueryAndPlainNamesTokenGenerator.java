@@ -19,11 +19,10 @@ package org.apache.shardingsphere.core.rewrite.token.generator.optional.impl;
 
 import com.google.common.base.Optional;
 import lombok.Setter;
-import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertQueryAndPlainNamesToken;
@@ -45,11 +44,11 @@ public final class InsertQueryAndPlainNamesTokenGenerator implements OptionalSQL
     private EncryptRule encryptRule;
     
     @Override
-    public Optional<InsertQueryAndPlainNamesToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
-        if (!isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext())) {
+    public Optional<InsertQueryAndPlainNamesToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+        if (!isNeedToGenerateSQLToken(sqlStatementContext)) {
             return Optional.absent();
         }
-        return createInsertAssistedColumnsToken(rewriteStatement.getSqlStatementContext());
+        return createInsertAssistedColumnsToken(sqlStatementContext);
     }
     
     private boolean isNeedToGenerateSQLToken(final SQLStatementContext sqlStatementContext) {

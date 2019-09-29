@@ -19,10 +19,10 @@ package org.apache.shardingsphere.core.rewrite.token.generator.optional.impl;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.OffsetToken;
@@ -35,11 +35,11 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.OffsetToken;
 public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
     
     @Override
-    public Optional<OffsetToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
-        if (!(rewriteStatement.getSqlStatementContext() instanceof SelectSQLStatementContext)) {
+    public Optional<OffsetToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+        if (!(sqlStatementContext instanceof SelectSQLStatementContext)) {
             return Optional.absent();
         }
-        PaginationContext pagination = ((SelectSQLStatementContext) rewriteStatement.getSqlStatementContext()).getPaginationContext();
+        PaginationContext pagination = ((SelectSQLStatementContext) sqlStatementContext).getPaginationContext();
         return pagination.getOffsetSegment().isPresent() && pagination.getOffsetSegment().get() instanceof NumberLiteralPaginationValueSegment
                 ? Optional.of(new OffsetToken(pagination.getOffsetSegment().get().getStartIndex(), pagination.getOffsetSegment().get().getStopIndex(), pagination.getRevisedOffset()))
                 : Optional.<OffsetToken>absent();

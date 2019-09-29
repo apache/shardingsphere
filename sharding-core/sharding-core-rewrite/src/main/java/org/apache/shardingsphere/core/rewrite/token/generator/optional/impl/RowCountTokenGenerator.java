@@ -19,10 +19,10 @@ package org.apache.shardingsphere.core.rewrite.token.generator.optional.impl;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.RowCountToken;
@@ -35,13 +35,13 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.RowCountToken;
 public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
     
     @Override
-    public Optional<RowCountToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
-        if (!(rewriteStatement.getSqlStatementContext() instanceof SelectSQLStatementContext)) {
+    public Optional<RowCountToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+        if (!(sqlStatementContext instanceof SelectSQLStatementContext)) {
             return Optional.absent();
         }
-        PaginationContext pagination = ((SelectSQLStatementContext) rewriteStatement.getSqlStatementContext()).getPaginationContext();
+        PaginationContext pagination = ((SelectSQLStatementContext) sqlStatementContext).getPaginationContext();
         return pagination.getRowCountSegment().isPresent() && pagination.getRowCountSegment().get() instanceof NumberLiteralPaginationValueSegment
                 ? Optional.of(new RowCountToken(pagination.getRowCountSegment().get().getStartIndex(), pagination.getRowCountSegment().get().getStopIndex(), 
-                pagination.getRevisedRowCount((SelectSQLStatementContext) rewriteStatement.getSqlStatementContext()))) : Optional.<RowCountToken>absent();
+                pagination.getRevisedRowCount((SelectSQLStatementContext) sqlStatementContext))) : Optional.<RowCountToken>absent();
     }
 }

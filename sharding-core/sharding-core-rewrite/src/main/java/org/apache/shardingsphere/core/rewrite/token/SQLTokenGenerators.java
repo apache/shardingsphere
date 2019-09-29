@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.rewrite.token;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.token.generator.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
@@ -68,14 +68,14 @@ public final class SQLTokenGenerators {
     /**
      * Generate SQL tokens.
      *
-     * @param rewriteStatement rewrite statement
+     * @param sqlStatementContext SQL statement context
      * @param parameterBuilder SQL parameter builder
      * @param tableMetas table metas
      * @param isSingleRoute is single route
      * @return SQL tokens
      */
     @SuppressWarnings("unchecked")
-    public List<SQLToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder, final TableMetas tableMetas, final boolean isSingleRoute) {
+    public List<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder, final TableMetas tableMetas, final boolean isSingleRoute) {
         List<SQLToken> result = new LinkedList<>();
         for (SQLTokenGenerator each : sqlTokenGenerators) {
             if (isSingleRoute && each instanceof IgnoreForSingleRoute) {
@@ -88,12 +88,12 @@ public final class SQLTokenGenerators {
                 ((PreviousSQLTokensAware) each).setPreviousSQLTokens(result);
             }
             if (each instanceof OptionalSQLTokenGenerator) {
-                Optional<? extends SQLToken> sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(rewriteStatement, parameterBuilder);
+                Optional<? extends SQLToken> sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(sqlStatementContext, parameterBuilder);
                 if (sqlToken.isPresent()) {
                     result.add(sqlToken.get());
                 }
             } else {
-                result.addAll(((CollectionSQLTokenGenerator) each).generateSQLTokens(rewriteStatement, parameterBuilder));
+                result.addAll(((CollectionSQLTokenGenerator) each).generateSQLTokens(sqlStatementContext, parameterBuilder));
             }
         }
         Collections.sort(result);

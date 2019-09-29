@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.core.rewrite.token.generator.collection.impl;
 
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.IndexToken;
 
@@ -36,9 +36,9 @@ import java.util.LinkedList;
 public final class IndexTokenGenerator implements CollectionSQLTokenGenerator {
     
     @Override
-    public Collection<IndexToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
+    public Collection<IndexToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
         Collection<IndexToken> result = new LinkedList<>();
-        for (SQLSegment each : rewriteStatement.getSqlStatementContext().getSqlStatement().getAllSQLSegments()) {
+        for (SQLSegment each : sqlStatementContext.getSqlStatement().getAllSQLSegments()) {
             if (each instanceof IndexSegment) {
                 result.add(createIndexToken((IndexSegment) each));
             }

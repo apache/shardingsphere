@@ -19,12 +19,12 @@ package org.apache.shardingsphere.core.rewrite.token.generator.optional.impl;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.OrderByToken;
@@ -37,12 +37,12 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.OrderByToken;
 public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
     
     @Override
-    public Optional<OrderByToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
-        if (!(rewriteStatement.getSqlStatementContext() instanceof SelectSQLStatementContext)) {
+    public Optional<OrderByToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+        if (!(sqlStatementContext instanceof SelectSQLStatementContext)) {
             return Optional.absent();
         }
-        if (((SelectSQLStatementContext) rewriteStatement.getSqlStatementContext()).getOrderByContext().isGenerated()) {
-            return Optional.of(createOrderByToken((SelectSQLStatementContext) rewriteStatement.getSqlStatementContext()));
+        if (((SelectSQLStatementContext) sqlStatementContext).getOrderByContext().isGenerated()) {
+            return Optional.of(createOrderByToken((SelectSQLStatementContext) sqlStatementContext));
         }
         return Optional.absent();
     }

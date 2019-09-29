@@ -19,12 +19,11 @@ package org.apache.shardingsphere.core.rewrite.token.generator.collection.impl;
 
 import com.google.common.base.Optional;
 import lombok.Setter;
-import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertCipherNameToken;
@@ -46,11 +45,11 @@ public final class InsertCipherNameTokenGenerator implements CollectionSQLTokenG
     private EncryptRule encryptRule;
     
     @Override
-    public Collection<InsertCipherNameToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
-        if (!isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext())) {
+    public Collection<InsertCipherNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+        if (!isNeedToGenerateSQLToken(sqlStatementContext)) {
             return Collections.emptyList();
         }
-        return createInsertColumnTokens((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext());
+        return createInsertColumnTokens((InsertSQLStatementContext) sqlStatementContext);
     }
     
     private boolean isNeedToGenerateSQLToken(final SQLStatementContext sqlStatementContext) {

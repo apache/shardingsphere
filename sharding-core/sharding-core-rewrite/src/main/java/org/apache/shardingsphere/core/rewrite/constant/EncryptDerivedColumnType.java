@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.statement.constant;
+package org.apache.shardingsphere.core.rewrite.constant;
 
 /**
  * Derived column type for encrypt.

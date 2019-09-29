@@ -21,14 +21,13 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.segment.insert.expression.DerivedSimpleExpressionSegment;
-import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.statement.constant.EncryptDerivedColumnType;
+import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
+import org.apache.shardingsphere.core.rewrite.constant.EncryptDerivedColumnType;
 import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetQueryAndPlainColumnsToken;
@@ -51,11 +50,11 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
     private EncryptRule encryptRule;
     
     @Override
-    public Optional<InsertSetQueryAndPlainColumnsToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
-        if (!isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext())) {
+    public Optional<InsertSetQueryAndPlainColumnsToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+        if (!isNeedToGenerateSQLToken(sqlStatementContext)) {
             return Optional.absent();
         }
-        return createInsertSetAddItemsToken((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext());
+        return createInsertSetAddItemsToken((InsertSQLStatementContext) sqlStatementContext);
     }
     
     private boolean isNeedToGenerateSQLToken(final SQLStatementContext sqlStatementContext) {

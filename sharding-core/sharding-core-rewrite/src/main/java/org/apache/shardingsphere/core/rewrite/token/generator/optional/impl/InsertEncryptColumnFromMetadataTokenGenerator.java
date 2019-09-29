@@ -20,13 +20,12 @@ package org.apache.shardingsphere.core.rewrite.token.generator.optional.impl;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.statement.InsertRewriteStatement;
-import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
@@ -52,24 +51,23 @@ public final class InsertEncryptColumnFromMetadataTokenGenerator implements Opti
     private List<SQLToken> previousSQLTokens;
     
     @Override
-    public Optional<InsertRegularNamesToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
-        return isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext().getSqlStatement())
-                ? createInsertColumnsToken((InsertRewriteStatement) rewriteStatement) : Optional.<InsertRegularNamesToken>absent();
+    public Optional<InsertRegularNamesToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+        return isNeedToGenerateSQLToken(sqlStatementContext.getSqlStatement()) ? createInsertColumnsToken(sqlStatementContext) : Optional.<InsertRegularNamesToken>absent();
     }
     
     private boolean isNeedToGenerateSQLToken(final SQLStatement sqlStatement) {
         return sqlStatement instanceof InsertStatement && ((InsertStatement) sqlStatement).useDefaultColumns() && sqlStatement.findSQLSegment(InsertColumnsSegment.class).isPresent();
     }
     
-    private Optional<InsertRegularNamesToken> createInsertColumnsToken(final InsertRewriteStatement rewriteStatement) {
-        String tableName = rewriteStatement.getSqlStatementContext().getTablesContext().getSingleTableName();
+    private Optional<InsertRegularNamesToken> createInsertColumnsToken(final SQLStatementContext sqlStatementContext) {
+        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         boolean hasMoreDerivedColumns = !encryptRule.getAssistedQueryAndPlainColumns(tableName).isEmpty();
         Optional<InsertRegularNamesToken> previousInsertRegularNamesToken = findInsertRegularNamesToken();
         if (previousInsertRegularNamesToken.isPresent()) {
             processPreviousSQLToken(previousInsertRegularNamesToken.get(), tableName, hasMoreDerivedColumns);
             return Optional.absent();
         }
-        return Optional.of(createNewSQLToken((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext(), tableName, hasMoreDerivedColumns));
+        return Optional.of(createNewSQLToken((InsertSQLStatementContext) sqlStatementContext, tableName, hasMoreDerivedColumns));
     }
     
     private Optional<InsertRegularNamesToken> findInsertRegularNamesToken() {

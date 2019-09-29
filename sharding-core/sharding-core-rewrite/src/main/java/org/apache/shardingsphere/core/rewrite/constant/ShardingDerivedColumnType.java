@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.statement;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+package org.apache.shardingsphere.core.rewrite.constant;
 
 /**
- * SQL Statement for rewrite.
+ * Derived column type for sharding.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public class RewriteStatement {
+public final class ShardingDerivedColumnType {
     
-    private final SQLStatementContext sqlStatementContext;
+    public static final String KEY_GEN = "KEY_GEN";
 }

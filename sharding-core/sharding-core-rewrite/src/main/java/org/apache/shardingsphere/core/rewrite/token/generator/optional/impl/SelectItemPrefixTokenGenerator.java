@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.rewrite.token.generator.optional.impl;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.ProjectionPrefixToken;
@@ -34,11 +34,11 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.ProjectionPrefixToken;
 public final class SelectItemPrefixTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
     
     @Override
-    public Optional<ProjectionPrefixToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
-        if (!(rewriteStatement.getSqlStatementContext() instanceof SelectSQLStatementContext)) {
+    public Optional<ProjectionPrefixToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+        if (!(sqlStatementContext instanceof SelectSQLStatementContext)) {
             return Optional.absent();
         }
-        ProjectionsContext projectionsContext = ((SelectSQLStatementContext) rewriteStatement.getSqlStatementContext()).getProjectionsContext();
+        ProjectionsContext projectionsContext = ((SelectSQLStatementContext) sqlStatementContext).getProjectionsContext();
         return projectionsContext.getAggregationDistinctProjections().isEmpty() ? Optional.<ProjectionPrefixToken>absent() : Optional.of(new ProjectionPrefixToken(projectionsContext.getStartIndex()));
     }
 }

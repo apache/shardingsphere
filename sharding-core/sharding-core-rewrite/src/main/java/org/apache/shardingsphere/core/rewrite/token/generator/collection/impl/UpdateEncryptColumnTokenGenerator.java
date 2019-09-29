@@ -26,7 +26,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.Paramete
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.standard.StandardParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.EncryptColumnToken;
@@ -49,9 +48,8 @@ public final class UpdateEncryptColumnTokenGenerator implements CollectionSQLTok
     private EncryptRule encryptRule;
     
     @Override
-    public Collection<EncryptColumnToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
-        return rewriteStatement.getSqlStatementContext().getSqlStatement() instanceof UpdateStatement 
-                ? createUpdateEncryptColumnTokens(parameterBuilder, rewriteStatement.getSqlStatementContext()) : Collections.<EncryptColumnToken>emptyList();
+    public Collection<EncryptColumnToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+        return sqlStatementContext.getSqlStatement() instanceof UpdateStatement ? createUpdateEncryptColumnTokens(parameterBuilder, sqlStatementContext) : Collections.<EncryptColumnToken>emptyList();
     }
     
     private Collection<EncryptColumnToken> createUpdateEncryptColumnTokens(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext) {

@@ -26,7 +26,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegm
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
@@ -51,11 +50,11 @@ public final class SelectEncryptItemTokenGenerator implements CollectionSQLToken
     private boolean queryWithCipherColumn;
     
     @Override
-    public Collection<SelectEncryptItemToken> generateSQLTokens(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
-        if (!isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext())) {
+    public Collection<SelectEncryptItemToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+        if (!isNeedToGenerateSQLToken(sqlStatementContext)) {
             return Collections.emptyList();
         }
-        return createSelectCipherItemTokens(rewriteStatement.getSqlStatementContext());
+        return createSelectCipherItemTokens(sqlStatementContext);
     }
     
     private boolean isNeedToGenerateSQLToken(final SQLStatementContext sqlStatementContext) {

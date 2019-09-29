@@ -26,10 +26,8 @@ import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatement
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilderFactory;
 import org.apache.shardingsphere.core.rewrite.builder.sql.SQLBuilder;
-import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
-import org.apache.shardingsphere.core.rewrite.statement.RewriteStatementFactory;
-import org.apache.shardingsphere.core.rewrite.statement.constant.EncryptDerivedColumnType;
-import org.apache.shardingsphere.core.rewrite.statement.constant.ShardingDerivedColumnType;
+import org.apache.shardingsphere.core.rewrite.constant.EncryptDerivedColumnType;
+import org.apache.shardingsphere.core.rewrite.constant.ShardingDerivedColumnType;
 import org.apache.shardingsphere.core.rewrite.token.SQLTokenGenerators;
 import org.apache.shardingsphere.core.rewrite.token.builder.BaseTokenGeneratorBuilder;
 import org.apache.shardingsphere.core.rewrite.token.builder.EncryptTokenGenerateBuilder;
@@ -64,7 +62,7 @@ public final class SQLRewriteEngine {
     
     private final BaseRule baseRule;
     
-    private final RewriteStatement rewriteStatement;
+    private final SQLStatementContext sqlStatementContext;
     
     private final List<SQLToken> sqlTokens;
     
@@ -75,12 +73,12 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final ShardingRule shardingRule, final TableMetas tableMetas, 
                             final SQLRouteResult sqlRouteResult, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
         baseRule = shardingRule;
-        rewriteStatement = RewriteStatementFactory.newInstance(shardingRule, sqlRouteResult);
+        sqlStatementContext = sqlRouteResult.getSqlStatementContext();
         if (sqlRouteResult.getSqlStatementContext() instanceof InsertSQLStatementContext) {
             processGeneratedKey((InsertSQLStatementContext) sqlRouteResult.getSqlStatementContext(), sqlRouteResult.getGeneratedKey().orNull());
             processEncrypt((InsertSQLStatementContext) sqlRouteResult.getSqlStatementContext(), shardingRule.getEncryptRule());
         }
-        parameterBuilder = ParameterBuilderFactory.newInstance(rewriteStatement, parameters, sqlRouteResult);
+        parameterBuilder = ParameterBuilderFactory.newInstance(sqlStatementContext, parameters, sqlRouteResult);
         sqlTokens = createSQLTokens(
                 tableMetas, sqlRouteResult.getShardingConditions(), sqlRouteResult.getGeneratedKey().orNull(), sqlRouteResult.getRoutingResult().isSingleRouting(), isQueryWithCipherColumn);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
@@ -89,19 +87,19 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final EncryptRule encryptRule, final TableMetas tableMetas,
                             final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
         baseRule = encryptRule;
-        rewriteStatement = RewriteStatementFactory.newInstance(encryptRule, sqlStatementContext);
+        this.sqlStatementContext = sqlStatementContext;
         if (sqlStatementContext instanceof InsertSQLStatementContext) {
             processEncrypt((InsertSQLStatementContext) sqlStatementContext, encryptRule);
         }
-        parameterBuilder = ParameterBuilderFactory.newInstance(rewriteStatement, parameters);
+        parameterBuilder = ParameterBuilderFactory.newInstance(sqlStatementContext, parameters);
         sqlTokens = createSQLTokens(tableMetas, new ShardingConditions(Collections.<ShardingCondition>emptyList()), null, false, isQueryWithCipherColumn);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
     }
     
     public SQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final SQLStatementContext sqlStatementContext, final String sql) {
         baseRule = masterSlaveRule;
-        rewriteStatement = new RewriteStatement(sqlStatementContext);
-        parameterBuilder = ParameterBuilderFactory.newInstance(rewriteStatement, Collections.emptyList());
+        this.sqlStatementContext = sqlStatementContext;
+        parameterBuilder = ParameterBuilderFactory.newInstance(sqlStatementContext, Collections.emptyList());
         sqlTokens = createSQLTokens(null, new ShardingConditions(Collections.<ShardingCondition>emptyList()), null, false, false);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
     }
@@ -161,7 +159,7 @@ public final class SQLRewriteEngine {
         } else if (baseRule instanceof EncryptRule) {
             sqlTokenGenerators.addAll(new EncryptTokenGenerateBuilder((EncryptRule) baseRule, isQueryWithCipherColumn).getSQLTokenGenerators());
         }
-        return sqlTokenGenerators.generateSQLTokens(rewriteStatement, parameterBuilder, tableMetas, isSingleRoute);
+        return sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameterBuilder, tableMetas, isSingleRoute);
     }
     
     /**

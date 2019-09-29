@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.token.generator.optional;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 
@@ -34,9 +34,9 @@ public interface OptionalSQLTokenGenerator extends SQLTokenGenerator {
     /**
      * Generate SQL token.
      * 
-     * @param rewriteStatement rewrite statement
+     * @param sqlStatementContext SQL statement context
      * @param parameterBuilder SQL parameter builder
      * @return SQL token
      */
-    Optional<? extends SQLToken> generateSQLToken(RewriteStatement rewriteStatement, ParameterBuilder parameterBuilder);
+    Optional<? extends SQLToken> generateSQLToken(SQLStatementContext sqlStatementContext, ParameterBuilder parameterBuilder);
 }

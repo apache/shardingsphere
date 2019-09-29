@@ -20,10 +20,10 @@ package org.apache.shardingsphere.core.rewrite.builder.parameter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.optimize.segment.insert.InsertValueContext;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.group.GroupedParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.standard.StandardParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 
 import java.util.LinkedList;
@@ -40,31 +40,32 @@ public final class ParameterBuilderFactory {
     /**
      * Create new instance of parameter builder.
      * 
-     * @param rewriteStatement rewrite statement
+     * @param sqlStatementContext SQL statement context
      * @param parameters parameters
      * @param sqlRouteResult SQL route result
      * @return instance of parameter builder
      */
-    public static ParameterBuilder newInstance(final RewriteStatement rewriteStatement, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        return rewriteStatement.getSqlStatementContext() instanceof InsertSQLStatementContext
-                ? new GroupedParameterBuilder(parameters, getGroupedParameters(rewriteStatement), sqlRouteResult.getShardingConditions()) : new StandardParameterBuilder(parameters, sqlRouteResult);
+    public static ParameterBuilder newInstance(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
+        return sqlStatementContext instanceof InsertSQLStatementContext
+                ? new GroupedParameterBuilder(parameters, getGroupedParameters(sqlStatementContext), sqlRouteResult.getShardingConditions())
+                : new StandardParameterBuilder(parameters, sqlRouteResult);
     }
     
     /**
      * Create new instance of parameter builder.
      * 
-     * @param rewriteStatement rewrite statement
+     * @param sqlStatementContext SQL statement context
      * @param parameters parameters
      * @return instance of parameter builder
      */
-    public static ParameterBuilder newInstance(final RewriteStatement rewriteStatement, final List<Object> parameters) {
-        return rewriteStatement.getSqlStatementContext() instanceof InsertSQLStatementContext
-                ? new GroupedParameterBuilder(parameters, getGroupedParameters(rewriteStatement), null) : new StandardParameterBuilder(parameters);
+    public static ParameterBuilder newInstance(final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
+        return sqlStatementContext instanceof InsertSQLStatementContext
+                ? new GroupedParameterBuilder(parameters, getGroupedParameters(sqlStatementContext), null) : new StandardParameterBuilder(parameters);
     }
     
-    private static List<List<Object>> getGroupedParameters(final RewriteStatement rewriteStatement) {
+    private static List<List<Object>> getGroupedParameters(final SQLStatementContext sqlStatementContext) {
         List<List<Object>> result = new LinkedList<>();
-        for (InsertValueContext each : ((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext()).getInsertValueContexts()) {
+        for (InsertValueContext each : ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts()) {
             result.add(each.getParameters());
         }
         return result;

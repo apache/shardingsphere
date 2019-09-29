@@ -19,12 +19,12 @@ package org.apache.shardingsphere.core.rewrite.token.generator.optional.impl;
 
 import com.google.common.base.Optional;
 import lombok.Setter;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.ShardingRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertSetGeneratedKeyColumnToken;
@@ -44,12 +44,12 @@ public final class InsertSetGeneratedKeyColumnTokenGenerator implements Optional
     private ShardingRule shardingRule;
     
     @Override
-    public Optional<InsertSetGeneratedKeyColumnToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
-        Optional<SetAssignmentsSegment> setAssignmentsSegment = rewriteStatement.getSqlStatementContext().getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
-        if (!(rewriteStatement.getSqlStatementContext() instanceof InsertSQLStatementContext && setAssignmentsSegment.isPresent())) {
+    public Optional<InsertSetGeneratedKeyColumnToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+        Optional<SetAssignmentsSegment> setAssignmentsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
+        if (!(sqlStatementContext instanceof InsertSQLStatementContext && setAssignmentsSegment.isPresent())) {
             return Optional.absent();
         }
-        return createInsertSetGeneratedKeyColumnToken((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext(), setAssignmentsSegment.get());
+        return createInsertSetGeneratedKeyColumnToken((InsertSQLStatementContext) sqlStatementContext, setAssignmentsSegment.get());
     }
     
     private Optional<InsertSetGeneratedKeyColumnToken> createInsertSetGeneratedKeyColumnToken(final InsertSQLStatementContext insertSQLStatementContext, final SetAssignmentsSegment segment) {
