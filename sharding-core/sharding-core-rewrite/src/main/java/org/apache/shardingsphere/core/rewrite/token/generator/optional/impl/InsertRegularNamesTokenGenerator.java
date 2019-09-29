@@ -30,6 +30,7 @@ import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertRegularNamesToken;
+import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
@@ -49,37 +50,45 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
     @Override
     public Optional<InsertRegularNamesToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
         return isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext().getSqlStatement())
-                ? Optional.of(createInsertColumnsToken(rewriteStatement)) : Optional.<InsertRegularNamesToken>absent();
+                ? Optional.of(createInsertColumnsToken((InsertRewriteStatement) rewriteStatement)) : Optional.<InsertRegularNamesToken>absent();
     }
     
     private boolean isNeedToGenerateSQLToken(final SQLStatement sqlStatement) {
         return sqlStatement instanceof InsertStatement && ((InsertStatement) sqlStatement).useDefaultColumns() && sqlStatement.findSQLSegment(InsertColumnsSegment.class).isPresent();
     }
     
-    private InsertRegularNamesToken createInsertColumnsToken(final RewriteStatement rewriteStatement) {
+    private InsertRegularNamesToken createInsertColumnsToken(final InsertRewriteStatement rewriteStatement) {
         Optional<InsertColumnsSegment> insertColumnsSegment = rewriteStatement.getSqlStatementContext().getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         Preconditions.checkState(insertColumnsSegment.isPresent());
-        return new InsertRegularNamesToken(insertColumnsSegment.get().getStopIndex(),
-                getActualInsertColumns((InsertRewriteStatement) rewriteStatement), !hasMoreDerivedColumns(rewriteStatement.getSqlStatementContext().getTablesContext().getSingleTableName()));
+        int startIndex = insertColumnsSegment.get().getStopIndex();
+        boolean hasMoreDerivedColumns = !encryptRule.getAssistedQueryAndPlainColumns(rewriteStatement.getSqlStatementContext().getTablesContext().getSingleTableName()).isEmpty();
+        if (rewriteStatement.getGeneratedKey().isPresent()) {
+            return new InsertRegularNamesToken(
+                    startIndex, getActualInsertColumns((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext(), rewriteStatement.getGeneratedKey().get()), !hasMoreDerivedColumns);
+        }
+        return new InsertRegularNamesToken(startIndex, getActualInsertColumns((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext()), !hasMoreDerivedColumns);
     }
     
-    private Collection<String> getActualInsertColumns(final InsertRewriteStatement rewriteStatement) {
+    private Collection<String> getActualInsertColumns(final InsertSQLStatementContext insertSQLStatementContext, final GeneratedKey generatedKey) {
         Collection<String> result = new LinkedList<>();
-        Map<String, String> logicAndCipherColumns = encryptRule.getLogicAndCipherColumns(rewriteStatement.getSqlStatementContext().getTablesContext().getSingleTableName());
-        boolean isGeneratedKey = rewriteStatement.getGeneratedKey().isPresent() && (rewriteStatement.getGeneratedKey().get().isGenerated());
-        for (String each : ((InsertSQLStatementContext) rewriteStatement.getSqlStatementContext()).getColumnNames()) {
-            if (!isGeneratedKey || !each.equalsIgnoreCase(rewriteStatement.getGeneratedKey().get().getColumnName())) {
+        Map<String, String> logicAndCipherColumns = encryptRule.getLogicAndCipherColumns(insertSQLStatementContext.getTablesContext().getSingleTableName());
+        for (String each : insertSQLStatementContext.getColumnNames()) {
+            if (!generatedKey.isGenerated() || !each.equalsIgnoreCase(generatedKey.getColumnName())) {
                 result.add(logicAndCipherColumns.keySet().contains(each) ? logicAndCipherColumns.get(each) : each);
             }
         }
-        if (isGeneratedKey) {
-            result.add(rewriteStatement.getGeneratedKey().get().getColumnName());
+        if (generatedKey.isGenerated()) {
+            result.add(generatedKey.getColumnName());
         }
         return result;
     }
     
-    private boolean hasMoreDerivedColumns(final String tableName) {
-        return !encryptRule.getAssistedQueryAndPlainColumns(tableName).isEmpty();
+    private Collection<String> getActualInsertColumns(final InsertSQLStatementContext insertSQLStatementContext) {
+        Collection<String> result = new LinkedList<>();
+        Map<String, String> logicAndCipherColumns = encryptRule.getLogicAndCipherColumns(insertSQLStatementContext.getTablesContext().getSingleTableName());
+        for (String each : insertSQLStatementContext.getColumnNames()) {
+            result.add(logicAndCipherColumns.keySet().contains(each) ? logicAndCipherColumns.get(each) : each);
+        }
+        return result;
     }
-    
 }
