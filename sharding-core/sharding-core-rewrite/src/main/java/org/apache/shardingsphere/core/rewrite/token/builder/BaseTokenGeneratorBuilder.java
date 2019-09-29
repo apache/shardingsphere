@@ -18,20 +18,22 @@
 package org.apache.shardingsphere.core.rewrite.token.builder;
 
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.RemoveTokenGenerator;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * SQL token generator.
+ * Base SQL token generator builder.
  *
- * @author zhangliang
+ * @author panjuan
  */
-public interface SQLTokenGenerateEngine {
+public final class BaseTokenGeneratorBuilder implements SQLTokenGeneratorBuilder {
     
-    /**
-     * Get SQL token generators.
-     * 
-     * @return SQL token generators
-     */
-    Collection<SQLTokenGenerator> getSQLTokenGenerators();
+    @Override
+    public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
+        Collection<SQLTokenGenerator> result = new LinkedList<>();
+        result.add(new RemoveTokenGenerator());
+        return result;
+    }
 }

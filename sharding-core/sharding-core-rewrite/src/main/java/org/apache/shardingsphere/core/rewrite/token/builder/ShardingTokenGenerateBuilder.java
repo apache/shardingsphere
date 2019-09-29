@@ -36,12 +36,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * SQL token generator for sharding.
+ * SQL token generator builder for sharding.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ShardingTokenGenerateEngine implements SQLTokenGenerateEngine {
+public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuilder {
     
     private final ShardingRule shardingRule;
     

@@ -36,13 +36,13 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * SQL token generator for encrypt.
+ * SQL token generator builder for encrypt.
  *
  * @author panjuan
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class EncryptTokenGenerateEngine implements SQLTokenGenerateEngine {
+public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuilder {
     
     private final EncryptRule encryptRule;
     

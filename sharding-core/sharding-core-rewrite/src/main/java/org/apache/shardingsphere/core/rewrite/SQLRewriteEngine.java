@@ -24,10 +24,10 @@ import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder
 import org.apache.shardingsphere.core.rewrite.builder.sql.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatementFactory;
-import org.apache.shardingsphere.core.rewrite.token.builder.BaseTokenGenerateEngine;
-import org.apache.shardingsphere.core.rewrite.token.builder.EncryptTokenGenerateEngine;
+import org.apache.shardingsphere.core.rewrite.token.builder.BaseTokenGeneratorBuilder;
+import org.apache.shardingsphere.core.rewrite.token.builder.EncryptTokenGenerateBuilder;
 import org.apache.shardingsphere.core.rewrite.token.SQLTokenGenerators;
-import org.apache.shardingsphere.core.rewrite.token.builder.ShardingTokenGenerateEngine;
+import org.apache.shardingsphere.core.rewrite.token.builder.ShardingTokenGenerateBuilder;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
@@ -89,12 +89,12 @@ public final class SQLRewriteEngine {
     
     private List<SQLToken> createSQLTokens(final TableMetas tableMetas, final boolean isSingleRoute, final boolean isQueryWithCipherColumn) {
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
-        sqlTokenGenerators.addAll(new BaseTokenGenerateEngine().getSQLTokenGenerators());
+        sqlTokenGenerators.addAll(new BaseTokenGeneratorBuilder().getSQLTokenGenerators());
         if (baseRule instanceof ShardingRule) {
-            sqlTokenGenerators.addAll(new ShardingTokenGenerateEngine((ShardingRule) baseRule).getSQLTokenGenerators());
-            sqlTokenGenerators.addAll(new EncryptTokenGenerateEngine(((ShardingRule) baseRule).getEncryptRule(), isQueryWithCipherColumn).getSQLTokenGenerators());
+            sqlTokenGenerators.addAll(new ShardingTokenGenerateBuilder((ShardingRule) baseRule).getSQLTokenGenerators());
+            sqlTokenGenerators.addAll(new EncryptTokenGenerateBuilder(((ShardingRule) baseRule).getEncryptRule(), isQueryWithCipherColumn).getSQLTokenGenerators());
         } else if (baseRule instanceof EncryptRule) {
-            sqlTokenGenerators.addAll(new EncryptTokenGenerateEngine((EncryptRule) baseRule, isQueryWithCipherColumn).getSQLTokenGenerators());
+            sqlTokenGenerators.addAll(new EncryptTokenGenerateBuilder((EncryptRule) baseRule, isQueryWithCipherColumn).getSQLTokenGenerators());
         }
         return sqlTokenGenerators.generateSQLTokens(rewriteStatement, parameterBuilder, tableMetas, isSingleRoute);
     }
