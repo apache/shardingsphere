@@ -60,9 +60,13 @@ public class RowsEvent {
     public void parsePostHeader(final ByteBuf in) {
         tableId = DataTypesCodec.readUnsignedInt6LE(in);
         flags = DataTypesCodec.readUnsignedInt2LE(in);
-        var extraDataLength = DataTypesCodec.readUnsignedInt2LE(in) - 2;
-        // skip data
-        DataTypesCodec.readBytes(extraDataLength, in);
+        if (EventTypes.WRITE_ROWS_EVENTv2 <= binlogEventHeader.getTypeCode()
+                && EventTypes.DELETE_ROWS_EVENTv2 >= binlogEventHeader.getTypeCode()) {
+            // added the extra-data fields in v2
+            var extraDataLength = DataTypesCodec.readUnsignedInt2LE(in) - 2;
+            // skip data
+            DataTypesCodec.readBytes(extraDataLength, in);
+        }
     }
 
     public void parsePaylod(final BinlogContext binlogContext, final ByteBuf in) {
