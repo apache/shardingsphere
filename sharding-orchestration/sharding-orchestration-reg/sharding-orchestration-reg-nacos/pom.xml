@@ -15,21 +15,32 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>sharding-orchestration</artifactId>
+        <artifactId>sharding-orchestration-reg</artifactId>
         <version>4.0.0-RC3-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-orchestration-reg</artifactId>
+    <artifactId>sharding-orchestration-reg-nacos</artifactId>
     <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
-    
-    <modules>
-        <module>sharding-orchestration-reg-api</module>
-        <module>sharding-orchestration-reg-zookeeper-curator</module>
-        <module>sharding-orchestration-reg-nacos</module>
-    </modules>
+
+    <properties>
+        <nacos-client.verison>1.0.0</nacos-client.verison>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-orchestration-reg-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.nacos</groupId>
+            <artifactId>nacos-client</artifactId>
+            <version>${nacos-client.verison}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>
