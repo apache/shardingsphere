@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.InsertRewriteStatement;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
@@ -46,15 +47,11 @@ public final class InsertRegularNamesTokenGenerator implements OptionalSQLTokenG
     
     @Override
     public Optional<InsertRegularNamesToken> generateSQLToken(final RewriteStatement rewriteStatement, final ParameterBuilder parameterBuilder) {
-        if (!isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext())) {
-            return Optional.absent();
-        }
-        return createInsertColumnsToken(rewriteStatement);
+        return isNeedToGenerateSQLToken(rewriteStatement.getSqlStatementContext()) ? createInsertColumnsToken(rewriteStatement) : Optional.<InsertRegularNamesToken>absent();
     }
     
     private boolean isNeedToGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
-        return sqlStatementContext instanceof InsertSQLStatementContext && insertColumnsSegment.isPresent() && insertColumnsSegment.get().getColumns().isEmpty();
+        return sqlStatementContext.getSqlStatement() instanceof InsertStatement && ((InsertStatement) sqlStatementContext.getSqlStatement()).useDefaultColumns();
     }
     
     private Optional<InsertRegularNamesToken> createInsertColumnsToken(final RewriteStatement rewriteStatement) {
