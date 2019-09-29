@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.statement.RewriteStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
+import org.apache.shardingsphere.core.rewrite.token.generator.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.TableMetasAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
@@ -82,6 +83,9 @@ public final class SQLTokenGenerators {
             }
             if (each instanceof TableMetasAware) {
                 ((TableMetasAware) each).setTableMetas(tableMetas);
+            }
+            if (each instanceof PreviousSQLTokensAware) {
+                ((PreviousSQLTokensAware) each).setPreviousSQLTokens(result);
             }
             if (each instanceof OptionalSQLTokenGenerator) {
                 Optional<? extends SQLToken> sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(rewriteStatement, parameterBuilder);
