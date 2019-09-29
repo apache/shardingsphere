@@ -22,12 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-
-import java.util.Collections;
 
 /**
  * Rewrite statement factory.
@@ -46,10 +42,8 @@ public final class RewriteStatementFactory {
      */
     public static RewriteStatement newInstance(final ShardingRule shardingRule, final SQLRouteResult sqlRouteResult) {
         return sqlRouteResult.getSqlStatementContext() instanceof InsertSQLStatementContext
-                ? new InsertRewriteStatement(
-                        (InsertSQLStatementContext) sqlRouteResult.getSqlStatementContext(), sqlRouteResult.getShardingConditions(), 
-                        sqlRouteResult.getGeneratedKey().orNull(), shardingRule.getEncryptRule())
-                : new RewriteStatement(sqlRouteResult.getSqlStatementContext(), sqlRouteResult.getShardingConditions());
+                ? new InsertRewriteStatement((InsertSQLStatementContext) sqlRouteResult.getSqlStatementContext(), sqlRouteResult.getGeneratedKey().orNull(), shardingRule.getEncryptRule())
+                : new RewriteStatement(sqlRouteResult.getSqlStatementContext());
     }
     
     /**
@@ -60,8 +54,7 @@ public final class RewriteStatementFactory {
      * @return rewrite statement
      */
     public static RewriteStatement newInstance(final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext) {
-        ShardingConditions shardingConditions = new ShardingConditions(Collections.<ShardingCondition>emptyList());
         return sqlStatementContext instanceof InsertSQLStatementContext
-                ? new InsertRewriteStatement((InsertSQLStatementContext) sqlStatementContext, shardingConditions, null, encryptRule) : new RewriteStatement(sqlStatementContext, shardingConditions);
+                ? new InsertRewriteStatement((InsertSQLStatementContext) sqlStatementContext, null, encryptRule) : new RewriteStatement(sqlStatementContext);
     }
 }

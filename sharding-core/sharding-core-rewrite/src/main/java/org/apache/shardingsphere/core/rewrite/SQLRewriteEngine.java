@@ -81,7 +81,7 @@ public final class SQLRewriteEngine {
     
     public SQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final SQLStatementContext sqlStatementContext, final String sql) {
         baseRule = masterSlaveRule;
-        rewriteStatement = new RewriteStatement(sqlStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+        rewriteStatement = new RewriteStatement(sqlStatementContext);
         parameterBuilder = ParameterBuilderFactory.newInstance(rewriteStatement, Collections.emptyList());
         sqlTokens = createSQLTokens(null, new ShardingConditions(Collections.<ShardingCondition>emptyList()), false, false);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);

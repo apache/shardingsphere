@@ -47,7 +47,7 @@ public final class ParameterBuilderFactory {
      */
     public static ParameterBuilder newInstance(final RewriteStatement rewriteStatement, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
         return rewriteStatement.getSqlStatementContext() instanceof InsertSQLStatementContext
-                ? new GroupedParameterBuilder(parameters, getGroupedParameters(rewriteStatement), rewriteStatement.getShardingConditions()) : new StandardParameterBuilder(parameters, sqlRouteResult);
+                ? new GroupedParameterBuilder(parameters, getGroupedParameters(rewriteStatement), sqlRouteResult.getShardingConditions()) : new StandardParameterBuilder(parameters, sqlRouteResult);
     }
     
     /**
