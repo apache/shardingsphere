@@ -53,7 +53,7 @@ public final class InsertValueContext {
         this.parameters = getParameters(parameters, parametersOffset);
     }
     
-    private int calculateParametersCount(final Collection<? extends ExpressionSegment> assignments) {
+    private int calculateParametersCount(final Collection<ExpressionSegment> assignments) {
         int result = 0;
         for (ExpressionSegment each : assignments) {
             if (each instanceof ParameterMarkerExpressionSegment) {
@@ -63,7 +63,7 @@ public final class InsertValueContext {
         return result;
     }
     
-    private List<ExpressionSegment> getValueExpressions(final Collection<? extends ExpressionSegment> assignments) {
+    private List<ExpressionSegment> getValueExpressions(final Collection<ExpressionSegment> assignments) {
         List<ExpressionSegment> result = new ArrayList<>(assignments.size());
         result.addAll(assignments);
         return result;

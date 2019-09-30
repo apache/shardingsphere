@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.optimize.segment.insert.expression;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
