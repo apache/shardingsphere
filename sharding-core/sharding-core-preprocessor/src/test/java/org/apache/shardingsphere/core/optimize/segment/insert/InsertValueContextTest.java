@@ -64,7 +64,7 @@ public class InsertValueContextTest {
 
     @Test
     public void assertGetValueWhenParameterMarker() {
-        Collection<? extends ExpressionSegment> assignments = makeParameterMarkerExpresstionSegment();
+        Collection assignments = makeParameterMarkerExpresstionSegment();
         String parameterValue = "test";
         List parameters = Lists.newArrayList(parameterValue);
         int parametersOffset = 0;
@@ -83,7 +83,7 @@ public class InsertValueContextTest {
     @Test
     public void assertGetValueWhenLiteralExpressionSegment() {
         Object literalObject = new Object();
-        Collection<? extends ExpressionSegment> assignments = makeLiteralExpressionSegment(literalObject);
+        Collection assignments = makeLiteralExpressionSegment(literalObject);
         List parameters = Lists.newArrayList();
         InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, 0);
         Object result = insertValueContext.getValue(0);
@@ -98,7 +98,7 @@ public class InsertValueContextTest {
 
     @Test
     public void assertAppendValueWhenParametersIsEmpty() {
-        Collection<? extends ExpressionSegment> assignments = Lists.newArrayList();
+        Collection assignments = Lists.newArrayList();
         List parameters = Lists.newArrayList();
         InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, 0);
 
@@ -115,7 +115,7 @@ public class InsertValueContextTest {
 
     @Test
     public void assertAppendValueWhenParametersIsNotEmpty() {
-        Collection<? extends ExpressionSegment> assignments = makeParameterMarkerExpresstionSegment();
+        Collection assignments = makeParameterMarkerExpresstionSegment();
         String parameterValue = "test";
         List parameters = Lists.newArrayList(parameterValue);
         int parametersOffset = 0;

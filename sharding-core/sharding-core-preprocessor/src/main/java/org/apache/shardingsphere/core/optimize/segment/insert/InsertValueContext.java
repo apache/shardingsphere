@@ -47,7 +47,7 @@ public final class InsertValueContext {
     
     private final List<Object> parameters;
     
-    public InsertValueContext(final Collection<? extends ExpressionSegment> assignments, final List<Object> parameters, final int parametersOffset) {
+    public InsertValueContext(final Collection<ExpressionSegment> assignments, final List<Object> parameters, final int parametersOffset) {
         parametersCount = calculateParametersCount(assignments);
         valueExpressions = getValueExpressions(assignments);
         this.parameters = getParameters(parameters, parametersOffset);
