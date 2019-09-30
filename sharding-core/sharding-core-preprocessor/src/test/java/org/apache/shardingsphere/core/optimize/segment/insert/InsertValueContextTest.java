@@ -27,22 +27,22 @@ public class InsertValueContextTest {
 
         InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, parametersOffset);
 
-        MethodInvocation calculateParametersCountMethod = new MethodInvocation(InsertValueContext.class.getDeclaredMethod("calculateParametersCount", Collection.class), new Object[] {assignments});
-        int calculateParametersCountResult = (int) calculateParametersCountMethod.invoke(insertValueContext);
+        MethodInvocation<Integer> calculateParametersCountMethod = new MethodInvocation(InsertValueContext.class.getDeclaredMethod("calculateParametersCount", Collection.class), new Object[] {assignments});
+        int calculateParametersCountResult = calculateParametersCountMethod.invoke(insertValueContext);
         assertThat(insertValueContext.getParametersCount(), is(calculateParametersCountResult));
 
-        MethodInvocation getValueExpressionsMethod = new MethodInvocation(InsertValueContext.class.getDeclaredMethod("getValueExpressions", Collection.class), new Object[] {assignments});
-        List<ExpressionSegment> getValueExpressionsResult = (List<ExpressionSegment>) getValueExpressionsMethod.invoke(insertValueContext);
+        MethodInvocation<List<ExpressionSegment>> getValueExpressionsMethod = new MethodInvocation(InsertValueContext.class.getDeclaredMethod("getValueExpressions", Collection.class), new Object[] {assignments});
+        List<ExpressionSegment> getValueExpressionsResult = getValueExpressionsMethod.invoke(insertValueContext);
         assertThat(insertValueContext.getValueExpressions(), is(getValueExpressionsResult));
 
-        MethodInvocation getParametersMethod = new MethodInvocation(InsertValueContext.class.getDeclaredMethod("getParameters", new Class[]{List.class, int.class}), new Object[] {parameters, parametersOffset});
-        List<Object> getParametersResult = (List<Object>) getParametersMethod.invoke(insertValueContext);
+        MethodInvocation<List<Object>> getParametersMethod = new MethodInvocation(InsertValueContext.class.getDeclaredMethod("getParameters", new Class[]{List.class, int.class}), new Object[] {parameters, parametersOffset});
+        List<Object> getParametersResult = getParametersMethod.invoke(insertValueContext);
         assertThat(insertValueContext.getParameters(), is(getParametersResult));
     }
 }
 
 @RequiredArgsConstructor
-class MethodInvocation {
+class MethodInvocation<T> {
     @Getter
     private final Method method;
 
@@ -55,8 +55,8 @@ class MethodInvocation {
      * @param target target object
      */
     @SneakyThrows
-    public Object invoke(final Object target) {
+    public T invoke(final Object target) {
         method.setAccessible(true);
-        return method.invoke(target, arguments);
+        return (T)method.invoke(target, arguments);
     }
 }
