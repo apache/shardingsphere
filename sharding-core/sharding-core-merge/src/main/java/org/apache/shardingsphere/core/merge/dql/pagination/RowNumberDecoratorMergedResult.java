@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.merge.dql.pagination;
 
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.common.DecoratorMergedResult;
-import org.apache.shardingsphere.core.optimize.segment.select.pagination.Pagination;
+import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
 
 import java.sql.SQLException;
 
@@ -30,13 +30,13 @@ import java.sql.SQLException;
  */
 public final class RowNumberDecoratorMergedResult extends DecoratorMergedResult {
     
-    private final Pagination pagination;
+    private final PaginationContext pagination;
     
     private final boolean skipAll;
     
     private long rowNumber;
     
-    public RowNumberDecoratorMergedResult(final MergedResult mergedResult, final Pagination pagination) throws SQLException {
+    public RowNumberDecoratorMergedResult(final MergedResult mergedResult, final PaginationContext pagination) throws SQLException {
         super(mergedResult);
         this.pagination = pagination;
         skipAll = skipOffset();

@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.optimize.statement.impl.CommonOptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.impl.CommonSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -54,8 +54,7 @@ public abstract class BaseShardingEngineTest {
     }
     
     protected final SQLRouteResult createSQLRouteResult() {
-        SQLRouteResult result = new SQLRouteResult(new CommonOptimizedStatement(new DALStatement()), 
-                new CommonOptimizedStatement(new DALStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+        SQLRouteResult result = new SQLRouteResult(new CommonSQLStatementContext(new DALStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         result.setRoutingResult(routingResult);

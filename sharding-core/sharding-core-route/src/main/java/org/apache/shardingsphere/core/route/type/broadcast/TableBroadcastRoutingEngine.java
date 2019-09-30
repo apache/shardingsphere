@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
@@ -49,7 +49,7 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     
     private final TableMetas tableMetas;
     
-    private final OptimizedStatement optimizedStatement;
+    private final SQLStatementContext sqlStatementContext;
     
     @Override
     public RoutingResult route() {
@@ -61,8 +61,8 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     }
     
     private Collection<String> getLogicTableNames() {
-        return optimizedStatement.getSqlStatement() instanceof DropIndexStatement
-                ? getTableNames((DropIndexStatement) optimizedStatement.getSqlStatement()) : optimizedStatement.getTables().getTableNames();
+        return sqlStatementContext.getSqlStatement() instanceof DropIndexStatement
+                ? getTableNames((DropIndexStatement) sqlStatementContext.getSqlStatement()) : sqlStatementContext.getTablesContext().getTableNames();
     }
     
     private Collection<String> getTableNames(final DropIndexStatement dropIndexStatement) {

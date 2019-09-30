@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.OptimizedStatementFactory;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.optimize.SQLStatementContextFactory;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.route.SQLLogger;
@@ -48,7 +48,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     
     private PreparedStatement preparedStatement;
     
-    private OptimizedStatement encryptStatement;
+    private SQLStatementContext sqlStatementContext;
     
     private EncryptResultSet resultSet;
     
@@ -93,7 +93,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
             preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
             replayMethodsInvocation(preparedStatement);
             replaySetParameter(preparedStatement, sqlUnit.getParameters());
-            this.resultSet = new EncryptResultSet(preparedStatementGenerator.connection.getRuntimeContext(), encryptStatement, this, preparedStatement.executeQuery());
+            this.resultSet = new EncryptResultSet(preparedStatementGenerator.connection.getRuntimeContext(), sqlStatementContext, this, preparedStatement.executeQuery());
             return resultSet;
         } finally {
             clearParameters();
@@ -135,7 +135,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     
     private EncryptResultSet createEncryptResultSet(final PreparedStatement preparedStatement) throws SQLException {
         return null == preparedStatement.getResultSet() 
-                ? null : new EncryptResultSet(preparedStatementGenerator.connection.getRuntimeContext(), encryptStatement, this, preparedStatement.getResultSet());
+                ? null : new EncryptResultSet(preparedStatementGenerator.connection.getRuntimeContext(), sqlStatementContext, this, preparedStatement.getResultSet());
     }
     
     @Override
@@ -148,9 +148,8 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     private SQLUnit getSQLUnit(final String sql) {
         EncryptConnection connection = preparedStatementGenerator.connection;
         SQLStatement sqlStatement = connection.getRuntimeContext().getParseEngine().parse(sql, true);
-        encryptStatement = OptimizedStatementFactory.newInstance(connection.getRuntimeContext().getTableMetas(), sql, getParameters(), sqlStatement);
-        SQLRewriteEngine encryptSQLRewriteEngine = new SQLRewriteEngine(connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getTableMetas(), 
-                encryptStatement, sql, getParameters(), connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
+        sqlStatementContext = SQLStatementContextFactory.newInstance(connection.getRuntimeContext().getTableMetas(), sql, getParameters(), sqlStatement);
+        SQLRewriteEngine encryptSQLRewriteEngine = new SQLRewriteEngine(connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getTableMetas(), sqlStatementContext, sql, getParameters(), connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         SQLUnit result = encryptSQLRewriteEngine.generateSQL();
         showSQL(result.getSql());
         return result;

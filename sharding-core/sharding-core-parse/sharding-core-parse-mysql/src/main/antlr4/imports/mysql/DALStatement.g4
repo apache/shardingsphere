@@ -302,3 +302,61 @@ dropResourceGroup
 setResourceGroup
     : SET RESOURCE GROUP groupName (FOR NUMBER_ (COMMA_ NUMBER_)*)?
     ;
+
+binlog
+    : BINLOG stringLiterals
+    ;
+
+cacheIndex
+    : CACHE INDEX (tableIndexList (COMMA_ tableIndexList)* | tableName PARTITION LP_ partitionList RP_) IN IDENTIFIER_
+    ;
+
+tableIndexList
+    : tableName (PARTITION LP_ partitionList RP_)? ((INDEX | KEY) LP_ indexName (COMMA_ indexName)* RP_)?
+    ;
+
+partitionList
+    : partitionName (COMMA_ partitionName)* | ALL
+    ;
+
+flush
+    : FLUSH (NO_WRITE_TO_BINLOG | LOCAL)? (flushOption_ (COMMA_ flushOption_) * | tablesOption_)
+    ;
+
+flushOption_
+    : BINARY LOGS | ENGINE LOGS | ERROR LOGS | GENERAL LOGS | HOSTS | LOGS | PRIVILEGES | OPTIMIZER_COSTS
+    | RELAY LOGS (FOR CHANNEL channelName)? | SLOW LOGS | STATUS | USER_RESOURCES 
+    ;
+
+tablesOption_
+    : TABLES |TABLES tableName (COMMA_ tableName)* | TABLES WITH READ LOCK | TABLES tableName (COMMA_ tableName)* WITH READ LOCK
+    | TABLES tableName (COMMA_ tableName)* FOR EXPORT
+    ;
+
+kill
+    : KILL (CONNECTION | QUERY)? NUMBER_+
+    ;
+
+loadIndexInfo
+    : LOAD INDEX INTO CACHE tableIndexList (COMMA_ tableIndexList)*
+    ;
+
+resetStatement
+    : RESET resetOption_ (COMMA_ resetOption_)*
+    ;
+
+resetOption_
+    : MASTER | SLAVE
+    ;
+
+resetPersist
+    : RESET PERSIST ((IF EXISTS)? IDENTIFIER_)
+    ;
+
+restart
+    : RESTART
+    ;
+
+shutdown
+    : SHUTDOWN
+    ;

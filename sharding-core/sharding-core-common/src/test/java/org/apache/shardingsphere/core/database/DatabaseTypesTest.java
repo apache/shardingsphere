@@ -64,8 +64,8 @@ public final class DatabaseTypesTest {
         assertThat(DatabaseTypes.getDatabaseTypeByURL("jdbc:mysqlx://localhost:3306/test").getName(), is("MySQL"));
     }
     
-    @Test(expected = UnsupportedOperationException.class)
-    public void assertGetDatabaseTypeByURLWithUnrecognizedDatabaseURL() {
-        DatabaseTypes.getDatabaseTypeByURL("Invalid");
+    @Test
+    public void assertGetDatabaseTypeSQL92() {
+        assertThat(DatabaseTypes.getDatabaseTypeByURL("jdbc:sqlite:test").getName(), is("SQL92"));
     }
 }
