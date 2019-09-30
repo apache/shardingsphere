@@ -28,6 +28,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralE
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.junit.Test;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
@@ -38,23 +39,26 @@ import static org.hamcrest.core.Is.is;
 public class InsertValueContextTest {
 
     @Test
-    public void assertInstanceConstructedOk() throws NoSuchMethodException {
+    public void assertInstanceConstructedOk() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Collection<ExpressionSegment> assignments = Lists.newArrayList();
         List<Object> parameters = Lists.newArrayList();
         int parametersOffset = 0;
 
         InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, parametersOffset);
 
-        MethodInvocation<Integer> calculateParametersCountMethod = new MethodInvocation(InsertValueContext.class.getDeclaredMethod("calculateParametersCount", Collection.class), new Object[] {assignments});
-        int calculateParametersCountResult = calculateParametersCountMethod.invoke(insertValueContext);
+        Method calculateParametersCountMethod = InsertValueContext.class.getDeclaredMethod("calculateParametersCount", Collection.class);
+        calculateParametersCountMethod.setAccessible(true);
+        int calculateParametersCountResult = (int) calculateParametersCountMethod.invoke(insertValueContext, new Object[] {assignments});
         assertThat(insertValueContext.getParametersCount(), is(calculateParametersCountResult));
 
-        MethodInvocation<List<ExpressionSegment>> getValueExpressionsMethod = new MethodInvocation(InsertValueContext.class.getDeclaredMethod("getValueExpressions", Collection.class), new Object[] {assignments});
-        List<ExpressionSegment> getValueExpressionsResult = getValueExpressionsMethod.invoke(insertValueContext);
+        Method getValueExpressionsMethod = InsertValueContext.class.getDeclaredMethod("getValueExpressions", Collection.class);
+        getValueExpressionsMethod.setAccessible(true);
+        List<ExpressionSegment> getValueExpressionsResult = (List<ExpressionSegment>) getValueExpressionsMethod.invoke(insertValueContext, new Object[] {assignments});
         assertThat(insertValueContext.getValueExpressions(), is(getValueExpressionsResult));
 
-        MethodInvocation<List<Object>> getParametersMethod = new MethodInvocation(InsertValueContext.class.getDeclaredMethod("getParameters", new Class[]{List.class, int.class}), new Object[] {parameters, parametersOffset});
-        List<Object> getParametersResult = getParametersMethod.invoke(insertValueContext);
+        Method getParametersMethod = InsertValueContext.class.getDeclaredMethod("getParameters", new Class[]{List.class, int.class});
+        getParametersMethod.setAccessible(true);
+        List<Object> getParametersResult = (List<Object>) getParametersMethod.invoke(insertValueContext, new Object[] {parameters, parametersOffset});
         assertThat(insertValueContext.getParameters(), is(getParametersResult));
     }
 
