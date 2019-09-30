@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.optimize.segment.insert.expression;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.Paramete
  */
 @Getter
 @ToString(callSuper = true)
+@EqualsAndHashCode
 public final class DerivedParameterMarkerExpressionSegment extends ParameterMarkerExpressionSegment implements DerivedSimpleExpressionSegment {
     
     private final String type;
