@@ -25,7 +25,7 @@ grant
 
 revoke
     : REVOKE (proxyClause_ | privilegeClause_ | allClause_ | roleClause_)
-    ;  
+    ;
 
 proxyClause_
     : PROXY ON userOrRole TO userOrRoles_ withGrantOption_?
@@ -177,7 +177,7 @@ identifiedBy_
     ;
 
 identifiedWith_
-    : IDENTIFIED WITH pluginName (BY |AS) (stringLiterals | RANDOM PASSWORD)
+    : IDENTIFIED WITH pluginName (BY |AS) (STRING_ | RANDOM PASSWORD)
       (REPLACE stringLiterals)? (RETAIN CURRENT PASSWORD)?
     ;
 
