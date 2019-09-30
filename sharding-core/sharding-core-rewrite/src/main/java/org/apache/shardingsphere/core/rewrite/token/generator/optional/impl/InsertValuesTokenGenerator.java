@@ -24,7 +24,6 @@ import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.generator.ShardingConditionsAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertValuesToken;
@@ -47,7 +46,7 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
     private ShardingConditions shardingConditions;
     
     @Override
-    public Optional<InsertValuesToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+    public Optional<InsertValuesToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
         Collection<InsertValuesSegment> insertValuesSegments = sqlStatementContext.getSqlStatement().findSQLSegments(InsertValuesSegment.class);
         return isNeedToGenerateSQLToken(sqlStatementContext, insertValuesSegments)
                 ? Optional.of(createInsertValuesToken(sqlStatementContext, insertValuesSegments)) : Optional.<InsertValuesToken>absent();

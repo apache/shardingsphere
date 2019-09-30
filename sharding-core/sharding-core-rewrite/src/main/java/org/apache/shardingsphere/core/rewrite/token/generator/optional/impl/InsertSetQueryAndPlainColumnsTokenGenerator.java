@@ -26,7 +26,6 @@ import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatement
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.constant.EncryptDerivedColumnType;
 import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
@@ -50,7 +49,7 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
     private EncryptRule encryptRule;
     
     @Override
-    public Optional<InsertSetQueryAndPlainColumnsToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+    public Optional<InsertSetQueryAndPlainColumnsToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
         if (!isNeedToGenerateSQLToken(sqlStatementContext)) {
             return Optional.absent();
         }

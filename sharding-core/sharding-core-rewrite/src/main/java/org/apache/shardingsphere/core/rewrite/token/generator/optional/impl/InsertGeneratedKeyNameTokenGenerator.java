@@ -22,7 +22,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.generator.GeneratedKeyAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.ShardingRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
@@ -43,7 +42,7 @@ public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTo
     private GeneratedKey generatedKey;
     
     @Override
-    public Optional<InsertGeneratedKeyNameToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+    public Optional<InsertGeneratedKeyNameToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         if (!insertColumnsSegment.isPresent() || insertColumnsSegment.get().getColumns().isEmpty()) {
             return Optional.absent();

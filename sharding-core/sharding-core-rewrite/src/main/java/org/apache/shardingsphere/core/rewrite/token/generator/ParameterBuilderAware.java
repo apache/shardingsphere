@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token.generator.optional;
+package org.apache.shardingsphere.core.rewrite.token.generator;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
+import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 
 /**
- * SQL token generator for optional.
+ * Parameter builder aware.
  *
  * @author zhangliang
- * @author panjuan
  */
-public interface OptionalSQLTokenGenerator extends SQLTokenGenerator {
+public interface ParameterBuilderAware {
     
     /**
-     * Generate SQL token.
+     * Set parameter builder.
      * 
-     * @param sqlStatementContext SQL statement context
-     * @return SQL token
+     * @param parameterBuilder parameter builder
      */
-    Optional<? extends SQLToken> generateSQLToken(SQLStatementContext sqlStatementContext);
+    void setParameterBuilder(ParameterBuilder parameterBuilder);
 }

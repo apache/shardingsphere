@@ -22,7 +22,6 @@ import org.apache.shardingsphere.core.optimize.segment.select.projection.Derived
 import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.AggregationDistinctToken;
@@ -39,7 +38,7 @@ import java.util.LinkedList;
 public final class AggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator, IgnoreForSingleRoute {
     
     @Override
-    public Collection<AggregationDistinctToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+    public Collection<AggregationDistinctToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         if (!(sqlStatementContext instanceof SelectSQLStatementContext)) {
             return Collections.emptyList();
         }

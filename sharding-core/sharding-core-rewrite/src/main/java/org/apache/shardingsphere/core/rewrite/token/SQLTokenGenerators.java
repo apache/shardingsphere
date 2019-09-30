@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
+import org.apache.shardingsphere.core.rewrite.token.generator.ParameterBuilderAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.TableMetasAware;
@@ -81,6 +82,9 @@ public final class SQLTokenGenerators {
             if (isSingleRoute && each instanceof IgnoreForSingleRoute) {
                 continue;
             }
+            if (each instanceof ParameterBuilderAware) {
+                ((ParameterBuilderAware) each).setParameterBuilder(parameterBuilder);
+            }
             if (each instanceof TableMetasAware) {
                 ((TableMetasAware) each).setTableMetas(tableMetas);
             }
@@ -88,12 +92,12 @@ public final class SQLTokenGenerators {
                 ((PreviousSQLTokensAware) each).setPreviousSQLTokens(result);
             }
             if (each instanceof OptionalSQLTokenGenerator) {
-                Optional<? extends SQLToken> sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(sqlStatementContext, parameterBuilder);
+                Optional<? extends SQLToken> sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(sqlStatementContext);
                 if (sqlToken.isPresent()) {
                     result.add(sqlToken.get());
                 }
             } else {
-                result.addAll(((CollectionSQLTokenGenerator) each).generateSQLTokens(sqlStatementContext, parameterBuilder));
+                result.addAll(((CollectionSQLTokenGenerator) each).generateSQLTokens(sqlStatementContext));
             }
         }
         Collections.sort(result);

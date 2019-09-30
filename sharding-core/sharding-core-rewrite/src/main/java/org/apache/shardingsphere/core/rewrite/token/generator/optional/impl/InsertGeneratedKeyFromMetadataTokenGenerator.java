@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatement
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.generator.GeneratedKeyAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.InsertRegularNamesToken;
@@ -45,7 +44,7 @@ public final class InsertGeneratedKeyFromMetadataTokenGenerator implements Optio
     private GeneratedKey generatedKey;
     
     @Override
-    public Optional<InsertRegularNamesToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+    public Optional<InsertRegularNamesToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
         return isNeedToGenerateSQLToken(sqlStatementContext.getSqlStatement())
                 ? Optional.of(createInsertColumnsToken(sqlStatementContext)) : Optional.<InsertRegularNamesToken>absent();
     }

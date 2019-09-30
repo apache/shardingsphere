@@ -22,7 +22,6 @@ import org.apache.shardingsphere.core.optimize.segment.select.pagination.Paginat
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
-import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.RowCountToken;
@@ -35,7 +34,7 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.RowCountToken;
 public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
     
     @Override
-    public Optional<RowCountToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+    public Optional<RowCountToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
         if (!(sqlStatementContext instanceof SelectSQLStatementContext)) {
             return Optional.absent();
         }
