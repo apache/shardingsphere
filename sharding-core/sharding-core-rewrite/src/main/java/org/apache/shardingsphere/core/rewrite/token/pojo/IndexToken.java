@@ -29,9 +29,9 @@ import java.util.Map;
  * @author caohao
  * @author panjuan
  */
-@Getter
 public final class IndexToken extends SQLToken implements Substitutable, Alterable {
     
+    @Getter
     private final int stopIndex;
     
     private final String indexName;
