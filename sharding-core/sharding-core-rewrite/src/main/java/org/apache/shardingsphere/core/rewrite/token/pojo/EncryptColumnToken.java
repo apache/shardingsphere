@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import lombok.Getter;
-import lombok.ToString;
 
 /**
  * Encrypt column token.
@@ -26,7 +25,6 @@ import lombok.ToString;
  * @author panjuan
  */
 @Getter
-@ToString
 public abstract class EncryptColumnToken extends SQLToken implements Substitutable {
     
     private final int stopIndex;

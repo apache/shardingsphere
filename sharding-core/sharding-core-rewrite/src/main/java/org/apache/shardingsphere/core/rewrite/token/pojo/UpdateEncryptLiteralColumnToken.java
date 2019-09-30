@@ -38,11 +38,6 @@ public final class UpdateEncryptLiteralColumnToken extends EncryptColumnToken {
         super(startIndex, stopIndex);
     }
     
-    @Override
-    public String toString() {
-        return Joiner.on(", ").join(columns);
-    }
-    
     /**
      * Add update column.
      *
@@ -51,6 +46,11 @@ public final class UpdateEncryptLiteralColumnToken extends EncryptColumnToken {
      */
     public void addUpdateColumn(final String columnName, final Object value) {
         columns.add(new UpdateColumn(columnName, value));
+    }
+    
+    @Override
+    public String toString() {
+        return Joiner.on(", ").join(columns);
     }
     
     @RequiredArgsConstructor

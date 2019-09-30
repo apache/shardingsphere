@@ -39,6 +39,15 @@ public final class UpdateEncryptParameterColumnToken extends EncryptColumnToken 
         super(startIndex, stopIndex);
     }
     
+    /**
+     * Add update column.
+     * 
+     * @param columnName column name
+     */
+    public void addUpdateColumn(final String columnName) {
+        columnNames.add(columnName);
+    }
+    
     @Override
     public String toString() {
         Collection<String> items = Collections2.transform(columnNames, new Function<String, String>() {
@@ -49,14 +58,5 @@ public final class UpdateEncryptParameterColumnToken extends EncryptColumnToken 
             }
         });
         return Joiner.on(", ").join(items);
-    }
-    
-    /**
-     * Add update column.
-     * 
-     * @param columnName column name
-     */
-    public void addUpdateColumn(final String columnName) {
-        columnNames.add(columnName);
     }
 }
