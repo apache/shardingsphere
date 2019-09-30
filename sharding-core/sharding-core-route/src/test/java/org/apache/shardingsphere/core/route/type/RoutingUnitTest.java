@@ -43,7 +43,7 @@ public class RoutingUnitTest {
     private RoutingUnit routingUnit;
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         routingUnit = new RoutingUnit(DATASOURCE_NAME);
         routingUnit.getTableUnits().addAll(mockTableUnits());
     }
