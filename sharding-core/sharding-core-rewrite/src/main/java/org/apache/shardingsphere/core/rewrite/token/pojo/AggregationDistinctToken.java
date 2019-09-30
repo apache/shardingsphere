@@ -24,13 +24,13 @@ import lombok.Getter;
  *
  * @author panjuan
  */
-@Getter
 public final class AggregationDistinctToken extends SQLToken implements Substitutable {
     
     private final String columnName;
     
     private final String derivedAlias;
     
+    @Getter
     private final int stopIndex;
     
     public AggregationDistinctToken(final int startIndex, final int stopIndex, final String columnName, final String derivedAlias) {
@@ -42,6 +42,6 @@ public final class AggregationDistinctToken extends SQLToken implements Substitu
     
     @Override
     public String toString() {
-        return null != derivedAlias ? columnName + " AS " + derivedAlias : columnName;
+        return null == derivedAlias ? columnName : columnName + " AS " + derivedAlias;
     }
 }
