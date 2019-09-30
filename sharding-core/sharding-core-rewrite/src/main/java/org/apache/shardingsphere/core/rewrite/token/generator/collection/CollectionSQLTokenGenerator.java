@@ -15,34 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.database;
+package org.apache.shardingsphere.core.rewrite.token.generator.collection;
 
-import org.apache.shardingsphere.core.metadata.datasource.dialect.SQL92DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
- * Database type of SQL92.
+ * SQL token generator for collection.
  *
- * @author zhangyonglun
+ * @author zhangliang
+ * @author panjuan
  */
-public final class SQL92DatabaseType implements DatabaseType {
+public interface CollectionSQLTokenGenerator extends SQLTokenGenerator {
     
-    @Override
-    public String getName() {
-        return "SQL92";
-    }
-    
-    @Override
-    public Collection<String> getJdbcUrlPrefixAlias() {
-        return Collections.emptyList();
-    }
-    
-    @Override
-    public DataSourceMetaData getDataSourceMetaData(final String url) {
-        return new SQL92DataSourceMetaData(url);
-    }
+    /**
+     * Generate SQL tokens.
+     * 
+     * @param sqlStatementContext SQL statement context
+     * @param parameterBuilder SQL parameter builder
+     * @return SQL tokens
+     */
+    Collection<? extends SQLToken> generateSQLTokens(SQLStatementContext sqlStatementContext, ParameterBuilder parameterBuilder);
 }

@@ -15,34 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.database;
-
-import org.apache.shardingsphere.core.metadata.datasource.dialect.SQL92DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.DatabaseType;
-
-import java.util.Collection;
-import java.util.Collections;
+package org.apache.shardingsphere.core.rewrite.token.generator;
 
 /**
- * Database type of SQL92.
+ * Query with cipher column aware.
  *
- * @author zhangyonglun
+ * @author zhangliang
  */
-public final class SQL92DatabaseType implements DatabaseType {
+public interface QueryWithCipherColumnAware {
     
-    @Override
-    public String getName() {
-        return "SQL92";
-    }
-    
-    @Override
-    public Collection<String> getJdbcUrlPrefixAlias() {
-        return Collections.emptyList();
-    }
-    
-    @Override
-    public DataSourceMetaData getDataSourceMetaData(final String url) {
-        return new SQL92DataSourceMetaData(url);
-    }
+    /**
+     * Set is query with cipher column or not.
+     * 
+     * @param queryWithCipherColumn is query with cipher column or not
+     */
+    void setQueryWithCipherColumn(boolean queryWithCipherColumn);
 }

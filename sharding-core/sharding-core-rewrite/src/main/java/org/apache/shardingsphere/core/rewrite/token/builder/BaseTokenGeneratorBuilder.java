@@ -15,34 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.database;
+package org.apache.shardingsphere.core.rewrite.token.builder;
 
-import org.apache.shardingsphere.core.metadata.datasource.dialect.SQL92DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.RemoveTokenGenerator;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.LinkedList;
 
 /**
- * Database type of SQL92.
+ * Base SQL token generator builder.
  *
- * @author zhangyonglun
+ * @author panjuan
  */
-public final class SQL92DatabaseType implements DatabaseType {
+public final class BaseTokenGeneratorBuilder implements SQLTokenGeneratorBuilder {
     
     @Override
-    public String getName() {
-        return "SQL92";
-    }
-    
-    @Override
-    public Collection<String> getJdbcUrlPrefixAlias() {
-        return Collections.emptyList();
-    }
-    
-    @Override
-    public DataSourceMetaData getDataSourceMetaData(final String url) {
-        return new SQL92DataSourceMetaData(url);
+    public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
+        Collection<SQLTokenGenerator> result = new LinkedList<>();
+        result.add(new RemoveTokenGenerator());
+        return result;
     }
 }

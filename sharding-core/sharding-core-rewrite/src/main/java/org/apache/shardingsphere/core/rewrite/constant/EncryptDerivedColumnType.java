@@ -15,34 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.database;
-
-import org.apache.shardingsphere.core.metadata.datasource.dialect.SQL92DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.DatabaseType;
-
-import java.util.Collection;
-import java.util.Collections;
+package org.apache.shardingsphere.core.rewrite.constant;
 
 /**
- * Database type of SQL92.
+ * Derived column type for encrypt.
  *
- * @author zhangyonglun
+ * @author zhangliang
  */
-public final class SQL92DatabaseType implements DatabaseType {
+public final class EncryptDerivedColumnType {
     
-    @Override
-    public String getName() {
-        return "SQL92";
-    }
-    
-    @Override
-    public Collection<String> getJdbcUrlPrefixAlias() {
-        return Collections.emptyList();
-    }
-    
-    @Override
-    public DataSourceMetaData getDataSourceMetaData(final String url) {
-        return new SQL92DataSourceMetaData(url);
-    }
+    public static final String ENCRYPT = "ENCRYPT";
 }

@@ -15,34 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.database;
+package org.apache.shardingsphere.core.rewrite.token.generator;
 
-import org.apache.shardingsphere.core.metadata.datasource.dialect.SQL92DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 /**
- * Database type of SQL92.
+ * Previous SQL tokens aware.
  *
- * @author zhangyonglun
+ * @author zhangliang
  */
-public final class SQL92DatabaseType implements DatabaseType {
+public interface PreviousSQLTokensAware {
     
-    @Override
-    public String getName() {
-        return "SQL92";
-    }
-    
-    @Override
-    public Collection<String> getJdbcUrlPrefixAlias() {
-        return Collections.emptyList();
-    }
-    
-    @Override
-    public DataSourceMetaData getDataSourceMetaData(final String url) {
-        return new SQL92DataSourceMetaData(url);
-    }
+    /**
+     * Set previous SQL tokens.
+     * 
+     * @param previousSQLTokens previous SQL tokens
+     */
+    void setPreviousSQLTokens(List<SQLToken> previousSQLTokens);
 }

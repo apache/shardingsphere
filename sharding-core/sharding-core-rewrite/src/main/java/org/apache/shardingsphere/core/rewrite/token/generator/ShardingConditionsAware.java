@@ -15,34 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.database;
+package org.apache.shardingsphere.core.rewrite.token.generator;
 
-import org.apache.shardingsphere.core.metadata.datasource.dialect.SQL92DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.DatabaseType;
-
-import java.util.Collection;
-import java.util.Collections;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 
 /**
- * Database type of SQL92.
+ * Sharding conditions aware.
  *
- * @author zhangyonglun
+ * @author zhangliang
  */
-public final class SQL92DatabaseType implements DatabaseType {
+public interface ShardingConditionsAware {
     
-    @Override
-    public String getName() {
-        return "SQL92";
-    }
-    
-    @Override
-    public Collection<String> getJdbcUrlPrefixAlias() {
-        return Collections.emptyList();
-    }
-    
-    @Override
-    public DataSourceMetaData getDataSourceMetaData(final String url) {
-        return new SQL92DataSourceMetaData(url);
-    }
+    /**
+     * Set sharding conditions.
+     * 
+     * @param shardingConditions sharding conditions
+     */
+    void setShardingConditions(ShardingConditions shardingConditions);
 }

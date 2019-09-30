@@ -84,7 +84,7 @@ public final class DatabaseTypes {
                 return each;
             }
         }
-        throw new UnsupportedOperationException(String.format("Unsupported database from url: '%s'", url));
+        return DATABASE_TYPES.get("SQL92");
     }
     
     private static boolean matchStandardURL(final String url, final DatabaseType databaseType) {
