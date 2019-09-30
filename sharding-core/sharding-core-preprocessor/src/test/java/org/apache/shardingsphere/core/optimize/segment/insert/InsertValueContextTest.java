@@ -5,7 +5,11 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.optimize.segment.insert.expression.DerivedLiteralExpressionSegment;
+import org.apache.shardingsphere.core.optimize.segment.insert.expression.DerivedParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -39,7 +43,88 @@ public class InsertValueContextTest {
         List<Object> getParametersResult = getParametersMethod.invoke(insertValueContext);
         assertThat(insertValueContext.getParameters(), is(getParametersResult));
     }
+
+    @Test
+    public void assertGetValueWhenParameterMarker() {
+        Collection<? extends ExpressionSegment> assignments = makeParameterMarkerExpresstionSegment();
+        String parameterValue = "test";
+        List<? extends Object> parameters = Lists.newArrayList(parameterValue);
+        int parametersOffset = 0;
+
+        InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, parametersOffset);
+
+        final int index = 0;
+        Object result = insertValueContext.getValue(index);
+
+        assertThat((String)result, is(parameterValue));
+    }
+
+    private Collection<ParameterMarkerExpressionSegment> makeParameterMarkerExpresstionSegment() {
+        ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(0, 10, 5);
+
+        return Lists.newArrayList(parameterMarkerExpressionSegment);
+    }
+
+    @Test
+    public void assertGetValueWhenLiteralExpressionSegment() {
+        Object literalObject = new Object();
+        Collection<? extends ExpressionSegment> assignments = makeLiteralExpressionSegment(literalObject);
+        List<? extends Object> parameters = Lists.newArrayList();
+
+        InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, 0);
+
+        Object result = insertValueContext.getValue(0);
+
+        assertThat(result, is(literalObject));
+    }
+
+    private Collection<LiteralExpressionSegment> makeLiteralExpressionSegment(Object literalObject) {
+        LiteralExpressionSegment parameterMarkerExpressionSegment = new LiteralExpressionSegment(0, 10, literalObject);
+
+        return Lists.newArrayList(parameterMarkerExpressionSegment);
+    }
+
+    @Test
+    public void assertAppendValueWhenParametersIsEmpty() {
+        Collection<? extends ExpressionSegment> assignments = Lists.newArrayList();
+        List<? extends Object> parameters = Lists.newArrayList();
+
+        InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, 0);
+
+        Object value = "test";
+        String type = "String";
+
+        insertValueContext.appendValue(value, type);
+
+        List<ExpressionSegment> valueExpressions = insertValueContext.getValueExpressions();
+        assertThat(valueExpressions.size(), is(1));
+
+        DerivedLiteralExpressionSegment segmentInInsertValueContext = (DerivedLiteralExpressionSegment) valueExpressions.get(0);
+        assertThat(segmentInInsertValueContext, is(new DerivedLiteralExpressionSegment(value, type)));
+    }
+
+    @Test
+    public void assertAppendValueWhenParametersIsNotEmpty() {
+        Collection<? extends ExpressionSegment> assignments = makeParameterMarkerExpresstionSegment();
+        String parameterValue = "test";
+        List<? extends Object> parameters = Lists.newArrayList(parameterValue);
+        int parametersOffset = 0;
+
+        InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, parametersOffset);
+
+        Object value = "test";
+        String type = "String";
+
+        insertValueContext.appendValue(value, type);
+
+        List<ExpressionSegment> valueExpressions = insertValueContext.getValueExpressions();
+        assertThat(valueExpressions.size(), is(2));
+
+        DerivedParameterMarkerExpressionSegment segmentInInsertValueContext = (DerivedParameterMarkerExpressionSegment) valueExpressions.get(1);
+        assertThat(segmentInInsertValueContext, is(new DerivedParameterMarkerExpressionSegment(parameters.size() - 1, type)));
+    }
 }
+
 
 @RequiredArgsConstructor
 class MethodInvocation<T> {
