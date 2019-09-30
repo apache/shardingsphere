@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.builder.parameter;
+package org.apache.shardingsphere.core.rewrite.parameter.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.optimize.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.builder.parameter.group.GroupedParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.builder.parameter.standard.StandardParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.parameter.builder.group.GroupedParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.parameter.builder.standard.StandardParameterBuilder;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 
 import java.util.LinkedList;

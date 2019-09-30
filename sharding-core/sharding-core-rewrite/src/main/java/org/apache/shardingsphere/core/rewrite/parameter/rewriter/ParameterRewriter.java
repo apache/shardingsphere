@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token.generator;
+package org.apache.shardingsphere.core.rewrite.parameter.rewriter;
 
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 
 /**
- * Parameter builder aware.
+ * Parameter rewriter.
  *
  * @author zhangliang
  */
-public interface ParameterBuilderAware {
+public interface ParameterRewriter {
     
     /**
-     * Set parameter builder.
+     * Rewrite SQL parameters.
      * 
+     * @param sqlStatementContext SQL statement context
      * @param parameterBuilder parameter builder
      */
-    void setParameterBuilder(ParameterBuilder parameterBuilder);
+    void rewrite(SQLStatementContext sqlStatementContext, ParameterBuilder parameterBuilder);
 }

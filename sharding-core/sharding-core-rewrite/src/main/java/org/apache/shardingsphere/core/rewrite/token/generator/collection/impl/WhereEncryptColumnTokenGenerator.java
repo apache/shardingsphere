@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptCondition;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptConditionEngine;
 import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
@@ -40,7 +40,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Where encrypt column token generator.
@@ -85,7 +84,6 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
     private WhereEncryptColumnToken createWhereEncryptColumnToken(final EncryptCondition encryptCondition, final List<Object> originalValues) {
         String encryptedColumnName = getEncryptedColumnName(encryptCondition);
         List<Object> encryptedValues = getEncryptedValues(encryptCondition, originalValues);
-        encryptParameters(encryptCondition.getPositionIndexMap(), encryptedValues);
         return new WhereEncryptColumnToken(encryptCondition.getStartIndex(), encryptCondition.getStopIndex(), encryptedColumnName,
                 getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptedValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
@@ -101,14 +99,6 @@ public final class WhereEncryptColumnTokenGenerator implements CollectionSQLToke
         return assistedQueryColumn.isPresent() 
                 ? encryptRule.getEncryptAssistedQueryValues(encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues) 
                 : encryptRule.getEncryptValues(encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
-    }
-    
-    private void encryptParameters(final Map<Integer, Integer> positionIndexes, final List<Object> encryptValues) {
-        if (!positionIndexes.isEmpty()) {
-            for (Entry<Integer, Integer> entry : positionIndexes.entrySet()) {
-                parameterBuilder.getOriginalParameters().set(entry.getValue(), encryptValues.get(entry.getKey()));
-            }
-        }
     }
     
     private Map<Integer, Object> getPositionValues(final Collection<Integer> valuePositions, final List<Object> encryptValues) {
