@@ -20,8 +20,9 @@ package org.apache.shardingsphere.core.rewrite.token.pojo;
 import com.google.common.base.Joiner;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Insert regular names token.
@@ -29,14 +30,15 @@ import java.util.Collection;
  * @author panjuan
  */
 @Getter
+@Setter
 @EqualsAndHashCode(callSuper = true)
 public final class InsertRegularNamesToken extends SQLToken implements Attachable {
     
-    private final Collection<String> columns;
+    private final List<String> columns;
     
     private boolean isToAppendCloseParenthesis;
     
-    public InsertRegularNamesToken(final int startIndex, final Collection<String> columns, final boolean isToAppendCloseParenthesis) {
+    public InsertRegularNamesToken(final int startIndex, final List<String> columns, final boolean isToAppendCloseParenthesis) {
         super(startIndex);
         this.columns = columns;
         this.isToAppendCloseParenthesis = isToAppendCloseParenthesis;
