@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 
 public final class ShardingCTLSetBackendHandlerTest {
     
-    private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
+    private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
     @Test
     public void assertSwitchTransactionTypeXA() {

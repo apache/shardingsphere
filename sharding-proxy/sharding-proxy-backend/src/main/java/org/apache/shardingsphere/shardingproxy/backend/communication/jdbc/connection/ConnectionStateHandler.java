@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 public class ConnectionStateHandler {
     
-    private volatile AtomicReference<ConnectionStatus> status = new AtomicReference<>(ConnectionStatus.INIT);
+    private final AtomicReference<ConnectionStatus> status = new AtomicReference<>(ConnectionStatus.INIT);
     
     private final ResourceSynchronizer resourceSynchronizer;
     
