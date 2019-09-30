@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
-import lombok.Getter;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.Paramete
  *
  * @author panjuan
  */
-@Getter
 public final class InsertSetGeneratedKeyColumnToken extends SQLToken implements Attachable {
     
     private final String columnName;

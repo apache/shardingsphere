@@ -28,9 +28,9 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.Paramete
  *
  * @author panjuan
  */
-@Getter
 public final class InsertSetCipherColumnToken extends SQLToken implements Substitutable {
     
+    @Getter
     private final int stopIndex;
     
     private final String cipherColumnName;

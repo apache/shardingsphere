@@ -17,16 +17,11 @@
 
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-
 /**
  * Insert generated key name token.
  *
  * @author panjuan
  */
-@Getter
-@EqualsAndHashCode(callSuper = true)
 public final class InsertGeneratedKeyNameToken extends SQLToken implements Attachable {
     
     private final String column;
@@ -41,12 +36,6 @@ public final class InsertGeneratedKeyNameToken extends SQLToken implements Attac
     
     @Override
     public String toString() {
-        if (null == column) {
-            return "";
-        }
-        if (isToAppendCloseParenthesis) {
-            return String.format(", %s)", column);
-        }
-        return String.format(", %s", column);
+        return String.format(isToAppendCloseParenthesis ? ", %s)" : ", %s", column);
     }
 }

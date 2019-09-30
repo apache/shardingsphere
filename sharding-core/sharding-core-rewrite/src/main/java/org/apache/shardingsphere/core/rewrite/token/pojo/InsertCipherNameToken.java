@@ -24,9 +24,9 @@ import lombok.Getter;
  *
  * @author panjuan
  */
-@Getter
 public final class InsertCipherNameToken extends SQLToken implements Substitutable {
     
+    @Getter
     private final int stopIndex;
     
     private final String columnName;

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
-import lombok.EqualsAndHashCode;
-
 import java.util.Collection;
 
 /**
@@ -27,7 +25,6 @@ import java.util.Collection;
  * @author zhangliang
  * @author panjuan
  */
-@EqualsAndHashCode(callSuper = true)
 public final class ProjectionsToken extends SQLToken implements Attachable {
     
     private final Collection<String> projections;

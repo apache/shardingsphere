@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import com.google.common.base.Joiner;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 import java.util.Collection;
 
@@ -28,8 +26,6 @@ import java.util.Collection;
  *
  * @author panjuan
  */
-@Getter
-@EqualsAndHashCode(callSuper = true)
 public final class InsertQueryAndPlainNamesToken extends SQLToken implements Attachable {
     
     private final Collection<String> columns;
@@ -47,9 +43,6 @@ public final class InsertQueryAndPlainNamesToken extends SQLToken implements Att
         if (columns.isEmpty()) {
             return "";
         }
-        if (isToAddCloseParenthesis) {
-            return String.format(", %s)", Joiner.on(", ").join(columns));
-        }
-        return String.format(", %s", Joiner.on(", ").join(columns));
+        return String.format(isToAddCloseParenthesis ? ", %s)" : ", %s", Joiner.on(", ").join(columns));
     }
 }

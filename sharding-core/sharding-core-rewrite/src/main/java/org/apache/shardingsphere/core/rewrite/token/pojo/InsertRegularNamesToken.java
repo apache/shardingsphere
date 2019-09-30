@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import com.google.common.base.Joiner;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,13 +28,12 @@ import java.util.List;
  *
  * @author panjuan
  */
-@Getter
-@Setter
-@EqualsAndHashCode(callSuper = true)
 public final class InsertRegularNamesToken extends SQLToken implements Attachable {
     
+    @Getter
     private final List<String> columns;
     
+    @Setter
     private boolean isToAppendCloseParenthesis;
     
     public InsertRegularNamesToken(final int startIndex, final List<String> columns, final boolean isToAppendCloseParenthesis) {
@@ -49,9 +47,6 @@ public final class InsertRegularNamesToken extends SQLToken implements Attachabl
         if (columns.isEmpty()) {
             return "";
         }
-        if (isToAppendCloseParenthesis) {
-            return String.format("(%s)", Joiner.on(", ").join(columns));
-        }
-        return String.format("(%s", Joiner.on(", ").join(columns));
+        return String.format(isToAppendCloseParenthesis ? "(%s)" : "(%s", Joiner.on(", ").join(columns));
     }
 }

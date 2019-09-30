@@ -31,12 +31,12 @@ import java.util.Map;
  * @author zhangliang
  * @author panjuan
  */
-@Getter
 public final class TableToken extends SQLToken implements Substitutable, Alterable {
     
-    private final String tableName;
-    
+    @Getter
     private final int stopIndex;
+    
+    private final String tableName;
     
     private final QuoteCharacter quoteCharacter;
     

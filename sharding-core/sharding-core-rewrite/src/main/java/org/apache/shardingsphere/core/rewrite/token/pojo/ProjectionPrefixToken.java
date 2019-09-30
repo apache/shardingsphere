@@ -17,19 +17,12 @@
 
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
-import lombok.Getter;
-import lombok.Setter;
-
 /**
  * Projection prefix token.
  *
  * @author panjuan
  */
-@Getter
 public final class ProjectionPrefixToken extends SQLToken implements Attachable {
-    
-    @Setter
-    private boolean isToAppendDistinct;
     
     public ProjectionPrefixToken(final int startIndex) {
         super(startIndex);

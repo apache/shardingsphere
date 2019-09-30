@@ -25,9 +25,9 @@ import lombok.Getter;
  * @author zhangliang
  * @author panjuan
  */
-@Getter
 public final class OffsetToken extends SQLToken implements Substitutable {
     
+    @Getter
     private final int stopIndex;
     
     private final long revisedOffset;

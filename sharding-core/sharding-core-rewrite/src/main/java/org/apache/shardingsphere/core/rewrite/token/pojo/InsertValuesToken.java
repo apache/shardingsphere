@@ -37,9 +37,9 @@ import java.util.Map;
  * @author maxiaoguang
  * @author panjuan
  */
-@Getter
 public final class InsertValuesToken extends SQLToken implements Substitutable, Alterable {
     
+    @Getter
     private final int stopIndex;
     
     private final List<InsertValueToken> insertValueTokens;
