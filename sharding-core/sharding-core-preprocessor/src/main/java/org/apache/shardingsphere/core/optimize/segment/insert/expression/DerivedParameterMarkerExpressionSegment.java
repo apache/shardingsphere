@@ -29,7 +29,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.Paramete
  */
 @Getter
 @ToString(callSuper = true)
-@EqualsAndHashCode
 public final class DerivedParameterMarkerExpressionSegment extends ParameterMarkerExpressionSegment implements DerivedSimpleExpressionSegment {
     
     private final String type;

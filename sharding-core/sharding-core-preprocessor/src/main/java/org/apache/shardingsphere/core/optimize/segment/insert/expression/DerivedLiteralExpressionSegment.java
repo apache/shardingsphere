@@ -29,7 +29,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralE
  */
 @Getter
 @ToString(callSuper = true)
-@EqualsAndHashCode
 public final class DerivedLiteralExpressionSegment extends LiteralExpressionSegment implements DerivedSimpleExpressionSegment {
     
     private final String type;
