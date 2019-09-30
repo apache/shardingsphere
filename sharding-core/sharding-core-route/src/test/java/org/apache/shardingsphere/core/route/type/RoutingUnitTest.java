@@ -79,9 +79,9 @@ public class RoutingUnitTest {
     
     @Test
     public void assertGetLogicTableNames() {
-        Set<String> acutal = routingUnit.getLogicTableNames();
-        assertThat(acutal.size(), is(1));
-        assertTrue(acutal.contains(LOGIC_TABLE));
+        Set<String> actual = routingUnit.getLogicTableNames();
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.contains(LOGIC_TABLE));
     }
     
     @Test
