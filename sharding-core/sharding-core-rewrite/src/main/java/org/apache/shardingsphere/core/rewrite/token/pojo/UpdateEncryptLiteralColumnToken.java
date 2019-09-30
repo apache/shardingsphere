@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
 import com.google.common.base.Joiner;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
@@ -29,7 +28,6 @@ import java.util.LinkedList;
  *
  * @author panjuan
  */
-@Getter
 public final class UpdateEncryptLiteralColumnToken extends EncryptColumnToken {
     
     private final Collection<UpdateColumn> columns = new LinkedList<>();
