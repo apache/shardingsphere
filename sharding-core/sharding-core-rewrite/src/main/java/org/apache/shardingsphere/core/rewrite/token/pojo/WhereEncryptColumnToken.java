@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
-import lombok.Getter;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.exception.ShardingException;
 
@@ -29,7 +28,6 @@ import java.util.Map;
  *
  * @author panjuan
  */
-@Getter
 public final class WhereEncryptColumnToken extends EncryptColumnToken {
     
     private final String columnName;
@@ -53,30 +51,30 @@ public final class WhereEncryptColumnToken extends EncryptColumnToken {
     public String toString() {
         switch (operator) {
             case EQUAL:
-                return toStringFromEqual();
+                return toStringForEqual();
             case IN:
-                return toStringFromIn();
+                return toStringForIn();
             default:
-                throw new ShardingException("Sharding operator is incorrect.");
+                throw new ShardingException("Sharding operator do not support.");
         }
     }
     
-    private String toStringFromEqual() {
+    private String toStringForEqual() {
         return parameterMarkerIndexes.isEmpty() ? String.format("%s = '%s'", columnName, indexValues.get(0)) : String.format("%s = ?", columnName);
     }
     
-    private String toStringFromIn() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(columnName).append(" ").append(operator.name()).append(" (");
+    private String toStringForIn() {
+        StringBuilder result = new StringBuilder();
+        result.append(columnName).append(" ").append(operator.name()).append(" (");
         for (int i = 0; i < indexValues.size() + parameterMarkerIndexes.size(); i++) {
             if (parameterMarkerIndexes.contains(i)) {
-                stringBuilder.append("?");
+                result.append("?");
             } else {
-                stringBuilder.append("'").append(indexValues.get(i)).append("'");
+                result.append("'").append(indexValues.get(i)).append("'");
             }
-            stringBuilder.append(", ");
+            result.append(", ");
         }
-        stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length()).append(")");
-        return stringBuilder.toString();
+        result.delete(result.length() - 2, result.length()).append(")");
+        return result.toString();
     }
 }
