@@ -13,10 +13,10 @@ mvn clean package
 Install `java` and run command:
 
 ```shell
-java -jar sharding-scaling-1.0.0-SNAPSHOT.jar
-  && scaling \
-  && --input-sharding-config conf/config-sharding.yaml \
-  && --output-jdbc-url jdbc:mysql://127.0.0.1/test2?useSSL=false \
-  && --output-jdbc-username root \
-  && --output-jdbc-password 123456
+bin/start.sh \
+  scaling \
+  --input-sharding-config conf/config-sharding.yaml \
+  --output-jdbc-url jdbc:mysql://127.0.0.1/test2?useSSL=false \
+  --output-jdbc-username root \
+  --output-jdbc-password 123456
 ```

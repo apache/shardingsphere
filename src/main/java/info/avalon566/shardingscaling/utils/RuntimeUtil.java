@@ -27,6 +27,6 @@ import java.io.File;
 public final class RuntimeUtil {
 
     public static String getBasePath() {
-        return new File(Engine.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent();
+        return Engine.class.getResource("/").getFile();
     }
 }

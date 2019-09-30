@@ -36,7 +36,7 @@ public class Engine {
     private final static Logger LOGGER = LoggerFactory.getLogger(Engine.class);
 
     static {
-        PropertyConfigurator.configure(RuntimeUtil.getBasePath() + File.separator + "conf" + File.separator + "log4j.properties");
+        PropertyConfigurator.configure(RuntimeUtil.getBasePath() + "conf" + File.separator + "log4j.properties");
     }
 
     public static void main(String[] args) {
