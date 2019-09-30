@@ -52,7 +52,7 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
         Collection<ParametersGroup> result = new LinkedList<>();
         Iterator<ShardingCondition> shardingConditionIterator = null == shardingConditions ? null : shardingConditions.getConditions().iterator();
         for (List<Object> each : rewritedGroupedParameters) {
-            Collection<DataNode> dataNodes = null == shardingConditions ? Collections.<DataNode>emptyList() : shardingConditionIterator.next().getDataNodes();
+            Collection<DataNode> dataNodes = null == shardingConditionIterator ? Collections.<DataNode>emptyList() : shardingConditionIterator.next().getDataNodes();
             result.add(new ParametersGroup(each, dataNodes));
         }
         return result;
