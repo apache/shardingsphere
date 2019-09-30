@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -25,22 +24,11 @@ import static org.junit.Assert.assertThat;
 
 public final class UpdateEncryptParameterColumnTokenTest {
     
-    private UpdateEncryptParameterColumnToken updateEncryptParameterColumnToken;
-    
-    @Before
-    public void setUp() {
-        updateEncryptParameterColumnToken = new UpdateEncryptParameterColumnToken(0, 1);
-        updateEncryptParameterColumnToken.addUpdateColumn("c1");
-        updateEncryptParameterColumnToken.addUpdateColumn("c2");
-    }
-    
     @Test
     public void assertToString() {
-        assertThat(updateEncryptParameterColumnToken.toString(), is("c1 = ?, c2 = ?"));
-    }
-    
-    @Test
-    public void assertGetColumnNames() {
-        assertThat(updateEncryptParameterColumnToken.getColumnNames().size(), is(2));
+        UpdateEncryptParameterColumnToken actual = new UpdateEncryptParameterColumnToken(0, 1);
+        actual.addUpdateColumn("c1");
+        actual.addUpdateColumn("c2");
+        assertThat(actual.toString(), is("c1 = ?, c2 = ?"));
     }
 }

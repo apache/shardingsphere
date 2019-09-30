@@ -20,17 +20,15 @@ package org.apache.shardingsphere.core.rewrite.token.pojo;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Collections2;
-import lombok.Getter;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Update encrypt parameter item column token.
+ * Update encrypt parameter column token.
  *
  * @author panjuan
  */
-@Getter
 public final class UpdateEncryptParameterColumnToken extends EncryptColumnToken {
     
     private final Collection<String> columnNames = new LinkedList<>();
