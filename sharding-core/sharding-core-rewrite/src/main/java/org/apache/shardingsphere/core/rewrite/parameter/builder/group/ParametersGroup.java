@@ -19,9 +19,7 @@ package org.apache.shardingsphere.core.rewrite.parameter.builder.group;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rule.DataNode;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -35,6 +33,4 @@ import java.util.List;
 final class ParametersGroup {
     
     private final List<Object> parameters;
-    
-    private final Collection<DataNode> dataNodes;
 }

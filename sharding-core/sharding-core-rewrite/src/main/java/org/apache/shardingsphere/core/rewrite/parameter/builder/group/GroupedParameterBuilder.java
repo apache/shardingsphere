@@ -24,7 +24,6 @@ import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,16 +38,17 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     
     private final Collection<ParametersGroup> parametersGroups;
     
+    private final ShardingConditions shardingConditions;
+    
     public GroupedParameterBuilder(final List<List<Object>> rewritedGroupedParameters, final ShardingConditions shardingConditions) {
-        parametersGroups = createParametersGroup(rewritedGroupedParameters, shardingConditions);
+        parametersGroups = createParametersGroup(rewritedGroupedParameters);
+        this.shardingConditions = shardingConditions;
     }
     
-    private Collection<ParametersGroup> createParametersGroup(final List<List<Object>> rewritedGroupedParameters, final ShardingConditions shardingConditions) {
+    private Collection<ParametersGroup> createParametersGroup(final List<List<Object>> rewritedGroupedParameters) {
         Collection<ParametersGroup> result = new LinkedList<>();
-        Iterator<ShardingCondition> shardingConditionIterator = null == shardingConditions ? null : shardingConditions.getConditions().iterator();
         for (List<Object> each : rewritedGroupedParameters) {
-            Collection<DataNode> dataNodes = null == shardingConditionIterator ? Collections.<DataNode>emptyList() : shardingConditionIterator.next().getDataNodes();
-            result.add(new ParametersGroup(each, dataNodes));
+            result.add(new ParametersGroup(each));
         }
         return result;
     }
@@ -65,20 +65,17 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     @Override
     public List<Object> getParameters(final List<Object> originalParameters, final RoutingUnit routingUnit) {
         List<Object> result = new LinkedList<>();
+        Iterator<ShardingCondition> shardingConditionIterator = null == shardingConditions ? null : shardingConditions.getConditions().iterator();
         for (ParametersGroup each : parametersGroups) {
-            if (isAppendParameter(each, routingUnit)) {
+            if (null == shardingConditionIterator || isInSameDataNode(shardingConditionIterator.next(), routingUnit)) {
                 result.addAll(each.getParameters());
             }
         }
         return result;
     }
     
-    private boolean isAppendParameter(final ParametersGroup parametersGroup, final RoutingUnit routingUnit) {
-        return parametersGroup.getDataNodes().isEmpty() || isInSameDataNode(parametersGroup, routingUnit);
-    }
-    
-    private boolean isInSameDataNode(final ParametersGroup parametersGroup, final RoutingUnit routingUnit) {
-        for (DataNode each : parametersGroup.getDataNodes()) {
+    private boolean isInSameDataNode(final ShardingCondition shardingCondition, final RoutingUnit routingUnit) {
+        for (DataNode each : shardingCondition.getDataNodes()) {
             if (routingUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
                 return true;
             }
