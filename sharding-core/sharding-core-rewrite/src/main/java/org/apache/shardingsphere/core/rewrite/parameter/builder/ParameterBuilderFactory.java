@@ -40,13 +40,12 @@ public final class ParameterBuilderFactory {
     /**
      * Create new instance of parameter builder.
      * 
-     * @param sqlStatementContext SQL statement context
      * @param sqlRouteResult SQL route result
      * @return instance of parameter builder
      */
-    public static ParameterBuilder newInstance(final SQLStatementContext sqlStatementContext, final SQLRouteResult sqlRouteResult) {
-        return sqlStatementContext instanceof InsertSQLStatementContext
-                ? new GroupedParameterBuilder(getGroupedParameters(sqlStatementContext), sqlRouteResult.getShardingConditions()) : new StandardParameterBuilder(sqlRouteResult);
+    public static ParameterBuilder newInstance(final SQLRouteResult sqlRouteResult) {
+        return sqlRouteResult.getSqlStatementContext() instanceof InsertSQLStatementContext
+                ? new GroupedParameterBuilder(getGroupedParameters(sqlRouteResult.getSqlStatementContext()), sqlRouteResult.getShardingConditions()) : new StandardParameterBuilder(sqlRouteResult);
     }
     
     /**

@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilderFactory;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.QueryWithCipherColumnAware;
@@ -44,16 +43,15 @@ public final class EncryptParameterBuilderFactory {
     /**
      * Build parameter builder.
      *
+     * @param parameterBuilder parameter builder
      * @param encryptRule encrypt rule
      * @param tableMetas table metas
      * @param sqlStatementContext SQL statement context
      * @param parameters SQL parameters
      * @param queryWithCipherColumn query with cipher column
-     * @return parameter builder
      */
-    public static ParameterBuilder build(final EncryptRule encryptRule, final TableMetas tableMetas,
+    public static void build(final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final TableMetas tableMetas,
                                          final SQLStatementContext sqlStatementContext, final List<Object> parameters, final boolean queryWithCipherColumn) {
-        ParameterBuilder result = ParameterBuilderFactory.newInstance(sqlStatementContext);
         for (ParameterRewriter each : getParameterRewriters()) {
             if (each instanceof EncryptRuleAware) {
                 ((EncryptRuleAware) each).setEncryptRule(encryptRule);
@@ -64,9 +62,8 @@ public final class EncryptParameterBuilderFactory {
             if (each instanceof QueryWithCipherColumnAware) {
                 ((QueryWithCipherColumnAware) each).setQueryWithCipherColumn(queryWithCipherColumn);
             }
-            each.rewrite(sqlStatementContext, parameters, result);
+            each.rewrite(sqlStatementContext, parameters, parameterBuilder);
         }
-        return result;
     }
     
     private static Collection<ParameterRewriter> getParameterRewriters() {

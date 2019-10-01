@@ -21,18 +21,15 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilderFactory;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.core.rewrite.parameter.rewriter.encrypt.EncryptAssignmentParameterRewriter;
-import org.apache.shardingsphere.core.rewrite.parameter.rewriter.encrypt.EncryptPredicateParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
-import org.apache.shardingsphere.core.rewrite.token.generator.QueryWithCipherColumnAware;
+import org.apache.shardingsphere.core.rewrite.token.generator.ShardingRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.TableMetasAware;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -46,35 +43,26 @@ public final class ShardingParameterBuilderFactory {
     /**
      * Build parameter builder.
      *
-     * @param encryptRule encrypt rule
+     * @param parameterBuilder parameter builder
+     * @param shardingRule sharding rule
      * @param tableMetas table metas
      * @param sqlRouteResult SQL route result
      * @param parameters SQL parameters
-     * @param queryWithCipherColumn query with cipher column
-     * @return parameter builder
      */
-    public static ParameterBuilder build(final EncryptRule encryptRule, final TableMetas tableMetas, 
-                                         final SQLRouteResult sqlRouteResult, final List<Object> parameters, final boolean queryWithCipherColumn) {
-        ParameterBuilder result = ParameterBuilderFactory.newInstance(sqlRouteResult.getSqlStatementContext(), sqlRouteResult);
+    public static void build(final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, 
+                             final TableMetas tableMetas, final SQLRouteResult sqlRouteResult, final List<Object> parameters) {
         for (ParameterRewriter each : getParameterRewriters()) {
             if (each instanceof EncryptRuleAware) {
-                ((EncryptRuleAware) each).setEncryptRule(encryptRule);
+                ((ShardingRuleAware) each).setShardingRule(shardingRule);
             }
             if (each instanceof TableMetasAware) {
                 ((TableMetasAware) each).setTableMetas(tableMetas);
             }
-            if (each instanceof QueryWithCipherColumnAware) {
-                ((QueryWithCipherColumnAware) each).setQueryWithCipherColumn(queryWithCipherColumn);
-            }
-            each.rewrite(sqlRouteResult.getSqlStatementContext(), parameters, result);
+            each.rewrite(sqlRouteResult.getSqlStatementContext(), parameters, parameterBuilder);
         }
-        return result;
     }
     
     private static Collection<ParameterRewriter> getParameterRewriters() {
-        Collection<ParameterRewriter> result = new LinkedList<>();
-        result.add(new EncryptAssignmentParameterRewriter());
-        result.add(new EncryptPredicateParameterRewriter());
-        return result;
+        return Collections.emptyList();
     }
 }
