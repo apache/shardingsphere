@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.In
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.InsertSetCipherColumnTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.SelectEncryptItemTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.UpdateEncryptColumnTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.WhereEncryptColumnTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.token.generator.collection.impl.EncryptPredicateTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertQueryAndPlainNamesTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertEncryptColumnFromMetadataTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.InsertSetQueryAndPlainColumnsTokenGenerator;
@@ -67,7 +67,7 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
         result.add(new InsertEncryptColumnFromMetadataTokenGenerator());
         result.add(new SelectEncryptItemTokenGenerator());
         result.add(new UpdateEncryptColumnTokenGenerator());
-        result.add(new WhereEncryptColumnTokenGenerator());
+        result.add(new EncryptPredicateTokenGenerator());
         result.add(new InsertCipherNameTokenGenerator());
         result.add(new InsertQueryAndPlainNamesTokenGenerator());
         result.add(new InsertSetCipherColumnTokenGenerator());

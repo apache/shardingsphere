@@ -33,13 +33,13 @@ public final class WhereEncryptColumnTokenTest {
     public void assertToStringWithoutPlaceholderWithEqual() {
         Map<Integer, Object> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "a");
-        WhereEncryptColumnToken actual = new WhereEncryptColumnToken(0, 0, "column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.EQUAL);
+        EncryptPredicateToken actual = new EncryptPredicateToken(0, 0, "column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.EQUAL);
         assertThat(actual.toString(), is("column_x = 'a'"));
     }
     
     @Test
     public void assertToStringWithPlaceholderWithEqual() {
-        WhereEncryptColumnToken actual = new WhereEncryptColumnToken(0, 0, "column_x", Collections.<Integer, Object>emptyMap(), Collections.singletonList(0), ShardingOperator.EQUAL);
+        EncryptPredicateToken actual = new EncryptPredicateToken(0, 0, "column_x", Collections.<Integer, Object>emptyMap(), Collections.singletonList(0), ShardingOperator.EQUAL);
         assertThat(actual.toString(), is("column_x = ?"));
     }
     
@@ -48,13 +48,13 @@ public final class WhereEncryptColumnTokenTest {
         Map<Integer, Object> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "a");
         indexValues.put(1, "b");
-        WhereEncryptColumnToken actual = new WhereEncryptColumnToken(0, 0, "column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.IN);
+        EncryptPredicateToken actual = new EncryptPredicateToken(0, 0, "column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.IN);
         assertThat(actual.toString(), is("column_x IN ('a', 'b')"));
     }
     
     @Test
     public void assertToStringWithPlaceholderWithIn() {
-        WhereEncryptColumnToken actual = new WhereEncryptColumnToken(0, 0, "column_x", Collections.<Integer, Object>emptyMap(), Collections.singletonList(0), ShardingOperator.IN);
+        EncryptPredicateToken actual = new EncryptPredicateToken(0, 0, "column_x", Collections.<Integer, Object>emptyMap(), Collections.singletonList(0), ShardingOperator.IN);
         assertThat(actual.toString(), is("column_x IN (?)"));
     }
 }

@@ -24,11 +24,11 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Where encrypt column token.
+ * Predicate token for encrypt.
  *
  * @author panjuan
  */
-public final class WhereEncryptColumnToken extends EncryptColumnToken {
+public final class EncryptPredicateToken extends EncryptColumnToken {
     
     private final String columnName;
     
@@ -38,8 +38,8 @@ public final class WhereEncryptColumnToken extends EncryptColumnToken {
     
     private final ShardingOperator operator;
     
-    public WhereEncryptColumnToken(final int startIndex, final int stopIndex, 
-                                   final String columnName, final Map<Integer, Object> indexValues, final Collection<Integer> parameterMarkerIndexes, final ShardingOperator operator) {
+    public EncryptPredicateToken(final int startIndex, final int stopIndex,
+                                 final String columnName, final Map<Integer, Object> indexValues, final Collection<Integer> parameterMarkerIndexes, final ShardingOperator operator) {
         super(startIndex, stopIndex);
         this.columnName = columnName;
         this.indexValues = indexValues;
