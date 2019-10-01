@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.parameter.rewriter;
+package org.apache.shardingsphere.core.rewrite.parameter.rewriter.encrypt;
 
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptCondition;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptConditionEngine;
+import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.TableMetasAware;
@@ -38,7 +39,7 @@ import java.util.Map.Entry;
  * @author zhangliang
  */
 @Setter
-public final class EncryptWhereParameterRewriter implements ParameterRewriter, TableMetasAware, EncryptRuleAware, QueryWithCipherColumnAware {
+public final class EncryptPredicateParameterRewriter implements ParameterRewriter, TableMetasAware, EncryptRuleAware, QueryWithCipherColumnAware {
     
     private TableMetas tableMetas;
     

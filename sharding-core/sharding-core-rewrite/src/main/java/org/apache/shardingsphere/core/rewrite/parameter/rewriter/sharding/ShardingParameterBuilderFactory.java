@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.parameter.rewriter;
+package org.apache.shardingsphere.core.rewrite.parameter.rewriter.sharding;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilderFactory;
+import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.core.rewrite.parameter.rewriter.encrypt.EncryptPredicateParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.TableMetasAware;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
@@ -33,26 +35,26 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Parameter builder factory for encrypt.
+ * Parameter builder factory for sharding.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EncryptParameterBuilderFactory {
+public final class ShardingParameterBuilderFactory {
     
     /**
      * Build parameter builder.
      *
      * @param encryptRule encrypt rule
      * @param tableMetas table metas
-     * @param sqlStatementContext SQL statement context
+     * @param sqlRouteResult SQL route result
      * @param parameters SQL parameters
      * @param queryWithCipherColumn query with cipher column
      * @return parameter builder
      */
-    public static ParameterBuilder build(final EncryptRule encryptRule, final TableMetas tableMetas,
-                                         final SQLStatementContext sqlStatementContext, final List<Object> parameters, final boolean queryWithCipherColumn) {
-        ParameterBuilder result = ParameterBuilderFactory.newInstance(sqlStatementContext, parameters);
+    public static ParameterBuilder build(final EncryptRule encryptRule, final TableMetas tableMetas, 
+                                         final SQLRouteResult sqlRouteResult, final List<Object> parameters, final boolean queryWithCipherColumn) {
+        ParameterBuilder result = ParameterBuilderFactory.newInstance(sqlRouteResult.getSqlStatementContext(), parameters, sqlRouteResult);
         for (ParameterRewriter each : getParameterRewriters()) {
             if (each instanceof EncryptRuleAware) {
                 ((EncryptRuleAware) each).setEncryptRule(encryptRule);
@@ -63,15 +65,14 @@ public final class EncryptParameterBuilderFactory {
             if (each instanceof QueryWithCipherColumnAware) {
                 ((QueryWithCipherColumnAware) each).setQueryWithCipherColumn(queryWithCipherColumn);
             }
-            each.rewrite(sqlStatementContext, result);
+            each.rewrite(sqlRouteResult.getSqlStatementContext(), result);
         }
         return result;
     }
     
     private static Collection<ParameterRewriter> getParameterRewriters() {
         Collection<ParameterRewriter> result = new LinkedList<>();
-        result.add(new EncryptUpdateItemsParameterRewriter());
-        result.add(new EncryptWhereParameterRewriter());
+        result.add(new EncryptPredicateParameterRewriter());
         return result;
     }
 }

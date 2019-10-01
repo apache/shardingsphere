@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.parameter.rewriter;
+package org.apache.shardingsphere.core.rewrite.parameter.rewriter.encrypt;
 
 import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.Paramete
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.standard.StandardParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
@@ -35,7 +36,7 @@ import java.util.Collections;
  * @author zhangliang
  */
 @Setter
-public final class EncryptUpdateItemsParameterRewriter implements ParameterRewriter, EncryptRuleAware {
+public final class EncryptAssignmentParameterRewriter implements ParameterRewriter, EncryptRuleAware {
     
     private EncryptRule encryptRule;
     
