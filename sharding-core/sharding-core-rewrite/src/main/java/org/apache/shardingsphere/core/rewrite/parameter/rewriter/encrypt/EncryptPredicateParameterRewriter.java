@@ -20,9 +20,10 @@ package org.apache.shardingsphere.core.rewrite.parameter.rewriter.encrypt;
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptCondition;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptConditionEngine;
+import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.parameter.builder.standard.StandardParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.QueryWithCipherColumnAware;
@@ -70,7 +71,7 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     private void encryptParameters(final ParameterBuilder parameterBuilder, final Map<Integer, Integer> positionIndexes, final List<Object> encryptValues) {
         if (!positionIndexes.isEmpty()) {
             for (Entry<Integer, Integer> entry : positionIndexes.entrySet()) {
-                parameterBuilder.getOriginalParameters().set(entry.getValue(), encryptValues.get(entry.getKey()));
+                ((StandardParameterBuilder) parameterBuilder).getReplacedIndexAndParameters().put(entry.getValue(), encryptValues.get(entry.getKey()));
             }
         }
     }
