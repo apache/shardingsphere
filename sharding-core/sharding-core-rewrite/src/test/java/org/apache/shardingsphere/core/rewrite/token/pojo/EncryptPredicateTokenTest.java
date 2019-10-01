@@ -27,7 +27,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class WhereEncryptColumnTokenTest {
+public final class EncryptPredicateTokenTest {
     
     @Test
     public void assertToStringWithoutPlaceholderWithEqual() {

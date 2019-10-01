@@ -25,24 +25,24 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Update encrypt parameter column token.
+ * Parameter assignment token for encrypt.
  *
  * @author panjuan
  */
-public final class UpdateEncryptParameterColumnToken extends EncryptColumnToken {
+public final class EncryptParameterAssignmentToken extends EncryptAssignmentToken {
     
     private final Collection<String> columnNames = new LinkedList<>();
     
-    public UpdateEncryptParameterColumnToken(final int startIndex, final int stopIndex) {
+    public EncryptParameterAssignmentToken(final int startIndex, final int stopIndex) {
         super(startIndex, stopIndex);
     }
     
     /**
-     * Add update column.
+     * Add column name.
      * 
      * @param columnName column name
      */
-    public void addUpdateColumn(final String columnName) {
+    public void addColumnName(final String columnName) {
         columnNames.add(columnName);
     }
     

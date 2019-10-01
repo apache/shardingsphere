@@ -22,13 +22,13 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class UpdateEncryptParameterColumnTokenTest {
+public final class EncryptParameterAssignmentTokenTest {
     
     @Test
     public void assertToString() {
-        UpdateEncryptParameterColumnToken actual = new UpdateEncryptParameterColumnToken(0, 1);
-        actual.addUpdateColumn("c1");
-        actual.addUpdateColumn("c2");
+        EncryptParameterAssignmentToken actual = new EncryptParameterAssignmentToken(0, 1);
+        actual.addColumnName("c1");
+        actual.addColumnName("c2");
         assertThat(actual.toString(), is("c1 = ?, c2 = ?"));
     }
 }

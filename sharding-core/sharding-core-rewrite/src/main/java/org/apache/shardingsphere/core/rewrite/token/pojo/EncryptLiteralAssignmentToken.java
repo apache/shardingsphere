@@ -24,35 +24,35 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Update encrypt literal item column token.
+ * Literal assignment token for encrypt.
  *
  * @author panjuan
  */
-public final class UpdateEncryptLiteralColumnToken extends EncryptColumnToken {
+public final class EncryptLiteralAssignmentToken extends EncryptAssignmentToken {
     
-    private final Collection<UpdateColumn> columns = new LinkedList<>();
+    private final Collection<LiteralAssignment> assignments = new LinkedList<>();
     
-    public UpdateEncryptLiteralColumnToken(final int startIndex, final int stopIndex) {
+    public EncryptLiteralAssignmentToken(final int startIndex, final int stopIndex) {
         super(startIndex, stopIndex);
     }
     
     /**
-     * Add update column.
+     * Add assignment.
      *
      * @param columnName column name
-     * @param value value
+     * @param value assignment value
      */
-    public void addUpdateColumn(final String columnName, final Object value) {
-        columns.add(new UpdateColumn(columnName, value));
+    public void addAssignment(final String columnName, final Object value) {
+        assignments.add(new LiteralAssignment(columnName, value));
     }
     
     @Override
     public String toString() {
-        return Joiner.on(", ").join(columns);
+        return Joiner.on(", ").join(assignments);
     }
     
     @RequiredArgsConstructor
-    private final class UpdateColumn {
+    private final class LiteralAssignment {
         
         private final String columnName;
         

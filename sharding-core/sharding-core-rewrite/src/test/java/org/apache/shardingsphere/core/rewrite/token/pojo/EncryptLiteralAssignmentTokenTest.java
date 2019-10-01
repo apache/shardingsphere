@@ -17,20 +17,18 @@
 
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
-import lombok.Getter;
+import org.junit.Test;
 
-/**
- * Encrypt column token.
- *
- * @author panjuan
- */
-@Getter
-public abstract class EncryptColumnToken extends SQLToken implements Substitutable {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class EncryptLiteralAssignmentTokenTest {
     
-    private final int stopIndex;
-    
-    public EncryptColumnToken(final int startIndex, final int stopIndex) {
-        super(startIndex);
-        this.stopIndex = stopIndex;
+    @Test
+    public void assertToString() {
+        EncryptLiteralAssignmentToken actual = new EncryptLiteralAssignmentToken(0, 1);
+        actual.addAssignment("c1", "c1");
+        actual.addAssignment("c2", 1);
+        assertThat(actual.toString(), is("c1 = 'c1', c2 = 1"));
     }
 }
