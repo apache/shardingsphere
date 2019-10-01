@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.core.rewrite.parameter.builder.group;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,34 +36,23 @@ import java.util.List;
  * @author panjuan
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public final class GroupedParameterBuilder implements ParameterBuilder {
     
-    private final Collection<ParametersGroup> parametersGroups;
+    @Getter
+    private final List<List<Object>> parameterGroups;
     
     private final ShardingConditions shardingConditions;
     
-    public GroupedParameterBuilder(final List<List<Object>> rewritedGroupedParameters, final ShardingConditions shardingConditions) {
-        parametersGroups = createParametersGroup(rewritedGroupedParameters);
-        this.shardingConditions = shardingConditions;
-    }
-    
-    public GroupedParameterBuilder(final List<List<Object>> rewritedGroupedParameters) {
-        this(rewritedGroupedParameters, null);
-    }
-    
-    private Collection<ParametersGroup> createParametersGroup(final List<List<Object>> rewritedGroupedParameters) {
-        Collection<ParametersGroup> result = new LinkedList<>();
-        for (List<Object> each : rewritedGroupedParameters) {
-            result.add(new ParametersGroup(each));
-        }
-        return result;
+    public GroupedParameterBuilder(final List<List<Object>> parameterGroups) {
+        this(parameterGroups, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
     }
     
     @Override
     public List<Object> getParameters(final List<Object> originalParameters) {
         List<Object> result = new LinkedList<>();
-        for (ParametersGroup each : parametersGroups) {
-            result.addAll(each.getParameters());
+        for (List<Object> each : parameterGroups) {
+            result.addAll(each);
         }
         return result;
     }
@@ -69,16 +60,19 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     @Override
     public List<Object> getParameters(final List<Object> originalParameters, final RoutingUnit routingUnit) {
         List<Object> result = new LinkedList<>();
-        Iterator<ShardingCondition> shardingConditionIterator = null == shardingConditions ? null : shardingConditions.getConditions().iterator();
-        for (ParametersGroup each : parametersGroups) {
-            if (null == shardingConditionIterator || isInSameDataNode(shardingConditionIterator.next(), routingUnit)) {
-                result.addAll(each.getParameters());
+        Iterator<ShardingCondition> shardingConditionIterator = shardingConditions.getConditions().iterator();
+        for (List<Object> each : parameterGroups) {
+            if (!shardingConditionIterator.hasNext() || isInSameDataNode(shardingConditionIterator.next(), routingUnit)) {
+                result.addAll(each);
             }
         }
         return result;
     }
     
     private boolean isInSameDataNode(final ShardingCondition shardingCondition, final RoutingUnit routingUnit) {
+        if (shardingCondition.getDataNodes().isEmpty()) {
+            return true;
+        }
         for (DataNode each : shardingCondition.getDataNodes()) {
             if (routingUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
                 return true;

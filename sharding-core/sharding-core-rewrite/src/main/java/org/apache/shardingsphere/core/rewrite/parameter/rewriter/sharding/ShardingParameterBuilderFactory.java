@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilderFactory;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.core.rewrite.parameter.rewriter.encrypt.EncryptAssignmentParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.encrypt.EncryptPredicateParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.QueryWithCipherColumnAware;
@@ -72,6 +73,7 @@ public final class ShardingParameterBuilderFactory {
     
     private static Collection<ParameterRewriter> getParameterRewriters() {
         Collection<ParameterRewriter> result = new LinkedList<>();
+        result.add(new EncryptAssignmentParameterRewriter());
         result.add(new EncryptPredicateParameterRewriter());
         return result;
     }
