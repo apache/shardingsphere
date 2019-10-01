@@ -20,6 +20,8 @@ package org.apache.shardingsphere.core.rewrite.parameter.rewriter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 
+import java.util.List;
+
 /**
  * Parameter rewriter.
  *
@@ -31,7 +33,8 @@ public interface ParameterRewriter {
      * Rewrite SQL parameters.
      * 
      * @param sqlStatementContext SQL statement context
+     * @param parameters SQL parameters
      * @param parameterBuilder parameter builder
      */
-    void rewrite(SQLStatementContext sqlStatementContext, ParameterBuilder parameterBuilder);
+    void rewrite(SQLStatementContext sqlStatementContext, List<Object> parameters, ParameterBuilder parameterBuilder);
 }

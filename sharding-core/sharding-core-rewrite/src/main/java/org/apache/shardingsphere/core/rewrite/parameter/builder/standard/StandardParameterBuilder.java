@@ -83,7 +83,7 @@ public final class StandardParameterBuilder implements ParameterBuilder {
     }
     
     @Override
-    public List<Object> getParameters() {
+    public List<Object> getParameters(final List<Object> originalParameters) {
         List<Object> result = new LinkedList<>(originalParameters);
         for (Entry<Integer, Object> entry : replacedIndexAndParameters.entrySet()) {
             result.set(entry.getKey(), entry.getValue());
@@ -95,7 +95,7 @@ public final class StandardParameterBuilder implements ParameterBuilder {
     }
     
     @Override
-    public List<Object> getParameters(final RoutingUnit routingUnit) {
-        return getParameters();
+    public List<Object> getParameters(final List<Object> originalParameters, final RoutingUnit routingUnit) {
+        return getParameters(originalParameters);
     }
 }

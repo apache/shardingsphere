@@ -64,7 +64,7 @@ public final class EncryptParameterBuilderFactory {
             if (each instanceof QueryWithCipherColumnAware) {
                 ((QueryWithCipherColumnAware) each).setQueryWithCipherColumn(queryWithCipherColumn);
             }
-            each.rewrite(sqlStatementContext, result);
+            each.rewrite(sqlStatementContext, parameters, result);
         }
         return result;
     }

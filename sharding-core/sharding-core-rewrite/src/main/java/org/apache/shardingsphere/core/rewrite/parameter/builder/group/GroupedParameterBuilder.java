@@ -59,7 +59,7 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     }
     
     @Override
-    public List<Object> getParameters() {
+    public List<Object> getParameters(final List<Object> originalParameters) {
         List<Object> result = new LinkedList<>();
         for (ParametersGroup each : parametersGroups) {
             result.addAll(each.getParameters());
@@ -68,7 +68,7 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     }
     
     @Override
-    public List<Object> getParameters(final RoutingUnit routingUnit) {
+    public List<Object> getParameters(final List<Object> originalParameters, final RoutingUnit routingUnit) {
         List<Object> result = new LinkedList<>();
         for (ParametersGroup each : parametersGroups) {
             if (isAppendParameter(each, routingUnit)) {

@@ -49,7 +49,7 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     private boolean queryWithCipherColumn;
     
     @Override
-    public void rewrite(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+    public void rewrite(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final ParameterBuilder parameterBuilder) {
         List<EncryptCondition> encryptConditions = new EncryptConditionEngine(encryptRule, tableMetas).createEncryptConditions(sqlStatementContext);
         if (encryptConditions.isEmpty()) {
             return;

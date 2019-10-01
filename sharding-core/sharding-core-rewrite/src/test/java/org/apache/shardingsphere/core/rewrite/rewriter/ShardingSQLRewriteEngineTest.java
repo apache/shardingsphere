@@ -1009,7 +1009,7 @@ public final class ShardingSQLRewriteEngineTest {
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(
                 createSQLRouteResultForSelectEqualWithShardingEncryptor(), "SELECT id FROM table_z WHERE id=? AND name=?", Arrays.<Object>asList(1, "x"));
         assertThat(rewriteEngine.generateSQL().getSql(), is("SELECT cipher FROM table_z WHERE cipher = ? AND name=?"));
-        assertThat(getParameterBuilder(rewriteEngine).getParameters().get(0), is((Object) "encryptValue"));
+        assertThat(getParameterBuilder(rewriteEngine).getParameters(Arrays.<Object>asList(1, "x")).get(0), is((Object) "encryptValue"));
     }
     
     @Test
@@ -1017,7 +1017,7 @@ public final class ShardingSQLRewriteEngineTest {
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(
                 createSQLRouteResultForSelectEqualWithShardingEncryptor(), "SELECT id FROM table_z WHERE id=? AND name=?", Arrays.<Object>asList(1, "x"), false);
         assertThat(rewriteEngine.generateSQL().getSql(), is("SELECT plain FROM table_z WHERE plain = ? AND name=?"));
-        assertThat(getParameterBuilder(rewriteEngine).getParameters().get(0), is((Object) 1));
+        assertThat(getParameterBuilder(rewriteEngine).getParameters(Arrays.<Object>asList(1, "x")).get(0), is((Object) 1));
     }
     
     private SQLRouteResult createSQLRouteResultForSelectEqualWithShardingEncryptor() {
@@ -1044,8 +1044,8 @@ public final class ShardingSQLRewriteEngineTest {
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(
                 createSQLRouteResultForSelectInWithShardingEncryptorWithParameter(), "SELECT id FROM table_z WHERE id in (?, ?) or id = 3", Arrays.<Object>asList(1, 2));
         assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT cipher FROM table_z WHERE cipher IN (?, ?) or cipher = 'encryptValue'"));
-        assertThat(getParameterBuilder(rewriteEngine).getParameters().get(0), is((Object) "encryptValue"));
-        assertThat(getParameterBuilder(rewriteEngine).getParameters().get(1), is((Object) "encryptValue"));
+        assertThat(getParameterBuilder(rewriteEngine).getParameters(Arrays.<Object>asList(1, 2)).get(0), is((Object) "encryptValue"));
+        assertThat(getParameterBuilder(rewriteEngine).getParameters(Arrays.<Object>asList(1, 2)).get(1), is((Object) "encryptValue"));
     }
     
     @Test
@@ -1053,8 +1053,8 @@ public final class ShardingSQLRewriteEngineTest {
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(
                 createSQLRouteResultForSelectInWithShardingEncryptorWithParameter(), "SELECT id FROM table_z WHERE id in (?, ?) or id = 3", Arrays.<Object>asList(1, 2), false);
         assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT plain FROM table_z WHERE plain IN (?, ?) or plain = '3'"));
-        assertThat(getParameterBuilder(rewriteEngine).getParameters().get(0), is((Object) 1));
-        assertThat(getParameterBuilder(rewriteEngine).getParameters().get(1), is((Object) 2));
+        assertThat(getParameterBuilder(rewriteEngine).getParameters(Arrays.<Object>asList(1, 2)).get(0), is((Object) 1));
+        assertThat(getParameterBuilder(rewriteEngine).getParameters(Arrays.<Object>asList(1, 2)).get(1), is((Object) 2));
     }
     
     private SQLRouteResult createSQLRouteResultForSelectInWithShardingEncryptorWithParameter() {
@@ -1084,7 +1084,7 @@ public final class ShardingSQLRewriteEngineTest {
         SQLRewriteEngine rewriteEngine = createSQLRewriteEngine(
                 createSQLRouteResultForSelectEqualWithQueryAssistedShardingEncryptor(), "SELECT id as alias FROM table_k WHERE id=? AND name=?", Arrays.<Object>asList(1, "k"));
         assertThat(rewriteEngine.generateSQL(null, logicTableAndActualTables).getSql(), is("SELECT cipher as alias FROM table_k WHERE query = ? AND name=?"));
-        assertThat(getParameterBuilder(rewriteEngine).getParameters().get(0), is((Object) "assistedEncryptValue"));
+        assertThat(getParameterBuilder(rewriteEngine).getParameters(Arrays.<Object>asList(1, "k")).get(0), is((Object) "assistedEncryptValue"));
     }
     
     private SQLRouteResult createSQLRouteResultForSelectEqualWithQueryAssistedShardingEncryptor() {

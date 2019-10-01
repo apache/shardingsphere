@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -58,14 +59,14 @@ public final class GroupedParameterBuilderTest {
     
     @Test
     public void assertGetParameters() {
-        assertThat(parameterBuilder.getParameters(), is(Arrays.<Object>asList(3, 4, 5, 6)));
+        assertThat(parameterBuilder.getParameters(Collections.emptyList()), is(Arrays.<Object>asList(3, 4, 5, 6)));
     }
     
     @Test
     public void assertGetParametersWithRoutingUnit() {
         RoutingUnit routingUnit = new RoutingUnit("db1");
         routingUnit.getTableUnits().add(new TableUnit("tb1", "tb1"));
-        assertThat(parameterBuilder.getParameters(routingUnit), is(Arrays.<Object>asList(3, 4)));
+        assertThat(parameterBuilder.getParameters(Collections.emptyList(), routingUnit), is(Arrays.<Object>asList(3, 4)));
     }
     
     @Test

@@ -65,7 +65,7 @@ public final class ShardingParameterBuilderFactory {
             if (each instanceof QueryWithCipherColumnAware) {
                 ((QueryWithCipherColumnAware) each).setQueryWithCipherColumn(queryWithCipherColumn);
             }
-            each.rewrite(sqlRouteResult.getSqlStatementContext(), result);
+            each.rewrite(sqlRouteResult.getSqlStatementContext(), parameters, result);
         }
         return result;
     }

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Update items parameter rewriter for encrypt.
@@ -41,7 +42,7 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
     private EncryptRule encryptRule;
     
     @Override
-    public void rewrite(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+    public void rewrite(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final ParameterBuilder parameterBuilder) {
         if (!(sqlStatementContext.getSqlStatement() instanceof UpdateStatement)) {
             return;
         }
