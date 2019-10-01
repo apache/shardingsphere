@@ -15,20 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token.pojo;
+package org.apache.shardingsphere.core.rewrite.token.pojo.impl;
 
-import org.junit.Test;
+import lombok.Getter;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.Substitutable;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class EncryptParameterAssignmentTokenTest {
+/**
+ * Remove token.
+ *
+ * @author zhangliang
+ * @author panjuan
+ */
+@Getter
+public final class RemoveToken extends SQLToken implements Substitutable {
     
-    @Test
-    public void assertToString() {
-        EncryptParameterAssignmentToken actual = new EncryptParameterAssignmentToken(0, 1);
-        actual.addColumnName("c1");
-        actual.addColumnName("c2");
-        assertThat(actual.toString(), is("c1 = ?, c2 = ?"));
+    private final int stopIndex;
+    
+    public RemoveToken(final int startIndex, final int stopIndex) {
+        super(startIndex);
+        this.stopIndex = stopIndex;
+    }
+    
+    @Override
+    public String toString() {
+        return "";
     }
 }

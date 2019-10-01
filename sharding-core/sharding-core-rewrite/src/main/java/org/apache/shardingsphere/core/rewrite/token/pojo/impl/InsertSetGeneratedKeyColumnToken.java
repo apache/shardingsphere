@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token.pojo;
+package org.apache.shardingsphere.core.rewrite.token.pojo.impl;
 
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.core.rewrite.token.pojo.Attachable;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 
 /**
  * Insert set generated key column token.

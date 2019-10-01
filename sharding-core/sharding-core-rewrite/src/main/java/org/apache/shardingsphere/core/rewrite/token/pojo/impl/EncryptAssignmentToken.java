@@ -15,34 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token.pojo;
+package org.apache.shardingsphere.core.rewrite.token.pojo.impl;
 
-import com.google.common.base.Joiner;
-
-import java.util.Collection;
+import lombok.Getter;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.Substitutable;
 
 /**
- * Insert query and plain names token.
+ * Assignment token for encrypt.
  *
  * @author panjuan
  */
-public final class InsertQueryAndPlainNamesToken extends SQLToken implements Attachable {
+@Getter
+public abstract class EncryptAssignmentToken extends SQLToken implements Substitutable {
     
-    private final Collection<String> columns;
+    private final int stopIndex;
     
-    private final boolean isToAddCloseParenthesis;
-    
-    public InsertQueryAndPlainNamesToken(final int startIndex, final Collection<String> columns, final boolean isToAddCloseParenthesis) {
+    public EncryptAssignmentToken(final int startIndex, final int stopIndex) {
         super(startIndex);
-        this.columns = columns;
-        this.isToAddCloseParenthesis = isToAddCloseParenthesis;
-    }
-    
-    @Override
-    public String toString() {
-        if (columns.isEmpty()) {
-            return "";
-        }
-        return String.format(isToAddCloseParenthesis ? ", %s)" : ", %s", Joiner.on(", ").join(columns));
+        this.stopIndex = stopIndex;
     }
 }

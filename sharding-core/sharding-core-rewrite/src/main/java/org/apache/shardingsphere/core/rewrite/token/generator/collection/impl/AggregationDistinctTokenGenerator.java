@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.pojo.AggregationDistinctToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.impl.AggregationDistinctToken;
 
 import java.util.Collection;
 import java.util.Collections;

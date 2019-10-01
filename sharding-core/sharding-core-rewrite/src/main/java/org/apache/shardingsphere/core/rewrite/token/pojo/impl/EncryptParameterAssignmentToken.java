@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token.pojo;
+package org.apache.shardingsphere.core.rewrite.token.pojo.impl;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;

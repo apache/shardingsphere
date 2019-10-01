@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token.pojo;
+package org.apache.shardingsphere.core.rewrite.token.pojo.impl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
+import org.apache.shardingsphere.core.rewrite.token.pojo.Attachable;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 
 import java.util.LinkedList;
 import java.util.List;

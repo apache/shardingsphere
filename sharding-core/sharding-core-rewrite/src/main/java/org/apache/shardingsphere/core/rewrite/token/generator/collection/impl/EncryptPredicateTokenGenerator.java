@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.rewrite.token.generator.ParametersAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.TableMetasAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.pojo.EncryptPredicateToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.impl.EncryptPredicateToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;

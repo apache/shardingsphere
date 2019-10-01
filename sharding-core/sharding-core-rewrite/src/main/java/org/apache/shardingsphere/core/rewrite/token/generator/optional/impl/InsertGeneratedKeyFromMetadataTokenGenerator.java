@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.token.generator.GeneratedKeyAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.pojo.InsertRegularNamesToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.impl.InsertRegularNamesToken;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 
 import java.util.ArrayList;

@@ -15,22 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token.pojo;
+package org.apache.shardingsphere.core.rewrite.token.pojo.impl;
 
-import lombok.Getter;
+import org.apache.shardingsphere.core.rewrite.token.pojo.Attachable;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 
 /**
- * Assignment token for encrypt.
+ * Insert generated key name token.
  *
  * @author panjuan
  */
-@Getter
-public abstract class EncryptAssignmentToken extends SQLToken implements Substitutable {
+public final class InsertGeneratedKeyNameToken extends SQLToken implements Attachable {
     
-    private final int stopIndex;
+    private final String column;
     
-    public EncryptAssignmentToken(final int startIndex, final int stopIndex) {
+    private final boolean isToAppendCloseParenthesis;
+    
+    public InsertGeneratedKeyNameToken(final int startIndex, final String column, final boolean isToAppendCloseParenthesis) {
         super(startIndex);
-        this.stopIndex = stopIndex;
+        this.column = column;
+        this.isToAppendCloseParenthesis = isToAppendCloseParenthesis;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format(isToAppendCloseParenthesis ? ", %s)" : ", %s", column);
     }
 }

@@ -15,32 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token.pojo;
+package org.apache.shardingsphere.core.rewrite.token.pojo.impl;
+
+import com.google.common.base.Joiner;
+import org.apache.shardingsphere.core.rewrite.token.pojo.Attachable;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 
 import java.util.Collection;
 
 /**
- * Projections token.
+ * Insert query and plain names token.
  *
- * @author zhangliang
  * @author panjuan
  */
-public final class ProjectionsToken extends SQLToken implements Attachable {
+public final class InsertQueryAndPlainNamesToken extends SQLToken implements Attachable {
     
-    private final Collection<String> projections;
+    private final Collection<String> columns;
     
-    public ProjectionsToken(final int startIndex, final Collection<String> projections) {
+    private final boolean isToAddCloseParenthesis;
+    
+    public InsertQueryAndPlainNamesToken(final int startIndex, final Collection<String> columns, final boolean isToAddCloseParenthesis) {
         super(startIndex);
-        this.projections = projections;
+        this.columns = columns;
+        this.isToAddCloseParenthesis = isToAddCloseParenthesis;
     }
     
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
-        for (String each : projections) {
-            result.append(", ");
-            result.append(each);
+        if (columns.isEmpty()) {
+            return "";
         }
-        return result.toString();
+        return String.format(isToAddCloseParenthesis ? ", %s)" : ", %s", Joiner.on(", ").join(columns));
     }
 }

@@ -15,31 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token.pojo;
+package org.apache.shardingsphere.core.rewrite.token.pojo.impl;
 
-import lombok.Getter;
+import org.apache.shardingsphere.core.rewrite.token.pojo.Attachable;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 
 /**
- * Offset token.
+ * Projection prefix token.
  *
- * @author zhangliang
  * @author panjuan
  */
-public final class OffsetToken extends SQLToken implements Substitutable {
+public final class ProjectionPrefixToken extends SQLToken implements Attachable {
     
-    @Getter
-    private final int stopIndex;
-    
-    private final long revisedOffset;
-    
-    public OffsetToken(final int startIndex, final int stopIndex, final long revisedOffset) {
+    public ProjectionPrefixToken(final int startIndex) {
         super(startIndex);
-        this.stopIndex = stopIndex;
-        this.revisedOffset = revisedOffset;
     }
     
     @Override
     public String toString() {
-        return String.valueOf(revisedOffset);
+        return "DISTINCT ";
     }
 }

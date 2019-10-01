@@ -15,38 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token.pojo;
+package org.apache.shardingsphere.core.rewrite.token.pojo.impl;
 
-import com.google.common.base.Joiner;
 import lombok.Getter;
-import lombok.Setter;
-
-import java.util.List;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.Substitutable;
 
 /**
- * Insert regular names token.
+ * Aggregation distinct token.
  *
  * @author panjuan
  */
-public final class InsertRegularNamesToken extends SQLToken implements Attachable {
+public final class AggregationDistinctToken extends SQLToken implements Substitutable {
+    
+    private final String columnName;
+    
+    private final String derivedAlias;
     
     @Getter
-    private final List<String> columns;
+    private final int stopIndex;
     
-    @Setter
-    private boolean isToAppendCloseParenthesis;
-    
-    public InsertRegularNamesToken(final int startIndex, final List<String> columns, final boolean isToAppendCloseParenthesis) {
+    public AggregationDistinctToken(final int startIndex, final int stopIndex, final String columnName, final String derivedAlias) {
         super(startIndex);
-        this.columns = columns;
-        this.isToAppendCloseParenthesis = isToAppendCloseParenthesis;
+        this.columnName = columnName;
+        this.derivedAlias = derivedAlias;
+        this.stopIndex = stopIndex;
     }
     
     @Override
     public String toString() {
-        if (columns.isEmpty()) {
-            return "";
-        }
-        return String.format(isToAppendCloseParenthesis ? "(%s)" : "(%s", Joiner.on(", ").join(columns));
+        return null == derivedAlias ? columnName : columnName + " AS " + derivedAlias;
     }
 }

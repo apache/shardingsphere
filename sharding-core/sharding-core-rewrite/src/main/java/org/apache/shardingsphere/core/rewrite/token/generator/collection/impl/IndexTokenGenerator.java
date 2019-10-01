@@ -21,7 +21,7 @@ import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.pojo.IndexToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.impl.IndexToken;
 
 import java.util.Collection;
 import java.util.LinkedList;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.rewrite.builder.sql;
 
 import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.token.pojo.TableToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.impl.TableToken;
 import org.junit.Before;
 import org.junit.Test;
 

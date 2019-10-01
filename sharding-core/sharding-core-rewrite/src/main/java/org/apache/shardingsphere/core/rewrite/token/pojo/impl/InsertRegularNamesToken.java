@@ -15,31 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token.pojo;
+package org.apache.shardingsphere.core.rewrite.token.pojo.impl;
 
+import com.google.common.base.Joiner;
 import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.core.rewrite.token.pojo.Attachable;
+import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
+
+import java.util.List;
 
 /**
- * Row count token.
+ * Insert regular names token.
  *
- * @author zhangliang
  * @author panjuan
  */
-public final class RowCountToken extends SQLToken implements Substitutable {
+public final class InsertRegularNamesToken extends SQLToken implements Attachable {
     
     @Getter
-    private final int stopIndex;
+    private final List<String> columns;
     
-    private final long revisedRowCount;
+    @Setter
+    private boolean isToAppendCloseParenthesis;
     
-    public RowCountToken(final int startIndex, final int stopIndex, final long revisedRowCount) {
+    public InsertRegularNamesToken(final int startIndex, final List<String> columns, final boolean isToAppendCloseParenthesis) {
         super(startIndex);
-        this.stopIndex = stopIndex;
-        this.revisedRowCount = revisedRowCount;
+        this.columns = columns;
+        this.isToAppendCloseParenthesis = isToAppendCloseParenthesis;
     }
     
     @Override
     public String toString() {
-        return String.valueOf(revisedRowCount);
+        if (columns.isEmpty()) {
+            return "";
+        }
+        return String.format(isToAppendCloseParenthesis ? "(%s)" : "(%s", Joiner.on(", ").join(columns));
     }
 }

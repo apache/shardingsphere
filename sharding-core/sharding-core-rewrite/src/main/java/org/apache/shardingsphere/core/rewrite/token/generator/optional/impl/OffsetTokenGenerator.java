@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatement
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.pojo.OffsetToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.impl.OffsetToken;
 
 /**
  * Offset token generator.

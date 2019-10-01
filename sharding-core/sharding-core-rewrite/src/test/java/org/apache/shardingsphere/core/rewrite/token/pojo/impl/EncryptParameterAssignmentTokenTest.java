@@ -15,27 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.token.pojo;
+package org.apache.shardingsphere.core.rewrite.token.pojo.impl;
 
-/**
- * Insert generated key name token.
- *
- * @author panjuan
- */
-public final class InsertGeneratedKeyNameToken extends SQLToken implements Attachable {
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class EncryptParameterAssignmentTokenTest {
     
-    private final String column;
-    
-    private final boolean isToAppendCloseParenthesis;
-    
-    public InsertGeneratedKeyNameToken(final int startIndex, final String column, final boolean isToAppendCloseParenthesis) {
-        super(startIndex);
-        this.column = column;
-        this.isToAppendCloseParenthesis = isToAppendCloseParenthesis;
-    }
-    
-    @Override
-    public String toString() {
-        return String.format(isToAppendCloseParenthesis ? ", %s)" : ", %s", column);
+    @Test
+    public void assertToString() {
+        EncryptParameterAssignmentToken actual = new EncryptParameterAssignmentToken(0, 1);
+        actual.addColumnName("c1");
+        actual.addColumnName("c2");
+        assertThat(actual.toString(), is("c1 = ?, c2 = ?"));
     }
 }
