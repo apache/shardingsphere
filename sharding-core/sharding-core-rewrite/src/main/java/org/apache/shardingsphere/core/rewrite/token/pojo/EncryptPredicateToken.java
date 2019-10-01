@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.token.pojo;
 
+import lombok.Getter;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.exception.ShardingException;
 
@@ -28,7 +29,10 @@ import java.util.Map;
  *
  * @author panjuan
  */
-public final class EncryptPredicateToken extends EncryptColumnToken {
+public final class EncryptPredicateToken extends SQLToken implements Substitutable {
+    
+    @Getter
+    private final int stopIndex;
     
     private final String columnName;
     
@@ -40,7 +44,8 @@ public final class EncryptPredicateToken extends EncryptColumnToken {
     
     public EncryptPredicateToken(final int startIndex, final int stopIndex,
                                  final String columnName, final Map<Integer, Object> indexValues, final Collection<Integer> parameterMarkerIndexes, final ShardingOperator operator) {
-        super(startIndex, stopIndex);
+        super(startIndex);
+        this.stopIndex = stopIndex;
         this.columnName = columnName;
         this.indexValues = indexValues;
         this.parameterMarkerIndexes = parameterMarkerIndexes;
