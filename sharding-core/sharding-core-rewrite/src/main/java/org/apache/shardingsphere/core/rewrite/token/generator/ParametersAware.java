@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.core.rewrite.token.generator;
 
-import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
+import java.util.List;
 
 /**
- * Parameter builder aware.
+ * SQL parameters aware.
  *
  * @author zhangliang
  */
-public interface ParameterBuilderAware {
+public interface ParametersAware {
     
     /**
-     * Set parameter builder.
+     * Set parameters.
      * 
-     * @param parameterBuilder parameter builder
+     * @param parameters parameters
      */
-    void setParameterBuilder(ParameterBuilder parameterBuilder);
+    void setParameters(List<Object> parameters);
 }

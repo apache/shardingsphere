@@ -24,9 +24,8 @@ import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptCondition;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptConditionEngine;
-import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
-import org.apache.shardingsphere.core.rewrite.token.generator.ParameterBuilderAware;
+import org.apache.shardingsphere.core.rewrite.token.generator.ParametersAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.TableMetasAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
@@ -47,13 +46,13 @@ import java.util.Map;
  * @author zhangliang
  */
 @Setter
-public final class EncryptPredicateTokenGenerator implements CollectionSQLTokenGenerator, TableMetasAware, EncryptRuleAware, ParameterBuilderAware, QueryWithCipherColumnAware {
+public final class EncryptPredicateTokenGenerator implements CollectionSQLTokenGenerator, TableMetasAware, EncryptRuleAware, ParametersAware, QueryWithCipherColumnAware {
     
     private TableMetas tableMetas;
     
     private EncryptRule encryptRule;
     
-    private ParameterBuilder parameterBuilder;
+    private List<Object> parameters;
     
     private boolean queryWithCipherColumn;
     
@@ -72,7 +71,7 @@ public final class EncryptPredicateTokenGenerator implements CollectionSQLTokenG
     }
     
     private EncryptPredicateToken createSQLToken(final EncryptCondition encryptCondition) {
-        List<Object> originalValues = encryptCondition.getValues(parameterBuilder.getOriginalParameters());
+        List<Object> originalValues = encryptCondition.getValues(parameters);
         return queryWithCipherColumn ? createSQLTokenForQueryWithCipherColumn(encryptCondition, originalValues) : createSQLTokenForQueryWithoutCipherColumn(encryptCondition, originalValues);
     }
     

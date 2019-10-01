@@ -20,9 +20,8 @@ package org.apache.shardingsphere.core.rewrite.token;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
-import org.apache.shardingsphere.core.rewrite.token.generator.ParameterBuilderAware;
+import org.apache.shardingsphere.core.rewrite.token.generator.ParametersAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.TableMetasAware;
@@ -70,20 +69,20 @@ public final class SQLTokenGenerators {
      * Generate SQL tokens.
      *
      * @param sqlStatementContext SQL statement context
-     * @param parameterBuilder SQL parameter builder
+     * @param parameters SQL parameters
      * @param tableMetas table metas
      * @param isSingleRoute is single route
      * @return SQL tokens
      */
     @SuppressWarnings("unchecked")
-    public List<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder, final TableMetas tableMetas, final boolean isSingleRoute) {
+    public List<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final TableMetas tableMetas, final boolean isSingleRoute) {
         List<SQLToken> result = new LinkedList<>();
         for (SQLTokenGenerator each : sqlTokenGenerators) {
             if (isSingleRoute && each instanceof IgnoreForSingleRoute) {
                 continue;
             }
-            if (each instanceof ParameterBuilderAware) {
-                ((ParameterBuilderAware) each).setParameterBuilder(parameterBuilder);
+            if (each instanceof ParametersAware) {
+                ((ParametersAware) each).setParameters(parameters);
             }
             if (each instanceof TableMetasAware) {
                 ((TableMetasAware) each).setTableMetas(tableMetas);
