@@ -45,6 +45,10 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
         this.shardingConditions = shardingConditions;
     }
     
+    public GroupedParameterBuilder(final List<List<Object>> rewritedGroupedParameters) {
+        this(rewritedGroupedParameters, null);
+    }
+    
     private Collection<ParametersGroup> createParametersGroup(final List<List<Object>> rewritedGroupedParameters) {
         Collection<ParametersGroup> result = new LinkedList<>();
         for (List<Object> each : rewritedGroupedParameters) {

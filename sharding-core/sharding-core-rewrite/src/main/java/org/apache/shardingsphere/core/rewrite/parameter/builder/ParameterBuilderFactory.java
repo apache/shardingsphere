@@ -56,7 +56,7 @@ public final class ParameterBuilderFactory {
      * @return instance of parameter builder
      */
     public static ParameterBuilder newInstance(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertSQLStatementContext ? new GroupedParameterBuilder(getGroupedParameters(sqlStatementContext), null) : new StandardParameterBuilder();
+        return sqlStatementContext instanceof InsertSQLStatementContext ? new GroupedParameterBuilder(getGroupedParameters(sqlStatementContext)) : new StandardParameterBuilder();
     }
     
     private static List<List<Object>> getGroupedParameters(final SQLStatementContext sqlStatementContext) {
