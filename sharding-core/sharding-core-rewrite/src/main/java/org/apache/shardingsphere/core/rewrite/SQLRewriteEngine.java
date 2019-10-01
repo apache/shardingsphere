@@ -106,7 +106,7 @@ public final class SQLRewriteEngine {
         baseRule = masterSlaveRule;
         this.sqlStatementContext = sqlStatementContext;
         this.parameters = Collections.emptyList();
-        parameterBuilder = ParameterBuilderFactory.newInstance(sqlStatementContext, Collections.emptyList());
+        parameterBuilder = ParameterBuilderFactory.newInstance(sqlStatementContext);
         sqlTokens = createSQLTokens(null, Collections.emptyList(), new ShardingConditions(Collections.<ShardingCondition>emptyList()), null, false, false);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
     }

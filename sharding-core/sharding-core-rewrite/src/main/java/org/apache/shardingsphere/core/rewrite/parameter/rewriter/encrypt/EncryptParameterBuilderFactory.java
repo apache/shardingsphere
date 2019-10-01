@@ -53,7 +53,7 @@ public final class EncryptParameterBuilderFactory {
      */
     public static ParameterBuilder build(final EncryptRule encryptRule, final TableMetas tableMetas,
                                          final SQLStatementContext sqlStatementContext, final List<Object> parameters, final boolean queryWithCipherColumn) {
-        ParameterBuilder result = ParameterBuilderFactory.newInstance(sqlStatementContext, parameters);
+        ParameterBuilder result = ParameterBuilderFactory.newInstance(sqlStatementContext);
         for (ParameterRewriter each : getParameterRewriters()) {
             if (each instanceof EncryptRuleAware) {
                 ((EncryptRuleAware) each).setEncryptRule(encryptRule);

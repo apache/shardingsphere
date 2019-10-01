@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.parameter.builder.group;
 
-import lombok.Getter;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
@@ -38,13 +37,9 @@ import java.util.List;
  */
 public final class GroupedParameterBuilder implements ParameterBuilder {
     
-    @Getter
-    private final List<Object> originalParameters;
-    
     private final Collection<ParametersGroup> parametersGroups;
     
-    public GroupedParameterBuilder(final List<Object> originalParameters, final List<List<Object>> rewritedGroupedParameters, final ShardingConditions shardingConditions) {
-        this.originalParameters = new LinkedList<>(originalParameters);
+    public GroupedParameterBuilder(final List<List<Object>> rewritedGroupedParameters, final ShardingConditions shardingConditions) {
         parametersGroups = createParametersGroup(rewritedGroupedParameters, shardingConditions);
     }
     

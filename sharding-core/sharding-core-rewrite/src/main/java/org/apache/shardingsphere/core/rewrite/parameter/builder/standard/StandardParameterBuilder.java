@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.rewrite.parameter.builder.standard;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
@@ -37,21 +38,15 @@ import java.util.TreeMap;
  *
  * @author panjuan
  */
+@NoArgsConstructor
 @Getter
 public final class StandardParameterBuilder implements ParameterBuilder {
-    
-    private final List<Object> originalParameters = new LinkedList<>();
     
     private final Map<Integer, Object> addedIndexAndParameters = new TreeMap<>();
     
     private final Map<Integer, Object> replacedIndexAndParameters = new HashMap<>();
     
-    public StandardParameterBuilder(final List<Object> originalParameters) {
-        this.originalParameters.addAll(originalParameters);
-    }
-    
-    public StandardParameterBuilder(final List<Object> originalParameters, final SQLRouteResult sqlRouteResult) {
-        this(originalParameters);
+    public StandardParameterBuilder(final SQLRouteResult sqlRouteResult) {
         setReplacedIndexAndParameters(sqlRouteResult);
     }
     

@@ -54,7 +54,7 @@ public final class ShardingParameterBuilderFactory {
      */
     public static ParameterBuilder build(final EncryptRule encryptRule, final TableMetas tableMetas, 
                                          final SQLRouteResult sqlRouteResult, final List<Object> parameters, final boolean queryWithCipherColumn) {
-        ParameterBuilder result = ParameterBuilderFactory.newInstance(sqlRouteResult.getSqlStatementContext(), parameters, sqlRouteResult);
+        ParameterBuilder result = ParameterBuilderFactory.newInstance(sqlRouteResult.getSqlStatementContext(), sqlRouteResult);
         for (ParameterRewriter each : getParameterRewriters()) {
             if (each instanceof EncryptRuleAware) {
                 ((EncryptRuleAware) each).setEncryptRule(encryptRule);

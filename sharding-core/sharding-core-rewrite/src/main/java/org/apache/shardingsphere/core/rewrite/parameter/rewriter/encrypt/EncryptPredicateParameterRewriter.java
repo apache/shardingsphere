@@ -56,7 +56,7 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
         }
         for (EncryptCondition each : encryptConditions) {
             if (queryWithCipherColumn) {
-                encryptParameters(parameterBuilder, each.getPositionIndexMap(), getEncryptedValues(each, each.getValues(parameterBuilder.getOriginalParameters())));
+                encryptParameters(parameterBuilder, each.getPositionIndexMap(), getEncryptedValues(each, each.getValues(parameters)));
             }
         }
     }

@@ -39,7 +39,7 @@ public final class GroupedParameterBuilderTest {
     
     @Before
     public void setUp() {
-        parameterBuilder = new GroupedParameterBuilder(Arrays.<Object>asList(1, 2), createGroupedParameters(), createShardingConditions());
+        parameterBuilder = new GroupedParameterBuilder(createGroupedParameters(), createShardingConditions());
     }
     
     private List<List<Object>> createGroupedParameters() {
@@ -67,10 +67,5 @@ public final class GroupedParameterBuilderTest {
         RoutingUnit routingUnit = new RoutingUnit("db1");
         routingUnit.getTableUnits().add(new TableUnit("tb1", "tb1"));
         assertThat(parameterBuilder.getParameters(Collections.emptyList(), routingUnit), is(Arrays.<Object>asList(3, 4)));
-    }
-    
-    @Test
-    public void assertGetOriginalParameters() {
-        assertThat(parameterBuilder.getOriginalParameters(), is(Arrays.<Object>asList(1, 2)));
     }
 }

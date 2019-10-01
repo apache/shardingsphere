@@ -41,26 +41,22 @@ public final class ParameterBuilderFactory {
      * Create new instance of parameter builder.
      * 
      * @param sqlStatementContext SQL statement context
-     * @param parameters parameters
      * @param sqlRouteResult SQL route result
      * @return instance of parameter builder
      */
-    public static ParameterBuilder newInstance(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
+    public static ParameterBuilder newInstance(final SQLStatementContext sqlStatementContext, final SQLRouteResult sqlRouteResult) {
         return sqlStatementContext instanceof InsertSQLStatementContext
-                ? new GroupedParameterBuilder(parameters, getGroupedParameters(sqlStatementContext), sqlRouteResult.getShardingConditions())
-                : new StandardParameterBuilder(parameters, sqlRouteResult);
+                ? new GroupedParameterBuilder(getGroupedParameters(sqlStatementContext), sqlRouteResult.getShardingConditions()) : new StandardParameterBuilder(sqlRouteResult);
     }
     
     /**
      * Create new instance of parameter builder.
      * 
      * @param sqlStatementContext SQL statement context
-     * @param parameters parameters
      * @return instance of parameter builder
      */
-    public static ParameterBuilder newInstance(final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        return sqlStatementContext instanceof InsertSQLStatementContext
-                ? new GroupedParameterBuilder(parameters, getGroupedParameters(sqlStatementContext), null) : new StandardParameterBuilder(parameters);
+    public static ParameterBuilder newInstance(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext instanceof InsertSQLStatementContext ? new GroupedParameterBuilder(getGroupedParameters(sqlStatementContext), null) : new StandardParameterBuilder();
     }
     
     private static List<List<Object>> getGroupedParameters(final SQLStatementContext sqlStatementContext) {

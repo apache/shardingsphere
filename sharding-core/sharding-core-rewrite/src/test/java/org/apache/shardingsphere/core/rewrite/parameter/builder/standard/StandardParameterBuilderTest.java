@@ -48,7 +48,7 @@ public final class StandardParameterBuilderTest {
     
     @Before
     public void setUp() {
-        parameterBuilder = new StandardParameterBuilder(parameters, createSQLRouteResult());
+        parameterBuilder = new StandardParameterBuilder(createSQLRouteResult());
         parameterBuilder.getAddedIndexAndParameters().putAll(Collections.singletonMap(4, 7));
     }
     
@@ -69,11 +69,6 @@ public final class StandardParameterBuilderTest {
     public void assertGetParameters() {
         assertThat(parameterBuilder.getParameters(parameters), is(Arrays.<Object>asList(1, 2, 0L, 6L, 7)));
         assertThat(parameterBuilder.getParameters(parameters, mock(RoutingUnit.class)), is(Arrays.<Object>asList(1, 2, 0L, 6L, 7)));
-    }
-    
-    @Test
-    public void assertGetOriginalParameters() {
-        assertThat(parameterBuilder.getOriginalParameters(), is(Arrays.<Object>asList(1, 2, 1, 5)));
     }
     
     @Test
