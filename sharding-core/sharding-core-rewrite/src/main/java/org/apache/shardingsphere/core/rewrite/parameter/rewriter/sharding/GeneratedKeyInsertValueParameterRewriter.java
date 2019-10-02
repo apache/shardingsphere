@@ -43,11 +43,13 @@ public final class GeneratedKeyInsertValueParameterRewriter implements Parameter
     public void rewrite(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final ParameterBuilder parameterBuilder) {
         if (sqlStatementContext instanceof InsertSQLStatementContext && null != generatedKey && generatedKey.isGenerated()) {
             Iterator<Comparable<?>> generatedValues = generatedKey.getGeneratedValues().descendingIterator();
+            int count = 0;
             for (List<Object> each : ((GroupedParameterBuilder) parameterBuilder).getParameterGroups()) {
                 Comparable<?> generatedValue = generatedValues.next();
                 if (!each.isEmpty()) {
-                    each.add(generatedValue);
+                    ((GroupedParameterBuilder) parameterBuilder).getAddedParameterGroups().get(count).add(generatedValue);
                 }
+                count++;
             }
         }
     }

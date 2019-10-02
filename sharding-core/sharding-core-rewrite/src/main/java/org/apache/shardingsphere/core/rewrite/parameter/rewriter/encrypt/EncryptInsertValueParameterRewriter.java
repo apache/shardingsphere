@@ -34,6 +34,7 @@ import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Insert value parameter rewriter for encrypt.
@@ -67,27 +68,29 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
                                      final String tableName, final String encryptLogicColumnName, final GroupedParameterBuilder parameterBuilder) {
         int columnIndex = insertSQLStatementContext.getColumnNames().indexOf(encryptLogicColumnName);
         Iterator<InsertValueContext> insertValueContexts = insertSQLStatementContext.getInsertValueContexts().iterator();
+        int count = 0;
         for (List<Object> each : parameterBuilder.getParameterGroups()) {
-            encryptInsertValue(encryptRule, shardingEncryptor, tableName, columnIndex, insertValueContexts.next().getValue(columnIndex), each, encryptLogicColumnName);
+            if (!each.isEmpty()) {
+                encryptInsertValue(encryptRule, shardingEncryptor, tableName, columnIndex, insertValueContexts.next().getValue(columnIndex), 
+                        parameterBuilder.getAddedParameterGroups().get(count), parameterBuilder.getReplacedParameterGroups().get(count), encryptLogicColumnName);
+            }
+            count++;
         }
     }
     
-    private void encryptInsertValue(final EncryptRule encryptRule, final ShardingEncryptor shardingEncryptor, 
-                                    final String tableName, final int columnIndex, final Object originalValue, final List<Object> parameters, final String encryptLogicColumnName) {
+    private void encryptInsertValue(final EncryptRule encryptRule, final ShardingEncryptor shardingEncryptor, final String tableName, final int columnIndex, 
+                                    final Object originalValue, final List<Object> addedParameters, final Map<Integer, Object> replacedParameters, final String encryptLogicColumnName) {
         // FIXME: can process all part of insert value is ? or literal, can not process mix ? and literal
         // For example: values (?, ?), (1, 1) can process
         // For example: values (?, 1), (?, 2) can not process
-        if (parameters.isEmpty()) {
-            return;
-        }
-        parameters.set(columnIndex, shardingEncryptor.encrypt(originalValue));
+        replacedParameters.put(columnIndex, shardingEncryptor.encrypt(originalValue));
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
             Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, encryptLogicColumnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            parameters.add(((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()));
+            addedParameters.add(((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()));
         }
         if (encryptRule.findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
-            parameters.add(originalValue);
+            addedParameters.add(originalValue);
         }
     }
 }
