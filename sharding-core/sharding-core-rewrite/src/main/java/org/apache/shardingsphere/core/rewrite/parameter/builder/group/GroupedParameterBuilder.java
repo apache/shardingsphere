@@ -47,7 +47,7 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     private final ShardingConditions shardingConditions;
     
     @Getter
-    private final List<List<Object>> addedParameterGroups;
+    private final List<Map<Integer, Object>> addedParameterGroups;
     
     @Getter
     private final List<Map<Integer, Object>> replacedParameterGroups;
@@ -59,19 +59,11 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     public GroupedParameterBuilder(final List<List<Object>> parameterGroups, final ShardingConditions shardingConditions) {
         this.parameterGroups = parameterGroups;
         this.shardingConditions = shardingConditions;
-        addedParameterGroups = createAddedParameterGroups();
-        replacedParameterGroups = createReplacedParameterGroups();
+        addedParameterGroups = createAdditionalParameterGroups();
+        replacedParameterGroups = createAdditionalParameterGroups();
     }
     
-    private List<List<Object>> createAddedParameterGroups() {
-        List<List<Object>> result = new ArrayList<>(parameterGroups.size());
-        for (int i = 0; i < parameterGroups.size(); i++) {
-            result.add(new LinkedList<>());
-        }
-        return result;
-    }
-    
-    private List<Map<Integer, Object>> createReplacedParameterGroups() {
+    private List<Map<Integer, Object>> createAdditionalParameterGroups() {
         List<Map<Integer, Object>> result = new ArrayList<>(parameterGroups.size());
         for (int i = 0; i < parameterGroups.size(); i++) {
             result.add(new HashMap<Integer, Object>());
@@ -110,7 +102,14 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
         for (Entry<Integer, Object> entry : replacedParameterGroups.get(count).entrySet()) {
             result.set(entry.getKey(), entry.getValue());
         }
-        result.addAll(addedParameterGroups.get(count));
+        for (Entry<Integer, Object> entry : addedParameterGroups.get(count).entrySet()) {
+            int index = entry.getKey();
+            if (index < result.size()) {
+                result.add(index, entry.getValue());
+            } else {
+                result.add(entry.getValue());
+            }
+        }
         return result;
     }
     

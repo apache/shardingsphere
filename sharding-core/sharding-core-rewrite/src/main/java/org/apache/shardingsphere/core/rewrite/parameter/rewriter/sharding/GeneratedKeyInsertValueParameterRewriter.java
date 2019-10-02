@@ -47,7 +47,7 @@ public final class GeneratedKeyInsertValueParameterRewriter implements Parameter
             for (List<Object> each : ((GroupedParameterBuilder) parameterBuilder).getParameterGroups()) {
                 Comparable<?> generatedValue = generatedValues.next();
                 if (!each.isEmpty()) {
-                    ((GroupedParameterBuilder) parameterBuilder).getAddedParameterGroups().get(count).add(generatedValue);
+                    ((GroupedParameterBuilder) parameterBuilder).getAddedParameterGroups().get(count).put(each.size(), generatedValue);
                 }
                 count++;
             }

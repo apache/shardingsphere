@@ -71,15 +71,15 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         int count = 0;
         for (List<Object> each : parameterBuilder.getParameterGroups()) {
             if (!each.isEmpty()) {
-                encryptInsertValue(encryptRule, shardingEncryptor, tableName, columnIndex, insertValueContexts.next().getValue(columnIndex), 
+                encryptInsertValue(encryptRule, shardingEncryptor, tableName, columnIndex, each.size(), insertValueContexts.next().getValue(columnIndex), 
                         parameterBuilder.getAddedParameterGroups().get(count), parameterBuilder.getReplacedParameterGroups().get(count), encryptLogicColumnName);
             }
             count++;
         }
     }
     
-    private void encryptInsertValue(final EncryptRule encryptRule, final ShardingEncryptor shardingEncryptor, final String tableName, final int columnIndex, 
-                                    final Object originalValue, final List<Object> addedParameters, final Map<Integer, Object> replacedParameters, final String encryptLogicColumnName) {
+    private void encryptInsertValue(final EncryptRule encryptRule, final ShardingEncryptor shardingEncryptor, final String tableName, final int columnIndex, final int parameterSize, 
+                                    final Object originalValue, final Map<Integer, Object> addedParameters, final Map<Integer, Object> replacedParameters, final String encryptLogicColumnName) {
         // FIXME: can process all part of insert value is ? or literal, can not process mix ? and literal
         // For example: values (?, ?), (1, 1) can process
         // For example: values (?, 1), (?, 2) can not process
@@ -87,10 +87,10 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
             Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, encryptLogicColumnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            addedParameters.add(((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()));
+            addedParameters.put(parameterSize + addedParameters.size(), ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()));
         }
         if (encryptRule.findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
-            addedParameters.add(originalValue);
+            addedParameters.put(parameterSize + addedParameters.size(), originalValue);
         }
     }
 }
