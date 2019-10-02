@@ -25,10 +25,10 @@ import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatement
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rewrite.token.generator.GeneratedKeyAware;
+import org.apache.shardingsphere.core.rewrite.token.generator.SQLRouteResultAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.impl.InsertRegularNamesToken;
-import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +39,9 @@ import java.util.List;
  * @author panjuan
  */
 @Setter
-public final class InsertGeneratedKeyFromMetadataTokenGenerator implements OptionalSQLTokenGenerator, GeneratedKeyAware {
+public final class InsertGeneratedKeyFromMetadataTokenGenerator implements OptionalSQLTokenGenerator, SQLRouteResultAware {
     
-    private GeneratedKey generatedKey;
+    private SQLRouteResult sqlRouteResult;
     
     @Override
     public Optional<InsertRegularNamesToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -57,14 +57,14 @@ public final class InsertGeneratedKeyFromMetadataTokenGenerator implements Optio
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         Preconditions.checkState(insertColumnsSegment.isPresent());
         return new InsertRegularNamesToken(insertColumnsSegment.get().getStopIndex(), 
-                getActualInsertColumns((InsertSQLStatementContext) sqlStatementContext, generatedKey), true);
+                getActualInsertColumns((InsertSQLStatementContext) sqlStatementContext), true);
     }
     
-    private List<String> getActualInsertColumns(final InsertSQLStatementContext insertSQLStatementContext, final GeneratedKey generatedKey) {
+    private List<String> getActualInsertColumns(final InsertSQLStatementContext insertSQLStatementContext) {
         List<String> result = new ArrayList<>(insertSQLStatementContext.getColumnNames());
-        if (null != generatedKey && generatedKey.isGenerated()) {
-            result.remove(generatedKey.getColumnName());
-            result.add(generatedKey.getColumnName());
+        if (sqlRouteResult.getGeneratedKey().isPresent() && sqlRouteResult.getGeneratedKey().get().isGenerated()) {
+            result.remove(sqlRouteResult.getGeneratedKey().get().getColumnName());
+            result.add(sqlRouteResult.getGeneratedKey().get().getColumnName());
         }
         return result;
     }

@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.core.rewrite.token.generator.GeneratedKeyAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLRouteResultAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.ShardingRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.TableMetasAware;
@@ -58,9 +57,6 @@ public final class ShardingParameterBuilderFactory {
             }
             if (each instanceof TableMetasAware) {
                 ((TableMetasAware) each).setTableMetas(tableMetas);
-            }
-            if (each instanceof GeneratedKeyAware) {
-                ((GeneratedKeyAware) each).setGeneratedKey(sqlRouteResult.getGeneratedKey().orNull());
             }
             if (each instanceof SQLRouteResultAware) {
                 ((SQLRouteResultAware) each).setSqlRouteResult(sqlRouteResult);

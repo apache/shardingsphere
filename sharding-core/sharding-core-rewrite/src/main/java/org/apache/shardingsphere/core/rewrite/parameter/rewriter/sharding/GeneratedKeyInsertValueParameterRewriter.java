@@ -23,8 +23,8 @@ import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatement
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.group.GroupedParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.core.rewrite.token.generator.GeneratedKeyAware;
-import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
+import org.apache.shardingsphere.core.rewrite.token.generator.SQLRouteResultAware;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 
 import java.util.Iterator;
 import java.util.List;
@@ -35,14 +35,14 @@ import java.util.List;
  * @author zhangliang
  */
 @Setter
-public final class GeneratedKeyInsertValueParameterRewriter implements ParameterRewriter, GeneratedKeyAware {
+public final class GeneratedKeyInsertValueParameterRewriter implements ParameterRewriter, SQLRouteResultAware {
     
-    private GeneratedKey generatedKey;
+    private SQLRouteResult sqlRouteResult;
     
     @Override
     public void rewrite(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final ParameterBuilder parameterBuilder) {
-        if (sqlStatementContext instanceof InsertSQLStatementContext && null != generatedKey && generatedKey.isGenerated()) {
-            Iterator<Comparable<?>> generatedValues = generatedKey.getGeneratedValues().descendingIterator();
+        if (sqlStatementContext instanceof InsertSQLStatementContext && sqlRouteResult.getGeneratedKey().isPresent() && sqlRouteResult.getGeneratedKey().get().isGenerated()) {
+            Iterator<Comparable<?>> generatedValues = sqlRouteResult.getGeneratedKey().get().getGeneratedValues().descendingIterator();
             int count = 0;
             for (List<Object> each : ((GroupedParameterBuilder) parameterBuilder).getParameterGroups()) {
                 Comparable<?> generatedValue = generatedValues.next();

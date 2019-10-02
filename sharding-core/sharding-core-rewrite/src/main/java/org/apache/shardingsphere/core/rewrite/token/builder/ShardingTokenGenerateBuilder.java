@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.token.builder;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rewrite.token.generator.GeneratedKeyAware;
+import org.apache.shardingsphere.core.rewrite.token.generator.SQLRouteResultAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.ShardingConditionsAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.ShardingRuleAware;
@@ -34,8 +34,8 @@ import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.Orde
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.ProjectionsTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.RowCountTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.impl.SelectItemPrefixTokenGenerator;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
-import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
@@ -53,7 +53,7 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
     
     private final ShardingConditions shardingConditions;
     
-    private final GeneratedKey generatedKey;
+    private final SQLRouteResult sqlRouteResult;
     
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
@@ -65,8 +65,8 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
             if (each instanceof ShardingConditionsAware) {
                 ((ShardingConditionsAware) each).setShardingConditions(shardingConditions);
             }
-            if (each instanceof GeneratedKeyAware) {
-                ((GeneratedKeyAware) each).setGeneratedKey(generatedKey);
+            if (each instanceof SQLRouteResultAware) {
+                ((SQLRouteResultAware) each).setSqlRouteResult(sqlRouteResult);
             }
         }
         return result;
