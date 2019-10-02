@@ -56,24 +56,26 @@ import java.util.concurrent.ExecutionException;
  */
 @Slf4j
 public final class MySQLConnector {
-    
+
     private final int serverId;
-    
+
     private final String host;
-    
+
     private final int port;
-    
+
     private final String username;
-    
+
     private final String password;
-    
+
     private EventLoopGroup eventLoopGroup = new NioEventLoopGroup(1);
-    
+
     private Channel channel;
-    
+
     private Promise<Object> responseCallback;
 
     private ArrayBlockingQueue<AbstractBinlogEvent> blockingEventQueue = new ArrayBlockingQueue(1000);
+
+    private ServerInfo serverInfo;
 
     class MySQLCommandResponHandler extends ChannelInboundHandlerAdapter {
         @Override
@@ -95,7 +97,7 @@ public final class MySQLConnector {
     class MySQLBinlogEventHandler extends ChannelInboundHandlerAdapter {
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-            if(msg instanceof AbstractBinlogEvent) {
+            if (msg instanceof AbstractBinlogEvent) {
                 blockingEventQueue.put((AbstractBinlogEvent) msg);
             }
         }
@@ -113,7 +115,7 @@ public final class MySQLConnector {
         this.username = username;
         this.password = password;
     }
-    
+
     /**
      * Connect to MySQL.
      */
@@ -134,9 +136,9 @@ public final class MySQLConnector {
                 })
                 .option(ChannelOption.AUTO_READ, true)
                 .connect(host, port).channel();
-        waitExpectedResponse(OkPacket.class);
+        serverInfo = waitExpectedResponse(ServerInfo.class);
     }
-    
+
     /**
      * Execute command.
      *
@@ -150,7 +152,7 @@ public final class MySQLConnector {
         channel.writeAndFlush(queryCommandPacket);
         return null != waitExpectedResponse(OkPacket.class);
     }
-    
+
     /**
      * Execute update.
      *
@@ -164,7 +166,7 @@ public final class MySQLConnector {
         channel.writeAndFlush(queryCommandPacket);
         return (int) waitExpectedResponse(OkPacket.class).getAffectedRows();
     }
-    
+
     /**
      * Execute query.
      *
@@ -178,7 +180,7 @@ public final class MySQLConnector {
         channel.writeAndFlush(queryCommandPacket);
         return waitExpectedResponse(InternalResultSet.class);
     }
-    
+
     /**
      * Start dump binlog.
      *
@@ -210,7 +212,9 @@ public final class MySQLConnector {
     }
 
     private void initDumpConnectSession() {
-        execute("set @master_binlog_checksum= @@global.binlog_checksum");
+        if (serverInfo.getServerVersion().greaterThanOrEqualTo(5, 6, 0)) {
+            execute("set @master_binlog_checksum= @@global.binlog_checksum");
+        }
     }
 
     private void registerSlave() {

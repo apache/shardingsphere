@@ -40,6 +40,8 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
     
     private final Promise<Object> authResultCallback;
 
+    private ServerInfo serverInfo;
+
     public MySQLNegotiateHandler(final String username, final String password, final Promise<Object> authResultCallback) {
         this.username = username;
         this.password = password;
@@ -61,11 +63,13 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
             clientAuth.setScrumbleBuff(joinAndCreateScrumbleBuff(handshake));
             clientAuth.setAuthPluginName(handshake.getAuthPluginName());
             ctx.channel().writeAndFlush(clientAuth);
+            serverInfo = new ServerInfo();
+            serverInfo.setServerVersion(new ServerInfo.ServerVersion(handshake.getServerVersion()));
             return;
         }
         if (msg instanceof OkPacket) {
             ctx.channel().pipeline().remove(this);
-            authResultCallback.setSuccess(null);
+            authResultCallback.setSuccess(serverInfo);
             return;
         }
         var error = (ErrorPacket) msg;
