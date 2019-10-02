@@ -40,22 +40,25 @@ public final class ParameterBuilderFactory {
     /**
      * Create new instance of parameter builder.
      * 
+     * @param originalParameters original parameters
      * @param sqlRouteResult SQL route result
      * @return instance of parameter builder
      */
-    public static ParameterBuilder newInstance(final SQLRouteResult sqlRouteResult) {
+    public static ParameterBuilder newInstance(final List<Object> originalParameters, final SQLRouteResult sqlRouteResult) {
         return sqlRouteResult.getSqlStatementContext() instanceof InsertSQLStatementContext
-                ? new GroupedParameterBuilder(getGroupedParameters(sqlRouteResult.getSqlStatementContext()), sqlRouteResult.getShardingConditions()) : new StandardParameterBuilder(sqlRouteResult);
+                ? new GroupedParameterBuilder(getGroupedParameters(sqlRouteResult.getSqlStatementContext()), sqlRouteResult.getShardingConditions())
+                : new StandardParameterBuilder(originalParameters, sqlRouteResult);
     }
     
     /**
      * Create new instance of parameter builder.
      * 
+     * @param originalParameters original parameters
      * @param sqlStatementContext SQL statement context
      * @return instance of parameter builder
      */
-    public static ParameterBuilder newInstance(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertSQLStatementContext ? new GroupedParameterBuilder(getGroupedParameters(sqlStatementContext)) : new StandardParameterBuilder();
+    public static ParameterBuilder newInstance(final List<Object> originalParameters, final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext instanceof InsertSQLStatementContext ? new GroupedParameterBuilder(getGroupedParameters(sqlStatementContext)) : new StandardParameterBuilder(originalParameters);
     }
     
     private static List<List<Object>> getGroupedParameters(final SQLStatementContext sqlStatementContext) {

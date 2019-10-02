@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.rewrite.parameter.builder.standard;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
@@ -38,15 +38,19 @@ import java.util.TreeMap;
  *
  * @author panjuan
  */
-@NoArgsConstructor
-@Getter
+@RequiredArgsConstructor
 public final class StandardParameterBuilder implements ParameterBuilder {
     
+    private final List<Object> originalParameters;
+    
+    @Getter
     private final Map<Integer, Object> addedIndexAndParameters = new TreeMap<>();
     
+    @Getter
     private final Map<Integer, Object> replacedIndexAndParameters = new HashMap<>();
     
-    public StandardParameterBuilder(final SQLRouteResult sqlRouteResult) {
+    public StandardParameterBuilder(final List<Object> originalParameters, final SQLRouteResult sqlRouteResult) {
+        this.originalParameters = originalParameters;
         setReplacedIndexAndParameters(sqlRouteResult);
     }
     
@@ -78,7 +82,7 @@ public final class StandardParameterBuilder implements ParameterBuilder {
     }
     
     @Override
-    public List<Object> getParameters(final List<Object> originalParameters) {
+    public List<Object> getParameters() {
         List<Object> result = new LinkedList<>(originalParameters);
         for (Entry<Integer, Object> entry : replacedIndexAndParameters.entrySet()) {
             result.set(entry.getKey(), entry.getValue());
@@ -90,7 +94,7 @@ public final class StandardParameterBuilder implements ParameterBuilder {
     }
     
     @Override
-    public List<Object> getParameters(final List<Object> originalParameters, final RoutingUnit routingUnit) {
-        return getParameters(originalParameters);
+    public List<Object> getParameters(final RoutingUnit routingUnit) {
+        return getParameters();
     }
 }

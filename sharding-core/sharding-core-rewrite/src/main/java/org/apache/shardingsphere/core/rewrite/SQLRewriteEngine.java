@@ -66,8 +66,6 @@ public final class SQLRewriteEngine {
             
     private final SQLStatementContext sqlStatementContext;
     
-    private final List<Object> parameters;
-    
     private final List<SQLToken> sqlTokens;
     
     private final SQLBuilder sqlBuilder;
@@ -78,7 +76,6 @@ public final class SQLRewriteEngine {
                             final SQLRouteResult sqlRouteResult, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
         baseRule = shardingRule;
         sqlStatementContext = sqlRouteResult.getSqlStatementContext();
-        this.parameters = parameters;
         parameterBuilder = createParameterBuilder(tableMetas, sqlRouteResult, parameters, isQueryWithCipherColumn);
         if (sqlRouteResult.getSqlStatementContext() instanceof InsertSQLStatementContext) {
             processGeneratedKey((InsertSQLStatementContext) sqlRouteResult.getSqlStatementContext(), sqlRouteResult.getGeneratedKey().orNull());
@@ -93,7 +90,6 @@ public final class SQLRewriteEngine {
                             final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
         baseRule = encryptRule;
         this.sqlStatementContext = sqlStatementContext;
-        this.parameters = parameters;
         parameterBuilder = createParameterBuilder(tableMetas, sqlStatementContext, parameters, isQueryWithCipherColumn);
         if (sqlStatementContext instanceof InsertSQLStatementContext) {
             processEncrypt((InsertSQLStatementContext) sqlStatementContext, encryptRule);
@@ -105,8 +101,7 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final SQLStatementContext sqlStatementContext, final String sql) {
         baseRule = masterSlaveRule;
         this.sqlStatementContext = sqlStatementContext;
-        this.parameters = Collections.emptyList();
-        parameterBuilder = ParameterBuilderFactory.newInstance(sqlStatementContext);
+        parameterBuilder = ParameterBuilderFactory.newInstance(Collections.emptyList(), sqlStatementContext);
         sqlTokens = createSQLTokens(null, Collections.emptyList(), new ShardingConditions(Collections.<ShardingCondition>emptyList()), null, false, false);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
     }
@@ -157,14 +152,14 @@ public final class SQLRewriteEngine {
     }
     
     private ParameterBuilder createParameterBuilder(final TableMetas tableMetas, final SQLRouteResult sqlRouteResult, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
-        ParameterBuilder result = ParameterBuilderFactory.newInstance(sqlRouteResult);
+        ParameterBuilder result = ParameterBuilderFactory.newInstance(parameters, sqlRouteResult);
         ShardingParameterBuilderFactory.build(result, (ShardingRule) baseRule, tableMetas, sqlRouteResult, parameters);
         EncryptParameterBuilderFactory.build(result, ((ShardingRule) baseRule).getEncryptRule(), tableMetas, sqlRouteResult.getSqlStatementContext(), parameters, isQueryWithCipherColumn);
         return result;
     }
     
     private ParameterBuilder createParameterBuilder(final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
-        ParameterBuilder result = ParameterBuilderFactory.newInstance(sqlStatementContext);
+        ParameterBuilder result = ParameterBuilderFactory.newInstance(parameters, sqlStatementContext);
         EncryptParameterBuilderFactory.build(result, (EncryptRule) baseRule, tableMetas, sqlStatementContext, parameters, isQueryWithCipherColumn);
         return result;
     }
@@ -188,7 +183,7 @@ public final class SQLRewriteEngine {
      * @return SQL unit
      */
     public SQLUnit generateSQL() {
-        return new SQLUnit(sqlBuilder.toSQL(), parameterBuilder.getParameters(parameters));
+        return new SQLUnit(sqlBuilder.toSQL(), parameterBuilder.getParameters());
     }
     
     /**
@@ -199,6 +194,6 @@ public final class SQLRewriteEngine {
      * @return SQL unit
      */
     public SQLUnit generateSQL(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
-        return new SQLUnit(sqlBuilder.toSQL(routingUnit, logicAndActualTables), parameterBuilder.getParameters(parameters, routingUnit));
+        return new SQLUnit(sqlBuilder.toSQL(routingUnit, logicAndActualTables), parameterBuilder.getParameters(routingUnit));
     }
 }

@@ -31,17 +31,15 @@ public interface ParameterBuilder {
     /**
      * Get parameters.
      *
-     * @param originalParameters original SQL parameters
      * @return parameters
      */
-    List<Object> getParameters(List<Object> originalParameters);
+    List<Object> getParameters();
     
     /**
      * Get parameters.
      *
-     * @param originalParameters original SQL parameters
      * @param routingUnit routing unit
      * @return parameters
      */
-    List<Object> getParameters(List<Object> originalParameters, RoutingUnit routingUnit);
+    List<Object> getParameters(RoutingUnit routingUnit);
 }

@@ -49,7 +49,7 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     }
     
     @Override
-    public List<Object> getParameters(final List<Object> originalParameters) {
+    public List<Object> getParameters() {
         List<Object> result = new LinkedList<>();
         for (List<Object> each : parameterGroups) {
             result.addAll(each);
@@ -58,7 +58,7 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     }
     
     @Override
-    public List<Object> getParameters(final List<Object> originalParameters, final RoutingUnit routingUnit) {
+    public List<Object> getParameters(final RoutingUnit routingUnit) {
         List<Object> result = new LinkedList<>();
         Iterator<ShardingCondition> shardingConditionIterator = shardingConditions.getConditions().iterator();
         for (List<Object> each : parameterGroups) {
