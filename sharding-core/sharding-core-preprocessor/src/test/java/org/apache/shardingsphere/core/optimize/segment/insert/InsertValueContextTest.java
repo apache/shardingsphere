@@ -28,6 +28,7 @@ import org.junit.Test;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,7 +39,7 @@ public final class InsertValueContextTest {
     @Test
     public void assertInstanceConstructedOk() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Collection<ExpressionSegment> assignments = Lists.newArrayList();
-        List<Object> parameters = Lists.newArrayList();
+        List<Object> parameters = Collections.emptyList();
         int parametersOffset = 0;
         InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, parametersOffset);
         Method calculateParametersCountMethod = InsertValueContext.class.getDeclaredMethod("calculateParametersCount", Collection.class);
@@ -57,39 +58,39 @@ public final class InsertValueContextTest {
 
     @Test
     public void assertGetValueWhenParameterMarker() {
-        Collection assignments = makeParameterMarkerExpresstionSegment();
+        Collection<ParameterMarkerExpressionSegment> assignments = makeParameterMarkerExpressionSegment();
         String parameterValue = "test";
-        List parameters = Lists.newArrayList(parameterValue);
+        List<String> parameters = Collections.singletonList(parameterValue);
         int parametersOffset = 0;
         InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, parametersOffset);
         Object result = insertValueContext.getValue(0);
         assertThat((String)result, is(parameterValue));
     }
 
-    private Collection<ParameterMarkerExpressionSegment> makeParameterMarkerExpresstionSegment() {
+    private Collection<ParameterMarkerExpressionSegment> makeParameterMarkerExpressionSegment() {
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(0, 10, 5);
-        return Lists.newArrayList(parameterMarkerExpressionSegment);
+        return Collections.singleton(parameterMarkerExpressionSegment);
     }
 
     @Test
     public void assertGetValueWhenLiteralExpressionSegment() {
         Object literalObject = new Object();
-        Collection assignments = makeLiteralExpressionSegment(literalObject);
-        List parameters = Lists.newArrayList();
+        Collection<LiteralExpressionSegment> assignments = makeLiteralExpressionSegment(literalObject);
+        List<Object> parameters = Collections.emptyList();
         InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, 0);
         Object result = insertValueContext.getValue(0);
         assertThat(result, is(literalObject));
     }
 
-    private Collection<LiteralExpressionSegment> makeLiteralExpressionSegment(Object literalObject) {
+    private Collection<LiteralExpressionSegment> makeLiteralExpressionSegment(final Object literalObject) {
         LiteralExpressionSegment parameterMarkerExpressionSegment = new LiteralExpressionSegment(0, 10, literalObject);
         return Lists.newArrayList(parameterMarkerExpressionSegment);
     }
 
     @Test
     public void assertAppendValueWhenParametersIsEmpty() {
-        Collection assignments = Lists.newArrayList();
-        List parameters = Lists.newArrayList();
+        Collection<ExpressionSegment> assignments = Collections.emptyList();
+        List<Object> parameters = Collections.emptyList();
         InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, 0);
         Object value = "test";
         String type = "String";
@@ -103,9 +104,9 @@ public final class InsertValueContextTest {
 
     @Test
     public void assertAppendValueWhenParametersIsNotEmpty() {
-        Collection assignments = makeParameterMarkerExpresstionSegment();
+        Collection<ParameterMarkerExpressionSegment> assignments = makeParameterMarkerExpressionSegment();
         String parameterValue = "test";
-        List parameters = Lists.newArrayList(parameterValue);
+        List<String> parameters = Collections.singletonList(parameterValue);
         int parametersOffset = 0;
         InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, parametersOffset);
         Object value = "test";

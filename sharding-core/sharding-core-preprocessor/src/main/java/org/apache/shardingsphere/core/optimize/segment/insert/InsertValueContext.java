@@ -40,20 +40,20 @@ import java.util.List;
 @Getter
 @ToString
 public final class InsertValueContext {
-    
+
     private final int parametersCount;
-    
+
     private final List<ExpressionSegment> valueExpressions;
-    
+
     private final List<Object> parameters;
-    
-    public InsertValueContext(final Collection<ExpressionSegment> assignments, final List<Object> parameters, final int parametersOffset) {
+
+    public InsertValueContext(final Collection<? extends ExpressionSegment> assignments, final List<? extends Object> parameters, final int parametersOffset) {
         parametersCount = calculateParametersCount(assignments);
         valueExpressions = getValueExpressions(assignments);
         this.parameters = getParameters(parameters, parametersOffset);
     }
-    
-    private int calculateParametersCount(final Collection<ExpressionSegment> assignments) {
+
+    private int calculateParametersCount(final Collection<? extends ExpressionSegment> assignments) {
         int result = 0;
         for (ExpressionSegment each : assignments) {
             if (each instanceof ParameterMarkerExpressionSegment) {
@@ -62,14 +62,14 @@ public final class InsertValueContext {
         }
         return result;
     }
-    
-    private List<ExpressionSegment> getValueExpressions(final Collection<ExpressionSegment> assignments) {
+
+    private List<ExpressionSegment> getValueExpressions(final Collection<? extends ExpressionSegment> assignments) {
         List<ExpressionSegment> result = new ArrayList<>(assignments.size());
         result.addAll(assignments);
         return result;
     }
-    
-    private List<Object> getParameters(final List<Object> parameters, final int parametersOffset) {
+
+    private List<Object> getParameters(final List<? extends Object> parameters, final int parametersOffset) {
         if (0 == parametersCount) {
             return Collections.emptyList();
         }
@@ -77,7 +77,7 @@ public final class InsertValueContext {
         result.addAll(parameters.subList(parametersOffset, parametersOffset + parametersCount));
         return result;
     }
-    
+
     /**
      * Get value.
      *
@@ -88,7 +88,7 @@ public final class InsertValueContext {
         ExpressionSegment valueExpression = valueExpressions.get(index);
         return valueExpression instanceof ParameterMarkerExpressionSegment ? parameters.get(getParameterIndex(valueExpression)) : ((LiteralExpressionSegment) valueExpression).getLiterals();
     }
-    
+
     /**
      * Add value.
      *
@@ -103,7 +103,7 @@ public final class InsertValueContext {
             parameters.add(value);
         }
     }
-    
+
     /**
      * Set value.
      *
@@ -118,7 +118,7 @@ public final class InsertValueContext {
             valueExpressions.set(index, new LiteralExpressionSegment(valueExpression.getStartIndex(), valueExpression.getStopIndex(), value));
         }
     }
-    
+
     private int getParameterIndex(final ExpressionSegment valueExpression) {
         int result = 0;
         for (ExpressionSegment each : valueExpressions) {
