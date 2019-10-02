@@ -26,12 +26,11 @@ import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
 /**
  * standard parameter builder.
@@ -44,10 +43,10 @@ public final class StandardParameterBuilder implements ParameterBuilder {
     private final List<Object> originalParameters;
     
     @Getter
-    private final Map<Integer, Object> addedIndexAndParameters = new TreeMap<>();
+    private final Map<Integer, Object> addedIndexAndParameters = new LinkedHashMap<>();
     
     @Getter
-    private final Map<Integer, Object> replacedIndexAndParameters = new HashMap<>();
+    private final Map<Integer, Object> replacedIndexAndParameters = new LinkedHashMap<>();
     
     public StandardParameterBuilder(final List<Object> originalParameters, final SQLRouteResult sqlRouteResult) {
         this.originalParameters = originalParameters;
@@ -87,7 +86,7 @@ public final class StandardParameterBuilder implements ParameterBuilder {
         for (Entry<Integer, Object> entry : replacedIndexAndParameters.entrySet()) {
             result.set(entry.getKey(), entry.getValue());
         }
-        for (Entry<Integer, Object> entry : ((TreeMap<Integer, Object>) addedIndexAndParameters).descendingMap().entrySet()) {
+        for (Entry<Integer, Object> entry : addedIndexAndParameters.entrySet()) {
             result.add(entry.getKey(), entry.getValue());
         }
         return result;
