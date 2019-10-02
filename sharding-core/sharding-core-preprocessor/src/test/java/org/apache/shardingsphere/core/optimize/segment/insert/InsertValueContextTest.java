@@ -84,7 +84,7 @@ public final class InsertValueContextTest {
 
     private Collection<ExpressionSegment> makeLiteralExpressionSegment(final Object literalObject) {
         LiteralExpressionSegment parameterMarkerExpressionSegment = new LiteralExpressionSegment(0, 10, literalObject);
-        return Lists.<ExpressionSegment>newArrayList(parameterMarkerExpressionSegment);
+        return Collections.<ExpressionSegment>singleton(parameterMarkerExpressionSegment);
     }
 
     @Test
