@@ -47,10 +47,10 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     private final ShardingConditions shardingConditions;
     
     @Getter
-    private final List<Map<Integer, Object>> addedParameterGroups;
+    private final List<Map<Integer, Object>> addedIndexAndParameterGroups;
     
     @Getter
-    private final List<Map<Integer, Object>> replacedParameterGroups;
+    private final List<Map<Integer, Object>> replacedIndexAndParameterGroups;
     
     public GroupedParameterBuilder(final List<List<Object>> parameterGroups) {
         this(parameterGroups, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
@@ -59,8 +59,8 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     public GroupedParameterBuilder(final List<List<Object>> parameterGroups, final ShardingConditions shardingConditions) {
         this.parameterGroups = parameterGroups;
         this.shardingConditions = shardingConditions;
-        addedParameterGroups = createAdditionalParameterGroups();
-        replacedParameterGroups = createAdditionalParameterGroups();
+        addedIndexAndParameterGroups = createAdditionalParameterGroups();
+        replacedIndexAndParameterGroups = createAdditionalParameterGroups();
     }
     
     private List<Map<Integer, Object>> createAdditionalParameterGroups() {
@@ -99,10 +99,10 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     private List<Object> getParameters(final List<Object> parameterGroup, final int count) {
         List<Object> result = new LinkedList<>();
         result.addAll(parameterGroup);
-        for (Entry<Integer, Object> entry : replacedParameterGroups.get(count).entrySet()) {
+        for (Entry<Integer, Object> entry : replacedIndexAndParameterGroups.get(count).entrySet()) {
             result.set(entry.getKey(), entry.getValue());
         }
-        for (Entry<Integer, Object> entry : addedParameterGroups.get(count).entrySet()) {
+        for (Entry<Integer, Object> entry : addedIndexAndParameterGroups.get(count).entrySet()) {
             int index = entry.getKey();
             if (index < result.size()) {
                 result.add(index, entry.getValue());

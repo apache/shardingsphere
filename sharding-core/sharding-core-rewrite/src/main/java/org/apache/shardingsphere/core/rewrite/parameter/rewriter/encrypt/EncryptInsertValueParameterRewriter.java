@@ -72,7 +72,7 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         for (List<Object> each : parameterBuilder.getParameterGroups()) {
             if (!each.isEmpty()) {
                 encryptInsertValue(encryptRule, shardingEncryptor, tableName, columnIndex, each.size(), insertValueContexts.next().getValue(columnIndex), 
-                        parameterBuilder.getAddedParameterGroups().get(count), parameterBuilder.getReplacedParameterGroups().get(count), encryptLogicColumnName);
+                        parameterBuilder.getAddedIndexAndParameterGroups().get(count), parameterBuilder.getReplacedIndexAndParameterGroups().get(count), encryptLogicColumnName);
             }
             count++;
         }
