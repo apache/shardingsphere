@@ -22,7 +22,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 public final class DerivedParameterMarkerExpressionSegmentTest {
-
+    
     @Test
     public void assertInstanceConstructedOk() {
         int parameterMarkerIndex = 10;

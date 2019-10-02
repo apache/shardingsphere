@@ -35,7 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 public final class InsertValueContextTest {
-
+    
     @Test
     public void assertInstanceConstructedOk() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Collection<ExpressionSegment> assignments = Lists.newArrayList();
@@ -55,7 +55,7 @@ public final class InsertValueContextTest {
         List<Object> getParametersResult = (List<Object>) getParametersMethod.invoke(insertValueContext, new Object[] {parameters, parametersOffset});
         assertThat(insertValueContext.getParameters(), is(getParametersResult));
     }
-
+    
     @Test
     public void assertGetValueWhenParameterMarker() {
         Collection<ExpressionSegment> assignments = makeParameterMarkerExpressionSegment();
@@ -63,30 +63,30 @@ public final class InsertValueContextTest {
         List<Object> parameters = Collections.<Object>singletonList(parameterValue);
         int parametersOffset = 0;
         InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, parametersOffset);
-        Object result = insertValueContext.getValue(0);
-        assertThat((String)result, is(parameterValue));
+        Object valueFromInsertValueContext = insertValueContext.getValue(0);
+        assertThat((String)valueFromInsertValueContext, is(parameterValue));
     }
-
+    
     private Collection<ExpressionSegment> makeParameterMarkerExpressionSegment() {
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(0, 10, 5);
         return Collections.<ExpressionSegment>singleton(parameterMarkerExpressionSegment);
     }
-
+    
     @Test
     public void assertGetValueWhenLiteralExpressionSegment() {
         Object literalObject = new Object();
         Collection<ExpressionSegment> assignments = makeLiteralExpressionSegment(literalObject);
         List<Object> parameters = Collections.emptyList();
         InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, 0);
-        Object result = insertValueContext.getValue(0);
-        assertThat(result, is(literalObject));
+        Object valueFromInsertValueContext = insertValueContext.getValue(0);
+        assertThat(valueFromInsertValueContext, is(literalObject));
     }
-
+    
     private Collection<ExpressionSegment> makeLiteralExpressionSegment(final Object literalObject) {
         LiteralExpressionSegment parameterMarkerExpressionSegment = new LiteralExpressionSegment(0, 10, literalObject);
         return Collections.<ExpressionSegment>singleton(parameterMarkerExpressionSegment);
     }
-
+    
     @Test
     public void assertAppendValueWhenParametersIsEmpty() {
         Collection<ExpressionSegment> assignments = Collections.emptyList();
@@ -101,7 +101,7 @@ public final class InsertValueContextTest {
         assertThat(segmentInInsertValueContext.getType(), is(type));
         assertThat(segmentInInsertValueContext.getLiterals(), is(value));
     }
-
+    
     @Test
     public void assertAppendValueWhenParametersIsNotEmpty() {
         Collection<ExpressionSegment> assignments = makeParameterMarkerExpressionSegment();
