@@ -22,14 +22,14 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
+import org.apache.shardingsphere.core.rewrite.token.generator.GeneratedKeyAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.ShardingRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.TableMetasAware;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -52,17 +52,22 @@ public final class ShardingParameterBuilderFactory {
     public static void build(final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, 
                              final TableMetas tableMetas, final SQLRouteResult sqlRouteResult, final List<Object> parameters) {
         for (ParameterRewriter each : getParameterRewriters()) {
-            if (each instanceof EncryptRuleAware) {
+            if (each instanceof ShardingRuleAware) {
                 ((ShardingRuleAware) each).setShardingRule(shardingRule);
             }
             if (each instanceof TableMetasAware) {
                 ((TableMetasAware) each).setTableMetas(tableMetas);
+            }
+            if (each instanceof GeneratedKeyAware) {
+                ((GeneratedKeyAware) each).setGeneratedKey(sqlRouteResult.getGeneratedKey().orNull());
             }
             each.rewrite(sqlRouteResult.getSqlStatementContext(), parameters, parameterBuilder);
         }
     }
     
     private static Collection<ParameterRewriter> getParameterRewriters() {
-        return Collections.emptyList();
+        Collection<ParameterRewriter> result = new LinkedList<>();
+        result.add(new GeneratedKeyInsertValueParameterRewriter());
+        return result;
     }
 }

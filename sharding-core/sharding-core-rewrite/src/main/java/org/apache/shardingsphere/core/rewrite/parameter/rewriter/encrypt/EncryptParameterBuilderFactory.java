@@ -70,6 +70,7 @@ public final class EncryptParameterBuilderFactory {
         Collection<ParameterRewriter> result = new LinkedList<>();
         result.add(new EncryptAssignmentParameterRewriter());
         result.add(new EncryptPredicateParameterRewriter());
+        result.add(new EncryptInsertValueParameterRewriter());
         return result;
     }
 }

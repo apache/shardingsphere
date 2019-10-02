@@ -78,12 +78,12 @@ public final class SQLRewriteEngine {
                             final SQLRouteResult sqlRouteResult, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
         baseRule = shardingRule;
         sqlStatementContext = sqlRouteResult.getSqlStatementContext();
+        this.parameters = parameters;
+        parameterBuilder = createParameterBuilder(tableMetas, sqlRouteResult, parameters, isQueryWithCipherColumn);
         if (sqlRouteResult.getSqlStatementContext() instanceof InsertSQLStatementContext) {
             processGeneratedKey((InsertSQLStatementContext) sqlRouteResult.getSqlStatementContext(), sqlRouteResult.getGeneratedKey().orNull());
             processEncrypt((InsertSQLStatementContext) sqlRouteResult.getSqlStatementContext(), shardingRule.getEncryptRule());
         }
-        this.parameters = parameters;
-        parameterBuilder = createParameterBuilder(tableMetas, sqlRouteResult, parameters, isQueryWithCipherColumn);
         sqlTokens = createSQLTokens(tableMetas, parameters, 
                 sqlRouteResult.getShardingConditions(), sqlRouteResult.getGeneratedKey().orNull(), sqlRouteResult.getRoutingResult().isSingleRouting(), isQueryWithCipherColumn);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
@@ -93,11 +93,11 @@ public final class SQLRewriteEngine {
                             final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
         baseRule = encryptRule;
         this.sqlStatementContext = sqlStatementContext;
+        this.parameters = parameters;
+        parameterBuilder = createParameterBuilder(tableMetas, sqlStatementContext, parameters, isQueryWithCipherColumn);
         if (sqlStatementContext instanceof InsertSQLStatementContext) {
             processEncrypt((InsertSQLStatementContext) sqlStatementContext, encryptRule);
         }
-        this.parameters = parameters;
-        parameterBuilder = createParameterBuilder(tableMetas, sqlStatementContext, parameters, isQueryWithCipherColumn);
         sqlTokens = createSQLTokens(tableMetas, parameters, new ShardingConditions(Collections.<ShardingCondition>emptyList()), null, false, isQueryWithCipherColumn);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
     }
