@@ -93,7 +93,7 @@ public final class MySQLFrontendEngineTest {
         when(payload.readStringNul()).thenReturn("root");
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(context.channel()).thenReturn(channel);
-        when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost",3307));
+        when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
         assertTrue(mysqlFrontendEngine.getAuthEngine().auth(context, payload, mock(BackendConnection.class)));
         verify(context).writeAndFlush(isA(MySQLErrPacket.class));
     }
@@ -106,13 +106,12 @@ public final class MySQLFrontendEngineTest {
         when(payload.readStringNul()).thenReturn("root");
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(context.channel()).thenReturn(channel);
-        when(channel.remoteAddress()).thenReturn(new InetSocketAddress(InetAddress.getByAddress(new byte[] {
-                (byte)192, (byte)168, (byte)0, (byte)102}
-        ),3307));
+        when(channel.remoteAddress()).thenReturn(new InetSocketAddress(InetAddress.getByAddress(new byte[] {(byte) 192, (byte) 168, (byte) 0, (byte) 102}), 3307));
         assertTrue(mysqlFrontendEngine.getAuthEngine().auth(context, payload, mock(BackendConnection.class)));
         verify(context).writeAndFlush(Mockito.argThat(new ArgumentMatcher<MySQLErrPacket>() {
+            
             @Override
-            public boolean matches(MySQLErrPacket argument) {
+            public boolean matches(final MySQLErrPacket argument) {
                 return argument.getErrorMessage().equals("Access denied for user 'root'@'192.168.0.102' (using password: YES)");
             }
         }));

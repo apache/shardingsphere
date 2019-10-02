@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(MockitoJUnitRunner.class)
 public final class TransactionBackendHandlerTest {
     
-    private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
+    private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
     @Test
     public void assertExecute() {

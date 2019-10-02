@@ -38,10 +38,10 @@ public final class DataSourceUtil {
     
     private static final String SET_METHOD_PREFIX = "set";
     
-    private static Collection<Class<?>> generalClassType;
+    private static final Collection<Class<?>> GENERAL_CLASS_TYPE;
     
     static {
-        generalClassType = Sets.<Class<?>>newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class);
+        GENERAL_CLASS_TYPE = Sets.<Class<?>>newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class);
     }
     
     /**
@@ -68,7 +68,7 @@ public final class DataSourceUtil {
     }
     
     private static void callSetterMethod(final DataSource dataSource, final String methodName, final String setterValue) {
-        for (Class<?> each : generalClassType) {
+        for (Class<?> each : GENERAL_CLASS_TYPE) {
             try {
                 Method method = dataSource.getClass().getMethod(methodName, each);
                 if (boolean.class == each || Boolean.class == each) {

@@ -124,7 +124,7 @@ columnName
     ;
 
 userName
-    : (STRING_ | IDENTIFIER_) AT_ (STRING_ IDENTIFIER_)
+    : STRING_  AT_ STRING_
     | identifier_
     | STRING_
     ;
@@ -225,7 +225,7 @@ logName
     ;
 
 roleName
-    : (STRING_ | IDENTIFIER_) AT_ (STRING_ IDENTIFIER_)
+    : (STRING_ | IDENTIFIER_) AT_ (STRING_ IDENTIFIER_) | IDENTIFIER_
     ;
 
 engineName

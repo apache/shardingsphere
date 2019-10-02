@@ -33,10 +33,10 @@ public final class ShardingCTLExplainParser implements ShardingCTLParser<Shardin
     
     private final String regex = "sctl:explain\\s+([\\s\\S]*)";
     
-    private Matcher matcher;
+    private final Matcher matcher;
     
     ShardingCTLExplainParser(final String sql) {
-        this.matcher = Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(sql);
+        matcher = Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(sql);
     }
     
     @Override

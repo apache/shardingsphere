@@ -105,7 +105,7 @@ public abstract class BaseShardingEngine {
     
     private Collection<RouteUnit> rewriteAndConvert(final String sql, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, metaData.getTables(), 
-                sqlRouteResult, sql, parameters, sqlRouteResult.getRoutingResult().isSingleRouting(), shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
+                sqlRouteResult, sql, parameters, shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         Collection<RouteUnit> result = new LinkedHashSet<>();
         for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
             result.add(new RouteUnit(
