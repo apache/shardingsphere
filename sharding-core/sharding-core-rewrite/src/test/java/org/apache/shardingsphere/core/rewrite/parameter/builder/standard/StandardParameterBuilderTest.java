@@ -24,15 +24,12 @@ import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -67,20 +64,6 @@ public final class StandardParameterBuilderTest {
     
     @Test
     public void assertGetParameters() {
-        assertThat(parameterBuilder.getParameters(), is(Arrays.<Object>asList(1, 2, 0L, 6L, 7)));
-        assertThat(parameterBuilder.getParameters(mock(RoutingUnit.class)), is(Arrays.<Object>asList(1, 2, 0L, 6L, 7)));
-    }
-    
-    @Test
-    public void assertGetAddedIndexAndParameters() {
-        assertThat(parameterBuilder.getAddedIndexAndParameters(), is(Collections.<Integer, Object>singletonMap(4, 7)));
-    }
-    
-    @Test
-    public void assertGetReplacedIndexAndParameters() {
-        Map<Integer, Object> expected = new LinkedHashMap<>();
-        expected.put(2, 0L);
-        expected.put(3, 6L);
-        assertThat(parameterBuilder.getReplacedIndexAndParameters(), is(expected));
+        assertThat(parameterBuilder.getParameters(), is(Arrays.<Object>asList(1, 2, 1, 5, 7)));
     }
 }

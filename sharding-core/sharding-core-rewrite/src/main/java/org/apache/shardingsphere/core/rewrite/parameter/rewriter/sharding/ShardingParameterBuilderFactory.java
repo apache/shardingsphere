@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.token.generator.GeneratedKeyAware;
+import org.apache.shardingsphere.core.rewrite.token.generator.SQLRouteResultAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.ShardingRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.TableMetasAware;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -61,6 +62,9 @@ public final class ShardingParameterBuilderFactory {
             if (each instanceof GeneratedKeyAware) {
                 ((GeneratedKeyAware) each).setGeneratedKey(sqlRouteResult.getGeneratedKey().orNull());
             }
+            if (each instanceof SQLRouteResultAware) {
+                ((SQLRouteResultAware) each).setSqlRouteResult(sqlRouteResult);
+            }
             each.rewrite(sqlRouteResult.getSqlStatementContext(), parameters, parameterBuilder);
         }
     }
@@ -68,6 +72,7 @@ public final class ShardingParameterBuilderFactory {
     private static Collection<ParameterRewriter> getParameterRewriters() {
         Collection<ParameterRewriter> result = new LinkedList<>();
         result.add(new GeneratedKeyInsertValueParameterRewriter());
+        result.add(new PaginationParameterRewriter());
         return result;
     }
 }
