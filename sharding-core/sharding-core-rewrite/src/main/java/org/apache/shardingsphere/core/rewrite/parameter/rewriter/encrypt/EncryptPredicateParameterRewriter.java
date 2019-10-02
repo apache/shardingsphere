@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Where parameter rewriter for encrypt.
+ * Predicate parameter rewriter for encrypt.
  *
  * @author zhangliang
  */

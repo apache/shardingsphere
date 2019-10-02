@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Update items parameter rewriter for encrypt.
+ * Update assignment parameter rewriter for encrypt.
  *
  * @author zhangliang
  */
