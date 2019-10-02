@@ -55,17 +55,17 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
     
     private void encryptParameters(final String tableName, final AssignmentSegment assignmentSegment, final List<Object> parameters, final ParameterBuilder parameterBuilder) {
         String columnName = assignmentSegment.getColumn().getName();
-        int valueIndex = ((ParameterMarkerExpressionSegment) assignmentSegment.getValue()).getParameterMarkerIndex();
-        Object originalValue = parameters.get(valueIndex);
+        int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) assignmentSegment.getValue()).getParameterMarkerIndex();
+        Object originalValue = parameters.get(parameterMarkerIndex);
         Object cipherValue = encryptRule.getEncryptValues(tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
         if (encryptRule.findPlainColumn(tableName, columnName).isPresent()) {
-            ((StandardParameterBuilder) parameterBuilder).getAddedIndexAndParameters().put(valueIndex + 1, cipherValue);
+            ((StandardParameterBuilder) parameterBuilder).getAddedIndexAndParameters().put(parameterMarkerIndex + 1, cipherValue);
         } else {
-            ((StandardParameterBuilder) parameterBuilder).getReplacedIndexAndParameters().put(valueIndex, cipherValue);
+            ((StandardParameterBuilder) parameterBuilder).getReplacedIndexAndParameters().put(parameterMarkerIndex, cipherValue);
         }
         if (encryptRule.findAssistedQueryColumn(tableName, columnName).isPresent()) {
             Object assistedQueryValue = encryptRule.getEncryptAssistedQueryValues(tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
-            ((StandardParameterBuilder) parameterBuilder).getAddedIndexAndParameters().put(valueIndex + 2, assistedQueryValue);
+            ((StandardParameterBuilder) parameterBuilder).getAddedIndexAndParameters().put(parameterMarkerIndex + 2, assistedQueryValue);
         }
     }
 }
