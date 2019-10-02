@@ -17,13 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.parameter.builder.standard;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
-import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,9 +26,6 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class StandardParameterBuilderTest {
     
@@ -45,21 +35,8 @@ public final class StandardParameterBuilderTest {
     
     @Before
     public void setUp() {
-        parameterBuilder = new StandardParameterBuilder(parameters, createSQLRouteResult());
+        parameterBuilder = new StandardParameterBuilder(parameters);
         parameterBuilder.getAddedIndexAndParameters().putAll(Collections.singletonMap(4, 7));
-    }
-    
-    private SQLRouteResult createSQLRouteResult() {
-        PaginationContext pagination = mock(PaginationContext.class);
-        when(pagination.isHasPagination()).thenReturn(true);
-        when(pagination.getOffsetParameterIndex()).thenReturn(Optional.of(2));
-        when(pagination.getRowCountParameterIndex()).thenReturn(Optional.of(3));
-        when(pagination.getRevisedRowCount(any(SelectSQLStatementContext.class))).thenReturn(6L);
-        SelectSQLStatementContext selectSQLStatementContext = mock(SelectSQLStatementContext.class);
-        when(selectSQLStatementContext.getPaginationContext()).thenReturn(pagination);
-        SQLRouteResult result = new SQLRouteResult(selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()), null);
-        result.setRoutingResult(new RoutingResult());
-        return result;
     }
     
     @Test

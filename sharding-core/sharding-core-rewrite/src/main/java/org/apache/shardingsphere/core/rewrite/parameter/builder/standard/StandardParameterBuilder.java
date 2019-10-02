@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.rewrite.parameter.builder.standard;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
 import java.util.LinkedHashMap;
@@ -44,10 +43,6 @@ public final class StandardParameterBuilder implements ParameterBuilder {
     
     @Getter
     private final Map<Integer, Object> replacedIndexAndParameters = new LinkedHashMap<>();
-    
-    public StandardParameterBuilder(final List<Object> originalParameters, final SQLRouteResult sqlRouteResult) {
-        this.originalParameters = originalParameters;
-    }
     
     @Override
     public List<Object> getParameters() {

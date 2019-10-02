@@ -47,7 +47,7 @@ public final class ParameterBuilderFactory {
     public static ParameterBuilder newInstance(final List<Object> originalParameters, final SQLRouteResult sqlRouteResult) {
         return sqlRouteResult.getSqlStatementContext() instanceof InsertSQLStatementContext
                 ? new GroupedParameterBuilder(getGroupedParameters(sqlRouteResult.getSqlStatementContext()), sqlRouteResult.getShardingConditions())
-                : new StandardParameterBuilder(originalParameters, sqlRouteResult);
+                : new StandardParameterBuilder(originalParameters);
     }
     
     /**
