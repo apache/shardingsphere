@@ -58,33 +58,33 @@ public final class InsertValueContextTest {
 
     @Test
     public void assertGetValueWhenParameterMarker() {
-        Collection<ParameterMarkerExpressionSegment> assignments = makeParameterMarkerExpressionSegment();
+        Collection<ExpressionSegment> assignments = makeParameterMarkerExpressionSegment();
         String parameterValue = "test";
-        List<String> parameters = Collections.singletonList(parameterValue);
+        List<Object> parameters = Collections.<Object>singletonList(parameterValue);
         int parametersOffset = 0;
         InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, parametersOffset);
         Object result = insertValueContext.getValue(0);
         assertThat((String)result, is(parameterValue));
     }
 
-    private Collection<ParameterMarkerExpressionSegment> makeParameterMarkerExpressionSegment() {
+    private Collection<ExpressionSegment> makeParameterMarkerExpressionSegment() {
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(0, 10, 5);
-        return Collections.singleton(parameterMarkerExpressionSegment);
+        return Collections.<ExpressionSegment>singleton(parameterMarkerExpressionSegment);
     }
 
     @Test
     public void assertGetValueWhenLiteralExpressionSegment() {
         Object literalObject = new Object();
-        Collection<LiteralExpressionSegment> assignments = makeLiteralExpressionSegment(literalObject);
+        Collection<ExpressionSegment> assignments = makeLiteralExpressionSegment(literalObject);
         List<Object> parameters = Collections.emptyList();
         InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, 0);
         Object result = insertValueContext.getValue(0);
         assertThat(result, is(literalObject));
     }
 
-    private Collection<LiteralExpressionSegment> makeLiteralExpressionSegment(final Object literalObject) {
+    private Collection<ExpressionSegment> makeLiteralExpressionSegment(final Object literalObject) {
         LiteralExpressionSegment parameterMarkerExpressionSegment = new LiteralExpressionSegment(0, 10, literalObject);
-        return Lists.newArrayList(parameterMarkerExpressionSegment);
+        return Lists.<ExpressionSegment>newArrayList(parameterMarkerExpressionSegment);
     }
 
     @Test
@@ -104,9 +104,9 @@ public final class InsertValueContextTest {
 
     @Test
     public void assertAppendValueWhenParametersIsNotEmpty() {
-        Collection<ParameterMarkerExpressionSegment> assignments = makeParameterMarkerExpressionSegment();
+        Collection<ExpressionSegment> assignments = makeParameterMarkerExpressionSegment();
         String parameterValue = "test";
-        List<String> parameters = Collections.singletonList(parameterValue);
+        List<Object> parameters = Collections.<Object>singletonList(parameterValue);
         int parametersOffset = 0;
         InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, parametersOffset);
         Object value = "test";

@@ -47,13 +47,13 @@ public final class InsertValueContext {
 
     private final List<Object> parameters;
 
-    public InsertValueContext(final Collection<? extends ExpressionSegment> assignments, final List<? extends Object> parameters, final int parametersOffset) {
+    public InsertValueContext(final Collection<ExpressionSegment> assignments, final List<Object> parameters, final int parametersOffset) {
         parametersCount = calculateParametersCount(assignments);
         valueExpressions = getValueExpressions(assignments);
         this.parameters = getParameters(parameters, parametersOffset);
     }
 
-    private int calculateParametersCount(final Collection<? extends ExpressionSegment> assignments) {
+    private int calculateParametersCount(final Collection<ExpressionSegment> assignments) {
         int result = 0;
         for (ExpressionSegment each : assignments) {
             if (each instanceof ParameterMarkerExpressionSegment) {
@@ -63,13 +63,13 @@ public final class InsertValueContext {
         return result;
     }
 
-    private List<ExpressionSegment> getValueExpressions(final Collection<? extends ExpressionSegment> assignments) {
+    private List<ExpressionSegment> getValueExpressions(final Collection<ExpressionSegment> assignments) {
         List<ExpressionSegment> result = new ArrayList<>(assignments.size());
         result.addAll(assignments);
         return result;
     }
 
-    private List<Object> getParameters(final List<? extends Object> parameters, final int parametersOffset) {
+    private List<Object> getParameters(final List<Object> parameters, final int parametersOffset) {
         if (0 == parametersCount) {
             return Collections.emptyList();
         }
