@@ -24,11 +24,11 @@ import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rewrite.token.generator.ShardingConditionsAware;
+import org.apache.shardingsphere.core.rewrite.token.generator.SQLRouteResultAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.impl.InsertValuesToken;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.rule.DataNode;
 
 import java.util.Collection;
@@ -41,9 +41,9 @@ import java.util.Iterator;
  * @author panjuan
  */
 @Setter
-public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerator, ShardingConditionsAware {
+public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerator, SQLRouteResultAware {
     
-    private ShardingConditions shardingConditions;
+    private SQLRouteResult sqlRouteResult;
     
     @Override
     public Optional<InsertValuesToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -58,7 +58,8 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
     
     private InsertValuesToken createInsertValuesToken(final SQLStatementContext sqlStatementContext, final Collection<InsertValuesSegment> insertValuesSegments) {
         InsertValuesToken result = new InsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
-        Iterator<ShardingCondition> shardingConditionIterator = null == shardingConditions || shardingConditions.getConditions().isEmpty() ? null : shardingConditions.getConditions().iterator();
+        Iterator<ShardingCondition> shardingConditionIterator = null == sqlRouteResult || sqlRouteResult.getShardingConditions().getConditions().isEmpty()
+                ? null : sqlRouteResult.getShardingConditions().getConditions().iterator();
         for (InsertValueContext each : ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts()) {
             Collection<DataNode> dataNodes = null == shardingConditionIterator ? Collections.<DataNode>emptyList() : shardingConditionIterator.next().getDataNodes();
             result.addInsertValueToken(each.getValueExpressions(), dataNodes);

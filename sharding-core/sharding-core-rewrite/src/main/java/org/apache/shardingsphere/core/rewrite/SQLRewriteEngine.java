@@ -164,7 +164,7 @@ public final class SQLRewriteEngine {
     private List<SQLToken> createSQLTokensForSharding(final TableMetas tableMetas, final List<Object> parameters, final SQLRouteResult sqlRouteResult, final boolean isQueryWithCipherColumn) {
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
         sqlTokenGenerators.addAll(new BaseTokenGeneratorBuilder().getSQLTokenGenerators());
-        sqlTokenGenerators.addAll(new ShardingTokenGenerateBuilder((ShardingRule) baseRule, sqlRouteResult.getShardingConditions(), sqlRouteResult).getSQLTokenGenerators());
+        sqlTokenGenerators.addAll(new ShardingTokenGenerateBuilder((ShardingRule) baseRule, sqlRouteResult).getSQLTokenGenerators());
         sqlTokenGenerators.addAll(new EncryptTokenGenerateBuilder(((ShardingRule) baseRule).getEncryptRule(), isQueryWithCipherColumn).getSQLTokenGenerators());
         return sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, tableMetas, sqlRouteResult.getRoutingResult().isSingleRouting());
     }
