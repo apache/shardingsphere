@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractEncryptJDBCDatabaseAndTableTest;
 import org.junit.Test;
@@ -149,7 +150,7 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
     }
     
     private void assertResultSet(final int resultSetCount, final int id, final Object pwd, final Object assistPwd) throws SQLException {
-        try (Connection conn = getDatabaseTypeMap().values().iterator().next().values().iterator().next().getConnection(); 
+        try (Connection conn = getDatabaseTypeMap().get(DatabaseTypes.getActualDatabaseType("H2")).get("encrypt").getConnection();
              Statement stmt = conn.createStatement()) {
             ResultSet resultSet = stmt.executeQuery(SELECT_ALL_SQL);
             int count = 1;
