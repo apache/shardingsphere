@@ -108,7 +108,6 @@ public class TableMetaDataLoaderTest {
         return Arrays.asList("ds_0", "ds_1");
     }
 
-    @Ignore
     @Test
     public void AssertLogicIndexes() throws SQLException {
         TableMetaData tableMetaData = tableMetaDataLoader.load("TEST_TABLE", shardingRule);
