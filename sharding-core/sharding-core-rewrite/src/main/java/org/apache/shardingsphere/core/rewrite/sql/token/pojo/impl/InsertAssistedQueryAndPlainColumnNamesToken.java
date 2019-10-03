@@ -24,20 +24,20 @@ import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import java.util.Collection;
 
 /**
- * Insert query and plain names token.
+ * Insert assisted query and plain column names token.
  *
  * @author panjuan
  */
-public final class InsertQueryAndPlainNamesToken extends SQLToken implements Attachable {
+public final class InsertAssistedQueryAndPlainColumnNamesToken extends SQLToken implements Attachable {
     
     private final Collection<String> columns;
     
-    private final boolean isToAddCloseParenthesis;
+    private final boolean isEndOfToken;
     
-    public InsertQueryAndPlainNamesToken(final int startIndex, final Collection<String> columns, final boolean isToAddCloseParenthesis) {
+    public InsertAssistedQueryAndPlainColumnNamesToken(final int startIndex, final Collection<String> columns, final boolean isEndOfToken) {
         super(startIndex);
         this.columns = columns;
-        this.isToAddCloseParenthesis = isToAddCloseParenthesis;
+        this.isEndOfToken = isEndOfToken;
     }
     
     @Override
@@ -45,6 +45,6 @@ public final class InsertQueryAndPlainNamesToken extends SQLToken implements Att
         if (columns.isEmpty()) {
             return "";
         }
-        return String.format(isToAddCloseParenthesis ? ", %s)" : ", %s", Joiner.on(", ").join(columns));
+        return String.format(isEndOfToken ? ", %s)" : ", %s", Joiner.on(", ").join(columns));
     }
 }
