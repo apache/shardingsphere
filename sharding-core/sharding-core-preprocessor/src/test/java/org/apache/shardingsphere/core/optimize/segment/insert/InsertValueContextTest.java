@@ -118,4 +118,37 @@ public final class InsertValueContextTest {
         assertThat(segmentInInsertValueContext.getType(), is(type));
         assertThat(segmentInInsertValueContext.getParameterMarkerIndex(), is(parameters.size() - 1));
     }
+    
+    @Test
+    public void assertSetValueWhenValueExpressionInstanceofParameterMarkerExpressionSegment() {
+        Collection<ExpressionSegment> assignments = makeParameterMarkerExpressionSegment();
+        String parameterValue = "test";
+        List<Object> parameters = Collections.<Object>singletonList(parameterValue);
+        InsertValueContext insertValueContext = new InsertValueContext(assignments, parameters, 0);
+        int index = 0;
+        String value = "String";
+        insertValueContext.setValue(index, value);
+        List<Object> parametersInInsertValueContext = insertValueContext.getParameters();
+        assertThat(parametersInInsertValueContext.size(), is(1));
+        Object valueFromParametersInInsertValueContext = parametersInInsertValueContext.get(0);
+        assertThat(valueFromParametersInInsertValueContext, is((Object) value));
+    }
+    
+    @Test
+    public void assertSetValueWhenValueExpressionNotInstanceofParameterMarkerExpressionSegment() {
+        Object literalObject = new Object();
+        Collection<ExpressionSegment> assignments = makeLiteralExpressionSegment(literalObject);
+        String parameterValue = "test";
+        List<Object> parameters = Collections.<Object>singletonList(parameterValue);
+        InsertValueContext insertValueContext = new InsertValueContext(assignments, parameters, 0);
+        int index = 0;
+        String value = "String";
+        insertValueContext.setValue(index, value);
+        List<ExpressionSegment> valueExpressionsInInsertValueContext = insertValueContext.getValueExpressions();
+        assertThat(valueExpressionsInInsertValueContext.size(), is(1));
+        LiteralExpressionSegment valueFromParametersInInsertValueContext = (LiteralExpressionSegment) valueExpressionsInInsertValueContext.get(0);
+        assertThat(valueFromParametersInInsertValueContext.getLiterals(), is((Object) value));
+        assertThat(valueFromParametersInInsertValueContext.getStartIndex(), is(0));
+        assertThat(valueFromParametersInInsertValueContext.getStopIndex(), is(10));
+    }
 }
