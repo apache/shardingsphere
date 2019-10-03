@@ -23,7 +23,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLRouteResultAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.OptionalSQLTokenGenerator;
@@ -45,19 +44,18 @@ public final class InsertGeneratedKeyFromMetadataTokenGenerator implements Optio
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        return sqlStatement instanceof InsertStatement && ((InsertStatement) sqlStatement).useDefaultColumns() && sqlStatement.findSQLSegment(InsertColumnsSegment.class).isPresent();
+        return sqlStatementContext instanceof InsertSQLStatementContext && ((InsertStatement) sqlStatementContext.getSqlStatement()).useDefaultColumns();
     }
     
     @Override
     public InsertRegularNamesToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         Preconditions.checkState(insertColumnsSegment.isPresent());
-        return new InsertRegularNamesToken(insertColumnsSegment.get().getStopIndex(), getActualInsertColumns((InsertSQLStatementContext) sqlStatementContext), true);
+        return new InsertRegularNamesToken(insertColumnsSegment.get().getStopIndex(), getColumnNames((InsertSQLStatementContext) sqlStatementContext), true);
     }
     
-    private List<String> getActualInsertColumns(final InsertSQLStatementContext insertSQLStatementContext) {
-        List<String> result = new ArrayList<>(insertSQLStatementContext.getColumnNames());
+    private List<String> getColumnNames(final InsertSQLStatementContext sqlStatementContext) {
+        List<String> result = new ArrayList<>(sqlStatementContext.getColumnNames());
         if (sqlRouteResult.getGeneratedKey().isPresent() && sqlRouteResult.getGeneratedKey().get().isGenerated()) {
             result.remove(sqlRouteResult.getGeneratedKey().get().getColumnName());
             result.add(sqlRouteResult.getGeneratedKey().get().getColumnName());
