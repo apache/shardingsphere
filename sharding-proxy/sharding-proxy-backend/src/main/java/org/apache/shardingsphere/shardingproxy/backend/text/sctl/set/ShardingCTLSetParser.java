@@ -33,10 +33,10 @@ public final class ShardingCTLSetParser implements ShardingCTLParser<ShardingCTL
     
     private final String regex = "sctl:set\\s+(\\S*)=(\\S*)";
     
-    private Matcher matcher;
+    private final Matcher matcher;
     
     ShardingCTLSetParser(final String sql) {
-        this.matcher = Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(sql);
+        matcher = Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(sql);
     }
     
     @Override

@@ -100,7 +100,6 @@ public final class InsertValueContext {
             valueExpressions.add(new DerivedLiteralExpressionSegment(value, type));
         } else {
             valueExpressions.add(new DerivedParameterMarkerExpressionSegment(parameters.size() - 1, type));
-            parameters.add(value);
         }
     }
     
@@ -112,9 +111,7 @@ public final class InsertValueContext {
      */
     public void setValue(final int index, final Object value) {
         ExpressionSegment valueExpression = valueExpressions.get(index);
-        if (valueExpression instanceof ParameterMarkerExpressionSegment) {
-            parameters.set(getParameterIndex(valueExpression), value);
-        } else {
+        if (valueExpression instanceof LiteralExpressionSegment) {
             valueExpressions.set(index, new LiteralExpressionSegment(valueExpression.getStartIndex(), valueExpression.getStopIndex(), value));
         }
     }

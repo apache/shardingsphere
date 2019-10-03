@@ -37,7 +37,7 @@ public final class UserExecutorGroup implements AutoCloseable {
     
     private static final UserExecutorGroup INSTANCE = new UserExecutorGroup();
     
-    private ShardingExecutorService shardingExecutorService;
+    private final ShardingExecutorService shardingExecutorService;
     
     @Getter
     private final ListeningExecutorService executorService;

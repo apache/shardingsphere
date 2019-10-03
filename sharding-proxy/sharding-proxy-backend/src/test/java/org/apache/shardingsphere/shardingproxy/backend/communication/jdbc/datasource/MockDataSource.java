@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  */
 public final class MockDataSource implements DataSource, AutoCloseable {
     
-    private AtomicInteger count = new AtomicInteger(0);
+    private final AtomicInteger count = new AtomicInteger(0);
     
     @Override
     public Connection getConnection() throws SQLException {

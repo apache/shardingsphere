@@ -32,11 +32,11 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public final class FifthTestRegistryCenter implements RegistryCenter {
     
+    private final Map<String, String> keys = new HashMap<>();
+    
     @Getter
     @Setter
     private Properties properties = new Properties();
-    
-    private Map<String, String> keys = new HashMap<>();
     
     private ReentrantLock lock = new ReentrantLock();
     
