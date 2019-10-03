@@ -958,14 +958,14 @@ public final class ShardingRewriteEngineTest {
     }
     
     @Test
-    public void assertRewriteInsertWithQueryAssistedShardingEncryptor() {
+    public void assertRewriteInsertWithGeneratedKeyAndQueryAssistedShardingEncryptor() {
         RewriteEngine rewriteEngine = createRewriteEngine(
-                createSQLRouteResultForInsertWithQueryAssistedShardingEncryptor(), "INSERT INTO `table_w` set name = 10 ON DUPLICATE KEY UPDATE name = VALUES(name)", Collections.emptyList());
+                createSQLRouteResultForInsertWithGeneratedKeyAndQueryAssistedShardingEncryptor(), "INSERT INTO `table_w` set name = 10 ON DUPLICATE KEY UPDATE name = VALUES(name)", Collections.emptyList());
         assertThat(rewriteEngine.generateSQL(routingUnit, logicTableAndActualTables).getSql(),
                 is("INSERT INTO `table_w` set cipher = 'encryptValue', id = 1, query = 'assistedEncryptValue', plain = 10 ON DUPLICATE KEY UPDATE name = VALUES(name)"));
     }
     
-    private SQLRouteResult createSQLRouteResultForInsertWithQueryAssistedShardingEncryptor() {
+    private SQLRouteResult createSQLRouteResultForInsertWithGeneratedKeyAndQueryAssistedShardingEncryptor() {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_w`"));
         insertStatement.setTable(new TableSegment(0, 0, "table_w"));
@@ -978,7 +978,9 @@ public final class ShardingRewriteEngineTest {
         insertSQLStatementContext.getInsertValueContexts().get(0).appendValue(1, ShardingDerivedColumnType.KEY_GEN);
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
-        SQLRouteResult result = new SQLRouteResult(insertSQLStatementContext, new ShardingConditions(Collections.singletonList(shardingCondition)));
+        GeneratedKey generatedKey = new GeneratedKey("id", true);
+        generatedKey.getGeneratedValues().add(1);
+        SQLRouteResult result = new SQLRouteResult(insertSQLStatementContext, new ShardingConditions(Collections.singletonList(shardingCondition)), generatedKey);
         result.setRoutingResult(new RoutingResult());
         return result;
     }

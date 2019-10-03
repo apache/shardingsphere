@@ -25,10 +25,10 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.Assignmen
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.ShardingRuleAware;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLRouteResultAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertSetGeneratedKeyColumnToken;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +39,9 @@ import java.util.List;
  * @author panjuan
  */
 @Setter
-public final class InsertSetGeneratedKeyColumnTokenGenerator implements OptionalSQLTokenGenerator, ShardingRuleAware {
+public final class InsertSetGeneratedKeyColumnTokenGenerator implements OptionalSQLTokenGenerator, SQLRouteResultAware {
     
-    private ShardingRule shardingRule;
+    private SQLRouteResult sqlRouteResult;
     
     @Override
     public Optional<InsertSetGeneratedKeyColumnToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -51,23 +51,15 @@ public final class InsertSetGeneratedKeyColumnTokenGenerator implements Optional
     }
     
     private Optional<InsertSetGeneratedKeyColumnToken> generateSQLToken(final InsertSQLStatementContext sqlStatementContext, final SetAssignmentsSegment segment) {
-        Optional<String> generatedKeyColumn = findGeneratedKeyColumn(sqlStatementContext);
-        if (generatedKeyColumn.isPresent()) {
-            return Optional.of(generateSQLToken(sqlStatementContext, generatedKeyColumn.get(), new ArrayList<>(segment.getAssignments())));
-        }
-        return Optional.absent();
+        Optional<String> generatedKeyColumn = sqlRouteResult.getGeneratedKey().isPresent() && sqlRouteResult.getGeneratedKey().get().isGenerated()
+                ? Optional.of(sqlRouteResult.getGeneratedKey().get().getColumnName()) : Optional.<String>absent();
+        return generatedKeyColumn.isPresent()
+                ? Optional.of(generateSQLToken(sqlStatementContext, generatedKeyColumn.get(), new ArrayList<>(segment.getAssignments()))) : Optional.<InsertSetGeneratedKeyColumnToken>absent();
     }
     
-    private InsertSetGeneratedKeyColumnToken generateSQLToken(final InsertSQLStatementContext sqlStatementContext,
-                                                              final String generatedKeyColumn, final List<AssignmentSegment> assignments) {
-        int index = sqlStatementContext.getColumnNames().contains(generatedKeyColumn)
-                ? sqlStatementContext.getColumnNames().indexOf(generatedKeyColumn) : sqlStatementContext.getColumnNames().size();
+    private InsertSetGeneratedKeyColumnToken generateSQLToken(final InsertSQLStatementContext sqlStatementContext, final String generatedKeyColumn, final List<AssignmentSegment> assignments) {
+        int index = sqlStatementContext.getColumnNames().contains(generatedKeyColumn) ? sqlStatementContext.getColumnNames().indexOf(generatedKeyColumn) : sqlStatementContext.getColumnNames().size();
         ExpressionSegment expressionSegment = sqlStatementContext.getInsertValueContexts().get(0).getValueExpressions().get(index);
         return new InsertSetGeneratedKeyColumnToken(assignments.get(assignments.size() - 1).getStopIndex() + 1, generatedKeyColumn, expressionSegment);
-    }
-    
-    private Optional<String> findGeneratedKeyColumn(final InsertSQLStatementContext insertSQLStatementContext) {
-        Optional<String> generateKeyColumn = shardingRule.findGenerateKeyColumnName(insertSQLStatementContext.getTablesContext().getSingleTableName());
-        return generateKeyColumn.isPresent() && !insertSQLStatementContext.getColumnNames().contains(generateKeyColumn.get()) ? generateKeyColumn : Optional.<String>absent();
     }
 }
