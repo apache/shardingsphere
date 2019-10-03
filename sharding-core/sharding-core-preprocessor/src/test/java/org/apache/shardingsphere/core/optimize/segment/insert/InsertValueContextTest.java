@@ -31,8 +31,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class InsertValueContextTest {
     
@@ -41,7 +41,7 @@ public final class InsertValueContextTest {
         Collection<ExpressionSegment> assignments = Lists.newArrayList();
         List<Object> parameters = Collections.emptyList();
         int parametersOffset = 0;
-        InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, parametersOffset);
+        InsertValueContext insertValueContext = new InsertValueContext(assignments, parameters, parametersOffset);
         Method calculateParametersCountMethod = InsertValueContext.class.getDeclaredMethod("calculateParametersCount", Collection.class);
         calculateParametersCountMethod.setAccessible(true);
         int calculateParametersCountResult = (int) calculateParametersCountMethod.invoke(insertValueContext, new Object[] {assignments});
@@ -62,9 +62,9 @@ public final class InsertValueContextTest {
         String parameterValue = "test";
         List<Object> parameters = Collections.<Object>singletonList(parameterValue);
         int parametersOffset = 0;
-        InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, parametersOffset);
+        InsertValueContext insertValueContext = new InsertValueContext(assignments, parameters, parametersOffset);
         Object valueFromInsertValueContext = insertValueContext.getValue(0);
-        assertThat((String)valueFromInsertValueContext, is(parameterValue));
+        assertThat((String) valueFromInsertValueContext, is(parameterValue));
     }
     
     private Collection<ExpressionSegment> makeParameterMarkerExpressionSegment() {
@@ -77,7 +77,7 @@ public final class InsertValueContextTest {
         Object literalObject = new Object();
         Collection<ExpressionSegment> assignments = makeLiteralExpressionSegment(literalObject);
         List<Object> parameters = Collections.emptyList();
-        InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, 0);
+        InsertValueContext insertValueContext = new InsertValueContext(assignments, parameters, 0);
         Object valueFromInsertValueContext = insertValueContext.getValue(0);
         assertThat(valueFromInsertValueContext, is(literalObject));
     }
@@ -91,7 +91,7 @@ public final class InsertValueContextTest {
     public void assertAppendValueWhenParametersIsEmpty() {
         Collection<ExpressionSegment> assignments = Collections.emptyList();
         List<Object> parameters = Collections.emptyList();
-        InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, 0);
+        InsertValueContext insertValueContext = new InsertValueContext(assignments, parameters, 0);
         Object value = "test";
         String type = "String";
         insertValueContext.appendValue(value, type);
@@ -108,7 +108,7 @@ public final class InsertValueContextTest {
         String parameterValue = "test";
         List<Object> parameters = Collections.<Object>singletonList(parameterValue);
         int parametersOffset = 0;
-        InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, parametersOffset);
+        InsertValueContext insertValueContext = new InsertValueContext(assignments, parameters, parametersOffset);
         Object value = "test";
         String type = "String";
         insertValueContext.appendValue(value, type);
