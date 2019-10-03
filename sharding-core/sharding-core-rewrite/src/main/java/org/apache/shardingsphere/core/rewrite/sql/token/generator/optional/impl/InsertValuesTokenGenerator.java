@@ -46,8 +46,7 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        Collection<InsertValuesSegment> insertValuesSegments = sqlStatementContext.getSqlStatement().findSQLSegments(InsertValuesSegment.class);
-        return sqlStatementContext.getSqlStatement() instanceof InsertStatement && !insertValuesSegments.isEmpty();
+        return sqlStatementContext.getSqlStatement() instanceof InsertStatement && !sqlStatementContext.getSqlStatement().findSQLSegments(InsertValuesSegment.class).isEmpty();
     }
     
     @Override
