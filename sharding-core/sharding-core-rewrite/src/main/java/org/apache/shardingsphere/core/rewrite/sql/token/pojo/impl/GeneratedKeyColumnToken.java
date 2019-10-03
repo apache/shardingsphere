@@ -21,17 +21,17 @@ import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 
 /**
- * Insert generated key name token.
+ * Generated key column token.
  *
  * @author panjuan
  */
-public final class InsertGeneratedKeyColumnToken extends SQLToken implements Attachable {
+public final class GeneratedKeyColumnToken extends SQLToken implements Attachable {
     
     private final String column;
     
     private final boolean isEndOfToken;
     
-    public InsertGeneratedKeyColumnToken(final int startIndex, final String column, final boolean isEndOfToken) {
+    public GeneratedKeyColumnToken(final int startIndex, final String column, final boolean isEndOfToken) {
         super(startIndex);
         this.column = column;
         this.isEndOfToken = isEndOfToken;

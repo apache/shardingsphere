@@ -23,8 +23,8 @@ import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenera
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.impl.AggregationDistinctTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.impl.IndexTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.impl.TableTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.InsertGeneratedKeyFromMetadataTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.InsertGeneratedKeyColumnTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.keygen.GeneratedKeyFromMetadataTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.keygen.GeneratedKeyColumnTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.InsertValuesTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.OffsetTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.OrderByTokenGenerator;
@@ -32,7 +32,7 @@ import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.RowCountTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.SelectItemPrefixTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.ShardingRuleAware;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.InsertSetGeneratedKeyColumnTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.keygen.GeneratedKeyAssignmentTokenGenerator;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -75,9 +75,9 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
         result.add(new IndexTokenGenerator());
         result.add(new OffsetTokenGenerator());
         result.add(new RowCountTokenGenerator());
-        result.add(new InsertGeneratedKeyColumnTokenGenerator());
-        result.add(new InsertGeneratedKeyFromMetadataTokenGenerator());
-        result.add(new InsertSetGeneratedKeyColumnTokenGenerator());
+        result.add(new GeneratedKeyColumnTokenGenerator());
+        result.add(new GeneratedKeyFromMetadataTokenGenerator());
+        result.add(new GeneratedKeyAssignmentTokenGenerator());
         result.add(new InsertValuesTokenGenerator());
         return result;
     }

@@ -15,51 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl;
+package org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.keygen;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLRouteResultAware;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertRegularNamesToken;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Insert generated key from metadata token generator.
+ * Generated key from metadata token generator.
  *
  * @author panjuan
+ * @author zhangliang
  */
-@Setter
-public final class InsertGeneratedKeyFromMetadataTokenGenerator implements OptionalSQLTokenGenerator, SQLRouteResultAware {
-    
-    private SQLRouteResult sqlRouteResult;
+public final class GeneratedKeyFromMetadataTokenGenerator extends BaseGeneratedKeyTokenGenerator {
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertSQLStatementContext && ((InsertStatement) sqlStatementContext.getSqlStatement()).useDefaultColumns();
+    protected boolean isGenerateSQLToken(final InsertStatement insertStatement) {
+        return insertStatement.useDefaultColumns();
     }
     
     @Override
-    public InsertRegularNamesToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
+    protected InsertRegularNamesToken generateSQLToken(final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         Preconditions.checkState(insertColumnsSegment.isPresent());
-        return new InsertRegularNamesToken(insertColumnsSegment.get().getStopIndex(), getColumnNames((InsertSQLStatementContext) sqlStatementContext), true);
+        return new InsertRegularNamesToken(insertColumnsSegment.get().getStopIndex(), getColumnNames((InsertSQLStatementContext) sqlStatementContext, generatedKey), true);
     }
     
-    private List<String> getColumnNames(final InsertSQLStatementContext sqlStatementContext) {
+    private List<String> getColumnNames(final InsertSQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
         List<String> result = new ArrayList<>(sqlStatementContext.getColumnNames());
-        if (sqlRouteResult.getGeneratedKey().isPresent() && sqlRouteResult.getGeneratedKey().get().isGenerated()) {
-            result.remove(sqlRouteResult.getGeneratedKey().get().getColumnName());
-            result.add(sqlRouteResult.getGeneratedKey().get().getColumnName());
-        }
+        result.remove(generatedKey.getColumnName());
+        result.add(generatedKey.getColumnName());
         return result;
     }
 }

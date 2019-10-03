@@ -15,44 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl;
+package org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.keygen;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLRouteResultAware;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.ShardingRuleAware;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertGeneratedKeyColumnToken;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.GeneratedKeyColumnToken;
+import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Insert generated key column token generator.
+ * Generated key column token generator.
  *
  * @author panjuan
+ * @author zhangliang
  */
 @Setter
-public final class InsertGeneratedKeyColumnTokenGenerator implements OptionalSQLTokenGenerator, ShardingRuleAware, SQLRouteResultAware {
+public final class GeneratedKeyColumnTokenGenerator extends BaseGeneratedKeyTokenGenerator implements ShardingRuleAware {
     
     private ShardingRule shardingRule;
     
-    private SQLRouteResult sqlRouteResult;
-    
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        Optional<InsertColumnsSegment> sqlSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
-        return sqlSegment.isPresent() && !sqlSegment.get().getColumns().isEmpty() && sqlRouteResult.getGeneratedKey().isPresent() && sqlRouteResult.getGeneratedKey().get().isGenerated();
+    protected boolean isGenerateSQLToken(final InsertStatement insertStatement) {
+        Optional<InsertColumnsSegment> sqlSegment = insertStatement.findSQLSegment(InsertColumnsSegment.class);
+        return sqlSegment.isPresent() && !sqlSegment.get().getColumns().isEmpty();
     }
     
     @Override
-    public InsertGeneratedKeyColumnToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
+    protected GeneratedKeyColumnToken generateSQLToken(final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
         Optional<InsertColumnsSegment> sqlSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         Preconditions.checkState(sqlSegment.isPresent());
-        Preconditions.checkState(sqlRouteResult.getGeneratedKey().isPresent());
         boolean isEndOfToken = !shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(sqlStatementContext.getTablesContext().getSingleTableName()).isEmpty();
-        return new InsertGeneratedKeyColumnToken(sqlSegment.get().getStopIndex(), sqlRouteResult.getGeneratedKey().get().getColumnName(), isEndOfToken);
+        return new GeneratedKeyColumnToken(sqlSegment.get().getStopIndex(), generatedKey.getColumnName(), isEndOfToken);
     }
 }
