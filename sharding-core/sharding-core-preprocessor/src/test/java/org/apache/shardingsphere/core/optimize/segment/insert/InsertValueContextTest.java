@@ -131,7 +131,7 @@ public final class InsertValueContextTest {
         List<Object> parametersInInsertValueContext = insertValueContext.getParameters();
         assertThat(parametersInInsertValueContext.size(), is(1));
         Object valueFromParametersInInsertValueContext = parametersInInsertValueContext.get(0);
-        assertThat(valueFromParametersInInsertValueContext, is((Object) value));
+        assertThat(valueFromParametersInInsertValueContext, is((Object) parameterValue));
     }
     
     @Test
