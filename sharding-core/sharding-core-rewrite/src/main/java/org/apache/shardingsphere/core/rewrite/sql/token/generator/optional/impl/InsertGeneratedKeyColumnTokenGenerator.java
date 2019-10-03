@@ -25,17 +25,17 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumns
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLRouteResultAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.ShardingRuleAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertGeneratedKeyNameToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertGeneratedKeyColumnToken;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Insert generated key name token generator.
+ * Insert generated key column token generator.
  *
  * @author panjuan
  */
 @Setter
-public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTokenGenerator, ShardingRuleAware, SQLRouteResultAware {
+public final class InsertGeneratedKeyColumnTokenGenerator implements OptionalSQLTokenGenerator, ShardingRuleAware, SQLRouteResultAware {
     
     private ShardingRule shardingRule;
     
@@ -48,11 +48,11 @@ public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTo
     }
     
     @Override
-    public InsertGeneratedKeyNameToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public InsertGeneratedKeyColumnToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
         Optional<InsertColumnsSegment> sqlSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         Preconditions.checkState(sqlSegment.isPresent());
         Preconditions.checkState(sqlRouteResult.getGeneratedKey().isPresent());
         boolean isEndOfToken = !shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(sqlStatementContext.getTablesContext().getSingleTableName()).isEmpty();
-        return new InsertGeneratedKeyNameToken(sqlSegment.get().getStopIndex(), sqlRouteResult.getGeneratedKey().get().getColumnName(), isEndOfToken);
+        return new InsertGeneratedKeyColumnToken(sqlSegment.get().getStopIndex(), sqlRouteResult.getGeneratedKey().get().getColumnName(), isEndOfToken);
     }
 }
