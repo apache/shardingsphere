@@ -51,21 +51,14 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         Optional<SetAssignmentsSegment> setAssignmentsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
-        return sqlStatementContext instanceof InsertSQLStatementContext && setAssignmentsSegment.isPresent();
+        return sqlStatementContext instanceof InsertSQLStatementContext && setAssignmentsSegment.isPresent()
+                && !encryptRule.getAssistedQueryAndPlainColumns(sqlStatementContext.getTablesContext().getSingleTableName()).isEmpty();
     }
     
     @Override
-    public Optional<InsertSetQueryAndPlainColumnsToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return createInsertSetAddItemsToken((InsertSQLStatementContext) sqlStatementContext);
-    }
-    
-    private Optional<InsertSetQueryAndPlainColumnsToken> createInsertSetAddItemsToken(final InsertSQLStatementContext insertSQLStatementContext) {
-        String tableName = insertSQLStatementContext.getTablesContext().getSingleTableName();
-        if (encryptRule.getAssistedQueryAndPlainColumns(tableName).isEmpty()) {
-            return Optional.absent();
-        }
-        List<String> encryptDerivedColumnNames = getEncryptDerivedColumnNames(tableName);
-        return Optional.of(new InsertSetQueryAndPlainColumnsToken(getStartIndex(insertSQLStatementContext), encryptDerivedColumnNames, getEncryptDerivedValues(insertSQLStatementContext)));
+    public InsertSetQueryAndPlainColumnsToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
+        return new InsertSetQueryAndPlainColumnsToken(getStartIndex((InsertSQLStatementContext) sqlStatementContext), 
+                getEncryptDerivedColumnNames(sqlStatementContext.getTablesContext().getSingleTableName()), getEncryptDerivedValues((InsertSQLStatementContext) sqlStatementContext));
     }
     
     private List<String> getEncryptDerivedColumnNames(final String tableName) {

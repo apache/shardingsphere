@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLRouteResultAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.ShardingRuleAware;
@@ -45,21 +44,18 @@ public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTo
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
-        return insertColumnsSegment.isPresent() && !insertColumnsSegment.get().getColumns().isEmpty() && sqlStatementContext instanceof InsertSQLStatementContext;
+        return insertColumnsSegment.isPresent() && !insertColumnsSegment.get().getColumns().isEmpty()
+                && sqlRouteResult.getGeneratedKey().isPresent() && sqlRouteResult.getGeneratedKey().get().isGenerated();
     }
     
     @Override
-    public Optional<InsertGeneratedKeyNameToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public InsertGeneratedKeyNameToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         Preconditions.checkState(insertColumnsSegment.isPresent());
-        return createInsertGeneratedKeyToken(sqlStatementContext, insertColumnsSegment.get());
-    }
-    
-    private Optional<InsertGeneratedKeyNameToken> createInsertGeneratedKeyToken(final SQLStatementContext sqlStatementContext, final InsertColumnsSegment segment) {
-        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        return sqlRouteResult.getGeneratedKey().isPresent() && sqlRouteResult.getGeneratedKey().get().isGenerated()
-                ? Optional.of(new InsertGeneratedKeyNameToken(segment.getStopIndex(), sqlRouteResult.getGeneratedKey().get().getColumnName(), isToAddCloseParenthesis(tableName, segment)))
-                : Optional.<InsertGeneratedKeyNameToken>absent();
+        InsertColumnsSegment segment = insertColumnsSegment.get();
+        Preconditions.checkState(sqlRouteResult.getGeneratedKey().isPresent());
+        return new InsertGeneratedKeyNameToken(segment.getStopIndex(), 
+                sqlRouteResult.getGeneratedKey().get().getColumnName(), isToAddCloseParenthesis(sqlStatementContext.getTablesContext().getSingleTableName(), segment));
     }
     
     private boolean isToAddCloseParenthesis(final String tableName, final InsertColumnsSegment segment) {

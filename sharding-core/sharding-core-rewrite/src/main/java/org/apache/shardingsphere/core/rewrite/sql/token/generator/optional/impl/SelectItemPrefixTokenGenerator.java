@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.IgnoreForSingleRoute;
@@ -37,7 +36,7 @@ public final class SelectItemPrefixTokenGenerator implements OptionalSQLTokenGen
     }
     
     @Override
-    public Optional<ProjectionPrefixToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return Optional.of(new ProjectionPrefixToken(((SelectSQLStatementContext) sqlStatementContext).getProjectionsContext().getStartIndex()));
+    public ProjectionPrefixToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
+        return new ProjectionPrefixToken(((SelectSQLStatementContext) sqlStatementContext).getProjectionsContext().getStartIndex());
     }
 }

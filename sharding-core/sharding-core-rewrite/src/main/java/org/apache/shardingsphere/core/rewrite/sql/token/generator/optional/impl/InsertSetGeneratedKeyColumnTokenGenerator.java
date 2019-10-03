@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLRouteResultAware;
@@ -46,25 +44,20 @@ public final class InsertSetGeneratedKeyColumnTokenGenerator implements Optional
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertSQLStatementContext && ((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent();
+        return sqlStatementContext instanceof InsertSQLStatementContext && ((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent()
+                && sqlRouteResult.getGeneratedKey().isPresent() && sqlRouteResult.getGeneratedKey().get().isGenerated();
     }
     
     @Override
-    public Optional<InsertSetGeneratedKeyColumnToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public InsertSetGeneratedKeyColumnToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
         Preconditions.checkState(((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent());
-        return generateSQLToken((InsertSQLStatementContext) sqlStatementContext, ((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().get());
-    }
-    
-    private Optional<InsertSetGeneratedKeyColumnToken> generateSQLToken(final InsertSQLStatementContext sqlStatementContext, final SetAssignmentsSegment segment) {
-        Optional<String> generatedKeyColumn = sqlRouteResult.getGeneratedKey().isPresent() && sqlRouteResult.getGeneratedKey().get().isGenerated()
-                ? Optional.of(sqlRouteResult.getGeneratedKey().get().getColumnName()) : Optional.<String>absent();
-        return generatedKeyColumn.isPresent()
-                ? Optional.of(generateSQLToken(sqlStatementContext, generatedKeyColumn.get(), new ArrayList<>(segment.getAssignments()))) : Optional.<InsertSetGeneratedKeyColumnToken>absent();
-    }
-    
-    private InsertSetGeneratedKeyColumnToken generateSQLToken(final InsertSQLStatementContext sqlStatementContext, final String generatedKeyColumn, final List<AssignmentSegment> assignments) {
-        int index = sqlStatementContext.getColumnNames().contains(generatedKeyColumn) ? sqlStatementContext.getColumnNames().indexOf(generatedKeyColumn) : sqlStatementContext.getColumnNames().size();
-        ExpressionSegment expressionSegment = sqlStatementContext.getInsertValueContexts().get(0).getValueExpressions().get(index);
+        Preconditions.checkState(sqlRouteResult.getGeneratedKey().isPresent());
+        String generatedKeyColumn = sqlRouteResult.getGeneratedKey().get().getColumnName();
+        List<AssignmentSegment> assignments = new ArrayList<>(((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().get().getAssignments());
+        int index = ((InsertSQLStatementContext) sqlStatementContext).getColumnNames().contains(generatedKeyColumn)
+                ? ((InsertSQLStatementContext) sqlStatementContext).getColumnNames().indexOf(generatedKeyColumn) : ((InsertSQLStatementContext) sqlStatementContext).getColumnNames().size();
+        ExpressionSegment expressionSegment = ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts().get(0).getValueExpressions().get(index);
         return new InsertSetGeneratedKeyColumnToken(assignments.get(assignments.size() - 1).getStopIndex() + 1, generatedKeyColumn, expressionSegment);
     }
+    
 }

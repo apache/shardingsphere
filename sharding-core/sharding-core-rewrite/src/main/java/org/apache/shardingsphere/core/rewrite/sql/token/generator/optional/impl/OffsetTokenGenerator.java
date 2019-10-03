@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl;
 
-import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
@@ -35,14 +35,15 @@ public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator, Ig
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectSQLStatementContext;
+        return sqlStatementContext instanceof SelectSQLStatementContext
+                && ((SelectSQLStatementContext) sqlStatementContext).getPaginationContext().getOffsetSegment().isPresent()
+                && ((SelectSQLStatementContext) sqlStatementContext).getPaginationContext().getOffsetSegment().get() instanceof NumberLiteralPaginationValueSegment;
     }
     
     @Override
-    public Optional<OffsetToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public OffsetToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
         PaginationContext pagination = ((SelectSQLStatementContext) sqlStatementContext).getPaginationContext();
-        return pagination.getOffsetSegment().isPresent() && pagination.getOffsetSegment().get() instanceof NumberLiteralPaginationValueSegment
-                ? Optional.of(new OffsetToken(pagination.getOffsetSegment().get().getStartIndex(), pagination.getOffsetSegment().get().getStopIndex(), pagination.getRevisedOffset()))
-                : Optional.<OffsetToken>absent();
+        Preconditions.checkState(pagination.getOffsetSegment().isPresent());
+        return new OffsetToken(pagination.getOffsetSegment().get().getStartIndex(), pagination.getOffsetSegment().get().getStopIndex(), pagination.getRevisedOffset());
     }
 }

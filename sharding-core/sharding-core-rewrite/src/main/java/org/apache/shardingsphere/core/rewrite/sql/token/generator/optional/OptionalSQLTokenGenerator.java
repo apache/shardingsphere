@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.sql.token.generator.optional;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
@@ -44,5 +43,5 @@ public interface OptionalSQLTokenGenerator extends SQLTokenGenerator {
      * @param sqlStatementContext SQL statement context
      * @return SQL token
      */
-    Optional<? extends SQLToken> generateSQLToken(SQLStatementContext sqlStatementContext);
+    SQLToken generateSQLToken(SQLStatementContext sqlStatementContext);
 }

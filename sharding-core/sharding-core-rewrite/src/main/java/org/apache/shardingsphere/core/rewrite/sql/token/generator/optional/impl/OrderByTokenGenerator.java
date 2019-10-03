@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
@@ -41,14 +40,10 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator, I
     }
     
     @Override
-    public Optional<OrderByToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return Optional.of(createOrderByToken((SelectSQLStatementContext) sqlStatementContext));
-    }
-    
-    private OrderByToken createOrderByToken(final SelectSQLStatementContext selectSQLStatementContext) {
-        OrderByToken result = new OrderByToken(selectSQLStatementContext.getGroupByContext().getLastIndex() + 1);
+    public OrderByToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
+        OrderByToken result = new OrderByToken(((SelectSQLStatementContext) sqlStatementContext).getGroupByContext().getLastIndex() + 1);
         String columnLabel;
-        for (OrderByItem each : selectSQLStatementContext.getOrderByContext().getItems()) {
+        for (OrderByItem each : ((SelectSQLStatementContext) sqlStatementContext).getOrderByContext().getItems()) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
                 ColumnOrderByItemSegment columnOrderByItemSegment = (ColumnOrderByItemSegment) each.getSegment();
                 QuoteCharacter quoteCharacter = columnOrderByItemSegment.getColumn().getQuoteCharacter();
@@ -63,4 +58,5 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator, I
         }
         return result;
     }
+    
 }

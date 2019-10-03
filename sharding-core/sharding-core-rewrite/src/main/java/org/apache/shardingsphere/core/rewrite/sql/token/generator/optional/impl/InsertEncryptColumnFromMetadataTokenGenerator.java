@@ -56,19 +56,15 @@ public final class InsertEncryptColumnFromMetadataTokenGenerator implements Opti
     }
     
     @Override
-    public Optional<InsertRegularNamesToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return createInsertColumnsToken(sqlStatementContext);
-    }
-    
-    private Optional<InsertRegularNamesToken> createInsertColumnsToken(final SQLStatementContext sqlStatementContext) {
+    public InsertRegularNamesToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         boolean hasMoreDerivedColumns = !encryptRule.getAssistedQueryAndPlainColumns(tableName).isEmpty();
         Optional<InsertRegularNamesToken> previousInsertRegularNamesToken = findInsertRegularNamesToken();
         if (previousInsertRegularNamesToken.isPresent()) {
             processPreviousSQLToken(previousInsertRegularNamesToken.get(), tableName, hasMoreDerivedColumns);
-            return Optional.absent();
+            return previousInsertRegularNamesToken.get();
         }
-        return Optional.of(createNewSQLToken((InsertSQLStatementContext) sqlStatementContext, tableName, hasMoreDerivedColumns));
+        return generateNewSQLToken((InsertSQLStatementContext) sqlStatementContext, tableName, hasMoreDerivedColumns);
     }
     
     private Optional<InsertRegularNamesToken> findInsertRegularNamesToken() {
@@ -90,7 +86,7 @@ public final class InsertEncryptColumnFromMetadataTokenGenerator implements Opti
         previousSQLToken.setToAppendCloseParenthesis(!hasMoreDerivedColumns);
     }
     
-    private InsertRegularNamesToken createNewSQLToken(final InsertSQLStatementContext sqlStatementContext, final String tableName, final boolean hasMoreDerivedColumns) {
+    private InsertRegularNamesToken generateNewSQLToken(final InsertSQLStatementContext sqlStatementContext, final String tableName, final boolean hasMoreDerivedColumns) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         Preconditions.checkState(insertColumnsSegment.isPresent());
         List<String> result = new LinkedList<>();

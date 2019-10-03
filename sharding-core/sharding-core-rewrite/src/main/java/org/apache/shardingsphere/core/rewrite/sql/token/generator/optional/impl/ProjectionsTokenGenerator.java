@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl;
 
 import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.optimize.segment.select.projection.Projection;
@@ -47,10 +46,9 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
     }
     
     @Override
-    public Optional<ProjectionsToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public ProjectionsToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
         Collection<String> derivedProjectionTexts = getDerivedProjectionTexts((SelectSQLStatementContext) sqlStatementContext);
-        return Optional.of(new ProjectionsToken(
-                ((SelectSQLStatementContext) sqlStatementContext).getProjectionsContext().getStopIndex() + 1 + " ".length(), derivedProjectionTexts));
+        return new ProjectionsToken(((SelectSQLStatementContext) sqlStatementContext).getProjectionsContext().getStopIndex() + 1 + " ".length(), derivedProjectionTexts);
     }
     
     private Collection<String> getDerivedProjectionTexts(final SelectSQLStatementContext selectSQLStatementContext) {

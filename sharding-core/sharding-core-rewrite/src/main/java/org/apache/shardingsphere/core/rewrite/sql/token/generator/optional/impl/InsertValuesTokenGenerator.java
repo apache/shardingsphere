@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl;
 
-import com.google.common.base.Optional;
 import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
@@ -52,12 +51,8 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
     }
     
     @Override
-    public Optional<InsertValuesToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public InsertValuesToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
         Collection<InsertValuesSegment> insertValuesSegments = sqlStatementContext.getSqlStatement().findSQLSegments(InsertValuesSegment.class);
-        return Optional.of(createInsertValuesToken(sqlStatementContext, insertValuesSegments));
-    }
-    
-    private InsertValuesToken createInsertValuesToken(final SQLStatementContext sqlStatementContext, final Collection<InsertValuesSegment> insertValuesSegments) {
         InsertValuesToken result = new InsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
         Iterator<ShardingCondition> shardingConditionIterator = null == sqlRouteResult || sqlRouteResult.getShardingConditions().getConditions().isEmpty()
                 ? null : sqlRouteResult.getShardingConditions().getConditions().iterator();
@@ -68,17 +63,17 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
         return result;
     }
     
-    private int getStartIndex(final Collection<InsertValuesSegment> insertValuesSegments) {
-        int result = insertValuesSegments.iterator().next().getStartIndex();
-        for (InsertValuesSegment each : insertValuesSegments) {
+    private int getStartIndex(final Collection<InsertValuesSegment> segments) {
+        int result = segments.iterator().next().getStartIndex();
+        for (InsertValuesSegment each : segments) {
             result = result > each.getStartIndex() ? each.getStartIndex() : result;
         }
         return result;
     }
     
-    private int getStopIndex(final Collection<InsertValuesSegment> insertValuesSegments) {
-        int result = insertValuesSegments.iterator().next().getStopIndex();
-        for (InsertValuesSegment each : insertValuesSegments) {
+    private int getStopIndex(final Collection<InsertValuesSegment> segments) {
+        int result = segments.iterator().next().getStopIndex();
+        for (InsertValuesSegment each : segments) {
             result = result < each.getStopIndex() ? each.getStopIndex() : result;
         }
         return result;

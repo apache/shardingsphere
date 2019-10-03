@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
@@ -42,10 +41,10 @@ public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator, 
     }
     
     @Override
-    public Optional<RowCountToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public RowCountToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
         PaginationContext pagination = ((SelectSQLStatementContext) sqlStatementContext).getPaginationContext();
         Preconditions.checkState(pagination.getRowCountSegment().isPresent());
-        return Optional.of(new RowCountToken(pagination.getRowCountSegment().get().getStartIndex(), pagination.getRowCountSegment().get().getStopIndex(),
-                pagination.getRevisedRowCount((SelectSQLStatementContext) sqlStatementContext)));
+        return new RowCountToken(pagination.getRowCountSegment().get().getStartIndex(), 
+                pagination.getRowCountSegment().get().getStopIndex(), pagination.getRevisedRowCount((SelectSQLStatementContext) sqlStatementContext));
     }
 }
