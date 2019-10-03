@@ -43,16 +43,14 @@ public final class InsertQueryAndPlainNamesTokenGenerator implements OptionalSQL
     private EncryptRule encryptRule;
     
     @Override
-    public Optional<InsertQueryAndPlainNamesToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        if (!isNeedToGenerateSQLToken(sqlStatementContext)) {
-            return Optional.absent();
-        }
-        return createInsertAssistedColumnsToken(sqlStatementContext);
-    }
-    
-    private boolean isNeedToGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         return sqlStatementContext instanceof InsertSQLStatementContext && insertColumnsSegment.isPresent();
+    }
+    
+    @Override
+    public Optional<InsertQueryAndPlainNamesToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
+        return createInsertAssistedColumnsToken(sqlStatementContext);
     }
     
     private Optional<InsertQueryAndPlainNamesToken> createInsertAssistedColumnsToken(final SQLStatementContext sqlStatementContext) {

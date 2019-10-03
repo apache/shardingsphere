@@ -50,12 +50,14 @@ public final class InsertEncryptColumnFromMetadataTokenGenerator implements Opti
     private List<SQLToken> previousSQLTokens;
     
     @Override
-    public Optional<InsertRegularNamesToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return isNeedToGenerateSQLToken(sqlStatementContext.getSqlStatement()) ? createInsertColumnsToken(sqlStatementContext) : Optional.<InsertRegularNamesToken>absent();
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
+        return sqlStatement instanceof InsertStatement && ((InsertStatement) sqlStatement).useDefaultColumns() && sqlStatement.findSQLSegment(InsertColumnsSegment.class).isPresent();
     }
     
-    private boolean isNeedToGenerateSQLToken(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof InsertStatement && ((InsertStatement) sqlStatement).useDefaultColumns() && sqlStatement.findSQLSegment(InsertColumnsSegment.class).isPresent();
+    @Override
+    public Optional<InsertRegularNamesToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
+        return createInsertColumnsToken(sqlStatementContext);
     }
     
     private Optional<InsertRegularNamesToken> createInsertColumnsToken(final SQLStatementContext sqlStatementContext) {

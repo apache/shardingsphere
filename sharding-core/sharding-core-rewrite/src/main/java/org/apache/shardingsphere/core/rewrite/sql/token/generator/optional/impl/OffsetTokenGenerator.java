@@ -34,10 +34,12 @@ import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.OffsetToken;
 public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
     
     @Override
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext instanceof SelectSQLStatementContext;
+    }
+    
+    @Override
     public Optional<OffsetToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof SelectSQLStatementContext)) {
-            return Optional.absent();
-        }
         PaginationContext pagination = ((SelectSQLStatementContext) sqlStatementContext).getPaginationContext();
         return pagination.getOffsetSegment().isPresent() && pagination.getOffsetSegment().get() instanceof NumberLiteralPaginationValueSegment
                 ? Optional.of(new OffsetToken(pagination.getOffsetSegment().get().getStartIndex(), pagination.getOffsetSegment().get().getStopIndex(), pagination.getRevisedOffset()))

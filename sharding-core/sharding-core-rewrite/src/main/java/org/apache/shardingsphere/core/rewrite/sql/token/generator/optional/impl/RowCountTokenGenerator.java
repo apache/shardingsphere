@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
@@ -34,13 +35,17 @@ import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.RowCountToken;
 public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
     
     @Override
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext instanceof SelectSQLStatementContext
+                && ((SelectSQLStatementContext) sqlStatementContext).getPaginationContext().getRowCountSegment().isPresent()
+                && ((SelectSQLStatementContext) sqlStatementContext).getPaginationContext().getRowCountSegment().get() instanceof NumberLiteralPaginationValueSegment;
+    }
+    
+    @Override
     public Optional<RowCountToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof SelectSQLStatementContext)) {
-            return Optional.absent();
-        }
         PaginationContext pagination = ((SelectSQLStatementContext) sqlStatementContext).getPaginationContext();
-        return pagination.getRowCountSegment().isPresent() && pagination.getRowCountSegment().get() instanceof NumberLiteralPaginationValueSegment
-                ? Optional.of(new RowCountToken(pagination.getRowCountSegment().get().getStartIndex(), pagination.getRowCountSegment().get().getStopIndex(), 
-                pagination.getRevisedRowCount((SelectSQLStatementContext) sqlStatementContext))) : Optional.<RowCountToken>absent();
+        Preconditions.checkState(pagination.getRowCountSegment().isPresent());
+        return Optional.of(new RowCountToken(pagination.getRowCountSegment().get().getStartIndex(), pagination.getRowCountSegment().get().getStopIndex(),
+                pagination.getRevisedRowCount((SelectSQLStatementContext) sqlStatementContext)));
     }
 }

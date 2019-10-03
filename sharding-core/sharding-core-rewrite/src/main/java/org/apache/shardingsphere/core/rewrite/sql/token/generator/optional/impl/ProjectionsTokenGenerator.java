@@ -42,12 +42,14 @@ import java.util.LinkedList;
 public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
     
     @Override
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext instanceof SelectSQLStatementContext && !getDerivedProjectionTexts((SelectSQLStatementContext) sqlStatementContext).isEmpty();
+    }
+    
+    @Override
     public Optional<ProjectionsToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof SelectSQLStatementContext)) {
-            return Optional.absent();
-        }
         Collection<String> derivedProjectionTexts = getDerivedProjectionTexts((SelectSQLStatementContext) sqlStatementContext);
-        return derivedProjectionTexts.isEmpty() ? Optional.<ProjectionsToken>absent() : Optional.of(new ProjectionsToken(
+        return Optional.of(new ProjectionsToken(
                 ((SelectSQLStatementContext) sqlStatementContext).getProjectionsContext().getStopIndex() + 1 + " ".length(), derivedProjectionTexts));
     }
     

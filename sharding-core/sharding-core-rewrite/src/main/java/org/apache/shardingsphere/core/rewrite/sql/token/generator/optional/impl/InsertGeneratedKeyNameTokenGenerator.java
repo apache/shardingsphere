@@ -18,14 +18,15 @@
 package org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertGeneratedKeyNameToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLRouteResultAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.ShardingRuleAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertGeneratedKeyNameToken;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -42,15 +43,16 @@ public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTo
     private SQLRouteResult sqlRouteResult;
     
     @Override
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+        Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
+        return insertColumnsSegment.isPresent() && !insertColumnsSegment.get().getColumns().isEmpty() && sqlStatementContext instanceof InsertSQLStatementContext;
+    }
+    
+    @Override
     public Optional<InsertGeneratedKeyNameToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
-        if (!insertColumnsSegment.isPresent() || insertColumnsSegment.get().getColumns().isEmpty()) {
-            return Optional.absent();
-        }
-        if (sqlStatementContext instanceof InsertSQLStatementContext) {
-            return createInsertGeneratedKeyToken(sqlStatementContext, insertColumnsSegment.get());
-        }
-        return Optional.absent();
+        Preconditions.checkState(insertColumnsSegment.isPresent());
+        return createInsertGeneratedKeyToken(sqlStatementContext, insertColumnsSegment.get());
     }
     
     private Optional<InsertGeneratedKeyNameToken> createInsertGeneratedKeyToken(final SQLStatementContext sqlStatementContext, final InsertColumnsSegment segment) {

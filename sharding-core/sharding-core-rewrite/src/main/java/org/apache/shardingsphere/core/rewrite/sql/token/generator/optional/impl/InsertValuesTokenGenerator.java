@@ -24,9 +24,9 @@ import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLRouteResultAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertValuesToken;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.rule.DataNode;
@@ -46,14 +46,15 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
     private SQLRouteResult sqlRouteResult;
     
     @Override
-    public Optional<InsertValuesToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         Collection<InsertValuesSegment> insertValuesSegments = sqlStatementContext.getSqlStatement().findSQLSegments(InsertValuesSegment.class);
-        return isNeedToGenerateSQLToken(sqlStatementContext, insertValuesSegments)
-                ? Optional.of(createInsertValuesToken(sqlStatementContext, insertValuesSegments)) : Optional.<InsertValuesToken>absent();
+        return sqlStatementContext.getSqlStatement() instanceof InsertStatement && !insertValuesSegments.isEmpty();
     }
     
-    private boolean isNeedToGenerateSQLToken(final SQLStatementContext sqlStatementContext, final Collection<InsertValuesSegment> insertValuesSegments) {
-        return sqlStatementContext.getSqlStatement() instanceof InsertStatement && !insertValuesSegments.isEmpty();
+    @Override
+    public Optional<InsertValuesToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
+        Collection<InsertValuesSegment> insertValuesSegments = sqlStatementContext.getSqlStatement().findSQLSegments(InsertValuesSegment.class);
+        return Optional.of(createInsertValuesToken(sqlStatementContext, insertValuesSegments));
     }
     
     private InsertValuesToken createInsertValuesToken(final SQLStatementContext sqlStatementContext, final Collection<InsertValuesSegment> insertValuesSegments) {

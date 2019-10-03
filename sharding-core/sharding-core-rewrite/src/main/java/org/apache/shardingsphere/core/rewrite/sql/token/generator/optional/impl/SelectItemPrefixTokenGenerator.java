@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.optimize.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.ProjectionPrefixToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.ProjectionPrefixToken;
 
 /**
  * Select item prefix token generator.
@@ -33,11 +32,12 @@ import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.Optio
 public final class SelectItemPrefixTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
     
     @Override
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext instanceof SelectSQLStatementContext && !((SelectSQLStatementContext) sqlStatementContext).getProjectionsContext().getAggregationDistinctProjections().isEmpty();
+    }
+    
+    @Override
     public Optional<ProjectionPrefixToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof SelectSQLStatementContext)) {
-            return Optional.absent();
-        }
-        ProjectionsContext projectionsContext = ((SelectSQLStatementContext) sqlStatementContext).getProjectionsContext();
-        return projectionsContext.getAggregationDistinctProjections().isEmpty() ? Optional.<ProjectionPrefixToken>absent() : Optional.of(new ProjectionPrefixToken(projectionsContext.getStartIndex()));
+        return Optional.of(new ProjectionPrefixToken(((SelectSQLStatementContext) sqlStatementContext).getProjectionsContext().getStartIndex()));
     }
 }

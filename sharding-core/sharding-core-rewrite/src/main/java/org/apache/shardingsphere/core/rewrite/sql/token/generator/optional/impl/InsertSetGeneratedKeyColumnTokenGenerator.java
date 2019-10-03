@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
@@ -44,10 +45,14 @@ public final class InsertSetGeneratedKeyColumnTokenGenerator implements Optional
     private SQLRouteResult sqlRouteResult;
     
     @Override
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext instanceof InsertSQLStatementContext && ((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent();
+    }
+    
+    @Override
     public Optional<InsertSetGeneratedKeyColumnToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertSQLStatementContext && ((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent()
-                ? generateSQLToken((InsertSQLStatementContext) sqlStatementContext, ((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().get())
-                : Optional.<InsertSetGeneratedKeyColumnToken>absent();
+        Preconditions.checkState(((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent());
+        return generateSQLToken((InsertSQLStatementContext) sqlStatementContext, ((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().get());
     }
     
     private Optional<InsertSetGeneratedKeyColumnToken> generateSQLToken(final InsertSQLStatementContext sqlStatementContext, final SetAssignmentsSegment segment) {

@@ -44,13 +44,14 @@ public final class InsertGeneratedKeyFromMetadataTokenGenerator implements Optio
     private SQLRouteResult sqlRouteResult;
     
     @Override
-    public Optional<InsertRegularNamesToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return isNeedToGenerateSQLToken(sqlStatementContext.getSqlStatement())
-                ? Optional.of(createInsertColumnsToken(sqlStatementContext)) : Optional.<InsertRegularNamesToken>absent();
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
+        return sqlStatement instanceof InsertStatement && ((InsertStatement) sqlStatement).useDefaultColumns() && sqlStatement.findSQLSegment(InsertColumnsSegment.class).isPresent();
     }
     
-    private boolean isNeedToGenerateSQLToken(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof InsertStatement && ((InsertStatement) sqlStatement).useDefaultColumns() && sqlStatement.findSQLSegment(InsertColumnsSegment.class).isPresent();
+    @Override
+    public Optional<InsertRegularNamesToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
+        return Optional.of(createInsertColumnsToken(sqlStatementContext));
     }
     
     private InsertRegularNamesToken createInsertColumnsToken(final SQLStatementContext sqlStatementContext) {

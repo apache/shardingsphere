@@ -22,12 +22,12 @@ import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.ParametersAware;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.PreviousSQLTokensAware;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.TableMetasAware;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -91,9 +91,11 @@ public final class SQLTokenGenerators {
                 ((PreviousSQLTokensAware) each).setPreviousSQLTokens(result);
             }
             if (each instanceof OptionalSQLTokenGenerator) {
-                Optional<? extends SQLToken> sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(sqlStatementContext);
-                if (sqlToken.isPresent()) {
-                    result.add(sqlToken.get());
+                if (((OptionalSQLTokenGenerator) each).isGenerateSQLToken(sqlStatementContext)) {
+                    Optional<? extends SQLToken> sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(sqlStatementContext);
+                    if (sqlToken.isPresent() && !result.contains(sqlToken.get())) {
+                        result.add(sqlToken.get());
+                    }
                 }
             } else {
                 result.addAll(((CollectionSQLTokenGenerator) each).generateSQLTokens(sqlStatementContext));

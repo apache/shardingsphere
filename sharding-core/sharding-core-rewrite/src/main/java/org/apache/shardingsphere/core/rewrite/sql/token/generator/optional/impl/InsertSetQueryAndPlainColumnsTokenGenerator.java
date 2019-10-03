@@ -49,16 +49,14 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
     private EncryptRule encryptRule;
     
     @Override
-    public Optional<InsertSetQueryAndPlainColumnsToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        if (!isNeedToGenerateSQLToken(sqlStatementContext)) {
-            return Optional.absent();
-        }
-        return createInsertSetAddItemsToken((InsertSQLStatementContext) sqlStatementContext);
-    }
-    
-    private boolean isNeedToGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         Optional<SetAssignmentsSegment> setAssignmentsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
         return sqlStatementContext instanceof InsertSQLStatementContext && setAssignmentsSegment.isPresent();
+    }
+    
+    @Override
+    public Optional<InsertSetQueryAndPlainColumnsToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
+        return createInsertSetAddItemsToken((InsertSQLStatementContext) sqlStatementContext);
     }
     
     private Optional<InsertSetQueryAndPlainColumnsToken> createInsertSetAddItemsToken(final InsertSQLStatementContext insertSQLStatementContext) {

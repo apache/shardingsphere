@@ -36,14 +36,13 @@ import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.OrderByToken;
 public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
     
     @Override
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext instanceof SelectSQLStatementContext && ((SelectSQLStatementContext) sqlStatementContext).getOrderByContext().isGenerated();
+    }
+    
+    @Override
     public Optional<OrderByToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof SelectSQLStatementContext)) {
-            return Optional.absent();
-        }
-        if (((SelectSQLStatementContext) sqlStatementContext).getOrderByContext().isGenerated()) {
-            return Optional.of(createOrderByToken((SelectSQLStatementContext) sqlStatementContext));
-        }
-        return Optional.absent();
+        return Optional.of(createOrderByToken((SelectSQLStatementContext) sqlStatementContext));
     }
     
     private OrderByToken createOrderByToken(final SelectSQLStatementContext selectSQLStatementContext) {
