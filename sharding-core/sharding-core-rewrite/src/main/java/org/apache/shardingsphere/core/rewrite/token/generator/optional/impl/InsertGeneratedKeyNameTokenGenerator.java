@@ -22,12 +22,11 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.token.generator.GeneratedKeyAware;
+import org.apache.shardingsphere.core.rewrite.token.generator.SQLRouteResultAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.ShardingRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.pojo.InsertGeneratedKeyNameToken;
-import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
+import org.apache.shardingsphere.core.rewrite.token.pojo.impl.InsertGeneratedKeyNameToken;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -36,14 +35,14 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  * @author panjuan
  */
 @Setter
-public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTokenGenerator, ShardingRuleAware, GeneratedKeyAware {
+public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTokenGenerator, ShardingRuleAware, SQLRouteResultAware {
     
     private ShardingRule shardingRule;
     
-    private GeneratedKey generatedKey;
+    private SQLRouteResult sqlRouteResult;
     
     @Override
-    public Optional<InsertGeneratedKeyNameToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+    public Optional<InsertGeneratedKeyNameToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         if (!insertColumnsSegment.isPresent() || insertColumnsSegment.get().getColumns().isEmpty()) {
             return Optional.absent();
@@ -56,8 +55,8 @@ public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTo
     
     private Optional<InsertGeneratedKeyNameToken> createInsertGeneratedKeyToken(final SQLStatementContext sqlStatementContext, final InsertColumnsSegment segment) {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        return null != generatedKey && generatedKey.isGenerated()
-                ? Optional.of(new InsertGeneratedKeyNameToken(segment.getStopIndex(), generatedKey.getColumnName(), isToAddCloseParenthesis(tableName, segment)))
+        return sqlRouteResult.getGeneratedKey().isPresent() && sqlRouteResult.getGeneratedKey().get().isGenerated()
+                ? Optional.of(new InsertGeneratedKeyNameToken(segment.getStopIndex(), sqlRouteResult.getGeneratedKey().get().getColumnName(), isToAddCloseParenthesis(tableName, segment)))
                 : Optional.<InsertGeneratedKeyNameToken>absent();
     }
     

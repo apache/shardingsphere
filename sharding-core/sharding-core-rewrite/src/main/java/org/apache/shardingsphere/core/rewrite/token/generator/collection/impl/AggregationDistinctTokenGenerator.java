@@ -22,10 +22,9 @@ import org.apache.shardingsphere.core.optimize.segment.select.projection.Derived
 import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.pojo.AggregationDistinctToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.impl.AggregationDistinctToken;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,7 +38,7 @@ import java.util.LinkedList;
 public final class AggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator, IgnoreForSingleRoute {
     
     @Override
-    public Collection<AggregationDistinctToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+    public Collection<AggregationDistinctToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         if (!(sqlStatementContext instanceof SelectSQLStatementContext)) {
             return Collections.emptyList();
         }
@@ -50,9 +49,9 @@ public final class AggregationDistinctTokenGenerator implements CollectionSQLTok
         return result;
     }
     
-    private AggregationDistinctToken createAggregationDistinctToken(final AggregationDistinctProjection item) {
-        Preconditions.checkArgument(item.getAlias().isPresent());
-        String derivedAlias = DerivedColumn.isDerivedColumnName(item.getAlias().get()) ? item.getAlias().get() : null;
-        return new AggregationDistinctToken(item.getStartIndex(), item.getStopIndex(), item.getDistinctInnerExpression(), derivedAlias);
+    private AggregationDistinctToken createAggregationDistinctToken(final AggregationDistinctProjection projection) {
+        Preconditions.checkArgument(projection.getAlias().isPresent());
+        String derivedAlias = DerivedColumn.isDerivedColumnName(projection.getAlias().get()) ? projection.getAlias().get() : null;
+        return new AggregationDistinctToken(projection.getStartIndex(), projection.getStopIndex(), projection.getDistinctInnerExpression(), derivedAlias);
     }
 }

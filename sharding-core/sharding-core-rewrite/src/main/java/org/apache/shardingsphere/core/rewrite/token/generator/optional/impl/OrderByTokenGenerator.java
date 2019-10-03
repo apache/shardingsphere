@@ -24,10 +24,9 @@ import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatement
 import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
-import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.pojo.OrderByToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.impl.OrderByToken;
 
 /**
  * Order by token generator.
@@ -37,7 +36,7 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.OrderByToken;
 public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
     
     @Override
-    public Optional<OrderByToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+    public Optional<OrderByToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
         if (!(sqlStatementContext instanceof SelectSQLStatementContext)) {
             return Optional.absent();
         }

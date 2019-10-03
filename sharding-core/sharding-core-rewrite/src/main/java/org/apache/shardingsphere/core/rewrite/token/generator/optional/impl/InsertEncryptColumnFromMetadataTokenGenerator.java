@@ -25,11 +25,10 @@ import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatement
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.pojo.InsertRegularNamesToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.impl.InsertRegularNamesToken;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
@@ -51,7 +50,7 @@ public final class InsertEncryptColumnFromMetadataTokenGenerator implements Opti
     private List<SQLToken> previousSQLTokens;
     
     @Override
-    public Optional<InsertRegularNamesToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+    public Optional<InsertRegularNamesToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
         return isNeedToGenerateSQLToken(sqlStatementContext.getSqlStatement()) ? createInsertColumnsToken(sqlStatementContext) : Optional.<InsertRegularNamesToken>absent();
     }
     

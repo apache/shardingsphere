@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.token.generator.collection;
 
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.token.pojo.SQLToken;
 
@@ -36,8 +35,7 @@ public interface CollectionSQLTokenGenerator extends SQLTokenGenerator {
      * Generate SQL tokens.
      * 
      * @param sqlStatementContext SQL statement context
-     * @param parameterBuilder SQL parameter builder
      * @return SQL tokens
      */
-    Collection<? extends SQLToken> generateSQLTokens(SQLStatementContext sqlStatementContext, ParameterBuilder parameterBuilder);
+    Collection<? extends SQLToken> generateSQLTokens(SQLStatementContext sqlStatementContext);
 }

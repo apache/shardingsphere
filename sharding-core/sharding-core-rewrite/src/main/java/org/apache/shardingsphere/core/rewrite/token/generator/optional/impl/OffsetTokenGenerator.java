@@ -22,10 +22,9 @@ import org.apache.shardingsphere.core.optimize.segment.select.pagination.Paginat
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
-import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.pojo.OffsetToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.impl.OffsetToken;
 
 /**
  * Offset token generator.
@@ -35,7 +34,7 @@ import org.apache.shardingsphere.core.rewrite.token.pojo.OffsetToken;
 public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
     
     @Override
-    public Optional<OffsetToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+    public Optional<OffsetToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
         if (!(sqlStatementContext instanceof SelectSQLStatementContext)) {
             return Optional.absent();
         }

@@ -31,10 +31,9 @@ import org.apache.shardingsphere.core.parse.sql.segment.generic.TableAvailable;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.generator.ShardingRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.collection.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.pojo.TableToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.impl.TableToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
@@ -52,7 +51,7 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
     private ShardingRule shardingRule;
     
     @Override
-    public Collection<TableToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+    public Collection<TableToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<TableToken> result = new LinkedList<>();
         for (SQLSegment each : sqlStatementContext.getSqlStatement().getAllSQLSegments()) {
             if (each instanceof SelectItemsSegment) {

@@ -27,10 +27,9 @@ import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.Ag
 import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.pojo.ProjectionsToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.impl.ProjectionsToken;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -43,7 +42,7 @@ import java.util.LinkedList;
 public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
     
     @Override
-    public Optional<ProjectionsToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+    public Optional<ProjectionsToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
         if (!(sqlStatementContext instanceof SelectSQLStatementContext)) {
             return Optional.absent();
         }

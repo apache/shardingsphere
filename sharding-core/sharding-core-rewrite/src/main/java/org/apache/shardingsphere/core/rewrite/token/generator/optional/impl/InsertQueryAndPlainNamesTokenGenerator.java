@@ -22,10 +22,9 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.core.rewrite.builder.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.token.generator.optional.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.token.pojo.InsertQueryAndPlainNamesToken;
+import org.apache.shardingsphere.core.rewrite.token.pojo.impl.InsertQueryAndPlainNamesToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 
@@ -44,7 +43,7 @@ public final class InsertQueryAndPlainNamesTokenGenerator implements OptionalSQL
     private EncryptRule encryptRule;
     
     @Override
-    public Optional<InsertQueryAndPlainNamesToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final ParameterBuilder parameterBuilder) {
+    public Optional<InsertQueryAndPlainNamesToken> generateSQLToken(final SQLStatementContext sqlStatementContext) {
         if (!isNeedToGenerateSQLToken(sqlStatementContext)) {
             return Optional.absent();
         }
