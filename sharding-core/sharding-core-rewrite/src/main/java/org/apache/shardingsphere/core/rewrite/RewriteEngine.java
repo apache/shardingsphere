@@ -54,12 +54,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * SQL rewrite engine.
+ * Rewrite engine.
  * 
  * @author panjuan
  * @author zhangliang
  */
-public final class SQLRewriteEngine {
+public final class RewriteEngine {
     
     private final BaseRule baseRule;
             
@@ -71,8 +71,8 @@ public final class SQLRewriteEngine {
     
     private final ParameterBuilder parameterBuilder;
     
-    public SQLRewriteEngine(final ShardingRule shardingRule, final TableMetas tableMetas, 
-                            final SQLRouteResult sqlRouteResult, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
+    public RewriteEngine(final ShardingRule shardingRule, final TableMetas tableMetas,
+                         final SQLRouteResult sqlRouteResult, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
         baseRule = shardingRule;
         sqlStatementContext = sqlRouteResult.getSqlStatementContext();
         parameterBuilder = createParameterBuilder(tableMetas, sqlRouteResult, parameters, isQueryWithCipherColumn);
@@ -84,8 +84,8 @@ public final class SQLRewriteEngine {
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
     }
     
-    public SQLRewriteEngine(final EncryptRule encryptRule, final TableMetas tableMetas,
-                            final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
+    public RewriteEngine(final EncryptRule encryptRule, final TableMetas tableMetas,
+                         final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
         baseRule = encryptRule;
         this.sqlStatementContext = sqlStatementContext;
         parameterBuilder = createParameterBuilder(tableMetas, sqlStatementContext, parameters, isQueryWithCipherColumn);
@@ -96,7 +96,7 @@ public final class SQLRewriteEngine {
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
     }
     
-    public SQLRewriteEngine(final MasterSlaveRule masterSlaveRule, final SQLStatementContext sqlStatementContext, final String sql) {
+    public RewriteEngine(final MasterSlaveRule masterSlaveRule, final SQLStatementContext sqlStatementContext, final String sql) {
         baseRule = masterSlaveRule;
         this.sqlStatementContext = sqlStatementContext;
         parameterBuilder = sqlStatementContext instanceof InsertSQLStatementContext

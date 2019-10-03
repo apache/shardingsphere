@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.SQLStatementContextFactory;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
+import org.apache.shardingsphere.core.rewrite.RewriteEngine;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.junit.Before;
@@ -45,7 +45,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class EncryptSQLRewriteEngineTest {
+public final class EncryptRewriteEngineTest {
     
     private EncryptRule encryptRule;
     
@@ -337,7 +337,7 @@ public final class EncryptSQLRewriteEngineTest {
         // TODO panjuan: should mock sqlStatement, do not call parse module on rewrite test case
         SQLStatement sqlStatement = parseEngine.parse(sql, false);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(mock(TableMetas.class), sql, parameters, sqlStatement);
-        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(encryptRule, mock(TableMetas.class), sqlStatementContext, sql, parameters, isQueryWithCipherColumn);
-        return sqlRewriteEngine.generateSQL();
+        RewriteEngine rewriteEngine = new RewriteEngine(encryptRule, mock(TableMetas.class), sqlStatementContext, sql, parameters, isQueryWithCipherColumn);
+        return rewriteEngine.generateSQL();
     }
 }
