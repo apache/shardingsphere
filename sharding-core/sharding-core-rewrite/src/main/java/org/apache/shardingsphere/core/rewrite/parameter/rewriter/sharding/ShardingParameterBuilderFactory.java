@@ -22,9 +22,9 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.core.rewrite.token.generator.SQLRouteResultAware;
-import org.apache.shardingsphere.core.rewrite.token.generator.ShardingRuleAware;
-import org.apache.shardingsphere.core.rewrite.token.generator.TableMetasAware;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLRouteResultAware;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.ShardingRuleAware;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.TableMetasAware;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
