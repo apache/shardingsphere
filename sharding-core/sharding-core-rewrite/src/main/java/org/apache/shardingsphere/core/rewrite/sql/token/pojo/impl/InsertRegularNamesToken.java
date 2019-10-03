@@ -36,12 +36,12 @@ public final class InsertRegularNamesToken extends SQLToken implements Attachabl
     private final List<String> columns;
     
     @Setter
-    private boolean isToAppendCloseParenthesis;
+    private boolean isEndOfToken;
     
-    public InsertRegularNamesToken(final int startIndex, final List<String> columns, final boolean isToAppendCloseParenthesis) {
+    public InsertRegularNamesToken(final int startIndex, final List<String> columns, final boolean isEndOfToken) {
         super(startIndex);
         this.columns = columns;
-        this.isToAppendCloseParenthesis = isToAppendCloseParenthesis;
+        this.isEndOfToken = isEndOfToken;
     }
     
     @Override
@@ -49,6 +49,6 @@ public final class InsertRegularNamesToken extends SQLToken implements Attachabl
         if (columns.isEmpty()) {
             return "";
         }
-        return String.format(isToAppendCloseParenthesis ? "(%s)" : "(%s", Joiner.on(", ").join(columns));
+        return String.format(isEndOfToken ? "(%s)" : "(%s", Joiner.on(", ").join(columns));
     }
 }
