@@ -110,6 +110,7 @@ public class TableMetaDataInitializerTest {
     }
 
     @Test
+    @Ignore
     public void assertShardingTablesCount() throws SQLException {
         Map<String, TableMetaData> tableMetas = tableMetaDataInitializer.load(shardingRule);
         TableMetaData TableMetaData = tableMetas.get("test_table");
