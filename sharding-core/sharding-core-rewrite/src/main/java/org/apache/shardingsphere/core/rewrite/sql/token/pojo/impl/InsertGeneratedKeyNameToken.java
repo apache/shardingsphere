@@ -29,16 +29,16 @@ public final class InsertGeneratedKeyNameToken extends SQLToken implements Attac
     
     private final String column;
     
-    private final boolean isToAppendCloseParenthesis;
+    private final boolean isEndOfToken;
     
-    public InsertGeneratedKeyNameToken(final int startIndex, final String column, final boolean isToAppendCloseParenthesis) {
+    public InsertGeneratedKeyNameToken(final int startIndex, final String column, final boolean isEndOfToken) {
         super(startIndex);
         this.column = column;
-        this.isToAppendCloseParenthesis = isToAppendCloseParenthesis;
+        this.isEndOfToken = isEndOfToken;
     }
     
     @Override
     public String toString() {
-        return String.format(isToAppendCloseParenthesis ? ", %s)" : ", %s", column);
+        return String.format(isEndOfToken ? ", %s)" : ", %s", column);
     }
 }

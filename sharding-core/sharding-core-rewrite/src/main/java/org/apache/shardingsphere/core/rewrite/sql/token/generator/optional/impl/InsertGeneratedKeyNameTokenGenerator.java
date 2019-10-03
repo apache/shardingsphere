@@ -43,22 +43,16 @@ public final class InsertGeneratedKeyNameTokenGenerator implements OptionalSQLTo
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
-        return insertColumnsSegment.isPresent() && !insertColumnsSegment.get().getColumns().isEmpty()
-                && sqlRouteResult.getGeneratedKey().isPresent() && sqlRouteResult.getGeneratedKey().get().isGenerated();
+        Optional<InsertColumnsSegment> sqlSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
+        return sqlSegment.isPresent() && !sqlSegment.get().getColumns().isEmpty() && sqlRouteResult.getGeneratedKey().isPresent() && sqlRouteResult.getGeneratedKey().get().isGenerated();
     }
     
     @Override
     public InsertGeneratedKeyNameToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
-        Preconditions.checkState(insertColumnsSegment.isPresent());
-        InsertColumnsSegment segment = insertColumnsSegment.get();
+        Optional<InsertColumnsSegment> sqlSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
+        Preconditions.checkState(sqlSegment.isPresent());
         Preconditions.checkState(sqlRouteResult.getGeneratedKey().isPresent());
-        return new InsertGeneratedKeyNameToken(segment.getStopIndex(), 
-                sqlRouteResult.getGeneratedKey().get().getColumnName(), isToAddCloseParenthesis(sqlStatementContext.getTablesContext().getSingleTableName(), segment));
-    }
-    
-    private boolean isToAddCloseParenthesis(final String tableName, final InsertColumnsSegment segment) {
-        return segment.getColumns().isEmpty() && shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(tableName).isEmpty();
+        boolean isEndOfToken = !shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(sqlStatementContext.getTablesContext().getSingleTableName()).isEmpty();
+        return new InsertGeneratedKeyNameToken(sqlSegment.get().getStopIndex(), sqlRouteResult.getGeneratedKey().get().getColumnName(), isEndOfToken);
     }
 }
