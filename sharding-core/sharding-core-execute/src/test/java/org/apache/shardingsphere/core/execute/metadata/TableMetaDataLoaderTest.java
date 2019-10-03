@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 
@@ -107,6 +108,7 @@ public class TableMetaDataLoaderTest {
         return Arrays.asList("ds_0", "ds_1");
     }
 
+    @Ignore
     @Test
     public void AssertLogicIndexes() throws SQLException {
         TableMetaData tableMetaData = tableMetaDataLoader.load("TEST_TABLE", shardingRule);
