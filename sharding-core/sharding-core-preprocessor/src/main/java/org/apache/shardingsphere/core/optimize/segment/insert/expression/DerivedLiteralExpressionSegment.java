@@ -30,10 +30,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralE
 @ToString(callSuper = true)
 public final class DerivedLiteralExpressionSegment extends LiteralExpressionSegment implements DerivedSimpleExpressionSegment {
     
-    private final String type;
-    
-    public DerivedLiteralExpressionSegment(final Object literals, final String type) {
+    public DerivedLiteralExpressionSegment(final Object literals) {
         super(0, 0, literals);
-        this.type = type;
     }
 }

@@ -30,10 +30,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.Paramete
 @ToString(callSuper = true)
 public final class DerivedParameterMarkerExpressionSegment extends ParameterMarkerExpressionSegment implements DerivedSimpleExpressionSegment {
     
-    private final String type;
-    
-    public DerivedParameterMarkerExpressionSegment(final int parameterMarkerIndex, final String type) {
+    public DerivedParameterMarkerExpressionSegment(final int parameterMarkerIndex) {
         super(0, 0, parameterMarkerIndex);
-        this.type = type;
     }
 }

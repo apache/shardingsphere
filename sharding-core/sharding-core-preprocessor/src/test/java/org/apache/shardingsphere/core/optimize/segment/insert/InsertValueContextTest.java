@@ -91,14 +91,12 @@ public final class InsertValueContextTest {
     public void assertAppendValueWhenParametersIsEmpty() {
         Collection<ExpressionSegment> assignments = Collections.emptyList();
         List<Object> parameters = Collections.emptyList();
-        InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, 0);
+        InsertValueContext insertValueContext = new InsertValueContext(assignments, parameters, 0);
         Object value = "test";
-        String type = "String";
-        insertValueContext.appendValue(value, type);
+        insertValueContext.appendValue(value);
         List<ExpressionSegment> valueExpressions = insertValueContext.getValueExpressions();
         assertThat(valueExpressions.size(), is(1));
         DerivedLiteralExpressionSegment segmentInInsertValueContext = (DerivedLiteralExpressionSegment) valueExpressions.get(0);
-        assertThat(segmentInInsertValueContext.getType(), is(type));
         assertThat(segmentInInsertValueContext.getLiterals(), is(value));
     }
     
@@ -108,14 +106,12 @@ public final class InsertValueContextTest {
         String parameterValue = "test";
         List<Object> parameters = Collections.<Object>singletonList(parameterValue);
         int parametersOffset = 0;
-        InsertValueContext insertValueContext = new InsertValueContext(assignments,parameters, parametersOffset);
+        InsertValueContext insertValueContext = new InsertValueContext(assignments, parameters, parametersOffset);
         Object value = "test";
-        String type = "String";
-        insertValueContext.appendValue(value, type);
+        insertValueContext.appendValue(value);
         List<ExpressionSegment> valueExpressions = insertValueContext.getValueExpressions();
         assertThat(valueExpressions.size(), is(2));
         DerivedParameterMarkerExpressionSegment segmentInInsertValueContext = (DerivedParameterMarkerExpressionSegment) valueExpressions.get(1);
-        assertThat(segmentInInsertValueContext.getType(), is(type));
         assertThat(segmentInInsertValueContext.getParameterMarkerIndex(), is(parameters.size() - 1));
     }
 }

@@ -975,7 +975,7 @@ public final class ShardingRewriteEngineTest {
         insertStatement.getAllSQLSegments().add(new SetAssignmentsSegment(26, 34, Collections.singletonList(new AssignmentSegment(26, 34, columnSegment, expressionSegment))));
         insertStatement.setSetAssignment(new SetAssignmentsSegment(26, 34, Collections.singletonList(new AssignmentSegment(26, 34, columnSegment, expressionSegment))));
         InsertSQLStatementContext insertSQLStatementContext = new InsertSQLStatementContext(null, Collections.emptyList(), insertStatement);
-        insertSQLStatementContext.getInsertValueContexts().get(0).appendValue(1, ShardingDerivedColumnType.KEY_GEN);
+        insertSQLStatementContext.getInsertValueContexts().get(0).appendValue(1);
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
         GeneratedKey generatedKey = new GeneratedKey("id", true);

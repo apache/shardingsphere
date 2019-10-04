@@ -28,7 +28,6 @@ import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rewrite.constant.ShardingDerivedColumnType;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.ParametersAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.OptionalSQLTokenGenerator;
@@ -65,8 +64,8 @@ public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedK
         int count = 0;
         for (InsertValueContext each : ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts()) {
             InsertValueToken insertValueToken = result.get().getInsertValueTokens().get(count);
-            DerivedSimpleExpressionSegment expressionSegment = parameters.isEmpty() ? new DerivedLiteralExpressionSegment(generatedValues.next(), ShardingDerivedColumnType.KEY_GEN)
-                    : new DerivedParameterMarkerExpressionSegment(each.getParametersCount(), ShardingDerivedColumnType.KEY_GEN);
+            DerivedSimpleExpressionSegment expressionSegment = parameters.isEmpty()
+                    ? new DerivedLiteralExpressionSegment(generatedValues.next()) : new DerivedParameterMarkerExpressionSegment(each.getParametersCount());
             insertValueToken.getValues().add(expressionSegment);
             count++;
         }

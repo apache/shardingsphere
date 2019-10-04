@@ -93,13 +93,12 @@ public final class InsertValueContext {
      * Add value.
      *
      * @param value value
-     * @param type type of derived value
      */
-    public void appendValue(final Object value, final String type) {
+    public void appendValue(final Object value) {
         if (parameters.isEmpty()) {
-            valueExpressions.add(new DerivedLiteralExpressionSegment(value, type));
+            valueExpressions.add(new DerivedLiteralExpressionSegment(value));
         } else {
-            valueExpressions.add(new DerivedParameterMarkerExpressionSegment(parameters.size() - 1, type));
+            valueExpressions.add(new DerivedParameterMarkerExpressionSegment(parameters.size() - 1));
         }
     }
     

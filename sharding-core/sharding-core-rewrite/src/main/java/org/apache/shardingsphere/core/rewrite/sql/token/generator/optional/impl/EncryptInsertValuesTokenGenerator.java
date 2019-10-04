@@ -31,7 +31,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rewrite.constant.EncryptDerivedColumnType;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.OptionalSQLTokenGenerator;
@@ -121,15 +120,13 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
             }
             if (encryptRule.findAssistedQueryColumn(tableName, each).isPresent()) {
                 DerivedSimpleExpressionSegment derivedExpressionSegment = insertValueContext.getParameters().isEmpty()
-                        ? new DerivedLiteralExpressionSegment(((ShardingQueryAssistedEncryptor) encryptor.get())
-                        .queryAssistedEncrypt(null == originalValue ? null : originalValue.toString()), EncryptDerivedColumnType.ENCRYPT)
-                        : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken), EncryptDerivedColumnType.ENCRYPT);
+                        ? new DerivedLiteralExpressionSegment(((ShardingQueryAssistedEncryptor) encryptor.get()).queryAssistedEncrypt(null == originalValue ? null : originalValue.toString()))
+                        : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
                 insertValueToken.getValues().add(derivedExpressionSegment);
             }
             if (encryptRule.findPlainColumn(tableName, each).isPresent()) {
                 DerivedSimpleExpressionSegment derivedExpressionSegment = insertValueContext.getParameters().isEmpty()
-                        ? new DerivedLiteralExpressionSegment(originalValue, EncryptDerivedColumnType.ENCRYPT)
-                        : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken), EncryptDerivedColumnType.ENCRYPT);
+                        ? new DerivedLiteralExpressionSegment(originalValue) : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
                 insertValueToken.getValues().add(derivedExpressionSegment);
             }
         }
