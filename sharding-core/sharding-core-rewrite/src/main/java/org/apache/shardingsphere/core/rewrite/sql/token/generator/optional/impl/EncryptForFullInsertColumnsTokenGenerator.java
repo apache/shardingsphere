@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.rewrite.sql.token.generator.EncryptRuleAwa
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.FullInsertColumnsToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertColumnsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 
@@ -56,26 +56,26 @@ public final class EncryptForFullInsertColumnsTokenGenerator implements Optional
     }
     
     @Override
-    public FullInsertColumnsToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public InsertColumnsToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        Optional<FullInsertColumnsToken> previousInsertRegularNamesToken = findFullInsertColumnsToken();
-        if (previousInsertRegularNamesToken.isPresent()) {
-            processPreviousSQLToken(previousInsertRegularNamesToken.get(), tableName);
-            return previousInsertRegularNamesToken.get();
+        Optional<InsertColumnsToken> previousSQLToken = findInsertColumnsToken();
+        if (previousSQLToken.isPresent()) {
+            processPreviousSQLToken(previousSQLToken.get(), tableName);
+            return previousSQLToken.get();
         }
         return generateNewSQLToken((InsertSQLStatementContext) sqlStatementContext, tableName);
     }
     
-    private Optional<FullInsertColumnsToken> findFullInsertColumnsToken() {
+    private Optional<InsertColumnsToken> findInsertColumnsToken() {
         for (SQLToken each : previousSQLTokens) {
-            if (each instanceof FullInsertColumnsToken) {
-                return Optional.of((FullInsertColumnsToken) each);
+            if (each instanceof InsertColumnsToken) {
+                return Optional.of((InsertColumnsToken) each);
             }
         }
         return Optional.absent();
     }
     
-    private void processPreviousSQLToken(final FullInsertColumnsToken previousSQLToken, final String tableName) {
+    private void processPreviousSQLToken(final InsertColumnsToken previousSQLToken, final String tableName) {
         for (Entry<String, String> entry : encryptRule.getLogicAndCipherColumns(tableName).entrySet()) {
             int encryptLogicColumnIndex = previousSQLToken.getColumns().indexOf(entry.getKey());
             if (-1 != encryptLogicColumnIndex) {
@@ -88,7 +88,7 @@ public final class EncryptForFullInsertColumnsTokenGenerator implements Optional
         }
     }
     
-    private FullInsertColumnsToken generateNewSQLToken(final InsertSQLStatementContext sqlStatementContext, final String tableName) {
+    private InsertColumnsToken generateNewSQLToken(final InsertSQLStatementContext sqlStatementContext, final String tableName) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         Preconditions.checkState(insertColumnsSegment.isPresent());
         List<String> columnNames = new LinkedList<>();
@@ -100,7 +100,7 @@ public final class EncryptForFullInsertColumnsTokenGenerator implements Optional
         if (encryptTable.isPresent()) {
             columnNames.addAll(getEncryptDerivedColumnNames(encryptTable.get(), tableName));
         }
-        return new FullInsertColumnsToken(insertColumnsSegment.get().getStopIndex(), columnNames);
+        return new InsertColumnsToken(insertColumnsSegment.get().getStopIndex(), columnNames);
     }
     
     private List<String> getEncryptDerivedColumnNames(final EncryptTable encryptTable, final String tableName) {

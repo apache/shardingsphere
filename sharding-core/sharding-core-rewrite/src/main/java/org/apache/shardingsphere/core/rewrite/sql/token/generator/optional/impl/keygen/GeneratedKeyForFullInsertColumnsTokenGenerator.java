@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.FullInsertColumnsToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertColumnsToken;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 
 import java.util.ArrayList;
@@ -43,10 +43,10 @@ public final class GeneratedKeyForFullInsertColumnsTokenGenerator extends BaseGe
     }
     
     @Override
-    protected FullInsertColumnsToken generateSQLToken(final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
+    protected InsertColumnsToken generateSQLToken(final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         Preconditions.checkState(insertColumnsSegment.isPresent());
-        return new FullInsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames((InsertSQLStatementContext) sqlStatementContext, generatedKey));
+        return new InsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames((InsertSQLStatementContext) sqlStatementContext, generatedKey));
     }
     
     private List<String> getColumnNames(final InsertSQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
