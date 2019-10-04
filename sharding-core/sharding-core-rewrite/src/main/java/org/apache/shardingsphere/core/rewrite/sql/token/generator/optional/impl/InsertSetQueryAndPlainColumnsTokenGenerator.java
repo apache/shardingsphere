@@ -32,12 +32,11 @@ import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertSetQuery
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Insert set add items token generator.
+ * Insert set query and plain columns token generator.
  *
  * @author panjuan
  */
@@ -48,22 +47,21 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        Optional<SetAssignmentsSegment> setAssignmentsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
-        return sqlStatementContext instanceof InsertSQLStatementContext && setAssignmentsSegment.isPresent()
+        return sqlStatementContext instanceof InsertSQLStatementContext && sqlStatementContext.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class).isPresent()
                 && !encryptRule.getAssistedQueryAndPlainColumns(sqlStatementContext.getTablesContext().getSingleTableName()).isEmpty();
     }
     
     @Override
     public InsertSetQueryAndPlainColumnsToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return new InsertSetQueryAndPlainColumnsToken(getStartIndex((InsertSQLStatementContext) sqlStatementContext), 
+        Optional<SetAssignmentsSegment> sqlSegment = sqlStatementContext.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
+        Preconditions.checkState(sqlSegment.isPresent());
+        return new InsertSetQueryAndPlainColumnsToken(sqlSegment.get().getStopIndex() + 1, 
                 getEncryptDerivedColumnNames(sqlStatementContext.getTablesContext().getSingleTableName()), getEncryptDerivedValues((InsertSQLStatementContext) sqlStatementContext));
     }
     
     private List<String> getEncryptDerivedColumnNames(final String tableName) {
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        if (!encryptTable.isPresent()) {
-            return Collections.emptyList();
-        }
+        Preconditions.checkState(encryptTable.isPresent());
         List<String> result = new LinkedList<>();
         for (String each : encryptTable.get().getLogicColumns()) {
             Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, each);
@@ -78,15 +76,9 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
         return result;
     }
     
-    private int getStartIndex(final InsertSQLStatementContext insertSQLStatementContext) {
-        Optional<SetAssignmentsSegment> setAssignmentsSegment = insertSQLStatementContext.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
-        Preconditions.checkState(setAssignmentsSegment.isPresent());
-        return setAssignmentsSegment.get().getStopIndex() + 1;
-    }
-    
-    private List<ExpressionSegment> getEncryptDerivedValues(final InsertSQLStatementContext insertSQLStatementContext) {
+    private List<ExpressionSegment> getEncryptDerivedValues(final InsertSQLStatementContext sqlStatementContext) {
         List<ExpressionSegment> result = new LinkedList<>();
-        for (ExpressionSegment each : insertSQLStatementContext.getInsertValueContexts().get(0).getValueExpressions()) {
+        for (ExpressionSegment each : sqlStatementContext.getInsertValueContexts().get(0).getValueExpressions()) {
             if (each instanceof DerivedSimpleExpressionSegment && EncryptDerivedColumnType.ENCRYPT.equals(((DerivedSimpleExpressionSegment) each).getType())) { 
                 result.add(each);
             }
