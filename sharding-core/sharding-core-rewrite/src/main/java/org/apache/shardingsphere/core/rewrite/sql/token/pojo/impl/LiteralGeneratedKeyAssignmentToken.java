@@ -17,27 +17,22 @@
 
 package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
 
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-
 /**
- * Generated key assignment token.
+ * Generated key assignment token for literal.
  *
- * @author zhangliang
+ * @author panjuan
  */
-public abstract class GeneratedKeyAssignmentToken extends SQLToken implements Attachable {
+public final class LiteralGeneratedKeyAssignmentToken extends GeneratedKeyAssignmentToken {
     
-    private final String columnName;
+    private final Object value;
     
-    public GeneratedKeyAssignmentToken(final int startIndex, final String columnName) {
-        super(startIndex);
-        this.columnName = columnName;
+    public LiteralGeneratedKeyAssignmentToken(final int startIndex, final String columnName, final Object value) {
+        super(startIndex, columnName);
+        this.value = value;
     }
     
     @Override
-    public final String toString() {
-        return String.format(", %s = %s", columnName, getRightValue());
+    protected String getRightValue() {
+        return value instanceof String ? String.format("'%s'", value) : value.toString();
     }
-    
-    protected abstract String getRightValue();
 }

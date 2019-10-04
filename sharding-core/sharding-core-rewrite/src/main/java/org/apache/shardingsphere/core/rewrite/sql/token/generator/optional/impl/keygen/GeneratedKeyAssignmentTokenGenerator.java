@@ -18,15 +18,16 @@
 package org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.keygen;
 
 import com.google.common.base.Preconditions;
+import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.ParametersAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.GeneratedKeyAssignmentToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.LiteralGeneratedKeyAssignmentToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.ParameterMarkerGeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,7 +36,10 @@ import java.util.List;
  * @author panjuan
  * @author zhangliang
  */
-public final class GeneratedKeyAssignmentTokenGenerator extends BaseGeneratedKeyTokenGenerator {
+@Setter
+public final class GeneratedKeyAssignmentTokenGenerator extends BaseGeneratedKeyTokenGenerator implements ParametersAware {
+    
+    private List<Object> parameters;
     
     @Override
     protected boolean isGenerateSQLToken(final InsertStatement insertStatement) {
@@ -45,9 +49,9 @@ public final class GeneratedKeyAssignmentTokenGenerator extends BaseGeneratedKey
     @Override
     protected GeneratedKeyAssignmentToken generateSQLToken(final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
         Preconditions.checkState(((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent());
-        List<AssignmentSegment> assignments = new ArrayList<>(((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().get().getAssignments());
-        int index = ((InsertSQLStatementContext) sqlStatementContext).getColumnNames().size();
-        ExpressionSegment expressionSegment = ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts().get(0).getValueExpressions().get(index);
-        return new GeneratedKeyAssignmentToken(assignments.get(assignments.size() - 1).getStopIndex() + 1, generatedKey.getColumnName(), expressionSegment);
+        List<AssignmentSegment> assignments = ((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().get().getAssignments();
+        int startIndex = assignments.get(assignments.size() - 1).getStopIndex() + 1;
+        return parameters.isEmpty() ? new LiteralGeneratedKeyAssignmentToken(startIndex, generatedKey.getColumnName(), generatedKey.getGeneratedValues().getLast())
+                : new ParameterMarkerGeneratedKeyAssignmentToken(startIndex, generatedKey.getColumnName());
     }
 }

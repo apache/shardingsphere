@@ -17,27 +17,19 @@
 
 package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
 
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-
 /**
- * Generated key assignment token.
+ * Generated key assignment token for parameter marker.
  *
- * @author zhangliang
+ * @author panjuan
  */
-public abstract class GeneratedKeyAssignmentToken extends SQLToken implements Attachable {
+public final class ParameterMarkerGeneratedKeyAssignmentToken extends GeneratedKeyAssignmentToken {
     
-    private final String columnName;
-    
-    public GeneratedKeyAssignmentToken(final int startIndex, final String columnName) {
-        super(startIndex);
-        this.columnName = columnName;
+    public ParameterMarkerGeneratedKeyAssignmentToken(final int startIndex, final String columnName) {
+        super(startIndex, columnName);
     }
     
     @Override
-    public final String toString() {
-        return String.format(", %s = %s", columnName, getRightValue());
+    protected String getRightValue() {
+        return "?";
     }
-    
-    protected abstract String getRightValue();
 }
