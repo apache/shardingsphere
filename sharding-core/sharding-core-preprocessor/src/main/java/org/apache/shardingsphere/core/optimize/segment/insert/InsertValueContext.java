@@ -20,8 +20,6 @@ package org.apache.shardingsphere.core.optimize.segment.insert;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.optimize.segment.insert.expression.DerivedLiteralExpressionSegment;
-import org.apache.shardingsphere.core.optimize.segment.insert.expression.DerivedParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -87,32 +85,6 @@ public final class InsertValueContext {
     public Object getValue(final int index) {
         ExpressionSegment valueExpression = valueExpressions.get(index);
         return valueExpression instanceof ParameterMarkerExpressionSegment ? parameters.get(getParameterIndex(valueExpression)) : ((LiteralExpressionSegment) valueExpression).getLiterals();
-    }
-    
-    /**
-     * Add value.
-     *
-     * @param value value
-     */
-    public void appendValue(final Object value) {
-        if (parameters.isEmpty()) {
-            valueExpressions.add(new DerivedLiteralExpressionSegment(value));
-        } else {
-            valueExpressions.add(new DerivedParameterMarkerExpressionSegment(parameters.size() - 1));
-        }
-    }
-    
-    /**
-     * Set value.
-     *
-     * @param index index
-     * @param value value
-     */
-    public void setValue(final int index, final Object value) {
-        ExpressionSegment valueExpression = valueExpressions.get(index);
-        if (valueExpression instanceof LiteralExpressionSegment) {
-            valueExpressions.set(index, new LiteralExpressionSegment(valueExpression.getStartIndex(), valueExpression.getStopIndex(), value));
-        }
     }
     
     private int getParameterIndex(final ExpressionSegment valueExpression) {
