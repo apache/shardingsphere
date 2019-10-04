@@ -23,7 +23,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.segment.insert.expression.DerivedSimpleExpressionSegment;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.rewrite.constant.EncryptDerivedColumnType;
@@ -33,7 +32,6 @@ import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertSetQuery
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -83,8 +81,7 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
     private int getStartIndex(final InsertSQLStatementContext insertSQLStatementContext) {
         Optional<SetAssignmentsSegment> setAssignmentsSegment = insertSQLStatementContext.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
         Preconditions.checkState(setAssignmentsSegment.isPresent());
-        List<AssignmentSegment> assignments = new ArrayList<>(setAssignmentsSegment.get().getAssignments());
-        return assignments.get(assignments.size() - 1).getStopIndex() + 1;
+        return setAssignmentsSegment.get().getStopIndex() + 1;
     }
     
     private List<ExpressionSegment> getEncryptDerivedValues(final InsertSQLStatementContext insertSQLStatementContext) {

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl
 import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.ParametersAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.GeneratedKeyAssignmentToken;
@@ -49,8 +48,7 @@ public final class GeneratedKeyAssignmentTokenGenerator extends BaseGeneratedKey
     @Override
     protected GeneratedKeyAssignmentToken generateSQLToken(final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
         Preconditions.checkState(((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent());
-        List<AssignmentSegment> assignments = ((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().get().getAssignments();
-        int startIndex = assignments.get(assignments.size() - 1).getStopIndex() + 1;
+        int startIndex = ((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().get().getStopIndex() + 1;
         return parameters.isEmpty() ? new LiteralGeneratedKeyAssignmentToken(startIndex, generatedKey.getColumnName(), generatedKey.getGeneratedValues().getLast())
                 : new ParameterMarkerGeneratedKeyAssignmentToken(startIndex, generatedKey.getColumnName());
     }

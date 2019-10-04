@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Set assignments segment.
@@ -37,5 +37,5 @@ public final class SetAssignmentsSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final List<AssignmentSegment> assignments;
+    private final Collection<AssignmentSegment> assignments;
 }
