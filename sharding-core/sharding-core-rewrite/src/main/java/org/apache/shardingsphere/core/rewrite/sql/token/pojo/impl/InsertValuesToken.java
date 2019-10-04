@@ -40,9 +40,9 @@ import java.util.Map;
  * @author maxiaoguang
  * @author panjuan
  */
+@Getter
 public final class InsertValuesToken extends SQLToken implements Substitutable, Alterable {
     
-    @Getter
     private final int stopIndex;
     
     private final List<InsertValueToken> insertValueTokens;
@@ -54,13 +54,16 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
     }
     
     /**
-     * Add insert value token.
+     * Add insert value.
      * 
      * @param values values
      * @param dataNodes data nodes
+     * @return Insert value token
      */
-    public void addInsertValueToken(final List<ExpressionSegment> values, final Collection<DataNode> dataNodes) {
-        insertValueTokens.add(new InsertValueToken(values, dataNodes));
+    public InsertValueToken addInsertValue(final List<ExpressionSegment> values, final Collection<DataNode> dataNodes) {
+        InsertValueToken result = new InsertValueToken(values, dataNodes);
+        insertValueTokens.add(result);
+        return result;
     }
     
     @Override
@@ -92,11 +95,11 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
     }
     
     @RequiredArgsConstructor
-    private final class InsertValueToken {
+    @Getter
+    public final class InsertValueToken {
     
         private final List<ExpressionSegment> values;
-    
-        @Getter
+        
         private final Collection<DataNode> dataNodes;
     
         @Override

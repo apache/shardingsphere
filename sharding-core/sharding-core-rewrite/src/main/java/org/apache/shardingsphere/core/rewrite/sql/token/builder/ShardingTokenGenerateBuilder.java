@@ -20,19 +20,20 @@ package org.apache.shardingsphere.core.rewrite.sql.token.builder;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLRouteResultAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.ShardingRuleAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.impl.AggregationDistinctTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.impl.IndexTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.impl.TableTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.keygen.GeneratedKeyForInsertColumnsTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.keygen.GeneratedKeyInsertColumnTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.ShardingInsertValuesTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.InsertValuesTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.OffsetTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.OrderByTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.ProjectionsTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.RowCountTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.SelectItemPrefixTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.ShardingRuleAware;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.keygen.GeneratedKeyInsertValuesTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.keygen.GeneratedKeyAssignmentTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.keygen.GeneratedKeyForInsertColumnsTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.keygen.GeneratedKeyInsertColumnTokenGenerator;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -78,7 +79,8 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
         result.add(new GeneratedKeyInsertColumnTokenGenerator());
         result.add(new GeneratedKeyForInsertColumnsTokenGenerator());
         result.add(new GeneratedKeyAssignmentTokenGenerator());
-        result.add(new ShardingInsertValuesTokenGenerator());
+        result.add(new InsertValuesTokenGenerator());
+        result.add(new GeneratedKeyInsertValuesTokenGenerator());
         return result;
     }
 }
