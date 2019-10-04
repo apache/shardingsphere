@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.sql.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.constant.EncryptDerivedColumnType;
 import org.apache.shardingsphere.core.rewrite.constant.ShardingDerivedColumnType;
@@ -139,7 +140,11 @@ public final class RewriteEngine {
     private void encryptInsertValue(final EncryptRule encryptRule, final ShardingEncryptor shardingEncryptor,
                                     final String tableName, final int columnIndex, final InsertValueContext insertValueContext, final String encryptLogicColumnName) {
         Object originalValue = insertValueContext.getValue(columnIndex);
-        insertValueContext.setValue(columnIndex, shardingEncryptor.encrypt(originalValue));
+        // FIXME: insert set for cipher is doing at sql generator
+        if (!((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent()) {
+            insertValueContext.setValue(columnIndex, shardingEncryptor.encrypt(originalValue));
+        }
+        // END FIXME
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
             Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, encryptLogicColumnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");

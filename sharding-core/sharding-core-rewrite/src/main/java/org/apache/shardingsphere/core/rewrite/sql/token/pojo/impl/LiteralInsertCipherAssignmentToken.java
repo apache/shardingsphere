@@ -25,15 +25,15 @@ package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
  */
 public final class LiteralInsertCipherAssignmentToken extends InsertCipherAssignmentToken {
     
-    private final Object assignmentValue;
+    private final String cipherValue;
     
-    public LiteralInsertCipherAssignmentToken(final int startIndex, final int stopIndex, final String cipherColumnName, final Object assignmentValue) {
+    public LiteralInsertCipherAssignmentToken(final int startIndex, final int stopIndex, final String cipherColumnName, final String cipherValue) {
         super(startIndex, stopIndex, cipherColumnName);
-        this.assignmentValue = assignmentValue;
+        this.cipherValue = cipherValue;
     }
     
     @Override
     protected String getAssignmentValue() {
-        return assignmentValue instanceof String ? String.format("'%s'", assignmentValue) : assignmentValue.toString();
+        return String.format("'%s'", cipherValue);
     }
 }
