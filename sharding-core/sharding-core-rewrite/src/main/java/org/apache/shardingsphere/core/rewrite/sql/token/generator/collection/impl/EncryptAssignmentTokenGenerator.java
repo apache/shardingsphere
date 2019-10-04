@@ -24,8 +24,8 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.Assignmen
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.EncryptRuleAware;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.EncryptAssignmentToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.EncryptLiteralAssignmentToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.EncryptParameterAssignmentToken;
@@ -46,18 +46,20 @@ public final class EncryptAssignmentTokenGenerator implements CollectionSQLToken
     private EncryptRule encryptRule;
     
     @Override
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext.getSqlStatement() instanceof UpdateStatement;
+    }
+    
+    @Override
     public Collection<EncryptAssignmentToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext.getSqlStatement() instanceof UpdateStatement) {
-            Collection<EncryptAssignmentToken> result = new LinkedList<>();
-            String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-            for (AssignmentSegment each : ((UpdateStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().getAssignments()) {
-                if (encryptRule.findShardingEncryptor(tableName, each.getColumn().getName()).isPresent()) {
-                    result.add(generateSQLToken(tableName, each));
-                }
+        Collection<EncryptAssignmentToken> result = new LinkedList<>();
+        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
+        for (AssignmentSegment each : ((UpdateStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().getAssignments()) {
+            if (encryptRule.findShardingEncryptor(tableName, each.getColumn().getName()).isPresent()) {
+                result.add(generateSQLToken(tableName, each));
             }
-            return result;
         }
-        return Collections.emptyList();
+        return result;
     }
     
     private EncryptAssignmentToken generateSQLToken(final String tableName, final AssignmentSegment assignmentSegment) {

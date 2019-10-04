@@ -35,17 +35,16 @@ import java.util.LinkedList;
 public final class IndexTokenGenerator implements CollectionSQLTokenGenerator {
     
     @Override
-    public Collection<IndexToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        Collection<IndexToken> result = new LinkedList<>();
-        for (SQLSegment each : sqlStatementContext.getSqlStatement().getAllSQLSegments()) {
-            if (each instanceof IndexSegment) {
-                result.add(createIndexToken((IndexSegment) each));
-            }
-        }
-        return result;
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+        return !sqlStatementContext.getSqlStatement().findSQLSegments(IndexSegment.class).isEmpty();
     }
     
-    private IndexToken createIndexToken(final IndexSegment segment) {
-        return new IndexToken(segment.getStartIndex(), segment.getStopIndex(), segment.getName(), segment.getQuoteCharacter());
+    @Override
+    public Collection<IndexToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+        Collection<IndexToken> result = new LinkedList<>();
+        for (SQLSegment each : sqlStatementContext.getSqlStatement().findSQLSegments(IndexSegment.class)) {
+            result.add(new IndexToken(each.getStartIndex(), each.getStopIndex(), ((IndexSegment) each).getName(), ((IndexSegment) each).getQuoteCharacter()));
+        }
+        return result;
     }
 }

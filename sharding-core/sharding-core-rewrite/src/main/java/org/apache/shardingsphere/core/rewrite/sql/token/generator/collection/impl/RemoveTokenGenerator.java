@@ -34,12 +34,15 @@ import java.util.LinkedList;
 public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator {
     
     @Override
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+        return !sqlStatementContext.getSqlStatement().findSQLSegments(RemoveAvailable.class).isEmpty();
+    }
+    
+    @Override
     public Collection<RemoveToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<RemoveToken> result = new LinkedList<>();
-        for (SQLSegment each : sqlStatementContext.getSqlStatement().getAllSQLSegments()) {
-            if (each instanceof RemoveAvailable) {
-                result.add(new RemoveToken(each.getStartIndex(), each.getStopIndex()));
-            }
+        for (SQLSegment each : sqlStatementContext.getSqlStatement().findSQLSegments(RemoveAvailable.class)) {
+            result.add(new RemoveToken(each.getStartIndex(), each.getStopIndex()));
         }
         return result;
     }

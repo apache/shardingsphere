@@ -17,10 +17,20 @@
 
 package org.apache.shardingsphere.core.rewrite.sql.token.generator;
 
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+
 /**
  * SQL token generator.
  *
  * @author zhangliang
  */
 public interface SQLTokenGenerator {
+    
+    /**
+     * Judge is generate SQL token or not.
+     *
+     * @param sqlStatementContext SQL statement context
+     * @return is generate SQL token or not
+     */
+    boolean isGenerateSQLToken(SQLStatementContext sqlStatementContext);
 }

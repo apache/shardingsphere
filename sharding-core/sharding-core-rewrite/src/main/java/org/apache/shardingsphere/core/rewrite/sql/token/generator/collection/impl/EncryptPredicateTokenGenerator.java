@@ -24,11 +24,11 @@ import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptCondition;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptConditionEngine;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.ParametersAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.TableMetasAware;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.EncryptPredicateToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
@@ -55,6 +55,11 @@ public final class EncryptPredicateTokenGenerator implements CollectionSQLTokenG
     private List<Object> parameters;
     
     private boolean queryWithCipherColumn;
+    
+    @Override
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+        return true;
+    }
     
     @Override
     public Collection<EncryptPredicateToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {

@@ -30,14 +30,6 @@ import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 public interface OptionalSQLTokenGenerator extends SQLTokenGenerator {
     
     /**
-     * Judge is generate SQL token or not.
-     * 
-     * @param sqlStatementContext SQL statement context
-     * @return is generate SQL token or not
-     */
-    boolean isGenerateSQLToken(SQLStatementContext sqlStatementContext);
-    
-    /**
      * Generate SQL token.
      * 
      * @param sqlStatementContext SQL statement context

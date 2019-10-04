@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.Col
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.AggregationDistinctToken;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -38,18 +37,20 @@ import java.util.LinkedList;
 public final class AggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator, IgnoreForSingleRoute {
     
     @Override
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext instanceof SelectSQLStatementContext;
+    }
+    
+    @Override
     public Collection<AggregationDistinctToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof SelectSQLStatementContext)) {
-            return Collections.emptyList();
-        }
         Collection<AggregationDistinctToken> result = new LinkedList<>();
         for (AggregationDistinctProjection each : ((SelectSQLStatementContext) sqlStatementContext).getProjectionsContext().getAggregationDistinctProjections()) {
-            result.add(createAggregationDistinctToken(each));
+            result.add(generateSQLToken(each));
         }
         return result;
     }
     
-    private AggregationDistinctToken createAggregationDistinctToken(final AggregationDistinctProjection projection) {
+    private AggregationDistinctToken generateSQLToken(final AggregationDistinctProjection projection) {
         Preconditions.checkArgument(projection.getAlias().isPresent());
         String derivedAlias = DerivedColumn.isDerivedColumnName(projection.getAlias().get()) ? projection.getAlias().get() : null;
         return new AggregationDistinctToken(projection.getStartIndex(), projection.getStopIndex(), projection.getDistinctInnerExpression(), derivedAlias);

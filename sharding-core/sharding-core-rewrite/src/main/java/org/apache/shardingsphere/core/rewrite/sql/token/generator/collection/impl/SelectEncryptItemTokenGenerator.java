@@ -25,9 +25,9 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegme
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.QueryWithCipherColumnAware;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.SelectEncryptItemToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
@@ -49,26 +49,16 @@ public final class SelectEncryptItemTokenGenerator implements CollectionSQLToken
     private boolean queryWithCipherColumn;
     
     @Override
-    public Collection<SelectEncryptItemToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        if (!isNeedToGenerateSQLToken(sqlStatementContext)) {
-            return Collections.emptyList();
-        }
-        return createSelectCipherItemTokens(sqlStatementContext);
-    }
-    
-    private boolean isNeedToGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        if (!isSelectStatementWithTable(sqlStatementContext)) {
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+        if (!(sqlStatementContext.getSqlStatement() instanceof SelectStatement && !sqlStatementContext.getTablesContext().isEmpty())) {
             return false;
         }
         Optional<SelectItemsSegment> selectItemsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(SelectItemsSegment.class);
         return selectItemsSegment.isPresent() && !selectItemsSegment.get().getSelectItems().isEmpty();
     }
     
-    private boolean isSelectStatementWithTable(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext.getSqlStatement() instanceof SelectStatement && !sqlStatementContext.getTablesContext().isEmpty();
-    }
-    
-    private Collection<SelectEncryptItemToken> createSelectCipherItemTokens(final SQLStatementContext sqlStatementContext) {
+    @Override
+    public Collection<SelectEncryptItemToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SelectEncryptItemToken> result = new LinkedList<>();
         Optional<SelectItemsSegment> selectItemsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(SelectItemsSegment.class);
         if (!selectItemsSegment.isPresent()) {
