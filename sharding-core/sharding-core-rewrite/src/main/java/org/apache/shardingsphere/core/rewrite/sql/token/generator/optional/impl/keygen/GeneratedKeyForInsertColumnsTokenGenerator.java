@@ -35,7 +35,7 @@ import java.util.List;
  * @author panjuan
  * @author zhangliang
  */
-public final class GeneratedKeyInsertColumnsTokenGenerator extends BaseGeneratedKeyTokenGenerator {
+public final class GeneratedKeyForInsertColumnsTokenGenerator extends BaseGeneratedKeyTokenGenerator {
     
     @Override
     protected boolean isGenerateSQLToken(final InsertStatement insertStatement) {
