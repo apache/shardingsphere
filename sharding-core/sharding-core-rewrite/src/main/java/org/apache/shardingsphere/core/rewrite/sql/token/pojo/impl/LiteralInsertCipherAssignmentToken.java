@@ -33,7 +33,7 @@ public final class LiteralInsertCipherAssignmentToken extends InsertCipherAssign
     }
     
     @Override
-    protected Object getAssignmentValue() {
+    protected String getAssignmentValue() {
         return assignmentValue instanceof String ? String.format("'%s'", assignmentValue) : assignmentValue.toString();
     }
 }

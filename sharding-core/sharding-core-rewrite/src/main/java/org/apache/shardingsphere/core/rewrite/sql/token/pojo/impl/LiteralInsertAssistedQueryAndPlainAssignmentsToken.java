@@ -17,34 +17,25 @@
 
 package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
 
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-
 import java.util.List;
 
 /**
- * Insert assisted query and plain assignments token.
+ * Insert assisted query and plain assignments token for literal.
  *
- * @author panjuan
- * @author zhangiang
+ * @author zhangliang
  */
-public abstract class InsertAssistedQueryAndPlainAssignmentsToken extends SQLToken implements Attachable {
+public final class LiteralInsertAssistedQueryAndPlainAssignmentsToken extends InsertAssistedQueryAndPlainAssignmentsToken {
     
-    private final List<String> columnNames;
+    private final List<Object> assignmentValues;
     
-    public InsertAssistedQueryAndPlainAssignmentsToken(final int startIndex, final List<String> columnNames) {
-        super(startIndex);
-        this.columnNames = columnNames;
+    public LiteralInsertAssistedQueryAndPlainAssignmentsToken(final int startIndex, final List<String> columnNames, final List<Object> assignmentValues) {
+        super(startIndex, columnNames);
+        this.assignmentValues = assignmentValues;
     }
     
     @Override
-    public final String toString() {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < columnNames.size(); i++) {
-            result.append(String.format(", %s = %s", columnNames.get(i), getAssignmentValue(i)));
-        }
-        return result.toString();
+    protected String getAssignmentValue(final int index) {
+        Object assignmentValue = assignmentValues.get(index);
+        return assignmentValue instanceof String ? String.format("'%s'", assignmentValue) : assignmentValue.toString();
     }
-    
-    protected abstract String getAssignmentValue(int index);
 }

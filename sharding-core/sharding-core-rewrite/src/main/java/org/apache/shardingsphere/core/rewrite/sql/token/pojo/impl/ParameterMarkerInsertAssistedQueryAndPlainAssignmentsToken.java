@@ -17,34 +17,21 @@
 
 package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
 
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-
 import java.util.List;
 
 /**
- * Insert assisted query and plain assignments token.
+ * Insert assisted query and plain assignments token for parameter marker.
  *
- * @author panjuan
- * @author zhangiang
+ * @author zhangliang
  */
-public abstract class InsertAssistedQueryAndPlainAssignmentsToken extends SQLToken implements Attachable {
+public final class ParameterMarkerInsertAssistedQueryAndPlainAssignmentsToken extends InsertAssistedQueryAndPlainAssignmentsToken {
     
-    private final List<String> columnNames;
-    
-    public InsertAssistedQueryAndPlainAssignmentsToken(final int startIndex, final List<String> columnNames) {
-        super(startIndex);
-        this.columnNames = columnNames;
+    public ParameterMarkerInsertAssistedQueryAndPlainAssignmentsToken(final int startIndex, final List<String> columnNames) {
+        super(startIndex, columnNames);
     }
     
     @Override
-    public final String toString() {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < columnNames.size(); i++) {
-            result.append(String.format(", %s = %s", columnNames.get(i), getAssignmentValue(i)));
-        }
-        return result.toString();
+    protected String getAssignmentValue(final int index) {
+        return "?";
     }
-    
-    protected abstract String getAssignmentValue(int index);
 }

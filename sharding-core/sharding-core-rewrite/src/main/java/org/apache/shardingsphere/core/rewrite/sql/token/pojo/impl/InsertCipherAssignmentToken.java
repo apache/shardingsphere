@@ -45,5 +45,5 @@ public abstract class InsertCipherAssignmentToken extends SQLToken implements Su
         return String.format("%s = %s", cipherColumnName, getAssignmentValue());
     }
     
-    protected abstract Object getAssignmentValue();
+    protected abstract String getAssignmentValue();
 }

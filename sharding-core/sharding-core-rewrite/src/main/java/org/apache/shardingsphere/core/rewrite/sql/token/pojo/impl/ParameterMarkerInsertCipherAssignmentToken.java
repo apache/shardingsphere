@@ -30,7 +30,7 @@ public final class ParameterMarkerInsertCipherAssignmentToken extends InsertCiph
     }
     
     @Override
-    protected Object getAssignmentValue() {
+    protected String getAssignmentValue() {
         return "?";
     }
 }
