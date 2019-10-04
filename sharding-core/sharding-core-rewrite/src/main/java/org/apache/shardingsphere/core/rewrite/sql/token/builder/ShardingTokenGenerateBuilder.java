@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.imp
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.impl.TableTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.keygen.GeneratedKeyForInsertColumnsTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.keygen.GeneratedKeyInsertColumnTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.InsertValuesTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.ShardingInsertValuesTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.OffsetTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.OrderByTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.ProjectionsTokenGenerator;
@@ -78,7 +78,7 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
         result.add(new GeneratedKeyInsertColumnTokenGenerator());
         result.add(new GeneratedKeyForInsertColumnsTokenGenerator());
         result.add(new GeneratedKeyAssignmentTokenGenerator());
-        result.add(new InsertValuesTokenGenerator());
+        result.add(new ShardingInsertValuesTokenGenerator());
         return result;
     }
 }

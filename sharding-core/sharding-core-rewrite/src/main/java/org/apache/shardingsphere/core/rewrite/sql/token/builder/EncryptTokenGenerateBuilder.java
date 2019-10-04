@@ -18,18 +18,18 @@
 package org.apache.shardingsphere.core.rewrite.sql.token.builder;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.EncryptRuleAware;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.impl.EncryptAssignmentTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.impl.EncryptPredicateTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.impl.InsertCipherNameTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.impl.InsertCipherAssignmentTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.impl.InsertCipherNameTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.impl.SelectEncryptItemTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.AssistQueryAndPlainInsertColumnsTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.InsertAssistedQueryAndPlainAssignmentsTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.InsertValuesTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.EncryptRuleAware;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.EncryptForInsertColumnsTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.EncryptInsertValuesTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.InsertAssistedQueryAndPlainAssignmentsTokenGenerator;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
@@ -72,7 +72,7 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
         result.add(new AssistQueryAndPlainInsertColumnsTokenGenerator());
         result.add(new InsertCipherAssignmentTokenGenerator());
         result.add(new InsertAssistedQueryAndPlainAssignmentsTokenGenerator());
-        result.add(new InsertValuesTokenGenerator());
+        result.add(new EncryptInsertValuesTokenGenerator());
         return result;
     }
 }
