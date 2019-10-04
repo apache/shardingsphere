@@ -143,16 +143,16 @@ public final class RewriteEngine {
         // FIXME: insert set for cipher is doing at sql generator
         if (!((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent()) {
             insertValueContext.setValue(columnIndex, shardingEncryptor.encrypt(originalValue));
+            if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
+                Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, encryptLogicColumnName);
+                Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
+                insertValueContext.appendValue(((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()), EncryptDerivedColumnType.ENCRYPT);
+            }
+            if (encryptRule.findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
+                insertValueContext.appendValue(originalValue, EncryptDerivedColumnType.ENCRYPT);
+            }
         }
         // END FIXME
-        if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
-            Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, encryptLogicColumnName);
-            Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            insertValueContext.appendValue(((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()), EncryptDerivedColumnType.ENCRYPT);
-        }
-        if (encryptRule.findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
-            insertValueContext.appendValue(originalValue, EncryptDerivedColumnType.ENCRYPT);
-        }
     }
     
     private ParameterBuilder createParameterBuilder(final TableMetas tableMetas, final SQLRouteResult sqlRouteResult, final List<Object> parameters, final boolean isQueryWithCipherColumn) {

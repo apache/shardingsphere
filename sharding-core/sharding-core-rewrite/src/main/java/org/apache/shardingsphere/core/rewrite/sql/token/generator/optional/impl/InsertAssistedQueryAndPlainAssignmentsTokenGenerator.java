@@ -20,13 +20,9 @@ package org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.core.optimize.segment.insert.expression.DerivedLiteralExpressionSegment;
-import org.apache.shardingsphere.core.optimize.segment.insert.expression.DerivedSimpleExpressionSegment;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.rewrite.constant.EncryptDerivedColumnType;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.ParametersAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.OptionalSQLTokenGenerator;
@@ -35,6 +31,8 @@ import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.LiteralInsertA
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.ParameterMarkerInsertAssistedQueryAndPlainAssignmentsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -61,10 +59,12 @@ public final class InsertAssistedQueryAndPlainAssignmentsTokenGenerator implemen
     public InsertAssistedQueryAndPlainAssignmentsToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
         Optional<SetAssignmentsSegment> sqlSegment = sqlStatementContext.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
         Preconditions.checkState(sqlSegment.isPresent());
-        List<String> columnNames = getEncryptDerivedColumnNames(sqlStatementContext.getTablesContext().getSingleTableName());
+        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
+        List<String> columnNames = getEncryptDerivedColumnNames(tableName);
+        int startIndex = sqlSegment.get().getStopIndex() + 1;
         return parameters.isEmpty()
-                ? new LiteralInsertAssistedQueryAndPlainAssignmentsToken(sqlSegment.get().getStopIndex() + 1, columnNames, getEncryptDerivedValues((InsertSQLStatementContext) sqlStatementContext))
-                : new ParameterMarkerInsertAssistedQueryAndPlainAssignmentsToken(sqlSegment.get().getStopIndex() + 1, columnNames);
+                ? new LiteralInsertAssistedQueryAndPlainAssignmentsToken(startIndex, columnNames, getEncryptDerivedValues((InsertSQLStatementContext) sqlStatementContext, tableName))
+                : new ParameterMarkerInsertAssistedQueryAndPlainAssignmentsToken(startIndex, columnNames);
     }
     
     private List<String> getEncryptDerivedColumnNames(final String tableName) {
@@ -84,11 +84,19 @@ public final class InsertAssistedQueryAndPlainAssignmentsTokenGenerator implemen
         return result;
     }
     
-    private List<Object> getEncryptDerivedValues(final InsertSQLStatementContext sqlStatementContext) {
+    private List<Object> getEncryptDerivedValues(final InsertSQLStatementContext sqlStatementContext, final String tableName) {
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        Preconditions.checkState(encryptTable.isPresent());
         List<Object> result = new LinkedList<>();
-        for (ExpressionSegment each : sqlStatementContext.getInsertValueContexts().get(0).getValueExpressions()) {
-            if (each instanceof DerivedLiteralExpressionSegment && EncryptDerivedColumnType.ENCRYPT.equals(((DerivedSimpleExpressionSegment) each).getType())) { 
-                result.add(((DerivedLiteralExpressionSegment) each).getLiterals());
+        for (String each : encryptTable.get().getLogicColumns()) {
+            Object value = sqlStatementContext.getInsertValueContexts().get(0).getValue(sqlStatementContext.getColumnNames().indexOf(each));
+            Optional<ShardingEncryptor> encryptor = encryptRule.findShardingEncryptor(tableName, each);
+            Preconditions.checkState(encryptor.isPresent());
+            if (encryptTable.get().findAssistedQueryColumn(each).isPresent()) {
+                result.add(((ShardingQueryAssistedEncryptor) encryptor.get()).queryAssistedEncrypt(null == value ? "" : value.toString()));
+            }
+            if (encryptTable.get().findPlainColumn(each).isPresent()) {
+                result.add(value);
             }
         }
         return result;
