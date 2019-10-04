@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.rewrite.sql.token.generator.EncryptRuleAwa
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertRegularNamesToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.FullInsertColumnsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 
@@ -38,12 +38,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Insert encrypt column from metadata token generator.
+ * Encrypt for full insert columns token generator.
  *
  * @author panjuan
  */
 @Setter
-public final class InsertEncryptColumnFromMetadataTokenGenerator implements OptionalSQLTokenGenerator, EncryptRuleAware, PreviousSQLTokensAware {
+public final class EncryptForFullInsertColumnsTokenGenerator implements OptionalSQLTokenGenerator, EncryptRuleAware, PreviousSQLTokensAware {
     
     private EncryptRule encryptRule;
     
@@ -55,9 +55,9 @@ public final class InsertEncryptColumnFromMetadataTokenGenerator implements Opti
     }
     
     @Override
-    public InsertRegularNamesToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public FullInsertColumnsToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        Optional<InsertRegularNamesToken> previousInsertRegularNamesToken = findInsertRegularNamesToken();
+        Optional<FullInsertColumnsToken> previousInsertRegularNamesToken = findFullInsertColumnsToken();
         if (previousInsertRegularNamesToken.isPresent()) {
             processPreviousSQLToken(previousInsertRegularNamesToken.get(), tableName);
             return previousInsertRegularNamesToken.get();
@@ -65,16 +65,16 @@ public final class InsertEncryptColumnFromMetadataTokenGenerator implements Opti
         return generateNewSQLToken((InsertSQLStatementContext) sqlStatementContext, tableName);
     }
     
-    private Optional<InsertRegularNamesToken> findInsertRegularNamesToken() {
+    private Optional<FullInsertColumnsToken> findFullInsertColumnsToken() {
         for (SQLToken each : previousSQLTokens) {
-            if (each instanceof InsertRegularNamesToken) {
-                return Optional.of((InsertRegularNamesToken) each);
+            if (each instanceof FullInsertColumnsToken) {
+                return Optional.of((FullInsertColumnsToken) each);
             }
         }
         return Optional.absent();
     }
     
-    private void processPreviousSQLToken(final InsertRegularNamesToken previousSQLToken, final String tableName) {
+    private void processPreviousSQLToken(final FullInsertColumnsToken previousSQLToken, final String tableName) {
         for (Entry<String, String> entry : encryptRule.getLogicAndCipherColumns(tableName).entrySet()) {
             int encryptLogicColumnIndex = previousSQLToken.getColumns().indexOf(entry.getKey());
             if (-1 != encryptLogicColumnIndex) {
@@ -85,10 +85,9 @@ public final class InsertEncryptColumnFromMetadataTokenGenerator implements Opti
         if (encryptTable.isPresent()) {
             previousSQLToken.getColumns().addAll(getEncryptDerivedColumnNames(encryptTable.get(), tableName));
         }
-        
     }
     
-    private InsertRegularNamesToken generateNewSQLToken(final InsertSQLStatementContext sqlStatementContext, final String tableName) {
+    private FullInsertColumnsToken generateNewSQLToken(final InsertSQLStatementContext sqlStatementContext, final String tableName) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         Preconditions.checkState(insertColumnsSegment.isPresent());
         List<String> columnNames = new LinkedList<>();
@@ -100,7 +99,7 @@ public final class InsertEncryptColumnFromMetadataTokenGenerator implements Opti
         if (encryptTable.isPresent()) {
             columnNames.addAll(getEncryptDerivedColumnNames(encryptTable.get(), tableName));
         }
-        return new InsertRegularNamesToken(insertColumnsSegment.get().getStopIndex(), columnNames);
+        return new FullInsertColumnsToken(insertColumnsSegment.get().getStopIndex(), columnNames);
     }
     
     private List<String> getEncryptDerivedColumnNames(final EncryptTable encryptTable, final String tableName) {

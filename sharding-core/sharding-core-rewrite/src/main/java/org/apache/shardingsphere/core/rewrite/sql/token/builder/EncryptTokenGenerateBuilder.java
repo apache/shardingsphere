@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.InsertValuesTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.QueryWithCipherColumnAware;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.InsertEncryptColumnFromMetadataTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.EncryptForFullInsertColumnsTokenGenerator;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
@@ -64,7 +64,7 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
     
     private Collection<SQLTokenGenerator> buildSQLTokenGenerators() {
         Collection<SQLTokenGenerator> result = new LinkedList<>();
-        result.add(new InsertEncryptColumnFromMetadataTokenGenerator());
+        result.add(new EncryptForFullInsertColumnsTokenGenerator());
         result.add(new SelectEncryptItemTokenGenerator());
         result.add(new EncryptAssignmentTokenGenerator());
         result.add(new EncryptPredicateTokenGenerator());

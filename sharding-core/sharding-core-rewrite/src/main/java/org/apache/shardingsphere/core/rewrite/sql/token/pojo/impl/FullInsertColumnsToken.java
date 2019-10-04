@@ -25,16 +25,17 @@ import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import java.util.List;
 
 /**
- * Insert regular names token.
+ * Full insert columns token.
  *
  * @author panjuan
+ * @author zhangliang
  */
-public final class InsertRegularNamesToken extends SQLToken implements Attachable {
+public final class FullInsertColumnsToken extends SQLToken implements Attachable {
     
     @Getter
     private final List<String> columns;
     
-    public InsertRegularNamesToken(final int startIndex, final List<String> columns) {
+    public FullInsertColumnsToken(final int startIndex, final List<String> columns) {
         super(startIndex);
         this.columns = columns;
     }
