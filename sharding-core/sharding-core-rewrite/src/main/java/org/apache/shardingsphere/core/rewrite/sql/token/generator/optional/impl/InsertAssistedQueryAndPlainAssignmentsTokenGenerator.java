@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.core.rewrite.constant.EncryptDerivedColumnType;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertSetQueryAndPlainColumnsToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertAssistedQueryAndPlainAssignmentsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 
@@ -36,12 +36,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Insert set query and plain columns token generator.
+ * Insert assisted query and plain assignments token generator.
  *
  * @author panjuan
  */
 @Setter
-public final class InsertSetQueryAndPlainColumnsTokenGenerator implements OptionalSQLTokenGenerator, EncryptRuleAware {
+public final class InsertAssistedQueryAndPlainAssignmentsTokenGenerator implements OptionalSQLTokenGenerator, EncryptRuleAware {
     
     private EncryptRule encryptRule;
     
@@ -52,10 +52,10 @@ public final class InsertSetQueryAndPlainColumnsTokenGenerator implements Option
     }
     
     @Override
-    public InsertSetQueryAndPlainColumnsToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public InsertAssistedQueryAndPlainAssignmentsToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
         Optional<SetAssignmentsSegment> sqlSegment = sqlStatementContext.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
         Preconditions.checkState(sqlSegment.isPresent());
-        return new InsertSetQueryAndPlainColumnsToken(sqlSegment.get().getStopIndex() + 1, 
+        return new InsertAssistedQueryAndPlainAssignmentsToken(sqlSegment.get().getStopIndex() + 1, 
                 getEncryptDerivedColumnNames(sqlStatementContext.getTablesContext().getSingleTableName()), getEncryptDerivedValues((InsertSQLStatementContext) sqlStatementContext));
     }
     

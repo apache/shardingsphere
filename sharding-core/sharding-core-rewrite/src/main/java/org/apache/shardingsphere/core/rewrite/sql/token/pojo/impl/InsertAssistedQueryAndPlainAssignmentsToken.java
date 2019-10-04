@@ -27,17 +27,17 @@ import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import java.util.List;
 
 /**
- * Insert set query and plain columns token.
+ * Insert assisted query and plain assignments token.
  *
  * @author panjuan
  */
-public final class InsertSetQueryAndPlainColumnsToken extends SQLToken implements Attachable {
+public final class InsertAssistedQueryAndPlainAssignmentsToken extends SQLToken implements Attachable {
     
     private final List<String> columnNames;
     
     private final List<ExpressionSegment> values;
     
-    public InsertSetQueryAndPlainColumnsToken(final int startIndex, final List<String> columnNames, final List<ExpressionSegment> values) {
+    public InsertAssistedQueryAndPlainAssignmentsToken(final int startIndex, final List<String> columnNames, final List<ExpressionSegment> values) {
         super(startIndex);
         this.columnNames = columnNames;
         this.values = values;
