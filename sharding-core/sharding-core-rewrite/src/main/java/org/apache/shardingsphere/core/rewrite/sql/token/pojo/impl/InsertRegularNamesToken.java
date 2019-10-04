@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
 
 import com.google.common.base.Joiner;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 
@@ -35,13 +34,9 @@ public final class InsertRegularNamesToken extends SQLToken implements Attachabl
     @Getter
     private final List<String> columns;
     
-    @Setter
-    private boolean isEndOfToken;
-    
-    public InsertRegularNamesToken(final int startIndex, final List<String> columns, final boolean isEndOfToken) {
+    public InsertRegularNamesToken(final int startIndex, final List<String> columns) {
         super(startIndex);
         this.columns = columns;
-        this.isEndOfToken = isEndOfToken;
     }
     
     @Override
@@ -49,6 +44,6 @@ public final class InsertRegularNamesToken extends SQLToken implements Attachabl
         if (columns.isEmpty()) {
             return "";
         }
-        return String.format(isEndOfToken ? "(%s)" : "(%s", Joiner.on(", ").join(columns));
+        return String.format("(%s)", Joiner.on(", ").join(columns));
     }
 }

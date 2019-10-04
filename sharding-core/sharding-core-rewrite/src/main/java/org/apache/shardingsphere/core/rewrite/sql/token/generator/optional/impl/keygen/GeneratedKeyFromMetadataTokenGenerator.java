@@ -46,7 +46,7 @@ public final class GeneratedKeyFromMetadataTokenGenerator extends BaseGeneratedK
     protected InsertRegularNamesToken generateSQLToken(final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         Preconditions.checkState(insertColumnsSegment.isPresent());
-        return new InsertRegularNamesToken(insertColumnsSegment.get().getStopIndex(), getColumnNames((InsertSQLStatementContext) sqlStatementContext, generatedKey), true);
+        return new InsertRegularNamesToken(insertColumnsSegment.get().getStopIndex(), getColumnNames((InsertSQLStatementContext) sqlStatementContext, generatedKey));
     }
     
     private List<String> getColumnNames(final InsertSQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {

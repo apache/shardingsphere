@@ -30,6 +30,7 @@ import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.Optio
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertRegularNamesToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -56,13 +57,12 @@ public final class InsertEncryptColumnFromMetadataTokenGenerator implements Opti
     @Override
     public InsertRegularNamesToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        boolean hasMoreDerivedColumns = !encryptRule.getAssistedQueryAndPlainColumns(tableName).isEmpty();
         Optional<InsertRegularNamesToken> previousInsertRegularNamesToken = findInsertRegularNamesToken();
         if (previousInsertRegularNamesToken.isPresent()) {
-            processPreviousSQLToken(previousInsertRegularNamesToken.get(), tableName, hasMoreDerivedColumns);
+            processPreviousSQLToken(previousInsertRegularNamesToken.get(), tableName);
             return previousInsertRegularNamesToken.get();
         }
-        return generateNewSQLToken((InsertSQLStatementContext) sqlStatementContext, tableName, hasMoreDerivedColumns);
+        return generateNewSQLToken((InsertSQLStatementContext) sqlStatementContext, tableName);
     }
     
     private Optional<InsertRegularNamesToken> findInsertRegularNamesToken() {
@@ -74,17 +74,21 @@ public final class InsertEncryptColumnFromMetadataTokenGenerator implements Opti
         return Optional.absent();
     }
     
-    private void processPreviousSQLToken(final InsertRegularNamesToken previousSQLToken, final String tableName, final boolean hasMoreDerivedColumns) {
+    private void processPreviousSQLToken(final InsertRegularNamesToken previousSQLToken, final String tableName) {
         for (Entry<String, String> entry : encryptRule.getLogicAndCipherColumns(tableName).entrySet()) {
             int encryptLogicColumnIndex = previousSQLToken.getColumns().indexOf(entry.getKey());
             if (-1 != encryptLogicColumnIndex) {
                 previousSQLToken.getColumns().set(encryptLogicColumnIndex, entry.getValue());
             }
         }
-        previousSQLToken.setEndOfToken(!hasMoreDerivedColumns);
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        if (encryptTable.isPresent()) {
+            previousSQLToken.getColumns().addAll(getEncryptDerivedColumnNames(encryptTable.get(), tableName));
+        }
+        
     }
     
-    private InsertRegularNamesToken generateNewSQLToken(final InsertSQLStatementContext sqlStatementContext, final String tableName, final boolean hasMoreDerivedColumns) {
+    private InsertRegularNamesToken generateNewSQLToken(final InsertSQLStatementContext sqlStatementContext, final String tableName) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         Preconditions.checkState(insertColumnsSegment.isPresent());
         List<String> columnNames = new LinkedList<>();
@@ -92,6 +96,25 @@ public final class InsertEncryptColumnFromMetadataTokenGenerator implements Opti
         for (String each : sqlStatementContext.getColumnNames()) {
             columnNames.add(logicAndCipherColumns.containsKey(each) ? logicAndCipherColumns.get(each) : each);
         }
-        return new InsertRegularNamesToken(insertColumnsSegment.get().getStopIndex(), columnNames, !hasMoreDerivedColumns);
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        if (encryptTable.isPresent()) {
+            columnNames.addAll(getEncryptDerivedColumnNames(encryptTable.get(), tableName));
+        }
+        return new InsertRegularNamesToken(insertColumnsSegment.get().getStopIndex(), columnNames);
+    }
+    
+    private List<String> getEncryptDerivedColumnNames(final EncryptTable encryptTable, final String tableName) {
+        List<String> result = new LinkedList<>();
+        for (String each : encryptTable.getLogicColumns()) {
+            Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, each);
+            if (assistedQueryColumn.isPresent()) {
+                result.add(assistedQueryColumn.get());
+            }
+            Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, each);
+            if (plainColumn.isPresent()) {
+                result.add(plainColumn.get());
+            }
+        }
+        return result;
     }
 }
