@@ -24,12 +24,13 @@ import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertSetCipherColumnToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertCipherAssignmentToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.LiteralInsertCipherAssignmentToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.ParameterMarkerInsertCipherAssignmentToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
@@ -48,17 +49,16 @@ public final class InsertSetCipherColumnTokenGenerator implements CollectionSQLT
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        Optional<SetAssignmentsSegment> setAssignmentsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
-        return sqlStatementContext.getSqlStatement() instanceof InsertStatement && setAssignmentsSegment.isPresent();
+        return sqlStatementContext instanceof InsertSQLStatementContext && sqlStatementContext.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class).isPresent();
     }
     
     @Override
-    public Collection<InsertSetCipherColumnToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+    public Collection<InsertCipherAssignmentToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Optional<SetAssignmentsSegment> sqlSegment = sqlStatementContext.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class);
         Preconditions.checkState(sqlSegment.isPresent());
-        Collection<InsertSetCipherColumnToken> result = new LinkedList<>();
+        Collection<InsertCipherAssignmentToken> result = new LinkedList<>();
         for (AssignmentSegment each : sqlSegment.get().getAssignments()) {
-            Optional<InsertSetCipherColumnToken> insertSetEncryptValueToken = createInsertSetEncryptValueToken((InsertSQLStatementContext) sqlStatementContext, each);
+            Optional<InsertCipherAssignmentToken> insertSetEncryptValueToken = generateSQLToken((InsertSQLStatementContext) sqlStatementContext, each);
             if (insertSetEncryptValueToken.isPresent()) {
                 result.add(insertSetEncryptValueToken.get());
             }
@@ -66,19 +66,22 @@ public final class InsertSetCipherColumnTokenGenerator implements CollectionSQLT
         return result;
     }
     
-    private Optional<InsertSetCipherColumnToken> createInsertSetEncryptValueToken(final InsertSQLStatementContext insertSQLStatementContext, final AssignmentSegment segment) {
-        String tableName = insertSQLStatementContext.getTablesContext().getSingleTableName();
+    private Optional<InsertCipherAssignmentToken> generateSQLToken(final InsertSQLStatementContext sqlStatementContext, final AssignmentSegment segment) {
+        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(tableName, segment.getColumn().getName());
         if (shardingEncryptor.isPresent()) {
             String cipherColumnName = encryptRule.getCipherColumn(tableName, segment.getColumn().getName());
-            ExpressionSegment cipherValue = getCipherValue(insertSQLStatementContext, segment);
-            return Optional.of(new InsertSetCipherColumnToken(segment.getStartIndex(), segment.getStopIndex(), cipherColumnName, cipherValue));
+            return Optional.of(generateSQLToken(sqlStatementContext, cipherColumnName, segment));
         }
         return Optional.absent();
     }
     
-    private ExpressionSegment getCipherValue(final InsertSQLStatementContext insertSQLStatementContext, final AssignmentSegment assignmentSegment) {
-        return assignmentSegment.getValue() instanceof ParameterMarkerExpressionSegment ? assignmentSegment.getValue()
-                : insertSQLStatementContext.getInsertValueContexts().get(0).getValueExpressions().get(insertSQLStatementContext.getColumnNames().indexOf(assignmentSegment.getColumn().getName()));
+    private InsertCipherAssignmentToken generateSQLToken(final InsertSQLStatementContext sqlStatementContext, final String cipherColumnName, final AssignmentSegment segment) {
+        if (segment.getValue() instanceof ParameterMarkerExpressionSegment) {
+            return new ParameterMarkerInsertCipherAssignmentToken(segment.getStartIndex(), segment.getStopIndex(), cipherColumnName);
+        }
+        LiteralExpressionSegment expressionSegment = (LiteralExpressionSegment) sqlStatementContext.getInsertValueContexts().get(0)
+                .getValueExpressions().get(sqlStatementContext.getColumnNames().indexOf(segment.getColumn().getName()));
+        return new LiteralInsertCipherAssignmentToken(segment.getStartIndex(), segment.getStopIndex(), cipherColumnName, expressionSegment.getLiterals());
     }
 }
