@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Generated key for full insert columns token generator.
+ * Generated key for insert columns token generator.
  *
  * @author panjuan
  * @author zhangliang

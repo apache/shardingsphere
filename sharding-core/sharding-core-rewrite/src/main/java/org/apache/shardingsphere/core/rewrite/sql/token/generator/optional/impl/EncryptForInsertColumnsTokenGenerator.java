@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Encrypt for full insert columns token generator.
+ * Encrypt for insert columns token generator.
  *
  * @author panjuan
  * @author zhangliang
