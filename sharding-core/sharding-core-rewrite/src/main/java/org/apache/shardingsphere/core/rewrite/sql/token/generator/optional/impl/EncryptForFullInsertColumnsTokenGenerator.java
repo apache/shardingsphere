@@ -41,6 +41,7 @@ import java.util.Map.Entry;
  * Encrypt for full insert columns token generator.
  *
  * @author panjuan
+ * @author zhangliang
  */
 @Setter
 public final class EncryptForFullInsertColumnsTokenGenerator implements OptionalSQLTokenGenerator, EncryptRuleAware, PreviousSQLTokensAware {

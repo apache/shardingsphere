@@ -17,28 +17,34 @@
 
 package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
 
+import com.google.common.base.Joiner;
+import lombok.Getter;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 
+import java.util.List;
+
 /**
- * Generated key column token.
+ * Part insert columns token.
  *
  * @author panjuan
+ * @author zhangliang
  */
-public final class GeneratedKeyColumnToken extends SQLToken implements Attachable {
+@Getter
+public final class PartInsertColumnsToken extends SQLToken implements Attachable {
     
-    private final String column;
+    private final List<String> columns;
     
-    private final boolean isEndOfToken;
-    
-    public GeneratedKeyColumnToken(final int startIndex, final String column, final boolean isEndOfToken) {
+    public PartInsertColumnsToken(final int startIndex, final List<String> columns) {
         super(startIndex);
-        this.column = column;
-        this.isEndOfToken = isEndOfToken;
+        this.columns = columns;
     }
     
     @Override
     public String toString() {
-        return String.format(isEndOfToken ? ", %s)" : ", %s", column);
+        if (columns.isEmpty()) {
+            return "";
+        }
+        return String.format(", %s", Joiner.on(", ").join(columns));
     }
 }

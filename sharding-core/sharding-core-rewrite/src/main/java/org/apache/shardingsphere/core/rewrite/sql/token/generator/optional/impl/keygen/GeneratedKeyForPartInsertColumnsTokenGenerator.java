@@ -19,25 +19,22 @@ package org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.ShardingRuleAware;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.GeneratedKeyColumnToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.PartInsertColumnsToken;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Generated key column token generator.
+ * Generated key for part insert columns token generator.
  *
  * @author panjuan
  * @author zhangliang
  */
 @Setter
-public final class GeneratedKeyColumnTokenGenerator extends BaseGeneratedKeyTokenGenerator implements ShardingRuleAware {
-    
-    private ShardingRule shardingRule;
+public final class GeneratedKeyForPartInsertColumnsTokenGenerator extends BaseGeneratedKeyTokenGenerator {
     
     @Override
     protected boolean isGenerateSQLToken(final InsertStatement insertStatement) {
@@ -46,10 +43,9 @@ public final class GeneratedKeyColumnTokenGenerator extends BaseGeneratedKeyToke
     }
     
     @Override
-    protected GeneratedKeyColumnToken generateSQLToken(final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
+    protected PartInsertColumnsToken generateSQLToken(final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
         Optional<InsertColumnsSegment> sqlSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         Preconditions.checkState(sqlSegment.isPresent());
-        boolean isEndOfToken = !shardingRule.getEncryptRule().getAssistedQueryAndPlainColumns(sqlStatementContext.getTablesContext().getSingleTableName()).isEmpty();
-        return new GeneratedKeyColumnToken(sqlSegment.get().getStopIndex(), generatedKey.getColumnName(), isEndOfToken);
+        return new PartInsertColumnsToken(sqlSegment.get().getStopIndex(), Lists.newArrayList(generatedKey.getColumnName()));
     }
 }

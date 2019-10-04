@@ -25,8 +25,10 @@ import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatement
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.EncryptRuleAware;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertAssistedQueryAndPlainColumnNamesToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.PartInsertColumnsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 
@@ -35,14 +37,17 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Insert assisted query column and plain column names token generator.
+ * Encrypt for part insert columns token generator.
  *
  * @author panjuan
+ * @author zhangliang
  */
 @Setter
-public final class InsertAssistedQueryAndPlainColumnNamesTokenGenerator implements OptionalSQLTokenGenerator, EncryptRuleAware {
+public final class EncryptForPartInsertColumnsTokenGenerator implements OptionalSQLTokenGenerator, EncryptRuleAware, PreviousSQLTokensAware {
     
     private EncryptRule encryptRule;
+    
+    private List<SQLToken> previousSQLTokens;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -52,20 +57,43 @@ public final class InsertAssistedQueryAndPlainColumnNamesTokenGenerator implemen
     }
     
     @Override
-    public InsertAssistedQueryAndPlainColumnNamesToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public PartInsertColumnsToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
         Optional<InsertColumnsSegment> sqlSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         Preconditions.checkState(sqlSegment.isPresent());
-        return new InsertAssistedQueryAndPlainColumnNamesToken(sqlSegment.get().getStopIndex(), 
-                getEncryptDerivedColumnNames(sqlStatementContext.getTablesContext().getSingleTableName()), sqlSegment.get().getColumns().isEmpty());
+        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
+        Optional<PartInsertColumnsToken> previousSQLToken = findPartInsertColumnsToken();
+        if (previousSQLToken.isPresent()) {
+            processPreviousSQLToken(previousSQLToken.get(), tableName);
+            return previousSQLToken.get();
+        }
+        return generateNewSQLToken(sqlSegment.get(), tableName);
     }
     
-    private List<String> getEncryptDerivedColumnNames(final String tableName) {
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        if (!encryptTable.isPresent()) {
-            return Collections.emptyList();
+    private Optional<PartInsertColumnsToken> findPartInsertColumnsToken() {
+        for (SQLToken each : previousSQLTokens) {
+            if (each instanceof PartInsertColumnsToken) {
+                return Optional.of((PartInsertColumnsToken) each);
+            }
         }
+        return Optional.absent();
+    }
+    
+    private void processPreviousSQLToken(final PartInsertColumnsToken previousSQLToken, final String tableName) {
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        if (encryptTable.isPresent()) {
+            previousSQLToken.getColumns().addAll(getEncryptDerivedColumnNames(encryptTable.get(), tableName));
+        }
+    }
+    
+    private PartInsertColumnsToken generateNewSQLToken(final InsertColumnsSegment sqlSegment, final String tableName) {
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        List<String> columnNames = encryptTable.isPresent() ? getEncryptDerivedColumnNames(encryptTable.get(), tableName) : Collections.<String>emptyList();
+        return new PartInsertColumnsToken(sqlSegment.getStopIndex(), columnNames);
+    }
+    
+    private List<String> getEncryptDerivedColumnNames(final EncryptTable encryptTable, final String tableName) {
         List<String> result = new LinkedList<>();
-        for (String each : encryptTable.get().getLogicColumns()) {
+        for (String each : encryptTable.getLogicColumns()) {
             Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, each);
             if (assistedQueryColumn.isPresent()) {
                 result.add(assistedQueryColumn.get());

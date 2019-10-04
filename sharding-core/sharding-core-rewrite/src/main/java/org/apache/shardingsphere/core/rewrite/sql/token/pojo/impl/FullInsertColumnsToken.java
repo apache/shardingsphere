@@ -30,9 +30,9 @@ import java.util.List;
  * @author panjuan
  * @author zhangliang
  */
+@Getter
 public final class FullInsertColumnsToken extends SQLToken implements Attachable {
     
-    @Getter
     private final List<String> columns;
     
     public FullInsertColumnsToken(final int startIndex, final List<String> columns) {
