@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.Parameter
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -35,20 +34,14 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class LimitPaginationContextEngineTest {
-
-    private LimitPaginationContextEngine limitPaginationContextEngine;
-
-    @Before
-    public void setUp() {
-        limitPaginationContextEngine = new LimitPaginationContextEngine();
-    }
-
+    
     @Test
     public void assertPaginationContextCreatedProperlyWhenPaginationValueSegmentIsNumberLiteralPaginationValueSegment() throws NoSuchFieldException, IllegalAccessException {
         NumberLiteralLimitValueSegment offset = new NumberLiteralLimitValueSegment(0, 10, 1L);
         NumberLiteralLimitValueSegment rowCount = new NumberLiteralLimitValueSegment(10, 20, 2L);
         LimitSegment limitSegment = new LimitSegment(0, 10, offset, rowCount);
         List<Object> parameters = Collections.emptyList();
+        LimitPaginationContextEngine limitPaginationContextEngine = new LimitPaginationContextEngine();
         PaginationContext paginationContext = limitPaginationContextEngine.createPaginationContext(limitSegment, parameters);
         assertThat(paginationContext.isHasPagination(), is(true));
         Field offsetSegmentField = paginationContext.getClass().getDeclaredField("offsetSegment");
@@ -73,6 +66,7 @@ public final class LimitPaginationContextEngineTest {
     public void assertPaginationContextCreatedProperlyWhenOffsetAndRowCountAreBothNull() throws NoSuchFieldException, IllegalAccessException {
         LimitSegment limitSegment = new LimitSegment(0, 10, null, null);
         List<Object> parameters = Collections.emptyList();
+        LimitPaginationContextEngine limitPaginationContextEngine = new LimitPaginationContextEngine();
         PaginationContext paginationContext = limitPaginationContextEngine.createPaginationContext(limitSegment, parameters);
         assertThat(paginationContext.isHasPagination(), is(false));
         Field offsetSegmentField = paginationContext.getClass().getDeclaredField("offsetSegment");
@@ -87,10 +81,6 @@ public final class LimitPaginationContextEngineTest {
         actualOffsetField.setAccessible(true);
         long actualOffsetFieldValue = (long) actualOffsetField.get(paginationContext);
         assertThat(actualOffsetFieldValue, is((long) 0));
-        Field actualRowCountField = paginationContext.getClass().getDeclaredField("actualRowCount");
-        actualRowCountField.setAccessible(true);
-        Long actualRowCountFieldValue = (Long) actualRowCountField.get(paginationContext);
-        assertNull(actualRowCountFieldValue);
     }
 
     @Test
@@ -99,6 +89,7 @@ public final class LimitPaginationContextEngineTest {
         ParameterMarkerPaginationValueSegment rowCount = new ParameterMarkerLimitValueSegment(10, 20, 1);
         LimitSegment limitSegment = new LimitSegment(0, 10, offset, rowCount);
         List<Object> parameters = Lists.<Object>newArrayList(15L, 20L);
+        LimitPaginationContextEngine limitPaginationContextEngine = new LimitPaginationContextEngine();
         PaginationContext paginationContext = limitPaginationContextEngine.createPaginationContext(limitSegment, parameters);
         assertThat(paginationContext.isHasPagination(), is(true));
         Field offsetSegmentField = paginationContext.getClass().getDeclaredField("offsetSegment");
