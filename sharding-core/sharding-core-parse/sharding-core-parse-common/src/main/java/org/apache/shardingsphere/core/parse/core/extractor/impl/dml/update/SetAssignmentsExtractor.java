@@ -25,8 +25,9 @@ import org.apache.shardingsphere.core.parse.core.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,8 +45,9 @@ public final class SetAssignmentsExtractor implements OptionalSQLSegmentExtracto
         if (!setAssignmentsClauseNode.isPresent()) {
             return Optional.absent();
         }
-        Collection<AssignmentSegment> assignmentSegments = new LinkedList<>();
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.ASSIGNMENT)) {
+        Collection<ParserRuleContext> assignments = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.ASSIGNMENT);
+        List<AssignmentSegment> assignmentSegments = new ArrayList<>(assignments.size());
+        for (ParserRuleContext each : assignments) {
             Optional<AssignmentSegment> assignmentSegment = assignmentExtractor.extract(each, parameterMarkerIndexes);
             if (assignmentSegment.isPresent()) {
                 assignmentSegments.add(assignmentSegment.get());

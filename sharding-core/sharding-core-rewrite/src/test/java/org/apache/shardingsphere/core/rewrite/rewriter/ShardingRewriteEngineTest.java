@@ -854,7 +854,7 @@ public final class ShardingRewriteEngineTest {
         UpdateStatement updateStatement = new UpdateStatement();
         updateStatement.getAllSQLSegments().add(new TableSegment(7, 27, "table_x"));
         updateStatement.setSetAssignment(
-                new SetAssignmentsSegment(28, 42, Collections.singleton(new AssignmentSegment(33, 42, new ColumnSegment(33, 40, "id"), new LiteralExpressionSegment(41, 42, 1)))));
+                new SetAssignmentsSegment(28, 42, Collections.singletonList(new AssignmentSegment(33, 42, new ColumnSegment(33, 40, "id"), new LiteralExpressionSegment(41, 42, 1)))));
         SQLRouteResult result = new SQLRouteResult(new CommonSQLStatementContext(updateStatement), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         result.setRoutingResult(new RoutingResult());
         return result;
@@ -946,7 +946,7 @@ public final class ShardingRewriteEngineTest {
         UpdateStatement updateStatement = new UpdateStatement();
         updateStatement.getAllSQLSegments().add(new TableSegment(7, 13, "table_z"));
         updateStatement.setSetAssignment(
-                new SetAssignmentsSegment(15, 24, Collections.singleton(new AssignmentSegment(19, 24, new ColumnSegment(19, 20, "id"), new LiteralExpressionSegment(0, 0, 1)))));
+                new SetAssignmentsSegment(15, 24, Collections.singletonList(new AssignmentSegment(19, 24, new ColumnSegment(19, 20, "id"), new LiteralExpressionSegment(0, 0, 1)))));
         AndPredicate andPredicate = new AndPredicate();
         andPredicate.getPredicates().add(new PredicateSegment(32, 37, new ColumnSegment(32, 34, "id"), new PredicateCompareRightValue("=", new LiteralExpressionSegment(37, 38, 2))));
         WhereSegment whereSegment = new WhereSegment(26, 38, 0);
@@ -959,8 +959,8 @@ public final class ShardingRewriteEngineTest {
     
     @Test
     public void assertRewriteInsertWithGeneratedKeyAndQueryAssistedShardingEncryptor() {
-        RewriteEngine rewriteEngine = createRewriteEngine(
-                createSQLRouteResultForInsertWithGeneratedKeyAndQueryAssistedShardingEncryptor(), "INSERT INTO `table_w` set name = 10 ON DUPLICATE KEY UPDATE name = VALUES(name)", Collections.emptyList());
+        RewriteEngine rewriteEngine = createRewriteEngine(createSQLRouteResultForInsertWithGeneratedKeyAndQueryAssistedShardingEncryptor(), 
+                "INSERT INTO `table_w` set name = 10 ON DUPLICATE KEY UPDATE name = VALUES(name)", Collections.emptyList());
         assertThat(rewriteEngine.generateSQL(routingUnit, logicTableAndActualTables).getSql(),
                 is("INSERT INTO `table_w` set cipher = 'encryptValue', id = 1, query = 'assistedEncryptValue', plain = 10 ON DUPLICATE KEY UPDATE name = VALUES(name)"));
     }
@@ -972,8 +972,8 @@ public final class ShardingRewriteEngineTest {
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "name"));
         ColumnSegment columnSegment = new ColumnSegment(26, 29, "name");
         LiteralExpressionSegment expressionSegment = new LiteralExpressionSegment(33, 34, 10);
-        insertStatement.getAllSQLSegments().add(new SetAssignmentsSegment(26, 34, Collections.singleton(new AssignmentSegment(26, 34, columnSegment, expressionSegment))));
-        insertStatement.setSetAssignment(new SetAssignmentsSegment(26, 34, Collections.singleton(new AssignmentSegment(26, 34, columnSegment, expressionSegment))));
+        insertStatement.getAllSQLSegments().add(new SetAssignmentsSegment(26, 34, Collections.singletonList(new AssignmentSegment(26, 34, columnSegment, expressionSegment))));
+        insertStatement.setSetAssignment(new SetAssignmentsSegment(26, 34, Collections.singletonList(new AssignmentSegment(26, 34, columnSegment, expressionSegment))));
         InsertSQLStatementContext insertSQLStatementContext = new InsertSQLStatementContext(null, Collections.emptyList(), insertStatement);
         insertSQLStatementContext.getInsertValueContexts().get(0).appendValue(1, ShardingDerivedColumnType.KEY_GEN);
         ShardingCondition shardingCondition = new ShardingCondition();

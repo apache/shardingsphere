@@ -46,8 +46,7 @@ public final class GeneratedKeyAssignmentTokenGenerator extends BaseGeneratedKey
     protected GeneratedKeyAssignmentToken generateSQLToken(final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
         Preconditions.checkState(((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent());
         List<AssignmentSegment> assignments = new ArrayList<>(((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().get().getAssignments());
-        int index = ((InsertSQLStatementContext) sqlStatementContext).getColumnNames().contains(generatedKey.getColumnName())
-                ? ((InsertSQLStatementContext) sqlStatementContext).getColumnNames().indexOf(generatedKey.getColumnName()) : ((InsertSQLStatementContext) sqlStatementContext).getColumnNames().size();
+        int index = ((InsertSQLStatementContext) sqlStatementContext).getColumnNames().size();
         ExpressionSegment expressionSegment = ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts().get(0).getValueExpressions().get(index);
         return new GeneratedKeyAssignmentToken(assignments.get(assignments.size() - 1).getStopIndex() + 1, generatedKey.getColumnName(), expressionSegment);
     }
