@@ -25,8 +25,8 @@ import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatement
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.EncryptRuleAware;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.ParametersAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.collection.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertCipherAssignmentToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.LiteralInsertCipherAssignmentToken;
@@ -36,6 +36,7 @@ import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Insert cipher assignment token generator.
@@ -43,9 +44,11 @@ import java.util.LinkedList;
  * @author panjuan
  */
 @Setter
-public final class InsertCipherAssignmentTokenGenerator implements CollectionSQLTokenGenerator, EncryptRuleAware {
+public final class InsertCipherAssignmentTokenGenerator implements CollectionSQLTokenGenerator, EncryptRuleAware, ParametersAware {
     
     private EncryptRule encryptRule;
+    
+    private List<Object> parameters;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -77,11 +80,11 @@ public final class InsertCipherAssignmentTokenGenerator implements CollectionSQL
     }
     
     private InsertCipherAssignmentToken generateSQLToken(final InsertSQLStatementContext sqlStatementContext, final String cipherColumnName, final AssignmentSegment segment) {
-        if (segment.getValue() instanceof ParameterMarkerExpressionSegment) {
-            return new ParameterMarkerInsertCipherAssignmentToken(segment.getStartIndex(), segment.getStopIndex(), cipherColumnName);
+        if (parameters.isEmpty()) {
+            LiteralExpressionSegment expressionSegment = (LiteralExpressionSegment) sqlStatementContext.getInsertValueContexts().get(0)
+                    .getValueExpressions().get(sqlStatementContext.getColumnNames().indexOf(segment.getColumn().getName()));
+            return new LiteralInsertCipherAssignmentToken(segment.getStartIndex(), segment.getStopIndex(), cipherColumnName, expressionSegment.getLiterals());
         }
-        LiteralExpressionSegment expressionSegment = (LiteralExpressionSegment) sqlStatementContext.getInsertValueContexts().get(0)
-                .getValueExpressions().get(sqlStatementContext.getColumnNames().indexOf(segment.getColumn().getName()));
-        return new LiteralInsertCipherAssignmentToken(segment.getStartIndex(), segment.getStopIndex(), cipherColumnName, expressionSegment.getLiterals());
+        return new ParameterMarkerInsertCipherAssignmentToken(segment.getStartIndex(), segment.getStopIndex(), cipherColumnName);
     }
 }
