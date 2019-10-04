@@ -18,24 +18,22 @@
 package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
 
 import com.google.common.base.Joiner;
-import lombok.Getter;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 
 import java.util.List;
 
 /**
- * Part insert columns token.
+ * Assist query and plain insert columns token.
  *
  * @author panjuan
  * @author zhangliang
  */
-@Getter
-public final class PartInsertColumnsToken extends SQLToken implements Attachable {
+public final class AssistQueryAndPlainInsertColumnsToken extends SQLToken implements Attachable {
     
     private final List<String> columns;
     
-    public PartInsertColumnsToken(final int startIndex, final List<String> columns) {
+    public AssistQueryAndPlainInsertColumnsToken(final int startIndex, final List<String> columns) {
         super(startIndex);
         this.columns = columns;
     }

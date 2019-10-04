@@ -19,22 +19,19 @@ package org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.PartInsertColumnsToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.GeneratedKeyInsertColumnToken;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 
 /**
- * Generated key for part insert columns token generator.
+ * Generated key insert column token generator.
  *
  * @author panjuan
  * @author zhangliang
  */
-@Setter
-public final class GeneratedKeyForPartInsertColumnsTokenGenerator extends BaseGeneratedKeyTokenGenerator {
+public final class GeneratedKeyInsertColumnTokenGenerator extends BaseGeneratedKeyTokenGenerator {
     
     @Override
     protected boolean isGenerateSQLToken(final InsertStatement insertStatement) {
@@ -43,9 +40,9 @@ public final class GeneratedKeyForPartInsertColumnsTokenGenerator extends BaseGe
     }
     
     @Override
-    protected PartInsertColumnsToken generateSQLToken(final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
+    protected GeneratedKeyInsertColumnToken generateSQLToken(final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
         Optional<InsertColumnsSegment> sqlSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         Preconditions.checkState(sqlSegment.isPresent());
-        return new PartInsertColumnsToken(sqlSegment.get().getStopIndex(), Lists.newArrayList(generatedKey.getColumnName()));
+        return new GeneratedKeyInsertColumnToken(sqlSegment.get().getStopIndex(), generatedKey.getColumnName());
     }
 }
