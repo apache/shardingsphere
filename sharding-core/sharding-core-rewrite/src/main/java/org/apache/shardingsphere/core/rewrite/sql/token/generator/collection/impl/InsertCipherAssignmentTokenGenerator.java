@@ -38,12 +38,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Insert set cipher column token generator.
+ * Insert cipher assignment token generator.
  *
  * @author panjuan
  */
 @Setter
-public final class InsertSetCipherColumnTokenGenerator implements CollectionSQLTokenGenerator, EncryptRuleAware {
+public final class InsertCipherAssignmentTokenGenerator implements CollectionSQLTokenGenerator, EncryptRuleAware {
     
     private EncryptRule encryptRule;
     
