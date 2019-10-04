@@ -44,7 +44,7 @@ import java.util.Map.Entry;
  * @author zhangliang
  */
 @Setter
-public final class EncryptForFullInsertColumnsTokenGenerator implements OptionalSQLTokenGenerator, EncryptRuleAware, PreviousSQLTokensAware {
+public final class EncryptForInsertColumnsTokenGenerator implements OptionalSQLTokenGenerator, EncryptRuleAware, PreviousSQLTokensAware {
     
     private EncryptRule encryptRule;
     
