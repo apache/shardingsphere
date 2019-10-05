@@ -19,7 +19,7 @@
 <!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN" "http://checkstyle.sourceforge.net/dtds/configuration_1_3.dtd">
 <module name = "Checker">
     <property name="charset" value="UTF-8"/>
-    <property name="severity" value="warning"/>
+    <property name="severity" value="error"/>
     <property name="fileExtensions" value="java, properties, xml"/>
     <module name="Header">
         <property name="headerFile" value="src/resources/copyright.txt"/>
@@ -64,12 +64,7 @@
         <module name="LineLength">
             <property name="max" value="200"/>
         </module>
-        <module name="MethodCount"/>
-        <module name="ExecutableStatementCount">
-            <property name="max" value="50"/>
-        </module>
         <module name="OuterTypeNumber"/>
-        <module name="ParameterNumber"/>
 
         <!-- Whitespace -->
         <module name="EmptyForInitializerPad"/>
@@ -152,7 +147,6 @@
         <module name="DeclarationOrder"/>
         <module name="EmptyStatement"/>
         <module name="EqualsAvoidNull"/>
-        <module name="EqualsHashCode"/>
         <module name="ExplicitInitialization"/>
         <module name="FallThrough"/>
         <module name="IllegalInstantiation"/>
@@ -169,7 +163,6 @@
         <module name="MissingSwitchDefault"/>
         <module name="ModifiedControlVariable"/>
         <module name="MultipleVariableDeclarations"/>
-        <module name="NestedForDepth"/>
         <module name="NestedIfDepth"/>
         <module name="NestedTryDepth"/>
         <module name="NoClone"/>
@@ -197,7 +190,6 @@
         <module name="RightCurly"/>
         
         <!-- Class Design -->
-        <module name="DesignForExtension"/>
         <module name="FinalClass"/>
         <!-- cannot recognize for lombok @NoArgsConstructor(access = AccessLevel.PRIVATE), just ignore -->
         <!--<module name="HideUtilityClassConstructor"/>-->
@@ -207,16 +199,6 @@
         <module name="VisibilityModifier"/>
         <module name="MutableException"/>
         <module name="ThrowsCount"/>
-        
-        <!-- Metrics -->
-        <module name="BooleanExpressionComplexity"/>
-        <module name="ClassDataAbstractionCoupling">
-            <property name="max" value="10"/>
-        </module>
-        <module name="ClassFanOutComplexity"/>
-        <module name="CyclomaticComplexity"/>
-        <module name="NPathComplexity"/>
-        <module name="JavaNCSS"/>
         
         <!-- Miscellaneous -->
         <module name="ArrayTypeStyle"/>
@@ -242,11 +224,7 @@
         <module name="JavadocTagContinuationIndentation"/>
         <module name="SingleLineJavadoc"/>
         <module name="SummaryJavadoc"/>
-        <!--
-        <module name="JavadocType">
-            <property name="scope" value="public"/>
-        </module>
-        -->
+        
         <module name="JavadocMethod">
             <property name="scope" value="public"/>
             <property name="allowedAnnotations" value="Override, Test, Before, After, BeforeClass, AfterClass, Parameterized, Parameters"/>
