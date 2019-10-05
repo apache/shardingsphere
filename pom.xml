@@ -670,6 +670,7 @@
                 <version>${maven-checkstyle-plugin.version}</version>
                 <configuration>
                     <configLocation>src/resources/checkstyle_ci.xml</configLocation>
+                    <excludes>**/autogen/**/*</excludes>
                 </configuration>
                 <executions>
                     <execution>
@@ -843,6 +844,7 @@
                 <version>${maven-checkstyle-plugin.version}</version>
                 <configuration>
                     <configLocation>src/resources/checkstyle.xml</configLocation>
+                    <excludes>**/autogen/**/*</excludes>
                 </configuration>
             </plugin>
             <plugin>
