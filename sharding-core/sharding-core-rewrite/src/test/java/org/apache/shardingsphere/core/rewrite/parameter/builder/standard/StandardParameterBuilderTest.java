@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.parameter.builder.standard;
 
+import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
