@@ -126,6 +126,7 @@
         
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
         <maven.deploy.skip>false</maven.deploy.skip>
+        <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
     </properties>
     
     <dependencyManagement>
@@ -508,9 +509,6 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <configuration>
-                        <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
