@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.encrypt;
 
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.rewrite.BasicRewriter;
+import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.encrypt.EncryptParameterBuilderFactory;
 import org.apache.shardingsphere.core.rewrite.sql.token.SQLTokenGenerators;
 import org.apache.shardingsphere.core.rewrite.sql.token.builder.EncryptTokenGenerateBuilder;
@@ -34,18 +34,18 @@ import java.util.List;
 public final class EncryptRewriterDecorator {
     
     /**
-     * Decorate rewriter.
+     * Decorate SQL rewrite engine.
      * 
-     * @param rewriter rewriter to be decorated
+     * @param sqlRewriteEngine SQL rewrite engine to be decorated
      * @param parameters SQL parameters
      * @param encryptRule encrypt rule
      * @param tableMetas table metas
      * @param isQueryWithCipherColumn is query with cipher column
      */
-    public void decorate(final BasicRewriter rewriter, final List<Object> parameters, final EncryptRule encryptRule, final TableMetas tableMetas, final boolean isQueryWithCipherColumn) {
-        EncryptParameterBuilderFactory.build(rewriter.getParameterBuilder(), encryptRule, tableMetas, rewriter.getSqlStatementContext(), parameters, isQueryWithCipherColumn);
+    public void decorate(final SQLRewriteEngine sqlRewriteEngine, final List<Object> parameters, final EncryptRule encryptRule, final TableMetas tableMetas, final boolean isQueryWithCipherColumn) {
+        EncryptParameterBuilderFactory.build(sqlRewriteEngine.getParameterBuilder(), encryptRule, tableMetas, sqlRewriteEngine.getSqlStatementContext(), parameters, isQueryWithCipherColumn);
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
         sqlTokenGenerators.addAll(new EncryptTokenGenerateBuilder(encryptRule, isQueryWithCipherColumn).getSQLTokenGenerators());
-        rewriter.addSQLTokens(sqlTokenGenerators.generateSQLTokens(rewriter.getSqlStatementContext(), parameters, tableMetas, rewriter.getSqlBuilder().getSqlTokens(), true));
+        sqlRewriteEngine.addSQLTokens(sqlTokenGenerators.generateSQLTokens(sqlRewriteEngine.getSqlStatementContext(), parameters, tableMetas, sqlRewriteEngine.getSqlBuilder().getSqlTokens(), true));
     }
 }

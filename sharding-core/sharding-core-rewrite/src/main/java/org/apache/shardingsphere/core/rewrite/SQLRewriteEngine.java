@@ -36,13 +36,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Basic Rewriter.
+ * SQL rewrite engine.
  * 
  * @author panjuan
  * @author zhangliang
  */
 @Getter
-public final class BasicRewriter {
+public final class SQLRewriteEngine {
     
     private final SQLStatementContext sqlStatementContext;
     
@@ -50,7 +50,7 @@ public final class BasicRewriter {
     
     private final ParameterBuilder parameterBuilder;
     
-    public BasicRewriter(final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters) {
+    public SQLRewriteEngine(final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters) {
         this.sqlStatementContext = sqlStatementContext;
         parameterBuilder = sqlStatementContext instanceof InsertSQLStatementContext
                 ? new GroupedParameterBuilder(((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) : new StandardParameterBuilder(parameters);

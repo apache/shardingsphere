@@ -23,7 +23,7 @@ import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.rewrite.BasicRewriter;
+import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptRewriterDecorator;
 import org.apache.shardingsphere.core.rewrite.sharding.ShardingRewriterDecorator;
 import org.apache.shardingsphere.core.route.RouteUnit;
@@ -106,14 +106,14 @@ public abstract class BaseShardingEngine {
     }
     
     private Collection<RouteUnit> rewriteAndConvert(final String sql, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        BasicRewriter rewriter = new BasicRewriter(sqlRouteResult.getSqlStatementContext(), sql, parameters);
-        new ShardingRewriterDecorator().decorate(rewriter, parameters, shardingRule, metaData.getTables(), sqlRouteResult);
-        new EncryptRewriterDecorator().decorate(rewriter, parameters, shardingRule.getEncryptRule(), metaData.getTables(), 
+        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(sqlRouteResult.getSqlStatementContext(), sql, parameters);
+        new ShardingRewriterDecorator().decorate(sqlRewriteEngine, parameters, shardingRule, metaData.getTables(), sqlRouteResult);
+        new EncryptRewriterDecorator().decorate(sqlRewriteEngine, parameters, shardingRule.getEncryptRule(), metaData.getTables(), 
                 shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         Collection<RouteUnit> result = new LinkedHashSet<>();
         for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
             result.add(new RouteUnit(
-                    each.getDataSourceName(), rewriter.generateSQL(each, getLogicAndActualTables(each, sqlRouteResult.getSqlStatementContext().getTablesContext().getTableNames()))));
+                    each.getDataSourceName(), sqlRewriteEngine.generateSQL(each, getLogicAndActualTables(each, sqlRouteResult.getSqlStatementContext().getTablesContext().getTableNames()))));
         }
         return result;
     }
