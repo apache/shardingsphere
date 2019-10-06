@@ -23,7 +23,7 @@ import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.rewrite.sharding.ShardingRewriteEngine;
+import org.apache.shardingsphere.core.rewrite.sharding.ShardingRewriter;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -104,12 +104,12 @@ public abstract class BaseShardingEngine {
     }
     
     private Collection<RouteUnit> rewriteAndConvert(final String sql, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        ShardingRewriteEngine rewriteEngine = new ShardingRewriteEngine(shardingRule, metaData.getTables(), 
+        ShardingRewriter rewriter = new ShardingRewriter(shardingRule, metaData.getTables(), 
                 sqlRouteResult, sql, parameters, shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         Collection<RouteUnit> result = new LinkedHashSet<>();
         for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
             result.add(new RouteUnit(
-                    each.getDataSourceName(), rewriteEngine.generateSQL(each, getLogicAndActualTables(each, sqlRouteResult.getSqlStatementContext().getTablesContext().getTableNames()))));
+                    each.getDataSourceName(), rewriter.generateSQL(each, getLogicAndActualTables(each, sqlRouteResult.getSqlStatementContext().getTablesContext().getTableNames()))));
         }
         return result;
     }

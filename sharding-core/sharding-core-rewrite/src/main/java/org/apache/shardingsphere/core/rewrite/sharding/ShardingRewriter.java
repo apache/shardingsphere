@@ -40,12 +40,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Rewrite engine for sharding.
+ * Rewriter for sharding.
  * 
  * @author panjuan
  * @author zhangliang
  */
-public final class ShardingRewriteEngine {
+public final class ShardingRewriter {
     
     private final ShardingRule shardingRule;
     
@@ -57,8 +57,8 @@ public final class ShardingRewriteEngine {
     
     private final ParameterBuilder parameterBuilder;
     
-    public ShardingRewriteEngine(final ShardingRule shardingRule, final TableMetas tableMetas,
-                                 final SQLRouteResult sqlRouteResult, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
+    public ShardingRewriter(final ShardingRule shardingRule, final TableMetas tableMetas,
+                            final SQLRouteResult sqlRouteResult, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
         this.shardingRule = shardingRule;
         sqlStatementContext = sqlRouteResult.getSqlStatementContext();
         parameterBuilder = createParameterBuilder(tableMetas, sqlRouteResult, parameters, isQueryWithCipherColumn);

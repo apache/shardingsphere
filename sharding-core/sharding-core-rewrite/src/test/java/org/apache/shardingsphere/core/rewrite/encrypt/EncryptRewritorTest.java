@@ -44,7 +44,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class EncryptRewriteEngineTest {
+public final class EncryptRewritorTest {
     
     private EncryptRule encryptRule;
     
@@ -336,7 +336,7 @@ public final class EncryptRewriteEngineTest {
         // TODO panjuan: should mock sqlStatement, do not call parse module on rewrite test case
         SQLStatement sqlStatement = parseEngine.parse(sql, false);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(mock(TableMetas.class), sql, parameters, sqlStatement);
-        EncryptRewriteEngine rewriteEngine = new EncryptRewriteEngine(encryptRule, mock(TableMetas.class), sqlStatementContext, sql, parameters, isQueryWithCipherColumn);
-        return rewriteEngine.generateSQL();
+        EncryptRewriter rewriter = new EncryptRewriter(encryptRule, mock(TableMetas.class), sqlStatementContext, sql, parameters, isQueryWithCipherColumn);
+        return rewriter.generateSQL();
     }
 }

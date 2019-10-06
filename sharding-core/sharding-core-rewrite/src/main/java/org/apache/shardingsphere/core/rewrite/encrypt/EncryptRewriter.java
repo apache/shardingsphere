@@ -35,12 +35,12 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
 import java.util.List;
 
 /**
- * Rewrite engine for encrypt.
+ * Rewriter for encrypt.
  * 
  * @author panjuan
  * @author zhangliang
  */
-public final class EncryptRewriteEngine {
+public final class EncryptRewriter {
     
     private final EncryptRule encryptRule;
     
@@ -52,8 +52,8 @@ public final class EncryptRewriteEngine {
     
     private final ParameterBuilder parameterBuilder;
     
-    public EncryptRewriteEngine(final EncryptRule encryptRule, final TableMetas tableMetas,
-                                final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
+    public EncryptRewriter(final EncryptRule encryptRule, final TableMetas tableMetas,
+                           final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
         this.encryptRule = encryptRule;
         this.sqlStatementContext = sqlStatementContext;
         parameterBuilder = createParameterBuilder(tableMetas, sqlStatementContext, parameters, isQueryWithCipherColumn);

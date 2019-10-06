@@ -32,12 +32,12 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Basic Rewrite engine.
+ * Basic Rewriter.
  * 
  * @author panjuan
  * @author zhangliang
  */
-public final class BasicRewriteEngine {
+public final class BasicRewriter {
     
     private final SQLStatementContext sqlStatementContext;
     
@@ -47,7 +47,7 @@ public final class BasicRewriteEngine {
     
     private final ParameterBuilder parameterBuilder;
     
-    public BasicRewriteEngine(final SQLStatementContext sqlStatementContext, final String sql) {
+    public BasicRewriter(final SQLStatementContext sqlStatementContext, final String sql) {
         this.sqlStatementContext = sqlStatementContext;
         parameterBuilder = sqlStatementContext instanceof InsertSQLStatementContext
                 ? new GroupedParameterBuilder(((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) : new StandardParameterBuilder(Collections.emptyList());
