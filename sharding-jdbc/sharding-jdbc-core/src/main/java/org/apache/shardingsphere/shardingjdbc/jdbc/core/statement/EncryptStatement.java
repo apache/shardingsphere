@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.SQLStatementContextFactory;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.rewrite.RewriteEngine;
+import org.apache.shardingsphere.core.rewrite.encrypt.EncryptRewriteEngine;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultSet;
@@ -80,7 +80,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     private String getRewriteSQL(final String sql) {
         SQLStatement sqlStatement = connection.getRuntimeContext().getParseEngine().parse(sql, false);
         sqlStatementContext = SQLStatementContextFactory.newInstance(connection.getRuntimeContext().getTableMetas(), sql, Collections.emptyList(), sqlStatement);
-        RewriteEngine encryptRewriteEngine = new RewriteEngine(connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getTableMetas(), sqlStatementContext, sql, 
+        EncryptRewriteEngine encryptRewriteEngine = new EncryptRewriteEngine(connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getTableMetas(), sqlStatementContext, sql, 
                 Collections.emptyList(), connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         String result = encryptRewriteEngine.generateSQL().getSql();
         showSQL(result);
