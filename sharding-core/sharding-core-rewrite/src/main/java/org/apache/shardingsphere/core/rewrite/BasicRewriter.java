@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite;
 
+import lombok.Getter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
@@ -27,9 +28,12 @@ import org.apache.shardingsphere.core.rewrite.sql.token.SQLTokenGenerators;
 import org.apache.shardingsphere.core.rewrite.sql.token.builder.BaseTokenGeneratorBuilder;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.route.SQLUnit;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Basic Rewriter.
@@ -39,16 +43,18 @@ import java.util.List;
  */
 public final class BasicRewriter {
     
+    @Getter
     private final SQLStatementContext sqlStatementContext;
     
     private final SQLBuilder sqlBuilder;
     
+    @Getter
     private final ParameterBuilder parameterBuilder;
     
-    public BasicRewriter(final SQLStatementContext sqlStatementContext, final String sql) {
+    public BasicRewriter(final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters) {
         this.sqlStatementContext = sqlStatementContext;
         parameterBuilder = sqlStatementContext instanceof InsertSQLStatementContext
-                ? new GroupedParameterBuilder(((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) : new StandardParameterBuilder(Collections.emptyList());
+                ? new GroupedParameterBuilder(((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) : new StandardParameterBuilder(parameters);
         sqlBuilder = new SQLBuilder(sql);
         sqlBuilder.getSqlTokens().addAll(createSQLTokens());
     }
@@ -60,11 +66,32 @@ public final class BasicRewriter {
     }
     
     /**
+     * Add SQL tokens.
+     * 
+     * @param sqlTokens SQL tokens
+     */
+    public void addSQLTokens(final Collection<SQLToken> sqlTokens) {
+        sqlBuilder.getSqlTokens().removeAll(sqlTokens);
+        sqlBuilder.getSqlTokens().addAll(sqlTokens);
+    }
+    
+    /**
      * Generate SQL.
      * 
      * @return SQL unit
      */
     public SQLUnit generateSQL() {
         return new SQLUnit(sqlBuilder.toSQL(), parameterBuilder.getParameters());
+    }
+    
+    /**
+     * Generate SQL.
+     *
+     * @param routingUnit routing unit
+     * @param logicAndActualTables logic and actual tables
+     * @return SQL unit
+     */
+    public SQLUnit generateSQL(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
+        return new SQLUnit(sqlBuilder.toSQL(routingUnit, logicAndActualTables), parameterBuilder.getParameters(routingUnit));
     }
 }

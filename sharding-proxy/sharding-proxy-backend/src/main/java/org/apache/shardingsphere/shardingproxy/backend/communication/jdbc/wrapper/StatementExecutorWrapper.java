@@ -24,8 +24,8 @@ import org.apache.shardingsphere.core.optimize.SQLStatementContextFactory;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.CommonSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.rewrite.encrypt.EncryptRewriter;
 import org.apache.shardingsphere.core.rewrite.BasicRewriter;
+import org.apache.shardingsphere.core.rewrite.encrypt.EncryptRewriteDecorator;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
@@ -80,7 +80,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     private SQLRouteResult doMasterSlaveRoute(final String sql) {
         SQLStatement sqlStatement = logicSchema.getParseEngine().parse(sql, false);
         CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
-        BasicRewriter basicRewriter = new BasicRewriter(sqlStatementContext, sql);
+        BasicRewriter basicRewriter = new BasicRewriter(sqlStatementContext, sql, Collections.emptyList());
         String rewriteSQL = basicRewriter.generateSQL().getSql();
         SQLRouteResult result = new SQLRouteResult(sqlStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         for (String each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), logicSchema.getParseEngine(),
@@ -95,8 +95,9 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         EncryptSchema encryptSchema = (EncryptSchema) logicSchema;
         SQLStatement sqlStatement = encryptSchema.getParseEngine().parse(sql, false);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(logicSchema.getMetaData().getTables(), sql, new LinkedList<>(), sqlStatement);
-        EncryptRewriter rewriter = new EncryptRewriter(encryptSchema.getEncryptRule(), logicSchema.getMetaData().getTables(), 
-                sqlStatementContext, sql, Collections.emptyList(), ShardingProxyContext.getInstance().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
+        BasicRewriter rewriter = new BasicRewriter(sqlStatementContext, sql, Collections.emptyList());
+        new EncryptRewriteDecorator().decorateRewriter(rewriter, Collections.emptyList(), encryptSchema.getEncryptRule(), 
+                logicSchema.getMetaData().getTables(), ShardingProxyContext.getInstance().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         SQLRouteResult result = new SQLRouteResult(sqlStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         result.getRouteUnits().add(new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(rewriter.generateSQL().getSql(), Collections.emptyList())));
         return result;
