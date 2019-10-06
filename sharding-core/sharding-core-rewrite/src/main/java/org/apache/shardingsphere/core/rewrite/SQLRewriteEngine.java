@@ -41,25 +41,21 @@ import java.util.Map;
  * @author panjuan
  * @author zhangliang
  */
+@Getter
 public final class SQLRewriteEngine {
     
-    private final SQLStatementContext sqlStatementContext;
-    
-    @Getter
     private final SQLBuilder sqlBuilder;
     
-    @Getter
     private final ParameterBuilder parameterBuilder;
     
     public SQLRewriteEngine(final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters) {
-        this.sqlStatementContext = sqlStatementContext;
         parameterBuilder = sqlStatementContext instanceof InsertSQLStatementContext
                 ? new GroupedParameterBuilder(((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) : new StandardParameterBuilder(parameters);
         sqlBuilder = new SQLBuilder(sql);
-        sqlBuilder.getSqlTokens().addAll(createSQLTokens());
+        sqlBuilder.getSqlTokens().addAll(createSQLTokens(sqlStatementContext));
     }
     
-    private List<SQLToken> createSQLTokens() {
+    private List<SQLToken> createSQLTokens(final SQLStatementContext sqlStatementContext) {
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
         sqlTokenGenerators.addAll(new BaseTokenGeneratorBuilder().getSQLTokenGenerators());
         return sqlTokenGenerators.generateSQLTokens(sqlStatementContext, Collections.emptyList(), null, Collections.<SQLToken>emptyList(), true);
