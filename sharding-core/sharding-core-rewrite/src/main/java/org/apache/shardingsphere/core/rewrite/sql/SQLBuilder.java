@@ -65,6 +65,7 @@ public final class SQLBuilder {
         if (sqlTokens.isEmpty()) {
             return logicSQL;
         }
+        Collections.sort(sqlTokens);
         return createLogicSQL(routingUnit, logicAndActualTables);
     }
     

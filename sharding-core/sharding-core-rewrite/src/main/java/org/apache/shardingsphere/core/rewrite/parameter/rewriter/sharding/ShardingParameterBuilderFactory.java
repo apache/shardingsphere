@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLRouteResultAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.ShardingRuleAware;
@@ -51,6 +52,9 @@ public final class ShardingParameterBuilderFactory {
      */
     public static void build(final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, 
                              final TableMetas tableMetas, final SQLRouteResult sqlRouteResult, final List<Object> parameters) {
+        if (parameterBuilder instanceof GroupedParameterBuilder) {
+            ((GroupedParameterBuilder) parameterBuilder).setShardingConditions(sqlRouteResult.getShardingConditions());
+        } 
         for (ParameterRewriter each : getParameterRewriters()) {
             if (each instanceof ShardingRuleAware) {
                 ((ShardingRuleAware) each).setShardingRule(shardingRule);

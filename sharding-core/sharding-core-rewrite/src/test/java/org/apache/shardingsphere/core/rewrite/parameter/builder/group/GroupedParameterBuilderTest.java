@@ -39,7 +39,8 @@ public final class GroupedParameterBuilderTest {
     
     @Before
     public void setUp() {
-        parameterBuilder = new GroupedParameterBuilder(createGroupedParameters(), createShardingConditions());
+        parameterBuilder = new GroupedParameterBuilder(createGroupedParameters());
+        parameterBuilder.setShardingConditions(createShardingConditions());
     }
     
     private List<List<Object>> createGroupedParameters() {

@@ -338,7 +338,7 @@ public final class EncryptRewritorTest {
         SQLStatement sqlStatement = parseEngine.parse(sql, false);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(mock(TableMetas.class), sql, parameters, sqlStatement);
         BasicRewriter rewriter = new BasicRewriter(sqlStatementContext, sql, parameters);
-        new EncryptRewriteDecorator().decorateRewriter(rewriter, parameters, encryptRule, mock(TableMetas.class), isQueryWithCipherColumn); 
+        new EncryptRewriterDecorator().decorate(rewriter, parameters, encryptRule, mock(TableMetas.class), isQueryWithCipherColumn); 
         return rewriter.generateSQL();
     }
 }

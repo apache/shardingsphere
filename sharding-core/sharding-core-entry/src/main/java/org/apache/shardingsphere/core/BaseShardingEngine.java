@@ -23,7 +23,9 @@ import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.rewrite.sharding.ShardingRewriter;
+import org.apache.shardingsphere.core.rewrite.BasicRewriter;
+import org.apache.shardingsphere.core.rewrite.encrypt.EncryptRewriterDecorator;
+import org.apache.shardingsphere.core.rewrite.sharding.ShardingRewriterDecorator;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -104,8 +106,10 @@ public abstract class BaseShardingEngine {
     }
     
     private Collection<RouteUnit> rewriteAndConvert(final String sql, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        ShardingRewriter rewriter = new ShardingRewriter(shardingRule, metaData.getTables(), 
-                sqlRouteResult, sql, parameters, shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
+        BasicRewriter rewriter = new BasicRewriter(sqlRouteResult.getSqlStatementContext(), sql, parameters);
+        new ShardingRewriterDecorator().decorate(rewriter, parameters, shardingRule, metaData.getTables(), sqlRouteResult);
+        new EncryptRewriterDecorator().decorate(rewriter, parameters, shardingRule.getEncryptRule(), metaData.getTables(), 
+                shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         Collection<RouteUnit> result = new LinkedHashSet<>();
         for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
             result.add(new RouteUnit(

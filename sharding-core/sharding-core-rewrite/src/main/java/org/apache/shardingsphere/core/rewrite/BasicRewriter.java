@@ -41,14 +41,13 @@ import java.util.Map;
  * @author panjuan
  * @author zhangliang
  */
+@Getter
 public final class BasicRewriter {
     
-    @Getter
     private final SQLStatementContext sqlStatementContext;
     
     private final SQLBuilder sqlBuilder;
     
-    @Getter
     private final ParameterBuilder parameterBuilder;
     
     public BasicRewriter(final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters) {
@@ -62,7 +61,7 @@ public final class BasicRewriter {
     private List<SQLToken> createSQLTokens() {
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
         sqlTokenGenerators.addAll(new BaseTokenGeneratorBuilder().getSQLTokenGenerators());
-        return sqlTokenGenerators.generateSQLTokens(sqlStatementContext, Collections.emptyList(), null, true);
+        return sqlTokenGenerators.generateSQLTokens(sqlStatementContext, Collections.emptyList(), null, Collections.<SQLToken>emptyList(), true);
     }
     
     /**

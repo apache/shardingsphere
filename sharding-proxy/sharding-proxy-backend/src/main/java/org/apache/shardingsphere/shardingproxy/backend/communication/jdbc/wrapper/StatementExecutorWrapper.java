@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.CommonSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.BasicRewriter;
-import org.apache.shardingsphere.core.rewrite.encrypt.EncryptRewriteDecorator;
+import org.apache.shardingsphere.core.rewrite.encrypt.EncryptRewriterDecorator;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
@@ -96,7 +96,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         SQLStatement sqlStatement = encryptSchema.getParseEngine().parse(sql, false);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(logicSchema.getMetaData().getTables(), sql, new LinkedList<>(), sqlStatement);
         BasicRewriter rewriter = new BasicRewriter(sqlStatementContext, sql, Collections.emptyList());
-        new EncryptRewriteDecorator().decorateRewriter(rewriter, Collections.emptyList(), encryptSchema.getEncryptRule(), 
+        new EncryptRewriterDecorator().decorate(rewriter, Collections.emptyList(), encryptSchema.getEncryptRule(), 
                 logicSchema.getMetaData().getTables(), ShardingProxyContext.getInstance().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         SQLRouteResult result = new SQLRouteResult(sqlStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         result.getRouteUnits().add(new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(rewriter.generateSQL().getSql(), Collections.emptyList())));

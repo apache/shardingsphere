@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.optimize.SQLStatementContextFactory;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.BasicRewriter;
-import org.apache.shardingsphere.core.rewrite.encrypt.EncryptRewriteDecorator;
+import org.apache.shardingsphere.core.rewrite.encrypt.EncryptRewriterDecorator;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultSet;
@@ -82,7 +82,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
         SQLStatement sqlStatement = connection.getRuntimeContext().getParseEngine().parse(sql, false);
         sqlStatementContext = SQLStatementContextFactory.newInstance(connection.getRuntimeContext().getTableMetas(), sql, Collections.emptyList(), sqlStatement);
         BasicRewriter rewriter = new BasicRewriter(sqlStatementContext, sql, Collections.emptyList());
-        new EncryptRewriteDecorator().decorateRewriter(rewriter, Collections.emptyList(), connection.getRuntimeContext().getRule(), 
+        new EncryptRewriterDecorator().decorate(rewriter, Collections.emptyList(), connection.getRuntimeContext().getRule(), 
                 connection.getRuntimeContext().getTableMetas(), connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         String result = rewriter.generateSQL().getSql();
         showSQL(result);

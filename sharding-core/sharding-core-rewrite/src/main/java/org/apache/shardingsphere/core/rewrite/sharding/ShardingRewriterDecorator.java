@@ -15,37 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.encrypt;
+package org.apache.shardingsphere.core.rewrite.sharding;
 
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rewrite.BasicRewriter;
-import org.apache.shardingsphere.core.rewrite.parameter.rewriter.encrypt.EncryptParameterBuilderFactory;
+import org.apache.shardingsphere.core.rewrite.parameter.rewriter.sharding.ShardingParameterBuilderFactory;
 import org.apache.shardingsphere.core.rewrite.sql.token.SQLTokenGenerators;
-import org.apache.shardingsphere.core.rewrite.sql.token.builder.EncryptTokenGenerateBuilder;
-import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.rewrite.sql.token.builder.ShardingTokenGenerateBuilder;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.List;
 
 /**
- * Rewrite decorator for encrypt.
+ * Rewriter decorator for sharding.
  * 
  * @author zhangliang
  */
-public final class EncryptRewriteDecorator {
+public final class ShardingRewriterDecorator {
     
     /**
      * Decorate rewriter.
      * 
      * @param rewriter rewriter to be decorated
      * @param parameters SQL parameters
-     * @param encryptRule encrypt rule
+     * @param shardingRule sharding rule
      * @param tableMetas table metas
-     * @param isQueryWithCipherColumn is query with cipher column
+     * @param sqlRouteResult SQL route result
      */
-    public void decorateRewriter(final BasicRewriter rewriter, final List<Object> parameters, final EncryptRule encryptRule, final TableMetas tableMetas, final boolean isQueryWithCipherColumn) {
-        EncryptParameterBuilderFactory.build(rewriter.getParameterBuilder(), encryptRule, tableMetas, rewriter.getSqlStatementContext(), parameters, isQueryWithCipherColumn);
+    public void decorate(final BasicRewriter rewriter, final List<Object> parameters, final ShardingRule shardingRule, final TableMetas tableMetas, final SQLRouteResult sqlRouteResult) {
+        ShardingParameterBuilderFactory.build(rewriter.getParameterBuilder(), shardingRule, tableMetas, sqlRouteResult, parameters);
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
-        sqlTokenGenerators.addAll(new EncryptTokenGenerateBuilder(encryptRule, isQueryWithCipherColumn).getSQLTokenGenerators());
-        rewriter.addSQLTokens(sqlTokenGenerators.generateSQLTokens(rewriter.getSqlStatementContext(), parameters, tableMetas, true));
+        sqlTokenGenerators.addAll(new ShardingTokenGenerateBuilder(shardingRule, sqlRouteResult).getSQLTokenGenerators());
+        rewriter.addSQLTokens(sqlTokenGenerators.generateSQLTokens(rewriter.getSqlStatementContext(), 
+                parameters, tableMetas, rewriter.getSqlBuilder().getSqlTokens(), sqlRouteResult.getRoutingResult().isSingleRouting()));
     }
 }
