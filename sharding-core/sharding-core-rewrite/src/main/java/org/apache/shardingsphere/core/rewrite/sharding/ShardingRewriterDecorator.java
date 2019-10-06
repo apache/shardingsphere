@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.core.rewrite.sharding;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.rewrite.SQLRewriteDecorator;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.sharding.ShardingParameterBuilderFactory;
 import org.apache.shardingsphere.core.rewrite.sql.token.SQLTokenGenerators;
@@ -32,22 +35,19 @@ import java.util.List;
  * 
  * @author zhangliang
  */
-public final class ShardingRewriterDecorator {
+@RequiredArgsConstructor
+public final class ShardingRewriterDecorator implements SQLRewriteDecorator {
     
-    /**
-     * Decorate SQL rewrite engine.
-     * 
-     * @param sqlRewriteEngine SQL rewrite engine to be decorated
-     * @param parameters SQL parameters
-     * @param shardingRule sharding rule
-     * @param tableMetas table metas
-     * @param sqlRouteResult SQL route result
-     */
-    public void decorate(final SQLRewriteEngine sqlRewriteEngine, final List<Object> parameters, final ShardingRule shardingRule, final TableMetas tableMetas, final SQLRouteResult sqlRouteResult) {
+    private final ShardingRule shardingRule;
+    
+    private final SQLRouteResult sqlRouteResult;
+    
+    @Override
+    public void decorate(final SQLRewriteEngine sqlRewriteEngine, final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
         ShardingParameterBuilderFactory.build(sqlRewriteEngine.getParameterBuilder(), shardingRule, tableMetas, sqlRouteResult, parameters);
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
         sqlTokenGenerators.addAll(new ShardingTokenGenerateBuilder(shardingRule, sqlRouteResult).getSQLTokenGenerators());
-        sqlRewriteEngine.addSQLTokens(sqlTokenGenerators.generateSQLTokens(sqlRewriteEngine.getSqlStatementContext(), 
-                parameters, tableMetas, sqlRewriteEngine.getSqlBuilder().getSqlTokens(), sqlRouteResult.getRoutingResult().isSingleRouting()));
+        sqlRewriteEngine.addSQLTokens(sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, 
+                tableMetas, sqlRewriteEngine.getSqlBuilder().getSqlTokens(), sqlRouteResult.getRoutingResult().isSingleRouting()));
     }
 }

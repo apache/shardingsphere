@@ -82,8 +82,9 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
         SQLStatement sqlStatement = connection.getRuntimeContext().getParseEngine().parse(sql, false);
         sqlStatementContext = SQLStatementContextFactory.newInstance(connection.getRuntimeContext().getTableMetas(), sql, Collections.emptyList(), sqlStatement);
         SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(sqlStatementContext, sql, Collections.emptyList());
-        new EncryptRewriterDecorator().decorate(sqlRewriteEngine, Collections.emptyList(), connection.getRuntimeContext().getRule(), 
-                connection.getRuntimeContext().getTableMetas(), connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
+        boolean isQueryWithCipherColumn = connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
+        new EncryptRewriterDecorator(connection.getRuntimeContext().getRule(), isQueryWithCipherColumn).decorate(
+                sqlRewriteEngine, connection.getRuntimeContext().getTableMetas(), sqlStatementContext, Collections.emptyList());
         String result = sqlRewriteEngine.generateSQL().getSql();
         showSQL(result);
         return result;

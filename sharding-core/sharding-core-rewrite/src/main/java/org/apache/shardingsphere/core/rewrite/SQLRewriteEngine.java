@@ -41,13 +41,14 @@ import java.util.Map;
  * @author panjuan
  * @author zhangliang
  */
-@Getter
 public final class SQLRewriteEngine {
     
     private final SQLStatementContext sqlStatementContext;
     
+    @Getter
     private final SQLBuilder sqlBuilder;
     
+    @Getter
     private final ParameterBuilder parameterBuilder;
     
     public SQLRewriteEngine(final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters) {
