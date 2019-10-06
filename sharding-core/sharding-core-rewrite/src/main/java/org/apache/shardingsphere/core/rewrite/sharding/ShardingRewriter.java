@@ -51,8 +51,6 @@ public final class ShardingRewriter {
     
     private final SQLStatementContext sqlStatementContext;
     
-    private final List<SQLToken> sqlTokens;
-    
     private final SQLBuilder sqlBuilder;
     
     private final ParameterBuilder parameterBuilder;
@@ -62,8 +60,8 @@ public final class ShardingRewriter {
         this.shardingRule = shardingRule;
         sqlStatementContext = sqlRouteResult.getSqlStatementContext();
         parameterBuilder = createParameterBuilder(tableMetas, sqlRouteResult, parameters, isQueryWithCipherColumn);
-        sqlTokens = createSQLTokens(tableMetas, parameters, sqlRouteResult, isQueryWithCipherColumn);
-        sqlBuilder = new SQLBuilder(sql, sqlTokens);
+        sqlBuilder = new SQLBuilder(sql);
+        sqlBuilder.getSqlTokens().addAll(createSQLTokens(tableMetas, parameters, sqlRouteResult, isQueryWithCipherColumn));
     }
     
     private ParameterBuilder createParameterBuilder(final TableMetas tableMetas, final SQLRouteResult sqlRouteResult, final List<Object> parameters, final boolean isQueryWithCipherColumn) {

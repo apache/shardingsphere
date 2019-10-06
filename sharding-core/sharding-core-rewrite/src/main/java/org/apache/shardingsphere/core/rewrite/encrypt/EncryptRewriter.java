@@ -46,8 +46,6 @@ public final class EncryptRewriter {
     
     private final SQLStatementContext sqlStatementContext;
     
-    private final List<SQLToken> sqlTokens;
-    
     private final SQLBuilder sqlBuilder;
     
     private final ParameterBuilder parameterBuilder;
@@ -57,8 +55,8 @@ public final class EncryptRewriter {
         this.encryptRule = encryptRule;
         this.sqlStatementContext = sqlStatementContext;
         parameterBuilder = createParameterBuilder(tableMetas, sqlStatementContext, parameters, isQueryWithCipherColumn);
-        sqlTokens = createSQLTokens(tableMetas, parameters, isQueryWithCipherColumn);
-        sqlBuilder = new SQLBuilder(sql, sqlTokens);
+        sqlBuilder = new SQLBuilder(sql);
+        sqlBuilder.getSqlTokens().addAll(createSQLTokens(tableMetas, parameters, isQueryWithCipherColumn));
     }
     
     private ParameterBuilder createParameterBuilder(final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<Object> parameters, final boolean isQueryWithCipherColumn) {

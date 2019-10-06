@@ -41,8 +41,6 @@ public final class BasicRewriter {
     
     private final SQLStatementContext sqlStatementContext;
     
-    private final List<SQLToken> sqlTokens;
-    
     private final SQLBuilder sqlBuilder;
     
     private final ParameterBuilder parameterBuilder;
@@ -51,8 +49,8 @@ public final class BasicRewriter {
         this.sqlStatementContext = sqlStatementContext;
         parameterBuilder = sqlStatementContext instanceof InsertSQLStatementContext
                 ? new GroupedParameterBuilder(((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) : new StandardParameterBuilder(Collections.emptyList());
-        sqlTokens = createSQLTokens();
-        sqlBuilder = new SQLBuilder(sql, sqlTokens);
+        sqlBuilder = new SQLBuilder(sql);
+        sqlBuilder.getSqlTokens().addAll(createSQLTokens());
     }
     
     private List<SQLToken> createSQLTokens() {
