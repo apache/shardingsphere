@@ -30,7 +30,6 @@ import org.apache.shardingsphere.core.rewrite.sql.token.builder.BaseTokenGenerat
 import org.apache.shardingsphere.core.rewrite.sql.token.builder.EncryptTokenGenerateBuilder;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.route.SQLUnit;
-import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.List;
@@ -43,7 +42,7 @@ import java.util.List;
  */
 public final class EncryptRewriteEngine {
     
-    private final BaseRule baseRule;
+    private final EncryptRule encryptRule;
     
     private final SQLStatementContext sqlStatementContext;
     
@@ -55,24 +54,24 @@ public final class EncryptRewriteEngine {
     
     public EncryptRewriteEngine(final EncryptRule encryptRule, final TableMetas tableMetas,
                                 final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
-        baseRule = encryptRule;
+        this.encryptRule = encryptRule;
         this.sqlStatementContext = sqlStatementContext;
         parameterBuilder = createParameterBuilder(tableMetas, sqlStatementContext, parameters, isQueryWithCipherColumn);
-        sqlTokens = createSQLTokensForEncrypt(tableMetas, parameters, isQueryWithCipherColumn);
+        sqlTokens = createSQLTokens(tableMetas, parameters, isQueryWithCipherColumn);
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
     }
     
     private ParameterBuilder createParameterBuilder(final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
         ParameterBuilder result = sqlStatementContext instanceof InsertSQLStatementContext
                 ? new GroupedParameterBuilder(((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) : new StandardParameterBuilder(parameters);
-        EncryptParameterBuilderFactory.build(result, (EncryptRule) baseRule, tableMetas, sqlStatementContext, parameters, isQueryWithCipherColumn);
+        EncryptParameterBuilderFactory.build(result, encryptRule, tableMetas, sqlStatementContext, parameters, isQueryWithCipherColumn);
         return result;
     }
     
-    private List<SQLToken> createSQLTokensForEncrypt(final TableMetas tableMetas, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
+    private List<SQLToken> createSQLTokens(final TableMetas tableMetas, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
         sqlTokenGenerators.addAll(new BaseTokenGeneratorBuilder().getSQLTokenGenerators());
-        sqlTokenGenerators.addAll(new EncryptTokenGenerateBuilder((EncryptRule) baseRule, isQueryWithCipherColumn).getSQLTokenGenerators());
+        sqlTokenGenerators.addAll(new EncryptTokenGenerateBuilder(encryptRule, isQueryWithCipherColumn).getSQLTokenGenerators());
         return sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, tableMetas, true);
     }
     
