@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.masterslave;
 
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
@@ -26,25 +25,19 @@ import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.StandardPar
 import org.apache.shardingsphere.core.rewrite.sql.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.sql.token.SQLTokenGenerators;
 import org.apache.shardingsphere.core.rewrite.sql.token.builder.BaseTokenGeneratorBuilder;
-import org.apache.shardingsphere.core.rewrite.sql.token.builder.EncryptTokenGenerateBuilder;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.route.SQLUnit;
-import org.apache.shardingsphere.core.rule.BaseRule;
-import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Rewrite engine for master-slave.
+ * Basic Rewrite engine.
  * 
  * @author panjuan
  * @author zhangliang
  */
-public final class MasterSlaveRewriteEngine {
-    
-    private final BaseRule baseRule;
+public final class BasicRewriteEngine {
     
     private final SQLStatementContext sqlStatementContext;
     
@@ -54,20 +47,18 @@ public final class MasterSlaveRewriteEngine {
     
     private final ParameterBuilder parameterBuilder;
     
-    public MasterSlaveRewriteEngine(final MasterSlaveRule masterSlaveRule, final SQLStatementContext sqlStatementContext, final String sql) {
-        baseRule = masterSlaveRule;
+    public BasicRewriteEngine(final SQLStatementContext sqlStatementContext, final String sql) {
         this.sqlStatementContext = sqlStatementContext;
         parameterBuilder = sqlStatementContext instanceof InsertSQLStatementContext
                 ? new GroupedParameterBuilder(((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) : new StandardParameterBuilder(Collections.emptyList());
-        sqlTokens = createSQLTokensForEncrypt(null, Collections.emptyList(), false);
+        sqlTokens = createSQLTokens();
         sqlBuilder = new SQLBuilder(sql, sqlTokens);
     }
     
-    private List<SQLToken> createSQLTokensForEncrypt(final TableMetas tableMetas, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
+    private List<SQLToken> createSQLTokens() {
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
         sqlTokenGenerators.addAll(new BaseTokenGeneratorBuilder().getSQLTokenGenerators());
-        sqlTokenGenerators.addAll(new EncryptTokenGenerateBuilder((EncryptRule) baseRule, isQueryWithCipherColumn).getSQLTokenGenerators());
-        return sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, tableMetas, true);
+        return sqlTokenGenerators.generateSQLTokens(sqlStatementContext, Collections.emptyList(), null, true);
     }
     
     /**

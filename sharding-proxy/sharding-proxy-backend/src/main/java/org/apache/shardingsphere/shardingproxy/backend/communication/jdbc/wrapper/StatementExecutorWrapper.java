@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.CommonSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptRewriteEngine;
-import org.apache.shardingsphere.core.rewrite.masterslave.MasterSlaveRewriteEngine;
+import org.apache.shardingsphere.core.rewrite.masterslave.BasicRewriteEngine;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
@@ -79,10 +79,10 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     private SQLRouteResult doMasterSlaveRoute(final String sql) {
         SQLStatement sqlStatement = logicSchema.getParseEngine().parse(sql, false);
-        CommonSQLStatementContext commonSQLStatementContext = new CommonSQLStatementContext(sqlStatement);
-        MasterSlaveRewriteEngine rewriteEngine = new MasterSlaveRewriteEngine(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), commonSQLStatementContext, sql);
+        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
+        BasicRewriteEngine rewriteEngine = new BasicRewriteEngine(sqlStatementContext, sql);
         String rewriteSQL = rewriteEngine.generateSQL().getSql();
-        SQLRouteResult result = new SQLRouteResult(commonSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+        SQLRouteResult result = new SQLRouteResult(sqlStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         for (String each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), logicSchema.getParseEngine(),
                 SHARDING_PROXY_CONTEXT.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW)).route(rewriteSQL, false)) {
             result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(rewriteSQL, Collections.emptyList())));
