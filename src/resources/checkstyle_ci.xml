@@ -150,7 +150,7 @@
         <module name="ExplicitInitialization"/>
         <module name="FallThrough"/>
         <module name="IllegalInstantiation"/>
-        <module name="IllegalCatch"/>
+        <!--<module name="IllegalCatch"/>-->
         <module name="IllegalThrows"/>
         <module name="IllegalType">
             <property name="tokens" value="METHOD_DEF,PARAMETER_DEF,VARIABLE_DEF"/>
