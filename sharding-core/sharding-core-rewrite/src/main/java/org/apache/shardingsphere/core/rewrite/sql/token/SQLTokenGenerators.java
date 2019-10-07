@@ -29,7 +29,6 @@ import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.Optio
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -70,16 +69,20 @@ public final class SQLTokenGenerators {
      * @param sqlStatementContext SQL statement context
      * @param parameters SQL parameters
      * @param tableMetas table metas
+     * @param previousSQLTokens previous SQL tokens
      * @param isSingleRoute is single route
      * @return SQL tokens
      */
-    public List<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final TableMetas tableMetas, final boolean isSingleRoute) {
+    public List<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, 
+                                            final List<Object> parameters, final TableMetas tableMetas, final List<SQLToken> previousSQLTokens, final boolean isSingleRoute) {
         List<SQLToken> result = new LinkedList<>();
         for (SQLTokenGenerator each : sqlTokenGenerators) {
             if (isSingleRoute && each instanceof IgnoreForSingleRoute) {
                 continue;
             }
-            setUpSQLTokenGenerator(each, parameters, tableMetas, result);
+            List<SQLToken> currentPreviousSQLTokens = new LinkedList<>(previousSQLTokens);
+            currentPreviousSQLTokens.addAll(result);
+            setUpSQLTokenGenerator(each, parameters, tableMetas, currentPreviousSQLTokens);
             if (!each.isGenerateSQLToken(sqlStatementContext)) {
                 continue;
             }
@@ -92,7 +95,6 @@ public final class SQLTokenGenerators {
                 result.addAll(((CollectionSQLTokenGenerator) each).generateSQLTokens(sqlStatementContext));
             }
         }
-        Collections.sort(result);
         return result;
     }
     

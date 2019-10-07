@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.parameter.builder.impl;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
@@ -25,7 +26,6 @@ import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -44,7 +44,8 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     @Getter
     private final List<List<Object>> parameterGroups;
     
-    private final ShardingConditions shardingConditions;
+    @Setter
+    private ShardingConditions shardingConditions;
     
     @Getter
     private final List<Map<Integer, Object>> addedIndexAndParameterGroups;
@@ -53,12 +54,7 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     private final List<Map<Integer, Object>> replacedIndexAndParameterGroups;
     
     public GroupedParameterBuilder(final List<List<Object>> parameterGroups) {
-        this(parameterGroups, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-    }
-    
-    public GroupedParameterBuilder(final List<List<Object>> parameterGroups, final ShardingConditions shardingConditions) {
         this.parameterGroups = parameterGroups;
-        this.shardingConditions = shardingConditions;
         addedIndexAndParameterGroups = createAdditionalParameterGroups();
         replacedIndexAndParameterGroups = createAdditionalParameterGroups();
     }
