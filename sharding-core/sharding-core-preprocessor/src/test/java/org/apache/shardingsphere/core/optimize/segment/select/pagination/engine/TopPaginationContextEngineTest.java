@@ -61,7 +61,7 @@ public final class TopPaginationContextEngineTest {
     }
     
     @Test
-    public void assertCreatePaginationContextWhenRowNumberPredicatePresentAndOperatorIsGreatThan() throws NoSuchFieldException, IllegalAccessException {
+    public void assertCreatePaginationContextWhenRowNumberPredicatePresentAndOperatorIsGreatThan() {
         String name = "rowNumberAlias";
         ColumnSegment columnSegment = new ColumnSegment(0, 10, name);
         PredicateCompareRightValue predicateCompareRightValue = mock(PredicateCompareRightValue.class);

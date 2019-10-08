@@ -44,22 +44,6 @@ public final class LimitPaginationContextEngineTest {
         LimitPaginationContextEngine limitPaginationContextEngine = new LimitPaginationContextEngine();
         PaginationContext paginationContext = limitPaginationContextEngine.createPaginationContext(limitSegment, parameters);
         assertThat(paginationContext.isHasPagination(), is(true));
-        Field offsetSegmentField = paginationContext.getClass().getDeclaredField("offsetSegment");
-        offsetSegmentField.setAccessible(true);
-        NumberLiteralLimitValueSegment offsetSegmentValue = (NumberLiteralLimitValueSegment) offsetSegmentField.get(paginationContext);
-        assertThat(offsetSegmentValue, is(offset));
-        Field rowCountField = paginationContext.getClass().getDeclaredField("rowCountSegment");
-        rowCountField.setAccessible(true);
-        NumberLiteralLimitValueSegment rowCountValue = (NumberLiteralLimitValueSegment) rowCountField.get(paginationContext);
-        assertThat(rowCountValue, is(rowCount));
-        Field actualOffsetField = paginationContext.getClass().getDeclaredField("actualOffset");
-        actualOffsetField.setAccessible(true);
-        long actualOffsetFieldValue = (long) actualOffsetField.get(paginationContext);
-        assertThat(actualOffsetFieldValue, is(offset.getValue()));
-        Field actualRowCountField = paginationContext.getClass().getDeclaredField("actualRowCount");
-        actualRowCountField.setAccessible(true);
-        Long actualRowCountFieldValue = (Long) actualRowCountField.get(paginationContext);
-        assertThat(actualRowCountFieldValue, is(rowCount.getValue()));
     }
 
     @Test
@@ -69,18 +53,6 @@ public final class LimitPaginationContextEngineTest {
         LimitPaginationContextEngine limitPaginationContextEngine = new LimitPaginationContextEngine();
         PaginationContext paginationContext = limitPaginationContextEngine.createPaginationContext(limitSegment, parameters);
         assertThat(paginationContext.isHasPagination(), is(false));
-        Field offsetSegmentField = paginationContext.getClass().getDeclaredField("offsetSegment");
-        offsetSegmentField.setAccessible(true);
-        NumberLiteralLimitValueSegment offsetSegmentValue = (NumberLiteralLimitValueSegment) offsetSegmentField.get(paginationContext);
-        assertNull(offsetSegmentValue);
-        Field rowCountField = paginationContext.getClass().getDeclaredField("rowCountSegment");
-        rowCountField.setAccessible(true);
-        NumberLiteralLimitValueSegment rowCountValue = (NumberLiteralLimitValueSegment) rowCountField.get(paginationContext);
-        assertNull(rowCountValue);
-        Field actualOffsetField = paginationContext.getClass().getDeclaredField("actualOffset");
-        actualOffsetField.setAccessible(true);
-        long actualOffsetFieldValue = (long) actualOffsetField.get(paginationContext);
-        assertThat(actualOffsetFieldValue, is((long) 0));
     }
 
     @Test
@@ -92,21 +64,5 @@ public final class LimitPaginationContextEngineTest {
         LimitPaginationContextEngine limitPaginationContextEngine = new LimitPaginationContextEngine();
         PaginationContext paginationContext = limitPaginationContextEngine.createPaginationContext(limitSegment, parameters);
         assertThat(paginationContext.isHasPagination(), is(true));
-        Field offsetSegmentField = paginationContext.getClass().getDeclaredField("offsetSegment");
-        offsetSegmentField.setAccessible(true);
-        ParameterMarkerPaginationValueSegment offsetSegmentValue = (ParameterMarkerPaginationValueSegment) offsetSegmentField.get(paginationContext);
-        assertThat(offsetSegmentValue, is(offset));
-        Field rowCountField = paginationContext.getClass().getDeclaredField("rowCountSegment");
-        rowCountField.setAccessible(true);
-        ParameterMarkerPaginationValueSegment rowCountValue = (ParameterMarkerPaginationValueSegment) rowCountField.get(paginationContext);
-        assertThat(rowCountValue, is(rowCount));
-        Field actualOffsetField = paginationContext.getClass().getDeclaredField("actualOffset");
-        actualOffsetField.setAccessible(true);
-        long actualOffsetFieldValue = (long) actualOffsetField.get(paginationContext);
-        assertThat(actualOffsetFieldValue, is(parameters.get(0)));
-        Field actualRowCountField = paginationContext.getClass().getDeclaredField("actualRowCount");
-        actualRowCountField.setAccessible(true);
-        Long actualRowCountFieldValue = (Long) actualRowCountField.get(paginationContext);
-        assertThat(actualRowCountFieldValue, is(parameters.get(1)));
     }
 }

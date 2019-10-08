@@ -62,7 +62,7 @@ public final class RowNumberPaginationContextEngineTest {
     }
     
     @Test
-    public void assertCreatePaginationContextWhenRowNumberAliasIsPresentAndRowNumberPredicatesIsEmpty() throws NoSuchFieldException, IllegalAccessException {
+    public void assertCreatePaginationContextWhenRowNumberAliasIsPresentAndRowNumberPredicatesIsEmpty() {
         Collection<AndPredicate> andPredicates = Collections.emptyList();
         ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
         String rowNumberAlias = "predicateRowNumberAlias";
@@ -74,7 +74,7 @@ public final class RowNumberPaginationContextEngineTest {
     }
     
     @Test
-    public void assertCreatePaginationContextWhenRowNumberAliasIsPresentAndRowNumberPredicatesNotEmpty() throws NoSuchFieldException, IllegalAccessException {
+    public void assertCreatePaginationContextWhenRowNumberAliasIsPresentAndRowNumberPredicatesNotEmpty() {
         ColumnSegment columnSegment = new ColumnSegment(0, 10, "rownum");
         PredicateCompareRightValue predicateCompareRightValue = mock(PredicateCompareRightValue.class);
         when(predicateCompareRightValue.getOperator()).thenReturn("<");
