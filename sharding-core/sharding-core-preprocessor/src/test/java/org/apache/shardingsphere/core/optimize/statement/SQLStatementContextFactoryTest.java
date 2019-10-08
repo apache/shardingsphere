@@ -71,5 +71,4 @@ public final class SQLStatementContextFactoryTest {
         assertNotNull(sqlStatementContext);
         assertTrue(sqlStatementContext instanceof CommonSQLStatementContext);
     }
-    
 }
