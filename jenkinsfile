@@ -30,13 +30,6 @@ pipeline {
          timeout time: 60, unit: 'MINUTES'
     }
     stages {
-        stage('Check environment') {
-            steps {
-                sh 'pwd'
-                sh 'ls -a'
-                sh 'git status'
-            }
-        }
         stage('SCM checkout') {
             steps {
                 deleteDir()
