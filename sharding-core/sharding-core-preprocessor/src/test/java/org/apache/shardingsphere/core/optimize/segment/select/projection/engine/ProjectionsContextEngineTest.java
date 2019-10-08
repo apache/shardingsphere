@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.optimize.segment.select.projection.engine;
 
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.projection.ProjectionsContext;
@@ -34,15 +33,10 @@ public final class ProjectionsContextEngineTest {
     
     @Test
     public void assertProjectionsContextCreatedProperly() {
-        TableMetas tableMetas = null;
-        ProjectionsContextEngine projectionsContextEngine = new ProjectionsContextEngine(tableMetas);
-        String sql = null;
+        ProjectionsContextEngine projectionsContextEngine = new ProjectionsContextEngine(null);
         SelectStatement selectStatement = mock(SelectStatement.class);
-        SelectItemsSegment selectItemsSegment = mock(SelectItemsSegment.class);
-        when(selectStatement.getSelectItems()).thenReturn(selectItemsSegment);
-        GroupByContext groupByContext = mock(GroupByContext.class);
-        OrderByContext orderByContext = mock(OrderByContext.class);
-        ProjectionsContext projectionsContext = projectionsContextEngine.createProjectionsContext(sql, selectStatement, groupByContext, orderByContext);
+        when(selectStatement.getSelectItems()).thenReturn(mock(SelectItemsSegment.class));
+        ProjectionsContext projectionsContext = projectionsContextEngine.createProjectionsContext(null, selectStatement, mock(GroupByContext.class), mock(OrderByContext.class));
         assertNotNull(projectionsContext);
     }
 }

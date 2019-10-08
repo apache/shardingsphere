@@ -22,7 +22,6 @@ import org.apache.shardingsphere.core.optimize.segment.select.projection.Project
 import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ShorthandSelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -31,27 +30,19 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ProjectionEngineTest {
-    private ProjectionEngine projectionEngine;
-    
-    @Before
-    public void setUp() {
-        projectionEngine = new ProjectionEngine();
-    }
     
     @Test
     public void assertProjectionCreatedWhenSelectItemSegmentNotMatched() {
-        Optional<Projection> projectionOptional = projectionEngine.createProjection(null, null);
+        Optional<Projection> projectionOptional = new ProjectionEngine().createProjection(null, null);
         assertFalse(projectionOptional.isPresent());
     }
     
     @Test
     public void assertProjectionCreatedWhenSelectItemSegmentInstanceOfShorthandSelectItemSegment() {
         ShorthandSelectItemSegment shorthandSelectItemSegment = mock(ShorthandSelectItemSegment.class);
-        TableSegment tableSegment = mock(TableSegment.class);
-        when(shorthandSelectItemSegment.getOwner()).thenReturn(Optional.of(tableSegment));
-        Optional<Projection> projectionOptional = projectionEngine.createProjection(null, shorthandSelectItemSegment);
+        when(shorthandSelectItemSegment.getOwner()).thenReturn(Optional.of(mock(TableSegment.class)));
+        Optional<Projection> projectionOptional = new ProjectionEngine().createProjection(null, shorthandSelectItemSegment);
         assertTrue(projectionOptional.isPresent());
-        Projection projection = projectionOptional.get();
-        assertTrue(projection instanceof ShorthandProjection);
+        assertTrue(projectionOptional.get() instanceof ShorthandProjection);
     }
 }

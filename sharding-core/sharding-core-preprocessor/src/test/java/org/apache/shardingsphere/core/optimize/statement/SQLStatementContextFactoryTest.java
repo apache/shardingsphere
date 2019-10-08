@@ -46,8 +46,7 @@ public final class SQLStatementContextFactoryTest {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getGroupBy()).thenReturn(Optional.<GroupBySegment>absent());
         when(selectStatement.getOrderBy()).thenReturn(Optional.<OrderBySegment>absent());
-        LimitSegment limitSegment = new LimitSegment(0, 10, null, null);
-        when(selectStatement.findSQLSegment(LimitSegment.class)).thenReturn(Optional.of(limitSegment));
+        when(selectStatement.findSQLSegment(LimitSegment.class)).thenReturn(Optional.of(new LimitSegment(0, 10, null, null)));
         SelectItemsSegment selectItemsSegment = mock(SelectItemsSegment.class);
         when(selectItemsSegment.getSelectItems()).thenReturn(Collections.<SelectItemSegment>emptyList());
         when(selectStatement.getSelectItems()).thenReturn(selectItemsSegment);
@@ -58,21 +57,17 @@ public final class SQLStatementContextFactoryTest {
     
     @Test
     public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement() {
-        InsertStatement selectStatement = mock(InsertStatement.class);
-        when(selectStatement.useDefaultColumns()).thenReturn(false);
-        LimitSegment limitSegment = new LimitSegment(0, 10, null, null);
-        when(selectStatement.findSQLSegment(LimitSegment.class)).thenReturn(Optional.of(limitSegment));
-        SelectItemsSegment selectItemsSegment = mock(SelectItemsSegment.class);
-        when(selectItemsSegment.getSelectItems()).thenReturn(Collections.<SelectItemSegment>emptyList());
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, null, null, selectStatement);
+        InsertStatement insertStatement = mock(InsertStatement.class);
+        when(insertStatement.useDefaultColumns()).thenReturn(false);
+        when(insertStatement.findSQLSegment(LimitSegment.class)).thenReturn(Optional.of(new LimitSegment(0, 10, null, null)));
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, null, null, insertStatement);
         assertNotNull(sqlStatementContext);
         assertTrue(sqlStatementContext instanceof InsertSQLStatementContext);
     }
     
     @Test
     public void assertSQLStatementContextCreatedWhenSQLStatementNotInstanceOfSelectStatementAndInsertStatement() {
-        SQLStatement sqlStatement = mock(SQLStatement.class);
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, null, null, sqlStatement);
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, null, null, mock(SQLStatement.class));
         assertNotNull(sqlStatementContext);
         assertTrue(sqlStatementContext instanceof CommonSQLStatementContext);
     }
