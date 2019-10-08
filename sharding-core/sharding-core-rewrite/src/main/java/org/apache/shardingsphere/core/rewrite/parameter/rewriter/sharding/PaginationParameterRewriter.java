@@ -23,9 +23,9 @@ import org.apache.shardingsphere.core.optimize.segment.select.pagination.Paginat
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.parameter.builder.standard.StandardParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.core.rewrite.token.generator.SQLRouteResultAware;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLRouteResultAware;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 
 import java.util.List;

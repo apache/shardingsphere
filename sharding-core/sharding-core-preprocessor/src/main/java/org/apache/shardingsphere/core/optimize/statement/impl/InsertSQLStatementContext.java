@@ -57,4 +57,17 @@ public final class InsertSQLStatementContext extends CommonSQLStatementContext {
         }
         return result;
     }
+    
+    /**
+     * Get grouped parameters.
+     * 
+     * @return grouped parameters
+     */
+    public List<List<Object>> getGroupedParameters() {
+        List<List<Object>> result = new LinkedList<>();
+        for (InsertValueContext each : insertValueContexts) {
+            result.add(each.getParameters());
+        }
+        return result;
+    }
 }

@@ -59,7 +59,7 @@ public final class TableAssert {
         }
     }
     
-    // TODO:yanan remove this method and make sure the table number of xml is correct
+    // TODO yanan remove this method and make sure the table number of xml is correct
     private Collection<TableSegment> mergeTableSegments(final Collection<TableSegment> actual) {
         Collection<TableSegment> result = new LinkedList<>();
         Set<String> tableNames = new HashSet<>(actual.size(), 1);
@@ -71,7 +71,7 @@ public final class TableAssert {
         return result;
     }
 
-    // TODO:yanan remove this method and make sure the seq of xml is correct
+    // TODO yanan remove this method and make sure the seq of xml is correct
     private Map<String, ExpectedTable> getExpectedMap(final List<ExpectedTable> expected) {
         Map<String, ExpectedTable> result = new HashMap<>(expected.size(), 1);
         for (ExpectedTable each : expected) {
