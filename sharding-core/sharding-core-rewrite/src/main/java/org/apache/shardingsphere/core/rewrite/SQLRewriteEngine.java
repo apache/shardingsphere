@@ -81,8 +81,7 @@ public final class SQLRewriteEngine {
      * @return SQL unit
      */
     public SQLUnit generateSQL() {
-        SQLBuilder sqlBuilder = createSQLBuilder();
-        return new SQLUnit(sqlBuilder.toSQL(), parameterBuilder.getParameters());
+        return new SQLUnit(createSQLBuilder().toSQL(), parameterBuilder.getParameters());
     }
     
     /**
@@ -93,8 +92,7 @@ public final class SQLRewriteEngine {
      * @return SQL unit
      */
     public SQLUnit generateSQL(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
-        SQLBuilder sqlBuilder = createSQLBuilder();
-        return new SQLUnit(sqlBuilder.toSQL(routingUnit, logicAndActualTables), parameterBuilder.getParameters(routingUnit));
+        return new SQLUnit(createSQLBuilder().toSQL(routingUnit, logicAndActualTables), parameterBuilder.getParameters(routingUnit));
     }
     
     private SQLBuilder createSQLBuilder() {
