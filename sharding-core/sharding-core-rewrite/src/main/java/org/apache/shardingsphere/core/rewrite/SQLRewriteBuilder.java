@@ -28,20 +28,16 @@ import org.apache.shardingsphere.core.rewrite.sql.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.sql.token.SQLTokenGenerators;
 import org.apache.shardingsphere.core.rewrite.sql.token.builder.BaseTokenGeneratorBuilder;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerator;
-import org.apache.shardingsphere.core.route.SQLUnit;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
- * SQL rewrite engine.
+ * SQL rewrite builder.
  * 
- * @author panjuan
  * @author zhangliang
  */
-public final class SQLRewriteEngine {
+public final class SQLRewriteBuilder {
     
     private final SQLStatementContext sqlStatementContext;
     
@@ -56,7 +52,7 @@ public final class SQLRewriteEngine {
     @Getter
     private final ParameterBuilder parameterBuilder;
     
-    public SQLRewriteEngine(final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters) {
+    public SQLRewriteBuilder(final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters) {
         this.tableMetas = tableMetas;
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
@@ -73,26 +69,6 @@ public final class SQLRewriteEngine {
      */
     public void addSQLTokenGenerators(final Collection<SQLTokenGenerator> sqlTokenGenerators) {
         this.sqlTokenGenerators.addAll(sqlTokenGenerators);
-    }
-    
-    /**
-     * Generate SQL.
-     * 
-     * @return SQL unit
-     */
-    public SQLUnit generateSQL() {
-        return new SQLUnit(getSQLBuilder().toSQL(), parameterBuilder.getParameters());
-    }
-    
-    /**
-     * Generate SQL.
-     *
-     * @param routingUnit routing unit
-     * @param logicAndActualTables logic and actual tables
-     * @return SQL unit
-     */
-    public SQLUnit generateSQL(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
-        return new SQLUnit(getSQLBuilder().toSQL(routingUnit, logicAndActualTables), parameterBuilder.getParameters(routingUnit));
     }
     
     /**

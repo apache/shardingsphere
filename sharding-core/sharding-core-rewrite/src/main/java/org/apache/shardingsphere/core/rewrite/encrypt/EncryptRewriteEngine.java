@@ -15,27 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite;
+package org.apache.shardingsphere.core.rewrite.encrypt;
 
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
-
-import java.util.List;
+import org.apache.shardingsphere.core.rewrite.SQLRewriteBuilder;
+import org.apache.shardingsphere.core.route.SQLUnit;
 
 /**
- * SQL rewrite decorator.
- *
+ * SQL rewrite engine for encrypt.
+ * 
  * @author zhangliang
  */
-public interface SQLRewriteDecorator {
+public final class EncryptRewriteEngine {
     
     /**
-     * Decorate SQL rewrite engine.
-     *
-     * @param sqlRewriteEngine SQL rewrite engine to be decorated
-     * @param tableMetas table metas
-     * @param sqlStatementContext SQL statement context
-     * @param parameters SQL parameters
+     * Generate SQL.
+     * 
+     * @param sqlRewriteBuilder SQL rewrite builder 
+     * @return SQL unit
      */
-    void decorate(SQLRewriteEngine sqlRewriteEngine, TableMetas tableMetas, SQLStatementContext sqlStatementContext, List<Object> parameters);
+    public SQLUnit generateSQL(final SQLRewriteBuilder sqlRewriteBuilder) {
+        return new SQLUnit(sqlRewriteBuilder.getSQLBuilder().toSQL(), sqlRewriteBuilder.getParameterBuilder().getParameters());
+    }
 }

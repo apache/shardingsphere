@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.rewrite.sharding;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.SQLRewriteDecorator;
-import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
+import org.apache.shardingsphere.core.rewrite.SQLRewriteBuilder;
+import org.apache.shardingsphere.core.rewrite.SQLRewriteBuilderDecorator;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.sharding.ShardingParameterBuilderFactory;
 import org.apache.shardingsphere.core.rewrite.sql.token.builder.ShardingTokenGenerateBuilder;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -30,20 +30,20 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import java.util.List;
 
 /**
- * Rewriter decorator for sharding.
+ * SQL rewrite builder decorator for sharding.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ShardingRewriterDecorator implements SQLRewriteDecorator {
+public final class ShardingRewriteBuilderDecorator implements SQLRewriteBuilderDecorator {
     
     private final ShardingRule shardingRule;
     
     private final SQLRouteResult sqlRouteResult;
     
     @Override
-    public void decorate(final SQLRewriteEngine sqlRewriteEngine, final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        ShardingParameterBuilderFactory.build(sqlRewriteEngine.getParameterBuilder(), shardingRule, tableMetas, sqlRouteResult, parameters);
-        sqlRewriteEngine.addSQLTokenGenerators(new ShardingTokenGenerateBuilder(shardingRule, sqlRouteResult).getSQLTokenGenerators());
+    public void decorate(final SQLRewriteBuilder sqlRewriteBuilder, final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
+        ShardingParameterBuilderFactory.build(sqlRewriteBuilder.getParameterBuilder(), shardingRule, tableMetas, sqlRouteResult, parameters);
+        sqlRewriteBuilder.addSQLTokenGenerators(new ShardingTokenGenerateBuilder(shardingRule, sqlRouteResult).getSQLTokenGenerators());
     }
 }
