@@ -42,6 +42,12 @@ public class DataTypesCodecTest {
     private ByteBuf byteBuf;
     
     @Test
+    public void assertSkipBytes() {
+        DataTypesCodec.skipBytes(10, byteBuf);
+        verify(byteBuf).skipBytes(10);
+    }
+    
+    @Test
     public void assertReadNul() {
         DataTypesCodec.readNul(byteBuf);
         verify(byteBuf).readByte();
@@ -79,6 +85,12 @@ public class DataTypesCodecTest {
     public void assertReadUnsignedInt1() {
         when(byteBuf.readUnsignedByte()).thenReturn((short) 0xff);
         assertThat(DataTypesCodec.readUnsignedInt1(byteBuf), is((short) 0xff));
+    }
+    
+    @Test
+    public void assertReadUnsignedInt2BE() {
+        when(byteBuf.readUnsignedShort()).thenReturn(0x0000ffff);
+        assertThat(DataTypesCodec.readUnsignedInt2BE(byteBuf), is(0x0000ffff));
     }
     
     @Test
