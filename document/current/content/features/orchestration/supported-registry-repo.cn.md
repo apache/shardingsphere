@@ -23,6 +23,11 @@ ShardingSphere官方使用[Apache Curator](http://curator.apache.org/)作为Zook
 ShardingSphere官方使用[原生的Etcd](https://coreos.com/etcd/)作为Etcd的实现方案。
 请使用Etcd V3及其以上版本，详情请参见[官方网站](https://coreos.com/etcd/docs/latest)。
 
+## Nacos
+
+ShardingSphere官方使用[Nacos Client](https://nacos.io/zh-cn/docs/sdk.html)作为Nacos的实现方案。
+请使用Nacos Client 1.0.0及其以上版本，详情请参见[官方网站](https://nacos.io/zh-cn/docs/sdk.html)。
+
 ## 其他
 
 使用SPI方式自行实现相关逻辑编码。
