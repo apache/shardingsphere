@@ -23,8 +23,8 @@ import org.apache.shardingsphere.core.optimize.SQLStatementContextFactory;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteBuilder;
-import org.apache.shardingsphere.core.rewrite.encrypt.EncryptRewriteBuilderDecorator;
-import org.apache.shardingsphere.core.rewrite.encrypt.EncryptRewriteEngine;
+import org.apache.shardingsphere.core.rewrite.encrypt.EncryptSQLRewriteBuilderDecorator;
+import org.apache.shardingsphere.core.rewrite.encrypt.EncryptSQLRewriteEngine;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
@@ -153,8 +153,8 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         sqlStatementContext = SQLStatementContextFactory.newInstance(connection.getRuntimeContext().getTableMetas(), sql, getParameters(), sqlStatement);
         SQLRewriteBuilder sqlRewriteBuilder = new SQLRewriteBuilder(connection.getRuntimeContext().getTableMetas(), sqlStatementContext, sql, getParameters());
         boolean isQueryWithCipherColumn = connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
-        new EncryptRewriteBuilderDecorator(connection.getRuntimeContext().getRule(), isQueryWithCipherColumn).decorate(sqlRewriteBuilder);
-        SQLUnit result = new EncryptRewriteEngine().generateSQL(sqlRewriteBuilder);
+        new EncryptSQLRewriteBuilderDecorator(connection.getRuntimeContext().getRule(), isQueryWithCipherColumn).decorate(sqlRewriteBuilder);
+        SQLUnit result = new EncryptSQLRewriteEngine().generateSQL(sqlRewriteBuilder);
         showSQL(result.getSql());
         return result;
     }

@@ -19,27 +19,26 @@ package org.apache.shardingsphere.core.rewrite.sharding;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteBuilder;
-import org.apache.shardingsphere.core.rewrite.SQLRewriteBuilderDecorator;
-import org.apache.shardingsphere.core.rewrite.parameter.rewriter.sharding.ShardingParameterBuilderFactory;
-import org.apache.shardingsphere.core.rewrite.sql.token.builder.ShardingTokenGenerateBuilder;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
+import org.apache.shardingsphere.core.route.SQLUnit;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
+
+import java.util.Map;
 
 /**
- * SQL rewrite builder decorator for sharding.
+ * SQL rewrite engine for sharding.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ShardingRewriteBuilderDecorator implements SQLRewriteBuilderDecorator {
+public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     
-    private final ShardingRule shardingRule;
+    private final RoutingUnit routingUnit;
     
-    private final SQLRouteResult sqlRouteResult;
+    private final Map<String, String> logicAndActualTables;
     
     @Override
-    public void decorate(final SQLRewriteBuilder sqlRewriteBuilder) {
-        ShardingParameterBuilderFactory.build(sqlRewriteBuilder.getParameterBuilder(), shardingRule, sqlRewriteBuilder.getTableMetas(), sqlRouteResult, sqlRewriteBuilder.getParameters());
-        sqlRewriteBuilder.addSQLTokenGenerators(new ShardingTokenGenerateBuilder(shardingRule, sqlRouteResult).getSQLTokenGenerators());
+    public SQLUnit generateSQL(final SQLRewriteBuilder sqlRewriteBuilder) {
+        return new SQLUnit(sqlRewriteBuilder.getSQLBuilder().toSQL(routingUnit, logicAndActualTables), sqlRewriteBuilder.getParameterBuilder().getParameters(routingUnit));
     }
 }

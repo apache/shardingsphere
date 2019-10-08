@@ -40,15 +40,15 @@ import java.util.List;
 public final class SQLRewriteBuilder {
     
     @Getter
+    private final TableMetas tableMetas;
+    
+    @Getter
     private final SQLStatementContext sqlStatementContext;
     
     private final String sql;
     
     @Getter
     private final List<Object> parameters;
-    
-    @Getter
-    private final TableMetas tableMetas;
     
     private final SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
     

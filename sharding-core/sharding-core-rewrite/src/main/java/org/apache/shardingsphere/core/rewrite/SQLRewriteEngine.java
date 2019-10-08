@@ -15,30 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sharding;
+package org.apache.shardingsphere.core.rewrite;
 
-import org.apache.shardingsphere.core.rewrite.SQLRewriteBuilder;
 import org.apache.shardingsphere.core.route.SQLUnit;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
-
-import java.util.Map;
 
 /**
- * SQL rewrite engine for sharding.
- * 
+ * SQL rewrite engine.
+ *
  * @author zhangliang
  */
-public final class ShardingRewriteEngine {
+public interface SQLRewriteEngine {
     
     /**
      * Generate SQL.
-     *
-     * @param sqlRewriteBuilder SQL rewrite builder 
-     * @param routingUnit routing unit
-     * @param logicAndActualTables logic and actual tables
+     * 
+     * @param sqlRewriteBuilder SQL rewrite builder
      * @return SQL unit
      */
-    public SQLUnit generateSQL(final SQLRewriteBuilder sqlRewriteBuilder, final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
-        return new SQLUnit(sqlRewriteBuilder.getSQLBuilder().toSQL(routingUnit, logicAndActualTables), sqlRewriteBuilder.getParameterBuilder().getParameters(routingUnit));
-    }
+    SQLUnit generateSQL(SQLRewriteBuilder sqlRewriteBuilder);
 }

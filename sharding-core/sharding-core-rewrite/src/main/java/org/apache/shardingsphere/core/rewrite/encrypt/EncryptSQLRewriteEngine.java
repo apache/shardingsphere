@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.encrypt;
 
 import org.apache.shardingsphere.core.rewrite.SQLRewriteBuilder;
+import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.route.SQLUnit;
 
 /**
@@ -25,14 +26,9 @@ import org.apache.shardingsphere.core.route.SQLUnit;
  * 
  * @author zhangliang
  */
-public final class EncryptRewriteEngine {
+public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
     
-    /**
-     * Generate SQL.
-     * 
-     * @param sqlRewriteBuilder SQL rewrite builder 
-     * @return SQL unit
-     */
+    @Override
     public SQLUnit generateSQL(final SQLRewriteBuilder sqlRewriteBuilder) {
         return new SQLUnit(sqlRewriteBuilder.getSQLBuilder().toSQL(), sqlRewriteBuilder.getParameterBuilder().getParameters());
     }
