@@ -33,10 +33,10 @@ public final class ShardingCTLShowParser implements ShardingCTLParser<ShardingCT
     
     private final String regex = "sctl:show\\s+(\\S*)";
     
-    private Matcher matcher;
+    private final Matcher matcher;
     
     ShardingCTLShowParser(final String sql) {
-        this.matcher = Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(sql);
+        matcher = Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(sql);
     }
     
     @Override

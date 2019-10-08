@@ -52,10 +52,7 @@ public final class UserAuthenticationService {
         if (userAccount == null || Strings.isNullOrEmpty(userAccount.getUsername()) || Strings.isNullOrEmpty(userAccount.getPassword())) {
             return false;
         }
-        if (!username.equals(userAccount.getUsername()) || !password.equals(userAccount.getPassword())) {
-            return false;
-        }
-        return true;
+        return username.equals(userAccount.getUsername()) && password.equals(userAccount.getPassword());
     }
     
     /**

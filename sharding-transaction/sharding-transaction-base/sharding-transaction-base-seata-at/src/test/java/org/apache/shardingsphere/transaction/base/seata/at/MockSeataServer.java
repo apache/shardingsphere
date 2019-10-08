@@ -47,7 +47,7 @@ public final class MockSeataServer {
     
     private final EventLoopGroup workerGroup;
     
-    private int port;
+    private final int port;
     
     @Getter
     private MockMessageHandler messageHandler = new MockMessageHandler();
@@ -56,9 +56,9 @@ public final class MockSeataServer {
     private final AtomicBoolean initialized = new AtomicBoolean(false);
     
     public MockSeataServer() {
-        this.bootstrap = new ServerBootstrap();
-        this.bossGroup = new NioEventLoopGroup(1);
-        this.workerGroup = new NioEventLoopGroup();
+        bootstrap = new ServerBootstrap();
+        bossGroup = new NioEventLoopGroup(1);
+        workerGroup = new NioEventLoopGroup();
         port = 8891;
     }
     

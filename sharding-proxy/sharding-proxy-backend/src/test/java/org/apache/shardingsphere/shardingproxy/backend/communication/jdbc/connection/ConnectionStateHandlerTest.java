@@ -26,9 +26,9 @@ import static org.junit.Assert.assertTrue;
 
 public final class ConnectionStateHandlerTest {
     
-    private ResourceSynchronizer resourceSynchronizer = new ResourceSynchronizer();
+    private final ResourceSynchronizer resourceSynchronizer = new ResourceSynchronizer();
     
-    private ConnectionStateHandler connectionStateHandler = new ConnectionStateHandler(resourceSynchronizer);
+    private final ConnectionStateHandler connectionStateHandler = new ConnectionStateHandler(resourceSynchronizer);
     
     @Test
     public void assertWaitUntilConnectionReleaseForNoneTransaction() throws InterruptedException {

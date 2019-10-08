@@ -668,4 +668,13 @@
     <dcl-test-case sql-case-id="revoke_usage_on_types">
         <assertion />
     </dcl-test-case>
+    <dcl-test-case sql-case-id="set_all_expect_role">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="set_all_expect_roles">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="set_default_role">
+        <assertion />
+    </dcl-test-case>
 </integrate-test-cases>

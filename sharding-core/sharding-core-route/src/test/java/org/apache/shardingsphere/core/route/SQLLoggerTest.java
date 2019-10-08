@@ -80,7 +80,7 @@ public final class SQLLoggerTest {
         inOrder.verify(logger).info("Rule Type: sharding", new Object[]{});
         inOrder.verify(logger).info("Logic SQL: {}", new Object[]{sql});
         inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
-        inOrder.verify(logger).info("Actual SQL: {} ::: {} ::: {}", new Object[]{"db1", sql, parameters});
+        inOrder.verify(logger).info("Actual SQL: {} ::: {} ::: {}", "db1", sql, parameters);
         inOrder.verify(logger).info("Actual SQL: {} ::: {}", new Object[]{"db2", sql});
         inOrder.verify(logger).info("Actual SQL: {} ::: {}", new Object[]{"db3", sql});
     }

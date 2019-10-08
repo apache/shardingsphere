@@ -32,22 +32,24 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedPredicateSegment extends ExpectedBaseSegment {
-
+    
     @XmlElement(name = "column-segment")
     private ExpectedColumnSegment column = new ExpectedColumnSegment();
-
+    
     @XmlElement(name = "predicate-between-right-value")
     private ExpectedPredicateBetweenRightValue betweenRightValue = new ExpectedPredicateBetweenRightValue();
-
+    
     @XmlElement(name = "predicate-in-right-value")
     private ExpectedPredicateInRightValue inRightValue = new ExpectedPredicateInRightValue();
-
+    
     @XmlElement(name = "predicate-compare-right-value")
     private ExpectedPredicateCompareRightValue compareRightValue = new ExpectedPredicateCompareRightValue();
-
+    
     /**
-     * find expected right value type
-     * @param expectedPredicateRightValue
+     * Find expected right value type.
+     * 
+     * @param expectedPredicateRightValue expected predicate right value
+     * @param <T> type of expected predicate right value
      * @return right value
      */
     public <T extends ExpectedPredicateRightValue> T findExpectedRightValue(final Class<T> expectedPredicateRightValue) {
