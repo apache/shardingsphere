@@ -30,8 +30,6 @@ import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.RotateEven
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.RowsEvent;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.TableMapEvent;
 import lombok.extern.slf4j.Slf4j;
-import lombok.var;
-
 import java.util.List;
 
 /**
@@ -48,7 +46,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
         checkError(in);
-        var binlogEventHeader = new BinlogEventHeader();
+        BinlogEventHeader binlogEventHeader = new BinlogEventHeader();
         binlogEventHeader.fromBytes(in);
         removeChecksum(binlogEventHeader.getTypeCode(), in);
         switch (binlogEventHeader.getTypeCode()) {
@@ -63,18 +61,15 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
                 break;
             case EventTypes.WRITE_ROWS_EVENTv1:
             case EventTypes.WRITE_ROWS_EVENTv2:
-                WriteRowsEvent writeRowsEvent = decodeWriteRowsEventV2(binlogEventHeader, in);
-                out.add(writeRowsEvent);
+                out.add(decodeWriteRowsEventV2(binlogEventHeader, in));
                 break;
             case EventTypes.UPDATE_ROWS_EVENTv1:
             case EventTypes.UPDATE_ROWS_EVENTv2:
-                UpdateRowsEvent updateRowsEvent = decodeUpdateRowsEventV2(binlogEventHeader, in);
-                out.add(updateRowsEvent);
+                out.add(decodeUpdateRowsEventV2(binlogEventHeader, in));
                 break;
             case EventTypes.DELETE_ROWS_EVENTv1:
             case EventTypes.DELETE_ROWS_EVENTv2:
-                DeleteRowsEvent deleteRowsEvent = decodeDeleteRowsEventV2(binlogEventHeader, in);
-                out.add(deleteRowsEvent);
+                out.add(decodeDeleteRowsEventV2(binlogEventHeader, in));
                 break;
             default:
                 DataTypesCodec.skipBytes(in.readableBytes(), in);
@@ -85,15 +80,16 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     }
 
     private void checkError(final ByteBuf in) {
-        var errorCode = DataTypesCodec.readUnsignedInt1(in);
+        short errorCode = DataTypesCodec.readUnsignedInt1(in);
         if (0 == errorCode) {
             return;
         }
-        if(255 == errorCode) {
-            var errorNo = DataTypesCodec.readUnsignedInt2LE(in);
+        if (255 == errorCode) {
+            int errorNo = DataTypesCodec.readUnsignedInt2LE(in);
             DataTypesCodec.skipBytes(1, in);
-            var sqlState = DataTypesCodec.readFixedLengthString(5, in);
-            throw new RuntimeException(DataTypesCodec.readFixedLengthString(in.readableBytes(), in));
+            String sqlState = DataTypesCodec.readFixedLengthString(5, in);
+            throw new RuntimeException(
+                String.format("Decode binlog event failed, errorCode: %d, sqlState: %s, errorMessage: %s", errorNo, sqlState, DataTypesCodec.readFixedLengthString(in.readableBytes(), in)));
         }
     }
 
@@ -106,51 +102,51 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     }
 
     private void decodeRotateEvent(final ByteBuf in) {
-        var rotateEvent = new RotateEvent();
+        RotateEvent rotateEvent = new RotateEvent();
         rotateEvent.parse(in);
         binlogContext.setFileName(rotateEvent.getNextFileName());
     }
 
     private DeleteRowsEvent decodeDeleteRowsEventV2(final BinlogEventHeader binlogEventHeader, final ByteBuf in) {
-        var rowsEvent = new RowsEvent(binlogEventHeader);
+        RowsEvent rowsEvent = new RowsEvent(binlogEventHeader);
         rowsEvent.parsePostHeader(in);
         rowsEvent.parsePaylod(binlogContext, in);
-        var deleteRowsEvent = new DeleteRowsEvent();
-        deleteRowsEvent.setTableName(binlogContext.getFullTableName(rowsEvent.getTableId()));
-        deleteRowsEvent.setBeforeColumns(rowsEvent.getColumnValues1());
-        return deleteRowsEvent;
+        DeleteRowsEvent result = new DeleteRowsEvent();
+        result.setTableName(binlogContext.getFullTableName(rowsEvent.getTableId()));
+        result.setBeforeColumns(rowsEvent.getColumnValues1());
+        return result;
     }
 
     private UpdateRowsEvent decodeUpdateRowsEventV2(final BinlogEventHeader binlogEventHeader, final ByteBuf in) {
-        var rowsEvent = new RowsEvent(binlogEventHeader);
+        RowsEvent rowsEvent = new RowsEvent(binlogEventHeader);
         rowsEvent.parsePostHeader(in);
         rowsEvent.parsePaylod(binlogContext, in);
-        var updateRowsEvent = new UpdateRowsEvent();
-        updateRowsEvent.setTableName(binlogContext.getFullTableName(rowsEvent.getTableId()));
-        updateRowsEvent.setBeforeColumns(rowsEvent.getColumnValues1());
-        updateRowsEvent.setAfterColumns(rowsEvent.getColumnValues2());
-        return updateRowsEvent;
+        UpdateRowsEvent result = new UpdateRowsEvent();
+        result.setTableName(binlogContext.getFullTableName(rowsEvent.getTableId()));
+        result.setBeforeColumns(rowsEvent.getColumnValues1());
+        result.setAfterColumns(rowsEvent.getColumnValues2());
+        return result;
     }
 
     private WriteRowsEvent decodeWriteRowsEventV2(final BinlogEventHeader binlogEventHeader, final ByteBuf in) {
-        var rowsEvent = new RowsEvent(binlogEventHeader);
+        RowsEvent rowsEvent = new RowsEvent(binlogEventHeader);
         rowsEvent.parsePostHeader(in);
         rowsEvent.parsePaylod(binlogContext, in);
-        var writeRowsEvent = new WriteRowsEvent();
-        writeRowsEvent.setTableName(binlogContext.getFullTableName(rowsEvent.getTableId()));
-        writeRowsEvent.setAfterColumns(rowsEvent.getColumnValues1());
-        return writeRowsEvent;
+        WriteRowsEvent result = new WriteRowsEvent();
+        result.setTableName(binlogContext.getFullTableName(rowsEvent.getTableId()));
+        result.setAfterColumns(rowsEvent.getColumnValues1());
+        return result;
     }
 
     private void decodeTableMapEvent(final ByteBuf in) {
-        var tableMapLogEvent = new TableMapEvent();
+        TableMapEvent tableMapLogEvent = new TableMapEvent();
         tableMapLogEvent.parsePostHeader(in);
         tableMapLogEvent.parsePayload(in);
         binlogContext.putTableMapEvent(tableMapLogEvent.getTableId(), tableMapLogEvent);
     }
 
     private void decodeFormatDescriptionEvent(final ByteBuf in) {
-        var formatDescriptionEvent = new FormatDescriptionEvent();
+        FormatDescriptionEvent formatDescriptionEvent = new FormatDescriptionEvent();
         formatDescriptionEvent.parse(in);
         binlogContext.setChecksumLength(formatDescriptionEvent.getChecksumLength());
     }
