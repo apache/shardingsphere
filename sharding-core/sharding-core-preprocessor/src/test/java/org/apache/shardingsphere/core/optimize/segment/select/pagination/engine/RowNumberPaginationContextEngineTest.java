@@ -32,8 +32,9 @@ import org.junit.Test;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -45,8 +46,8 @@ public final class RowNumberPaginationContextEngineTest {
         ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
         when(projectionsContext.findAlias(anyString())).thenReturn(Optional.<String>absent());
         PaginationContext paginationContext = new RowNumberPaginationContextEngine().createPaginationContext(null, projectionsContext, Collections.emptyList());
-        assertThat(paginationContext.getOffsetSegment(), is(Optional.<PaginationValueSegment>absent()));
-        assertThat(paginationContext.getRowCountSegment(), is(Optional.<PaginationValueSegment>absent()));
+        assertFalse(paginationContext.getOffsetSegment().isPresent());
+        assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
     
     @Test
@@ -54,8 +55,8 @@ public final class RowNumberPaginationContextEngineTest {
         ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
         when(projectionsContext.findAlias(anyString())).thenReturn(Optional.of("predicateRowNumberAlias"));
         PaginationContext paginationContext = new RowNumberPaginationContextEngine().createPaginationContext(Collections.<AndPredicate>emptyList(), projectionsContext, Collections.emptyList());
-        assertThat(paginationContext.getOffsetSegment(), is(Optional.<PaginationValueSegment>absent()));
-        assertThat(paginationContext.getRowCountSegment(), is(Optional.<PaginationValueSegment>absent()));
+        assertFalse(paginationContext.getOffsetSegment().isPresent());
+        assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
     
     @Test
@@ -68,7 +69,7 @@ public final class RowNumberPaginationContextEngineTest {
         ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
         when(projectionsContext.findAlias(anyString())).thenReturn(Optional.of("predicateRowNumberAlias"));
         PaginationContext paginationContext = new RowNumberPaginationContextEngine().createPaginationContext(Collections.singleton(andPredicate), projectionsContext, Collections.emptyList());
-        assertThat(paginationContext.getOffsetSegment(), is(Optional.<PaginationValueSegment>absent()));
+        assertFalse(paginationContext.getOffsetSegment().isPresent());
         Optional<PaginationValueSegment> paginationValueSegmentOptional = paginationContext.getRowCountSegment();
         assertTrue(paginationValueSegmentOptional.isPresent());
         PaginationValueSegment paginationValueSegment = paginationValueSegmentOptional.get();

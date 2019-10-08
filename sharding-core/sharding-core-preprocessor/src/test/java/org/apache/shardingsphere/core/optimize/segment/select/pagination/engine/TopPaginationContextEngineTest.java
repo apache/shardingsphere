@@ -38,6 +38,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -56,8 +57,8 @@ public final class TopPaginationContextEngineTest {
         Collection<AndPredicate> andPredicates = Collections.emptyList();
         List<Object> parameters = Collections.emptyList();
         PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(topSegment, andPredicates, parameters);
-        assertThat(paginationContext.getOffsetSegment(), is(Optional.<PaginationValueSegment>absent()));
-        assertThat(paginationContext.getRowCountSegment(), is(Optional.<PaginationValueSegment>absent()));
+        assertFalse(paginationContext.getOffsetSegment().isPresent());
+        assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
     
     @Test
@@ -85,6 +86,6 @@ public final class TopPaginationContextEngineTest {
         assertThat(numberLiteralRowNumberValueSegment.getStartIndex(), is(0));
         assertThat(numberLiteralRowNumberValueSegment.getStopIndex(), is(10));
         assertThat(numberLiteralRowNumberValueSegment.getValue(), is(100L));
-        assertThat(paginationContext.getRowCountSegment(), is(Optional.<PaginationValueSegment>absent()));
+        assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
 }

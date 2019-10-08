@@ -26,8 +26,8 @@ import org.junit.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public final class LimitPaginationContextEngineTest {
     
@@ -35,19 +35,19 @@ public final class LimitPaginationContextEngineTest {
     public void assertPaginationContextCreatedProperlyWhenPaginationValueSegmentIsNumberLiteralPaginationValueSegment() throws NoSuchFieldException, IllegalAccessException {
         LimitSegment limitSegment = new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 1L), new NumberLiteralLimitValueSegment(10, 20, 2L));
         PaginationContext paginationContext = new LimitPaginationContextEngine().createPaginationContext(limitSegment, Collections.emptyList());
-        assertThat(paginationContext.isHasPagination(), is(true));
+        assertTrue(paginationContext.isHasPagination());
     }
 
     @Test
     public void assertPaginationContextCreatedProperlyWhenOffsetAndRowCountAreBothNull() throws NoSuchFieldException, IllegalAccessException {
         PaginationContext paginationContext = new LimitPaginationContextEngine().createPaginationContext(new LimitSegment(0, 10, null, null), Collections.emptyList());
-        assertThat(paginationContext.isHasPagination(), is(false));
+        assertFalse(paginationContext.isHasPagination());
     }
 
     @Test
     public void assertPaginationContextCreatedProperlyWhenPaginationValueSegmentIsParameterMarkerPaginationValueSegment() throws NoSuchFieldException, IllegalAccessException {
         LimitSegment limitSegment = new LimitSegment(0, 10, new ParameterMarkerLimitValueSegment(0, 10, 0), new ParameterMarkerLimitValueSegment(10, 20, 1));
         PaginationContext paginationContext = new LimitPaginationContextEngine().createPaginationContext(limitSegment, Lists.<Object>newArrayList(15L, 20L));
-        assertThat(paginationContext.isHasPagination(), is(true));
+        assertTrue(paginationContext.isHasPagination());
     }
 }
