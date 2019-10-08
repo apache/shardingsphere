@@ -46,6 +46,6 @@ public final class EncryptRewriterDecorator implements SQLRewriteDecorator {
         EncryptParameterBuilderFactory.build(sqlRewriteEngine.getParameterBuilder(), encryptRule, tableMetas, sqlStatementContext, parameters, isQueryWithCipherColumn);
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
         sqlTokenGenerators.addAll(new EncryptTokenGenerateBuilder(encryptRule, isQueryWithCipherColumn).getSQLTokenGenerators());
-        sqlRewriteEngine.addSQLTokens(sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, tableMetas, sqlRewriteEngine.getSqlBuilder().getSqlTokens(), true));
+        sqlRewriteEngine.addSQLTokens(sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, tableMetas, sqlRewriteEngine.getSqlBuilder().getSqlTokens()));
     }
 }

@@ -58,7 +58,7 @@ public final class SQLRewriteEngine {
     private List<SQLToken> createSQLTokens(final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
         sqlTokenGenerators.addAll(new BaseTokenGeneratorBuilder().getSQLTokenGenerators());
-        return sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, null, Collections.<SQLToken>emptyList(), true);
+        return sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, null, Collections.<SQLToken>emptyList());
     }
     
     /**

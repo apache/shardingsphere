@@ -47,7 +47,6 @@ public final class ShardingRewriterDecorator implements SQLRewriteDecorator {
         ShardingParameterBuilderFactory.build(sqlRewriteEngine.getParameterBuilder(), shardingRule, tableMetas, sqlRouteResult, parameters);
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
         sqlTokenGenerators.addAll(new ShardingTokenGenerateBuilder(shardingRule, sqlRouteResult).getSQLTokenGenerators());
-        sqlRewriteEngine.addSQLTokens(sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, 
-                tableMetas, sqlRewriteEngine.getSqlBuilder().getSqlTokens(), sqlRouteResult.getRoutingResult().isSingleRouting()));
+        sqlRewriteEngine.addSQLTokens(sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, tableMetas, sqlRewriteEngine.getSqlBuilder().getSqlTokens()));
     }
 }

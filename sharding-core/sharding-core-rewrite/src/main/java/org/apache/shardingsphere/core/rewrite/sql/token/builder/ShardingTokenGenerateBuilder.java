@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.sql.token.builder;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLRouteResultAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.ShardingRuleAware;
@@ -30,10 +31,10 @@ import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.ProjectionsTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.RowCountTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.SelectItemPrefixTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.keygen.GeneratedKeyInsertValuesTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.keygen.GeneratedKeyAssignmentTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.keygen.GeneratedKeyForInsertColumnsTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.keygen.GeneratedKeyInsertColumnTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.optional.impl.keygen.GeneratedKeyInsertValuesTokenGenerator;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -68,19 +69,26 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
     
     private Collection<SQLTokenGenerator> buildSQLTokenGenerators() {
         Collection<SQLTokenGenerator> result = new LinkedList<>();
-        result.add(new TableTokenGenerator());
-        result.add(new SelectItemPrefixTokenGenerator());
-        result.add(new ProjectionsTokenGenerator());
-        result.add(new OrderByTokenGenerator());
-        result.add(new AggregationDistinctTokenGenerator());
-        result.add(new IndexTokenGenerator());
-        result.add(new OffsetTokenGenerator());
-        result.add(new RowCountTokenGenerator());
-        result.add(new GeneratedKeyInsertColumnTokenGenerator());
-        result.add(new GeneratedKeyForInsertColumnsTokenGenerator());
-        result.add(new GeneratedKeyAssignmentTokenGenerator());
-        result.add(new InsertValuesTokenGenerator());
-        result.add(new GeneratedKeyInsertValuesTokenGenerator());
+        addSQLTokenGenerator(result, new TableTokenGenerator());
+        addSQLTokenGenerator(result, new SelectItemPrefixTokenGenerator());
+        addSQLTokenGenerator(result, new ProjectionsTokenGenerator());
+        addSQLTokenGenerator(result, new OrderByTokenGenerator());
+        addSQLTokenGenerator(result, new AggregationDistinctTokenGenerator());
+        addSQLTokenGenerator(result, new IndexTokenGenerator());
+        addSQLTokenGenerator(result, new OffsetTokenGenerator());
+        addSQLTokenGenerator(result, new RowCountTokenGenerator());
+        addSQLTokenGenerator(result, new GeneratedKeyInsertColumnTokenGenerator());
+        addSQLTokenGenerator(result, new GeneratedKeyForInsertColumnsTokenGenerator());
+        addSQLTokenGenerator(result, new GeneratedKeyAssignmentTokenGenerator());
+        addSQLTokenGenerator(result, new InsertValuesTokenGenerator());
+        addSQLTokenGenerator(result, new GeneratedKeyInsertValuesTokenGenerator());
         return result;
+    }
+    
+    private void addSQLTokenGenerator(final Collection<SQLTokenGenerator> sqlTokenGenerators, final SQLTokenGenerator toBeAddedSQLTokenGenerator) {
+        if (toBeAddedSQLTokenGenerator instanceof IgnoreForSingleRoute && sqlRouteResult.getRoutingResult().isSingleRouting()) {
+            return;
+        }
+        sqlTokenGenerators.add(toBeAddedSQLTokenGenerator);
     }
 }

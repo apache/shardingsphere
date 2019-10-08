@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.rewrite.sql.token;
 
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.ParametersAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerator;
@@ -70,16 +69,11 @@ public final class SQLTokenGenerators {
      * @param parameters SQL parameters
      * @param tableMetas table metas
      * @param previousSQLTokens previous SQL tokens
-     * @param isSingleRoute is single route
      * @return SQL tokens
      */
-    public List<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, 
-                                            final List<Object> parameters, final TableMetas tableMetas, final List<SQLToken> previousSQLTokens, final boolean isSingleRoute) {
+    public List<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final TableMetas tableMetas, final List<SQLToken> previousSQLTokens) {
         List<SQLToken> result = new LinkedList<>();
         for (SQLTokenGenerator each : sqlTokenGenerators) {
-            if (isSingleRoute && each instanceof IgnoreForSingleRoute) {
-                continue;
-            }
             List<SQLToken> currentPreviousSQLTokens = new LinkedList<>(previousSQLTokens);
             currentPreviousSQLTokens.addAll(result);
             setUpSQLTokenGenerator(each, parameters, tableMetas, currentPreviousSQLTokens);
