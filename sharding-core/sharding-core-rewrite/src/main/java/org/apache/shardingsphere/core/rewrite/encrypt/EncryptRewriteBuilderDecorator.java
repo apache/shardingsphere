@@ -18,15 +18,11 @@
 package org.apache.shardingsphere.core.rewrite.encrypt;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteBuilder;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteBuilderDecorator;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.encrypt.EncryptParameterBuilderFactory;
 import org.apache.shardingsphere.core.rewrite.sql.token.builder.EncryptTokenGenerateBuilder;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-
-import java.util.List;
 
 /**
  * SQL rewrite builder decorator for encrypt.
@@ -41,8 +37,9 @@ public final class EncryptRewriteBuilderDecorator implements SQLRewriteBuilderDe
     private final boolean isQueryWithCipherColumn;
     
     @Override
-    public void decorate(final SQLRewriteBuilder sqlRewriteBuilder, final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        EncryptParameterBuilderFactory.build(sqlRewriteBuilder.getParameterBuilder(), encryptRule, tableMetas, sqlStatementContext, parameters, isQueryWithCipherColumn);
+    public void decorate(final SQLRewriteBuilder sqlRewriteBuilder) {
+        EncryptParameterBuilderFactory.build(sqlRewriteBuilder.getParameterBuilder(), 
+                encryptRule, sqlRewriteBuilder.getTableMetas(), sqlRewriteBuilder.getSqlStatementContext(), sqlRewriteBuilder.getParameters(), isQueryWithCipherColumn);
         sqlRewriteBuilder.addSQLTokenGenerators(new EncryptTokenGenerateBuilder(encryptRule, isQueryWithCipherColumn).getSQLTokenGenerators());
     }
 }

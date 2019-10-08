@@ -17,11 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite;
 
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
-
-import java.util.List;
-
 /**
  * SQL rewrite builder decorator.
  *
@@ -33,9 +28,6 @@ public interface SQLRewriteBuilderDecorator {
      * Decorate SQL rewrite builder.
      *
      * @param sqlRewriteBuilder SQL rewrite builder to be decorated
-     * @param tableMetas table metas
-     * @param sqlStatementContext SQL statement context
-     * @param parameters SQL parameters
      */
-    void decorate(SQLRewriteBuilder sqlRewriteBuilder, TableMetas tableMetas, SQLStatementContext sqlStatementContext, List<Object> parameters);
+    void decorate(SQLRewriteBuilder sqlRewriteBuilder);
 }

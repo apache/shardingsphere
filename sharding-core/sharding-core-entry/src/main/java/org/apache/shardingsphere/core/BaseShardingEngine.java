@@ -108,10 +108,9 @@ public abstract class BaseShardingEngine {
     
     private Collection<RouteUnit> rewriteAndConvert(final String sql, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
         SQLRewriteBuilder sqlRewriteBuilder = new SQLRewriteBuilder(metaData.getTables(), sqlRouteResult.getSqlStatementContext(), sql, parameters);
-        new ShardingRewriteBuilderDecorator(shardingRule, sqlRouteResult).decorate(sqlRewriteBuilder, metaData.getTables(), sqlRouteResult.getSqlStatementContext(), parameters);
+        new ShardingRewriteBuilderDecorator(shardingRule, sqlRouteResult).decorate(sqlRewriteBuilder);
         boolean isQueryWithCipherColumn = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
-        new EncryptRewriteBuilderDecorator(shardingRule.getEncryptRule(), isQueryWithCipherColumn).decorate(
-                sqlRewriteBuilder, metaData.getTables(), sqlRouteResult.getSqlStatementContext(), parameters);
+        new EncryptRewriteBuilderDecorator(shardingRule.getEncryptRule(), isQueryWithCipherColumn).decorate(sqlRewriteBuilder);
         ShardingRewriteEngine shardingRewriteEngine = new ShardingRewriteEngine();
         Collection<RouteUnit> result = new LinkedHashSet<>();
         for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
