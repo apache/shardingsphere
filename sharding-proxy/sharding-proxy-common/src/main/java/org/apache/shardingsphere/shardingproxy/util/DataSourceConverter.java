@@ -51,6 +51,7 @@ public final class DataSourceConverter {
     }
     
     private static YamlDataSourceParameter createDataSourceParameter(final DataSourceConfiguration dataSourceConfiguration) {
+        bindAlias(dataSourceConfiguration);
         YamlDataSourceParameter result = new YamlDataSourceParameter();
         for (Field each : result.getClass().getDeclaredFields()) {
             try {
@@ -62,6 +63,14 @@ public final class DataSourceConverter {
             }
         }
         return result;
+    }
+
+    private static void bindAlias(final DataSourceConfiguration dataSourceConfiguration) {
+        dataSourceConfiguration.addAlias("url", "jdbcUrl");
+        dataSourceConfiguration.addAlias("user", "username");
+        dataSourceConfiguration.addAlias("connectionTimeout", "connectionTimeoutMilliseconds");
+        dataSourceConfiguration.addAlias("maxLifetime", "maxLifetimeMilliseconds");
+        dataSourceConfiguration.addAlias("idleTimeout", "idleTimeoutMilliseconds");
     }
     
     /**
@@ -80,12 +89,12 @@ public final class DataSourceConverter {
     
     private static DataSourceConfiguration createDataSourceConfiguration(final YamlDataSourceParameter dataSourceParameter) {
         DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());
-        result.getProperties().put("url", dataSourceParameter.getUrl());
+        result.getProperties().put("jdbcUrl", dataSourceParameter.getUrl());
         result.getProperties().put("username", dataSourceParameter.getUsername());
         result.getProperties().put("password", dataSourceParameter.getPassword());
-        result.getProperties().put("connectionTimeoutMilliseconds", dataSourceParameter.getConnectionTimeoutMilliseconds());
-        result.getProperties().put("idleTimeoutMilliseconds", dataSourceParameter.getIdleTimeoutMilliseconds());
-        result.getProperties().put("maxLifetimeMilliseconds", dataSourceParameter.getMaxLifetimeMilliseconds());
+        result.getProperties().put("connectionTimeout", dataSourceParameter.getConnectionTimeoutMilliseconds());
+        result.getProperties().put("idleTimeout", dataSourceParameter.getIdleTimeoutMilliseconds());
+        result.getProperties().put("maxLifetime", dataSourceParameter.getMaxLifetimeMilliseconds());
         result.getProperties().put("maxPoolSize", dataSourceParameter.getMaxPoolSize());
         result.getProperties().put("minPoolSize", dataSourceParameter.getMinPoolSize());
         result.getProperties().put("maintenanceIntervalMilliseconds", dataSourceParameter.getMaintenanceIntervalMilliseconds());
