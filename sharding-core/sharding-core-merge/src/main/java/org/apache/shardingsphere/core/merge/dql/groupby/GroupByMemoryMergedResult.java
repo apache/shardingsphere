@@ -84,12 +84,12 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
         if (!aggregationMap.containsKey(groupByValue)) {
             Map<AggregationProjection, AggregationUnit> map = Maps.toMap(
                     selectSQLStatementContext.getProjectionsContext().getAggregationProjections(), new Function<AggregationProjection, AggregationUnit>() {
-                
-                @Override
-                public AggregationUnit apply(final AggregationProjection input) {
-                    return AggregationUnitFactory.create(input.getType());
-                }
-            });
+                        
+                        @Override
+                        public AggregationUnit apply(final AggregationProjection input) {
+                            return AggregationUnitFactory.create(input.getType());
+                        }
+                    });
             aggregationMap.put(groupByValue, map);
         }
     }

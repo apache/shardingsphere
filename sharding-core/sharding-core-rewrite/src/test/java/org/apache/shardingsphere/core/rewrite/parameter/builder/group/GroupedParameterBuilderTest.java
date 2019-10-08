@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.parameter.builder.group;
 
+import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -38,7 +39,8 @@ public final class GroupedParameterBuilderTest {
     
     @Before
     public void setUp() {
-        parameterBuilder = new GroupedParameterBuilder(createGroupedParameters(), createShardingConditions());
+        parameterBuilder = new GroupedParameterBuilder(createGroupedParameters());
+        parameterBuilder.setShardingConditions(createShardingConditions());
     }
     
     private List<List<Object>> createGroupedParameters() {

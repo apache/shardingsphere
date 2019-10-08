@@ -25,11 +25,4 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleEx
  * @author zhangliang
  */
 public interface DerivedSimpleExpressionSegment extends SimpleExpressionSegment {
-    
-    /**
-     * Get derived expression type.
-     * 
-     * @return derived expression type
-     */
-    String getType();
 }

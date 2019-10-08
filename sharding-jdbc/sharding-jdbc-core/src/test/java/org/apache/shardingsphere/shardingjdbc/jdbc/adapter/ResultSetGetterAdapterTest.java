@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.util.JDBCTestSQL;
@@ -221,127 +222,127 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     }
     
     @Test
-    public void assertGetBytesForColumnIndex() {
+    public void assertGetBytesForColumnIndex() throws SQLException {
         for (ResultSet each : resultSets.values()) {
             try {
                 assertTrue(each.getBytes(1).length > 0);
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
     
     @Test
-    public void assertGetBytesForColumnLabel() {
+    public void assertGetBytesForColumnLabel() throws SQLException {
         for (ResultSet each : resultSets.values()) {
             try {
                 assertTrue(each.getBytes(columnName).length > 0);
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
     
     @Test
-    public void assertGetDateForColumnIndex() {
+    public void assertGetDateForColumnIndex() throws SQLException {
         for (ResultSet each : resultSets.values()) {
             try {
                 each.getDate(1);
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
     
     @Test
-    public void assertGetDateForColumnLabel() {
+    public void assertGetDateForColumnLabel() throws SQLException {
         for (ResultSet each : resultSets.values()) {
             try {
                 each.getDate(columnName);
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
     
     @Test
-    public void assertGetDateColumnIndexWithCalendar() {
+    public void assertGetDateColumnIndexWithCalendar() throws SQLException {
         for (ResultSet each : resultSets.values()) {
             try {
                 each.getDate(1, Calendar.getInstance());
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
     
     @Test
-    public void assertGetDateColumnLabelWithCalendar() {
+    public void assertGetDateColumnLabelWithCalendar() throws SQLException {
         for (ResultSet each : resultSets.values()) {
             try {
                 each.getDate(columnName, Calendar.getInstance());
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
     
     @Test
-    public void assertGetTimeForColumnIndex() {
+    public void assertGetTimeForColumnIndex() throws SQLException {
         for (ResultSet each : resultSets.values()) {
             try {
                 each.getTime(1);
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
     
     @Test
-    public void assertGetTimeForColumnLabel() {
+    public void assertGetTimeForColumnLabel() throws SQLException {
         for (ResultSet each : resultSets.values()) {
             try {
                 each.getTime(columnName);
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
     
     @Test
-    public void assertGetTimeColumnIndexWithCalendar() {
+    public void assertGetTimeColumnIndexWithCalendar() throws SQLException {
         for (ResultSet each : resultSets.values()) {
             try {
                 each.getTime(1, Calendar.getInstance());
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
     
     @Test
-    public void assertGetTimeColumnLabelWithCalendar() {
+    public void assertGetTimeColumnLabelWithCalendar() throws SQLException {
         for (ResultSet each : resultSets.values()) {
             try {
                 each.getTime(columnName, Calendar.getInstance());
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
     
     @Test
-    public void assertGetTimestampForColumnIndex() {
+    public void assertGetTimestampForColumnIndex() throws SQLException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             try {
                 each.getValue().getTimestamp(1);
@@ -349,14 +350,14 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
                     continue;
                 }
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
     
     @Test
-    public void assertGetTimestampForColumnLabel() {
+    public void assertGetTimestampForColumnLabel() throws SQLException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             try {
                 each.getValue().getTimestamp(columnName);
@@ -364,14 +365,14 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
                     continue;
                 }
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
     
     @Test
-    public void assertGetTimestampColumnIndexWithCalendar() {
+    public void assertGetTimestampColumnIndexWithCalendar() throws SQLException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             try {
                 each.getValue().getTimestamp(1, Calendar.getInstance());
@@ -379,14 +380,14 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
                     continue;
                 }
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
     
     @Test
-    public void assertGetTimestampColumnLabelWithCalendar() {
+    public void assertGetTimestampColumnLabelWithCalendar() throws SQLException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             try {
                 each.getValue().getTimestamp(columnName, Calendar.getInstance());
@@ -394,7 +395,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
                     continue;
                 }
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
@@ -433,7 +434,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             if (DatabaseTypes.getActualDatabaseType("H2") == each.getKey() || DatabaseTypes.getActualDatabaseType("SQLServer") == each.getKey()) {
                 try {
                     each.getValue().getUnicodeStream(1).read(b);
-                } catch (final Exception ignored) {
+                } catch (final ShardingException ignored) {
                 }
             } else {
                 each.getValue().getUnicodeStream(1).read(b);
@@ -453,7 +454,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             if (DatabaseTypes.getActualDatabaseType("H2") == each.getKey() || DatabaseTypes.getActualDatabaseType("SQLServer") == each.getKey()) {
                 try {
                     each.getValue().getUnicodeStream(columnName).read(b);
-                } catch (final Exception ignored) {
+                } catch (final ShardingException ignored) {
                 }
             } else {
                 each.getValue().getUnicodeStream(columnName).read(b);
@@ -503,13 +504,14 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     }
     
     @Test
-    public void assertGetBlobForColumnIndex() {
+    public void assertGetBlobForColumnIndex() throws SQLException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             if (DatabaseTypes.getActualDatabaseType("H2") == each.getKey()) {
                 try {
                     assertTrue(each.getValue().getBlob(1).length() > 0);
                     fail("Expected an SQLException to be thrown");
-                } catch (final Exception ex) {
+                    // TODO need investigate why throw ClassCastException
+                } catch (final ClassCastException ex) {
                     assertFalse(ex.getMessage().isEmpty());
                 }
             }
@@ -517,13 +519,14 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     }
     
     @Test
-    public void assertGetBlobForColumnLabel() {
+    public void assertGetBlobForColumnLabel() throws SQLException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             if (DatabaseTypes.getActualDatabaseType("H2") == each.getKey()) {
                 try {
                     assertTrue(each.getValue().getBlob(columnName).length() > 0);
                     fail("Expected an SQLException to be thrown");
-                } catch (final Exception ex) {
+                    // TODO need investigate why throw ClassCastException
+                } catch (final ClassCastException ex) {
                     assertFalse(ex.getMessage().isEmpty());
                 }
             }
@@ -531,48 +534,52 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     }
     
     @Test
-    public void assertGetClobForColumnIndex() {
+    public void assertGetClobForColumnIndex() throws SQLException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             try {
-                assertThat(each.getValue().getClob(1).getSubString(1, 2), is("10"));
+                each.getValue().getClob(1);
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception ex) {
+                // TODO need investigate why throw ClassCastException
+            } catch (final ClassCastException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
     
     @Test
-    public void assertGetClobForColumnLabel() {
+    public void assertGetClobForColumnLabel() throws SQLException {
         for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
             try {
                 assertThat(each.getValue().getClob(columnName).getSubString(1, 2), is("10"));
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception ex) {
+                // TODO need investigate why throw ClassCastException
+            } catch (final ClassCastException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
     
     @Test
-    public void assertGetURLForColumnIndex() {
+    public void assertGetURLForColumnIndex() throws SQLException {
         for (ResultSet each : resultSets.values()) {
             try {
                 each.getURL(1);
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception ex) {
+                // TODO need investigate why throw ClassCastException
+            } catch (final ClassCastException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
     
     @Test
-    public void assertGetURLForColumnLabel() {
+    public void assertGetURLForColumnLabel() throws SQLException {
         for (ResultSet each : resultSets.values()) {
             try {
                 each.getURL(columnName);
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception ex) {
+                // TODO need investigate why throw ClassCastException
+            } catch (final ClassCastException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
@@ -588,7 +595,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
                 try {
                     each.getValue().getSQLXML(1);
                     fail("Expected an SQLException to be thrown");
-                } catch (final Exception ex) {
+                    // TODO need investigate why throw ClassCastException
+                } catch (final ClassCastException ex) {
                     assertFalse(ex.getMessage().isEmpty());
                 }
             } else {
@@ -607,7 +615,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
                 try {
                     each.getValue().getSQLXML(columnName);
                     fail("Expected an SQLException to be thrown");
-                } catch (final Exception ex) {
+                    // TODO need investigate why throw ClassCastException
+                } catch (final ClassCastException ex) {
                     assertFalse(ex.getMessage().isEmpty());
                 }
             } else {
