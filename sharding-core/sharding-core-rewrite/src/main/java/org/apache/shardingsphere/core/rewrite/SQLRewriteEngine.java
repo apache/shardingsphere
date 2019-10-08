@@ -52,13 +52,13 @@ public final class SQLRewriteEngine {
         parameterBuilder = sqlStatementContext instanceof InsertSQLStatementContext
                 ? new GroupedParameterBuilder(((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) : new StandardParameterBuilder(parameters);
         sqlBuilder = new SQLBuilder(sql);
-        sqlBuilder.getSqlTokens().addAll(createSQLTokens(sqlStatementContext));
+        sqlBuilder.getSqlTokens().addAll(createSQLTokens(sqlStatementContext, parameters));
     }
     
-    private List<SQLToken> createSQLTokens(final SQLStatementContext sqlStatementContext) {
+    private List<SQLToken> createSQLTokens(final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
         sqlTokenGenerators.addAll(new BaseTokenGeneratorBuilder().getSQLTokenGenerators());
-        return sqlTokenGenerators.generateSQLTokens(sqlStatementContext, Collections.emptyList(), null, Collections.<SQLToken>emptyList(), true);
+        return sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, null, Collections.<SQLToken>emptyList(), true);
     }
     
     /**
