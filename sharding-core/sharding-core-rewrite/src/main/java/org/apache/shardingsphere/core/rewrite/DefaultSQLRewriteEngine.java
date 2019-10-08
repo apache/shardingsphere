@@ -15,18 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.encrypt;
+package org.apache.shardingsphere.core.rewrite;
 
-import org.apache.shardingsphere.core.rewrite.SQLRewriteBuilder;
-import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.route.SQLUnit;
 
 /**
- * SQL rewrite engine for encrypt.
+ * Default SQL rewrite engine.
  * 
  * @author zhangliang
  */
-public final class EncryptSQLRewriteEngine implements SQLRewriteEngine {
+public final class DefaultSQLRewriteEngine implements SQLRewriteEngine {
     
     @Override
     public SQLUnit generateSQL(final SQLRewriteBuilder sqlRewriteBuilder) {

@@ -24,9 +24,9 @@ import org.apache.shardingsphere.core.optimize.SQLStatementContextFactory;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.CommonSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.rewrite.DefaultSQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteBuilder;
 import org.apache.shardingsphere.core.rewrite.encrypt.EncryptSQLRewriteBuilderDecorator;
-import org.apache.shardingsphere.core.rewrite.masterslave.MasterSlaveRewriteEngine;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
@@ -82,7 +82,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         SQLStatement sqlStatement = logicSchema.getParseEngine().parse(sql, true);
         CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         SQLRewriteBuilder sqlRewriteBuilder = new SQLRewriteBuilder(logicSchema.getMetaData().getTables(), sqlStatementContext, sql, parameters);
-        String rewriteSQL = new MasterSlaveRewriteEngine().generateSQL(sqlRewriteBuilder).getSql();
+        String rewriteSQL = new DefaultSQLRewriteEngine().generateSQL(sqlRewriteBuilder).getSql();
         SQLRouteResult result = new SQLRouteResult(sqlStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         for (String each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), logicSchema.getParseEngine(),
                 SHARDING_PROXY_CONTEXT.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW)).route(rewriteSQL, true)) {
@@ -101,7 +101,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         new EncryptSQLRewriteBuilderDecorator(encryptSchema.getEncryptRule(), isQueryWithCipherColumn).decorate(sqlRewriteBuilder);
         SQLRouteResult result = new SQLRouteResult(sqlStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         result.getRouteUnits().add(
-                new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(new MasterSlaveRewriteEngine().generateSQL(sqlRewriteBuilder).getSql(), parameters)));
+                new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(new DefaultSQLRewriteEngine().generateSQL(sqlRewriteBuilder).getSql(), parameters)));
         return result;
     }
     

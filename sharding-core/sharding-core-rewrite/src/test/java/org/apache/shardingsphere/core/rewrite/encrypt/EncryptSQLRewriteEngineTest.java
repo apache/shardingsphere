@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.optimize.SQLStatementContextFactory;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.rewrite.DefaultSQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteBuilder;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -339,6 +340,6 @@ public final class EncryptSQLRewriteEngineTest {
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(mock(TableMetas.class), sql, parameters, sqlStatement);
         SQLRewriteBuilder sqlRewriteBuilder = new SQLRewriteBuilder(mock(TableMetas.class), sqlStatementContext, sql, parameters);
         new EncryptSQLRewriteBuilderDecorator(encryptRule, isQueryWithCipherColumn).decorate(sqlRewriteBuilder); 
-        return new EncryptSQLRewriteEngine().generateSQL(sqlRewriteBuilder);
+        return new DefaultSQLRewriteEngine().generateSQL(sqlRewriteBuilder);
     }
 }
