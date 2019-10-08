@@ -61,7 +61,7 @@ public final class SQLRewriteEngine {
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
         this.parameters = parameters;
-        sqlTokenGenerators.addAll(new BaseTokenGeneratorBuilder().getSQLTokenGenerators());
+        addSQLTokenGenerators(new BaseTokenGeneratorBuilder().getSQLTokenGenerators());
         parameterBuilder = sqlStatementContext instanceof InsertSQLStatementContext
                 ? new GroupedParameterBuilder(((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) : new StandardParameterBuilder(parameters);
     }
@@ -81,7 +81,7 @@ public final class SQLRewriteEngine {
      * @return SQL unit
      */
     public SQLUnit generateSQL() {
-        return new SQLUnit(createSQLBuilder().toSQL(), parameterBuilder.getParameters());
+        return new SQLUnit(getSQLBuilder().toSQL(), parameterBuilder.getParameters());
     }
     
     /**
@@ -92,10 +92,15 @@ public final class SQLRewriteEngine {
      * @return SQL unit
      */
     public SQLUnit generateSQL(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
-        return new SQLUnit(createSQLBuilder().toSQL(routingUnit, logicAndActualTables), parameterBuilder.getParameters(routingUnit));
+        return new SQLUnit(getSQLBuilder().toSQL(routingUnit, logicAndActualTables), parameterBuilder.getParameters(routingUnit));
     }
     
-    private SQLBuilder createSQLBuilder() {
+    /**
+     * Get SQL builder.
+     * 
+     * @return SQL builder
+     */
+    public SQLBuilder getSQLBuilder() {
         SQLBuilder result = new SQLBuilder(sql);
         result.getSqlTokens().addAll(sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, tableMetas));
         return result;
