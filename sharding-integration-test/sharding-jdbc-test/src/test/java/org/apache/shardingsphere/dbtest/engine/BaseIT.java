@@ -180,7 +180,7 @@ public abstract class BaseIT {
             for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
                 SchemaEnvironmentManager.createDatabase(each);
             }
-        } catch (final Exception ex) {
+        } catch (final JAXBException | IOException | SQLException ex) {
             ex.printStackTrace();
         }
     }
@@ -190,7 +190,7 @@ public abstract class BaseIT {
             for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
                 SchemaEnvironmentManager.createTable(each);
             }
-        } catch (final Exception ex) {
+        } catch (final JAXBException | IOException | SQLException ex) {
             ex.printStackTrace();
         }
     }
@@ -200,7 +200,7 @@ public abstract class BaseIT {
             for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
                 SchemaEnvironmentManager.dropDatabase(each);
             }
-        } catch (final Exception ex) {
+        } catch (final JAXBException | IOException ex) {
             ex.printStackTrace();
         }
     }
@@ -210,7 +210,7 @@ public abstract class BaseIT {
             for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
                 SchemaEnvironmentManager.dropTable(each);
             }
-        } catch (final Exception ex) {
+        } catch (final JAXBException | IOException ex) {
             ex.printStackTrace();
         }
     }

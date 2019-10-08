@@ -231,11 +231,7 @@ public final class EncryptRule implements BaseRule {
             
             @Override
             public Object apply(final Object input) {
-                if (input == null) {
-                    return null;
-                } else {
-                    return ((ShardingQueryAssistedEncryptor) shardingEncryptor.get()).queryAssistedEncrypt(input.toString());
-                }
+                return null == input ? null : ((ShardingQueryAssistedEncryptor) shardingEncryptor.get()).queryAssistedEncrypt(input.toString());
             }
         });
     }
@@ -255,11 +251,7 @@ public final class EncryptRule implements BaseRule {
             
             @Override
             public Object apply(final Object input) {
-                if (input == null) {
-                    return null;
-                } else {
-                    return String.valueOf(shardingEncryptor.get().encrypt(input.toString()));
-                }
+                return null == input ? null : String.valueOf(shardingEncryptor.get().encrypt(input.toString()));
             }
         });
     }

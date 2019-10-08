@@ -30,41 +30,36 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertNull;
 
-/**
- * @author kezhenxu94
- */
-public class EncryptRuleTest {
+public final class EncryptRuleTest {
+    
     private final String table = "table";
+    
     private final String column = "column";
-
+    
     private EncryptRuleConfiguration encryptRuleConfig;
-
+    
     @Before
-    public void before() {
+    public void setUp() {
         Properties props = new Properties();
-
         EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("assistedTest", props);
         EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration("plain_pwd", "cipher_pwd", "", "aes");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(Collections.singletonMap(column, columnConfig));
-
         encryptRuleConfig = new EncryptRuleConfiguration();
         encryptRuleConfig.getEncryptors().put("aes", encryptorConfig);
         encryptRuleConfig.getTables().put(table, tableConfig);
     }
-
+    
     @Test
-    public void testGetEncryptAssistedQueryValues() {
+    public void assertGetEncryptAssistedQueryValues() {
         List<Object> encryptAssistedQueryValues = new EncryptRule(encryptRuleConfig).getEncryptAssistedQueryValues(table, column, Collections.singletonList(null));
-
         for (final Object value : encryptAssistedQueryValues) {
             assertNull(value);
         }
     }
-
+    
     @Test
-    public void testGetEncryptValues() {
+    public void assertGetEncryptValues() {
         List<Object> encryptAssistedQueryValues = new EncryptRule(encryptRuleConfig).getEncryptValues(table, column, Collections.singletonList(null));
-
         for (final Object value : encryptAssistedQueryValues) {
             assertNull(value);
         }
