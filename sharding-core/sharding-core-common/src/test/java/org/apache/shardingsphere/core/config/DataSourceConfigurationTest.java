@@ -81,7 +81,7 @@ public final class DataSourceConfigurationTest {
         assertThat(actual.getProperties().get("jdbcUrl").toString(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getProperties().get("username").toString(), is("root"));
         assertThat(actual.getProperties().get("password").toString(), is("root"));
-        assertThat(actual.getProperties().get("jdbcUrl"), is(equalTo(actual.getProperties().get("url"))));
-        assertThat(actual.getProperties().get("username"), is(equalTo(actual.getProperties().get("user"))));
+        assertThat(actual.getProperties().get("jdbcUrl"), is(actual.getProperties().get("url")));
+        assertThat(actual.getProperties().get("username"), is(actual.getProperties().get("user")));
     }
 }
