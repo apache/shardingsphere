@@ -33,16 +33,16 @@ public final class ProjectionEngineTest {
     
     @Test
     public void assertProjectionCreatedWhenSelectItemSegmentNotMatched() {
-        Optional<Projection> projectionOptional = new ProjectionEngine().createProjection(null, null);
-        assertFalse(projectionOptional.isPresent());
+        Optional<Projection> projection = new ProjectionEngine().createProjection(null, null);
+        assertFalse(projection.isPresent());
     }
     
     @Test
     public void assertProjectionCreatedWhenSelectItemSegmentInstanceOfShorthandSelectItemSegment() {
         ShorthandSelectItemSegment shorthandSelectItemSegment = mock(ShorthandSelectItemSegment.class);
         when(shorthandSelectItemSegment.getOwner()).thenReturn(Optional.of(mock(TableSegment.class)));
-        Optional<Projection> projectionOptional = new ProjectionEngine().createProjection(null, shorthandSelectItemSegment);
-        assertTrue(projectionOptional.isPresent());
-        assertTrue(projectionOptional.get() instanceof ShorthandProjection);
+        Optional<Projection> projection = new ProjectionEngine().createProjection(null, shorthandSelectItemSegment);
+        assertTrue(projection.isPresent());
+        assertTrue(projection.get() instanceof ShorthandProjection);
     }
 }
