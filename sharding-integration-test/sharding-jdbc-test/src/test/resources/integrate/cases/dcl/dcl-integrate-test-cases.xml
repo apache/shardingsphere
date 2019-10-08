@@ -49,9 +49,6 @@
     <dcl-test-case sql-case-id="alter_all_roles_reset_config">
         <assertion />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="alter_all_roles_reset_config">
-        <assertion />
-    </dcl-test-case>
     <dcl-test-case sql-case-id="alter_all_roles_set_config">
         <assertion />
     </dcl-test-case>
@@ -351,21 +348,6 @@
         <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_user_with_tablespace">
-        <assertion />
-    </dcl-test-case>
-    <dcl-test-case sql-case-id="alter_all_roles_reset_config">
-        <assertion />
-    </dcl-test-case>
-    <dcl-test-case sql-case-id="alter_all_roles_set_config">
-        <assertion />
-    </dcl-test-case>
-    <dcl-test-case sql-case-id="alter_all_users_reset_config">
-        <assertion />
-    </dcl-test-case>
-    <dcl-test-case sql-case-id="alter_all_users_set_config">
-        <assertion />
-    </dcl-test-case>
-    <dcl-test-case sql-case-id="alter_local_user">
         <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="deny_user">
