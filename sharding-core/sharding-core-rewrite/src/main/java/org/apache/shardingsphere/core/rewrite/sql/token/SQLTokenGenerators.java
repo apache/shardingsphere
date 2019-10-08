@@ -68,15 +68,12 @@ public final class SQLTokenGenerators {
      * @param sqlStatementContext SQL statement context
      * @param parameters SQL parameters
      * @param tableMetas table metas
-     * @param previousSQLTokens previous SQL tokens
      * @return SQL tokens
      */
-    public List<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final TableMetas tableMetas, final List<SQLToken> previousSQLTokens) {
+    public List<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final TableMetas tableMetas) {
         List<SQLToken> result = new LinkedList<>();
         for (SQLTokenGenerator each : sqlTokenGenerators) {
-            List<SQLToken> currentPreviousSQLTokens = new LinkedList<>(previousSQLTokens);
-            currentPreviousSQLTokens.addAll(result);
-            setUpSQLTokenGenerator(each, parameters, tableMetas, currentPreviousSQLTokens);
+            setUpSQLTokenGenerator(each, parameters, tableMetas, result);
             if (!each.isGenerateSQLToken(sqlStatementContext)) {
                 continue;
             }

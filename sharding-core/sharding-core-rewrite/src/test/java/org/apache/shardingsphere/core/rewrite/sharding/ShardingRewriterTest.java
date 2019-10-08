@@ -1114,9 +1114,9 @@ public final class ShardingRewriterTest {
     }
     
     private SQLRewriteEngine createSQLRewriteEngine(final SQLRouteResult sqlRouteResult, final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
-        SQLRewriteEngine result = new SQLRewriteEngine(sqlRouteResult.getSqlStatementContext(), sql, parameters);
+        SQLRewriteEngine result = new SQLRewriteEngine(sqlRouteResult.getSqlStatementContext(), sql, parameters, mock(TableMetas.class));
         new ShardingRewriterDecorator(shardingRule, sqlRouteResult).decorate(result, null, sqlRouteResult.getSqlStatementContext(), parameters);
-        new EncryptRewriterDecorator(shardingRule.getEncryptRule(), isQueryWithCipherColumn).decorate(result, null, sqlRouteResult.getSqlStatementContext(), parameters);
+        new EncryptRewriterDecorator(shardingRule.getEncryptRule(), isQueryWithCipherColumn).decorate(result, mock(TableMetas.class), sqlRouteResult.getSqlStatementContext(), parameters);
         return result;
     }
 }
