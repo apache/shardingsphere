@@ -337,7 +337,7 @@ public final class EncrypSQLRewriteEngineTest {
         // TODO panjuan: should mock sqlStatement, do not call parse module on rewrite test case
         SQLStatement sqlStatement = parseEngine.parse(sql, false);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(mock(TableMetas.class), sql, parameters, sqlStatement);
-        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(sqlStatementContext, sql, parameters, mock(TableMetas.class));
+        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(mock(TableMetas.class), sqlStatementContext, sql, parameters);
         new EncryptRewriterDecorator(encryptRule, isQueryWithCipherColumn).decorate(sqlRewriteEngine, mock(TableMetas.class), sqlStatementContext, parameters); 
         return sqlRewriteEngine.generateSQL();
     }

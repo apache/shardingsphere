@@ -55,11 +55,11 @@ public final class SQLRewriteEngine {
     @Getter
     private final ParameterBuilder parameterBuilder;
     
-    public SQLRewriteEngine(final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters, final TableMetas tableMetas) {
+    public SQLRewriteEngine(final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters) {
+        this.tableMetas = tableMetas;
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
         this.parameters = parameters;
-        this.tableMetas = tableMetas;
         sqlTokenGenerators.addAll(new BaseTokenGeneratorBuilder().getSQLTokenGenerators());
         parameterBuilder = sqlStatementContext instanceof InsertSQLStatementContext
                 ? new GroupedParameterBuilder(((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) : new StandardParameterBuilder(parameters);
