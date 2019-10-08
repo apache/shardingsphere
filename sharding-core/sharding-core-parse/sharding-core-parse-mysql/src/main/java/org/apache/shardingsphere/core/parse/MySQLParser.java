@@ -17,18 +17,33 @@
 
 package org.apache.shardingsphere.core.parse;
 
-import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.core.parse.api.SQLParser;
+import org.apache.shardingsphere.core.parse.autogen.MySQLStatementLexer;
 import org.apache.shardingsphere.core.parse.autogen.MySQLStatementParser;
 
 /**
  * SQL parser for MySQL.
- * 
+ *
  * @author duhongjun
  */
 public final class MySQLParser extends MySQLStatementParser implements SQLParser {
-    
+
     public MySQLParser(final TokenStream input) {
         super(input);
+    }
+
+    public static void main(String[] args){
+        CharStream input = CharStreams.fromString("SELECT Y.* FROM TS_ORDER K WHERE K.ID = 3");
+
+        Lexer lexer = new MySQLStatementLexer(input);
+
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+
+        MySQLParser parser = new MySQLParser(tokens);
+
+        ParseTree tree = parser.execute().getChild(0);
+        System.out.println(tree.toStringTree(parser));
     }
 }
