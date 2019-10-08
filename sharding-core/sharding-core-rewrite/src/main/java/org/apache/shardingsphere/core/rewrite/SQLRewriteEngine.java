@@ -27,9 +27,11 @@ import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.StandardPar
 import org.apache.shardingsphere.core.rewrite.sql.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.sql.token.SQLTokenGenerators;
 import org.apache.shardingsphere.core.rewrite.sql.token.builder.BaseTokenGeneratorBuilder;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +51,6 @@ public final class SQLRewriteEngine {
     
     private final TableMetas tableMetas;
     
-    @Getter
     private final SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
     
     @Getter
@@ -63,6 +64,15 @@ public final class SQLRewriteEngine {
         sqlTokenGenerators.addAll(new BaseTokenGeneratorBuilder().getSQLTokenGenerators());
         parameterBuilder = sqlStatementContext instanceof InsertSQLStatementContext
                 ? new GroupedParameterBuilder(((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) : new StandardParameterBuilder(parameters);
+    }
+    
+    /**
+     * Add SQL token generators.
+     * 
+     * @param sqlTokenGenerators SQL token generators
+     */
+    public void addSQLTokenGenerators(final Collection<SQLTokenGenerator> sqlTokenGenerators) {
+        this.sqlTokenGenerators.addAll(sqlTokenGenerators);
     }
     
     /**
