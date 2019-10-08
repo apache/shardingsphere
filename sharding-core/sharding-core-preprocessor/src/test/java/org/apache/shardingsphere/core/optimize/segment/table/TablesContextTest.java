@@ -173,6 +173,21 @@ public final class TablesContextTest {
         assertFalse(tableName.isPresent());
     }
     
+    @Test
+    public void assertFindTableNameWhenColumnSegmentOwnerAbsentAndTableMetasContainsColumn() {
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
+        selectStatement.getAllSQLSegments().add(createTableSegment("table_2", "tbl_2"));
+        TablesContext tablesContext = new TablesContext(selectStatement);
+        ColumnSegment columnSegment = mock(ColumnSegment.class);
+        when(columnSegment.getOwner()).thenReturn(Optional.<TableSegment>absent());
+        when(columnSegment.getName()).thenReturn("columnName");
+        TableMetas tableMetas = mock(TableMetas.class);
+        when(tableMetas.containsColumn(anyString(), anyString())).thenReturn(true);
+        Optional<String> tableName = tablesContext.findTableName(columnSegment, tableMetas);
+        assertTrue(tableName.isPresent());
+    }
+    
     private TableSegment createTableSegment(final String tableName, final String alias) {
         TableSegment result = new TableSegment(0, 0, tableName);
         result.setAlias(alias);
