@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import org.apache.shardingsphere.core.constant.ShardingConstant;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
 
@@ -40,15 +40,15 @@ public final class EncryptResultSetMetaData extends WrapperAdapter implements Re
     
     private final EncryptRule encryptRule;
     
-    private final OptimizedStatement optimizedStatement;
+    private final SQLStatementContext sqlStatementContext;
     
     private final Map<String, String> logicAndActualColumns;
     
-    public EncryptResultSetMetaData(final ResultSetMetaData resultSetMetaData, 
-                                    final EncryptRule encryptRule, final OptimizedStatement optimizedStatement, final Map<String, String> logicAndActualColumns) {
+    public EncryptResultSetMetaData(final ResultSetMetaData resultSetMetaData,
+                                    final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext, final Map<String, String> logicAndActualColumns) {
         this.resultSetMetaData = resultSetMetaData;
         this.encryptRule = encryptRule;
-        this.optimizedStatement = optimizedStatement;
+        this.sqlStatementContext = sqlStatementContext;
         this.logicAndActualColumns = logicAndActualColumns;
     }
     
@@ -71,7 +71,7 @@ public final class EncryptResultSetMetaData extends WrapperAdapter implements Re
     
     private Collection<String> getAssistedQueryColumns() {
         Collection<String> result = new LinkedList<>();
-        for (String each : optimizedStatement.getTables().getTableNames()) {
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             result.addAll(encryptRule.getAssistedQueryColumns(each));
         }
         return result;

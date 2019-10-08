@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryMergedResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 
@@ -52,14 +52,14 @@ public final class DescribeTableMergedResult extends MemoryMergedResult {
     
     private final ShardingRule shardingRule;
     
-    private final OptimizedStatement optimizedStatement;
+    private final SQLStatementContext sqlStatementContext;
     
     private final Iterator<MemoryQueryResultRow> memoryResultSetRows;
     
-    public DescribeTableMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults, final OptimizedStatement optimizedStatement) throws SQLException {
+    public DescribeTableMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
         super(LABEL_AND_INDEX_MAP);
         this.shardingRule = shardingRule;
-        this.optimizedStatement = optimizedStatement;
+        this.sqlStatementContext = sqlStatementContext;
         this.memoryResultSetRows = init(queryResults);
     }
     
@@ -81,7 +81,7 @@ public final class DescribeTableMergedResult extends MemoryMergedResult {
     
     private Optional<MemoryQueryResultRow> optimize(final QueryResult queryResult) throws SQLException {
         MemoryQueryResultRow memoryQueryResultRow = new MemoryQueryResultRow(queryResult);
-        String logicTableName = optimizedStatement.getTables().getSingleTableName();
+        String logicTableName = sqlStatementContext.getTablesContext().getSingleTableName();
         Optional<EncryptTable> encryptTable = shardingRule.getEncryptRule().findEncryptTable(logicTableName);
         if (encryptTable.isPresent()) {
             String columnName = memoryQueryResultRow.getCell(1).toString();

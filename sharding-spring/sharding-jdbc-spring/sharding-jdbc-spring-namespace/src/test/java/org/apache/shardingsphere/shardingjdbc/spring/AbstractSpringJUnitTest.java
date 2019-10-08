@@ -83,6 +83,7 @@ public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContex
         return Arrays.asList("schema/dbtbl_0.sql", "schema/dbtbl_1.sql");
     }
     
+    @SuppressWarnings("unchecked")
     @SneakyThrows
     private void reInitMetaData() {
         Map<String, DataSource> dataSourceMap = (Map<String, DataSource>) getFieldValue(shardingDataSource.getRuntimeContext().getCachedDatabaseMetaData(), "dataSourceMap");
@@ -119,7 +120,7 @@ public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContex
     
     private Optional<Field> getField(final Object object, final String name) {
         Class clazz = object.getClass();
-        Optional result = Optional.absent();
+        Optional<Field> result = Optional.absent();
         while (!result.isPresent() && null != clazz) {
             try {
                 result = Optional.of(clazz.getDeclaredField(name));

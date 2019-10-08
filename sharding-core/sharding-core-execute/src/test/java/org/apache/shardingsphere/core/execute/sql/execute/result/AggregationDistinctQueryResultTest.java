@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
-import org.apache.shardingsphere.core.optimize.segment.select.item.impl.AggregationDistinctSelectItem;
+import org.apache.shardingsphere.core.optimize.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +46,7 @@ public final class AggregationDistinctQueryResultTest {
     
     @Before
     public void setUp() throws SQLException {
-        aggregationDistinctQueryResult = new AggregationDistinctQueryResult(getQueryResults(), getAggregationDistinctSelectItems());
+        aggregationDistinctQueryResult = new AggregationDistinctQueryResult(getQueryResults(), getAggregationDistinctProjections());
     }
     
     private Collection<QueryResult> getQueryResults() throws SQLException {
@@ -88,14 +88,14 @@ public final class AggregationDistinctQueryResultTest {
         return result;
     }
     
-    private List<AggregationDistinctSelectItem> getAggregationDistinctSelectItems() {
-        List<AggregationDistinctSelectItem> result = new LinkedList<>();
-        AggregationDistinctSelectItem distinctCountSelectItem = new AggregationDistinctSelectItem(0, 0, AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
-        AggregationDistinctSelectItem distinctAvgSelectItem = new AggregationDistinctSelectItem(0, 0, AggregationType.AVG, "(DISTINCT order_id)", "a", "order_id");
-        distinctAvgSelectItem.getDerivedAggregationItems().add(new AggregationDistinctSelectItem(0, 0, AggregationType.COUNT, "(DISTINCT order_id)", "AVG_DERIVED_COUNT_0", "order_id"));
-        distinctAvgSelectItem.getDerivedAggregationItems().add(new AggregationDistinctSelectItem(0, 0, AggregationType.SUM, "(DISTINCT order_id)", "AVG_DERIVED_SUM_0", "order_id"));
-        result.add(distinctCountSelectItem);
-        result.add(distinctAvgSelectItem);
+    private List<AggregationDistinctProjection> getAggregationDistinctProjections() {
+        List<AggregationDistinctProjection> result = new LinkedList<>();
+        AggregationDistinctProjection distinctCountProjection = new AggregationDistinctProjection(0, 0, AggregationType.COUNT, "(DISTINCT order_id)", "c", "order_id");
+        AggregationDistinctProjection distinctAvgProjection = new AggregationDistinctProjection(0, 0, AggregationType.AVG, "(DISTINCT order_id)", "a", "order_id");
+        distinctAvgProjection.getDerivedAggregationProjections().add(new AggregationDistinctProjection(0, 0, AggregationType.COUNT, "(DISTINCT order_id)", "AVG_DERIVED_COUNT_0", "order_id"));
+        distinctAvgProjection.getDerivedAggregationProjections().add(new AggregationDistinctProjection(0, 0, AggregationType.SUM, "(DISTINCT order_id)", "AVG_DERIVED_SUM_0", "order_id"));
+        result.add(distinctCountProjection);
+        result.add(distinctAvgProjection);
         return result;
     }
     

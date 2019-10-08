@@ -105,7 +105,10 @@ unreservedWord_
     | WAIT | LOGFILE | UNDOFILE | UNDO_BUFFER_SIZE | REDO_BUFFER_SIZE | DEFINITION | ORGANIZATION
     | DESCRIPTION | REFERENCE | FOLLOWS | PRECEDES | NAME |CLOSE | OPEN | NEXT | HANDLER | PREV
     | IMPORT | CONCURRENT | XML | POSITION | SHARE | DUMPFILE | CLONE | AGGREGATE | INSTALL | UNINSTALL
-    | RESOURCE
+    | RESOURCE | FLUSH | RESET | RESTART | HOSTS | RELAY | EXPORT | USER_RESOURCES | SLOW | GENERAL | CACHE
+    | SUBJECT | ISSUER | OLD | RANDOM | RETAIN | MAX_USER_CONNECTIONS | MAX_CONNECTIONS_PER_HOUR | MAX_UPDATES_PER_HOUR
+    | MAX_QUERIES_PER_HOUR | REUSE | OPTIONAL | HISTORY | NEVER | EXPIRE
+
     ;
 
 schemaName
@@ -121,7 +124,7 @@ columnName
     ;
 
 userName
-    : (STRING_ | IDENTIFIER_) AT_ (STRING_ IDENTIFIER_)
+    : STRING_  AT_ STRING_
     | identifier_
     | STRING_
     ;
@@ -222,7 +225,7 @@ logName
     ;
 
 roleName
-    : (STRING_ | IDENTIFIER_) AT_ (STRING_ IDENTIFIER_)
+    : (STRING_ | IDENTIFIER_) AT_ (STRING_ IDENTIFIER_) | IDENTIFIER_
     ;
 
 engineName
@@ -235,6 +238,14 @@ triggerName
 
 triggerTime
     : BEFORE | AFTER
+    ;
+
+userOrRole
+    : userName | roleName
+    ;
+
+partitionName
+    : IDENTIFIER_
     ;
 
 triggerEvent

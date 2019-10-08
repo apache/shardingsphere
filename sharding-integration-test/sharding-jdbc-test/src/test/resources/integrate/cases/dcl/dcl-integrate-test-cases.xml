@@ -64,9 +64,6 @@
     <dcl-test-case sql-case-id="alter_local_user">
         <assertion />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="alter_user">
-        <assertion />
-    </dcl-test-case>
     <dcl-test-case sql-case-id="alter_user_identified_without_hostname">
         <assertion />
     </dcl-test-case>
@@ -374,6 +371,24 @@
     <dcl-test-case sql-case-id="deny_user">
         <assertion />
     </dcl-test-case>
+    <dcl-test-case sql-case-id="deny_all">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="deny_crud">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="deny_select">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="deny_select_column">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="deny_select_to_users">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="drop_role_if_exists">
+        <assertion />
+    </dcl-test-case>
     <dcl-test-case sql-case-id="drop_user_without_hostname">
         <assertion />
     </dcl-test-case>
@@ -435,6 +450,231 @@
         <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="revoke_user_with_hostname_on_db_and_table">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_column_on_table">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_column_on_table_from_roles">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_object_privileges">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_database">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_database_from_roles">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_domain">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_domain_from_roles">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_foreign_data_wrapper">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_foreign_data_wrapper_from_roles">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_foreign_server">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_foreign_server_from_roles">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_function">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_function_from_roles">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_language">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_language_from_roles">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_large_object">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_large_object_from_roles">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_schema_from_role">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_schema_from_roles">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_sequence">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_sequence_from_roles">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_table_from_roles">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_tablespace">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_tablespace_from_roles">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_type">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_on_type_from_roles">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_all_system_privileges">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_create_on_database">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_create_on_databases">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_create_on_schema">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_create_on_schemas">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_create_on_tablespace">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_create_on_tablespaces">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_crud">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_crud_on_table">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_execute_on_all_functions">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_execute_on_function">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_execute_on_functions">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_object_privilege">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_object_privilege_column">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_object_privilege_from_users">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_object_privileges">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_program">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_roles">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_roles_from_programs">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_select">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_select_column_on_table">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_select_column_on_tables">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_select_from_local_user">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_select_large_object">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_select_on_all_sequences">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_select_on_all_tables">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_select_on_large_objects">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_select_on_sequence">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_select_on_sequences">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_select_on_table">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_select_on_tables">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_select_to_users">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_system_privilege">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_system_privilege_from_users">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_system_privileges">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_usage_on_domain">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_usage_on_domains">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_usage_on_foreign_data_wrapper">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_usage_on_foreign_data_wrappers">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_usage_on_foreign_server">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_usage_on_foreign_servers">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_usage_on_language">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_usage_on_languages">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_usage_on_type">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_usage_on_types">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="set_all_expect_role">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="set_all_expect_roles">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="set_default_role">
         <assertion />
     </dcl-test-case>
 </integrate-test-cases>

@@ -34,7 +34,7 @@ import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.core.execute.sql.prepare.SQLExecutePrepareTemplate;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.statement.OptimizedStatement;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateIndexStatement;
@@ -85,7 +85,7 @@ public class AbstractStatementExecutor {
     
     @Getter
     @Setter
-    private OptimizedStatement optimizedStatement;
+    private SQLStatementContext sqlStatementContext;
     
     @Getter
     private final List<List<Object>> parameterSets = new LinkedList<>();
@@ -132,12 +132,12 @@ public class AbstractStatementExecutor {
     @SuppressWarnings("unchecked")
     protected final <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
         List<T> result = sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);
-        refreshMetaDataIfNeeded(connection.getRuntimeContext(), optimizedStatement);
+        refreshMetaDataIfNeeded(connection.getRuntimeContext(), sqlStatementContext);
         return result;
     }
     
     protected final boolean isAccumulate() {
-        return !connection.getRuntimeContext().getRule().isAllBroadcastTables(optimizedStatement.getTables().getTableNames());
+        return !connection.getRuntimeContext().getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames());
     }
     
     /**
@@ -160,52 +160,52 @@ public class AbstractStatementExecutor {
         }
     }
     
-    private void refreshMetaDataIfNeeded(final ShardingRuntimeContext runtimeContext, final OptimizedStatement optimizedStatement) throws SQLException {
-        if (null == optimizedStatement) {
+    private void refreshMetaDataIfNeeded(final ShardingRuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) throws SQLException {
+        if (null == sqlStatementContext) {
             return;
         }
-        if (optimizedStatement.getSqlStatement() instanceof CreateTableStatement) {
-            refreshTableMetaDataForCreateTable(runtimeContext, optimizedStatement);
-        } else if (optimizedStatement.getSqlStatement() instanceof AlterTableStatement) {
-            refreshTableMetaDataForAlterTable(runtimeContext, optimizedStatement);
-        } else if (optimizedStatement.getSqlStatement() instanceof DropTableStatement) {
-            refreshTableMetaDataForDropTable(runtimeContext, optimizedStatement);
-        } else if (optimizedStatement.getSqlStatement() instanceof CreateIndexStatement) {
-            refreshTableMetaDataForCreateIndex(runtimeContext, optimizedStatement);
-        } else if (optimizedStatement.getSqlStatement() instanceof DropIndexStatement) {
-            refreshTableMetaDataForDropIndex(runtimeContext, optimizedStatement);
+        if (sqlStatementContext.getSqlStatement() instanceof CreateTableStatement) {
+            refreshTableMetaDataForCreateTable(runtimeContext, sqlStatementContext);
+        } else if (sqlStatementContext.getSqlStatement() instanceof AlterTableStatement) {
+            refreshTableMetaDataForAlterTable(runtimeContext, sqlStatementContext);
+        } else if (sqlStatementContext.getSqlStatement() instanceof DropTableStatement) {
+            refreshTableMetaDataForDropTable(runtimeContext, sqlStatementContext);
+        } else if (sqlStatementContext.getSqlStatement() instanceof CreateIndexStatement) {
+            refreshTableMetaDataForCreateIndex(runtimeContext, sqlStatementContext);
+        } else if (sqlStatementContext.getSqlStatement() instanceof DropIndexStatement) {
+            refreshTableMetaDataForDropIndex(runtimeContext, sqlStatementContext);
         }
     }
     
-    private void refreshTableMetaDataForCreateTable(final ShardingRuntimeContext runtimeContext, final OptimizedStatement optimizedStatement) throws SQLException {
-        String tableName = optimizedStatement.getTables().getSingleTableName();
+    private void refreshTableMetaDataForCreateTable(final ShardingRuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) throws SQLException {
+        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         runtimeContext.getMetaData().getTables().put(tableName, getTableMetaDataInitializer().load(tableName, runtimeContext.getRule()));
     }
     
-    private void refreshTableMetaDataForAlterTable(final ShardingRuntimeContext runtimeContext, final OptimizedStatement optimizedStatement) throws SQLException {
-        String tableName = optimizedStatement.getTables().getSingleTableName();
+    private void refreshTableMetaDataForAlterTable(final ShardingRuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) throws SQLException {
+        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         runtimeContext.getMetaData().getTables().put(tableName, getTableMetaDataInitializer().load(tableName, runtimeContext.getRule()));
     }
     
-    private void refreshTableMetaDataForDropTable(final ShardingRuntimeContext runtimeContext, final OptimizedStatement optimizedStatement) {
-        for (String each : optimizedStatement.getTables().getTableNames()) {
+    private void refreshTableMetaDataForDropTable(final ShardingRuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) {
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             runtimeContext.getMetaData().getTables().remove(each);
         }
     }
     
-    private void refreshTableMetaDataForCreateIndex(final ShardingRuntimeContext runtimeContext, final OptimizedStatement optimizedStatement) {
-        CreateIndexStatement createIndexStatement = (CreateIndexStatement) optimizedStatement.getSqlStatement();
+    private void refreshTableMetaDataForCreateIndex(final ShardingRuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) {
+        CreateIndexStatement createIndexStatement = (CreateIndexStatement) sqlStatementContext.getSqlStatement();
         if (null == createIndexStatement.getIndex()) {
             return;
         }
-        runtimeContext.getMetaData().getTables().get(optimizedStatement.getTables().getSingleTableName()).getIndexes().add(createIndexStatement.getIndex().getName());
+        runtimeContext.getMetaData().getTables().get(sqlStatementContext.getTablesContext().getSingleTableName()).getIndexes().add(createIndexStatement.getIndex().getName());
     }
     
-    private void refreshTableMetaDataForDropIndex(final ShardingRuntimeContext runtimeContext, final OptimizedStatement optimizedStatement) {
-        DropIndexStatement dropIndexStatement = (DropIndexStatement) optimizedStatement.getSqlStatement();
+    private void refreshTableMetaDataForDropIndex(final ShardingRuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) {
+        DropIndexStatement dropIndexStatement = (DropIndexStatement) sqlStatementContext.getSqlStatement();
         Collection<String> indexNames = getIndexNames(dropIndexStatement);
-        TableMetaData tableMetaData = runtimeContext.getMetaData().getTables().get(optimizedStatement.getTables().getSingleTableName());
-        if (!optimizedStatement.getTables().isEmpty()) {
+        TableMetaData tableMetaData = runtimeContext.getMetaData().getTables().get(sqlStatementContext.getTablesContext().getSingleTableName());
+        if (!sqlStatementContext.getTablesContext().isEmpty()) {
             tableMetaData.getIndexes().removeAll(indexNames);
         }
         for (String each : indexNames) {
