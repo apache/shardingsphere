@@ -21,10 +21,12 @@ import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.ColumnDef;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.TableMapEvent;
 import lombok.Data;
 import lombok.var;
-
 import java.util.HashMap;
+import java.util.Map;
 
 /**
+ * Binlog context.
+ *
  * @author avalon566
  */
 @Data
@@ -34,17 +36,35 @@ public class BinlogContext {
 
     private int checksumLength;
 
-    private HashMap<Long, TableMapEvent> tableMap = new HashMap<>();
-
+    private Map<Long, TableMapEvent> tableMap = new HashMap<>();
+    
+    /**
+     * Cache table map event.
+     *
+     * @param tableId table id
+     * @param tableMapEvent table map event
+     */
     public void putTableMapEvent(final long tableId, final TableMapEvent tableMapEvent) {
         tableMap.put(tableId, tableMapEvent);
     }
-
+    
+    /**
+     * Get full table name by table id.
+     *
+     * @param tableId table id
+     * @return full table name
+     */
     public String getFullTableName(final long tableId) {
         var tableMapEvent = tableMap.get(tableId);
         return String.format("%s.%s", tableMapEvent.getSchemaName(), tableMapEvent.getTableName());
     }
-
+    
+    /**
+     * Get column defined by table id.
+     *
+     * @param tableId table id
+     * @return array of column defined
+     */
     public ColumnDef[] getColumnDefs(final long tableId) {
         return tableMap.get(tableId).getColumnDefs();
     }
