@@ -28,7 +28,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -66,8 +65,7 @@ public final class InsertSQLStatementContextTest {
         insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
         setUpInsertValues(insertStatement);
         InsertSQLStatementContext actual = new InsertSQLStatementContext(tableMetas, Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
-        List<List<Object>> groupedParameters = actual.getGroupedParameters();
-        assertThat(groupedParameters.size(), is(2));
+        assertThat(actual.getGroupedParameters().size(), is(2));
     }
     
     private void setUpInsertValues(final InsertStatement insertStatement) {
