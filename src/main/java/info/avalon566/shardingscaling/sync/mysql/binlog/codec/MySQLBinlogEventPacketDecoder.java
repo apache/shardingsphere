@@ -43,7 +43,12 @@ import java.util.List;
 @Slf4j
 public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
 
-    private final BinlogContext binlogContext = new BinlogContext();
+    private final BinlogContext binlogContext;
+
+    public MySQLBinlogEventPacketDecoder(int checksumLength) {
+        binlogContext = new BinlogContext();
+        binlogContext.setChecksumLength(checksumLength);
+    }
 
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
@@ -99,7 +104,6 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
 
     private void removeChecksum(final short eventType, final ByteBuf in) {
         if (0 < binlogContext.getChecksumLength()
-                && EventTypes.ROTATE_EVENT != eventType
                 && EventTypes.FORMAT_DESCRIPTION_EVENT != eventType) {
             in.writerIndex(in.writerIndex() - binlogContext.getChecksumLength());
         }

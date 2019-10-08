@@ -189,6 +189,7 @@ public final class MySQLConnector {
      */
     public synchronized void subscribe(final String binlogFileName, final long binlogPosition) {
         initDumpConnectSession();
+        int checksumLength = queryChecksumLength();
         registerSlave();
         responseCallback = null;
         BinlogDumpCommandPacket binlogDumpCmd = new BinlogDumpCommandPacket();
@@ -197,9 +198,22 @@ public final class MySQLConnector {
         binlogDumpCmd.setSlaveServerId(serverId);
         channel.pipeline().remove(MySQLCommandPacketDecoder.class);
         channel.pipeline().remove(MySQLCommandResponHandler.class);
-        channel.pipeline().addLast(new MySQLBinlogEventPacketDecoder());
+        channel.pipeline().addLast(new MySQLBinlogEventPacketDecoder(checksumLength));
         channel.pipeline().addLast(new MySQLBinlogEventHandler());
         channel.writeAndFlush(binlogDumpCmd);
+    }
+
+    private int queryChecksumLength() {
+        InternalResultSet resultSet = executeQuery("select @@global.binlog_checksum");
+        String checksumType = resultSet.getFieldValues().get(0).getColumns().get(0);
+        switch (checksumType) {
+            case "None":
+                return 0;
+            case "CRC32":
+                return 4;
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 
     /**
