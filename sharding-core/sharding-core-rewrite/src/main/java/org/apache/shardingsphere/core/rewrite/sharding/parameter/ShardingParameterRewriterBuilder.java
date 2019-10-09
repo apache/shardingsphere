@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.rewrite.sharding.parameter;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.ParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.parameter.ParameterRewriterBuilder;
@@ -34,7 +33,6 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Parameter rewriter builder for sharding.
@@ -49,8 +47,7 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
     private final SQLRouteResult sqlRouteResult;
     
     @Override
-    public Collection<ParameterRewriter> getParameterRewriters(final ParameterBuilder parameterBuilder,
-                                                               final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
+    public Collection<ParameterRewriter> getParameterRewriters(final ParameterBuilder parameterBuilder, final TableMetas tableMetas) {
         if (parameterBuilder instanceof GroupedParameterBuilder) {
             ((GroupedParameterBuilder) parameterBuilder).setShardingConditions(sqlRouteResult.getShardingConditions());
         }

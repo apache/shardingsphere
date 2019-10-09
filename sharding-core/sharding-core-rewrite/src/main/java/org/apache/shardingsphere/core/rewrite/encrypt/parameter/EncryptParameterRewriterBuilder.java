@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.rewrite.encrypt.parameter;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.encrypt.parameter.impl.EncryptAssignmentParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.encrypt.parameter.impl.EncryptInsertValueParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.encrypt.parameter.impl.EncryptPredicateParameterRewriter;
@@ -33,7 +32,6 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Parameter rewriter builder for encrypt.
@@ -48,8 +46,7 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
     private final boolean queryWithCipherColumn;
     
     @Override
-    public Collection<ParameterRewriter> getParameterRewriters(final ParameterBuilder parameterBuilder, 
-                                                               final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
+    public Collection<ParameterRewriter> getParameterRewriters(final ParameterBuilder parameterBuilder, final TableMetas tableMetas) {
         Collection<ParameterRewriter> result = getParameterRewriters();
         for (ParameterRewriter each : result) {
             setUpParameterRewriters(each, tableMetas);

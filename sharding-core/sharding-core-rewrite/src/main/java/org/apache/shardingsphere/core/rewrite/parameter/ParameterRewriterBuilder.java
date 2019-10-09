@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.parameter;
 
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Parameter rewriter builder.
@@ -35,9 +33,7 @@ public interface ParameterRewriterBuilder {
      * 
      * @param parameterBuilder parameter builder
      * @param tableMetas table metas
-     * @param sqlStatementContext SQL statement context
-     * @param parameters SQL parameters
      * @return parameter rewriters
      */
-    Collection<ParameterRewriter> getParameterRewriters(ParameterBuilder parameterBuilder, TableMetas tableMetas, SQLStatementContext sqlStatementContext, List<Object> parameters);
+    Collection<ParameterRewriter> getParameterRewriters(ParameterBuilder parameterBuilder, TableMetas tableMetas);
 }
