@@ -15,30 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.sharding.engine;
+package org.apache.shardingsphere.core.rewrite.engine;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteEngine;
-import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteResult;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
-import java.util.Map;
+import java.util.List;
 
 /**
- * SQL rewrite engine for sharding.
- * 
+ * SQL rewrite result.
+ *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
+@Getter
+public final class SQLRewriteResult {
     
-    private final RoutingUnit routingUnit;
+    private final String sql;
     
-    private final Map<String, String> logicAndActualTables;
-    
-    @Override
-    public SQLRewriteResult generateSQL(final SQLRewriteContext sqlRewriteContext) {
-        return new SQLRewriteResult(sqlRewriteContext.getSQLBuilder().toSQL(routingUnit, logicAndActualTables), sqlRewriteContext.getParameterBuilder().getParameters(routingUnit));
-    }
+    private final List<Object> parameters;
 }
