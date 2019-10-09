@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.engine;
+package org.apache.shardingsphere.core.rewrite.engine.impl;
 
 import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteEngine;
+import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteResult;
 
 /**
  * Default SQL rewrite engine.
