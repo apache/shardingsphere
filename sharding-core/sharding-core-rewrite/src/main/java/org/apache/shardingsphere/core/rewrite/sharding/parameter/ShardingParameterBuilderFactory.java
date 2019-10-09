@@ -67,7 +67,7 @@ public final class ShardingParameterBuilderFactory {
             if (each instanceof SQLRouteResultAware) {
                 ((SQLRouteResultAware) each).setSqlRouteResult(sqlRouteResult);
             }
-            each.rewrite(sqlRouteResult.getSqlStatementContext(), parameters, parameterBuilder);
+            each.rewrite(parameterBuilder, sqlRouteResult.getSqlStatementContext(), parameters);
         }
     }
     

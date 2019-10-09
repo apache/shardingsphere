@@ -31,9 +31,9 @@ public interface ParameterRewriter {
     /**
      * Rewrite SQL parameters.
      * 
+     * @param parameterBuilder parameter builder
      * @param sqlStatementContext SQL statement context
      * @param parameters SQL parameters
-     * @param parameterBuilder parameter builder
      */
-    void rewrite(SQLStatementContext sqlStatementContext, List<Object> parameters, ParameterBuilder parameterBuilder);
+    void rewrite(ParameterBuilder parameterBuilder, SQLStatementContext sqlStatementContext, List<Object> parameters);
 }

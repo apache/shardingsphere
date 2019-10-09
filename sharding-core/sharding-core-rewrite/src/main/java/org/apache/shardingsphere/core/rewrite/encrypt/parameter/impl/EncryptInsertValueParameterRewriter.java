@@ -47,7 +47,7 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
     private EncryptRule encryptRule;
     
     @Override
-    public void rewrite(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final ParameterBuilder parameterBuilder) {
+    public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
         if (!(sqlStatementContext instanceof InsertSQLStatementContext) || parameters.isEmpty()) {
             return;
         }
@@ -59,13 +59,13 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         for (String each : encryptTable.get().getLogicColumns()) {
             Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(tableName, each);
             if (shardingEncryptor.isPresent()) {
-                encryptInsertValues((InsertSQLStatementContext) sqlStatementContext, encryptRule, shardingEncryptor.get(), tableName, each, (GroupedParameterBuilder) parameterBuilder);
+                encryptInsertValues((GroupedParameterBuilder) parameterBuilder, (InsertSQLStatementContext) sqlStatementContext, encryptRule, shardingEncryptor.get(), tableName, each);
             }
         }
     }
     
-    private void encryptInsertValues(final InsertSQLStatementContext insertSQLStatementContext, final EncryptRule encryptRule, final ShardingEncryptor shardingEncryptor,
-                                     final String tableName, final String encryptLogicColumnName, final GroupedParameterBuilder parameterBuilder) {
+    private void encryptInsertValues(final GroupedParameterBuilder parameterBuilder, final InsertSQLStatementContext insertSQLStatementContext, 
+                                     final EncryptRule encryptRule, final ShardingEncryptor shardingEncryptor, final String tableName, final String encryptLogicColumnName) {
         int columnIndex = insertSQLStatementContext.getColumnNames().indexOf(encryptLogicColumnName);
         Iterator<InsertValueContext> insertValueContexts = insertSQLStatementContext.getInsertValueContexts().iterator();
         int count = 0;

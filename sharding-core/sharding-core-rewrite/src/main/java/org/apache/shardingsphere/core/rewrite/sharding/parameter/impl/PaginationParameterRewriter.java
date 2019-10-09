@@ -41,7 +41,7 @@ public final class PaginationParameterRewriter implements ParameterRewriter, SQL
     private SQLRouteResult sqlRouteResult;
     
     @Override
-    public void rewrite(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final ParameterBuilder parameterBuilder) {
+    public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
         if (isNeedRewritePagination(sqlRouteResult)) {
             PaginationContext pagination = ((SelectSQLStatementContext) sqlRouteResult.getSqlStatementContext()).getPaginationContext();
             Optional<Integer> offsetParameterIndex = pagination.getOffsetParameterIndex();
