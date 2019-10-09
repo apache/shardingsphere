@@ -23,17 +23,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Rule configuration.
  * @author avalon566
  */
 @Data
 public class RuleConfiguration {
 
+    private Map<String, YamlDataSourceParameter> dataSources = new HashMap<>();
+
     @Data
     public static final class YamlDataSourceParameter {
         private String url;
+
         private String username;
+
         private String password;
     }
-
-    private Map<String, YamlDataSourceParameter> dataSources = new HashMap<>();
 }

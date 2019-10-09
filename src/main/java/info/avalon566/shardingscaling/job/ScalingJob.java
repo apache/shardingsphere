@@ -25,7 +25,11 @@ import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
 import info.avalon566.shardingscaling.utils.RuntimeUtil;
 import info.avalon566.shardingscaling.utils.YamlUtil;
 import lombok.var;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,23 +38,31 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Scaling job.
  * @author avalon566
  */
 public class ScalingJob {
 
     private static final String INPUT_SHARDING_CONFIG = "input-sharding-config";
+
     private static final String OUTPUT_JDBC_URL = "output-jdbc-url";
+
     private static final String OUTPUT_JDBC_USERNAME = "output-jdbc-username";
+
     private static final String OUTPUT_JDBC_PASSWORD = "output-jdbc-password";
 
     private final String[] args;
+
     private final Scheduler scheduler;
 
-    public ScalingJob(String[] args, Scheduler scheduler) {
+    public ScalingJob(final String[] args, final Scheduler scheduler) {
         this.args = args;
         this.scheduler = scheduler;
     }
 
+    /**
+     * Run.
+     */
     public void run() {
         try {
             var commandLine = parseCommand(args);
@@ -61,7 +73,7 @@ public class ScalingJob {
         }
     }
 
-    private CommandLine parseCommand(String[] args) throws ParseException {
+    private CommandLine parseCommand(final String[] args) throws ParseException {
         var options = new Options();
         options.addOption(Option.builder().required(true).hasArg(true).longOpt(INPUT_SHARDING_CONFIG).desc("shardingsphere 路由配置文件").build());
         options.addOption(Option.builder().required(true).hasArg(true).longOpt(OUTPUT_JDBC_URL).desc("输出 jdbc url").build());
@@ -70,7 +82,7 @@ public class ScalingJob {
         return new DefaultParser().parse(options, args);
     }
 
-    private List<SyncConfiguration> toSyncConfigurations(CommandLine commandLine) throws FileNotFoundException {
+    private List<SyncConfiguration> toSyncConfigurations(final CommandLine commandLine) throws FileNotFoundException {
         var ruleConfig = loadRuleConfiguration(commandLine.getOptionValue(INPUT_SHARDING_CONFIG));
         var syncConfigurations = new ArrayList<SyncConfiguration>(ruleConfig.getDataSources().size());
         for (Map.Entry<String, RuleConfiguration.YamlDataSourceParameter> entry : ruleConfig.getDataSources().entrySet()) {
@@ -87,8 +99,8 @@ public class ScalingJob {
         return syncConfigurations;
     }
 
-    private RuleConfiguration loadRuleConfiguration(String fileName) throws FileNotFoundException {
-        if(fileName.startsWith("/")) {
+    private RuleConfiguration loadRuleConfiguration(final String fileName) throws FileNotFoundException {
+        if (fileName.startsWith("/")) {
             return YamlUtil.parse(fileName, RuleConfiguration.class);
         } else {
             var fullFileName = RuntimeUtil.getBasePath() + File.separator + fileName;

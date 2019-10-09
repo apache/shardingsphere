@@ -27,6 +27,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
+ * Sync executor.
  * @author avalon566
  */
 @AllArgsConstructor
@@ -34,20 +35,27 @@ import java.util.concurrent.Future;
 public class SyncExecutor {
 
     private Future<?> readerFuture;
+
     private final List<Future<?>> writerFutures;
+
     private final Reader reader;
+
     private final List<Writer> writers;
+
     private final Channel channel;
 
-    public SyncExecutor(Reader reader, List<Writer> writers) {
+    public SyncExecutor(final Reader reader, final List<Writer> writers) {
         this.reader = reader;
         this.writers = writers;
-        this.channel = 1 == writers.size() ?
-                new MemoryChannel() :
-                new DispatcherChannel(writers.size());
+        this.channel = 1 == writers.size()
+                ? new MemoryChannel()
+                : new DispatcherChannel(writers.size());
         writerFutures = new ArrayList<>(writers.size());
     }
 
+    /**
+     * Run.
+     */
     public void run() {
         var readThreadExecutor = Executors.newSingleThreadExecutor();
         reader.setChannel(channel);
@@ -61,6 +69,9 @@ public class SyncExecutor {
         writeThreadExecutor.shutdown();
     }
 
+    /**
+     * Wait all slices finished.
+     */
     public void waitFinish() {
         for (Future<?> writerFuture : writerFutures) {
             try {

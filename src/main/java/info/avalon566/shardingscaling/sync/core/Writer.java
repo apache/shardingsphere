@@ -18,11 +18,20 @@
 package info.avalon566.shardingscaling.sync.core;
 
 /**
+ * Writer.
  * @author avalon566
  */
 public interface Writer extends Runner {
 
+    /**
+     * Set channel.
+     * @param channel channel
+     */
     void setChannel(Channel channel);
 
+    /**
+     * write data to channel.
+     * @param channel channel
+     */
     void write(Channel channel);
 }

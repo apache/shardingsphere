@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
+ * Sync configuration.
  * @author avalon566
  */
 @Data
@@ -31,7 +32,7 @@ public class SyncConfiguration {
     private SyncType syncType;
 
     /**
-     * 单表写入并发度
+     * 单表写入并发度.
      */
     private int concurrency;
 

@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.ExecutionException;
 
 /**
+ * Sql builder.
  * @author avalon566
  */
 public final class SqlBuilder {
@@ -35,23 +36,29 @@ public final class SqlBuilder {
     private static final Logger LOGGER = LoggerFactory.getLogger(SqlBuilder.class);
 
     private static final String LEFT_ESCAPE_QUOTE = "`";
+
     private static final String RIGHT_ESCAPE_QUOTE = "`";
+
     private static final String INSERT_SQL_CACHE_KEY_PREFIX = "INSERT_";
+
     private static final String UPDATE_SQL_CACHE_KEY_PREFIX = "UPDATE_";
+
     private static final String DELETE_SQL_CACHE_KEY_PREFIX = "DELETE_";
 
     private final RdbmsConfiguration rdbmsConfiguration;
+
     private final LoadingCache<String, String> sqlCache;
+
     private final DbMetaDataUtil dbMetaDataUtil;
 
-    public SqlBuilder(RdbmsConfiguration rdbmsConfiguration) {
+    public SqlBuilder(final RdbmsConfiguration rdbmsConfiguration) {
         this.rdbmsConfiguration = rdbmsConfiguration;
         this.dbMetaDataUtil = new DbMetaDataUtil(rdbmsConfiguration);
         sqlCache = CacheBuilder.newBuilder()
                 .maximumSize(64)
                 .build(new CacheLoader<String, String>() {
                     @Override
-                    public String load(String key) {
+                    public String load(final String key) {
                         if (key.startsWith(INSERT_SQL_CACHE_KEY_PREFIX)) {
                             return buildInsertSqlInternal(key.replaceFirst(INSERT_SQL_CACHE_KEY_PREFIX, ""));
                         } else if (key.startsWith(UPDATE_SQL_CACHE_KEY_PREFIX)) {
@@ -63,7 +70,12 @@ public final class SqlBuilder {
                 });
     }
 
-    public String buildInsertSql(String tableName) {
+    /**
+     * Build insert sql.
+     * @param tableName table name
+     * @return sql
+     */
+    public String buildInsertSql(final String tableName) {
         try {
             return sqlCache.get(INSERT_SQL_CACHE_KEY_PREFIX + tableName);
         } catch (ExecutionException e) {
@@ -71,7 +83,12 @@ public final class SqlBuilder {
         }
     }
 
-    public String buildUpdateSql(String tableName) {
+    /**
+     * Build update sql.
+     * @param tableName table name
+     * @return sql
+     */
+    public String buildUpdateSql(final String tableName) {
         try {
             return sqlCache.get(UPDATE_SQL_CACHE_KEY_PREFIX + tableName);
         } catch (ExecutionException e) {
@@ -79,7 +96,12 @@ public final class SqlBuilder {
         }
     }
 
-    public String buildDeleteSql(String tableName) {
+    /**
+     * Build delete sql.
+     * @param tableName table name
+     * @return sql
+     */
+    public String buildDeleteSql(final String tableName) {
         try {
             return sqlCache.get(DELETE_SQL_CACHE_KEY_PREFIX + tableName);
         } catch (ExecutionException e) {
@@ -87,7 +109,7 @@ public final class SqlBuilder {
         }
     }
 
-    private String buildInsertSqlInternal(String tableName) {
+    private String buildInsertSqlInternal(final String tableName) {
         var metaData = dbMetaDataUtil.getColumNames(tableName);
         var columns = "";
         var holder = "";
@@ -100,7 +122,7 @@ public final class SqlBuilder {
         return String.format("INSERT INTO %s%s%s(%s) VALUES(%s)", LEFT_ESCAPE_QUOTE, tableName, RIGHT_ESCAPE_QUOTE, columns, holder);
     }
 
-    private String buildDeleteSqlInternal(String tableName) {
+    private String buildDeleteSqlInternal(final String tableName) {
         var primaryKeys = dbMetaDataUtil.getPrimaryKeys(tableName);
         var where = "";
         for (int i = 0; i < primaryKeys.size(); i++) {
@@ -110,7 +132,7 @@ public final class SqlBuilder {
         return String.format("DELETE FROM %s%s%s WHERE %s", LEFT_ESCAPE_QUOTE, tableName, RIGHT_ESCAPE_QUOTE, where);
     }
 
-    private String buildUpdateSqlInternal(String tableName) {
+    private String buildUpdateSqlInternal(final String tableName) {
         var primaryKeys = dbMetaDataUtil.getPrimaryKeys(tableName);
         var where = "";
         for (int i = 0; i < primaryKeys.size(); i++) {

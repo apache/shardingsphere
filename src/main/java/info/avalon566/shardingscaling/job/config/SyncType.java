@@ -18,6 +18,7 @@
 package info.avalon566.shardingscaling.job.config;
 
 /**
+ * Sync type.
  * @author avalon566
  */
 

@@ -26,11 +26,20 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 /**
+ * Yaml util.
  * @author avalon566
  */
 public final class YamlUtil {
 
-    public static <T> T parse(String fileName, Class<T> t) throws FileNotFoundException {
+    /**
+     * parse object from yaml format file.
+     * @param fileName yaml file name
+     * @param t object type
+     * @param <T> object type
+     * @return object
+     * @throws FileNotFoundException file not found exception
+     */
+    public static <T> T parse(final String fileName, final Class<T> t) throws FileNotFoundException {
         var representer = new Representer();
         representer.getPropertyUtils().setSkipMissingProperties(true);
         return new Yaml(new Constructor(t), representer).loadAs(new FileInputStream(fileName), t);

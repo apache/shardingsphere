@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 
 /**
+ * Table slice sync job.
  * @author avalon566
  */
 public class TableSliceSyncJob {
@@ -42,11 +43,14 @@ public class TableSliceSyncJob {
 
     private final Reporter reporter;
 
-    public TableSliceSyncJob(SyncConfiguration syncConfiguration, Reporter reporter) {
+    public TableSliceSyncJob(final SyncConfiguration syncConfiguration, final Reporter reporter) {
         this.syncConfiguration = syncConfiguration;
         this.reporter = reporter;
     }
 
+    /**
+     * Run.
+     */
     public void run() {
         var reader = new MySQLJdbcReader(syncConfiguration.getReaderConfiguration());
         var writer = new MySQLWriter(syncConfiguration.getWriterConfiguration());

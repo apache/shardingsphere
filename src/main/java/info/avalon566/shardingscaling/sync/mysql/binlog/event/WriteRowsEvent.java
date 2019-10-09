@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
+ * Write rows event.
  * @author avalon566
  */
 @Data

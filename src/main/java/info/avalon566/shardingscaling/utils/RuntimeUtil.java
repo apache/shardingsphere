@@ -19,13 +19,16 @@ package info.avalon566.shardingscaling.utils;
 
 import info.avalon566.shardingscaling.Engine;
 
-import java.io.File;
-
 /**
+ * Runtime util.
  * @author avalon566
  */
 public final class RuntimeUtil {
 
+    /**
+     * Get runtime classpath.
+     * @return classpath
+     */
     public static String getBasePath() {
         return Engine.class.getResource("/").getFile();
     }
