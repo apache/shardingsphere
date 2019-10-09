@@ -22,6 +22,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Memory channel.
  * @author avalon566
  */
 public class MemoryChannel implements Channel {
@@ -31,7 +32,7 @@ public class MemoryChannel implements Channel {
     private final BlockingQueue<Record> queue = new ArrayBlockingQueue<>(1000);
 
     @Override
-    public void pushRecord(Record dataRecord) {
+    public final void pushRecord(final Record dataRecord) {
         try {
             if (!queue.offer(dataRecord, PUSH_TIMEOUT, TimeUnit.HOURS)) {
                 throw new RuntimeException();
@@ -42,11 +43,11 @@ public class MemoryChannel implements Channel {
     }
 
     @Override
-    public Record popRecord() {
+    public final Record popRecord() {
         try {
             return queue.poll(1000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             return null;
         }
     }
-};
+}

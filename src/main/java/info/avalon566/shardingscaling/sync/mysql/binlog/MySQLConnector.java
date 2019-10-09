@@ -77,37 +77,6 @@ public final class MySQLConnector {
 
     private ServerInfo serverInfo;
 
-    class MySQLCommandResponHandler extends ChannelInboundHandlerAdapter {
-        @Override
-        public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
-            if (null != responseCallback) {
-                responseCallback.setSuccess(msg);
-            }
-        }
-
-        @Override
-        public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
-            if (null != responseCallback) {
-                responseCallback.setFailure(cause);
-                log.error("protocol resolution error", cause);
-            }
-        }
-    }
-
-    class MySQLBinlogEventHandler extends ChannelInboundHandlerAdapter {
-        @Override
-        public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-            if (msg instanceof AbstractBinlogEvent) {
-                blockingEventQueue.put((AbstractBinlogEvent) msg);
-            }
-        }
-
-        @Override
-        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-            log.error("protocol resolution error", cause);
-        }
-    }
-
     public MySQLConnector(final int serverId, final String host, final int port, final String username, final String password) {
         this.serverId = serverId;
         this.host = host;
@@ -189,7 +158,7 @@ public final class MySQLConnector {
      */
     public synchronized void subscribe(final String binlogFileName, final long binlogPosition) {
         initDumpConnectSession();
-        int checksumLength = queryChecksumLength();
+        final int checksumLength = queryChecksumLength();
         registerSlave();
         responseCallback = null;
         BinlogDumpCommandPacket binlogDumpCmd = new BinlogDumpCommandPacket();
@@ -259,6 +228,37 @@ public final class MySQLConnector {
             throw new RuntimeException("unexpected response type");
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    class MySQLCommandResponHandler extends ChannelInboundHandlerAdapter {
+        @Override
+        public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
+            if (null != responseCallback) {
+                responseCallback.setSuccess(msg);
+            }
+        }
+
+        @Override
+        public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
+            if (null != responseCallback) {
+                responseCallback.setFailure(cause);
+                log.error("protocol resolution error", cause);
+            }
+        }
+    }
+
+    class MySQLBinlogEventHandler extends ChannelInboundHandlerAdapter {
+        @Override
+        public void channelRead(final ChannelHandlerContext ctx, final Object msg) throws Exception {
+            if (msg instanceof AbstractBinlogEvent) {
+                blockingEventQueue.put((AbstractBinlogEvent) msg);
+            }
+        }
+
+        @Override
+        public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
+            log.error("protocol resolution error", cause);
         }
     }
 }

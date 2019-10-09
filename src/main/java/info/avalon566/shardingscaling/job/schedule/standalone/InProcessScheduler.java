@@ -28,12 +28,13 @@ import lombok.var;
 import java.util.List;
 
 /**
+ * In process scheduler.
  * @author avalon566
  */
 public class InProcessScheduler implements Scheduler {
 
     @Override
-    public Reporter schedule(List<SyncConfiguration> syncConfigurations) {
+    public final Reporter schedule(final List<SyncConfiguration> syncConfigurations) {
         var reporter = new InProcessReporter();
         for (SyncConfiguration syncConfiguration : syncConfigurations) {
             if (SyncType.Database.equals(syncConfiguration.getSyncType())) {
