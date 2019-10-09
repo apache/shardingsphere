@@ -341,6 +341,6 @@ public final class EncryptSQLRewriteEngineTest {
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(mock(TableMetas.class), sql, parameters, sqlStatement);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(TableMetas.class), sqlStatementContext, sql, parameters);
         new EncryptSQLRewriteContextDecorator(encryptRule, isQueryWithCipherColumn).decorate(sqlRewriteContext); 
-        return new DefaultSQLRewriteEngine().generateSQL(sqlRewriteContext);
+        return new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
     }
 }

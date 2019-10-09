@@ -27,10 +27,10 @@ import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
 public interface SQLRewriteEngine {
     
     /**
-     * Generate SQL.
+     * Rewrite SQL and parameters.
      * 
      * @param sqlRewriteContext SQL rewrite context
-     * @return SQL unit
+     * @return SQL rewrite result
      */
-    SQLRewriteResult generateSQL(SQLRewriteContext sqlRewriteContext);
+    SQLRewriteResult rewrite(SQLRewriteContext sqlRewriteContext);
 }

@@ -38,7 +38,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     private final Map<String, String> logicAndActualTables;
     
     @Override
-    public SQLRewriteResult generateSQL(final SQLRewriteContext sqlRewriteContext) {
+    public SQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
         return new SQLRewriteResult(sqlRewriteContext.getSQLBuilder().toSQL(routingUnit, logicAndActualTables), sqlRewriteContext.getParameterBuilder().getParameters(routingUnit));
     }
 }

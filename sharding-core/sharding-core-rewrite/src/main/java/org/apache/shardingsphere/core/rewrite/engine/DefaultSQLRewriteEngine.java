@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
 public final class DefaultSQLRewriteEngine implements SQLRewriteEngine {
     
     @Override
-    public SQLRewriteResult generateSQL(final SQLRewriteContext sqlRewriteContext) {
+    public SQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
         return new SQLRewriteResult(sqlRewriteContext.getSQLBuilder().toSQL(), sqlRewriteContext.getParameterBuilder().getParameters());
     }
 }
