@@ -50,9 +50,8 @@ public class MySQLBinlogEventPacketDecoderTest {
     
     @Before
     public void setUp() throws Exception {
-        binlogEventPacketDecoder = new MySQLBinlogEventPacketDecoder(0);
+        binlogEventPacketDecoder = new MySQLBinlogEventPacketDecoder(4);
         binlogContext = ReflectionUtil.getFieldValueFromClass(binlogEventPacketDecoder, "binlogContext", BinlogContext.class);
-        binlogContext.setChecksumLength(4);
     }
     
     @Test(expected = RuntimeException.class)
