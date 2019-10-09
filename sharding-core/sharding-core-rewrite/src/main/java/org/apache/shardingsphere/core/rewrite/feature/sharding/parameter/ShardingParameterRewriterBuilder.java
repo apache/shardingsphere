@@ -25,9 +25,9 @@ import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewrit
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.parameter.impl.GeneratedKeyInsertValueParameterRewriter;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLRouteResultAware;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.ShardingRuleAware;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.TableMetasAware;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.SQLRouteResultAware;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.ShardingRuleAware;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.TableMetasAware;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 

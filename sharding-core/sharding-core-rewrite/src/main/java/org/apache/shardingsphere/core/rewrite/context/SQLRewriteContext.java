@@ -25,8 +25,8 @@ import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.sql.SQLBuilder;
-import org.apache.shardingsphere.core.rewrite.sql.token.SQLTokenGenerators;
-import org.apache.shardingsphere.core.rewrite.sql.token.builder.BaseTokenGeneratorBuilder;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerators;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.builder.DefaultTokenGeneratorBuilder;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerator;
 
 import java.util.Collection;
@@ -60,7 +60,7 @@ public final class SQLRewriteContext {
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
         this.parameters = parameters;
-        addSQLTokenGenerators(new BaseTokenGeneratorBuilder().getSQLTokenGenerators());
+        addSQLTokenGenerators(new DefaultTokenGeneratorBuilder().getSQLTokenGenerators());
         parameterBuilder = sqlStatementContext instanceof InsertSQLStatementContext
                 ? new GroupedParameterBuilder(((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) : new StandardParameterBuilder(parameters);
     }

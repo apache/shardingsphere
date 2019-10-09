@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.parameter.EncryptParameterRewriterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.core.rewrite.sql.token.builder.EncryptTokenGenerateBuilder;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.EncryptTokenGenerateBuilder;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 /**
