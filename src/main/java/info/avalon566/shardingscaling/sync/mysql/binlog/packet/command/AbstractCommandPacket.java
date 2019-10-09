@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.sync.mysql.binlog.packet;
+package info.avalon566.shardingscaling.sync.mysql.binlog.packet.command;
 
+import info.avalon566.shardingscaling.sync.mysql.binlog.packet.AbstractPacket;
 import lombok.Data;
 
 /**

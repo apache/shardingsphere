@@ -19,7 +19,6 @@ package info.avalon566.shardingscaling.sync.mysql.binlog.packet.command;
 
 import com.google.common.base.Strings;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
-import info.avalon566.shardingscaling.sync.mysql.binlog.packet.AbstractCommandPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import lombok.Data;
