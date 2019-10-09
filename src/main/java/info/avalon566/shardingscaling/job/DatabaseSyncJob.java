@@ -21,6 +21,7 @@ import info.avalon566.shardingscaling.job.config.SyncConfiguration;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * Database sync job.
  * @author avalon566
  */
 @Slf4j
@@ -32,12 +33,15 @@ public class DatabaseSyncJob {
 
     private final RealtimeDataSyncer realtimeDataSyncer;
 
-    public DatabaseSyncJob(SyncConfiguration syncConfiguration) {
+    public DatabaseSyncJob(final SyncConfiguration syncConfiguration) {
         this.syncConfiguration = syncConfiguration;
         this.historyDataSyncer = new HistoryDataSyncer(syncConfiguration);
         this.realtimeDataSyncer = new RealtimeDataSyncer(syncConfiguration);
     }
 
+    /**
+     * Run.
+     */
     public void run() {
         realtimeDataSyncer.preRun();
         historyDataSyncer.run();

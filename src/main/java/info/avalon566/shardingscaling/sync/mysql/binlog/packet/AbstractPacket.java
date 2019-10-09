@@ -35,11 +35,19 @@ import lombok.Data;
 public abstract class AbstractPacket implements Packet {
     private byte sequenceNumber;
 
+    /**
+     * empty implement method,throw {@code UnsupportedOperationException}.
+     * @param data buffer
+     */
     @Override
     public void fromByteBuf(final ByteBuf data) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * empty implement method,throw {@code UnsupportedOperationException}.
+     * @return data buffer
+     */
     @Override
     public ByteBuf toByteBuf() {
         throw new UnsupportedOperationException();

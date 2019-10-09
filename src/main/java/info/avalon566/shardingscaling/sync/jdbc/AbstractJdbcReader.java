@@ -73,7 +73,7 @@ public abstract class AbstractJdbcReader extends AbstractRunner implements Reade
             ps.setFetchDirection(ResultSet.FETCH_REVERSE);
             var rs = ps.executeQuery();
             var metaData = rs.getMetaData();
-            while (running && rs.next()) {
+            while (isRunning() && rs.next()) {
                 var record = new DataRecord(metaData.getColumnCount());
                 record.setType("bootstrap-insert");
                 record.setFullTableName(String.format("%s.%s", conn.getCatalog(), rdbmsConfiguration.getTableName()));

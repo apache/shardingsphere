@@ -17,18 +17,31 @@
 
 package info.avalon566.shardingscaling.sync.core;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
+ * Abstract runner.
  * @author avalon566
  */
 public abstract class AbstractRunner implements Runner {
 
-    protected boolean running = false;
+    @Setter(AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
+    private boolean running;
 
+    /**
+     * generic start implement.
+     */
     @Override
     public void start() {
         running = true;
     }
 
+    /**
+     * generic stop implement.
+     */
     @Override
     public void stop() {
         running = false;

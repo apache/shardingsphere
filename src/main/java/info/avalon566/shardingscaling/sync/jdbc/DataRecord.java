@@ -24,31 +24,53 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Data record.
  * @author avalon566
  */
 @Data
 public class DataRecord implements Record {
+
     private String type;
+
     private String tableName;
+
     private String fullTableName;
+
     private final List<Column> columns;
 
-    public DataRecord(int columnCount) {
-        columns = new ArrayList<Column>(columnCount);
+    public DataRecord(final int columnCount) {
+        columns = new ArrayList<>(columnCount);
     }
 
-    public void addColumn(Column data) {
+    /**
+     * Add a column to record.
+     * @param data column
+     */
+    public void addColumn(final Column data) {
         columns.add(data);
     }
 
+    /**
+     * Return column count.
+     * @return count
+     */
     public int getColumnCount() {
         return columns.size();
     }
 
-    public Column getColumn(int index) {
+    /**
+     * Get column by index.
+     * @param index of column
+     * @return column
+     */
+    public Column getColumn(final int index) {
         return columns.get(index);
     }
 
+    /**
+     * Get table name.
+     * @return tableName
+     */
     public String getTableName() {
         return fullTableName.split("\\.")[1];
     }

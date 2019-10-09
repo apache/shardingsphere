@@ -18,6 +18,7 @@
 package info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog;
 
 /**
+ * Mysql column types.
  * @author avalon566
  */
 public final class ColumnTypes {

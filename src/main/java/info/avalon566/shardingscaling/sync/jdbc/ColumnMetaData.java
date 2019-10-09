@@ -20,6 +20,7 @@ package info.avalon566.shardingscaling.sync.jdbc;
 import lombok.Data;
 
 /**
+ * Column meta data.
  * @author avalon566
  */
 @Data

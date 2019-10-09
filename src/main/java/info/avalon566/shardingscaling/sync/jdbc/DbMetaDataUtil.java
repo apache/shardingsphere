@@ -26,12 +26,15 @@ import lombok.var;
 
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
+ * Database meta util.
+ *
  * @author avalon566
  */
 @Slf4j
@@ -51,14 +54,14 @@ public final class DbMetaDataUtil {
 
     private LoadingCache<String, List<ColumnMetaData>> cmdCache;
 
-    public DbMetaDataUtil(RdbmsConfiguration rdbmsConfiguration) {
+    public DbMetaDataUtil(final RdbmsConfiguration rdbmsConfiguration) {
         this.rdbmsConfiguration = rdbmsConfiguration;
 
         pksCache = CacheBuilder.newBuilder()
                 .maximumSize(64)
                 .build(new CacheLoader<String, List<String>>() {
                     @Override
-                    public List<String> load(String key) {
+                    public List<String> load(final String key) {
                         return getPrimaryKeysInternal(key);
                     }
                 });
@@ -67,13 +70,19 @@ public final class DbMetaDataUtil {
                 .maximumSize(64)
                 .build(new CacheLoader<String, List<ColumnMetaData>>() {
                     @Override
-                    public List<ColumnMetaData> load(String key) {
+                    public List<ColumnMetaData> load(final String key) {
                         return getColumNamesInternal(key);
                     }
                 });
     }
 
-    public List<String> getPrimaryKeys(String tableName) {
+    /**
+     * Get primary key column name by table name.
+     *
+     * @param tableName table name
+     * @return list of table name
+     */
+    public List<String> getPrimaryKeys(final String tableName) {
         try {
             return pksCache.get(tableName);
         } catch (ExecutionException e) {
@@ -81,7 +90,7 @@ public final class DbMetaDataUtil {
         }
     }
 
-    private List<String> getPrimaryKeysInternal(String tableName) {
+    private List<String> getPrimaryKeysInternal(final String tableName) {
         try {
             try (var connection = DriverManager.getConnection(rdbmsConfiguration.getJdbcUrl(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword())) {
                 var rs = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), null, tableName);
@@ -91,11 +100,16 @@ public final class DbMetaDataUtil {
                 }
                 return primaryKeys;
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new RuntimeException("getTableNames error", e);
         }
     }
 
+    /**
+     * Get all table names in current database.
+     *
+     * @return list of table name
+     */
     public List<String> getTableNames() {
         try {
             try (var connection = DriverManager.getConnection(rdbmsConfiguration.getJdbcUrl(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword())) {
@@ -106,12 +120,18 @@ public final class DbMetaDataUtil {
                 }
                 return tableNames;
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new RuntimeException("getTableNames error", e);
         }
     }
 
-    public List<ColumnMetaData> getColumNames(String tableName) {
+    /**
+     * Get all column meta data by table name.
+     *
+     * @param tableName table name
+     * @return list of column meta data
+     */
+    public List<ColumnMetaData> getColumNames(final String tableName) {
         try {
             return cmdCache.get(tableName);
         } catch (ExecutionException e) {
@@ -119,36 +139,38 @@ public final class DbMetaDataUtil {
         }
     }
 
-    public List<ColumnMetaData> getColumNamesInternal(String tableName) {
+    private List<ColumnMetaData> getColumNamesInternal(final String tableName) {
         try {
             try (var connection = DriverManager.getConnection(rdbmsConfiguration.getJdbcUrl(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword())) {
                 var result = new ArrayList<ColumnMetaData>();
-                try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), connection.getSchema(), tableName, "%")) {
-                    while (resultSet.next()) {
-                        var columnMetaData = new ColumnMetaData();
-                        columnMetaData.setColumnName(resultSet.getString(COLUMN_NAME));
-                        columnMetaData.setColumnType(resultSet.getInt(DATA_TYPE));
-                        columnMetaData.setColumnTypeName(resultSet.getString(TYPE_NAME));
-                        result.add(columnMetaData);
-                    }
+                ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), connection.getSchema(), tableName, "%");
+                while (resultSet.next()) {
+                    var columnMetaData = new ColumnMetaData();
+                    columnMetaData.setColumnName(resultSet.getString(COLUMN_NAME));
+                    columnMetaData.setColumnType(resultSet.getInt(DATA_TYPE));
+                    columnMetaData.setColumnTypeName(resultSet.getString(TYPE_NAME));
+                    result.add(columnMetaData);
                 }
                 return result;
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new RuntimeException("getTableNames error", e);
         }
     }
 
-    public static int findColumnIndex(List<ColumnMetaData> metaData, String columnName) {
-        try {
-            for (int i = 0; i < metaData.size(); i++) {
-                if (metaData.get(i).getColumnName().equals(columnName)) {
-                    return i;
-                }
+    /**
+     * Find column index by column name.
+     *
+     * @param metaData   meta data list
+     * @param columnName table name
+     * @return index
+     */
+    public static int findColumnIndex(final List<ColumnMetaData> metaData, final String columnName) {
+        for (int i = 0; i < metaData.size(); i++) {
+            if (metaData.get(i).getColumnName().equals(columnName)) {
+                return i;
             }
-            return -1;
-        } catch (Exception e) {
-            throw new RuntimeException("findColumnIndex error", e);
         }
+        return -1;
     }
 }

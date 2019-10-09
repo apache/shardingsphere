@@ -66,7 +66,7 @@ public abstract class AbstractJdbcWriter extends AbstractRunner implements Write
         var buffer = new ArrayList<DataRecord>(2000);
         var lastFlushTime = System.currentTimeMillis();
         try {
-            while (running) {
+            while (isRunning()) {
                 var record = channel.popRecord();
                 if (null == record) {
                     try {

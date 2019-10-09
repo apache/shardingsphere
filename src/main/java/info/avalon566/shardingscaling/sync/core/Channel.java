@@ -18,10 +18,20 @@
 package info.avalon566.shardingscaling.sync.core;
 
 /**
+ * Channel.
  * @author avalon566
  */
 public interface Channel {
+
+    /**
+     * push a {@code DataRecord} to channel.
+     * @param dataRecord data
+     */
     void pushRecord(Record dataRecord);
 
+    /**
+     * pop a {@code DataRecord} from channel.
+     * @return dataRecord
+     */
     Record popRecord();
 }

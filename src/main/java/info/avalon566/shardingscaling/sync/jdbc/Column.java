@@ -21,11 +21,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
+ * Column.
  * @author avalon566
  */
 @Data
 @AllArgsConstructor
 public class Column {
     private Object value;
+
     private boolean updated;
 }
