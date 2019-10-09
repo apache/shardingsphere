@@ -165,7 +165,6 @@ public final class TablesContextTest {
         ColumnSegment columnSegment = mock(ColumnSegment.class);
         when(columnSegment.getOwner()).thenReturn(Optional.<TableSegment>absent());
         TableMetas tableMetas = mock(TableMetas.class);
-        when(tableMetas.containsColumn(anyString(), anyString())).thenReturn(false);
         assertFalse(tablesContext.findTableName(columnSegment, tableMetas).isPresent());
     }
     
