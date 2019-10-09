@@ -31,7 +31,7 @@ import static org.mockito.Mockito.verify;
 
 public final class ShardingTransactionManagerEngineTest {
     
-    private ShardingTransactionManagerEngine shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
+    private final ShardingTransactionManagerEngine shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
     
     @Test
     public void assertGetEngine() {

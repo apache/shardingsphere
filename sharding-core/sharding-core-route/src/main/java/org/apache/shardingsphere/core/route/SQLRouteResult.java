@@ -41,9 +41,7 @@ import java.util.LinkedHashSet;
 @Setter
 public final class SQLRouteResult {
     
-    private final SQLStatementContext shardingStatementContext;
-    
-    private final SQLStatementContext encryptStatementContext;
+    private final SQLStatementContext sqlStatementContext;
     
     private final ShardingConditions shardingConditions;
     
@@ -53,8 +51,8 @@ public final class SQLRouteResult {
     
     private RoutingResult routingResult;
     
-    public SQLRouteResult(final SQLStatementContext shardingStatementContext, final SQLStatementContext encryptStatementContext, final ShardingConditions shardingConditions) {
-        this(shardingStatementContext, encryptStatementContext, shardingConditions, null);
+    public SQLRouteResult(final SQLStatementContext sqlStatementContext, final ShardingConditions shardingConditions) {
+        this(sqlStatementContext, shardingConditions, null);
     }
     
     /**

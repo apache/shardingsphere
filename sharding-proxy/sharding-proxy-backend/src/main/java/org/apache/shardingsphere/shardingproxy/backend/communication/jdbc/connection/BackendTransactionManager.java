@@ -31,11 +31,11 @@ public final class BackendTransactionManager implements TransactionManager {
     
     private final BackendConnection connection;
     
-    private TransactionType transactionType;
+    private final TransactionType transactionType;
     
-    private LocalTransactionManager localTransactionManager;
+    private final LocalTransactionManager localTransactionManager;
     
-    private ShardingTransactionManager shardingTransactionManager;
+    private final ShardingTransactionManager shardingTransactionManager;
     
     public BackendTransactionManager(final BackendConnection backendConnection) {
         connection = backendConnection;

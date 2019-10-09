@@ -24,7 +24,7 @@ import static org.junit.Assert.assertThat;
 
 public final class StateNodeTest {
     
-    private StateNode stateNode = new StateNode("test");
+    private final StateNode stateNode = new StateNode("test");
     
     @Test
     public void assertGetInstancesNodeFullPath() {

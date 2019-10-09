@@ -58,7 +58,7 @@ public final class BackendConnectionTest {
     @Mock
     private JDBCBackendDataSource backendDataSource;
     
-    private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
+    private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
     @Before
     @SneakyThrows
