@@ -173,6 +173,9 @@ public final class MySQLConnector {
     }
 
     private int queryChecksumLength() {
+        if (!serverInfo.getServerVersion().greaterThanOrEqualTo(5, 6, 0)) {
+            return 0;
+        }
         InternalResultSet resultSet = executeQuery("select @@global.binlog_checksum");
         String checksumType = resultSet.getFieldValues().get(0).getColumns().get(0);
         switch (checksumType) {

@@ -17,6 +17,7 @@
 
 package info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog;
 
+import com.google.common.base.Strings;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.BinlogContext;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DecimalValueDecoder;
@@ -57,6 +58,10 @@ public class RowsEvent {
         this.binlogEventHeader = binlogEventHeader;
     }
 
+    /**
+     * Parse post header.
+     * @param in buffer
+     */
     public void parsePostHeader(final ByteBuf in) {
         tableId = DataTypesCodec.readUnsignedInt6LE(in);
         flags = DataTypesCodec.readUnsignedInt2LE(in);
@@ -69,6 +74,11 @@ public class RowsEvent {
         }
     }
 
+    /**
+     * Parse payload.
+     * @param binlogContext binlog context
+     * @param in buffer
+     */
     public void parsePaylod(final BinlogContext binlogContext, final ByteBuf in) {
         var columnsLength = (int) DataTypesCodec.readLengthCodedIntLE(in);
         columnsPresentBitmap = DataTypesCodec.readBitmap(columnsLength, in);
@@ -127,10 +137,16 @@ public class RowsEvent {
                 return decodeTimestamp2(columnDef.getMeta(), in);
             case ColumnTypes.MYSQL_TYPE_DATETIME2:
                 return decodeDatetime2(columnDef.getMeta(), in);
+            case ColumnTypes.MYSQL_TYPE_TIME:
+                return decodeTime(columnDef.getMeta(), in);
             case ColumnTypes.MYSQL_TYPE_TIME2:
                 return decodeTime2(columnDef.getMeta(), in);
             case ColumnTypes.MYSQL_TYPE_DATE:
                 return decodeDate(columnDef.getMeta(), in);
+            case ColumnTypes.MYSQL_TYPE_DATETIME:
+                return decodeDateTime(columnDef.getMeta(), in);
+            case ColumnTypes.MYSQL_TYPE_TIMESTAMP:
+                return decodeTimestamp(columnDef.getMeta(), in);
             case ColumnTypes.MYSQL_TYPE_YEAR:
                 return decodeYear(columnDef.getMeta(), in);
             case ColumnTypes.MYSQL_TYPE_BLOB:
@@ -145,6 +161,39 @@ public class RowsEvent {
             default:
                 throw new UnsupportedOperationException();
         }
+    }
+
+    private Serializable decodeTime(final int meta, final ByteBuf in) {
+        String datetime = Long.toString(DataTypesCodec.readUnsignedInt3LE(in));
+        if ("0".equals(datetime)) {
+            return "00:00:00";
+        }
+        datetime = Strings.padStart(datetime, 6, '0');
+        final String hour = datetime.substring(0, 2);
+        final String minute = datetime.substring(2, 4);
+        final String second = datetime.substring(4, 6);
+        return String.format("%s:%s:%s", hour, minute, second);
+    }
+
+    private Serializable decodeTimestamp(final int meta, final ByteBuf in) {
+        var second = DataTypesCodec.readUnsignedInt4LE(in);
+        var secondStr = new Timestamp(second * 1000).toString();
+        // remove millsecond data
+        return secondStr.substring(0, secondStr.length() - 2);
+    }
+
+    private Serializable decodeDateTime(final int meta, final ByteBuf in) {
+        final String datetime = Long.toString(DataTypesCodec.readInt8LE(in));
+        if ("0".equals(datetime)) {
+            return "0000-00-00 00:00:00";
+        }
+        final String year = datetime.substring(0, 4);
+        final String month = datetime.substring(4, 6);
+        final String day = datetime.substring(6, 8);
+        final String hour = datetime.substring(8, 10);
+        final String minute = datetime.substring(10, 12);
+        final String second = datetime.substring(12, 14);
+        return String.format("%s-%s-%s %s:%s:%s", year, month, day, hour, minute, second);
     }
 
     private Serializable decodeLong(final int meta, final ByteBuf in) {
@@ -264,7 +313,7 @@ public class RowsEvent {
             case ColumnTypes.MYSQL_TYPE_SET:
                 // hardcode
                 return in.readByte();
-            case 254:
+            case ColumnTypes.MYSQL_TYPE_STRING:
                 var length = DataTypesCodec.readUnsignedInt1(in);
                 return new String(DataTypesCodec.readBytes(length, in));
             default:
