@@ -1,5 +1,9 @@
 # ShardingScaling - ShardingSphere Scaling Out Component
 
+## Requirement
+
+MySQL: 5.1.15 ~ 5.7.x
+
 ## How to Build
 
 Install `maven` and run command:
