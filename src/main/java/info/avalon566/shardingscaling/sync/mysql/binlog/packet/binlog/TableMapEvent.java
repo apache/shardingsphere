@@ -63,7 +63,7 @@ public class TableMapEvent {
         var columnCount = DataTypesCodec.readLengthCodedIntLE(in);
         initColumnDefs((int) columnCount);
         decodeColumnType(in);
-        columnCount = DataTypesCodec.readLengthCodedIntLE(in);
+        var columnMetaDefDataLength = DataTypesCodec.readLengthCodedIntLE(in);
         decodeColumMeta(in);
         // skip null bitmap
         DataTypesCodec.readBitmap((int) columnCount, in);
