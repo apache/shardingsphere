@@ -29,7 +29,6 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 import org.junit.Test;
 
-import java.util.Collection;
 import java.util.Collections;
 
 import static org.junit.Assert.assertNotNull;
