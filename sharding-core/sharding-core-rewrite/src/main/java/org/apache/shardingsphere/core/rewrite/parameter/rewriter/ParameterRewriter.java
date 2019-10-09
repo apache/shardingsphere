@@ -15,25 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.parameter;
+package org.apache.shardingsphere.core.rewrite.parameter.rewriter;
 
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
- * Parameter rewriter builder.
+ * Parameter rewriter.
  *
  * @author zhangliang
  */
-public interface ParameterRewriterBuilder {
+public interface ParameterRewriter {
     
     /**
-     * Get parameter rewriters.
+     * Rewrite SQL parameters.
      * 
      * @param parameterBuilder parameter builder
-     * @param tableMetas table metas
-     * @return parameter rewriters
+     * @param sqlStatementContext SQL statement context
+     * @param parameters SQL parameters
      */
-    Collection<ParameterRewriter> getParameterRewriters(ParameterBuilder parameterBuilder, TableMetas tableMetas);
+    void rewrite(ParameterBuilder parameterBuilder, SQLStatementContext sqlStatementContext, List<Object> parameters);
 }

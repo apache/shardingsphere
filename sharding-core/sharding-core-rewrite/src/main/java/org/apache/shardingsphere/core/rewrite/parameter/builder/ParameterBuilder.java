@@ -15,25 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.parameter;
+package org.apache.shardingsphere.core.rewrite.parameter.builder;
 
-import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
 import java.util.List;
 
 /**
- * Parameter rewriter.
+ * Parameter builder.
  *
- * @author zhangliang
+ * @author panjuan
  */
-public interface ParameterRewriter {
+public interface ParameterBuilder {
     
     /**
-     * Rewrite SQL parameters.
-     * 
-     * @param parameterBuilder parameter builder
-     * @param sqlStatementContext SQL statement context
-     * @param parameters SQL parameters
+     * Get parameters.
+     *
+     * @return parameters
      */
-    void rewrite(ParameterBuilder parameterBuilder, SQLStatementContext sqlStatementContext, List<Object> parameters);
+    List<Object> getParameters();
+    
+    /**
+     * Get parameters.
+     *
+     * @param routingUnit routing unit
+     * @return parameters
+     */
+    List<Object> getParameters(RoutingUnit routingUnit);
 }

@@ -15,31 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.parameter;
+package org.apache.shardingsphere.core.rewrite.parameter.builder.impl;
 
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import org.junit.Before;
+import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-/**
- * Parameter builder.
- *
- * @author panjuan
- */
-public interface ParameterBuilder {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class StandardParameterBuilderTest {
     
-    /**
-     * Get parameters.
-     *
-     * @return parameters
-     */
-    List<Object> getParameters();
+    private final List<Object> parameters = Arrays.<Object>asList(1, 2, 1, 5);
     
-    /**
-     * Get parameters.
-     *
-     * @param routingUnit routing unit
-     * @return parameters
-     */
-    List<Object> getParameters(RoutingUnit routingUnit);
+    private StandardParameterBuilder parameterBuilder;
+    
+    @Before
+    public void setUp() {
+        parameterBuilder = new StandardParameterBuilder(parameters);
+        parameterBuilder.getAddedIndexAndParameters().putAll(Collections.singletonMap(4, 7));
+    }
+    
+    @Test
+    public void assertGetParameters() {
+        assertThat(parameterBuilder.getParameters(), is(Arrays.<Object>asList(1, 2, 1, 5, 7)));
+    }
 }

@@ -22,9 +22,9 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.parameter.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.parameter.impl.StandardParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.parameter.ParameterRewriter;
+import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.StandardParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLRouteResultAware;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 

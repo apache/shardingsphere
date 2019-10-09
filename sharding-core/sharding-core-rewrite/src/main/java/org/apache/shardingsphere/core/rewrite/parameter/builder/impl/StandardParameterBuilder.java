@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.parameter.impl;
+package org.apache.shardingsphere.core.rewrite.parameter.builder.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rewrite.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
 import java.util.LinkedHashMap;
