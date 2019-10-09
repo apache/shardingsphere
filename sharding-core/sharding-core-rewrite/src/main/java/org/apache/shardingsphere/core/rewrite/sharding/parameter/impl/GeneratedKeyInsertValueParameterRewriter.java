@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.parameter.rewriter.sharding;
+package org.apache.shardingsphere.core.rewrite.sharding.parameter.impl;
 
 import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.GroupedParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.core.rewrite.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.parameter.impl.GroupedParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.parameter.ParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLRouteResultAware;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 

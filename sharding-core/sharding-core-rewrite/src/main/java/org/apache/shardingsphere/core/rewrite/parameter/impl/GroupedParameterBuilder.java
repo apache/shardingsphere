@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.parameter.builder.impl;
+package org.apache.shardingsphere.core.rewrite.parameter.impl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;

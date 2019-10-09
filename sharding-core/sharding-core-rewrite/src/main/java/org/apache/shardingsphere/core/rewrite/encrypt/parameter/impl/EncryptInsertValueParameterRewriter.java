@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.parameter.rewriter.encrypt;
+package org.apache.shardingsphere.core.rewrite.encrypt.parameter.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -23,9 +23,9 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.GroupedParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.core.rewrite.parameter.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.parameter.impl.GroupedParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.parameter.ParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;

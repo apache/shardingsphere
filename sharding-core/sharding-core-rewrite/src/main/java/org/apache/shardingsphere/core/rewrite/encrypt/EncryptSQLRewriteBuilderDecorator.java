@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.rewrite.encrypt;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteBuilder;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteBuilderDecorator;
-import org.apache.shardingsphere.core.rewrite.parameter.rewriter.encrypt.EncryptParameterBuilderFactory;
+import org.apache.shardingsphere.core.rewrite.encrypt.parameter.EncryptParameterBuilderFactory;
 import org.apache.shardingsphere.core.rewrite.sql.token.builder.EncryptTokenGenerateBuilder;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 

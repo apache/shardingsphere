@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.rewrite.sharding;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteBuilder;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteBuilderDecorator;
-import org.apache.shardingsphere.core.rewrite.parameter.rewriter.sharding.ShardingParameterBuilderFactory;
+import org.apache.shardingsphere.core.rewrite.sharding.parameter.ShardingParameterBuilderFactory;
 import org.apache.shardingsphere.core.rewrite.sql.token.builder.ShardingTokenGenerateBuilder;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
