@@ -21,8 +21,8 @@ import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesCons
 import org.apache.shardingsphere.core.optimize.SQLStatementContextFactory;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.rewrite.SQLRewriteBuilder;
-import org.apache.shardingsphere.core.rewrite.encrypt.EncryptSQLRewriteBuilderDecorator;
+import org.apache.shardingsphere.core.rewrite.SQLRewriteContext;
+import org.apache.shardingsphere.core.rewrite.encrypt.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.core.rewrite.DefaultSQLRewriteEngine;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
@@ -82,10 +82,10 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     private String getRewriteSQL(final String sql) {
         SQLStatement sqlStatement = connection.getRuntimeContext().getParseEngine().parse(sql, false);
         sqlStatementContext = SQLStatementContextFactory.newInstance(connection.getRuntimeContext().getTableMetas(), sql, Collections.emptyList(), sqlStatement);
-        SQLRewriteBuilder sqlRewriteBuilder = new SQLRewriteBuilder(connection.getRuntimeContext().getTableMetas(), sqlStatementContext, sql, Collections.emptyList());
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(connection.getRuntimeContext().getTableMetas(), sqlStatementContext, sql, Collections.emptyList());
         boolean isQueryWithCipherColumn = connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
-        new EncryptSQLRewriteBuilderDecorator(connection.getRuntimeContext().getRule(), isQueryWithCipherColumn).decorate(sqlRewriteBuilder);
-        String result = new DefaultSQLRewriteEngine().generateSQL(sqlRewriteBuilder).getSql();
+        new EncryptSQLRewriteContextDecorator(connection.getRuntimeContext().getRule(), isQueryWithCipherColumn).decorate(sqlRewriteContext);
+        String result = new DefaultSQLRewriteEngine().generateSQL(sqlRewriteContext).getSql();
         showSQL(result);
         return result;
     }

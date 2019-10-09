@@ -18,31 +18,31 @@
 package org.apache.shardingsphere.core.rewrite.encrypt;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rewrite.SQLRewriteBuilder;
-import org.apache.shardingsphere.core.rewrite.SQLRewriteBuilderDecorator;
+import org.apache.shardingsphere.core.rewrite.SQLRewriteContext;
+import org.apache.shardingsphere.core.rewrite.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.core.rewrite.encrypt.parameter.EncryptParameterRewriterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.ParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.sql.token.builder.EncryptTokenGenerateBuilder;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 /**
- * SQL rewrite builder decorator for encrypt.
+ * SQL rewrite context decorator for encrypt.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class EncryptSQLRewriteBuilderDecorator implements SQLRewriteBuilderDecorator {
+public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContextDecorator {
     
     private final EncryptRule encryptRule;
     
     private final boolean isQueryWithCipherColumn;
     
     @Override
-    public void decorate(final SQLRewriteBuilder sqlRewriteBuilder) {
+    public void decorate(final SQLRewriteContext sqlRewriteContext) {
         for (ParameterRewriter each : new EncryptParameterRewriterBuilder(encryptRule, isQueryWithCipherColumn).getParameterRewriters(
-                sqlRewriteBuilder.getParameterBuilder(), sqlRewriteBuilder.getTableMetas())) {
-            each.rewrite(sqlRewriteBuilder.getParameterBuilder(), sqlRewriteBuilder.getSqlStatementContext(), sqlRewriteBuilder.getParameters());
+                sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getTableMetas())) {
+            each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());
         }
-        sqlRewriteBuilder.addSQLTokenGenerators(new EncryptTokenGenerateBuilder(encryptRule, isQueryWithCipherColumn).getSQLTokenGenerators());
+        sqlRewriteContext.addSQLTokenGenerators(new EncryptTokenGenerateBuilder(encryptRule, isQueryWithCipherColumn).getSQLTokenGenerators());
     }
 }

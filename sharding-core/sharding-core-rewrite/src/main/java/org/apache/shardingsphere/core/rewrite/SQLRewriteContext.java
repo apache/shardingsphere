@@ -33,11 +33,11 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * SQL rewrite builder.
+ * SQL rewrite context.
  * 
  * @author zhangliang
  */
-public final class SQLRewriteBuilder {
+public final class SQLRewriteContext {
     
     @Getter
     private final TableMetas tableMetas;
@@ -55,7 +55,7 @@ public final class SQLRewriteBuilder {
     @Getter
     private final ParameterBuilder parameterBuilder;
     
-    public SQLRewriteBuilder(final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters) {
+    public SQLRewriteContext(final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters) {
         this.tableMetas = tableMetas;
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;

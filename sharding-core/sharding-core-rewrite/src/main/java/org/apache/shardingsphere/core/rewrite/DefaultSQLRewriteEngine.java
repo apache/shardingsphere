@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.route.SQLUnit;
 public final class DefaultSQLRewriteEngine implements SQLRewriteEngine {
     
     @Override
-    public SQLUnit generateSQL(final SQLRewriteBuilder sqlRewriteBuilder) {
-        return new SQLUnit(sqlRewriteBuilder.getSQLBuilder().toSQL(), sqlRewriteBuilder.getParameterBuilder().getParameters());
+    public SQLUnit generateSQL(final SQLRewriteContext sqlRewriteContext) {
+        return new SQLUnit(sqlRewriteContext.getSQLBuilder().toSQL(), sqlRewriteContext.getParameterBuilder().getParameters());
     }
 }

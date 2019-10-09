@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.sharding;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rewrite.SQLRewriteBuilder;
+import org.apache.shardingsphere.core.rewrite.SQLRewriteContext;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -38,7 +38,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     private final Map<String, String> logicAndActualTables;
     
     @Override
-    public SQLUnit generateSQL(final SQLRewriteBuilder sqlRewriteBuilder) {
-        return new SQLUnit(sqlRewriteBuilder.getSQLBuilder().toSQL(routingUnit, logicAndActualTables), sqlRewriteBuilder.getParameterBuilder().getParameters(routingUnit));
+    public SQLUnit generateSQL(final SQLRewriteContext sqlRewriteContext) {
+        return new SQLUnit(sqlRewriteContext.getSQLBuilder().toSQL(routingUnit, logicAndActualTables), sqlRewriteContext.getParameterBuilder().getParameters(routingUnit));
     }
 }

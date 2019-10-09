@@ -29,8 +29,8 @@ public interface SQLRewriteEngine {
     /**
      * Generate SQL.
      * 
-     * @param sqlRewriteBuilder SQL rewrite builder
+     * @param sqlRewriteContext SQL rewrite context
      * @return SQL unit
      */
-    SQLUnit generateSQL(SQLRewriteBuilder sqlRewriteBuilder);
+    SQLUnit generateSQL(SQLRewriteContext sqlRewriteContext);
 }

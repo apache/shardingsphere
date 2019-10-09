@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.core.rewrite;
 
 /**
- * SQL rewrite builder decorator.
+ * SQL rewrite context decorator.
  *
  * @author zhangliang
  */
-public interface SQLRewriteBuilderDecorator {
+public interface SQLRewriteContextDecorator {
     
     /**
-     * Decorate SQL rewrite builder.
+     * Decorate SQL rewrite context.
      *
-     * @param sqlRewriteBuilder SQL rewrite builder to be decorated
+     * @param sqlRewriteContext SQL rewrite context to be decorated
      */
-    void decorate(SQLRewriteBuilder sqlRewriteBuilder);
+    void decorate(SQLRewriteContext sqlRewriteContext);
 }
