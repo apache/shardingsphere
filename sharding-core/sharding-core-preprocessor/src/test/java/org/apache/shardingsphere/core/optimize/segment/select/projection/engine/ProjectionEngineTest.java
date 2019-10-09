@@ -36,6 +36,8 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -53,7 +55,7 @@ public final class ProjectionEngineTest {
         when(shorthandSelectItemSegment.getOwner()).thenReturn(Optional.of(mock(TableSegment.class)));
         Optional<Projection> projection = new ProjectionEngine().createProjection(null, shorthandSelectItemSegment);
         assertTrue(projection.isPresent());
-        assertTrue(projection.get() instanceof ShorthandProjection);
+        assertThat(projection.get(), instanceOf(ShorthandProjection.class));
     }
     
     @Test
@@ -62,7 +64,7 @@ public final class ProjectionEngineTest {
         columnSelectItemSegment.setAlias("alias");
         Optional<Projection> projection = new ProjectionEngine().createProjection(null, columnSelectItemSegment);
         assertTrue(projection.isPresent());
-        assertTrue(projection.get() instanceof ColumnProjection);
+        assertThat(projection.get(), instanceOf(ColumnProjection.class));
     }
 
     @Test
@@ -70,7 +72,7 @@ public final class ProjectionEngineTest {
         ExpressionSelectItemSegment expressionSelectItemSegment = new ExpressionSelectItemSegment(0, 10, "text");
         Optional<Projection> projection = new ProjectionEngine().createProjection(null, expressionSelectItemSegment);
         assertTrue(projection.isPresent());
-        assertTrue(projection.get() instanceof ExpressionProjection);
+        assertThat(projection.get(), instanceOf(ExpressionProjection.class));
     }
     
     @Test
@@ -78,7 +80,7 @@ public final class ProjectionEngineTest {
         AggregationDistinctSelectItemSegment aggregationDistinctSelectItemSegment = new AggregationDistinctSelectItemSegment(0, 10, "text", AggregationType.COUNT, 0, "distinctExpression");
         Optional<Projection> projection = new ProjectionEngine().createProjection("select count(1) from table_1", aggregationDistinctSelectItemSegment);
         assertTrue(projection.isPresent());
-        assertTrue(projection.get() instanceof AggregationDistinctProjection);
+        assertThat(projection.get(), instanceOf(AggregationDistinctProjection.class));
     }
     
     @Test
@@ -86,7 +88,7 @@ public final class ProjectionEngineTest {
         AggregationSelectItemSegment aggregationSelectItemSegment = new AggregationSelectItemSegment(0, 10, "text", AggregationType.COUNT, 0);
         Optional<Projection> projection = new ProjectionEngine().createProjection("select count(1) from table_1", aggregationSelectItemSegment);
         assertTrue(projection.isPresent());
-        assertTrue(projection.get() instanceof AggregationProjection);
+        assertThat(projection.get(), instanceOf(AggregationProjection.class));
     }
     
 }
