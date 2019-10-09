@@ -102,6 +102,8 @@ public class SeataATShardingTransactionManagerTest {
         SeataTransactionHolder.clear();
         seataATShardingTransactionManager.close();
         releaseRpcClient();
+        requestQueue.clear();
+        responseQueue.clear();
     }
     
     private DataSource getDataSource() {
