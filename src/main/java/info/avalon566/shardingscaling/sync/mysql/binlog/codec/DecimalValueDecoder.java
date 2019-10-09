@@ -18,76 +18,109 @@
 package info.avalon566.shardingscaling.sync.mysql.binlog.codec;
 
 import io.netty.buffer.ByteBuf;
-import lombok.var;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+
+import lombok.Getter;
 
 /**
  * Decimal Value decoder.
  *
  * @author avalon566
+ * @author yangyi
  */
 public class DecimalValueDecoder {
 
+    private static final int DEC_BYTE_SIZE = 4;
+    
     private static final int DIG_PER_DEC = 9;
 
     private static final int[] DIG_TO_BYTES = {0, 1, 1, 2, 2, 3, 3, 4, 4, 4};
     
     /**
      * decode new Decimal.
+     * <p>
+     *     see comment of strings/decimal.c/decimal2bin and strings/decimal.c/bin2decimal
+     *     https://github.com/mysql/mysql-server/blob/5.7/strings/decimal.c
+     * </p>
      *
      * @param meta meta
      * @param in byte buffer
      * @return decimal value
      */
     public static Serializable decodeNewDecimal(final int meta, final ByteBuf in) {
-        var precision = meta >> 8;
-        var scale = meta & 0xFF;
-        var x = precision - scale;
-        var ipd = x / DIG_PER_DEC;
-        var fpd = scale / DIG_PER_DEC;
-        var decimalLength = (ipd << 2) + DIG_TO_BYTES[x - ipd * DIG_PER_DEC] + (fpd << 2) + DIG_TO_BYTES[scale - fpd * DIG_PER_DEC];
-        return toDecimal(precision, scale, DataTypesCodec.readBytes(decimalLength, in));
+        DecimalMetaData metaData = new DecimalMetaData(meta);
+        return toDecimal(metaData, DataTypesCodec.readBytes(metaData.getTotalByteLength(), in));
     }
 
-    private static BigDecimal toDecimal(final int precision, final int scale, final byte[] value) {
-        var positive = (value[0] & 0x80) == 0x80;
+    private static BigDecimal toDecimal(final DecimalMetaData metaData, final byte[] value) {
+        boolean positive = (value[0] & 0x80) == 0x80;
         value[0] ^= 0x80;
         if (!positive) {
             for (int i = 0; i < value.length; i++) {
                 value[i] ^= 0xFF;
             }
         }
-        var x = precision - scale;
-        var ipDigits = x / DIG_PER_DEC;
-        var ipDigitsX = x - ipDigits * DIG_PER_DEC;
-        var ipSize = (ipDigits << 2) + DIG_TO_BYTES[ipDigitsX];
-        var offset = DIG_TO_BYTES[ipDigitsX];
-        var ip = offset > 0 ? BigDecimal.valueOf(readFixedLengthIntBE(value, 0, offset)) : BigDecimal.ZERO;
-        for (; offset < ipSize; offset += 4) {
-            int i = readFixedLengthIntBE(value, offset, 4);
-            ip = ip.movePointRight(DIG_PER_DEC).add(BigDecimal.valueOf(i));
-        }
-        var shift = 0;
-        var fp = BigDecimal.ZERO;
-        for (; shift + DIG_PER_DEC <= scale; shift += DIG_PER_DEC, offset += 4) {
-            var i = readFixedLengthIntBE(value, offset, 4);
-            fp = fp.add(BigDecimal.valueOf(i).movePointLeft(shift + DIG_PER_DEC));
-        }
-        if (shift < scale) {
-            var i = readFixedLengthIntBE(value, offset, DIG_TO_BYTES[scale - shift]);
-            fp = fp.add(BigDecimal.valueOf(i).movePointLeft(scale));
-        }
-        var result = ip.add(fp);
+        BigDecimal integerValue = decodeIntegerValue(metaData, value);
+        BigDecimal scaleValue = decodeScaleValue(metaData, value);
+        BigDecimal result = integerValue.add(scaleValue);
         return positive ? result : result.negate();
     }
 
+    private static BigDecimal decodeIntegerValue(final DecimalMetaData metaData, final byte[] value) {
+        int offset = metaData.getExtraIntegerSize();
+        BigDecimal result = offset > 0 ? BigDecimal.valueOf(readFixedLengthIntBE(value, 0, offset)) : BigDecimal.ZERO;
+        for (; offset < metaData.getIntegerByteLength(); offset += DEC_BYTE_SIZE) {
+            int i = readFixedLengthIntBE(value, offset, DEC_BYTE_SIZE);
+            result = result.movePointRight(DIG_PER_DEC).add(BigDecimal.valueOf(i));
+        }
+        return result;
+    }
+    
+    private static BigDecimal decodeScaleValue(final DecimalMetaData metaData, final byte[] value) {
+        BigDecimal result = BigDecimal.ZERO;
+        int shift = 0;
+        int offset = metaData.getIntegerByteLength();
+        int scale = metaData.getScale();
+        for (; shift + DIG_PER_DEC <= scale; shift += DIG_PER_DEC, offset += DEC_BYTE_SIZE) {
+            result = result.add(BigDecimal.valueOf(readFixedLengthIntBE(value, offset, DEC_BYTE_SIZE)).movePointLeft(shift + DIG_PER_DEC));
+        }
+        if (shift < scale) {
+            result = result.add(BigDecimal.valueOf(readFixedLengthIntBE(value, offset, DIG_TO_BYTES[scale - shift])).movePointLeft(scale));
+        }
+        return result;
+    }
+    
     private static int readFixedLengthIntBE(final byte[] bytes, final int offset, final int length) {
-        var result = 0;
-        for (var i = offset; i < (offset + length); i++) {
+        int result = 0;
+        for (int i = offset; i < (offset + length); i++) {
             result = (result << 8) | (short) (0xff & bytes[i]);
         }
         return result;
+    }
+    
+    @Getter
+    private static final class DecimalMetaData {
+        
+        private final int scale;
+        
+        private final int extraIntegerSize;
+        
+        private final int integerByteLength;
+        
+        private final int totalByteLength;
+        
+        private DecimalMetaData(final int metaData) {
+            scale = metaData & 0xFF;
+            int precision = metaData >> 8;
+            int integer = precision - scale;
+            int fullIntegerSize = integer / DIG_PER_DEC;
+            extraIntegerSize = integer - fullIntegerSize * DIG_PER_DEC;
+            integerByteLength = (fullIntegerSize << 2) + DIG_TO_BYTES[extraIntegerSize];
+            int fullScaleSize = scale / DIG_PER_DEC;
+            int extraScaleSize = scale - fullScaleSize * DIG_PER_DEC;
+            totalByteLength = integerByteLength + (fullScaleSize << 2) +  DIG_TO_BYTES[extraScaleSize];
+        }
     }
 }

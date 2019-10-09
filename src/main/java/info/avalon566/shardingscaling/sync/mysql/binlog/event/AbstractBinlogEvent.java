@@ -21,6 +21,7 @@ import lombok.Data;
 
 /**
  * Abstract binlog event.
+ *
  * @author avalon566
  */
 @Data
@@ -30,5 +31,4 @@ public abstract class AbstractBinlogEvent {
 
     private long position;
 
-    private EventTypes eventType;
 }

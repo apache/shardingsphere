@@ -15,14 +15,23 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.sync.mysql.binlog.event;
+package info.avalon566.shardingscaling.sync.mysql.binlog.packet.command;
+
+import info.avalon566.shardingscaling.sync.mysql.binlog.packet.AbstractPacket;
+import lombok.Data;
 
 /**
- * Event types.
+ * Abstract command packet.
+ *
  * @author avalon566
+ * @author yangyi
  */
-public enum EventTypes {
-    WRITE_ROWS,
-    DELETE_ROWS,
-    UPDATE_ROWS
+@Data
+public abstract class AbstractCommandPacket extends AbstractPacket {
+    
+    private byte command;
+    
+    public AbstractCommandPacket() {
+        setSequenceNumber((byte) 0);
+    }
 }

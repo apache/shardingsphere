@@ -18,6 +18,7 @@
 package info.avalon566.shardingscaling.sync.mysql.binlog.codec;
 
 import io.netty.buffer.ByteBuf;
+import info.avalon566.shardingscaling.sync.mysql.binlog.BinlogContext;
 import info.avalon566.shardingscaling.sync.mysql.binlog.event.DeleteRowsEvent;
 import info.avalon566.shardingscaling.sync.mysql.binlog.event.UpdateRowsEvent;
 import info.avalon566.shardingscaling.sync.mysql.binlog.event.WriteRowsEvent;
@@ -50,9 +51,8 @@ public class MySQLBinlogEventPacketDecoderTest {
     
     @Before
     public void setUp() throws Exception {
-        binlogEventPacketDecoder = new MySQLBinlogEventPacketDecoder(0);
+        binlogEventPacketDecoder = new MySQLBinlogEventPacketDecoder(4);
         binlogContext = ReflectionUtil.getFieldValueFromClass(binlogEventPacketDecoder, "binlogContext", BinlogContext.class);
-        binlogContext.setChecksumLength(4);
     }
     
     @Test(expected = RuntimeException.class)

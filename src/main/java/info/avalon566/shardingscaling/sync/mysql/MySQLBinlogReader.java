@@ -32,7 +32,6 @@ import info.avalon566.shardingscaling.sync.mysql.binlog.event.WriteRowsEvent;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
-
 import java.io.Serializable;
 import java.sql.DriverManager;
 import java.sql.SQLException;

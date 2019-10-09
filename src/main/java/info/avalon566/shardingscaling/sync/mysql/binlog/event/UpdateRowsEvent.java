@@ -25,6 +25,7 @@ import java.util.List;
 
 /**
  * Update rows event.
+ *
  * @author avalon566
  */
 @Data
@@ -38,7 +39,4 @@ public class UpdateRowsEvent extends AbstractBinlogEvent {
 
     private BitSet changedBitmap;
 
-    public UpdateRowsEvent() {
-        setEventType(EventTypes.UPDATE_ROWS);
-    }
 }
