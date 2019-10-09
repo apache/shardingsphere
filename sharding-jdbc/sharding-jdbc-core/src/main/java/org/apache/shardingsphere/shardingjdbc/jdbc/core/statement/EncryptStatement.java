@@ -21,9 +21,9 @@ import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesCons
 import org.apache.shardingsphere.core.optimize.SQLStatementContextFactory;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.rewrite.SQLRewriteContext;
-import org.apache.shardingsphere.core.rewrite.encrypt.EncryptSQLRewriteContextDecorator;
-import org.apache.shardingsphere.core.rewrite.DefaultSQLRewriteEngine;
+import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.EncryptSQLRewriteContextDecorator;
+import org.apache.shardingsphere.core.rewrite.engine.DefaultSQLRewriteEngine;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultSet;
