@@ -15,30 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
+package org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic;
 
+import com.google.common.base.Joiner;
 import lombok.Getter;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
+
+import java.util.List;
 
 /**
- * Remove token.
+ * Insert columns token.
  *
- * @author zhangliang
  * @author panjuan
+ * @author zhangliang
  */
 @Getter
-public final class RemoveToken extends SQLToken implements Substitutable {
+public final class InsertColumnsToken extends SQLToken implements Attachable {
     
-    private final int stopIndex;
+    private final List<String> columns;
     
-    public RemoveToken(final int startIndex, final int stopIndex) {
+    public InsertColumnsToken(final int startIndex, final List<String> columns) {
         super(startIndex);
-        this.stopIndex = stopIndex;
+        this.columns = columns;
     }
     
     @Override
     public String toString() {
-        return "";
+        if (columns.isEmpty()) {
+            return "";
+        }
+        return String.format("(%s)", Joiner.on(", ").join(columns));
     }
 }

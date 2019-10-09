@@ -15,36 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
+package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo;
 
-import com.google.common.base.Joiner;
 import lombok.Getter;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-
-import java.util.List;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
 
 /**
- * Insert columns token.
+ * Insert cipher assignment token.
  *
  * @author panjuan
  * @author zhangliang
  */
-@Getter
-public final class InsertColumnsToken extends SQLToken implements Attachable {
+public abstract class InsertCipherAssignmentToken extends SQLToken implements Substitutable {
     
-    private final List<String> columns;
+    @Getter
+    private final int stopIndex;
     
-    public InsertColumnsToken(final int startIndex, final List<String> columns) {
+    private final String cipherColumnName;
+    
+    public InsertCipherAssignmentToken(final int startIndex, final int stopIndex, final String cipherColumnName) {
         super(startIndex);
-        this.columns = columns;
+        this.stopIndex = stopIndex;
+        this.cipherColumnName = cipherColumnName;
     }
     
     @Override
-    public String toString() {
-        if (columns.isEmpty()) {
-            return "";
-        }
-        return String.format("(%s)", Joiner.on(", ").join(columns));
+    public final String toString() {
+        return String.format("%s = %s", cipherColumnName, getAssignmentValue());
     }
+    
+    protected abstract String getAssignmentValue();
 }

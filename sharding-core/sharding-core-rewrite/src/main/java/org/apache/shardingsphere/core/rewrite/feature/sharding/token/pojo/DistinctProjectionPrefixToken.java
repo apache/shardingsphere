@@ -15,36 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
 
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 
-import java.util.List;
-
 /**
- * Insert assisted query and plain assignments token.
+ * Distinct projection prefix token.
  *
  * @author panjuan
- * @author zhangiang
  */
-public abstract class InsertAssistedQueryAndPlainAssignmentsToken extends SQLToken implements Attachable {
+public final class DistinctProjectionPrefixToken extends SQLToken implements Attachable {
     
-    private final List<String> columnNames;
-    
-    public InsertAssistedQueryAndPlainAssignmentsToken(final int startIndex, final List<String> columnNames) {
+    public DistinctProjectionPrefixToken(final int startIndex) {
         super(startIndex);
-        this.columnNames = columnNames;
     }
     
     @Override
-    public final String toString() {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < columnNames.size(); i++) {
-            result.append(String.format(", %s = %s", columnNames.get(i), getAssignmentValue(i)));
-        }
-        return result.toString();
+    public String toString() {
+        return "DISTINCT ";
     }
-    
-    protected abstract String getAssignmentValue(int index);
 }

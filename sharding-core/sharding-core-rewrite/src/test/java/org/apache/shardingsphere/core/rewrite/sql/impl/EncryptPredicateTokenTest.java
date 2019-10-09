@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.sql.impl;
 
 import org.apache.shardingsphere.core.constant.ShardingOperator;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.EncryptPredicateToken;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptPredicateToken;
 import org.junit.Test;
 
 import java.util.Collections;

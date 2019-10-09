@@ -15,25 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
+
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
+
+import java.util.Collection;
 
 /**
- * Insert cipher assignment token for literal.
+ * Projections token.
  *
- * @author panjuan
  * @author zhangliang
+ * @author panjuan
  */
-public final class LiteralInsertCipherAssignmentToken extends InsertCipherAssignmentToken {
+public final class ProjectionsToken extends SQLToken implements Attachable {
     
-    private final String cipherValue;
+    private final Collection<String> projections;
     
-    public LiteralInsertCipherAssignmentToken(final int startIndex, final int stopIndex, final String cipherColumnName, final String cipherValue) {
-        super(startIndex, stopIndex, cipherColumnName);
-        this.cipherValue = cipherValue;
+    public ProjectionsToken(final int startIndex, final Collection<String> projections) {
+        super(startIndex);
+        this.projections = projections;
     }
     
     @Override
-    protected String getAssignmentValue() {
-        return String.format("'%s'", cipherValue);
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        for (String each : projections) {
+            result.append(", ");
+            result.append(each);
+        }
+        return result.toString();
     }
 }

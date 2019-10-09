@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.En
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertColumnsToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertColumnsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 

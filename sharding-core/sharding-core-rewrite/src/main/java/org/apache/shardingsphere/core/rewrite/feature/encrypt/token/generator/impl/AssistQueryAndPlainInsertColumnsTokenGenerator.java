@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumns
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.AssistQueryAndPlainInsertColumnsToken;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.AssistQueryAndPlainInsertColumnsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 

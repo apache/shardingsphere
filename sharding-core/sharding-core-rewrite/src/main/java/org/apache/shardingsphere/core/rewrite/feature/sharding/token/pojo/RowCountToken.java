@@ -15,22 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
+
+import lombok.Getter;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
 
 /**
- * Insert cipher assignment token for parameter marker.
+ * Row count token.
  *
- * @author panjuan
  * @author zhangliang
+ * @author panjuan
  */
-public final class ParameterMarkerInsertCipherAssignmentToken extends InsertCipherAssignmentToken {
+public final class RowCountToken extends SQLToken implements Substitutable {
     
-    public ParameterMarkerInsertCipherAssignmentToken(final int startIndex, final int stopIndex, final String cipherColumnName) {
-        super(startIndex, stopIndex, cipherColumnName);
+    @Getter
+    private final int stopIndex;
+    
+    private final long revisedRowCount;
+    
+    public RowCountToken(final int startIndex, final int stopIndex, final long revisedRowCount) {
+        super(startIndex);
+        this.stopIndex = stopIndex;
+        this.revisedRowCount = revisedRowCount;
     }
     
     @Override
-    protected String getAssignmentValue() {
-        return "?";
+    public String toString() {
+        return String.valueOf(revisedRowCount);
     }
 }

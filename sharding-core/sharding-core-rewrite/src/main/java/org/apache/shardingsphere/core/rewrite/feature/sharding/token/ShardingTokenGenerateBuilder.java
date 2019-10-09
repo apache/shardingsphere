@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.i
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.impl.OrderByTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.impl.ProjectionsTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.impl.RowCountTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.impl.SelectItemPrefixTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.impl.DistinctProjectionPrefixTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.impl.keygen.GeneratedKeyAssignmentTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.impl.keygen.GeneratedKeyForInsertColumnsTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.impl.keygen.GeneratedKeyInsertColumnTokenGenerator;
@@ -71,7 +71,7 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
     private Collection<SQLTokenGenerator> buildSQLTokenGenerators() {
         Collection<SQLTokenGenerator> result = new LinkedList<>();
         addSQLTokenGenerator(result, new TableTokenGenerator());
-        addSQLTokenGenerator(result, new SelectItemPrefixTokenGenerator());
+        addSQLTokenGenerator(result, new DistinctProjectionPrefixTokenGenerator());
         addSQLTokenGenerator(result, new ProjectionsTokenGenerator());
         addSQLTokenGenerator(result, new OrderByTokenGenerator());
         addSQLTokenGenerator(result, new AggregationDistinctTokenGenerator());

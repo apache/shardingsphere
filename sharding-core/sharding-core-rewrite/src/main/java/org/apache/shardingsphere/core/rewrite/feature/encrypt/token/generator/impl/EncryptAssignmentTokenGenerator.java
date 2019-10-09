@@ -26,9 +26,9 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.Paramete
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.EncryptAssignmentToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.EncryptLiteralAssignmentToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.EncryptParameterAssignmentToken;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptAssignmentToken;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptLiteralAssignmentToken;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptParameterAssignmentToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;

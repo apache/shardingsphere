@@ -32,8 +32,8 @@ import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.Paramete
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertValuesToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertValuesToken.InsertValueToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValuesToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValuesToken.InsertValueToken;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 
 import java.util.Iterator;

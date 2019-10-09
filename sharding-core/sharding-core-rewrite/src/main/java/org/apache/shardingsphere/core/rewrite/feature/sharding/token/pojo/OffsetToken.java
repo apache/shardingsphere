@@ -15,33 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
 
 /**
- * Row count token.
+ * Offset token.
  *
  * @author zhangliang
  * @author panjuan
  */
-public final class RowCountToken extends SQLToken implements Substitutable {
+public final class OffsetToken extends SQLToken implements Substitutable {
     
     @Getter
     private final int stopIndex;
     
-    private final long revisedRowCount;
+    private final long revisedOffset;
     
-    public RowCountToken(final int startIndex, final int stopIndex, final long revisedRowCount) {
+    public OffsetToken(final int startIndex, final int stopIndex, final long revisedOffset) {
         super(startIndex);
         this.stopIndex = stopIndex;
-        this.revisedRowCount = revisedRowCount;
+        this.revisedOffset = revisedOffset;
     }
     
     @Override
     public String toString() {
-        return String.valueOf(revisedRowCount);
+        return String.valueOf(revisedOffset);
     }
 }

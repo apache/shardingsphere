@@ -15,35 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
+package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
 
 /**
- * Aggregation distinct token.
+ * Insert cipher item token.
  *
  * @author panjuan
  */
-public final class AggregationDistinctToken extends SQLToken implements Substitutable {
-    
-    private final String columnName;
-    
-    private final String derivedAlias;
+public final class SelectEncryptItemToken extends SQLToken implements Substitutable {
     
     @Getter
     private final int stopIndex;
     
-    public AggregationDistinctToken(final int startIndex, final int stopIndex, final String columnName, final String derivedAlias) {
+    private final String columnName;
+    
+    private final String owner;
+    
+    public SelectEncryptItemToken(final int startIndex, final int stopIndex, final String columnName, final String owner) {
         super(startIndex);
-        this.columnName = columnName;
-        this.derivedAlias = derivedAlias;
         this.stopIndex = stopIndex;
+        this.columnName = columnName;
+        this.owner = owner;
+    }
+    
+    public SelectEncryptItemToken(final int startIndex, final int stopIndex, final String columnName) {
+        this(startIndex, stopIndex, columnName, null);
     }
     
     @Override
     public String toString() {
-        return null == derivedAlias ? columnName : columnName + " AS " + derivedAlias;
+        return null == owner ? columnName : String.format("%s.%s", owner, columnName);
     }
 }

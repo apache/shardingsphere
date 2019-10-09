@@ -21,7 +21,7 @@ import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.RemoveAvailable;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.RemoveToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.RemoveToken;
 
 import java.util.Collection;
 import java.util.LinkedList;

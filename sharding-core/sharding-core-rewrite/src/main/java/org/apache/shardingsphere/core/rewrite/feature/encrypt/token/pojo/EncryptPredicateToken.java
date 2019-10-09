@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
+package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.ShardingOperator;

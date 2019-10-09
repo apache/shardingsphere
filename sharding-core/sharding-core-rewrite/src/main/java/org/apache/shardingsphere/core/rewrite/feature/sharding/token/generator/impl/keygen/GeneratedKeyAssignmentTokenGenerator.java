@@ -22,9 +22,9 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.ParametersAware;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.GeneratedKeyAssignmentToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.LiteralGeneratedKeyAssignmentToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.ParameterMarkerGeneratedKeyAssignmentToken;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.GeneratedKeyAssignmentToken;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.LiteralGeneratedKeyAssignmentToken;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.ParameterMarkerGeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 
 import java.util.List;

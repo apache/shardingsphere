@@ -15,34 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
 
-import com.google.common.base.Joiner;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 
-import java.util.List;
-
 /**
- * Assist query and plain insert columns token.
+ * Generated key insert column token.
  *
- * @author panjuan
  * @author zhangliang
  */
-public final class AssistQueryAndPlainInsertColumnsToken extends SQLToken implements Attachable {
+public final class GeneratedKeyInsertColumnToken extends SQLToken implements Attachable {
     
-    private final List<String> columns;
+    private final String column;
     
-    public AssistQueryAndPlainInsertColumnsToken(final int startIndex, final List<String> columns) {
+    public GeneratedKeyInsertColumnToken(final int startIndex, final String column) {
         super(startIndex);
-        this.columns = columns;
+        this.column = column;
     }
     
     @Override
     public String toString() {
-        if (columns.isEmpty()) {
-            return "";
-        }
-        return String.format(", %s", Joiner.on(", ").join(columns));
+        return String.format(", %s", column);
     }
 }

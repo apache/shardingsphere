@@ -15,24 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
+package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo;
 
-import lombok.Getter;
+import com.google.common.base.Joiner;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
+
+import java.util.List;
 
 /**
- * Assignment token for encrypt.
+ * Assist query and plain insert columns token.
  *
  * @author panjuan
+ * @author zhangliang
  */
-@Getter
-public abstract class EncryptAssignmentToken extends SQLToken implements Substitutable {
+public final class AssistQueryAndPlainInsertColumnsToken extends SQLToken implements Attachable {
     
-    private final int stopIndex;
+    private final List<String> columns;
     
-    public EncryptAssignmentToken(final int startIndex, final int stopIndex) {
+    public AssistQueryAndPlainInsertColumnsToken(final int startIndex, final List<String> columns) {
         super(startIndex);
-        this.stopIndex = stopIndex;
+        this.columns = columns;
+    }
+    
+    @Override
+    public String toString() {
+        if (columns.isEmpty()) {
+            return "";
+        }
+        return String.format(", %s", Joiner.on(", ").join(columns));
     }
 }

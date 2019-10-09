@@ -15,24 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
+package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo;
+
+import java.util.List;
 
 /**
- * Generated key assignment token for literal.
+ * Insert assisted query and plain assignments token for literal.
  *
- * @author panjuan
+ * @author zhangliang
  */
-public final class LiteralGeneratedKeyAssignmentToken extends GeneratedKeyAssignmentToken {
+public final class LiteralInsertAssistedQueryAndPlainAssignmentsToken extends InsertAssistedQueryAndPlainAssignmentsToken {
     
-    private final Object value;
+    private final List<Object> assignmentValues;
     
-    public LiteralGeneratedKeyAssignmentToken(final int startIndex, final String columnName, final Object value) {
-        super(startIndex, columnName);
-        this.value = value;
+    public LiteralInsertAssistedQueryAndPlainAssignmentsToken(final int startIndex, final List<String> columnNames, final List<Object> assignmentValues) {
+        super(startIndex, columnNames);
+        this.assignmentValues = assignmentValues;
     }
     
     @Override
-    protected String getRightValue() {
-        return value instanceof String ? String.format("'%s'", value) : value.toString();
+    protected String getAssignmentValue(final int index) {
+        Object assignmentValue = assignmentValues.get(index);
+        return assignmentValue instanceof String ? String.format("'%s'", assignmentValue) : assignmentValue.toString();
     }
 }

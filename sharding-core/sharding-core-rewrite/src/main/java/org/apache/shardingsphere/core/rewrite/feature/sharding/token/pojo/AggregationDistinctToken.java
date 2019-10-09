@@ -15,27 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
 
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
+import lombok.Getter;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
 
 /**
- * Generated key insert column token.
+ * Aggregation distinct token.
  *
- * @author zhangliang
+ * @author panjuan
  */
-public final class GeneratedKeyInsertColumnToken extends SQLToken implements Attachable {
+public final class AggregationDistinctToken extends SQLToken implements Substitutable {
     
-    private final String column;
+    private final String columnName;
     
-    public GeneratedKeyInsertColumnToken(final int startIndex, final String column) {
+    private final String derivedAlias;
+    
+    @Getter
+    private final int stopIndex;
+    
+    public AggregationDistinctToken(final int startIndex, final int stopIndex, final String columnName, final String derivedAlias) {
         super(startIndex);
-        this.column = column;
+        this.columnName = columnName;
+        this.derivedAlias = derivedAlias;
+        this.stopIndex = stopIndex;
     }
     
     @Override
     public String toString() {
-        return String.format(", %s", column);
+        return null == derivedAlias ? columnName : columnName + " AS " + derivedAlias;
     }
 }

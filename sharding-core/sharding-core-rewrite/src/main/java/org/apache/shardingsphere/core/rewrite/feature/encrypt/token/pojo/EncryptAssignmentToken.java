@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
+package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo;
+
+import lombok.Getter;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
 
 /**
- * Generated key assignment token for parameter marker.
+ * Assignment token for encrypt.
  *
  * @author panjuan
  */
-public final class ParameterMarkerGeneratedKeyAssignmentToken extends GeneratedKeyAssignmentToken {
+@Getter
+public abstract class EncryptAssignmentToken extends SQLToken implements Substitutable {
     
-    public ParameterMarkerGeneratedKeyAssignmentToken(final int startIndex, final String columnName) {
-        super(startIndex, columnName);
-    }
+    private final int stopIndex;
     
-    @Override
-    protected String getRightValue() {
-        return "?";
+    public EncryptAssignmentToken(final int startIndex, final int stopIndex) {
+        super(startIndex);
+        this.stopIndex = stopIndex;
     }
 }

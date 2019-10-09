@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
-
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
 
 /**
- * Projection prefix token.
+ * Generated key assignment token for parameter marker.
  *
  * @author panjuan
  */
-public final class ProjectionPrefixToken extends SQLToken implements Attachable {
+public final class ParameterMarkerGeneratedKeyAssignmentToken extends GeneratedKeyAssignmentToken {
     
-    public ProjectionPrefixToken(final int startIndex) {
-        super(startIndex);
+    public ParameterMarkerGeneratedKeyAssignmentToken(final int startIndex, final String columnName) {
+        super(startIndex, columnName);
     }
     
     @Override
-    public String toString() {
-        return "DISTINCT ";
+    protected String getRightValue() {
+        return "?";
     }
 }

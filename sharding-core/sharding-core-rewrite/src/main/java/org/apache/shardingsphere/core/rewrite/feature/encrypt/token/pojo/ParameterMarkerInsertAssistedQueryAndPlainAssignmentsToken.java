@@ -15,35 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
+package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo;
 
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-
-import java.util.Collection;
+import java.util.List;
 
 /**
- * Projections token.
+ * Insert assisted query and plain assignments token for parameter marker.
  *
  * @author zhangliang
- * @author panjuan
  */
-public final class ProjectionsToken extends SQLToken implements Attachable {
+public final class ParameterMarkerInsertAssistedQueryAndPlainAssignmentsToken extends InsertAssistedQueryAndPlainAssignmentsToken {
     
-    private final Collection<String> projections;
-    
-    public ProjectionsToken(final int startIndex, final Collection<String> projections) {
-        super(startIndex);
-        this.projections = projections;
+    public ParameterMarkerInsertAssistedQueryAndPlainAssignmentsToken(final int startIndex, final List<String> columnNames) {
+        super(startIndex, columnNames);
     }
     
     @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder();
-        for (String each : projections) {
-            result.append(", ");
-            result.append(each);
-        }
-        return result.toString();
+    protected String getAssignmentValue(final int index) {
+        return "?";
     }
 }

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrd
 import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.OrderByToken;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.OrderByToken;
 
 /**
  * Order by token generator.

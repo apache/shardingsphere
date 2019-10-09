@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
-
-import java.util.List;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
 
 /**
- * Insert assisted query and plain assignments token for parameter marker.
+ * Generated key assignment token for literal.
  *
- * @author zhangliang
+ * @author panjuan
  */
-public final class ParameterMarkerInsertAssistedQueryAndPlainAssignmentsToken extends InsertAssistedQueryAndPlainAssignmentsToken {
+public final class LiteralGeneratedKeyAssignmentToken extends GeneratedKeyAssignmentToken {
     
-    public ParameterMarkerInsertAssistedQueryAndPlainAssignmentsToken(final int startIndex, final List<String> columnNames) {
-        super(startIndex, columnNames);
+    private final Object value;
+    
+    public LiteralGeneratedKeyAssignmentToken(final int startIndex, final String columnName, final Object value) {
+        super(startIndex, columnName);
+        this.value = value;
     }
     
     @Override
-    protected String getAssignmentValue(final int index) {
-        return "?";
+    protected String getRightValue() {
+        return value instanceof String ? String.format("'%s'", value) : value.toString();
     }
 }

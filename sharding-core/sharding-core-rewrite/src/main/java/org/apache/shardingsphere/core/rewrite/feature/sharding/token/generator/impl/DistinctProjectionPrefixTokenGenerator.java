@@ -21,14 +21,14 @@ import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.ProjectionPrefixToken;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.DistinctProjectionPrefixToken;
 
 /**
- * Select item prefix token generator.
+ * Distinct projection prefix token generator.
  *
  * @author panjuan
  */
-public final class SelectItemPrefixTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
+public final class DistinctProjectionPrefixTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -36,7 +36,7 @@ public final class SelectItemPrefixTokenGenerator implements OptionalSQLTokenGen
     }
     
     @Override
-    public ProjectionPrefixToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return new ProjectionPrefixToken(((SelectSQLStatementContext) sqlStatementContext).getProjectionsContext().getStartIndex());
+    public DistinctProjectionPrefixToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
+        return new DistinctProjectionPrefixToken(((SelectSQLStatementContext) sqlStatementContext).getProjectionsContext().getStartIndex());
     }
 }

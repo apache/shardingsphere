@@ -15,27 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
+package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo;
 
-import java.util.List;
+import lombok.Getter;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
 
 /**
- * Insert assisted query and plain assignments token for literal.
+ * Insert cipher name token.
  *
- * @author zhangliang
+ * @author panjuan
  */
-public final class LiteralInsertAssistedQueryAndPlainAssignmentsToken extends InsertAssistedQueryAndPlainAssignmentsToken {
+public final class InsertCipherNameToken extends SQLToken implements Substitutable {
     
-    private final List<Object> assignmentValues;
+    @Getter
+    private final int stopIndex;
     
-    public LiteralInsertAssistedQueryAndPlainAssignmentsToken(final int startIndex, final List<String> columnNames, final List<Object> assignmentValues) {
-        super(startIndex, columnNames);
-        this.assignmentValues = assignmentValues;
+    private final String columnName;
+    
+    public InsertCipherNameToken(final int startIndex, final int stopIndex, final String columnName) {
+        super(startIndex);
+        this.stopIndex = stopIndex;
+        this.columnName = columnName;
     }
     
     @Override
-    protected String getAssignmentValue(final int index) {
-        Object assignmentValue = assignmentValues.get(index);
-        return assignmentValue instanceof String ? String.format("'%s'", assignmentValue) : assignmentValue.toString();
+    public String toString() {
+        return columnName;
     }
 }

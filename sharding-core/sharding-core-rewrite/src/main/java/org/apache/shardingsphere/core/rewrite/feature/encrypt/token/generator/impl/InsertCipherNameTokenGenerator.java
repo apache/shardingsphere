@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertCipherNameToken;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.InsertCipherNameToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;

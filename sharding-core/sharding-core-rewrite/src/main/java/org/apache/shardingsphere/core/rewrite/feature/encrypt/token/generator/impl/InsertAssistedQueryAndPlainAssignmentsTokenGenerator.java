@@ -26,9 +26,9 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssign
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.ParametersAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertAssistedQueryAndPlainAssignmentsToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.LiteralInsertAssistedQueryAndPlainAssignmentsToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.ParameterMarkerInsertAssistedQueryAndPlainAssignmentsToken;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.InsertAssistedQueryAndPlainAssignmentsToken;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.LiteralInsertAssistedQueryAndPlainAssignmentsToken;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.ParameterMarkerInsertAssistedQueryAndPlainAssignmentsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;

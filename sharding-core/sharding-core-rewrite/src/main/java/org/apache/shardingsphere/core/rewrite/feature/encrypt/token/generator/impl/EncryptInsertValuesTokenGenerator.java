@@ -35,8 +35,8 @@ import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.En
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertValuesToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.InsertValuesToken.InsertValueToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValuesToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValuesToken.InsertValueToken;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;

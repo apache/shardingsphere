@@ -15,33 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
+package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo;
 
-import lombok.Getter;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
+
+import java.util.List;
 
 /**
- * Offset token.
+ * Insert assisted query and plain assignments token.
  *
- * @author zhangliang
  * @author panjuan
+ * @author zhangiang
  */
-public final class OffsetToken extends SQLToken implements Substitutable {
+public abstract class InsertAssistedQueryAndPlainAssignmentsToken extends SQLToken implements Attachable {
     
-    @Getter
-    private final int stopIndex;
+    private final List<String> columnNames;
     
-    private final long revisedOffset;
-    
-    public OffsetToken(final int startIndex, final int stopIndex, final long revisedOffset) {
+    public InsertAssistedQueryAndPlainAssignmentsToken(final int startIndex, final List<String> columnNames) {
         super(startIndex);
-        this.stopIndex = stopIndex;
-        this.revisedOffset = revisedOffset;
+        this.columnNames = columnNames;
     }
     
     @Override
-    public String toString() {
-        return String.valueOf(revisedOffset);
+    public final String toString() {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < columnNames.size(); i++) {
+            result.append(String.format(", %s = %s", columnNames.get(i), getAssignmentValue(i)));
+        }
+        return result.toString();
     }
+    
+    protected abstract String getAssignmentValue(int index);
 }

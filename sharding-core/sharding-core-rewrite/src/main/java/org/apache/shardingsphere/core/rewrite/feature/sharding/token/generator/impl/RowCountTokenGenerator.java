@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatement
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.RowCountToken;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.RowCountToken;
 
 /**
  * Row count token generator.

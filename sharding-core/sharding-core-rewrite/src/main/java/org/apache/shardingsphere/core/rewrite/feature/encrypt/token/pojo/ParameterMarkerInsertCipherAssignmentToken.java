@@ -15,29 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl;
-
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
+package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo;
 
 /**
- * Generated key assignment token.
+ * Insert cipher assignment token for parameter marker.
  *
+ * @author panjuan
  * @author zhangliang
  */
-public abstract class GeneratedKeyAssignmentToken extends SQLToken implements Attachable {
+public final class ParameterMarkerInsertCipherAssignmentToken extends InsertCipherAssignmentToken {
     
-    private final String columnName;
-    
-    public GeneratedKeyAssignmentToken(final int startIndex, final String columnName) {
-        super(startIndex);
-        this.columnName = columnName;
+    public ParameterMarkerInsertCipherAssignmentToken(final int startIndex, final int stopIndex, final String cipherColumnName) {
+        super(startIndex, stopIndex, cipherColumnName);
     }
     
     @Override
-    public final String toString() {
-        return String.format(", %s = %s", columnName, getRightValue());
+    protected String getAssignmentValue() {
+        return "?";
     }
-    
-    protected abstract String getRightValue();
 }
