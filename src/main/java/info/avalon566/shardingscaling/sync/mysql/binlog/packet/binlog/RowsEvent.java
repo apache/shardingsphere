@@ -88,7 +88,7 @@ public class RowsEvent {
         }
         var columnDefs = binlogContext.getColumnDefs(tableId);
         while (in.isReadable()) {
-            //TODO: support minimal binlog row image
+            //TODO support minimal binlog row image
             var nullBitmap = DataTypesCodec.readBitmap(columnsLength, in);
             var columnValues = new Serializable[columnsLength];
             for (int i = 0; i < columnsLength; i++) {
@@ -130,7 +130,7 @@ public class RowsEvent {
             case ColumnTypes.MYSQL_TYPE_FLOAT:
                 return decodeFloat(columnDef.getMeta(), in);
             case ColumnTypes.MYSQL_TYPE_NEWDECIMAL:
-                return decodeNewdecimal(columnDef.getMeta(), in);
+                return decodeNewDecimal(columnDef.getMeta(), in);
             case ColumnTypes.MYSQL_TYPE_DOUBLE:
                 return DataTypesCodec.readDoubleLE(in);
             case ColumnTypes.MYSQL_TYPE_TIMESTAMP2:
@@ -266,7 +266,7 @@ public class RowsEvent {
         return DataTypesCodec.readUnsignedInt1(in) + 1900;
     }
 
-    private Serializable decodeNewdecimal(final int meta, final ByteBuf in) {
+    private Serializable decodeNewDecimal(final int meta, final ByteBuf in) {
         return DecimalValueDecoder.decodeNewDecimal(meta, in);
     }
 
