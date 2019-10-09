@@ -30,12 +30,12 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Generated key insert value parameter rewriter.
+ * Sharding generated key insert value parameter rewriter.
  *
  * @author zhangliang
  */
 @Setter
-public final class GeneratedKeyInsertValueParameterRewriter implements ParameterRewriter, SQLRouteResultAware {
+public final class ShardingGeneratedKeyInsertValueParameterRewriter implements ParameterRewriter, SQLRouteResultAware {
     
     private SQLRouteResult sqlRouteResult;
     

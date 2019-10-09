@@ -19,12 +19,12 @@ package org.apache.shardingsphere.core.rewrite.feature.sharding.parameter;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.rewrite.feature.sharding.parameter.impl.PaginationParameterRewriter;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.parameter.impl.ShardingPaginationParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.GroupedParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.feature.sharding.parameter.impl.GeneratedKeyInsertValueParameterRewriter;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.parameter.impl.ShardingGeneratedKeyInsertValueParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.SQLRouteResultAware;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.ShardingRuleAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.TableMetasAware;
@@ -60,8 +60,8 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
     
     private static Collection<ParameterRewriter> getParameterRewriters() {
         Collection<ParameterRewriter> result = new LinkedList<>();
-        result.add(new GeneratedKeyInsertValueParameterRewriter());
-        result.add(new PaginationParameterRewriter());
+        result.add(new ShardingGeneratedKeyInsertValueParameterRewriter());
+        result.add(new ShardingPaginationParameterRewriter());
         return result;
     }
     

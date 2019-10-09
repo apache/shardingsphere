@@ -31,12 +31,12 @@ import org.apache.shardingsphere.core.route.SQLRouteResult;
 import java.util.List;
 
 /**
- * Pagination parameter rewriter.
+ * Sharding pagination parameter rewriter.
  *
  * @author zhangliang
  */
 @Setter
-public final class PaginationParameterRewriter implements ParameterRewriter, SQLRouteResultAware {
+public final class ShardingPaginationParameterRewriter implements ParameterRewriter, SQLRouteResultAware {
     
     private SQLRouteResult sqlRouteResult;
     
