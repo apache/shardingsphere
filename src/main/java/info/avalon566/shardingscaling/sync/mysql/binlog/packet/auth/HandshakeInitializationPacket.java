@@ -87,7 +87,8 @@ public final class HandshakeInitializationPacket extends AbstractPacket {
             int authPluginDataLength = DataTypesCodec.readUnsignedInt1(data);
             DataTypesCodec.readBytes(10, data);
             if ((capabilities & CapabilityFlags.CLIENT_SECURE_CONNECTION) != 0) {
-                authPluginDataPart2 = DataTypesCodec.readBytes(Math.max(13, authPluginDataLength - 8), data);
+                authPluginDataPart2 = DataTypesCodec.readBytes(authPluginDataLength - 8 - 1, data);
+                DataTypesCodec.readNul(data);
             }
             if ((capabilities & CapabilityFlags.CLIENT_PLUGIN_AUTH) != 0) {
                 authPluginName = DataTypesCodec.readNulTerminatedString(data);
