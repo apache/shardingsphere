@@ -23,11 +23,11 @@ import org.apache.shardingsphere.core.parse.autogen.MySQLStatementParser;
 
 /**
  * SQL parser for MySQL.
- *
+ * 
  * @author duhongjun
  */
 public final class MySQLParser extends MySQLStatementParser implements SQLParser {
-
+    
     public MySQLParser(final TokenStream input) {
         super(input);
     }
