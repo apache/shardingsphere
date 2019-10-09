@@ -20,6 +20,7 @@ package info.avalon566.shardingscaling.sync.mysql.binlog.event;
 import lombok.Data;
 
 /**
+ * Abstract binlog event.
  * @author avalon566
  */
 @Data

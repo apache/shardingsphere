@@ -17,11 +17,16 @@
 
 package info.avalon566.shardingscaling.sync.jdbc;
 
-import info.avalon566.shardingscaling.sync.core.*;
+import info.avalon566.shardingscaling.sync.core.AbstractRunner;
+import info.avalon566.shardingscaling.sync.core.Channel;
+import info.avalon566.shardingscaling.sync.core.FinishedRecord;
+import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
+import info.avalon566.shardingscaling.sync.core.Writer;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -29,6 +34,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 
 /**
+ * generic jdbc writer implement.
  * @author avalon566
  */
 @Slf4j
@@ -43,20 +49,20 @@ public abstract class AbstractJdbcWriter extends AbstractRunner implements Write
     @Setter
     private Channel channel;
 
-    public AbstractJdbcWriter(RdbmsConfiguration rdbmsConfiguration) {
+    public AbstractJdbcWriter(final RdbmsConfiguration rdbmsConfiguration) {
         this.rdbmsConfiguration = rdbmsConfiguration;
         this.dbMetaDataUtil = new DbMetaDataUtil(rdbmsConfiguration);
         this.sqlBuilder = new SqlBuilder(rdbmsConfiguration);
     }
 
     @Override
-    public void run() {
+    public final void run() {
         start();
         write(channel);
     }
 
     @Override
-    public void write(Channel channel) {
+    public final void write(final Channel channel) {
         var buffer = new ArrayList<DataRecord>(2000);
         var lastFlushTime = System.currentTimeMillis();
         try {
@@ -83,69 +89,78 @@ public abstract class AbstractJdbcWriter extends AbstractRunner implements Write
             if (0 < buffer.size()) {
                 flush(rdbmsConfiguration, buffer);
             }
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             log.error(null, ex);
             throw new RuntimeException(ex);
         }
     }
 
-    private void flush(RdbmsConfiguration config, ArrayList<DataRecord> buffer) throws SQLException {
+    private void flush(final RdbmsConfiguration config, final ArrayList<DataRecord> buffer) throws SQLException {
         try (var connection = DriverManager.getConnection(config.getJdbcUrl(), config.getUsername(), config.getPassword())) {
             connection.setAutoCommit(false);
             for (int ij = 0; ij < buffer.size(); ij++) {
                 var record = buffer.get(ij);
                 if ("bootstrap-insert".equals(record.getType())
                         || "insert".equals(record.getType())) {
-                    var insertSql = sqlBuilder.buildInsertSql(record.getTableName());
-                    PreparedStatement ps = connection.prepareStatement(insertSql);
-                    ps.setQueryTimeout(30);
-                    for (DataRecord r : buffer) {
-                        try {
-                            for (int i = 0; i < r.getColumnCount(); i++) {
-                                ps.setObject(i + 1, r.getColumn(i).getValue());
-                            }
-                            ps.execute();
-                        } catch (SQLIntegrityConstraintViolationException ex) {
-                        } catch (Exception ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    }
+                    executeInsert(connection, record);
                 } else if ("update".equals(record.getType())) {
-                    var metaData = dbMetaDataUtil.getColumNames(record.getTableName());
-                    var primaryKeys = dbMetaDataUtil.getPrimaryKeys(record.getTableName());
-                    var updatedColumns = new StringBuilder();
-                    var values = new ArrayList<Column>();
-                    for (int i = 0; i < metaData.size(); i++) {
-                        if (record.getColumn(i).isUpdated()) {
-                            updatedColumns.append(String.format("%s = ?,", metaData.get(i).getColumnName()));
-                            values.add(record.getColumn(i));
-                        }
-                    }
-                    for (int i = 0; i < primaryKeys.size(); i++) {
-                        var index = DbMetaDataUtil.findColumnIndex(metaData, primaryKeys.get(i));
-                        values.add(record.getColumn(index));
-                    }
-                    var updateSql = sqlBuilder.buildUpdateSql(record.getTableName());
-                    var sql = String.format(updateSql, updatedColumns.substring(0, updatedColumns.length() - 1));
-                    PreparedStatement ps = connection.prepareStatement(sql);
-                    for (int i = 0; i < values.size(); i++) {
-                        ps.setObject(i + 1, values.get(i).getValue());
-                    }
-                    ps.execute();
+                    executeUpdate(connection, record);
                 } else if ("delete".equals(record.getType())) {
-                    var metaData = dbMetaDataUtil.getColumNames(record.getTableName());
-                    var primaryKeys = dbMetaDataUtil.getPrimaryKeys(record.getTableName());
-                    var deleteSql = sqlBuilder.buildDeleteSql(record.getTableName());
-                    PreparedStatement ps = connection.prepareStatement(deleteSql);
-                    for (int i = 0; i < primaryKeys.size(); i++) {
-                        var index = DbMetaDataUtil.findColumnIndex(metaData, primaryKeys.get(i));
-                        ps.setObject(i + 1, record.getColumn(index).getValue());
-                    }
-                    ps.execute();
+                    executeDelete(connection, record);
                 }
             }
             connection.commit();
         }
         buffer.clear();
+    }
+
+    private void executeInsert(final Connection connection, final DataRecord record) throws SQLException {
+        var insertSql = sqlBuilder.buildInsertSql(record.getTableName());
+        PreparedStatement ps = connection.prepareStatement(insertSql);
+        ps.setQueryTimeout(30);
+        try {
+            for (int i = 0; i < record.getColumnCount(); i++) {
+                ps.setObject(i + 1, record.getColumn(i).getValue());
+            }
+            ps.execute();
+        } catch (SQLIntegrityConstraintViolationException ex) {
+            // ignore
+        }
+    }
+
+    private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
+        var metaData = dbMetaDataUtil.getColumNames(record.getTableName());
+        var primaryKeys = dbMetaDataUtil.getPrimaryKeys(record.getTableName());
+        var updatedColumns = new StringBuilder();
+        var values = new ArrayList<Column>();
+        for (int i = 0; i < metaData.size(); i++) {
+            if (record.getColumn(i).isUpdated()) {
+                updatedColumns.append(String.format("%s = ?,", metaData.get(i).getColumnName()));
+                values.add(record.getColumn(i));
+            }
+        }
+        for (int i = 0; i < primaryKeys.size(); i++) {
+            var index = DbMetaDataUtil.findColumnIndex(metaData, primaryKeys.get(i));
+            values.add(record.getColumn(index));
+        }
+        var updateSql = sqlBuilder.buildUpdateSql(record.getTableName());
+        var sql = String.format(updateSql, updatedColumns.substring(0, updatedColumns.length() - 1));
+        PreparedStatement ps = connection.prepareStatement(sql);
+        for (int i = 0; i < values.size(); i++) {
+            ps.setObject(i + 1, values.get(i).getValue());
+        }
+        ps.execute();
+    }
+
+    private void executeDelete(final Connection connection, final DataRecord record) throws SQLException {
+        var metaData = dbMetaDataUtil.getColumNames(record.getTableName());
+        var primaryKeys = dbMetaDataUtil.getPrimaryKeys(record.getTableName());
+        var deleteSql = sqlBuilder.buildDeleteSql(record.getTableName());
+        PreparedStatement ps = connection.prepareStatement(deleteSql);
+        for (int i = 0; i < primaryKeys.size(); i++) {
+            var index = DbMetaDataUtil.findColumnIndex(metaData, primaryKeys.get(i));
+            ps.setObject(i + 1, record.getColumn(index).getValue());
+        }
+        ps.execute();
     }
 }

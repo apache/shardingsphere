@@ -22,6 +22,8 @@ import info.avalon566.shardingscaling.sync.core.Channel;
 import info.avalon566.shardingscaling.sync.core.FinishedRecord;
 import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
 import info.avalon566.shardingscaling.sync.core.Reader;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
@@ -35,38 +37,38 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.sql.ResultSet.TYPE_FORWARD_ONLY;
-
 /**
+ * generic jdbc reader implement.
  * @author avalon566
  */
 @Slf4j
 public abstract class AbstractJdbcReader extends AbstractRunner implements Reader {
 
-    protected final RdbmsConfiguration rdbmsConfiguration;
+    @Getter(AccessLevel.PROTECTED)
+    private final RdbmsConfiguration rdbmsConfiguration;
 
     @Setter
     private Channel channel;
 
-    public AbstractJdbcReader(RdbmsConfiguration rdbmsConfiguration) {
+    public AbstractJdbcReader(final RdbmsConfiguration rdbmsConfiguration) {
         this.rdbmsConfiguration = rdbmsConfiguration;
     }
 
     @Override
-    public void run() {
+    public final void run() {
         start();
         read(channel);
     }
 
     @Override
-    public void read(Channel channel) {
+    public final void read(final Channel channel) {
         try {
             Connection conn = DriverManager.getConnection(
                     rdbmsConfiguration.getJdbcUrl(),
                     rdbmsConfiguration.getUsername(),
                     rdbmsConfiguration.getPassword());
             var sql = String.format("select * from %s %s", rdbmsConfiguration.getTableName(), rdbmsConfiguration.getWhereCondition());
-            var ps = conn.prepareStatement(sql, TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            var ps = conn.prepareStatement(sql, java.sql.ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             ps.setFetchSize(Integer.MIN_VALUE);
             ps.setFetchDirection(ResultSet.FETCH_REVERSE);
             var rs = ps.executeQuery();
@@ -88,8 +90,11 @@ public abstract class AbstractJdbcReader extends AbstractRunner implements Reade
         }
     }
 
+    /**
+     * generic jdbc reader split implement.
+     */
     @Override
-    public List<RdbmsConfiguration> split(int concurrency) {
+    public List<RdbmsConfiguration> split(final int concurrency) {
         var primaryKeys = new DbMetaDataUtil(rdbmsConfiguration).getPrimaryKeys(rdbmsConfiguration.getTableName());
         if (primaryKeys == null || primaryKeys.size() == 0) {
             log.warn("{} 表主键不存在, 不支持并发执行", rdbmsConfiguration.getTableName());
@@ -101,13 +106,9 @@ public abstract class AbstractJdbcReader extends AbstractRunner implements Reade
         }
         var metaData = new DbMetaDataUtil(rdbmsConfiguration).getColumNames(rdbmsConfiguration.getTableName());
         var index = DbMetaDataUtil.findColumnIndex(metaData, primaryKeys.get(0));
-        try {
-            if (Types.INTEGER != metaData.get(index).getColumnType()) {
-                log.warn("{} 主键不是整形,不支持并发执行", rdbmsConfiguration.getTableName());
-                return Arrays.asList(rdbmsConfiguration);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        if (Types.INTEGER != metaData.get(index).getColumnType()) {
+            log.warn("{} 主键不是整形,不支持并发执行", rdbmsConfiguration.getTableName());
+            return Arrays.asList(rdbmsConfiguration);
         }
         var pk = primaryKeys.get(0);
         try {
@@ -131,7 +132,7 @@ public abstract class AbstractJdbcReader extends AbstractRunner implements Reade
                 }
                 return configs;
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new RuntimeException("getTableNames error", e);
         }
     }

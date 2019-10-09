@@ -38,7 +38,7 @@ public final class MySQLJdbcReader extends AbstractJdbcReader {
 
     @Override
     public List<RdbmsConfiguration> split(final int concurrency) {
-        rdbmsConfiguration.setJdbcUrl(fixMysqlUrl(rdbmsConfiguration.getJdbcUrl()));
+        getRdbmsConfiguration().setJdbcUrl(fixMysqlUrl(getRdbmsConfiguration().getJdbcUrl()));
         return super.split(concurrency);
     }
 
