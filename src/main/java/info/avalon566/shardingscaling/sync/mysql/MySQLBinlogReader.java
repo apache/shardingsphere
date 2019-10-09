@@ -149,7 +149,7 @@ public final class MySQLBinlogReader extends AbstractRunner implements Reader {
             for (int j = 0; j < beforeValues.length; j++) {
                 var oldValue = getColumnValue(record.getTableName(), j, beforeValues[j]);
                 var newValue = getColumnValue(record.getTableName(), j, afterValues[j]);
-                record.addColumn(new Column(newValue, newValue.equals(oldValue)));
+                record.addColumn(new Column(newValue, !newValue.equals(oldValue)));
             }
             channel.pushRecord(record);
         }
