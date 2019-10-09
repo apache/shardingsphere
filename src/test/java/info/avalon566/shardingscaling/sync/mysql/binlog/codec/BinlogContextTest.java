@@ -17,6 +17,7 @@
 
 package info.avalon566.shardingscaling.sync.mysql.binlog.codec;
 
+import info.avalon566.shardingscaling.sync.mysql.binlog.BinlogContext;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.ColumnDef;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.TableMapEvent;
 import org.junit.Before;

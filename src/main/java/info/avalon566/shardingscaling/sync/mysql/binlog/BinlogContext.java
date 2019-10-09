@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.sync.mysql.binlog.codec;
+package info.avalon566.shardingscaling.sync.mysql.binlog;
 
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.ColumnDef;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.TableMapEvent;

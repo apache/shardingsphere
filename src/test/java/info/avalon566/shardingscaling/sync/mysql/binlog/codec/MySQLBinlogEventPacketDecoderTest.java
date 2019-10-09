@@ -18,6 +18,7 @@
 package info.avalon566.shardingscaling.sync.mysql.binlog.codec;
 
 import io.netty.buffer.ByteBuf;
+import info.avalon566.shardingscaling.sync.mysql.binlog.BinlogContext;
 import info.avalon566.shardingscaling.sync.mysql.binlog.event.DeleteRowsEvent;
 import info.avalon566.shardingscaling.sync.mysql.binlog.event.UpdateRowsEvent;
 import info.avalon566.shardingscaling.sync.mysql.binlog.event.WriteRowsEvent;

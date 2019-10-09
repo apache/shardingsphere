@@ -18,7 +18,7 @@
 package info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog;
 
 import com.google.common.base.Strings;
-import info.avalon566.shardingscaling.sync.mysql.binlog.codec.BinlogContext;
+import info.avalon566.shardingscaling.sync.mysql.binlog.BinlogContext;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DecimalValueDecoder;
 import io.netty.buffer.ByteBuf;
@@ -60,6 +60,7 @@ public class RowsEvent {
 
     /**
      * Parse post header.
+     *
      * @param in buffer
      */
     public void parsePostHeader(final ByteBuf in) {
@@ -76,6 +77,7 @@ public class RowsEvent {
 
     /**
      * Parse payload.
+     *
      * @param binlogContext binlog context
      * @param in buffer
      */
