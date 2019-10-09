@@ -151,4 +151,24 @@ public final class DataSourceConfiguration {
         }
         return Objects.hashCode(dataSourceClassName, stringBuilder.toString());
     }
+
+    /**
+     * Add alias to share configuration with sharding-jdbc.
+     *
+     * @param alias alias for configuration
+     */
+    public void addAlias(final String... alias) {
+        Object value = null;
+        for (String each : alias) {
+            if (null != properties.get(each)) {
+                value = properties.get(each);
+            }
+        }
+        if (null == value) {
+            return;
+        }
+        for (String each : alias) {
+            properties.put(each, value);
+        }
+    }
 }

@@ -57,6 +57,17 @@ public final class InsertSQLStatementContextTest {
         assertInsertSQLStatementContext(actual);
     }
     
+    @Test
+    public void assertGetGroupedParameters() {
+        TableMetas tableMetas = mock(TableMetas.class);
+        when(tableMetas.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
+        InsertStatement insertStatement = new InsertStatement();
+        insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
+        setUpInsertValues(insertStatement);
+        InsertSQLStatementContext actual = new InsertSQLStatementContext(tableMetas, Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
+        assertThat(actual.getGroupedParameters().size(), is(2));
+    }
+    
     private void setUpInsertValues(final InsertStatement insertStatement) {
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Arrays.<ExpressionSegment>asList(
                 new ParameterMarkerExpressionSegment(0, 0, 1), new ParameterMarkerExpressionSegment(0, 0, 2), new LiteralExpressionSegment(0, 0, "init"))));
