@@ -142,9 +142,7 @@ public final class TablesContextTest {
     public void assertFindTableNameWhenSingleTable() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        Optional<String> tableName = tablesContext.findTableName(null, null);
-        assertTrue(tableName.isPresent());
+        assertTrue(new TablesContext(selectStatement).findTableName(null, null).isPresent());
     }
     
     @Test
@@ -155,8 +153,7 @@ public final class TablesContextTest {
         TablesContext tablesContext = new TablesContext(selectStatement);
         ColumnSegment columnSegment = mock(ColumnSegment.class);
         when(columnSegment.getOwner()).thenReturn(Optional.of(new TableSegment(0, 10, "table_1")));
-        Optional<String> tableName = tablesContext.findTableName(columnSegment, null);
-        assertTrue(tableName.isPresent());
+        assertTrue(tablesContext.findTableName(columnSegment, null).isPresent());
     }
     
     @Test
@@ -169,8 +166,7 @@ public final class TablesContextTest {
         when(columnSegment.getOwner()).thenReturn(Optional.<TableSegment>absent());
         TableMetas tableMetas = mock(TableMetas.class);
         when(tableMetas.containsColumn(anyString(), anyString())).thenReturn(false);
-        Optional<String> tableName = tablesContext.findTableName(columnSegment, tableMetas);
-        assertFalse(tableName.isPresent());
+        assertFalse(tablesContext.findTableName(columnSegment, tableMetas).isPresent());
     }
     
     @Test
@@ -184,8 +180,7 @@ public final class TablesContextTest {
         when(columnSegment.getName()).thenReturn("columnName");
         TableMetas tableMetas = mock(TableMetas.class);
         when(tableMetas.containsColumn(anyString(), anyString())).thenReturn(true);
-        Optional<String> tableName = tablesContext.findTableName(columnSegment, tableMetas);
-        assertTrue(tableName.isPresent());
+        assertTrue(tablesContext.findTableName(columnSegment, tableMetas).isPresent());
     }
     
     private TableSegment createTableSegment(final String tableName, final String alias) {
