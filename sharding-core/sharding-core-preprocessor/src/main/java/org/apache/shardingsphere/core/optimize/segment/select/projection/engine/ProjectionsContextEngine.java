@@ -110,6 +110,18 @@ public final class ProjectionsContextEngine {
                 || containsItemInShorthandProjection(tablesContext, projections, orderByItemSegment) || containsProjection(projections, orderByItemSegment);
     }
     
+    private boolean containsProjection(final Collection<Projection> projections, final OrderByItemSegment orderItem) {
+        for (Projection each : projections) {
+            if (orderItem instanceof IndexOrderByItemSegment) {
+                return true;
+            }
+            if (isSameAlias(each, (TextOrderByItemSegment) orderItem) || isSameQualifiedName(each, (TextOrderByItemSegment) orderItem)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     private boolean containsItemInShorthandProjection(final TablesContext tablesContext, final Collection<Projection> projections, final OrderByItemSegment orderByItemSegment) {
         return isUnqualifiedShorthandProjection(projections) || containsItemWithOwnerInShorthandProjections(tablesContext, projections, orderByItemSegment)
                 || containsItemWithoutOwnerInShorthandProjections(tablesContext, projections, orderByItemSegment);
@@ -173,18 +185,6 @@ public final class ProjectionsContextEngine {
         Preconditions.checkState(shorthandProjection.getOwner().isPresent());
         Optional<Table> table = tablesContext.find(shorthandProjection.getOwner().get());
         return table.isPresent() && tableMetas.containsColumn(table.get().getName(), orderItem.getColumn().getName());
-    }
-    
-    private boolean containsProjection(final Collection<Projection> projections, final OrderByItemSegment orderItem) {
-        for (Projection each : projections) {
-            if (orderItem instanceof IndexOrderByItemSegment) {
-                return true;
-            }
-            if (isSameAlias(each, (TextOrderByItemSegment) orderItem) || isSameQualifiedName(each, (TextOrderByItemSegment) orderItem)) {
-                return true;
-            }
-        }
-        return false;
     }
     
     private boolean isSameAlias(final Projection projection, final TextOrderByItemSegment orderItem) {

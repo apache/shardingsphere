@@ -59,15 +59,15 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public class SeataATShardingTransactionManagerTest {
     
-    private static MockSeataServer mockSeataServer = new MockSeataServer();
+    private static final MockSeataServer MOCK_SEATA_SERVER = new MockSeataServer();
     
     private final DataSource dataSource = getDataSource();
     
     private final SeataATShardingTransactionManager seataATShardingTransactionManager = new SeataATShardingTransactionManager();
     
-    private Queue<Object> requestQueue = mockSeataServer.getMessageHandler().getRequestQueue();
+    private final Queue<Object> requestQueue = MOCK_SEATA_SERVER.getMessageHandler().getRequestQueue();
     
-    private Queue<Object> responseQueue = mockSeataServer.getMessageHandler().getResponseQueue();
+    private final Queue<Object> responseQueue = MOCK_SEATA_SERVER.getMessageHandler().getResponseQueue();
     
     @BeforeClass
     @SneakyThrows
@@ -75,11 +75,11 @@ public class SeataATShardingTransactionManagerTest {
         Executors.newSingleThreadExecutor().submit(new Runnable() {
             @Override
             public void run() {
-                mockSeataServer.start();
+                MOCK_SEATA_SERVER.start();
             }
         });
         while (true) {
-            if (mockSeataServer.getInitialized().get()) {
+            if (MOCK_SEATA_SERVER.getInitialized().get()) {
                 return;
             }
         }
@@ -87,7 +87,7 @@ public class SeataATShardingTransactionManagerTest {
 
     @AfterClass
     public static void after() {
-        mockSeataServer.shutdown();
+        MOCK_SEATA_SERVER.shutdown();
     }
     
     @Before
@@ -102,6 +102,8 @@ public class SeataATShardingTransactionManagerTest {
         SeataTransactionHolder.clear();
         seataATShardingTransactionManager.close();
         releaseRpcClient();
+        requestQueue.clear();
+        responseQueue.clear();
     }
     
     private DataSource getDataSource() {

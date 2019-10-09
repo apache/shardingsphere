@@ -52,10 +52,13 @@ public final class ExpectedPredicateCompareRightValue implements ExpectedPredica
     private ExpectedParamMarkerExpressionSegment paramMarkerExpression;
 
     /**
-     * find expected expression
-     * @param expectedExpressionSegment
-     * @return  expression segment
+     * Find expected expression.
+     * 
+     * @param expectedExpressionSegment expected expression segment
+     * @param <T> type of expected expression segment
+     * @return expression segment
      */
+    @SuppressWarnings("unchecked")
     public <T extends ExpectedExpressionSegment> T findExpectedExpression(final Class<T> expectedExpressionSegment) {
         if (expectedExpressionSegment.isAssignableFrom(ExpectedParamMarkerExpressionSegment.class)) {
             return (T) paramMarkerExpression;

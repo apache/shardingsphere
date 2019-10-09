@@ -36,7 +36,7 @@ import static org.junit.Assert.assertThat;
 
 public final class ShardingCTLShowBackendHandlerTest {
     
-    private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
+    private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
     @Test
     public void assertShowTransactionType() throws SQLException {

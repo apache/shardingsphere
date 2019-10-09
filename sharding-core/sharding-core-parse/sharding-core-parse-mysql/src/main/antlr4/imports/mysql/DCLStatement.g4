@@ -25,22 +25,22 @@ grant
 
 revoke
     : REVOKE (proxyClause_ | privilegeClause_ | allClause_ | roleClause_)
-    ;  
+    ;
 
 proxyClause_
-    : PROXY ON
+    : PROXY ON userOrRole TO userOrRoles_ withGrantOption_?
     ;
 
 privilegeClause_
-    : privileges_ ON onObjectClause_
+    : privileges_ ON onObjectClause_ (TO | FROM) userOrRoles_ withGrantOption_? grantOption_?
     ;
 
 roleClause_
-    : ignoredIdentifiers_
+    : roles_ ( TO| FROM) userOrRoles_ withGrantOption_?
     ;
 
 allClause_
-    : ALL PRIVILEGES? COMMA_ GRANT OPTION
+    : ALL PRIVILEGES? COMMA_ GRANT OPTION FROM userOrRoles_
     ;
 
 privileges_
@@ -106,33 +106,104 @@ privilegeLevel_
     ;
 
 createUser
-    : CREATE USER
-    ;
-
-dropUser
-    : DROP USER
+    : CREATE USER (IF NOT EXISTS)? userName userAuthOption_? (COMMA_ userName userAuthOption_?)*
+    DEFAULT ROLE roleName (COMMA_ roleName)* (REQUIRE (NONE | tlsOption_ (AND? tlsOption_)*))?
+    (WITH resourceOption_ resourceOption_*)? (passwordOption_ | lockOption_)*
     ;
 
 alterUser
-    : ALTER USER
+    : ALTER USER (IF EXISTS)? userName userAuthOption_? (COMMA_ userName userAuthOption_?)*
+    (REQUIRE (NONE | tlsOption_ (AND? tlsOption_)*))? (WITH resourceOption_ resourceOption_*)? (passwordOption_ | lockOption_)*
+    | ALTER USER (IF EXISTS)? USER LP_ RP_ userFuncAuthOption_
+    | ALTER USER (IF EXISTS)? userName DEFAULT ROLE (NONE | ALL | roleName (COMMA_ roleName)*)
     ;
 
-renameUser
-    : RENAME USER
+dropUser
+    : DROP USER (IF EXISTS)? userName (COMMA_ userName)*
     ;
 
 createRole
-    : CREATE ROLE
+    : CREATE ROLE (IF NOT EXISTS)? roleName (COMMA_ roleName)*
     ;
 
 dropRole
-    : DROP ROLE
+    : DROP ROLE (IF EXISTS)? roleName (COMMA_ roleName)*
+    ;
+
+renameUser
+    : RENAME USER userName TO userName (COMMA_ userName TO userName)*
+    ;
+
+setDefaultRole
+    : SET DEFAULT ROLE (NONE | ALL | roleName (COMMA_ roleName)*) TO userName (COMMA_ userName)*
     ;
 
 setRole
-    : SET DEFAULT? ROLE
+    : SET ROLE (DEFAULT | NONE | ALL | ALL EXCEPT roleName (COMMA_ roleName)* | roleName (COMMA_ roleName)*)
     ;
 
 setPassword
-    : SET PASSWORD
+    : SET PASSWORD (FOR userName)? authOption_ (REPLACE STRING_)? (RETAIN CURRENT PASSWORD)?
+    ;
+
+authOption_
+    : EQ_ stringLiterals | TO RANDOM
+    ;
+
+withGrantOption_
+    : WITH GRANT OPTION
+    ;
+
+userOrRoles_
+    : userOrRole (COMMA_ userOrRole)*
+    ;
+
+roles_
+    : roleName (COMMA_ roleName)*
+    ;
+
+grantOption_
+    : AS userName (WITH ROLE DEFAULT | NONE | ALL | ALL EXCEPT roles_ | roles_ )?
+    ;
+
+userAuthOption_
+    : identifiedBy_
+    | identifiedWith_
+    | DISCARD OLD PASSWORD
+    ;
+
+identifiedBy_
+    : IDENTIFIED BY (STRING_ | RANDOM PASSWORD) (REPLACE STRING_)? (RETAIN CURRENT PASSWORD)?
+    ;
+
+identifiedWith_
+    : IDENTIFIED WITH pluginName (BY |AS) (STRING_ | RANDOM PASSWORD)
+      (REPLACE stringLiterals)? (RETAIN CURRENT PASSWORD)?
+    ;
+
+lockOption_
+    : ACCOUNT LOCK | ACCOUNT UNLOCK
+    ;
+
+
+passwordOption_
+    : PASSWORD EXPIRE (DEFAULT | NEVER | INTERVAL NUMBER_ DAY)?
+    | PASSWORD HISTORY (DEFAULT | NUMBER_)
+    | PASSWORD REUSE INTERVAL (DEFAULT | NUMBER_ DAY)
+    | PASSWORD REQUIRE CURRENT (DEFAULT | OPTIONAL)
+    ;
+
+resourceOption_
+    : MAX_QUERIES_PER_HOUR NUMBER_
+    | MAX_UPDATES_PER_HOUR NUMBER_
+    | MAX_CONNECTIONS_PER_HOUR NUMBER_
+    | MAX_USER_CONNECTIONS NUMBER_
+    ;
+
+tlsOption_
+    : SSL | X509 | CIPHER STRING_ | ISSUER STRING_ | SUBJECT STRING_
+    ;
+
+userFuncAuthOption_
+    : identifiedBy_ | DISCARD OLD PASSWORD
     ;

@@ -124,7 +124,7 @@ public final class ShardingSQLStatementAssert {
         }
         Optional<WhereSegment> whereSegment = actual.findSQLSegment(WhereSegment.class);
         if (whereSegment.isPresent() && null != expected.getWhereSegment()) {
-            predicateAssert.assertPredicate(whereSegment.get(),expected.getWhereSegment());
+            predicateAssert.assertPredicate(whereSegment.get(), expected.getWhereSegment());
         }
     }
     

@@ -93,8 +93,7 @@ public final class ConfigurationYamlConverter {
      * @return authentication
      */
     public static Authentication loadAuthentication(final String data) {
-        Authentication result = new AuthenticationYamlSwapper().swap(YamlEngine.unmarshal(data, YamlAuthenticationConfiguration.class));
-        return result;
+        return new AuthenticationYamlSwapper().swap(YamlEngine.unmarshal(data, YamlAuthenticationConfiguration.class));
     }
     
     /**

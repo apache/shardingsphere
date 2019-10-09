@@ -43,7 +43,7 @@ public final class InsertSQLStatementContext extends CommonSQLStatementContext {
     
     public InsertSQLStatementContext(final TableMetas tableMetas, final List<Object> parameters, final InsertStatement sqlStatement) {
         super(sqlStatement);
-        columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(this.getTablesContext().getSingleTableName()) : sqlStatement.getColumnNames();
+        columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(getTablesContext().getSingleTableName()) : sqlStatement.getColumnNames();
         insertValueContexts = getInsertValueContexts(parameters);
     }
     
@@ -54,6 +54,19 @@ public final class InsertSQLStatementContext extends CommonSQLStatementContext {
             InsertValueContext insertValueContext = new InsertValueContext(each, parameters, parametersOffset);
             result.add(insertValueContext);
             parametersOffset += insertValueContext.getParametersCount();
+        }
+        return result;
+    }
+    
+    /**
+     * Get grouped parameters.
+     * 
+     * @return grouped parameters
+     */
+    public List<List<Object>> getGroupedParameters() {
+        List<List<Object>> result = new LinkedList<>();
+        for (InsertValueContext each : insertValueContexts) {
+            result.add(each.getParameters());
         }
         return result;
     }

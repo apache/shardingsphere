@@ -21,8 +21,8 @@ import org.apache.shardingsphere.core.metadata.datasource.dialect.SQL92DataSourc
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Database type of SQL92.
@@ -38,7 +38,7 @@ public final class SQL92DatabaseType implements DatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixAlias() {
-        return Arrays.asList("jdbc:sqlite:", "jdbc:sybase", "jdbc:db2", "jdbc:informix-sqli");
+        return Collections.emptyList();
     }
     
     @Override
