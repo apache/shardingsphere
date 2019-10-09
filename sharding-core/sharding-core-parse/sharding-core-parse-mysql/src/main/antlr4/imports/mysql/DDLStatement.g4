@@ -66,13 +66,13 @@ alterInstance
     ;
 
 instanceAction
-    : ROTATE INNODB_ MASTER KEY | ROTATE BINLOG MASTER KEY | RELOAD TLS_ (NO ROLLBACK ON ERROR)?
+    : ROTATE 'INNODB' MASTER KEY | ROTATE BINLOG MASTER KEY | RELOAD 'TLS' (NO ROLLBACK ON ERROR)?
     ;
 
 createEvent
     : CREATE ownerStatement? EVENT (IF NOT EXISTS)? eventName
       ON SCHEDULE scheduleExpression_
-      (ON COMPLETION NOT? PRESERVE)?
+      (ON COMPLETION NOT? PRESERVE)? 
       (ENABLE | DISABLE | DISABLE ON SLAVE)?
       (COMMENT STRING_)?
       DO routineBody
@@ -142,7 +142,7 @@ createView
       ( ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE) )?
       ownerStatement?
       (SQL SECURITY (DEFINER | INVOKER))?
-      VIEW viewName (LP_ identifier_ (COMMA_ identifier_)* RP_)?
+      VIEW viewName (LP_ identifier_ (COMMA_ identifier_)* RP_)? 
       AS select
       (WITH (CASCADED | LOCAL)? CHECK OPTION)?
     ;
@@ -152,7 +152,7 @@ alterView
       ( ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE) )?
       ownerStatement?
       (SQL SECURITY (DEFINER | INVOKER))?
-      VIEW viewName (LP_ identifier_ (COMMA_ identifier_)* RP_)?
+      VIEW viewName (LP_ identifier_ (COMMA_ identifier_)* RP_)? 
       AS select
       (WITH (CASCADED | LOCAL)? CHECK OPTION)?
     ;
@@ -166,7 +166,7 @@ createTablespaceInnodb
     : CREATE (UNDO)? TABLESPACE identifier_
       ADD DATAFILE STRING_
       (FILE_BLOCK_SIZE EQ_ fileSizeLiteral_)?
-      (ENCRYPTION EQ_ Y_N_ )?
+      (ENCRYPTION EQ_ ('Y' | 'N') )?
       (ENGINE EQ_? STRING_)?
     ;
 
@@ -238,7 +238,7 @@ createDefinitionClause_
 createDatabaseSpecification_
     : DEFAULT? (CHARACTER SET | CHARSET) EQ_? characterSetName_
     | DEFAULT? COLLATE EQ_? collationName_
-    | DEFAULT ENCRYPTION EQ_ Y_N_
+    | DEFAULT ENCRYPTION EQ_ ('Y' | 'N')
     ;
 
 createDefinitions_
@@ -300,10 +300,10 @@ keyPart_
     ;
 
 indexOption_
-    : KEY_BLOCK_SIZE EQ_? NUMBER_
-    | indexType_
-    | WITH PARSER identifier_
-    | COMMENT STRING_
+    : KEY_BLOCK_SIZE EQ_? NUMBER_ 
+    | indexType_ 
+    | WITH PARSER identifier_ 
+    | COMMENT STRING_ 
     | (VISIBLE | INVISIBLE)
     ;
 
@@ -469,9 +469,9 @@ partitionDefinitions_
     ;
 
 partitionDefinition_
-    : PARTITION identifier_
+    : PARTITION identifier_ 
     (VALUES (LESS THAN partitionLessThanValue_ | IN LP_ partitionValueList_ RP_))?
-    partitionDefinitionOption_*
+    partitionDefinitionOption_* 
     (LP_ subpartitionDefinition_ (COMMA_ subpartitionDefinition_)* RP_)?
     ;
 
@@ -517,7 +517,7 @@ scheduleExpression_
     : AT_ timestampValue (PLUS_ intervalExpression_)*
     | EVERY intervalExpression_
       (STARTS timestampValue (PLUS_ intervalExpression_)*)?
-      ( ENDS timestampValue (PLUS_ intervalExpression_)*)?
+      ( ENDS timestampValue (PLUS_ intervalExpression_)*)?     
     ;
 
 timestampValue
@@ -525,7 +525,7 @@ timestampValue
     ;
 
 routineBody
-    :  NOT_SUPPORT_
+    :  'not support'
     ;
 
 serverOption_
@@ -535,15 +535,15 @@ serverOption_
     | PASSWORD STRING_
     | SOCKET STRING_
     | OWNER STRING_
-    | PORT numberLiterals
+    | PORT numberLiterals 
     ;
 
 routineOption_
-    : COMMENT STRING_
-    | LANGUAGE SQL
-    | NOT? DETERMINISTIC
-    | ( CONTAINS SQL | NO SQL | READS SQL DATA | MODIFIES SQL DATA)
-    | SQL SECURITY (DEFINER | INVOKER)
+    : COMMENT STRING_                                       
+    | LANGUAGE SQL                                              
+    | NOT? DETERMINISTIC                                          
+    | ( CONTAINS SQL | NO SQL | READS SQL DATA | MODIFIES SQL DATA)                                                           
+    | SQL SECURITY (DEFINER | INVOKER)                    
     ;
 
 procedureParameter_
@@ -551,5 +551,5 @@ procedureParameter_
     ;
 
 fileSizeLiteral_
-    : FILESIZE_LITERAL | numberLiterals
+    : numberLiterals ('K'|'M'|'G'|'T') | numberLiterals
     ;
