@@ -60,7 +60,7 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
             clientAuth.setServerCapabilities(handshake.getServerCapabilities());
             // use default database
             clientAuth.setDatabaseName("mysql");
-            clientAuth.setScrumbleBuff(joinAndCreateScrumbleBuff(handshake));
+            clientAuth.setAuthPluginData(joinAndCreateAuthPluginData(handshake));
             clientAuth.setAuthPluginName(handshake.getAuthPluginName());
             ctx.channel().writeAndFlush(clientAuth);
             serverInfo = new ServerInfo();
@@ -77,12 +77,10 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
         throw new RuntimeException(error.getMessage());
     }
 
-    private byte[] joinAndCreateScrumbleBuff(final HandshakeInitializationPacket handshakePacket) {
-        byte[] result = new byte[handshakePacket.getScramble().length + handshakePacket.getRestOfScramble().length];
-        System.arraycopy(handshakePacket.getScramble(), 0, result, 0, handshakePacket.getScramble().length);
-        System.arraycopy(handshakePacket.getRestOfScramble(),
-                0, result, handshakePacket.getScramble().length,
-                handshakePacket.getRestOfScramble().length);
+    private byte[] joinAndCreateAuthPluginData(final HandshakeInitializationPacket handshakePacket) {
+        byte[] result = new byte[handshakePacket.getAuthPluginDataPart1().length + handshakePacket.getAuthPluginDataPart2().length];
+        System.arraycopy(handshakePacket.getAuthPluginDataPart1(), 0, result, 0, handshakePacket.getAuthPluginDataPart1().length);
+        System.arraycopy(handshakePacket.getAuthPluginDataPart2(), 0, result, handshakePacket.getAuthPluginDataPart1().length, handshakePacket.getAuthPluginDataPart2().length);
         return result;
     }
 }

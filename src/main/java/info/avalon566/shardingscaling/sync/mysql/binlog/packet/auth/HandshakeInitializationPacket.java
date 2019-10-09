@@ -33,16 +33,16 @@ import lombok.Data;
  *     1           protocol version (always 10)
  *     n           server version string, \0-terminated
  *     4           thread id
- *     8           first 8 bytes of the plugin provided data (scramble)
- *     1           \0 byte, terminating the first part of a scramble
+ *     8           first 8 bytes of the plugin provided data (authPluginDataPart1)
+ *     1           \0 byte, terminating the first part of a authPluginDataPart1
  *     2           server capabilities (two lower bytes)
  *     1           server character set
  *     2           server status
  *     2           server capabilities (two upper bytes)
- *     1           length of the scramble
+ *     1           length of the authPluginDataPart1
  *     10          reserved, always 0
  *     n           rest of the plugin provided data (at least 12 bytes)
- *     1           \0 byte, terminating the second part of a scramble
+ *     1           \0 byte, terminating the second part of a authPluginDataPart1
  * </p>
  *
  * @author avalon566
@@ -57,7 +57,7 @@ public final class HandshakeInitializationPacket extends AbstractPacket {
     
     private long threadId;
     
-    private byte[] scramble;
+    private byte[] authPluginDataPart1;
     
     private int serverCapabilities;
     
@@ -67,7 +67,7 @@ public final class HandshakeInitializationPacket extends AbstractPacket {
     
     private int serverCapabilities2;
     
-    private byte[] restOfScramble;
+    private byte[] authPluginDataPart2;
     
     private String authPluginName;
 
@@ -76,7 +76,7 @@ public final class HandshakeInitializationPacket extends AbstractPacket {
         protocolVersion = DataTypesCodec.readUnsignedInt1(data);
         serverVersion = DataTypesCodec.readNulTerminatedString(data);
         threadId = DataTypesCodec.readUnsignedInt4LE(data);
-        scramble = DataTypesCodec.readBytes(8, data);
+        authPluginDataPart1 = DataTypesCodec.readBytes(8, data);
         DataTypesCodec.readNul(data);
         serverCapabilities = DataTypesCodec.readUnsignedInt2LE(data);
         if (data.isReadable()) {
@@ -84,12 +84,11 @@ public final class HandshakeInitializationPacket extends AbstractPacket {
             serverStatus = DataTypesCodec.readUnsignedInt2LE(data);
             serverCapabilities2 = DataTypesCodec.readUnsignedInt2LE(data);
             int capabilities = (serverCapabilities2 << 16) | serverCapabilities;
-            DataTypesCodec.readUnsignedInt1(data);
+            int authPluginDataLength = DataTypesCodec.readUnsignedInt1(data);
             DataTypesCodec.readBytes(10, data);
             if ((capabilities & CapabilityFlags.CLIENT_SECURE_CONNECTION) != 0) {
-                restOfScramble = DataTypesCodec.readBytes(12, data);
+                authPluginDataPart2 = DataTypesCodec.readBytes(Math.max(13, authPluginDataLength - 8), data);
             }
-            DataTypesCodec.readNul(data);
             if ((capabilities & CapabilityFlags.CLIENT_PLUGIN_AUTH) != 0) {
                 authPluginName = DataTypesCodec.readNulTerminatedString(data);
             }
