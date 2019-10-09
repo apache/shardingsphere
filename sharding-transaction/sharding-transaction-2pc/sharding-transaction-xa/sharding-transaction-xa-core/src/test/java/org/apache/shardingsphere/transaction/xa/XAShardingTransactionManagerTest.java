@@ -147,6 +147,30 @@ public final class XAShardingTransactionManagerTest {
         assertThat(cachedSingleXADataSourceMap.size(), is(0));
     }
     
+    @Test
+    public void assertBegin() throws Exception {
+        setCachedSingleXADataSourceMap("ds1");
+        xaShardingTransactionManager.begin();
+        verify(xaTransactionManager).getTransactionManager();
+        verify(xaTransactionManager.getTransactionManager()).begin();
+    }
+    
+    @Test
+    public void assertCommit() throws Exception {
+        setCachedSingleXADataSourceMap("ds1");
+        xaShardingTransactionManager.commit();
+        verify(xaTransactionManager).getTransactionManager();
+        verify(xaTransactionManager.getTransactionManager()).commit();
+    }
+    
+    @Test
+    public void assertRollback() throws Exception {
+        setCachedSingleXADataSourceMap("ds1");
+        xaShardingTransactionManager.rollback();
+        verify(xaTransactionManager).getTransactionManager();
+        verify(xaTransactionManager.getTransactionManager()).rollback();
+    }
+    
     @SneakyThrows
     @SuppressWarnings("unchecked")
     private Map<String, SingleXADataSource> getCachedSingleXADataSourceMap() {
