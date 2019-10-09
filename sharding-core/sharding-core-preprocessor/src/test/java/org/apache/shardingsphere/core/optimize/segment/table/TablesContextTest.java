@@ -174,13 +174,12 @@ public final class TablesContextTest {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
         selectStatement.getAllSQLSegments().add(createTableSegment("table_2", "tbl_2"));
-        TablesContext tablesContext = new TablesContext(selectStatement);
         ColumnSegment columnSegment = mock(ColumnSegment.class);
         when(columnSegment.getOwner()).thenReturn(Optional.<TableSegment>absent());
         when(columnSegment.getName()).thenReturn("columnName");
         TableMetas tableMetas = mock(TableMetas.class);
         when(tableMetas.containsColumn(anyString(), anyString())).thenReturn(true);
-        assertTrue(tablesContext.findTableName(columnSegment, tableMetas).isPresent());
+        assertTrue(new TablesContext(selectStatement).findTableName(columnSegment, tableMetas).isPresent());
     }
     
     private TableSegment createTableSegment(final String tableName, final String alias) {
