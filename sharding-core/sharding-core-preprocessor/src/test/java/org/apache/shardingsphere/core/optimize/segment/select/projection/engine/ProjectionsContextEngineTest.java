@@ -56,8 +56,7 @@ public final class ProjectionsContextEngineTest {
         TableSegment owner = new TableSegment(0, 10, "name");
         owner.setOwner(new SchemaSegment(0, 10, "name"));
         shorthandSelectItemSegment.setOwner(owner);
-        Collection<SelectItemSegment> selectItemSegments = Collections.<SelectItemSegment>singleton(shorthandSelectItemSegment);
-        when(selectItemsSegment.getSelectItems()).thenReturn(selectItemSegments);
+        when(selectItemsSegment.getSelectItems()).thenReturn(Collections.<SelectItemSegment>singleton(shorthandSelectItemSegment));
         ProjectionsContext projectionsContext = new ProjectionsContextEngine(null).createProjectionsContext(null, selectStatement, mock(GroupByContext.class), mock(OrderByContext.class));
         assertNotNull(projectionsContext);
     }
