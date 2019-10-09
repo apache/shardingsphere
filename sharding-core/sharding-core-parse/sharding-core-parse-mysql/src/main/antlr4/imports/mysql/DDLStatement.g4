@@ -66,7 +66,7 @@ alterInstance
     ;
 
 instanceAction
-    : ROTATE INNODB_ MASTER KEY | ROTATE BINLOG MASTER KEY | RELOAD TLS_ (NO ROLLBACK ON ERROR)?
+    : ROTATE 'INNODB' MASTER KEY | ROTATE BINLOG MASTER KEY | RELOAD 'TLS' (NO ROLLBACK ON ERROR)?
     ;
 
 createEvent
@@ -166,7 +166,7 @@ createTablespaceInnodb
     : CREATE (UNDO)? TABLESPACE identifier_
       ADD DATAFILE STRING_
       (FILE_BLOCK_SIZE EQ_ fileSizeLiteral_)?
-      (ENCRYPTION EQ_ Y_N_ )?
+      (ENCRYPTION EQ_ ('Y' | 'N') )?
       (ENGINE EQ_? STRING_)?
     ;
 
@@ -238,7 +238,7 @@ createDefinitionClause_
 createDatabaseSpecification_
     : DEFAULT? (CHARACTER SET | CHARSET) EQ_? characterSetName_
     | DEFAULT? COLLATE EQ_? collationName_
-    | DEFAULT ENCRYPTION EQ_ Y_N_
+    | DEFAULT ENCRYPTION EQ_ ('Y' | 'N')
     ;
 
 createDefinitions_
@@ -525,7 +525,7 @@ timestampValue
     ;
 
 routineBody
-    :  NOT_SUPPORT_
+    :  'not support'
     ;
 
 serverOption_
@@ -551,5 +551,5 @@ procedureParameter_
     ;
 
 fileSizeLiteral_
-    : FILESIZE_LITERAL | numberLiterals
+    : numberLiterals ('K'|'M'|'G'|'T') | numberLiterals
     ;
