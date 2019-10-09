@@ -64,23 +64,23 @@ public final class EncryptPredicateTokenGenerator implements CollectionSQLTokenG
     @Override
     public Collection<EncryptPredicateToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         List<EncryptCondition> encryptConditions = new EncryptConditionEngine(encryptRule, tableMetas).createEncryptConditions(sqlStatementContext);
-        return encryptConditions.isEmpty() ? Collections.<EncryptPredicateToken>emptyList() : createSQLTokens(encryptConditions);
+        return encryptConditions.isEmpty() ? Collections.<EncryptPredicateToken>emptyList() : generateSQLTokens(encryptConditions);
     }
     
-    private Collection<EncryptPredicateToken> createSQLTokens(final List<EncryptCondition> encryptConditions) {
+    private Collection<EncryptPredicateToken> generateSQLTokens(final List<EncryptCondition> encryptConditions) {
         Collection<EncryptPredicateToken> result = new LinkedList<>();
         for (EncryptCondition each : encryptConditions) {
-            result.add(createSQLToken(each));
+            result.add(generateSQLToken(each));
         }
         return result;
     }
     
-    private EncryptPredicateToken createSQLToken(final EncryptCondition encryptCondition) {
+    private EncryptPredicateToken generateSQLToken(final EncryptCondition encryptCondition) {
         List<Object> originalValues = encryptCondition.getValues(parameters);
-        return queryWithCipherColumn ? createSQLTokenForQueryWithCipherColumn(encryptCondition, originalValues) : createSQLTokenForQueryWithoutCipherColumn(encryptCondition, originalValues);
+        return queryWithCipherColumn ? generateSQLTokenForQueryWithCipherColumn(encryptCondition, originalValues) : generateSQLTokenForQueryWithoutCipherColumn(encryptCondition, originalValues);
     }
     
-    private EncryptPredicateToken createSQLTokenForQueryWithCipherColumn(final EncryptCondition encryptCondition, final List<Object> originalValues) {
+    private EncryptPredicateToken generateSQLTokenForQueryWithCipherColumn(final EncryptCondition encryptCondition, final List<Object> originalValues) {
         String encryptedColumnName = encryptRule.findAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName())
                 .or(encryptRule.getCipherColumn(encryptCondition.getTableName(), encryptCondition.getColumnName()));
         List<Object> encryptedValues = getEncryptedValues(encryptCondition, originalValues);
@@ -95,7 +95,7 @@ public final class EncryptPredicateTokenGenerator implements CollectionSQLTokenG
                 : encryptRule.getEncryptValues(encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
     }
     
-    private EncryptPredicateToken createSQLTokenForQueryWithoutCipherColumn(final EncryptCondition encryptCondition, final List<Object> originalValues) {
+    private EncryptPredicateToken generateSQLTokenForQueryWithoutCipherColumn(final EncryptCondition encryptCondition, final List<Object> originalValues) {
         Optional<String> plainColumn = encryptRule.findPlainColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
         Preconditions.checkState(plainColumn.isPresent(), "Plain column should be required.");
         return new EncryptPredicateToken(encryptCondition.getStartIndex(), encryptCondition.getStopIndex(), plainColumn.get(),
