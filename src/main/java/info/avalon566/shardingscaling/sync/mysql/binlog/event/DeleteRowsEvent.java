@@ -24,6 +24,7 @@ import java.util.List;
 
 /**
  * Delete rows event.
+ *
  * @author avalon566
  */
 @Data
@@ -33,7 +34,4 @@ public class DeleteRowsEvent extends AbstractBinlogEvent {
 
     private List<Serializable[]> beforeColumns;
 
-    public DeleteRowsEvent() {
-        setEventType(EventTypes.DELETE_ROWS);
-    }
 }

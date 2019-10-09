@@ -24,6 +24,7 @@ import java.util.List;
 
 /**
  * Write rows event.
+ *
  * @author avalon566
  */
 @Data
@@ -33,7 +34,4 @@ public class WriteRowsEvent extends AbstractBinlogEvent {
 
     private List<Serializable[]> afterColumns;
 
-    public WriteRowsEvent() {
-        setEventType(EventTypes.WRITE_ROWS);
-    }
 }
