@@ -22,7 +22,7 @@
     <property name="severity" value="error"/>
     <property name="fileExtensions" value="java, properties, xml"/>
     <module name="Header">
-        <property name="headerFile" value="src/resources/copyright.txt"/>
+        <!--<property name="headerFile" value="src/resources/copyright.txt"/>-->
         <property name="fileExtensions" value="java"/>
     </module>
     <module name="FileTabCharacter">
