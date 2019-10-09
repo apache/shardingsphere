@@ -60,14 +60,14 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
         Collection<TableToken> result = new LinkedList<>();
         for (SQLSegment each : sqlStatementContext.getSqlStatement().getAllSQLSegments()) {
             if (each instanceof SelectItemsSegment) {
-                result.addAll(createTableTokens(sqlStatementContext, (SelectItemsSegment) each));
+                result.addAll(generateSQLTokens(sqlStatementContext, (SelectItemsSegment) each));
             } else if (each instanceof ColumnSegment) {
-                Optional<TableToken> tableToken = createTableToken(sqlStatementContext, (ColumnSegment) each);
+                Optional<TableToken> tableToken = generateSQLToken(sqlStatementContext, (ColumnSegment) each);
                 if (tableToken.isPresent()) {
                     result.add(tableToken.get());
                 }
             } else if (each instanceof TableAvailable) {
-                Optional<TableToken> tableToken = createTableToken(sqlStatementContext.getSqlStatement(), (TableAvailable) each);
+                Optional<TableToken> tableToken = generateSQLToken(sqlStatementContext.getSqlStatement(), (TableAvailable) each);
                 if (tableToken.isPresent()) {
                     result.add(tableToken.get());
                 }
@@ -76,11 +76,11 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
         return result;
     }
     
-    private Collection<TableToken> createTableTokens(final SQLStatementContext sqlStatementContext, final SelectItemsSegment selectItemsSegment) {
+    private Collection<TableToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final SelectItemsSegment selectItemsSegment) {
         Collection<TableToken> result = new LinkedList<>();
         for (SelectItemSegment each : selectItemsSegment.getSelectItems()) {
             if (each instanceof ShorthandSelectItemSegment) {
-                Optional<TableToken> tableToken = createTableToken(sqlStatementContext, (ShorthandSelectItemSegment) each);
+                Optional<TableToken> tableToken = generateSQLToken(sqlStatementContext, (ShorthandSelectItemSegment) each);
                 if (tableToken.isPresent()) {
                     result.add(tableToken.get());
                 }
@@ -89,22 +89,15 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
         return result;
     }
     
-    private Optional<TableToken> createTableToken(final SQLStatementContext sqlStatementContext, final OwnerAvailable<TableSegment> segment) {
+    private Optional<TableToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final OwnerAvailable<TableSegment> segment) {
         Optional<TableSegment> owner = segment.getOwner();
-        if (!owner.isPresent()) {
-            return Optional.absent();
-        }
-        if (isToGenerateTableToken(sqlStatementContext, owner.get())) {
-            return Optional.of(new TableToken(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getTableName(), owner.get().getQuoteCharacter()));
-        }
-        return Optional.absent();
+        return owner.isPresent() && isToGenerateTableToken(sqlStatementContext, owner.get())
+                ? Optional.of(new TableToken(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getTableName(), owner.get().getQuoteCharacter())) : Optional.<TableToken>absent();
     }
     
-    private Optional<TableToken> createTableToken(final SQLStatement sqlStatement, final TableAvailable segment) {
-        if (isToGenerateTableToken(sqlStatement, segment)) {
-            return Optional.of(new TableToken(segment.getStartIndex(), segment.getStopIndex(), segment.getTableName(), segment.getTableQuoteCharacter()));
-        }
-        return Optional.absent();
+    private Optional<TableToken> generateSQLToken(final SQLStatement sqlStatement, final TableAvailable segment) {
+        return isToGenerateTableToken(sqlStatement, segment)
+                ? Optional.of(new TableToken(segment.getStartIndex(), segment.getStopIndex(), segment.getTableName(), segment.getTableQuoteCharacter())) : Optional.<TableToken>absent();
     }
     
     private boolean isToGenerateTableToken(final SQLStatementContext sqlStatementContext, final TableSegment tableSegment) {
