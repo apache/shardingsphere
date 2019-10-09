@@ -32,10 +32,7 @@ import info.avalon566.shardingscaling.sync.mysql.binlog.event.WriteRowsEvent;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -104,7 +101,7 @@ public final class MySQLBinlogReader extends AbstractRunner implements Reader {
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
         while (true) {
             var event = client.poll();
-            if(null == event) {
+            if (null == event) {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -113,52 +110,64 @@ public final class MySQLBinlogReader extends AbstractRunner implements Reader {
                 continue;
             }
             if (event instanceof WriteRowsEvent) {
-                var wred = (WriteRowsEvent) event;
-                for (Serializable[] row : wred.getAfterColumns()) {
-                    if (filter(uri.getDatabase(), wred.getTableName())) {
-                        return;
-                    }
-                    var record = new DataRecord(row.length);
-                    record.setFullTableName(wred.getTableName());
-                    record.setType("insert");
-                    for (int i = 0; i < row.length; i++) {
-                        record.addColumn(new Column(getColumnValue(record.getTableName(), i, row[i]), true));
-                    }
-                    channel.pushRecord(record);
-                }
+                handleWriteRowsEvent(channel, uri, (WriteRowsEvent) event);
             } else if (event instanceof UpdateRowsEvent) {
-                var ured = (UpdateRowsEvent) event;
-                for (int i = 0; i < ured.getBeforeColumns().size(); i++) {
-                    if (filter(uri.getDatabase(), ((UpdateRowsEvent) event).getTableName())) {
-                        return;
-                    }
-                    var beforeValues = ured.getBeforeColumns().get(i);
-                    var afterValues = ured.getAfterColumns().get(i);
-                    var record = new DataRecord(beforeValues.length);
-                    record.setFullTableName(((UpdateRowsEvent) event).getTableName());
-                    record.setType("update");
-                    for (int j = 0; j < beforeValues.length; j++) {
-                        var oldValue = getColumnValue(record.getTableName(), j, beforeValues[j]);
-                        var newValue = getColumnValue(record.getTableName(), j, afterValues[j]);
-                        record.addColumn(new Column(newValue, newValue.equals(oldValue)));
-                    }
-                    channel.pushRecord(record);
-                }
+                handleUpdateRowsEvent(channel, uri, (UpdateRowsEvent) event);
             } else if (event instanceof DeleteRowsEvent) {
-                var dred = (DeleteRowsEvent) event;
-                for (Serializable[] row : dred.getBeforeColumns()) {
-                    if (filter(uri.getDatabase(), dred.getTableName())) {
-                        return;
-                    }
-                    var record = new DataRecord(row.length);
-                    record.setFullTableName(dred.getTableName());
-                    record.setType("delete");
-                    for (int i = 0; i < row.length; i++) {
-                        record.addColumn(new Column(getColumnValue(record.getTableName(), i, row[i]), true));
-                    }
-                    channel.pushRecord(record);
-                }
+                handleDeleteRowsEvent(channel, uri, (DeleteRowsEvent) event);
             }
+        }
+    }
+
+    private void handleWriteRowsEvent(final Channel channel, final JdbcUri uri, final WriteRowsEvent event) {
+        var wred = event;
+        for (Serializable[] row : wred.getAfterColumns()) {
+            if (filter(uri.getDatabase(), wred.getTableName())) {
+                continue;
+            }
+            var record = new DataRecord(row.length);
+            record.setFullTableName(wred.getTableName());
+            record.setType("insert");
+            for (int i = 0; i < row.length; i++) {
+                record.addColumn(new Column(getColumnValue(record.getTableName(), i, row[i]), true));
+            }
+            channel.pushRecord(record);
+        }
+    }
+
+    private void handleUpdateRowsEvent(final Channel channel, final JdbcUri uri, final UpdateRowsEvent event) {
+        var ured = event;
+        for (int i = 0; i < ured.getBeforeColumns().size(); i++) {
+            if (filter(uri.getDatabase(), event.getTableName())) {
+                continue;
+            }
+            var beforeValues = ured.getBeforeColumns().get(i);
+            var afterValues = ured.getAfterColumns().get(i);
+            var record = new DataRecord(beforeValues.length);
+            record.setFullTableName(event.getTableName());
+            record.setType("update");
+            for (int j = 0; j < beforeValues.length; j++) {
+                var oldValue = getColumnValue(record.getTableName(), j, beforeValues[j]);
+                var newValue = getColumnValue(record.getTableName(), j, afterValues[j]);
+                record.addColumn(new Column(newValue, newValue.equals(oldValue)));
+            }
+            channel.pushRecord(record);
+        }
+    }
+
+    private void handleDeleteRowsEvent(final Channel channel, final JdbcUri uri, final DeleteRowsEvent event) {
+        var dred = event;
+        for (Serializable[] row : dred.getBeforeColumns()) {
+            if (filter(uri.getDatabase(), dred.getTableName())) {
+                continue;
+            }
+            var record = new DataRecord(row.length);
+            record.setFullTableName(dred.getTableName());
+            record.setType("delete");
+            for (int i = 0; i < row.length; i++) {
+                record.addColumn(new Column(getColumnValue(record.getTableName(), i, row[i]), true));
+            }
+            channel.pushRecord(record);
         }
     }
 

@@ -23,6 +23,7 @@ import lombok.Data;
 import lombok.var;
 
 /**
+ * Format description event.
  * https://dev.mysql.com/doc/internals/en/format-description-event.html
  *
  * @author avalon566
@@ -38,11 +39,15 @@ public class FormatDescriptionEvent {
 
     private short eventHeaderLength;
 
-    private short checksumType = 0;
+    private short checksumType;
 
-    private int checksumLength = 0;
+    private int checksumLength;
 
-    public void parse(final ByteBuf in) {
+    /**
+     * Parse format description event from {@code ByteBuf}.
+     * @param in buffer
+     */
+    public final void parse(final ByteBuf in) {
         binglogVersion = DataTypesCodec.readUnsignedInt2LE(in);
         mysqlServerVersion = DataTypesCodec.readFixedLengthString(50, in);
         createTimestamp = DataTypesCodec.readUnsignedInt4LE(in);
@@ -51,7 +56,7 @@ public class FormatDescriptionEvent {
         var eventLength = DataTypesCodec.readUnsignedInt1(in);
         var remainLength = eventLength - 2 - 50 - 4 - 1 - (EventTypes.FORMAT_DESCRIPTION_EVENT - 1) - 1;
         DataTypesCodec.skipBytes(remainLength, in);
-        if(0 < in.readableBytes()) {
+        if (0 < in.readableBytes()) {
             // checksum add after 5.6
             checksumType = DataTypesCodec.readUnsignedInt1(in);
             if (0 < checksumType) {

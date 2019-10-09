@@ -18,6 +18,7 @@
 package info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog;
 
 /**
+ * Mysql event types.
  * https://dev.mysql.com/doc/shorternals/en/binlog-event-type.html
  *
  * @author avalon566

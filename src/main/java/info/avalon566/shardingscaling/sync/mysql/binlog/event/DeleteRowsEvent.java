@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
+ * Delete rows event.
  * @author avalon566
  */
 @Data

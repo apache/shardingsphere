@@ -18,6 +18,7 @@
 package info.avalon566.shardingscaling.sync.mysql.binlog.event;
 
 /**
+ * Event types.
  * @author avalon566
  */
 public enum EventTypes {

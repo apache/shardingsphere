@@ -18,7 +18,10 @@
 package info.avalon566.shardingscaling.job.schedule;
 
 /**
+ * Event type.
  * @author avalon566
  */
 
-public enum EventType {FINISHED}
+public enum EventType {
+    FINISHED
+}

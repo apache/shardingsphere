@@ -18,6 +18,7 @@
 package info.avalon566.shardingscaling.sync.core;
 
 /**
+ * Finished record.
  * @author avalon566
  */
 public class FinishedRecord implements Record {

@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * One provider to multi consumer channel model.
  * @author avalon566
  */
 public class DispatcherChannel implements Channel {
@@ -31,16 +32,16 @@ public class DispatcherChannel implements Channel {
     private final int channelNumber;
 
     /**
-     * 通道Id : 通道
+     * 通道Id : 通道.
      */
-    private final HashMap<String, MemoryChannel> channels = new HashMap<>();
+    private final Map<String, MemoryChannel> channels = new HashMap<>();
 
     /**
-     * 线程Id : 通道Id
+     * 线程Id : 通道Id.
      */
-    private final HashMap<String, String> channelAssignment = new HashMap<>();
+    private final Map<String, String> channelAssignment = new HashMap<>();
 
-    public DispatcherChannel(int channelNumber) {
+    public DispatcherChannel(final int channelNumber) {
         this.channelNumber = channelNumber;
         for (int i = 0; i < channelNumber; i++) {
             channels.put(Integer.toString(i), new MemoryChannel());
@@ -48,7 +49,7 @@ public class DispatcherChannel implements Channel {
     }
 
     @Override
-    public void pushRecord(Record record) {
+    public final void pushRecord(final Record record) {
         if (FinishedRecord.class.equals(record.getClass())) {
             // 广播事件
             for (Map.Entry<String, MemoryChannel> entry : channels.entrySet()) {
@@ -65,13 +66,13 @@ public class DispatcherChannel implements Channel {
     }
 
     @Override
-    public Record popRecord() {
+    public final Record popRecord() {
         var threadId = Long.toString(Thread.currentThread().getId());
         checkAssignment(threadId);
         return channels.get(channelAssignment.get(threadId)).popRecord();
     }
 
-    private void checkAssignment(String threadId) {
+    private void checkAssignment(final String threadId) {
         if (!channelAssignment.containsKey(threadId)) {
             synchronized (this) {
                 for (Map.Entry<String, MemoryChannel> entry : channels.entrySet()) {

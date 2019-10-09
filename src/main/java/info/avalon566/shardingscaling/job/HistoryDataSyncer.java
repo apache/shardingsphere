@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * History data syncer.
  * @author avalon566
  */
 @Slf4j
@@ -38,24 +39,27 @@ public class HistoryDataSyncer {
 
     private final SyncConfiguration syncConfiguration;
 
-    public HistoryDataSyncer(SyncConfiguration syncConfiguration) {
+    public HistoryDataSyncer(final SyncConfiguration syncConfiguration) {
         this.syncConfiguration = syncConfiguration;
     }
 
-    public void run() {
+    /**
+     * Run.
+     */
+    public final void run() {
         var configs = split(syncConfiguration);
         var reporter = new InProcessScheduler().schedule(configs);
         waitSlicesFinished(configs, reporter);
     }
 
-    private List<SyncConfiguration> split(SyncConfiguration syncConfiguration) {
+    private List<SyncConfiguration> split(final SyncConfiguration syncConfiguration) {
         List<SyncConfiguration> syncConfigurations = new ArrayList<>();
         // split by table
         for (String tableName : new DbMetaDataUtil(syncConfiguration.getReaderConfiguration()).getTableNames()) {
             var readerConfig = syncConfiguration.getReaderConfiguration().clone();
             readerConfig.setTableName(tableName);
             // split by primary key range
-            for(var sliceConfig : new MySQLJdbcReader(readerConfig).split(syncConfiguration.getConcurrency())) {
+            for (var sliceConfig : new MySQLJdbcReader(readerConfig).split(syncConfiguration.getConcurrency())) {
                 syncConfigurations.add(new SyncConfiguration(SyncType.TableSlice, syncConfiguration.getConcurrency(),
                         sliceConfig, syncConfiguration.getWriterConfiguration().clone()));
             }
@@ -63,7 +67,7 @@ public class HistoryDataSyncer {
         return syncConfigurations;
     }
 
-    private void waitSlicesFinished(List<SyncConfiguration> syncConfigurations, Reporter reporter) {
+    private void waitSlicesFinished(final List<SyncConfiguration> syncConfigurations, final Reporter reporter) {
         var counter = 0;
         while (true) {
             var event = reporter.consumeEvent();

@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
+ * Event.
  * @author avalon566
  */
 @Data

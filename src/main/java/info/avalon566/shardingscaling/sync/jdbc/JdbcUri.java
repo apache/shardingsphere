@@ -22,39 +22,65 @@ import lombok.var;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
+ * Jdbc uri.
  * @author avalon566
  */
 public final class JdbcUri {
 
     private final URI jdbcUri;
 
-    public JdbcUri(String jdbcUrl) {
+    public JdbcUri(final String jdbcUrl) {
         this.jdbcUri = URI.create(jdbcUrl.substring(5));
     }
 
+    /**
+     * Get scheme.
+     * @return scheme name
+     */
     public String getScheme() {
         return jdbcUri.getScheme();
     }
 
+    /**
+     * Get hostname.
+     * @return hostname
+     */
     public String getHostname() {
         return jdbcUri.getHost();
     }
 
+    /**
+     * Get port.
+     * @return port
+     */
     public int getPort() {
         return -1 == jdbcUri.getPort() ? 3306 : jdbcUri.getPort();
     }
 
+    /**
+     * Get host.
+     * @return host
+     */
     public String getHost() {
         return String.format("%s:%d", getHostname(), getPort());
     }
 
+    /**
+     * Get database name.
+     * @return database name
+     */
     public String getDatabase() {
         return jdbcUri.getPath().replaceFirst("/", "");
     }
 
-    public HashMap<String, String> getParameters() {
+    /**
+     * Get parameters.
+     * @return parameters.
+     */
+    public Map<String, String> getParameters() {
         var result = new HashMap<String, String>();
         if (Strings.isNullOrEmpty(jdbcUri.getQuery())) {
             return result;
