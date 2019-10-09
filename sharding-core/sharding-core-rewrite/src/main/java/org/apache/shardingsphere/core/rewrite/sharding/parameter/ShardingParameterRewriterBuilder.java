@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.core.rewrite.sharding.parameter;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.parameter.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.parameter.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.ParameterRewriter;
+import org.apache.shardingsphere.core.rewrite.parameter.ParameterRewriterBuilder;
+import org.apache.shardingsphere.core.rewrite.parameter.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.sharding.parameter.impl.GeneratedKeyInsertValueParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.sharding.parameter.impl.PaginationParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLRouteResultAware;
@@ -36,39 +37,28 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Parameter builder factory for sharding.
+ * Parameter rewriter builder for sharding.
  *
  * @author zhangliang
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingParameterBuilderFactory {
+@RequiredArgsConstructor
+public final class ShardingParameterRewriterBuilder implements ParameterRewriterBuilder {
     
-    /**
-     * Build parameter builder.
-     *
-     * @param parameterBuilder parameter builder
-     * @param shardingRule sharding rule
-     * @param tableMetas table metas
-     * @param sqlRouteResult SQL route result
-     * @param parameters SQL parameters
-     */
-    public static void build(final ParameterBuilder parameterBuilder, final ShardingRule shardingRule, 
-                             final TableMetas tableMetas, final SQLRouteResult sqlRouteResult, final List<Object> parameters) {
+    private final ShardingRule shardingRule;
+    
+    private final SQLRouteResult sqlRouteResult;
+    
+    @Override
+    public Collection<ParameterRewriter> getParameterRewriters(final ParameterBuilder parameterBuilder,
+                                                               final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
         if (parameterBuilder instanceof GroupedParameterBuilder) {
             ((GroupedParameterBuilder) parameterBuilder).setShardingConditions(sqlRouteResult.getShardingConditions());
-        } 
-        for (ParameterRewriter each : getParameterRewriters()) {
-            if (each instanceof ShardingRuleAware) {
-                ((ShardingRuleAware) each).setShardingRule(shardingRule);
-            }
-            if (each instanceof TableMetasAware) {
-                ((TableMetasAware) each).setTableMetas(tableMetas);
-            }
-            if (each instanceof SQLRouteResultAware) {
-                ((SQLRouteResultAware) each).setSqlRouteResult(sqlRouteResult);
-            }
-            each.rewrite(parameterBuilder, sqlRouteResult.getSqlStatementContext(), parameters);
         }
+        Collection<ParameterRewriter> result = getParameterRewriters();
+        for (ParameterRewriter each : result) {
+            setUpParameterRewriters(each, tableMetas);
+        }
+        return result;
     }
     
     private static Collection<ParameterRewriter> getParameterRewriters() {
@@ -76,5 +66,17 @@ public final class ShardingParameterBuilderFactory {
         result.add(new GeneratedKeyInsertValueParameterRewriter());
         result.add(new PaginationParameterRewriter());
         return result;
+    }
+    
+    private void setUpParameterRewriters(final ParameterRewriter parameterRewriter, final TableMetas tableMetas) {
+        if (parameterRewriter instanceof TableMetasAware) {
+            ((TableMetasAware) parameterRewriter).setTableMetas(tableMetas);
+        }
+        if (parameterRewriter instanceof ShardingRuleAware) {
+            ((ShardingRuleAware) parameterRewriter).setShardingRule(shardingRule);
+        }
+        if (parameterRewriter instanceof SQLRouteResultAware) {
+            ((SQLRouteResultAware) parameterRewriter).setSqlRouteResult(sqlRouteResult);
+        }
     }
 }

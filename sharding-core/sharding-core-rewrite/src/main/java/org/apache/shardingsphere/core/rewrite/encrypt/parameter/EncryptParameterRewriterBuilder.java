@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.encrypt.parameter;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.encrypt.parameter.impl.EncryptAssignmentParameterRewriter;
@@ -26,6 +25,7 @@ import org.apache.shardingsphere.core.rewrite.encrypt.parameter.impl.EncryptInse
 import org.apache.shardingsphere.core.rewrite.encrypt.parameter.impl.EncryptPredicateParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.parameter.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.ParameterRewriter;
+import org.apache.shardingsphere.core.rewrite.parameter.ParameterRewriterBuilder;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.TableMetasAware;
@@ -36,44 +36,44 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Parameter builder factory for encrypt.
+ * Parameter rewriter builder for encrypt.
  *
  * @author zhangliang
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EncryptParameterBuilderFactory {
+@RequiredArgsConstructor
+public final class EncryptParameterRewriterBuilder implements ParameterRewriterBuilder {
     
-    /**
-     * Build parameter builder.
-     *
-     * @param parameterBuilder parameter builder
-     * @param encryptRule encrypt rule
-     * @param tableMetas table metas
-     * @param sqlStatementContext SQL statement context
-     * @param parameters SQL parameters
-     * @param queryWithCipherColumn query with cipher column
-     */
-    public static void build(final ParameterBuilder parameterBuilder, final EncryptRule encryptRule, final TableMetas tableMetas,
-                                         final SQLStatementContext sqlStatementContext, final List<Object> parameters, final boolean queryWithCipherColumn) {
-        for (ParameterRewriter each : getParameterRewriters()) {
-            if (each instanceof EncryptRuleAware) {
-                ((EncryptRuleAware) each).setEncryptRule(encryptRule);
-            }
-            if (each instanceof TableMetasAware) {
-                ((TableMetasAware) each).setTableMetas(tableMetas);
-            }
-            if (each instanceof QueryWithCipherColumnAware) {
-                ((QueryWithCipherColumnAware) each).setQueryWithCipherColumn(queryWithCipherColumn);
-            }
-            each.rewrite(parameterBuilder, sqlStatementContext, parameters);
+    private final EncryptRule encryptRule;
+    
+    private final boolean queryWithCipherColumn;
+    
+    @Override
+    public Collection<ParameterRewriter> getParameterRewriters(final ParameterBuilder parameterBuilder, 
+                                                               final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
+        Collection<ParameterRewriter> result = getParameterRewriters();
+        for (ParameterRewriter each : result) {
+            setUpParameterRewriters(each, tableMetas);
         }
+        return result;
     }
     
-    private static Collection<ParameterRewriter> getParameterRewriters() {
+    private Collection<ParameterRewriter> getParameterRewriters() {
         Collection<ParameterRewriter> result = new LinkedList<>();
         result.add(new EncryptAssignmentParameterRewriter());
         result.add(new EncryptPredicateParameterRewriter());
         result.add(new EncryptInsertValueParameterRewriter());
         return result;
+    }
+    
+    private void setUpParameterRewriters(final ParameterRewriter parameterRewriter, final TableMetas tableMetas) {
+        if (parameterRewriter instanceof TableMetasAware) {
+            ((TableMetasAware) parameterRewriter).setTableMetas(tableMetas);
+        }
+        if (parameterRewriter instanceof EncryptRuleAware) {
+            ((EncryptRuleAware) parameterRewriter).setEncryptRule(encryptRule);
+        }
+        if (parameterRewriter instanceof QueryWithCipherColumnAware) {
+            ((QueryWithCipherColumnAware) parameterRewriter).setQueryWithCipherColumn(queryWithCipherColumn);
+        }
     }
 }
