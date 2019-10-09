@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
-public class ResourceIDGeneratorTest {
+public final class ResourceIDGeneratorTest {
     
     @Test
     public void assertNextIdProperly() {
