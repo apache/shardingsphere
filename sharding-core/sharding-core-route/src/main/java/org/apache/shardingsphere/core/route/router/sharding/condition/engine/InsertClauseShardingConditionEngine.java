@@ -25,8 +25,10 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
+import org.apache.shardingsphere.core.route.spi.SPITimeService;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 
@@ -78,10 +80,15 @@ public final class InsertClauseShardingConditionEngine {
     
     private ShardingCondition createShardingCondition(final String tableName, final Iterator<String> columnNames, final InsertValueContext insertValueContext, final List<Object> parameters) {
         ShardingCondition result = new ShardingCondition();
+        SPITimeService timeService = new SPITimeService();
         for (ExpressionSegment each : insertValueContext.getValueExpressions()) {
             String columnName = columnNames.next();
-            if (each instanceof SimpleExpressionSegment && shardingRule.isShardingColumn(columnName, tableName)) {
-                result.getRouteValues().add(new ListRouteValue<>(columnName, tableName, Collections.singletonList(getRouteValue((SimpleExpressionSegment) each, parameters))));
+            if (shardingRule.isShardingColumn(columnName, tableName)) {
+                if (each instanceof SimpleExpressionSegment) {
+                    result.getRouteValues().add(new ListRouteValue<>(columnName, tableName, Collections.singletonList(getRouteValue((SimpleExpressionSegment) each, parameters))));
+                } else if (ExpressionConditionUtils.isNowExpression(each)) {
+                    result.getRouteValues().add(new ListRouteValue<>(columnName, tableName, Collections.singletonList(timeService.getTime())));
+                }
             }
         }
         return result;
