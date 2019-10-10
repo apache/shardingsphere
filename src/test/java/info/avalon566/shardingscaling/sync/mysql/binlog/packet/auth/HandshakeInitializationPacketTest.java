@@ -43,7 +43,7 @@ public class HandshakeInitializationPacketTest {
         assertThat(actual.getServerCharsetSet(), is((short) 8));
         assertThat(actual.getServerStatus(), is(2));
         assertThat(actual.getServerCapabilities2(), is(0));
-        assertThat(actual.getAuthPluginDataPart2(), is(ByteBufUtil.decodeHexDump("2a34647c635a776b345e5d3a00")));
+        assertThat(actual.getAuthPluginDataPart2(), is(ByteBufUtil.decodeHexDump("2a34647c635a776b345e5d3a")));
         assertNull(actual.getAuthPluginName());
     }
     
@@ -63,7 +63,7 @@ public class HandshakeInitializationPacketTest {
         assertThat(actual.getServerCharsetSet(), is((short) 8));
         assertThat(actual.getServerStatus(), is(2));
         assertThat(actual.getServerCapabilities2(), is(49167));
-        assertThat(actual.getAuthPluginDataPart2(), is(ByteBufUtil.decodeHexDump("2b7944262f5a5a3330355a4700")));
+        assertThat(actual.getAuthPluginDataPart2(), is(ByteBufUtil.decodeHexDump("2b7944262f5a5a3330355a47")));
         assertThat(actual.getAuthPluginName(), is("mysql_native_password"));
     }
 }
