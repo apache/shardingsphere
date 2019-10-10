@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 
@@ -41,6 +42,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     
+    private final ShardingConditions shardingConditions;
+    
     private final RoutingUnit routingUnit;
     
     private final Map<String, String> logicAndActualTables;
@@ -51,7 +54,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     }
     
     private List<Object> getParameters(final ParameterBuilder parameterBuilder, final RoutingUnit routingUnit) {
-        if (parameterBuilder instanceof StandardParameterBuilder || null == ((GroupedParameterBuilder) parameterBuilder).getShardingConditions()) {
+        if (parameterBuilder instanceof StandardParameterBuilder || shardingConditions.getConditions().isEmpty()) {
             return parameterBuilder.getParameters();
         }
         if (parameterBuilder.getParameters().isEmpty()) {
@@ -59,7 +62,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
         }
         List<Object> result = new LinkedList<>();
         int count = 0;
-        for (ShardingCondition each : ((GroupedParameterBuilder) parameterBuilder).getShardingConditions().getConditions()) {
+        for (ShardingCondition each : shardingConditions.getConditions()) {
             if (isInSameDataNode(each, routingUnit)) {
                 result.addAll(((GroupedParameterBuilder) parameterBuilder).getParameters(count));
             }

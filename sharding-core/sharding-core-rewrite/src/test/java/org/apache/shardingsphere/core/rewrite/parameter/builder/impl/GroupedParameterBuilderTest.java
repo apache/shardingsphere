@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.parameter.builder.impl;
 
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
-import org.apache.shardingsphere.core.rule.DataNode;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -32,12 +28,10 @@ import static org.junit.Assert.assertThat;
 
 public final class GroupedParameterBuilderTest {
     
-    private GroupedParameterBuilder parameterBuilder;
-    
-    @Before
-    public void setUp() {
-        parameterBuilder = new GroupedParameterBuilder(createGroupedParameters());
-        parameterBuilder.setShardingConditions(createShardingConditions());
+    @Test
+    public void assertGetParameters() {
+        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters());
+        assertThat(actual.getParameters(), is(Arrays.<Object>asList(3, 4, 5, 6)));
     }
     
     private List<List<Object>> createGroupedParameters() {
@@ -45,18 +39,5 @@ public final class GroupedParameterBuilderTest {
         result.add(Arrays.<Object>asList(3, 4));
         result.add(Arrays.<Object>asList(5, 6));
         return result;
-    }
-    
-    private ShardingConditions createShardingConditions() {
-        ShardingCondition shardingCondition1 = new ShardingCondition();
-        shardingCondition1.getDataNodes().add(new DataNode("db1.tb1"));
-        ShardingCondition shardingCondition2 = new ShardingCondition();
-        shardingCondition2.getDataNodes().add(new DataNode("db2.tb2"));
-        return new ShardingConditions(Arrays.asList(shardingCondition1, shardingCondition2));
-    }
-    
-    @Test
-    public void assertGetParameters() {
-        assertThat(parameterBuilder.getParameters(), is(Arrays.<Object>asList(3, 4, 5, 6)));
     }
 }
