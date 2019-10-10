@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.route.router.sharding.validator.impl;
 
 import static org.mockito.Mockito.when;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -98,11 +99,13 @@ public final class ShardingUpdateStatementValidatorTest {
         return result;
     }
 
-    private UpdateStatement createUpdateStatementAndParameters(Object shardingColumnPatamater) {
+    private UpdateStatement createUpdateStatementAndParameters(final Object shardingColumnPatamater) {
         UpdateStatement result = new UpdateStatement();
         result.getAllSQLSegments().add(new TableSegment(0, 0, "user"));
         // set shardingColumnPatamater
-        result.setSetAssignment(new SetAssignmentsSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "id"), new LiteralExpressionSegment(0, 0, shardingColumnPatamater)))));
+        Collection<AssignmentSegment> assignments = Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "id"), new LiteralExpressionSegment(0, 0, shardingColumnPatamater)));
+        SetAssignmentsSegment setAssignmentsSegment = new SetAssignmentsSegment(0, 0, assignments);
+        result.setSetAssignment(setAssignmentsSegment);
 
         // create whereSegment
         WhereSegment where = new WhereSegment(0, 0, 1);
