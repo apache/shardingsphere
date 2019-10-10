@@ -18,11 +18,20 @@
 package info.avalon566.shardingscaling.job.schedule;
 
 /**
+ * Job Running reporter.
  * @author avalon566
  */
 public interface Reporter {
 
+    /**
+     * Report job running event.
+     * @param event job running event
+     */
     void report(Event event);
 
+    /**
+     * Get job running report.
+     * @return event
+     */
     Event consumeEvent();
 }

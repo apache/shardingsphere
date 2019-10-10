@@ -18,6 +18,7 @@
 package info.avalon566.shardingscaling.sync.core;
 
 /**
+ * Record interface.
  * @author avalon566
  */
 public interface Record {

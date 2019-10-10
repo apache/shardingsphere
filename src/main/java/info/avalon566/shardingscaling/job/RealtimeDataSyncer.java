@@ -27,6 +27,7 @@ import lombok.var;
 import java.util.ArrayList;
 
 /**
+ * Realtime data syncer.
  * @author avalon566
  */
 public class RealtimeDataSyncer {
@@ -35,16 +36,22 @@ public class RealtimeDataSyncer {
 
     private final MySQLBinlogReader mysqlBinlogReader;
 
-    public RealtimeDataSyncer(SyncConfiguration syncConfiguration) {
+    public RealtimeDataSyncer(final SyncConfiguration syncConfiguration) {
         this.syncConfiguration = syncConfiguration;
         mysqlBinlogReader = new MySQLBinlogReader(syncConfiguration.getReaderConfiguration());
     }
 
-    public void preRun() {
+    /**
+     * Do something before run,mark binlog position.
+     */
+    public final void preRun() {
         mysqlBinlogReader.markPosition();
     }
 
-    public void run() {
+    /**
+     * Start to sync realtime data.
+     */
+    public final void run() {
         var writers = new ArrayList<Writer>(syncConfiguration.getConcurrency());
         for (int i = 0; i < syncConfiguration.getConcurrency(); i++) {
             writers.add(new MySQLWriter(syncConfiguration.getWriterConfiguration()));

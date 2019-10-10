@@ -20,13 +20,27 @@ package info.avalon566.shardingscaling.sync.core;
 import java.util.List;
 
 /**
+ * Reader interface.
  * @author avalon566
  */
 public interface Reader extends Runner {
 
+    /**
+     * Set channel.
+     * @param channel channel
+     */
     void setChannel(Channel channel);
 
+    /**
+     * Read Record to channel.
+     * @param channel channel
+     */
     void read(Channel channel);
 
+    /**
+     * Split job to job slices.
+     * @param concurrency slices number.
+     * @return rmdbs configuration
+     */
     List<RdbmsConfiguration> split(int concurrency);
 }

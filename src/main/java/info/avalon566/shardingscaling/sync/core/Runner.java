@@ -18,11 +18,18 @@
 package info.avalon566.shardingscaling.sync.core;
 
 /**
+ * Job runner.
  * @author avalon566
  */
 public interface Runner extends Runnable {
 
+    /**
+     * Start run job.
+     */
     void start();
 
+    /**
+     * Stop running job.
+     */
     void stop();
 }

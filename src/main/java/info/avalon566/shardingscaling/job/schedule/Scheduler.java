@@ -22,9 +22,15 @@ import info.avalon566.shardingscaling.job.config.SyncConfiguration;
 import java.util.List;
 
 /**
+ * Schedule sync job, run in inprocess,k8s etc.
  * @author avalon566
  */
 public interface Scheduler {
 
+    /**
+     * Schedule sync job.
+     * @param configs job configs
+     * @return reporter
+     */
     Reporter schedule(List<SyncConfiguration> configs);
 }

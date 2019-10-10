@@ -22,6 +22,7 @@ import io.netty.buffer.ByteBuf;
 import lombok.Data;
 
 /**
+ * Rotate event.
  * @author avalon566
  */
 @Data
@@ -31,6 +32,10 @@ public class RotateEvent {
 
     private String nextFileName;
 
+    /**
+     * Parse rotate event from {@code ByteBuf}.
+     * @param in buffer
+     */
     public void parse(final ByteBuf in) {
         position = DataTypesCodec.readInt8LE(in);
         nextFileName = DataTypesCodec.readFixedLengthString(in.readableBytes(), in);

@@ -20,6 +20,7 @@ package info.avalon566.shardingscaling.sync.core;
 import lombok.Data;
 
 /**
+ * Rdbms configuration.
  * @author avalon566
  */
 @Data
@@ -38,7 +39,7 @@ public class RdbmsConfiguration implements Cloneable {
     private String whereCondition;
 
     @Override
-    public RdbmsConfiguration clone() {
+    public final RdbmsConfiguration clone() {
         try {
             return (RdbmsConfiguration) super.clone();
         } catch (CloneNotSupportedException e) {

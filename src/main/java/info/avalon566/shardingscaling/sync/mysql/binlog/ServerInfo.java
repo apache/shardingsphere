@@ -23,6 +23,7 @@ import lombok.var;
 import java.util.regex.Pattern;
 
 /**
+ * MySQL server info.
  * @author avalon566
  */
 @Data

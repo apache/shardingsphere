@@ -120,7 +120,7 @@ public class DecimalValueDecoder {
             integerByteLength = (fullIntegerSize << 2) + DIG_TO_BYTES[extraIntegerSize];
             int fullScaleSize = scale / DIG_PER_DEC;
             int extraScaleSize = scale - fullScaleSize * DIG_PER_DEC;
-            totalByteLength = integerByteLength + (fullScaleSize << 2) +  DIG_TO_BYTES[extraScaleSize];
+            totalByteLength = integerByteLength + (fullScaleSize << 2) + DIG_TO_BYTES[extraScaleSize];
         }
     }
 }
