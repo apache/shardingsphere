@@ -48,10 +48,10 @@ public final class NacosRegistryCenter implements RegistryCenter {
         try {
             Properties properties = new Properties();
             properties.put("serverAddr", config.getServerLists());
-            properties.put("namespace", !Strings.isNullOrEmpty(config.getNamespace()) ? config.getNamespace() : "");
+            properties.put("namespace", null == config.getNamespace() ? "" : config.getNamespace());
             configService = NacosFactory.createConfigService(properties);
-        } catch (NacosException e) {
-            log.debug("exception for: {}", e.toString());
+        } catch (final NacosException ex) {
+            log.debug("exception for: {}", ex.toString());
         }
     }
 
@@ -67,8 +67,8 @@ public final class NacosRegistryCenter implements RegistryCenter {
             String group = properties.getProperty("group", "SHARDING_SPHERE_DEFAULT_GROUP");
             long timeoutMs = Long.parseLong(properties.getProperty("timeout", "3000"));
             return configService.getConfig(dataId, group, timeoutMs);
-        } catch (NacosException e) {
-            log.debug("exception for: {}", e.toString());
+        } catch (final NacosException ex) {
+            log.debug("exception for: {}", ex.toString());
             return null;
         }
     }
@@ -94,8 +94,8 @@ public final class NacosRegistryCenter implements RegistryCenter {
             String dataId = key.replace("/", ".");
             String group = properties.getProperty("group", "SHARDING_SPHERE_DEFAULT_GROUP");
             configService.publishConfig(dataId, group, value);
-        } catch (NacosException e) {
-            log.debug("exception for: {}", e.toString());
+        } catch (final NacosException ex) {
+            log.debug("exception for: {}", ex.toString());
         }
     }
 
@@ -121,8 +121,8 @@ public final class NacosRegistryCenter implements RegistryCenter {
                     dataChangedEventListener.onChange(new DataChangedEvent(key, configInfo, DataChangedEvent.ChangedType.UPDATED));
                 }
             });
-        } catch (NacosException e) {
-            log.debug("exception for: {}", e.toString());
+        } catch (final NacosException ex) {
+            log.debug("exception for: {}", ex.toString());
         }
     }
 
