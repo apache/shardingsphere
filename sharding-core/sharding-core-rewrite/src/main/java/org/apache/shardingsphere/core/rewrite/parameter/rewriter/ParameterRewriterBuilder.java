@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.parameter.rewriter;
 
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 
 import java.util.Collection;
 
@@ -32,9 +31,8 @@ public interface ParameterRewriterBuilder {
     /**
      * Get parameter rewriters.
      * 
-     * @param parameterBuilder parameter builder
      * @param tableMetas table metas
      * @return parameter rewriters
      */
-    Collection<ParameterRewriter> getParameterRewriters(ParameterBuilder parameterBuilder, TableMetas tableMetas);
+    Collection<ParameterRewriter> getParameterRewriters(TableMetas tableMetas);
 }

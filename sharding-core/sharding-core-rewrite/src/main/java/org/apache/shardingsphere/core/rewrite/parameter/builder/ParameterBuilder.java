@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.parameter.builder;
 
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
-
 import java.util.List;
 
 /**
@@ -34,12 +32,4 @@ public interface ParameterBuilder {
      * @return parameters
      */
     List<Object> getParameters();
-    
-    /**
-     * Get parameters.
-     *
-     * @param routingUnit routing unit
-     * @return parameters
-     */
-    List<Object> getParameters(RoutingUnit routingUnit);
 }

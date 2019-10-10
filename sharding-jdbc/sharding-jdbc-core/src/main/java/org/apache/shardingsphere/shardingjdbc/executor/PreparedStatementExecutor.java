@@ -117,8 +117,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         ShardingRule shardingRule = getConnection().getRuntimeContext().getRule();
         ShardingProperties properties = getConnection().getRuntimeContext().getProps();
         getResultSets().add(resultSet);
-        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet, shardingRule, properties) 
-                : new MemoryQueryResult(resultSet, shardingRule, properties);
+        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet, shardingRule, properties) : new MemoryQueryResult(resultSet, shardingRule, properties);
     }
     
     /**
