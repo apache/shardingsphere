@@ -27,7 +27,6 @@ import io.netty.buffer.ByteBufAllocator;
 import lombok.AccessLevel;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import lombok.var;
 
 /**
  * MySQL client authentication packet.
@@ -85,7 +84,7 @@ public final class ClientAuthenticationPacket extends AbstractPacket {
     @Override
     @SneakyThrows
     public ByteBuf toByteBuf() {
-        var result = ByteBufAllocator.DEFAULT.heapBuffer();
+        ByteBuf result = ByteBufAllocator.DEFAULT.heapBuffer();
         DataTypesCodec.writeInt4LE(clientCapability, result);
         DataTypesCodec.writeInt4LE(1 << 24, result);
         DataTypesCodec.writeByte(charsetNumber, result);

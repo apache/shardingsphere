@@ -33,16 +33,16 @@ import lombok.Data;
  *     1           protocol version (always 10)
  *     n           server version string, \0-terminated
  *     4           thread id
- *     8           first 8 bytes of the plugin provided data (authPluginDataPart1)
- *     1           \0 byte, terminating the first part of a authPluginDataPart1
+ *     8           first 8 bytes of the plugin provided data (scramble)
+ *     1           \0 byte, terminating the first part of a scramble
  *     2           server capabilities (two lower bytes)
  *     1           server character set
  *     2           server status
  *     2           server capabilities (two upper bytes)
- *     1           length of the authPluginDataPart1
+ *     1           length of the scramble
  *     10          reserved, always 0
  *     n           rest of the plugin provided data (at least 12 bytes)
- *     1           \0 byte, terminating the second part of a authPluginDataPart1
+ *     1           \0 byte, terminating the second part of a scramble
  * </p>
  *
  * @author avalon566

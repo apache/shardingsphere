@@ -19,6 +19,12 @@ package info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog;
 
 import lombok.Data;
 
+/**
+ * Column definition.
+ *
+ * @author yangyi
+ * @author avalon566
+ */
 @Data
 public class ColumnDef {
 

@@ -19,19 +19,20 @@ package info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog;
 
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import io.netty.buffer.ByteBuf;
-import lombok.Data;
-import lombok.var;
+import lombok.Getter;
 
 /**
  * Format description event.
  * https://dev.mysql.com/doc/internals/en/format-description-event.html
+ * Checksum in format description event include algorithm information.
+ * https://dev.mysql.com/worklog/task/?id=2540#tabs-2540-4
  *
  * @author avalon566
  */
-@Data
+@Getter
 public class FormatDescriptionEvent {
 
-    private int binglogVersion;
+    private int binlogVersion;
 
     private String mysqlServerVersion;
 
@@ -45,16 +46,17 @@ public class FormatDescriptionEvent {
 
     /**
      * Parse format description event from {@code ByteBuf}.
+     *
      * @param in buffer
      */
     public final void parse(final ByteBuf in) {
-        binglogVersion = DataTypesCodec.readUnsignedInt2LE(in);
+        binlogVersion = DataTypesCodec.readUnsignedInt2LE(in);
         mysqlServerVersion = DataTypesCodec.readFixedLengthString(50, in);
         createTimestamp = DataTypesCodec.readUnsignedInt4LE(in);
         eventHeaderLength = DataTypesCodec.readUnsignedInt1(in);
         DataTypesCodec.skipBytes(EventTypes.FORMAT_DESCRIPTION_EVENT - 1, in);
-        var eventLength = DataTypesCodec.readUnsignedInt1(in);
-        var remainLength = eventLength - 2 - 50 - 4 - 1 - (EventTypes.FORMAT_DESCRIPTION_EVENT - 1) - 1;
+        short eventLength = DataTypesCodec.readUnsignedInt1(in);
+        int remainLength = eventLength - 2 - 50 - 4 - 1 - (EventTypes.FORMAT_DESCRIPTION_EVENT - 1) - 1;
         DataTypesCodec.skipBytes(remainLength, in);
         if (0 < in.readableBytes()) {
             // checksum add after 5.6
