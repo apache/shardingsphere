@@ -50,10 +50,10 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     
     @Override
     public SQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
-        return new SQLRewriteResult(sqlRewriteContext.getSQLBuilder().toSQL(routingUnit, logicAndActualTables), getParameters(sqlRewriteContext.getParameterBuilder(), routingUnit));
+        return new SQLRewriteResult(sqlRewriteContext.getSQLBuilder().toSQL(routingUnit, logicAndActualTables), getParameters(sqlRewriteContext.getParameterBuilder()));
     }
     
-    private List<Object> getParameters(final ParameterBuilder parameterBuilder, final RoutingUnit routingUnit) {
+    private List<Object> getParameters(final ParameterBuilder parameterBuilder) {
         if (parameterBuilder instanceof StandardParameterBuilder || shardingConditions.getConditions().isEmpty()) {
             return parameterBuilder.getParameters();
         }
@@ -63,7 +63,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
         List<Object> result = new LinkedList<>();
         int count = 0;
         for (ShardingCondition each : shardingConditions.getConditions()) {
-            if (isInSameDataNode(each, routingUnit)) {
+            if (isInSameDataNode(each)) {
                 result.addAll(((GroupedParameterBuilder) parameterBuilder).getParameters(count));
             }
             count++;
@@ -71,7 +71,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
         return result;
     }
 
-    private boolean isInSameDataNode(final ShardingCondition shardingCondition, final RoutingUnit routingUnit) {
+    private boolean isInSameDataNode(final ShardingCondition shardingCondition) {
         if (shardingCondition.getDataNodes().isEmpty()) {
             return true;
         }
