@@ -70,7 +70,7 @@ public final class TableMetasTest {
     @Test
     public void assertGetAllColumnNamesWhenContainsKey() {
         TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("name", "dataType", false)), Collections.<String>emptyList());
-        assertThat(new TableMetas(ImmutableMap.of("tableMetaData", tableMetaData)).getAllColumnNames("tableMetaData"), is((List<String>) Collections.singleton("name")));
+        assertThat(new TableMetas(ImmutableMap.of("tableMetaData", tableMetaData)).getAllColumnNames("tableMetaData"), is((List<String>) Collections.singletonList("name")));
     }
     
     @Test
