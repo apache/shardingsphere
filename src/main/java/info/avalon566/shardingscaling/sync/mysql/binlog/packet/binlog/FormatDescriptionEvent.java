@@ -24,6 +24,8 @@ import lombok.Getter;
 /**
  * Format description event.
  * https://dev.mysql.com/doc/internals/en/format-description-event.html
+ * Checksum in format description event include algorithm information.
+ * https://dev.mysql.com/worklog/task/?id=2540#tabs-2540-4
  *
  * @author avalon566
  */
@@ -44,6 +46,7 @@ public class FormatDescriptionEvent {
 
     /**
      * Parse format description event from {@code ByteBuf}.
+     *
      * @param in buffer
      */
     public final void parse(final ByteBuf in) {
