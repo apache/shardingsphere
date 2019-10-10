@@ -31,6 +31,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class EncryptTableTest {
+    
     private EncryptTable encryptTable;
     
     @Before
@@ -42,7 +43,6 @@ public final class EncryptTableTest {
         when(encryptColumnRuleConfiguration.getAssistedQueryColumn()).thenReturn("assistedQueryColumn");
         when(encryptColumnRuleConfiguration.getPlainColumn()).thenReturn("plainColumn");
         when(encryptColumnRuleConfiguration.getEncryptor()).thenReturn("encryptor");
-    
         encryptTable = new EncryptTable(config);
     }
     
