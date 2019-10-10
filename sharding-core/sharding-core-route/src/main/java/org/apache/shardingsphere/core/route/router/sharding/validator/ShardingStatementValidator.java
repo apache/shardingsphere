@@ -20,6 +20,8 @@ package org.apache.shardingsphere.core.route.router.sharding.validator;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
+import java.util.List;
+
 /**
  * Sharding statement validator.
  *
@@ -34,6 +36,7 @@ public interface ShardingStatementValidator<T extends SQLStatement> {
      * 
      * @param shardingRule sharding rule
      * @param sqlStatement SQL statement
+     * @param parameters SQL  parameters
      */
-    void validate(ShardingRule shardingRule, T sqlStatement);
+    void validate(ShardingRule shardingRule, T sqlStatement, List<Object> parameters);
 }

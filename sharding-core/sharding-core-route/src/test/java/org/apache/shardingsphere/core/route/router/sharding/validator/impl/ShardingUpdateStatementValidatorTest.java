@@ -17,11 +17,21 @@
 
 package org.apache.shardingsphere.core.route.router.sharding.validator.impl;
 
+import static org.mockito.Mockito.when;
+
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -30,32 +40,77 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collections;
-
-import static org.mockito.Mockito.when;
+import com.google.common.collect.Lists;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ShardingUpdateStatementValidatorTest {
-    
+
     @Mock
     private ShardingRule shardingRule;
-    
+
     @Test
     public void assertValidateUpdateWithoutShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
-        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatement());
+        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatement(), null);
     }
-    
+
     @Test(expected = ShardingException.class)
     public void assertValidateUpdateWithShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatement());
+        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatement(), null);
     }
-    
+
+    @Test
+    public void assertValidateUpdateWithoutShardingKeyAndParameters() {
+        when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
+        List<Object> parameters = Lists.newArrayList();
+        parameters.add(1);
+        parameters.add(1);
+        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatementAndParameters(1), parameters);
+    }
+
+    @Test
+    public void assertValidateUpdateWithShardingKeyAndShardingParameterEquals() {
+        when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
+        List<Object> parameters = Lists.newArrayList();
+        parameters.add(1);
+        parameters.add(1);
+        // set parameter = 1
+        // where patameter = 2
+        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatementAndParameters(1), parameters);
+    }
+
+    @Test(expected = ShardingException.class)
+    public void assertValidateUpdateWithShardingKeyAndShardingParameterNotEquals() {
+        when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
+        List<Object> parameters = Lists.newArrayList();
+        parameters.add(1);
+        parameters.add(1);
+        // set parameter = 1
+        // where patameter = 2
+        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatementAndParameters(2), parameters);
+    }
+
     private UpdateStatement createUpdateStatement() {
         UpdateStatement result = new UpdateStatement();
         result.getAllSQLSegments().add(new TableSegment(0, 0, "user"));
         result.setSetAssignment(new SetAssignmentsSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "id"), new LiteralExpressionSegment(0, 0, "")))));
+        return result;
+    }
+
+    private UpdateStatement createUpdateStatementAndParameters(Object shardingColumnPatamater) {
+        UpdateStatement result = new UpdateStatement();
+        result.getAllSQLSegments().add(new TableSegment(0, 0, "user"));
+        // set shardingColumnPatamater
+        result.setSetAssignment(new SetAssignmentsSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "id"), new LiteralExpressionSegment(0, 0, shardingColumnPatamater)))));
+
+        // create whereSegment
+        WhereSegment where = new WhereSegment(0, 0, 1);
+        where.setParameterStartIndex(0);
+        AndPredicate andPre = new AndPredicate();
+        andPre.getPredicates().add(new PredicateSegment(0, 1, new ColumnSegment(0, 0, "id"), new PredicateCompareRightValue("=", new ParameterMarkerExpressionSegment(0, 0, 0))));
+        where.getAndPredicates().add(andPre);
+        result.setWhere(where);
         return result;
     }
 }
