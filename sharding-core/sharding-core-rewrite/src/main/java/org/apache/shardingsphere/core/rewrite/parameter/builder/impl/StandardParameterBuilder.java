@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.rewrite.parameter.builder.impl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -54,10 +53,5 @@ public final class StandardParameterBuilder implements ParameterBuilder {
             result.add(entry.getKey(), entry.getValue());
         }
         return result;
-    }
-    
-    @Override
-    public List<Object> getParameters(final RoutingUnit routingUnit) {
-        return getParameters();
     }
 }

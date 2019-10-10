@@ -21,8 +21,16 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteResult;
+import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.GroupedParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.StandardParameterBuilder;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import org.apache.shardingsphere.core.rule.DataNode;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,6 +47,36 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     
     @Override
     public SQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
-        return new SQLRewriteResult(sqlRewriteContext.getSQLBuilder().toSQL(routingUnit, logicAndActualTables), sqlRewriteContext.getParameterBuilder().getParameters(routingUnit));
+        return new SQLRewriteResult(sqlRewriteContext.getSQLBuilder().toSQL(routingUnit, logicAndActualTables), getParameters(sqlRewriteContext.getParameterBuilder(), routingUnit));
+    }
+    
+    private List<Object> getParameters(final ParameterBuilder parameterBuilder, final RoutingUnit routingUnit) {
+        if (parameterBuilder instanceof StandardParameterBuilder || null == ((GroupedParameterBuilder) parameterBuilder).getShardingConditions()) {
+            return parameterBuilder.getParameters();
+        }
+        if (parameterBuilder.getParameters().isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Object> result = new LinkedList<>();
+        int count = 0;
+        for (ShardingCondition each : ((GroupedParameterBuilder) parameterBuilder).getShardingConditions().getConditions()) {
+            if (isInSameDataNode(each, routingUnit)) {
+                result.addAll(((GroupedParameterBuilder) parameterBuilder).getParameters(count));
+            }
+            count++;
+        }
+        return result;
+    }
+
+    private boolean isInSameDataNode(final ShardingCondition shardingCondition, final RoutingUnit routingUnit) {
+        if (shardingCondition.getDataNodes().isEmpty()) {
+            return true;
+        }
+        for (DataNode each : shardingCondition.getDataNodes()) {
+            if (routingUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

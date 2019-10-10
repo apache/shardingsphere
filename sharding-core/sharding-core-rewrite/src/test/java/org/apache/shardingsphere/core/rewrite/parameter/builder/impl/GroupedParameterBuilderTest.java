@@ -19,8 +19,6 @@ package org.apache.shardingsphere.core.rewrite.parameter.builder.impl;
 
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
-import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,12 +58,5 @@ public final class GroupedParameterBuilderTest {
     @Test
     public void assertGetParameters() {
         assertThat(parameterBuilder.getParameters(), is(Arrays.<Object>asList(3, 4, 5, 6)));
-    }
-    
-    @Test
-    public void assertGetParametersWithRoutingUnit() {
-        RoutingUnit routingUnit = new RoutingUnit("db1");
-        routingUnit.getTableUnits().add(new TableUnit("tb1", "tb1"));
-        assertThat(parameterBuilder.getParameters(routingUnit), is(Arrays.<Object>asList(3, 4)));
     }
 }

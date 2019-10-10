@@ -20,14 +20,10 @@ package org.apache.shardingsphere.core.rewrite.parameter.builder.impl;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
-import org.apache.shardingsphere.core.rule.DataNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -76,18 +72,6 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
         return result;
     }
     
-    @Override
-    public List<Object> getParameters(final RoutingUnit routingUnit) {
-        List<Object> result = new LinkedList<>();
-        Iterator<ShardingCondition> shardingConditionIterator = shardingConditions.getConditions().iterator();
-        for (int i = 0; i < groupedParameters.size(); i++) {
-            if (!shardingConditionIterator.hasNext() || isInSameDataNode(shardingConditionIterator.next(), routingUnit)) {
-                result.addAll(getParameters(i));
-            }
-        }
-        return result;
-    }
-    
     /**
      * Get parameters.
      * 
@@ -109,17 +93,5 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
             }
         }
         return result;
-    }
-    
-    private boolean isInSameDataNode(final ShardingCondition shardingCondition, final RoutingUnit routingUnit) {
-        if (shardingCondition.getDataNodes().isEmpty()) {
-            return true;
-        }
-        for (DataNode each : shardingCondition.getDataNodes()) {
-            if (routingUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
-                return true;
-            }
-        }
-        return false;
     }
 }
