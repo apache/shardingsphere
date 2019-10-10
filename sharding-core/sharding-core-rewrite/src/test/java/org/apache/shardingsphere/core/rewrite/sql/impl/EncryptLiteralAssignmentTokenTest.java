@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.sql.impl;
 
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.impl.EncryptLiteralAssignmentToken;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptLiteralAssignmentToken;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

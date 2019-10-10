@@ -23,9 +23,11 @@ import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
-import org.apache.shardingsphere.core.rewrite.encrypt.EncryptRewriterDecorator;
-import org.apache.shardingsphere.core.rewrite.sharding.ShardingRewriterDecorator;
+import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteResult;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.context.EncryptSQLRewriteContextDecorator;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.context.ShardingSQLRewriteContextDecorator;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.engine.ShardingSQLRewriteEngine;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -106,14 +108,15 @@ public abstract class BaseShardingEngine {
     }
     
     private Collection<RouteUnit> rewriteAndConvert(final String sql, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(sqlRouteResult.getSqlStatementContext(), sql, parameters);
-        new ShardingRewriterDecorator(shardingRule, sqlRouteResult).decorate(sqlRewriteEngine, metaData.getTables(), sqlRouteResult.getSqlStatementContext(), parameters);
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(metaData.getTables(), sqlRouteResult.getSqlStatementContext(), sql, parameters);
+        new ShardingSQLRewriteContextDecorator(shardingRule, sqlRouteResult).decorate(sqlRewriteContext);
         boolean isQueryWithCipherColumn = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
-        new EncryptRewriterDecorator(shardingRule.getEncryptRule(), isQueryWithCipherColumn).decorate(sqlRewriteEngine, metaData.getTables(), sqlRouteResult.getSqlStatementContext(), parameters);
+        new EncryptSQLRewriteContextDecorator(shardingRule.getEncryptRule(), isQueryWithCipherColumn).decorate(sqlRewriteContext);
         Collection<RouteUnit> result = new LinkedHashSet<>();
         for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
-            result.add(new RouteUnit(
-                    each.getDataSourceName(), sqlRewriteEngine.generateSQL(each, getLogicAndActualTables(each, sqlRouteResult.getSqlStatementContext().getTablesContext().getTableNames()))));
+            ShardingSQLRewriteEngine sqlRewriteEngine = new ShardingSQLRewriteEngine(each, getLogicAndActualTables(each, sqlRouteResult.getSqlStatementContext().getTablesContext().getTableNames()));
+            SQLRewriteResult sqlRewriteResult = sqlRewriteEngine.rewrite(sqlRewriteContext);
+            result.add(new RouteUnit(each.getDataSourceName(), new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));
         }
         return result;
     }
