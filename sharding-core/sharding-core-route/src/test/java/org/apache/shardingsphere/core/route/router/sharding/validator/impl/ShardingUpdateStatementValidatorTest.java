@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.route.router.sharding.validator.impl;
 
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -52,13 +53,13 @@ public final class ShardingUpdateStatementValidatorTest {
     @Test
     public void assertValidateUpdateWithoutShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
-        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatement(), null);
+        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatement(), Collections.emptyList());
     }
 
     @Test(expected = ShardingException.class)
     public void assertValidateUpdateWithShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatement(), null);
+        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatement(), Collections.emptyList());
     }
 
     @Test
@@ -73,22 +74,14 @@ public final class ShardingUpdateStatementValidatorTest {
     @Test
     public void assertValidateUpdateWithShardingKeyAndShardingParameterEquals() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        List<Object> parameters = Lists.newArrayList();
-        parameters.add(1);
-        parameters.add(1);
-        // set parameter = 1
-        // where patameter = 2
+        List parameters = Arrays.asList(1, 1);
         new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatementAndParameters(1), parameters);
     }
 
     @Test(expected = ShardingException.class)
     public void assertValidateUpdateWithShardingKeyAndShardingParameterNotEquals() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        List<Object> parameters = Lists.newArrayList();
-        parameters.add(1);
-        parameters.add(1);
-        // set parameter = 1
-        // where patameter = 2
+        List parameters = Arrays.asList(1, 1);
         new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatementAndParameters(2), parameters);
     }
 
@@ -106,7 +99,6 @@ public final class ShardingUpdateStatementValidatorTest {
         Collection<AssignmentSegment> assignments = Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "id"), new LiteralExpressionSegment(0, 0, shardingColumnPatamater)));
         SetAssignmentsSegment setAssignmentsSegment = new SetAssignmentsSegment(0, 0, assignments);
         result.setSetAssignment(setAssignmentsSegment);
-
         // create whereSegment
         WhereSegment where = new WhereSegment(0, 0, 1);
         where.setParameterStartIndex(0);

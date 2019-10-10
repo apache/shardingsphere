@@ -32,8 +32,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.google.common.collect.Lists;
-
 @RunWith(MockitoJUnitRunner.class)
 public final class ShardingInsertStatementValidatorTest {
     
@@ -43,13 +41,13 @@ public final class ShardingInsertStatementValidatorTest {
     @Test
     public void assertValidateOnDuplicateKeyWithoutShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
-        new ShardingInsertStatementValidator().validate(shardingRule, createInsertStatement(), Lists.newArrayList());
+        new ShardingInsertStatementValidator().validate(shardingRule, createInsertStatement(), Collections.emptyList());
     }
     
     @Test(expected = ShardingException.class)
     public void assertValidateOnDuplicateKeyWithShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        new ShardingInsertStatementValidator().validate(shardingRule, createInsertStatement(), Lists.newArrayList());
+        new ShardingInsertStatementValidator().validate(shardingRule, createInsertStatement(), Collections.emptyList());
     }
     
     private InsertStatement createInsertStatement() {
