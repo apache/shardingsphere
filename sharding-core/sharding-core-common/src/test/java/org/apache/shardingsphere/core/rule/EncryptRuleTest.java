@@ -28,7 +28,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 
 public final class EncryptRuleTest {
     
@@ -63,5 +67,65 @@ public final class EncryptRuleTest {
         for (final Object value : encryptAssistedQueryValues) {
             assertNull(value);
         }
+    }
+    
+    @Test
+    public void assertFindEncryptTable() {
+        assertTrue(new EncryptRule(encryptRuleConfig).findEncryptTable(table).isPresent());
+    }
+    
+    @Test
+    public void assertGetLogicColumn() {
+        assertThat(new EncryptRule(encryptRuleConfig).getLogicColumn(table, "cipher_pwd"), is(column));
+    }
+    
+    @Test
+    public void assertFindPlainColumn() {
+        assertFalse(new EncryptRule(encryptRuleConfig).findPlainColumn(table, "cipher_pwd").isPresent());
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void assertGetCipherColumnWhenNoEncryptColumn() {
+        new EncryptRule(encryptRuleConfig).getCipherColumn(table, "cipher_pwd");
+    }
+    
+    @Test
+    public void assertGetCipherColumnWhenEncryptColumnExist() {
+        assertThat(new EncryptRule(encryptRuleConfig).getCipherColumn(table, column), is("cipher_pwd"));
+    }
+    
+    @Test
+    public void assertIsCipherColumn() {
+        assertTrue(new EncryptRule(encryptRuleConfig).isCipherColumn(table, "cipher_pwd"));
+    }
+    
+    @Test
+    public void assertFindAssistedQueryColumn() {
+        assertFalse(new EncryptRule(encryptRuleConfig).findAssistedQueryColumn(table, "cipher_pwd").isPresent());
+    }
+    
+    @Test
+    public void assertGetAssistedQueryColumns() {
+        assertTrue(new EncryptRule(encryptRuleConfig).getAssistedQueryColumns(table).isEmpty());
+    }
+    
+    @Test
+    public void assertGetAssistedQueryAndPlainColumns() {
+        assertFalse(new EncryptRule(encryptRuleConfig).getAssistedQueryAndPlainColumns(table).isEmpty());
+    }
+    
+    @Test
+    public void assertGetLogicAndCipherColumns() {
+        assertFalse(new EncryptRule(encryptRuleConfig).getLogicAndCipherColumns(table).isEmpty());
+    }
+    
+    @Test
+    public void assertGetLogicAndPlainColumns() {
+        assertFalse(new EncryptRule(encryptRuleConfig).getLogicAndPlainColumns(table).isEmpty());
+    }
+    
+    @Test
+    public void assertGetEncryptTableNames() {
+        assertFalse(new EncryptRule(encryptRuleConfig).getEncryptTableNames().isEmpty());
     }
 }
