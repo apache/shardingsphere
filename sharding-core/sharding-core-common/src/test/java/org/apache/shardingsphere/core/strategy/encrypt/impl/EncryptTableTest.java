@@ -25,12 +25,8 @@ import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -65,9 +61,18 @@ public final class EncryptTableTest {
         assertFalse(encryptTable.getLogicColumns().isEmpty());
     }
     
+    @Test
+    public void assertFindPlainColumn() {
+        assertFalse(encryptTable.findPlainColumn("logicColumn").isPresent());
+    }
     
     @Test
-    public void assertGetLogicColumns() {
-        assertFalse(encryptTable.getLogicColumns().isEmpty());
+    public void assertGetLogicAndCipherColumns() {
+        assertFalse(encryptTable.getLogicAndCipherColumns().isEmpty());
+    }
+    
+    @Test
+    public void assertGetLogicAndPlainColumns() {
+        assertFalse(encryptTable.getLogicAndPlainColumns().isEmpty());
     }
 }
