@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * standard parameter builder.
+ * Standard parameter builder.
  *
  * @author panjuan
  */
