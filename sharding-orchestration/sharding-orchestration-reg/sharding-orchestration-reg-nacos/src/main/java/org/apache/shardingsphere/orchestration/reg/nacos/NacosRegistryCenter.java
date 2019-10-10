@@ -35,7 +35,7 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 
 @Slf4j
-public class NacosRegistryCenter implements RegistryCenter {
+public final class NacosRegistryCenter implements RegistryCenter {
 
     private ConfigService configService;
 
@@ -46,7 +46,10 @@ public class NacosRegistryCenter implements RegistryCenter {
     @Override
     public void init(final RegistryCenterConfiguration config) {
         try {
-            configService = NacosFactory.createConfigService(config.getServerLists());
+            Properties properties = new Properties();
+            properties.put("serverAddr", config.getServerLists());
+            properties.put("namespace", !Strings.isNullOrEmpty(config.getNamespace()) ? config.getNamespace() : "");
+            configService = NacosFactory.createConfigService(properties);
         } catch (NacosException e) {
             log.debug("exception for: {}", e.toString());
         }
