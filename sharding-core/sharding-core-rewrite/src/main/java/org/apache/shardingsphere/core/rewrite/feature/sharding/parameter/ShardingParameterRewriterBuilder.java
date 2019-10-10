@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.rewrite.feature.sharding.parameter.impl.Sh
 import org.apache.shardingsphere.core.rewrite.feature.sharding.parameter.impl.ShardingPaginationParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.SQLRouteResultAware;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.ShardingRuleAware;
-import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriterBuilder;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.TableMetasAware;
@@ -46,7 +45,7 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
     private final SQLRouteResult sqlRouteResult;
     
     @Override
-    public Collection<ParameterRewriter> getParameterRewriters(final ParameterBuilder parameterBuilder, final TableMetas tableMetas) {
+    public Collection<ParameterRewriter> getParameterRewriters(final TableMetas tableMetas) {
         Collection<ParameterRewriter> result = getParameterRewriters();
         for (ParameterRewriter each : result) {
             setUpParameterRewriters(each, tableMetas);

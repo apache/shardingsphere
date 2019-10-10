@@ -22,11 +22,10 @@ import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.parameter.impl.EncryptAssignmentParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.parameter.impl.EncryptInsertValueParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.parameter.impl.EncryptPredicateParameterRewriter;
-import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriterBuilder;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.QueryWithCipherColumnAware;
+import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriterBuilder;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.TableMetasAware;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
@@ -46,7 +45,7 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
     private final boolean queryWithCipherColumn;
     
     @Override
-    public Collection<ParameterRewriter> getParameterRewriters(final ParameterBuilder parameterBuilder, final TableMetas tableMetas) {
+    public Collection<ParameterRewriter> getParameterRewriters(final TableMetas tableMetas) {
         Collection<ParameterRewriter> result = getParameterRewriters();
         for (ParameterRewriter each : result) {
             setUpParameterRewriters(each, tableMetas);
