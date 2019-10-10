@@ -101,7 +101,7 @@
 </template>
 <script>
 import { mapActions } from 'vuex'
-import _ from 'lodash'
+import clone from 'lodash/clone'
 import API from '../api'
 export default {
   name: 'RegistConfig',
@@ -188,14 +188,14 @@ export default {
   methods: {
     ...mapActions(['setRegCenterActivated']),
     handleCurrentChange(val) {
-      const data = _.clone(this.cloneTableData)
+      const data = clone(this.cloneTableData)
       this.tableData = data.splice(val - 1, this.pageSize)
     },
     getRegCenter() {
       API.getRegCenter().then(res => {
         const data = res.model
         this.total = data.length
-        this.cloneTableData = _.clone(res.model)
+        this.cloneTableData = clone(res.model)
         this.tableData = data.splice(0, this.pageSize)
       })
       this.getRegCenterActivated()
@@ -214,13 +214,7 @@ export default {
         })
       } else {
         const params = {
-          // activated: row.activated,
-          // digest: row.digest,
           name: row.name
-          // namespace: row.namespace,
-          // orchestrationName: row.orchestrationName,
-          // registryCenterType: row.registryCenterType,
-          // serverLists: row.serverLists
         }
         API.postRegCenterConnect(params).then(res => {
           this.$notify({
@@ -234,13 +228,7 @@ export default {
     },
     handlerDel(row) {
       const params = {
-        // activated: row.activated,
-        // digest: row.digest,
         name: row.name
-        // namespace: row.namespace,
-        // orchestrationName: row.orchestrationName,
-        // registryCenterType: row.registryCenterType,
-        // serverLists: row.serverLists
       }
       API.deleteRegCenter(params).then(res => {
         this.$notify({

@@ -24,7 +24,7 @@
       auto-complete="off"
       label-position="left"
     >
-      <h3 class="title"/>
+      <h3 class="title" />
       <el-form-item prop="username">
         <el-input
           v-model="loginForm.username"
@@ -33,7 +33,7 @@
           auto-complete="off"
           placeholder="username"
         >
-          <i slot="prefix" class="icon-user icon-iem"/>
+          <i slot="prefix" class="icon-user icon-iem" />
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
@@ -45,7 +45,7 @@
           placeholder="password"
           @keyup.enter.native="handleLogin"
         >
-          <i slot="prefix" class="icon-password icon-iem"/>
+          <i slot="prefix" class="icon-password icon-iem" />
         </el-input>
       </el-form-item>
       <el-form-item class="btn-login">
@@ -57,7 +57,7 @@
         >{{ $t("login.btnTxt") }}</el-button>
       </el-form-item>
     </el-form>
-    <s-footer style="position: fixed;bottom: 0;"/>
+    <s-footer style="position: fixed;bottom: 0;" />
   </div>
 </template>
 
@@ -152,10 +152,10 @@ $light_gray: #f2f2f2;
     display: inline-block;
   }
   .icon-user {
-    background: url("../../assets/img/user.png") no-repeat left center;
+    background: url('../../assets/img/user.png') no-repeat left center;
   }
   .icon-password {
-    background: url("../../assets/img/password.png") no-repeat left center;
+    background: url('../../assets/img/password.png') no-repeat left center;
   }
   .btn-login {
     margin-top: 50px;
@@ -172,7 +172,7 @@ $light_gray: #eee;
   height: 100%;
   width: 100%;
   // background-color: $bg;
-  background: url("../../assets/img/bg.png") no-repeat center center;
+  background: url('../../assets/img/bg.png') no-repeat center center;
   .login-form {
     position: absolute;
     left: 0;
@@ -192,7 +192,7 @@ $light_gray: #eee;
   .title {
     margin: 0px auto 40px auto;
     height: 86px;
-    background: url("../../assets/img/login-logo.png") no-repeat center center;
+    background: url('../../assets/img/login-logo.png') no-repeat center center;
   }
 }
 .footer-copy-right {

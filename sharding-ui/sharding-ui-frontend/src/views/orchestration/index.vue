@@ -21,7 +21,7 @@
       <el-radio-button label="1">{{ $t('orchestration.serviceNode') }}</el-radio-button>
       <el-radio-button label="2">{{ $t('orchestration.slaveDataSourceName') }}</el-radio-button>
     </el-radio-group>
-    <component :is="currentView"/>
+    <component :is="currentView" />
   </el-row>
 </template>
 <script>
