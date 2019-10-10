@@ -43,6 +43,7 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     
     private final List<List<Object>> groupedParameters;
     
+    @Getter
     @Setter
     private ShardingConditions shardingConditions;
     
@@ -69,10 +70,8 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     @Override
     public List<Object> getParameters() {
         List<Object> result = new LinkedList<>();
-        int count = 0;
-        for (List<Object> each : groupedParameters) {
-            result.addAll(getParameters(each, count));
-            count++;
+        for (int i = 0; i < groupedParameters.size(); i++) {
+            result.addAll(getParameters(i));
         }
         return result;
     }
@@ -81,19 +80,23 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     public List<Object> getParameters(final RoutingUnit routingUnit) {
         List<Object> result = new LinkedList<>();
         Iterator<ShardingCondition> shardingConditionIterator = shardingConditions.getConditions().iterator();
-        int count = 0;
-        for (List<Object> each : groupedParameters) {
+        for (int i = 0; i < groupedParameters.size(); i++) {
             if (!shardingConditionIterator.hasNext() || isInSameDataNode(shardingConditionIterator.next(), routingUnit)) {
-                result.addAll(getParameters(each, count));
+                result.addAll(getParameters(i));
             }
-            count++;
         }
         return result;
     }
     
-    private List<Object> getParameters(final List<Object> parameterGroup, final int count) {
+    /**
+     * Get parameters.
+     * 
+     * @param count parameters group count
+     * @return parameters
+     */
+    public List<Object> getParameters(final int count) {
         List<Object> result = new LinkedList<>();
-        result.addAll(parameterGroup);
+        result.addAll(groupedParameters.get(count));
         for (Entry<Integer, Object> entry : replacedIndexAndParameterGroups.get(count).entrySet()) {
             result.set(entry.getKey(), entry.getValue());
         }
