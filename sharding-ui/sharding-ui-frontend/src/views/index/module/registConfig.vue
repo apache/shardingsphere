@@ -39,7 +39,7 @@
             <el-button
               :disabled="scope.row.activated"
               type="primary"
-              icon="icon-link iconfont"
+              icon="el-icon-link"
               size="small"
               @click="handleConnect(scope.row)"
             />
