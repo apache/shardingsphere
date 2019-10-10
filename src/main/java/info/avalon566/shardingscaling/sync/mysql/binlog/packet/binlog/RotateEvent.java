@@ -19,13 +19,13 @@ package info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog;
 
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import io.netty.buffer.ByteBuf;
-import lombok.Data;
+import lombok.Getter;
 
 /**
  * Rotate event.
  * @author avalon566
  */
-@Data
+@Getter
 public class RotateEvent {
 
     private long position;

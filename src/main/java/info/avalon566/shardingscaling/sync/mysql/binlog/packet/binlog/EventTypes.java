@@ -65,17 +65,17 @@ public final class EventTypes {
 
     public static final short TABLE_MAP_EVENT = 19;
 
-    public static final short WRITE_ROWS_EVENTv0 = 20;
+    public static final short WRITE_ROWS_EVENT_V0 = 20;
 
-    public static final short UPDATE_ROWS_EVENTv0 = 21;
+    public static final short UPDATE_ROWS_EVENT_V0 = 21;
 
-    public static final short DELETE_ROWS_EVENTv0 = 22;
+    public static final short DELETE_ROWS_EVENT_V0 = 22;
 
-    public static final short WRITE_ROWS_EVENTv1 = 23;
+    public static final short WRITE_ROWS_EVENT_V1 = 23;
 
-    public static final short UPDATE_ROWS_EVENTv1 = 24;
+    public static final short UPDATE_ROWS_EVENT_V1 = 24;
 
-    public static final short DELETE_ROWS_EVENTv1 = 25;
+    public static final short DELETE_ROWS_EVENT_V1 = 25;
 
     public static final short INCIDENT_EVENT = 26;
 
@@ -85,11 +85,11 @@ public final class EventTypes {
 
     public static final short ROWS_QUERY_EVENT = 29;
 
-    public static final short WRITE_ROWS_EVENTv2 = 30;
+    public static final short WRITE_ROWS_EVENT_V2 = 30;
 
-    public static final short UPDATE_ROWS_EVENTv2 = 31;
+    public static final short UPDATE_ROWS_EVENT_V2 = 31;
 
-    public static final short DELETE_ROWS_EVENTv2 = 32;
+    public static final short DELETE_ROWS_EVENT_V2 = 32;
 
     public static final short GTID_EVENT = 33;
 

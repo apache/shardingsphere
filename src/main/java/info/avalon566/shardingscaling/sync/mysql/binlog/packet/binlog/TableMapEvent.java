@@ -19,15 +19,15 @@ package info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog;
 
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import io.netty.buffer.ByteBuf;
-import lombok.Data;
-import lombok.var;
+import lombok.Getter;
 
 /**
  * Table map event.
  * https://dev.mysql.com/doc/internals/en/table-map-event.html
+ *
  * @author avalon566
  */
-@Data
+@Getter
 public class TableMapEvent {
 
     private long tableId;
@@ -60,11 +60,11 @@ public class TableMapEvent {
         DataTypesCodec.readNul(in);
         tableName = DataTypesCodec.readFixedLengthString(DataTypesCodec.readUnsignedInt1(in), in);
         DataTypesCodec.readNul(in);
-        var columnCount = DataTypesCodec.readLengthCodedIntLE(in);
+        long columnCount = DataTypesCodec.readLengthCodedIntLE(in);
         initColumnDefs((int) columnCount);
         decodeColumnType(in);
-        var columnMetaDefDataLength = DataTypesCodec.readLengthCodedIntLE(in);
-        decodeColumMeta(in);
+        long columnMetaDefDataLength = DataTypesCodec.readLengthCodedIntLE(in);
+        decodeColumnMeta(in);
         // skip null bitmap
         DataTypesCodec.readBitmap((int) columnCount, in);
     }
@@ -77,14 +77,13 @@ public class TableMapEvent {
     }
 
     private void decodeColumnType(final ByteBuf in) {
-        for (int i = 0; i < columnDefs.length; i++) {
-            columnDefs[i].setType(DataTypesCodec.readUnsignedInt1(in));
+        for (ColumnDef columnDef : columnDefs) {
+            columnDef.setType(DataTypesCodec.readUnsignedInt1(in));
         }
     }
 
-    private void decodeColumMeta(final ByteBuf in) {
-        for (int i = 0; i < columnDefs.length; i++) {
-            var columnDef = columnDefs[i];
+    private void decodeColumnMeta(final ByteBuf in) {
+        for (ColumnDef columnDef : columnDefs) {
             switch (columnDef.getType()) {
                 case ColumnTypes.MYSQL_TYPE_TINY_BLOB:
                 case ColumnTypes.MYSQL_TYPE_BLOB:
@@ -94,24 +93,18 @@ public class TableMapEvent {
                 case ColumnTypes.MYSQL_TYPE_FLOAT:
                 case ColumnTypes.MYSQL_TYPE_GEOMETRY:
                 case ColumnTypes.MYSQL_TYPE_JSON:
-                    columnDef.setMeta(DataTypesCodec.readUnsignedInt1(in));
-                    break;
-                case ColumnTypes.MYSQL_TYPE_STRING:
-                    columnDef.setMeta(DataTypesCodec.readUnsignedInt2BE(in));
-                    break;
-                case ColumnTypes.MYSQL_TYPE_BIT:
-                    columnDef.setMeta(DataTypesCodec.readUnsignedInt2LE(in));
-                    break;
-                case ColumnTypes.MYSQL_TYPE_VARCHAR:
-                    columnDef.setMeta(DataTypesCodec.readUnsignedInt2LE(in));
-                    break;
-                case ColumnTypes.MYSQL_TYPE_NEWDECIMAL:
-                    columnDef.setMeta(DataTypesCodec.readUnsignedInt2BE(in));
-                    break;
                 case ColumnTypes.MYSQL_TYPE_TIME2:
                 case ColumnTypes.MYSQL_TYPE_DATETIME2:
                 case ColumnTypes.MYSQL_TYPE_TIMESTAMP2:
                     columnDef.setMeta(DataTypesCodec.readUnsignedInt1(in));
+                    break;
+                case ColumnTypes.MYSQL_TYPE_STRING:
+                case ColumnTypes.MYSQL_TYPE_NEWDECIMAL:
+                    columnDef.setMeta(DataTypesCodec.readUnsignedInt2BE(in));
+                    break;
+                case ColumnTypes.MYSQL_TYPE_BIT:
+                case ColumnTypes.MYSQL_TYPE_VARCHAR:
+                    columnDef.setMeta(DataTypesCodec.readUnsignedInt2LE(in));
                     break;
                 default:
                     columnDef.setMeta(0);

@@ -65,16 +65,16 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
             case EventTypes.TABLE_MAP_EVENT:
                 decodeTableMapEvent(in);
                 break;
-            case EventTypes.WRITE_ROWS_EVENTv1:
-            case EventTypes.WRITE_ROWS_EVENTv2:
+            case EventTypes.WRITE_ROWS_EVENT_V1:
+            case EventTypes.WRITE_ROWS_EVENT_V2:
                 out.add(decodeWriteRowsEventV2(binlogEventHeader, in));
                 break;
-            case EventTypes.UPDATE_ROWS_EVENTv1:
-            case EventTypes.UPDATE_ROWS_EVENTv2:
+            case EventTypes.UPDATE_ROWS_EVENT_V1:
+            case EventTypes.UPDATE_ROWS_EVENT_V2:
                 out.add(decodeUpdateRowsEventV2(binlogEventHeader, in));
                 break;
-            case EventTypes.DELETE_ROWS_EVENTv1:
-            case EventTypes.DELETE_ROWS_EVENTv2:
+            case EventTypes.DELETE_ROWS_EVENT_V1:
+            case EventTypes.DELETE_ROWS_EVENT_V2:
                 out.add(decodeDeleteRowsEventV2(binlogEventHeader, in));
                 break;
             default:
