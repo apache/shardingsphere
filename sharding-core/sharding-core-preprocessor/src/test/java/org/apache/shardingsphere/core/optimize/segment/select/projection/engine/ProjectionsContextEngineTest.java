@@ -20,10 +20,16 @@ package org.apache.shardingsphere.core.optimize.segment.select.projection.engine
 import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.core.optimize.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ShorthandSelectItemSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 import org.junit.Test;
+
+import java.util.Collections;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
@@ -37,6 +43,20 @@ public final class ProjectionsContextEngineTest {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getSelectItems()).thenReturn(mock(SelectItemsSegment.class));
         ProjectionsContext projectionsContext = projectionsContextEngine.createProjectionsContext(null, selectStatement, mock(GroupByContext.class), mock(OrderByContext.class));
+        assertNotNull(projectionsContext);
+    }
+    
+    @Test
+    public void assertProjectionsContextCreatedProperlyWhenSelectItemPresent() {
+        SelectStatement selectStatement = mock(SelectStatement.class);
+        SelectItemsSegment selectItemsSegment = mock(SelectItemsSegment.class);
+        when(selectStatement.getSelectItems()).thenReturn(selectItemsSegment);
+        ShorthandSelectItemSegment shorthandSelectItemSegment = new ShorthandSelectItemSegment(0, 10, "text");
+        TableSegment owner = new TableSegment(0, 10, "name");
+        owner.setOwner(new SchemaSegment(0, 10, "name"));
+        shorthandSelectItemSegment.setOwner(owner);
+        when(selectItemsSegment.getSelectItems()).thenReturn(Collections.<SelectItemSegment>singleton(shorthandSelectItemSegment));
+        ProjectionsContext projectionsContext = new ProjectionsContextEngine(null).createProjectionsContext(null, selectStatement, mock(GroupByContext.class), mock(OrderByContext.class));
         assertNotNull(projectionsContext);
     }
 }
