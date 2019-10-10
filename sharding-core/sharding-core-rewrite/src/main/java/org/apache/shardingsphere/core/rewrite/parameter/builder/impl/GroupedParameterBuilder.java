@@ -41,7 +41,7 @@ import java.util.Map.Entry;
  */
 public final class GroupedParameterBuilder implements ParameterBuilder {
     
-    private final List<List<Object>> parameterGroups;
+    private final List<List<Object>> groupedParameters;
     
     @Setter
     private ShardingConditions shardingConditions;
@@ -52,15 +52,15 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     @Getter
     private final List<Map<Integer, Object>> replacedIndexAndParameterGroups;
     
-    public GroupedParameterBuilder(final List<List<Object>> parameterGroups) {
-        this.parameterGroups = parameterGroups;
+    public GroupedParameterBuilder(final List<List<Object>> groupedParameters) {
+        this.groupedParameters = groupedParameters;
         addedIndexAndParameterGroups = createAdditionalParameterGroups();
         replacedIndexAndParameterGroups = createAdditionalParameterGroups();
     }
     
     private List<Map<Integer, Object>> createAdditionalParameterGroups() {
-        List<Map<Integer, Object>> result = new ArrayList<>(parameterGroups.size());
-        for (int i = 0; i < parameterGroups.size(); i++) {
+        List<Map<Integer, Object>> result = new ArrayList<>(groupedParameters.size());
+        for (int i = 0; i < groupedParameters.size(); i++) {
             result.add(new HashMap<Integer, Object>());
         }
         return result;
@@ -70,7 +70,7 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     public List<Object> getParameters() {
         List<Object> result = new LinkedList<>();
         int count = 0;
-        for (List<Object> each : parameterGroups) {
+        for (List<Object> each : groupedParameters) {
             result.addAll(getParameters(each, count));
             count++;
         }
@@ -82,7 +82,7 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
         List<Object> result = new LinkedList<>();
         Iterator<ShardingCondition> shardingConditionIterator = shardingConditions.getConditions().iterator();
         int count = 0;
-        for (List<Object> each : parameterGroups) {
+        for (List<Object> each : groupedParameters) {
             if (!shardingConditionIterator.hasNext() || isInSameDataNode(shardingConditionIterator.next(), routingUnit)) {
                 result.addAll(getParameters(each, count));
             }
