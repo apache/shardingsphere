@@ -64,12 +64,12 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         }
     }
     
-    private void encryptInsertValues(final GroupedParameterBuilder parameterBuilder, final InsertSQLStatementContext insertSQLStatementContext, 
+    private void encryptInsertValues(final GroupedParameterBuilder parameterBuilder, final InsertSQLStatementContext sqlStatementContext, 
                                      final EncryptRule encryptRule, final ShardingEncryptor shardingEncryptor, final String tableName, final String encryptLogicColumnName) {
-        int columnIndex = insertSQLStatementContext.getColumnNames().indexOf(encryptLogicColumnName);
-        Iterator<InsertValueContext> insertValueContexts = insertSQLStatementContext.getInsertValueContexts().iterator();
+        int columnIndex = sqlStatementContext.getColumnNames().indexOf(encryptLogicColumnName);
+        Iterator<InsertValueContext> insertValueContexts = sqlStatementContext.getInsertValueContexts().iterator();
         int count = 0;
-        for (List<Object> each : parameterBuilder.getParameterGroups()) {
+        for (List<Object> each : sqlStatementContext.getGroupedParameters()) {
             if (!each.isEmpty()) {
                 encryptInsertValue(encryptRule, shardingEncryptor, tableName, columnIndex, each.size(), insertValueContexts.next().getValue(columnIndex), 
                         parameterBuilder.getAddedIndexAndParameterGroups().get(count), parameterBuilder.getReplacedIndexAndParameterGroups().get(count), encryptLogicColumnName);

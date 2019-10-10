@@ -41,7 +41,6 @@ import java.util.Map.Entry;
  */
 public final class GroupedParameterBuilder implements ParameterBuilder {
     
-    @Getter
     private final List<List<Object>> parameterGroups;
     
     @Setter
