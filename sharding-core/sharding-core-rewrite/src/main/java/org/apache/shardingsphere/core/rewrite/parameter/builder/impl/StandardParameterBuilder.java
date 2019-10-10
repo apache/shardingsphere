@@ -50,7 +50,12 @@ public final class StandardParameterBuilder implements ParameterBuilder {
             result.set(entry.getKey(), entry.getValue());
         }
         for (Entry<Integer, Object> entry : addedIndexAndParameters.entrySet()) {
-            result.add(entry.getKey(), entry.getValue());
+            int index = entry.getKey();
+            if (index < result.size()) {
+                result.add(index, entry.getValue());
+            } else {
+                result.add(entry.getValue());
+            }
         }
         return result;
     }

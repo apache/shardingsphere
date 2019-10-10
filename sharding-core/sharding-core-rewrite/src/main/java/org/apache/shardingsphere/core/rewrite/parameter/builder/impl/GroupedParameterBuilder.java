@@ -21,11 +21,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Grouped Parameter builder.
@@ -33,34 +30,22 @@ import java.util.Map.Entry;
  * @author panjuan
  * @author zhangliang
  */
+@Getter
 public final class GroupedParameterBuilder implements ParameterBuilder {
     
-    private final List<List<Object>> groupedParameters;
-    
-    @Getter
-    private final List<Map<Integer, Object>> addedIndexAndParameterGroups;
-    
-    @Getter
-    private final List<Map<Integer, Object>> replacedIndexAndParameterGroups;
+    private final List<StandardParameterBuilder> parameterBuilders;
     
     public GroupedParameterBuilder(final List<List<Object>> groupedParameters) {
-        this.groupedParameters = groupedParameters;
-        addedIndexAndParameterGroups = createAdditionalParameterGroups();
-        replacedIndexAndParameterGroups = createAdditionalParameterGroups();
-    }
-    
-    private List<Map<Integer, Object>> createAdditionalParameterGroups() {
-        List<Map<Integer, Object>> result = new ArrayList<>(groupedParameters.size());
-        for (int i = 0; i < groupedParameters.size(); i++) {
-            result.add(new HashMap<Integer, Object>());
+        parameterBuilders = new ArrayList<>(groupedParameters.size());
+        for (List<Object> each : groupedParameters) {
+            parameterBuilders.add(new StandardParameterBuilder(each));
         }
-        return result;
     }
     
     @Override
     public List<Object> getParameters() {
         List<Object> result = new LinkedList<>();
-        for (int i = 0; i < groupedParameters.size(); i++) {
+        for (int i = 0; i < parameterBuilders.size(); i++) {
             result.addAll(getParameters(i));
         }
         return result;
@@ -73,19 +58,6 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
      * @return parameters
      */
     public List<Object> getParameters(final int count) {
-        List<Object> result = new LinkedList<>();
-        result.addAll(groupedParameters.get(count));
-        for (Entry<Integer, Object> entry : replacedIndexAndParameterGroups.get(count).entrySet()) {
-            result.set(entry.getKey(), entry.getValue());
-        }
-        for (Entry<Integer, Object> entry : addedIndexAndParameterGroups.get(count).entrySet()) {
-            int index = entry.getKey();
-            if (index < result.size()) {
-                result.add(index, entry.getValue());
-            } else {
-                result.add(entry.getValue());
-            }
-        }
-        return result;
+        return parameterBuilders.get(count).getParameters();
     }
 }
