@@ -19,10 +19,11 @@ package info.avalon566.shardingscaling.sync.core;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lombok.var;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
@@ -57,11 +58,11 @@ public class SyncExecutor {
      * Run.
      */
     public void run() {
-        var readThreadExecutor = Executors.newSingleThreadExecutor();
+        ExecutorService readThreadExecutor = Executors.newSingleThreadExecutor();
         reader.setChannel(channel);
         readerFuture = readThreadExecutor.submit(reader);
         readThreadExecutor.shutdown();
-        var writeThreadExecutor = Executors.newFixedThreadPool(writers.size());
+        ExecutorService writeThreadExecutor = Executors.newFixedThreadPool(writers.size());
         for (Writer writer : writers) {
             writer.setChannel(channel);
             writerFutures.add(writeThreadExecutor.submit(writer));
@@ -76,8 +77,8 @@ public class SyncExecutor {
         for (Future<?> writerFuture : writerFutures) {
             try {
                 writerFuture.get();
-            } catch (Exception ex) {
-                //TODO: shutdown reader and other writer
+            } catch (InterruptedException | ExecutionException ex) {
+                //TODO shutdown reader and other writer
                 throw new RuntimeException(ex);
             }
         }

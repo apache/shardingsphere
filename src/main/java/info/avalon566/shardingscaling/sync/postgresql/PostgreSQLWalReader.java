@@ -37,7 +37,7 @@ public final class PostgreSQLWalReader extends AbstractRunner implements Reader 
 
     @Override
     public void run() {
-        //TODO:
+        //TODO
         read(channel);
     }
 
