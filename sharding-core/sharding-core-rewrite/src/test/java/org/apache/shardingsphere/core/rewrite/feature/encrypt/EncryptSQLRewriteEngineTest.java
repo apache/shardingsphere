@@ -33,6 +33,7 @@ import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -249,6 +250,24 @@ public final class EncryptSQLRewriteEngineTest {
         assertThat(actual.getParameters().get(1), is((Object) "encryptValue"));
         assertThat(actual.getParameters().get(2), is((Object) "assistedEncryptValue"));
         assertThat(actual.getParameters().get(3), is((Object) "assistedEncryptValue"));
+    }
+    
+    @Test
+    @Ignore
+    public void assertUpdateMultipleEncryptColumnsWithPlaceholder() {
+        String sql = "UPDATE t_plain_query set col3 = ?, col4 = ?, other_col1 = ? where other_col2 = ?";
+        List<Object> parameters = Arrays.<Object>asList(1, 2, "update_regular", "query_regular");
+        SQLRewriteResult actual = getSQLRewriteResult(sql, parameters, true);
+        assertThat(actual.getSql(), is("UPDATE t_plain_query set plain1 = ?, col1 = ?, query1 = ?, plain2 = ?, col2 = ?, query2 = ?, other_col1 = ? where other_col2 = ?"));
+        assertThat(actual.getParameters().size(), is(8));
+        assertThat(actual.getParameters().get(0), is((Object) 1));
+        assertThat(actual.getParameters().get(1), is((Object) "encryptValue"));
+        assertThat(actual.getParameters().get(2), is((Object) "assistedEncryptValue"));
+        assertThat(actual.getParameters().get(3), is((Object) 2));
+        assertThat(actual.getParameters().get(4), is((Object) "encryptValue"));
+        assertThat(actual.getParameters().get(5), is((Object) "assistedEncryptValue"));
+        assertThat(actual.getParameters().get(6), is((Object) "update_regular"));
+        assertThat(actual.getParameters().get(7), is((Object) "query_regular"));
     }
     
     @Test
