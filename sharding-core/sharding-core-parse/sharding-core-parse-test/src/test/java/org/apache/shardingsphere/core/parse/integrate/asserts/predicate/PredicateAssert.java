@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parse.integrate.asserts.predicate;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parse.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.ExpectedExpressionSegment;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.complex.ExpectedCommonExpressionSegment;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.complex.ExpectedSubquerySegment;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.expr.simple.ExpectedLiteralExpressionSegment;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.core.parse.integrate.jaxb.predicate.ExpectedPre
 import org.apache.shardingsphere.core.parse.integrate.jaxb.predicate.ExpectedWhereSegment;
 import org.apache.shardingsphere.core.parse.integrate.jaxb.predicate.value.ExpectedPredicateCompareRightValue;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.SubquerySegment;
@@ -61,7 +59,8 @@ public final class PredicateAssert {
     private final SQLStatementAssertMessage assertMessage;
 
     /**
-     * assert predicate
+     * Assert predicate.
+     * 
      * @param actual actual where segment
      * @param expected expected where segment
      */
@@ -69,11 +68,12 @@ public final class PredicateAssert {
         if (SQLCaseType.Placeholder == sqlCaseType) {
             assertThat(assertMessage.getFullAssertMessage("parameters count assertion error:"), actual.getParametersCount(), is(expected.getParametersCount()));
         }
-        assertAndPredicate(actual.getAndPredicates(),expected.getAndPredicates());
+        assertAndPredicate(actual.getAndPredicates(), expected.getAndPredicates());
     }
 
     /**
-     * assert and predicate
+     * Assert and predicate.
+     * 
      * @param actual actual and predicate
      * @param expected expected and predicate
      */
@@ -82,20 +82,21 @@ public final class PredicateAssert {
         int count = 0;
         for (AndPredicate each: actual) {
             assertThat(assertMessage.getFullAssertMessage("predicate segment size error: "), each.getPredicates().size(), is(expected.get(count).getPredicates().size()));
-            assertPredicateSegment(each.getPredicates(),expected.get(count).getPredicates());
+            assertPredicateSegment(each.getPredicates(), expected.get(count).getPredicates());
             count++;
         }
     }
 
     /**
-     * assert predicate segment
+     * Assert predicate segment.
+     * 
      * @param actual actual predicate segment
      * @param expected expected predicate segment
      */
     private void assertPredicateSegment(final Collection<PredicateSegment> actual, final List<ExpectedPredicateSegment> expected) {
         int count = 0;
         for (PredicateSegment each: actual) {
-            assertColumnSegment(each.getColumn(),expected.get(count).getColumn());
+            assertColumnSegment(each.getColumn(), expected.get(count).getColumn());
             if (each.getRightValue() instanceof PredicateCompareRightValue) {
                 assertCompareRightValue((PredicateCompareRightValue) each.getRightValue(), expected.get(count).findExpectedRightValue(ExpectedPredicateCompareRightValue.class));
             }
@@ -105,34 +106,41 @@ public final class PredicateAssert {
     }
 
     /**
-     * assert column segment
+     * Assert column segment.
+     * 
      * @param actual actual column segment
      * @param expected expected column segment
      */
     private void assertColumnSegment(final ColumnSegment actual, final ExpectedColumnSegment expected) {
         assertThat(assertMessage.getFullAssertMessage("column segment name assertion error: "), actual.getName(), is(expected.getName()));
-        assertThat(assertMessage.getFullAssertMessage("column segment table name assertion error: "), actual.getOwner().isPresent() ? actual.getOwner().get().getTableName() : null, is(expected.getOwner().getName()));
+        assertThat(assertMessage.getFullAssertMessage("column segment table name assertion error: "), 
+                actual.getOwner().isPresent() ? actual.getOwner().get().getTableName() : null, is(expected.getOwner().getName()));
     }
 
     /**
-     * assert expr and operation
-     * @param actual
-     * @param expected
+     * Assert expr and operation.
+     * 
+     * @param actual actual predicate compare right value
+     * @param expected expected predicate compare right value
      */
     private void assertCompareRightValue(final PredicateCompareRightValue actual, final ExpectedPredicateCompareRightValue expected) {
-        assertThat(assertMessage.getFullAssertMessage("right value operator assertion error: "),actual.getOperator(),is(expected.getOperator()));
+        assertThat(assertMessage.getFullAssertMessage("right value operator assertion error: "), actual.getOperator(), is(expected.getOperator()));
         if (actual.getExpression() instanceof ParameterMarkerExpressionSegment) {
-            assertThat(assertMessage.getFullAssertMessage("parameter marker expression parameterMarkerindex assertion error"),((ParameterMarkerExpressionSegment) actual.getExpression()).getParameterMarkerIndex(),is(expected.findExpectedExpression(ExpectedParamMarkerExpressionSegment.class).getParameterMarkerIndex()));
+            assertThat(assertMessage.getFullAssertMessage("parameter marker expression parameter marker index assertion error"), 
+                    ((ParameterMarkerExpressionSegment) actual.getExpression()).getParameterMarkerIndex(), 
+                    is(expected.findExpectedExpression(ExpectedParamMarkerExpressionSegment.class).getParameterMarkerIndex()));
         }
         if (actual.getExpression() instanceof CommonExpressionSegment) {
-            assertThat(assertMessage.getFullAssertMessage("common expression text assertion error: "),((ComplexExpressionSegment) actual.getExpression()).getText(),is(expected.findExpectedExpression(ExpectedCommonExpressionSegment.class).getText()));
+            assertThat(assertMessage.getFullAssertMessage("common expression text assertion error: "), ((ComplexExpressionSegment) actual.getExpression()).getText(), 
+                    is(expected.findExpectedExpression(ExpectedCommonExpressionSegment.class).getText()));
         }
         if (actual.getExpression() instanceof SubquerySegment) {
-            assertThat(assertMessage.getFullAssertMessage("subquery segment text assertion error: "),((ComplexExpressionSegment) actual.getExpression()).getText(),is(expected.findExpectedExpression(ExpectedSubquerySegment.class).getText()));
+            assertThat(assertMessage.getFullAssertMessage("subquery segment text assertion error: "), ((ComplexExpressionSegment) actual.getExpression()).getText(), 
+                    is(expected.findExpectedExpression(ExpectedSubquerySegment.class).getText()));
         }
         if (actual.getExpression() instanceof LiteralExpressionSegment) {
-            assertThat(assertMessage.getFullAssertMessage("literal assertion error:"),((LiteralExpressionSegment) actual.getExpression()).getLiterals().toString(),is(expected.findExpectedExpression(ExpectedLiteralExpressionSegment.class).getLiterals().toString()));
+            assertThat(assertMessage.getFullAssertMessage("literal assertion error:"), ((LiteralExpressionSegment) actual.getExpression()).getLiterals().toString(), 
+                    is(expected.findExpectedExpression(ExpectedLiteralExpressionSegment.class).getLiterals().toString()));
         }
     }
-
 }

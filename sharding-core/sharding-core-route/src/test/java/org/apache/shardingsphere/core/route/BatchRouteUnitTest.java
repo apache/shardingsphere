@@ -28,13 +28,13 @@ import static org.junit.Assert.assertTrue;
 
 public class BatchRouteUnitTest {
     
-    private static final String DATASOUCE_NAME = "ds";
+    private static final String DATA_SOURCE_NAME = "ds";
     
     private static final String SQL = "select * from table where id = ?";
     
     @Test
     public void assertGetParameterSets() {
-        BatchRouteUnit batchRouteUnit = new BatchRouteUnit(new RouteUnit(DATASOUCE_NAME, new SQLUnit(SQL, Lists.<Object>newArrayList(1))));
+        BatchRouteUnit batchRouteUnit = new BatchRouteUnit(new RouteUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Lists.<Object>newArrayList(1))));
         List<List<Object>> actual = batchRouteUnit.getParameterSets();
         assertThat(actual.size(), is(1));
         assertTrue(actual.get(0).isEmpty());
@@ -47,16 +47,15 @@ public class BatchRouteUnitTest {
     
     @Test
     public void assertEquals() {
-        BatchRouteUnit actual = new BatchRouteUnit(new RouteUnit(DATASOUCE_NAME, new SQLUnit(SQL, Lists.<Object>newArrayList(1))));
-        BatchRouteUnit expected = new BatchRouteUnit(new RouteUnit(DATASOUCE_NAME, new SQLUnit(SQL, Lists.<Object>newArrayList(2))));
+        BatchRouteUnit actual = new BatchRouteUnit(new RouteUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Lists.<Object>newArrayList(1))));
+        BatchRouteUnit expected = new BatchRouteUnit(new RouteUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Lists.<Object>newArrayList(2))));
         assertTrue(expected.equals(actual));
     }
     
     @Test
     public void assertToString() {
-        BatchRouteUnit actual = new BatchRouteUnit(new RouteUnit(DATASOUCE_NAME, new SQLUnit(SQL, Lists.<Object>newArrayList(1))));
-        assertThat(actual.toString(), is(
-            String.format("BatchRouteUnit(routeUnit=RouteUnit(dataSourceName=%s, sqlUnit=SQLUnit(sql=%s, parameters=[%d])), jdbcAndActualAddBatchCallTimesMap={}, actualCallAddBatchTimes=0)",
-                DATASOUCE_NAME, SQL, 1)));
+        BatchRouteUnit actual = new BatchRouteUnit(new RouteUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Lists.<Object>newArrayList(1))));
+        assertThat(actual.toString(), is(String.format("BatchRouteUnit(routeUnit=RouteUnit"
+                + "(dataSourceName=%s, sqlUnit=SQLUnit(sql=%s, parameters=[%d])), jdbcAndActualAddBatchCallTimesMap={}, actualCallAddBatchTimes=0)", DATA_SOURCE_NAME, SQL, 1)));
     }
 }

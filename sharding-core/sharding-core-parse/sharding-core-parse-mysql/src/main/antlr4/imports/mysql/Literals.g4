@@ -42,6 +42,26 @@ BIT_NUM_
     : '0b' ('0' | '1')+ | B SQ_ ('0' | '1')+ SQ_
     ;
 
+INNODB_
+    : 'INNODB'
+    ;
+
+TLS_
+    : 'TLS'
+    ;
+
+Y_N_
+    : ('Y' | 'N')
+    ;
+
+NOT_SUPPORT_
+    : 'not support'
+    ;
+
+FILESIZE_LITERAL
+    : INT_ ('K'|'M'|'G'|'T')
+    ;
+
 fragment INT_
     : [0-9]+
     ;

@@ -24,5 +24,5 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal;
  */
 public enum HintShardingType {
     
-    DATABASES_ONLY, DATABASES_TABLES;
+    DATABASES_ONLY, DATABASES_TABLES
 }

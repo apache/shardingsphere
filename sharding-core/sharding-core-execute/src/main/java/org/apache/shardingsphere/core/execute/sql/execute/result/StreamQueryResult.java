@@ -68,12 +68,12 @@ public final class StreamQueryResult implements QueryResult {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        return decrypt(columnIndex, QueryResultUtil.getValue(resultSet, columnIndex));
+        return decrypt(columnIndex, QueryResultUtil.getValue(resultSet, columnIndex, type));
     }
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
-        return decrypt(columnLabel, QueryResultUtil.getValue(resultSet, queryResultMetaData.getColumnIndex(columnLabel)));
+        return decrypt(columnLabel, QueryResultUtil.getValue(resultSet, queryResultMetaData.getColumnIndex(columnLabel), type));
     }
     
     @Override

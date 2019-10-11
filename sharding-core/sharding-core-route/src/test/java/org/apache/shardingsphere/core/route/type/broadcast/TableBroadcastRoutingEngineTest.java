@@ -22,8 +22,8 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.segment.table.TablesContext;
-import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.preprocessor.segment.table.TablesContext;
+import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
@@ -67,13 +67,12 @@ public final class TableBroadcastRoutingEngineTest {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..2}");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1"));
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(tablesContext.getTableNames()).thenReturn(Lists.newArrayList("t_order"));
         when(tableMetas.getAllTableNames()).thenReturn(Lists.newArrayList("t_order"));
         when(tableMetas.get("t_order")).thenReturn(tableMetaData);
         when(tableMetaData.containsIndex("index_name")).thenReturn(true);
-        tableBroadcastRoutingEngine = new TableBroadcastRoutingEngine(shardingRule, tableMetas, sqlStatementContext);
+        tableBroadcastRoutingEngine = new TableBroadcastRoutingEngine(new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1")), tableMetas, sqlStatementContext);
     }
     
     @Test

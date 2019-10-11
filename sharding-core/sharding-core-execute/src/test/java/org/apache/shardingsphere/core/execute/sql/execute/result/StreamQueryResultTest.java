@@ -34,7 +34,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.sql.Types;
 import java.util.Calendar;
 import java.util.Properties;
 
@@ -95,14 +94,14 @@ public final class StreamQueryResultTest {
     public void assertGetValueWithColumnIndex() throws SQLException {
         StreamQueryResult queryResult = new StreamQueryResult(getResultSet());
         queryResult.next();
-        assertThat(queryResult.getValue(1, Integer.class), Is.<Object>is(1));
+        assertThat(queryResult.getValue(1, int.class), Is.<Object>is(1));
     }
     
     @Test
     public void assertGetValueWithColumnLabel() throws SQLException {
         StreamQueryResult queryResult = new StreamQueryResult(getResultSet());
         queryResult.next();
-        assertThat(queryResult.getValue("order_id", Integer.class), Is.<Object>is(1));
+        assertThat(queryResult.getValue("order_id", int.class), Is.<Object>is(1));
     }
     
     @Test
@@ -110,7 +109,7 @@ public final class StreamQueryResultTest {
         when(shardingEncryptor.decrypt("1")).thenReturn("1");
         StreamQueryResult queryResult = new StreamQueryResult(getResultSet(), getShardingRule(), new ShardingProperties(new Properties()));
         queryResult.next();
-        assertThat(queryResult.getValue("order_id", Integer.class), Is.<Object>is("1"));
+        assertThat(queryResult.getValue("order_id", int.class), Is.<Object>is("1"));
     }
     
     @Test(expected = Exception.class)
@@ -118,14 +117,13 @@ public final class StreamQueryResultTest {
         ResultSet resultSet = getResultSetWithException();
         StreamQueryResult queryResult = new StreamQueryResult(resultSet);
         queryResult.next();
-        queryResult.getValue("order_id", Integer.class);
+        queryResult.getValue("order_id", int.class);
     }
     
     private ResultSet getResultSetWithException() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true).thenReturn(false);
         when(result.getInt(1)).thenReturn(1);
-        when(result.wasNull()).thenReturn(false);
         doReturn(getResultSetMetaDataWithException()).when(result).getMetaData();
         return result;
     }
@@ -135,7 +133,6 @@ public final class StreamQueryResultTest {
         when(result.getColumnCount()).thenReturn(1);
         when(result.getColumnLabel(1)).thenReturn("order_id");
         when(result.getColumnName(1)).thenThrow(new SQLException());
-        when(result.getColumnType(1)).thenReturn(Types.INTEGER);
         when(result.getTableName(1)).thenReturn("order");
         return result;
     }
@@ -325,7 +322,6 @@ public final class StreamQueryResultTest {
         when(metaData.getColumnCount()).thenReturn(1);
         when(metaData.getColumnLabel(1)).thenReturn("order_id");
         when(metaData.getColumnName(1)).thenReturn("order_id");
-        when(metaData.getColumnType(1)).thenReturn(Types.INTEGER);
         when(metaData.getTableName(1)).thenReturn("order");
         when(metaData.isCaseSensitive(1)).thenReturn(false);
         return metaData;
