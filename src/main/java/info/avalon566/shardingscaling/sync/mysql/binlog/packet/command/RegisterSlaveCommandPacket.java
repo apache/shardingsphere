@@ -21,7 +21,6 @@ import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import lombok.Data;
-import lombok.var;
 
 /**
  * Register salve command packet.
@@ -48,7 +47,7 @@ public final class RegisterSlaveCommandPacket extends AbstractCommandPacket {
 
     @Override
     public ByteBuf toByteBuf() {
-        var result = ByteBufAllocator.DEFAULT.heapBuffer();
+        ByteBuf result = ByteBufAllocator.DEFAULT.heapBuffer();
         DataTypesCodec.writeByte(getCommand(), result);
         DataTypesCodec.writeInt4LE(serverId, result);
         DataTypesCodec.writeByte((byte) reportHost.getBytes().length, result);

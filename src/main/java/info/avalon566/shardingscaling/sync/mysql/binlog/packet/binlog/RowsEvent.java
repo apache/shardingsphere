@@ -24,7 +24,6 @@ import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DecimalValueDecode
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.JsonValueDecoder;
 import io.netty.buffer.ByteBuf;
 import lombok.Data;
-import lombok.var;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -70,7 +69,7 @@ public class RowsEvent {
         if (EventTypes.WRITE_ROWS_EVENT_V2 <= binlogEventHeader.getTypeCode()
                 && EventTypes.DELETE_ROWS_EVENT_V2 >= binlogEventHeader.getTypeCode()) {
             // added the extra-data fields in v2
-            var extraDataLength = DataTypesCodec.readUnsignedInt2LE(in) - 2;
+            int extraDataLength = DataTypesCodec.readUnsignedInt2LE(in) - 2;
             // skip data
             DataTypesCodec.readBytes(extraDataLength, in);
         }
@@ -83,17 +82,17 @@ public class RowsEvent {
      * @param in buffer
      */
     public void parsePaylod(final BinlogContext binlogContext, final ByteBuf in) {
-        var columnsLength = (int) DataTypesCodec.readLengthCodedIntLE(in);
+        int columnsLength = (int) DataTypesCodec.readLengthCodedIntLE(in);
         columnsPresentBitmap = DataTypesCodec.readBitmap(columnsLength, in);
         if (EventTypes.UPDATE_ROWS_EVENT_V1 == binlogEventHeader.getTypeCode()
                 || EventTypes.UPDATE_ROWS_EVENT_V2 == binlogEventHeader.getTypeCode()) {
             columnsPresentBitmap2 = DataTypesCodec.readBitmap(columnsLength, in);
         }
-        var columnDefs = binlogContext.getColumnDefs(tableId);
+        ColumnDef[] columnDefs = binlogContext.getColumnDefs(tableId);
         while (in.isReadable()) {
             //TODO support minimal binlog row image
-            var nullBitmap = DataTypesCodec.readBitmap(columnsLength, in);
-            var columnValues = new Serializable[columnsLength];
+            BitSet nullBitmap = DataTypesCodec.readBitmap(columnsLength, in);
+            Serializable[] columnValues = new Serializable[columnsLength];
             for (int i = 0; i < columnsLength; i++) {
                 if (!nullBitmap.get(i)) {
                     columnValues[i] = decodeValue(columnDefs[i], in);
@@ -179,8 +178,8 @@ public class RowsEvent {
     }
 
     private Serializable decodeTimestamp(final int meta, final ByteBuf in) {
-        var second = DataTypesCodec.readUnsignedInt4LE(in);
-        var secondStr = new Timestamp(second * 1000).toString();
+        long second = DataTypesCodec.readUnsignedInt4LE(in);
+        String secondStr = new Timestamp(second * 1000).toString();
         // remove millsecond data
         return secondStr.substring(0, secondStr.length() - 2);
     }
@@ -224,8 +223,8 @@ public class RowsEvent {
     }
 
     private Serializable decodeTimestamp2(final int meta, final ByteBuf in) {
-        var second = DataTypesCodec.readUnsignedInt4BE(in);
-        var secondStr = new Timestamp(second * 1000).toString();
+        long second = DataTypesCodec.readUnsignedInt4BE(in);
+        String secondStr = new Timestamp(second * 1000).toString();
         // remove millsecond data
         secondStr = secondStr.substring(0, secondStr.length() - 2);
         if (0 < meta) {
@@ -235,7 +234,7 @@ public class RowsEvent {
     }
 
     private Serializable decodeDatetime2(final int meta, final ByteBuf in) {
-        var datetime = DataTypesCodec.readUnsignedInt5BE(in) - 0x8000000000L;
+        long datetime = DataTypesCodec.readUnsignedInt5BE(in) - 0x8000000000L;
         long ymd = datetime >> 17;
         long ym = ymd >> 5;
         long hms = datetime % (1 << 17);
@@ -250,7 +249,7 @@ public class RowsEvent {
     }
 
     private Serializable decodeTime2(final int meta, final ByteBuf in) {
-        var time = DataTypesCodec.readUnsignedInt3BE(in) - 0x800000L;
+        long time = DataTypesCodec.readUnsignedInt3BE(in) - 0x800000L;
         return String.format("%02d:%02d:%02d",
                 (time >> 12) % (1 << 10),
                 (time >> 6) % (1 << 6),
@@ -258,7 +257,7 @@ public class RowsEvent {
     }
 
     private Serializable decodeDate(final int meta, final ByteBuf in) {
-        var date = DataTypesCodec.readUnsignedInt3LE(in);
+        int date = DataTypesCodec.readUnsignedInt3LE(in);
         return String.format("%d-%02d-%02d",
                 date / 16 / 32,
                 date / 32 % 16,
@@ -300,7 +299,7 @@ public class RowsEvent {
     }
 
     private Serializable decodeVarString(final int meta, final ByteBuf in) {
-        var length = 0;
+        int length = 0;
         if (256 > meta) {
             length = DataTypesCodec.readUnsignedInt1(in);
         } else {
@@ -317,7 +316,7 @@ public class RowsEvent {
                 // hardcode
                 return in.readByte();
             case ColumnTypes.MYSQL_TYPE_STRING:
-                var length = DataTypesCodec.readUnsignedInt1(in);
+                int length = DataTypesCodec.readUnsignedInt1(in);
                 return new String(DataTypesCodec.readBytes(length, in));
             default:
                 throw new UnsupportedOperationException();
@@ -325,7 +324,8 @@ public class RowsEvent {
     }
 
     private Serializable decodeJson(final int meta, final ByteBuf in) {
-        var length = 0;
+        //TODO decode json data to string
+        int length = 0;
         switch (meta) {
             case 1:
                 length = DataTypesCodec.readUnsignedInt1(in);
@@ -350,7 +350,7 @@ public class RowsEvent {
     }
 
     private String readAndAlignMillisecond(final int meta, final ByteBuf in) {
-        var fraction = 0;
+        int fraction = 0;
         switch (meta) {
             case 1:
             case 2:
@@ -371,9 +371,9 @@ public class RowsEvent {
     }
 
     private String alignMillisecond(final int meta, final int fraction) {
-        var result = new StringBuilder(6);
-        var str = Integer.toString(fraction);
-        var append = 6 - str.length();
+        StringBuilder result = new StringBuilder(6);
+        String str = Integer.toString(fraction);
+        int append = 6 - str.length();
         for (int i = 0; i < append; i++) {
             result.append("0");
         }

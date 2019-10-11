@@ -18,7 +18,6 @@
 package info.avalon566.shardingscaling.sync.jdbc;
 
 import com.google.common.base.Strings;
-import lombok.var;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -26,6 +25,7 @@ import java.util.Map;
 
 /**
  * Jdbc uri.
+ *
  * @author avalon566
  */
 public final class JdbcUri {
@@ -38,6 +38,7 @@ public final class JdbcUri {
 
     /**
      * Get scheme.
+     *
      * @return scheme name
      */
     public String getScheme() {
@@ -46,6 +47,7 @@ public final class JdbcUri {
 
     /**
      * Get hostname.
+     *
      * @return hostname
      */
     public String getHostname() {
@@ -54,6 +56,7 @@ public final class JdbcUri {
 
     /**
      * Get port.
+     *
      * @return port
      */
     public int getPort() {
@@ -62,6 +65,7 @@ public final class JdbcUri {
 
     /**
      * Get host.
+     *
      * @return host
      */
     public String getHost() {
@@ -78,16 +82,17 @@ public final class JdbcUri {
 
     /**
      * Get parameters.
+     *
      * @return parameters.
      */
     public Map<String, String> getParameters() {
-        var result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         if (Strings.isNullOrEmpty(jdbcUri.getQuery())) {
             return result;
         }
-        var parameters = jdbcUri.getQuery().split("&");
-        for (int i = 0; i < parameters.length; i++) {
-            var args = parameters[i].split("=");
+        String[] parameters = jdbcUri.getQuery().split("&");
+        for (String each : parameters) {
+            String[] args = each.split("=");
             result.put(args[0], 1 == args.length ? null : args[1]);
         }
         return result;

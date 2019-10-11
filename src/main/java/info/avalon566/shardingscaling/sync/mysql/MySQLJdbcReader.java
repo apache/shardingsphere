@@ -20,7 +20,6 @@ package info.avalon566.shardingscaling.sync.mysql;
 import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
 import info.avalon566.shardingscaling.sync.jdbc.AbstractJdbcReader;
 import info.avalon566.shardingscaling.sync.jdbc.JdbcUri;
-import lombok.var;
 
 import java.util.List;
 import java.util.Map;
@@ -43,12 +42,12 @@ public final class MySQLJdbcReader extends AbstractJdbcReader {
     }
 
     private String fixMysqlUrl(final String url) {
-        var uri = new JdbcUri(url);
+        JdbcUri uri = new JdbcUri(url);
         return String.format("jdbc:%s://%s/%s?%s", uri.getScheme(), uri.getHost(), uri.getDatabase(), fixMysqlParams(uri.getParameters()));
     }
 
     private String formatMysqlParams(final Map<String, String> params) {
-        var result = new StringBuilder();
+        StringBuilder result = new StringBuilder();
         for (Map.Entry<String, String> entry : params.entrySet()) {
             result.append(entry.getKey());
             if (null != entry.getValue()) {

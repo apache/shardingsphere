@@ -18,12 +18,13 @@
 package info.avalon566.shardingscaling.sync.mysql.binlog;
 
 import lombok.Data;
-import lombok.var;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * MySQL server info.
+ *
  * @author avalon566
  */
 @Data
@@ -43,7 +44,7 @@ public class ServerInfo {
         private int series;
 
         public ServerVersion(final String version) {
-            var matcher = VERSION_PATTERN.matcher(version);
+            Matcher matcher = VERSION_PATTERN.matcher(version);
             if (matcher.matches()) {
                 major = Short.valueOf(matcher.group(1));
                 minor = Short.valueOf(matcher.group(2));

@@ -22,8 +22,8 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
 import lombok.extern.slf4j.Slf4j;
-import lombok.var;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -93,9 +93,9 @@ public final class DbMetaDataUtil {
 
     private List<String> getPrimaryKeysInternal(final String tableName) {
         try {
-            try (var connection = DriverManager.getConnection(rdbmsConfiguration.getJdbcUrl(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword())) {
-                var rs = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), null, tableName);
-                var primaryKeys = new ArrayList<String>(rs.getRow());
+            try (Connection connection = DriverManager.getConnection(rdbmsConfiguration.getJdbcUrl(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword())) {
+                ResultSet rs = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), null, tableName);
+                List<String> primaryKeys = new ArrayList<>(rs.getRow());
                 while (rs.next()) {
                     primaryKeys.add(rs.getString(COLUMN_NAME));
                 }
@@ -113,9 +113,9 @@ public final class DbMetaDataUtil {
      */
     public List<String> getTableNames() {
         try {
-            try (var connection = DriverManager.getConnection(rdbmsConfiguration.getJdbcUrl(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword())) {
-                var rs = connection.getMetaData().getTables(connection.getCatalog(), null, "%", new String[]{"TABLE"});
-                var tableNames = new LinkedList<String>();
+            try (Connection connection = DriverManager.getConnection(rdbmsConfiguration.getJdbcUrl(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword())) {
+                ResultSet rs = connection.getMetaData().getTables(connection.getCatalog(), null, "%", new String[]{"TABLE"});
+                List<String> tableNames = new LinkedList<>();
                 while (rs.next()) {
                     tableNames.add(rs.getString(TABLE_NAME));
                 }
@@ -142,11 +142,11 @@ public final class DbMetaDataUtil {
 
     private List<ColumnMetaData> getColumNamesInternal(final String tableName) {
         try {
-            try (var connection = DriverManager.getConnection(rdbmsConfiguration.getJdbcUrl(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword())) {
-                var result = new ArrayList<ColumnMetaData>();
+            try (Connection connection = DriverManager.getConnection(rdbmsConfiguration.getJdbcUrl(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword())) {
+                List<ColumnMetaData> result = new ArrayList<>();
                 ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), connection.getSchema(), tableName, "%");
                 while (resultSet.next()) {
-                    var columnMetaData = new ColumnMetaData();
+                    ColumnMetaData columnMetaData = new ColumnMetaData();
                     columnMetaData.setColumnName(resultSet.getString(COLUMN_NAME));
                     columnMetaData.setColumnType(resultSet.getInt(DATA_TYPE));
                     columnMetaData.setColumnTypeName(resultSet.getString(TYPE_NAME));

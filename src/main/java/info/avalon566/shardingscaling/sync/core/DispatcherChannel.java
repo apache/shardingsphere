@@ -18,14 +18,13 @@
 package info.avalon566.shardingscaling.sync.core;
 
 import info.avalon566.shardingscaling.sync.jdbc.DataRecord;
-import lombok.var;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * One provider to multi consumer channel model.
- * 
+ *
  * @author avalon566
  */
 public class DispatcherChannel implements Channel {
@@ -58,8 +57,8 @@ public class DispatcherChannel implements Channel {
             }
         } else if (DataRecord.class.equals(record.getClass())) {
             // 表名哈希
-            var dataRecord = (DataRecord) record;
-            var index = Integer.toString(dataRecord.getTableName().hashCode() % channelNumber);
+            DataRecord dataRecord = (DataRecord) record;
+            String index = Integer.toString(dataRecord.getTableName().hashCode() % channelNumber);
             channels.get(index).pushRecord(dataRecord);
         } else {
             throw new RuntimeException("Not Support Record Type");
@@ -68,7 +67,7 @@ public class DispatcherChannel implements Channel {
 
     @Override
     public final Record popRecord() {
-        var threadId = Long.toString(Thread.currentThread().getId());
+        String threadId = Long.toString(Thread.currentThread().getId());
         checkAssignment(threadId);
         return channels.get(channelAssignment.get(threadId)).popRecord();
     }

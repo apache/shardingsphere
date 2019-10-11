@@ -29,7 +29,6 @@ import info.avalon566.shardingscaling.sync.mysql.binlog.packet.response.OkPacket
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.response.ResultSetHeaderPacket;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.response.RowDataPacket;
 import lombok.extern.slf4j.Slf4j;
-import lombok.var;
 
 import java.util.List;
 
@@ -68,7 +67,7 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     }
     
     private HandshakeInitializationPacket decodeHandshakeInitializationPacket(final ByteBuf in) {
-        var result = new HandshakeInitializationPacket();
+        HandshakeInitializationPacket result = new HandshakeInitializationPacket();
         result.fromByteBuf(in);
         if (PacketConstants.PROTOCOL_VERSION != result.getProtocolVersion()) {
             throw new UnsupportedOperationException();
@@ -81,11 +80,11 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     
     private void decodeFieldPacket(final ByteBuf in) {
         if (PacketConstants.EOF_PACKET_MARK != in.getByte(0)) {
-            var fieldPacket = new FieldPacket();
+            FieldPacket fieldPacket = new FieldPacket();
             fieldPacket.fromByteBuf(in);
             internalResultSet.getFieldDescriptors().add(fieldPacket);
         } else {
-            var eofPacket = new EofPacket();
+            EofPacket eofPacket = new EofPacket();
             eofPacket.fromByteBuf(in);
             currentState = States.RowDataPacket;
         }
@@ -93,11 +92,11 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     
     private void decodeRowDataPacket(final ByteBuf in, final List<Object> out) {
         if (PacketConstants.EOF_PACKET_MARK != in.getByte(0)) {
-            var rowDataPacket = new RowDataPacket();
+            RowDataPacket rowDataPacket = new RowDataPacket();
             rowDataPacket.fromByteBuf(in);
             internalResultSet.getFieldValues().add(rowDataPacket);
         } else {
-            var eofPacket = new EofPacket();
+            EofPacket eofPacket = new EofPacket();
             eofPacket.fromByteBuf(in);
             out.add(internalResultSet);
             currentState = States.ResponsePacket;
@@ -107,15 +106,15 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     
     private void decodeResponsePacket(final ByteBuf in, final List<Object> out) {
         if (PacketConstants.ERR_PACKET_MARK == in.getByte(0)) {
-            var error = new ErrorPacket();
+            ErrorPacket error = new ErrorPacket();
             error.fromByteBuf(in);
             out.add(error);
         } else if (PacketConstants.OK_PACKET_MARK == in.getByte(0)) {
-            var ok = new OkPacket();
+            OkPacket ok = new OkPacket();
             ok.fromByteBuf(in);
             out.add(ok);
         } else {
-            var resultSetHeaderPacket = new ResultSetHeaderPacket();
+            ResultSetHeaderPacket resultSetHeaderPacket = new ResultSetHeaderPacket();
             resultSetHeaderPacket.fromByteBuf(in);
             currentState = States.FieldPacket;
             internalResultSet = new InternalResultSet(resultSetHeaderPacket);

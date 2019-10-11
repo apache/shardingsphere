@@ -22,12 +22,13 @@ import info.avalon566.shardingscaling.sync.core.SyncExecutor;
 import info.avalon566.shardingscaling.sync.core.Writer;
 import info.avalon566.shardingscaling.sync.mysql.MySQLBinlogReader;
 import info.avalon566.shardingscaling.sync.mysql.MySQLWriter;
-import lombok.var;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Realtime data syncer.
+ *
  * @author avalon566
  */
 public class RealtimeDataSyncer {
@@ -52,7 +53,7 @@ public class RealtimeDataSyncer {
      * Start to sync realtime data.
      */
     public final void run() {
-        var writers = new ArrayList<Writer>(syncConfiguration.getConcurrency());
+        List<Writer> writers = new ArrayList<>(syncConfiguration.getConcurrency());
         for (int i = 0; i < syncConfiguration.getConcurrency(); i++) {
             writers.add(new MySQLWriter(syncConfiguration.getWriterConfiguration()));
         }

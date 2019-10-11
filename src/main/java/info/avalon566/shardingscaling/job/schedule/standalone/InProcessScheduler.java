@@ -23,19 +23,19 @@ import info.avalon566.shardingscaling.job.config.SyncConfiguration;
 import info.avalon566.shardingscaling.job.config.SyncType;
 import info.avalon566.shardingscaling.job.schedule.Reporter;
 import info.avalon566.shardingscaling.job.schedule.Scheduler;
-import lombok.var;
 
 import java.util.List;
 
 /**
  * In process scheduler.
+ *
  * @author avalon566
  */
 public class InProcessScheduler implements Scheduler {
 
     @Override
     public final Reporter schedule(final List<SyncConfiguration> syncConfigurations) {
-        var reporter = new InProcessReporter();
+        InProcessReporter reporter = new InProcessReporter();
         for (SyncConfiguration syncConfiguration : syncConfigurations) {
             if (SyncType.Database.equals(syncConfiguration.getSyncType())) {
                 new DatabaseSyncJob(syncConfiguration).run();

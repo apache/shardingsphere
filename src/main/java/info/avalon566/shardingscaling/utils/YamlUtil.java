@@ -17,7 +17,6 @@
 
 package info.avalon566.shardingscaling.utils;
 
-import lombok.var;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.representer.Representer;
@@ -27,6 +26,7 @@ import java.io.FileNotFoundException;
 
 /**
  * Yaml util.
+ *
  * @author avalon566
  */
 public final class YamlUtil {
@@ -40,7 +40,7 @@ public final class YamlUtil {
      * @throws FileNotFoundException file not found exception
      */
     public static <T> T parse(final String fileName, final Class<T> t) throws FileNotFoundException {
-        var representer = new Representer();
+        Representer representer = new Representer();
         representer.getPropertyUtils().setSkipMissingProperties(true);
         return new Yaml(new Constructor(t), representer).loadAs(new FileInputStream(fileName), t);
     }

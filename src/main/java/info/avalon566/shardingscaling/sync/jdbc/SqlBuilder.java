@@ -21,7 +21,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
-import lombok.var;
+
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -68,6 +69,7 @@ public final class SqlBuilder {
 
     /**
      * Build insert sql.
+     *
      * @param tableName table name
      * @return sql
      */
@@ -81,6 +83,7 @@ public final class SqlBuilder {
 
     /**
      * Build update sql.
+     *
      * @param tableName table name
      * @return sql
      */
@@ -94,6 +97,7 @@ public final class SqlBuilder {
 
     /**
      * Build delete sql.
+     *
      * @param tableName table name
      * @return sql
      */
@@ -106,35 +110,35 @@ public final class SqlBuilder {
     }
 
     private String buildInsertSqlInternal(final String tableName) {
-        var metaData = dbMetaDataUtil.getColumnNames(tableName);
-        var columns = "";
-        var holder = "";
-        for (int i = 0; i < metaData.size(); i++) {
-            columns += String.format("%s%s%s,", LEFT_ESCAPE_QUOTE, metaData.get(i).getColumnName(), RIGHT_ESCAPE_QUOTE);
-            holder += "?,";
+        List<ColumnMetaData> metaData = dbMetaDataUtil.getColumnNames(tableName);
+        StringBuilder columns = new StringBuilder();
+        StringBuilder holder = new StringBuilder();
+        for (ColumnMetaData each : metaData) {
+            columns.append(String.format("%s%s%s,", LEFT_ESCAPE_QUOTE, each.getColumnName(), RIGHT_ESCAPE_QUOTE));
+            holder.append("?,");
         }
-        columns = columns.substring(0, columns.length() - 1);
-        holder = holder.substring(0, holder.length() - 1);
-        return String.format("INSERT INTO %s%s%s(%s) VALUES(%s)", LEFT_ESCAPE_QUOTE, tableName, RIGHT_ESCAPE_QUOTE, columns, holder);
+        columns.setLength(columns.length() - 1);
+        holder.setLength(holder.length() - 1);
+        return String.format("INSERT INTO %s%s%s(%s) VALUES(%s)", LEFT_ESCAPE_QUOTE, tableName, RIGHT_ESCAPE_QUOTE, columns.toString(), holder.toString());
     }
 
     private String buildDeleteSqlInternal(final String tableName) {
-        var primaryKeys = dbMetaDataUtil.getPrimaryKeys(tableName);
-        var where = "";
-        for (int i = 0; i < primaryKeys.size(); i++) {
-            where += String.format("%s%s%s = ?,", LEFT_ESCAPE_QUOTE, primaryKeys.get(i), RIGHT_ESCAPE_QUOTE);
+        List<String> primaryKeys = dbMetaDataUtil.getPrimaryKeys(tableName);
+        StringBuilder where = new StringBuilder();
+        for (String each : primaryKeys) {
+            where.append(String.format("%s%s%s = ?,", LEFT_ESCAPE_QUOTE, each, RIGHT_ESCAPE_QUOTE));
         }
-        where = where.substring(0, where.length() - 1);
-        return String.format("DELETE FROM %s%s%s WHERE %s", LEFT_ESCAPE_QUOTE, tableName, RIGHT_ESCAPE_QUOTE, where);
+        where.setLength(where.length() - 1);
+        return String.format("DELETE FROM %s%s%s WHERE %s", LEFT_ESCAPE_QUOTE, tableName, RIGHT_ESCAPE_QUOTE, where.toString());
     }
 
     private String buildUpdateSqlInternal(final String tableName) {
-        var primaryKeys = dbMetaDataUtil.getPrimaryKeys(tableName);
-        var where = "";
-        for (int i = 0; i < primaryKeys.size(); i++) {
-            where += String.format("%s%s%s = ?,", LEFT_ESCAPE_QUOTE, primaryKeys.get(i), RIGHT_ESCAPE_QUOTE);
+        List<String> primaryKeys = dbMetaDataUtil.getPrimaryKeys(tableName);
+        StringBuilder where = new StringBuilder();
+        for (String each : primaryKeys) {
+            where.append(String.format("%s%s%s = ?,", LEFT_ESCAPE_QUOTE, each, RIGHT_ESCAPE_QUOTE));
         }
-        where = where.substring(0, where.length() - 1);
-        return String.format("UPDATE %s%s%s SET %%s WHERE %s", LEFT_ESCAPE_QUOTE, tableName, RIGHT_ESCAPE_QUOTE, where);
+        where.setLength(where.length() - 1);
+        return String.format("UPDATE %s%s%s SET %%s WHERE %s", LEFT_ESCAPE_QUOTE, tableName, RIGHT_ESCAPE_QUOTE, where.toString());
     }
 }

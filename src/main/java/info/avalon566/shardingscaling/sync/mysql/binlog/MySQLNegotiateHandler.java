@@ -24,7 +24,6 @@ import info.avalon566.shardingscaling.sync.mysql.binlog.packet.response.OkPacket
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.concurrent.Promise;
-import lombok.var;
 
 /**
  * MySQL Negotiate Handler.
@@ -51,8 +50,8 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
         if (msg instanceof HandshakeInitializationPacket) {
-            var handshake = (HandshakeInitializationPacket) msg;
-            var clientAuth = new ClientAuthenticationPacket();
+            HandshakeInitializationPacket handshake = (HandshakeInitializationPacket) msg;
+            ClientAuthenticationPacket clientAuth = new ClientAuthenticationPacket();
             clientAuth.setSequenceNumber((byte) (handshake.getSequenceNumber() + 1));
             clientAuth.setCharsetNumber((byte) 33);
             clientAuth.setUsername(username);
@@ -72,7 +71,7 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
             authResultCallback.setSuccess(serverInfo);
             return;
         }
-        var error = (ErrorPacket) msg;
+        ErrorPacket error = (ErrorPacket) msg;
         ctx.channel().close();
         throw new RuntimeException(error.getMessage());
     }

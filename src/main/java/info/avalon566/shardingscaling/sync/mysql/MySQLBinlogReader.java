@@ -26,14 +26,17 @@ import info.avalon566.shardingscaling.sync.jdbc.DataRecord;
 import info.avalon566.shardingscaling.sync.jdbc.DbMetaDataUtil;
 import info.avalon566.shardingscaling.sync.jdbc.JdbcUri;
 import info.avalon566.shardingscaling.sync.mysql.binlog.MySQLConnector;
+import info.avalon566.shardingscaling.sync.mysql.binlog.event.AbstractBinlogEvent;
 import info.avalon566.shardingscaling.sync.mysql.binlog.event.DeleteRowsEvent;
 import info.avalon566.shardingscaling.sync.mysql.binlog.event.UpdateRowsEvent;
 import info.avalon566.shardingscaling.sync.mysql.binlog.event.WriteRowsEvent;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import lombok.var;
 import java.io.Serializable;
+import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -76,9 +79,9 @@ public final class MySQLBinlogReader extends AbstractRunner implements Reader {
      */
     public void markPosition() {
         try {
-            try (var connection = DriverManager.getConnection(rdbmsConfiguration.getJdbcUrl(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword())) {
-                var ps = connection.prepareStatement("show master status");
-                var rs = ps.executeQuery();
+            try (Connection connection = DriverManager.getConnection(rdbmsConfiguration.getJdbcUrl(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword())) {
+                PreparedStatement ps = connection.prepareStatement("show master status");
+                ResultSet rs = ps.executeQuery();
                 rs.next();
                 binlogPosition.setFilename(rs.getString(1));
                 binlogPosition.setPosition(rs.getLong(2));
@@ -94,12 +97,12 @@ public final class MySQLBinlogReader extends AbstractRunner implements Reader {
 
     @Override
     public void read(final Channel channel) {
-        final var uri = new JdbcUri(rdbmsConfiguration.getJdbcUrl());
-        var client = new MySQLConnector(123456, uri.getHostname(), uri.getPort(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword());
+        final JdbcUri uri = new JdbcUri(rdbmsConfiguration.getJdbcUrl());
+        MySQLConnector client = new MySQLConnector(123456, uri.getHostname(), uri.getPort(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword());
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
         while (true) {
-            var event = client.poll();
+            AbstractBinlogEvent event = client.poll();
             if (null == event) {
                 try {
                     Thread.sleep(100);
@@ -119,35 +122,35 @@ public final class MySQLBinlogReader extends AbstractRunner implements Reader {
     }
 
     private void handleWriteRowsEvent(final Channel channel, final JdbcUri uri, final WriteRowsEvent event) {
-        var wred = event;
-        for (Serializable[] row : wred.getAfterColumns()) {
+        WriteRowsEvent wred = event;
+        for (Serializable[] each : wred.getAfterColumns()) {
             if (filter(uri.getDatabase(), wred.getTableName())) {
                 continue;
             }
-            var record = new DataRecord(row.length);
+            DataRecord record = new DataRecord(each.length);
             record.setFullTableName(wred.getTableName());
             record.setType("insert");
-            for (int i = 0; i < row.length; i++) {
-                record.addColumn(new Column(getColumnValue(record.getTableName(), i, row[i]), true));
+            for (int i = 0; i < each.length; i++) {
+                record.addColumn(new Column(getColumnValue(record.getTableName(), i, each[i]), true));
             }
             channel.pushRecord(record);
         }
     }
 
     private void handleUpdateRowsEvent(final Channel channel, final JdbcUri uri, final UpdateRowsEvent event) {
-        var ured = event;
+        UpdateRowsEvent ured = event;
         for (int i = 0; i < ured.getBeforeColumns().size(); i++) {
             if (filter(uri.getDatabase(), event.getTableName())) {
                 continue;
             }
-            var beforeValues = ured.getBeforeColumns().get(i);
-            var afterValues = ured.getAfterColumns().get(i);
-            var record = new DataRecord(beforeValues.length);
+            Serializable[] beforeValues = ured.getBeforeColumns().get(i);
+            Serializable[] afterValues = ured.getAfterColumns().get(i);
+            DataRecord record = new DataRecord(beforeValues.length);
             record.setFullTableName(event.getTableName());
             record.setType("update");
             for (int j = 0; j < beforeValues.length; j++) {
-                var oldValue = getColumnValue(record.getTableName(), j, beforeValues[j]);
-                var newValue = getColumnValue(record.getTableName(), j, afterValues[j]);
+                Object oldValue = getColumnValue(record.getTableName(), j, beforeValues[j]);
+                Object newValue = getColumnValue(record.getTableName(), j, afterValues[j]);
                 record.addColumn(new Column(newValue, !newValue.equals(oldValue)));
             }
             channel.pushRecord(record);
@@ -155,16 +158,16 @@ public final class MySQLBinlogReader extends AbstractRunner implements Reader {
     }
 
     private void handleDeleteRowsEvent(final Channel channel, final JdbcUri uri, final DeleteRowsEvent event) {
-        var dred = event;
-        for (Serializable[] row : dred.getBeforeColumns()) {
+        DeleteRowsEvent dred = event;
+        for (Serializable[] each : dred.getBeforeColumns()) {
             if (filter(uri.getDatabase(), dred.getTableName())) {
                 continue;
             }
-            var record = new DataRecord(row.length);
+            DataRecord record = new DataRecord(each.length);
             record.setFullTableName(dred.getTableName());
             record.setType("delete");
-            for (int i = 0; i < row.length; i++) {
-                record.addColumn(new Column(getColumnValue(record.getTableName(), i, row[i]), true));
+            for (int i = 0; i < each.length; i++) {
+                record.addColumn(new Column(getColumnValue(record.getTableName(), i, each[i]), true));
             }
             channel.pushRecord(record);
         }
