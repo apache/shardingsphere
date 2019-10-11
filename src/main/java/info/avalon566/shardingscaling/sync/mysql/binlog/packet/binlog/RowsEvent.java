@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import info.avalon566.shardingscaling.sync.mysql.binlog.BinlogContext;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DecimalValueDecoder;
+import info.avalon566.shardingscaling.sync.mysql.binlog.codec.JsonValueDecoder;
 import io.netty.buffer.ByteBuf;
 import lombok.Data;
 import lombok.var;
@@ -324,7 +325,6 @@ public class RowsEvent {
     }
 
     private Serializable decodeJson(final int meta, final ByteBuf in) {
-        //TODO decode json data to string
         var length = 0;
         switch (meta) {
             case 1:
@@ -345,7 +345,7 @@ public class RowsEvent {
         if (0 == length) {
             return "";
         } else {
-            return DataTypesCodec.readBytes(length, in);
+            return JsonValueDecoder.decode(in.readBytes(length));
         }
     }
 

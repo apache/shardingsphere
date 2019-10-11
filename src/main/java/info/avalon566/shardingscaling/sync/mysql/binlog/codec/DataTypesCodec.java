@@ -20,6 +20,7 @@ package info.avalon566.shardingscaling.sync.mysql.binlog.codec;
 import io.netty.buffer.ByteBuf;
 import lombok.var;
 
+import java.math.BigInteger;
 import java.util.BitSet;
 
 /**
@@ -109,6 +110,26 @@ public final class DataTypesCodec {
             }
         }
         return bitSet;
+    }
+
+    /**
+     * Read little endian byte order 2 byte integer from {@code ByteBuf}.
+     *
+     * @param in byte buffer
+     * @return int value
+     */
+    public static int readInt2LE(final ByteBuf in) {
+        return in.readShortLE();
+    }
+
+    /**
+     * Read little endian byte order 4 byte integer from {@code ByteBuf}.
+     *
+     * @param in byte buffer
+     * @return int value
+     */
+    public static int readInt4LE(final ByteBuf in) {
+        return in.readIntLE();
     }
 
     /**
@@ -218,6 +239,19 @@ public final class DataTypesCodec {
                 | ((long) (0xff & in.readByte())) << 24
                 | ((long) (0xff & in.readByte())) << 32
                 | ((long) (0xff & in.readByte())) << 40;
+    }
+
+    private final static BigInteger MAX_BIG_INTEGER_VALUE = new BigInteger("18446744073709551615");
+
+    /**
+     * Read unsigned little endian byte order 8 byte integer from {@code ByteBuf}.
+     *
+     * @param in
+     * @return big integer value
+     */
+    public static BigInteger readUnsignedInt8LE(final ByteBuf in) {
+        long value = readInt8LE(in);
+        return 0 <= value ? BigInteger.valueOf(value) : MAX_BIG_INTEGER_VALUE.add(BigInteger.valueOf(1 + value));
     }
 
     /**
