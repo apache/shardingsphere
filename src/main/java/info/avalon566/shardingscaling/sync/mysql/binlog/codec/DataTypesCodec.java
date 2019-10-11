@@ -31,6 +31,8 @@ import java.util.BitSet;
  */
 public final class DataTypesCodec {
 
+    private static final BigInteger MAX_BIG_INTEGER_VALUE = new BigInteger("18446744073709551615");
+
     /**
      * Skip length byte in {@code ByteBuf}.
      *
@@ -240,12 +242,10 @@ public final class DataTypesCodec {
                 | ((long) (0xff & in.readByte())) << 40;
     }
 
-    private final static BigInteger MAX_BIG_INTEGER_VALUE = new BigInteger("18446744073709551615");
-
     /**
      * Read unsigned little endian byte order 8 byte integer from {@code ByteBuf}.
      *
-     * @param in
+     * @param in byte buffer
      * @return big integer value
      */
     public static BigInteger readUnsignedInt8LE(final ByteBuf in) {
