@@ -60,7 +60,7 @@
                     </execution>
                     <execution>
                         <id>npm run unit</id>
-                        <phase>test<phase>
+                        <phase>test</phase>
                         <goals>
                             <goal>npm</goal>
                         </goals>
