@@ -35,7 +35,7 @@ import java.util.Set;
  * @author zhangliang
  */
 @Getter
-public class RoutingResult {
+public final class RoutingResult {
     
     private final Collection<RoutingUnit> routingUnits = new LinkedHashSet<>();
     

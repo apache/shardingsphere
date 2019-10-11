@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.core.route.type.complex;
 
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.optimize.segment.select.groupby.GroupByContext;
-import org.apache.shardingsphere.core.optimize.segment.select.projection.Projection;
-import org.apache.shardingsphere.core.optimize.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByContext;
-import org.apache.shardingsphere.core.optimize.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.core.preprocessor.segment.select.groupby.GroupByContext;
+import org.apache.shardingsphere.core.preprocessor.segment.select.projection.Projection;
+import org.apache.shardingsphere.core.preprocessor.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderByContext;
+import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.core.preprocessor.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.core.preprocessor.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
