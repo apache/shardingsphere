@@ -35,7 +35,7 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 
 @Slf4j
-public class NacosRegistryCenter implements RegistryCenter {
+public final class NacosRegistryCenter implements RegistryCenter {
 
     private ConfigService configService;
 
@@ -46,9 +46,12 @@ public class NacosRegistryCenter implements RegistryCenter {
     @Override
     public void init(final RegistryCenterConfiguration config) {
         try {
-            configService = NacosFactory.createConfigService(config.getServerLists());
-        } catch (NacosException e) {
-            log.debug("exception for: {}", e.toString());
+            Properties properties = new Properties();
+            properties.put("serverAddr", config.getServerLists());
+            properties.put("namespace", null == config.getNamespace() ? "" : config.getNamespace());
+            configService = NacosFactory.createConfigService(properties);
+        } catch (final NacosException ex) {
+            log.debug("exception for: {}", ex.toString());
         }
     }
 
@@ -64,8 +67,8 @@ public class NacosRegistryCenter implements RegistryCenter {
             String group = properties.getProperty("group", "SHARDING_SPHERE_DEFAULT_GROUP");
             long timeoutMs = Long.parseLong(properties.getProperty("timeout", "3000"));
             return configService.getConfig(dataId, group, timeoutMs);
-        } catch (NacosException e) {
-            log.debug("exception for: {}", e.toString());
+        } catch (final NacosException ex) {
+            log.debug("exception for: {}", ex.toString());
             return null;
         }
     }
@@ -91,8 +94,8 @@ public class NacosRegistryCenter implements RegistryCenter {
             String dataId = key.replace("/", ".");
             String group = properties.getProperty("group", "SHARDING_SPHERE_DEFAULT_GROUP");
             configService.publishConfig(dataId, group, value);
-        } catch (NacosException e) {
-            log.debug("exception for: {}", e.toString());
+        } catch (final NacosException ex) {
+            log.debug("exception for: {}", ex.toString());
         }
     }
 
@@ -118,8 +121,8 @@ public class NacosRegistryCenter implements RegistryCenter {
                     dataChangedEventListener.onChange(new DataChangedEvent(key, configInfo, DataChangedEvent.ChangedType.UPDATED));
                 }
             });
-        } catch (NacosException e) {
-            log.debug("exception for: {}", e.toString());
+        } catch (final NacosException ex) {
+            log.debug("exception for: {}", ex.toString());
         }
     }
 

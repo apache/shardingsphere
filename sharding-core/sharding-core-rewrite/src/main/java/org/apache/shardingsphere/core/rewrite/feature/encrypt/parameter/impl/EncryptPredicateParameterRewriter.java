@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.rewrite.feature.encrypt.parameter.impl;
 
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.EncryptCondition;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.EncryptConditionEngine;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;

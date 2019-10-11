@@ -19,14 +19,12 @@ package org.apache.shardingsphere.core.rewrite.feature.sharding.parameter;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.rewrite.feature.sharding.parameter.impl.ShardingPaginationParameterRewriter;
-import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriterBuilder;
-import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.parameter.impl.ShardingGeneratedKeyInsertValueParameterRewriter;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.parameter.impl.ShardingPaginationParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.SQLRouteResultAware;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.ShardingRuleAware;
+import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriterBuilder;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.TableMetasAware;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -47,10 +45,7 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
     private final SQLRouteResult sqlRouteResult;
     
     @Override
-    public Collection<ParameterRewriter> getParameterRewriters(final ParameterBuilder parameterBuilder, final TableMetas tableMetas) {
-        if (parameterBuilder instanceof GroupedParameterBuilder) {
-            ((GroupedParameterBuilder) parameterBuilder).setShardingConditions(sqlRouteResult.getShardingConditions());
-        }
+    public Collection<ParameterRewriter> getParameterRewriters(final TableMetas tableMetas) {
         Collection<ParameterRewriter> result = getParameterRewriters();
         for (ParameterRewriter each : result) {
             setUpParameterRewriters(each, tableMetas);

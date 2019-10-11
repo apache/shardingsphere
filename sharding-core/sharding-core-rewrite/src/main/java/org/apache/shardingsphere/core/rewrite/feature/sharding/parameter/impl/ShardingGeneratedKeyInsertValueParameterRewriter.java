@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.feature.sharding.parameter.impl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
@@ -44,10 +44,10 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriter implements P
         if (sqlStatementContext instanceof InsertSQLStatementContext && sqlRouteResult.getGeneratedKey().isPresent() && sqlRouteResult.getGeneratedKey().get().isGenerated()) {
             Iterator<Comparable<?>> generatedValues = sqlRouteResult.getGeneratedKey().get().getGeneratedValues().descendingIterator();
             int count = 0;
-            for (List<Object> each : ((GroupedParameterBuilder) parameterBuilder).getParameterGroups()) {
+            for (List<Object> each : ((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) {
                 Comparable<?> generatedValue = generatedValues.next();
                 if (!each.isEmpty()) {
-                    ((GroupedParameterBuilder) parameterBuilder).getAddedIndexAndParameterGroups().get(count).put(each.size(), generatedValue);
+                    ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(count).getAddedIndexAndParameters().put(each.size(), generatedValue);
                 }
                 count++;
             }
