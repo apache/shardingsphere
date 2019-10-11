@@ -28,6 +28,7 @@
 
     <properties>
         <node.version>v6.10.0</node.version>
+        <npm.version>3.10.10</npm.version>
     </properties>
 
     <build>
@@ -44,6 +45,7 @@
                         </goals>
                         <configuration>
                             <nodeVersion>${node.version}</nodeVersion>
+                            <npmVersion>${npm.version}</npmVersion>
                         </configuration>
                     </execution>
                     <execution>
@@ -58,6 +60,7 @@
                     </execution>
                     <execution>
                         <id>npm run unit</id>
+                        <phase>test<phase>
                         <goals>
                             <goal>npm</goal>
                         </goals>
