@@ -25,11 +25,11 @@ encryptRule:
   tables:
     t_encrypt:
       columns:
-        col1:
-          cipherColumn: col1
+        encrypt_col_1:
+          cipherColumn: cipher_col_1
           encryptor: test
-        col2:
-          cipherColumn: col2
+        encrypt_col_2:
+          cipherColumn: cipher_col_2
           encryptor: test
     t_query_encrypt:
       columns:
