@@ -20,6 +20,10 @@ ShardingSphere adopts [Apache Curator](http://curator.apache.org/) to enable Zoo
 
 ShardingSphere adopts [native Etcd](https://coreos.com/etcd/) to enable Etcd. Please use Etcd V3 and above, see the [official website](https://coreos.com/etcd/docs/latest) for details.
 
+## Nacos
+
+ShardingSphere adopts [Nacos Client](https://nacos.io/en-us/docs/sdk.html) to enable Nacos. Please use Nacos Client 1.0.0 and above, see the [official website](https://nacos.io/en-us/docs/sdk.html) for details.
+
 ## Others
 
 Use SPI to realize relevant logic coding.

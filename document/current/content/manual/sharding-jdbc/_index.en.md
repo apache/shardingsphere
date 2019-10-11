@@ -7,7 +7,7 @@ chapter = true
 
 ## Introduction
 
-As the first product and the predecessor of ShardingSphere, Sharding-JDBC defines itself as a lightweight Java framework that provides extra service at Java JDBC layer. With client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence. It can be considered as an enhanced JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
+As the first product and the predecessor of ShardingSphere, Sharding-JDBC defines itself as a lightweight Java framework that provides extra service at Java JDBC layer. With the client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence. It can be considered as an enhanced JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
 
 - Applicable to any Java ORM framework, such as JPA, Hibernate, Mybatis, Spring JDBC Template or direct use of JDBC.
 

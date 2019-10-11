@@ -1525,7 +1525,7 @@ Therefore, at current stage, we prefer to focus on its increment instead of a to
 <p><a href="https://mvnrepository.com/artifact/io.shardingsphere/sharding-jdbc"><img src="https://maven-badges.herokuapp.com/maven-central/io.shardingsphere/sharding-jdbc/badge.svg" alt="Maven Status" /></a></p>
 
 <p>Sharding-JDBC defines itself as a lightweight Java framework that provides extra service at Java JDBC layer.
-With client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence.
+With the client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence.
 It can be considered as an enhanced JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.</p>
 
 <ul>
@@ -1542,24 +1542,24 @@ It can be considered as an enhanced JDBC driver, which is fully compatible with 
 <a href="https://store.docker.com/community/images/shardingsphere/sharding-proxy"><img src="https://img.shields.io/docker/pulls/shardingsphere/sharding-proxy.svg" alt="Docker Pulls" /></a></p>
 
 <p>Sharding-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages.
-Friendlier to DBA, the MySQL version provided now can use any kind of client access (such as MySQL Command Client, MySQL Workbench, etc.) that is compatible of MySQL protocol to operate data.</p>
+Friendlier to DBA, the MySQL version provided now can use any kind of terminal (such as MySQL Command Client, MySQL Workbench, etc.) that is compatible of MySQL protocol to operate data.</p>
 
 <ul>
 <li>Totally transparent to applications, it can be used directly as MySQL.</li>
-<li>Applicable to any kind of compatible of client end that is compatible of MySQL protocol.</li>
+<li>Applicable to any kind of terminal that is compatible with MySQL and PostgreSQL protocol.</li>
 </ul>
 
 <p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img//sharding-proxy-brief_v2.png" alt="Sharding-Proxy Architecture" /></p>
 
 <h3 id="sharding-sidecar-tbd">Sharding-Sidecar(TBD)</h3>
 
-<p>Sharding-Sidecar (TBD) defines itself as a cloud native database agent of Kubernetes or Mesos environment, in charge of all the access to database in the form of DaemonSet.
-Through a decentralized and zero-cost solution, it provides a mesh layer interacting with database, i.e., Database Mesh, also referred to as database grid.</p>
+<p>Sharding-Sidecar (TODO) defines itself as a cloud native database agent of the Kubernetes environment, in charge of all the access to the database in the form of sidecar.
+It provides a mesh layer interacting with the database, we call this as Database Mesh.</p>
 
 <p>Database Mesh emphasizes on how to connect distributed database access application with the database.
-Focusing on interaction, it effectively organizes the interaction between messy applications and database.
+Focusing on interaction, it effectively organizes the interaction between messy applications and the database.
 The application and database that use Database Mesh to visit database will form a large grid system, where they just need to be put into the right position accordingly.
-They are all governed by mesh layer.</p>
+They are all governed by the mesh layer.</p>
 
 <p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/sharding-sidecar-brief_v2.png" alt="Sharding-Sidecar Architecture" /></p>
 
@@ -1624,7 +1624,7 @@ They are all governed by mesh layer.</p>
 Sharding-Proxy provides static entry and heterogeneous language support, applicable for OLAP application and the sharding databases management and operation situation.</p>
 
 <p>ShardingSphere is an ecosphere consists of multiple endpoints together.
-Through mixed use of Sharding-JDBC and Sharding-Proxy and unified sharding strategy by one registry center, ShardingSphere can build application system applicable to all kinds of situations.
+  Through a mixed use of Sharding-JDBC and Sharding-Proxy and unified sharding strategy by the same registry center, ShardingSphere can build an application system applicable to all kinds of scenarios.
 Architects can adjust the system architecture to the most applicable one to current business more freely.</p>
 
 <p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/shardingsphere-hybrid.png" alt="ShardingSphere Hybrid Architecture" /></p>
