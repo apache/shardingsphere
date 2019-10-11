@@ -57,6 +57,15 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>npm run unit</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run unit</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>npm run build</id>
                         <goals>
                             <goal>npm</goal>
