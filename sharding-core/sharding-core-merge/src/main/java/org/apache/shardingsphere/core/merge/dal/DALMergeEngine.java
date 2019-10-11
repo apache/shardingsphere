@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.merge.dal.show.ShowOtherMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowTableStatusMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowTablesMergedResult;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.DescribeStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowCreateTableStatement;

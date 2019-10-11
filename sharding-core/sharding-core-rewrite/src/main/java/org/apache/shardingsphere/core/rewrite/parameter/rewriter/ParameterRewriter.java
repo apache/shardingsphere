@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.parameter.rewriter;
 
-import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 
 import java.util.List;
