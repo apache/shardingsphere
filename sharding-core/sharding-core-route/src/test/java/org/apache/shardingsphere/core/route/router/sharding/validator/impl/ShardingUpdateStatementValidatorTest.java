@@ -17,13 +17,6 @@
 
 package org.apache.shardingsphere.core.route.router.sharding.validator.impl;
 
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
@@ -42,18 +35,25 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import static org.mockito.Mockito.when;
+
 @RunWith(MockitoJUnitRunner.class)
 public final class ShardingUpdateStatementValidatorTest {
-
+    
     @Mock
     private ShardingRule shardingRule;
-
+    
     @Test
     public void assertValidateUpdateWithoutShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
         new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatement(), Collections.emptyList());
     }
-
+    
     @Test(expected = ShardingException.class)
     public void assertValidateUpdateWithShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
@@ -91,11 +91,9 @@ public final class ShardingUpdateStatementValidatorTest {
     private UpdateStatement createUpdateStatementAndParameters(final Object shardingColumnPatamater) {
         UpdateStatement result = new UpdateStatement();
         result.getAllSQLSegments().add(new TableSegment(0, 0, "user"));
-        // set shardingColumnPatamater
         Collection<AssignmentSegment> assignments = Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "id"), new LiteralExpressionSegment(0, 0, shardingColumnPatamater)));
         SetAssignmentsSegment setAssignmentsSegment = new SetAssignmentsSegment(0, 0, assignments);
         result.setSetAssignment(setAssignmentsSegment);
-        // create whereSegment
         WhereSegment where = new WhereSegment(0, 0, 1);
         where.setParameterStartIndex(0);
         AndPredicate andPre = new AndPredicate();
