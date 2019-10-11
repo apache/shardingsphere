@@ -135,6 +135,12 @@ Be sure to remove \<distributionManagement\> section from your POM so they inher
 </parent>
 ```
 
+### Update Release Notes
+
+```
+https://github.com/apache/incubator-shardingsphere/blob/dev/RELEASE-NOTES.md
+```
+
 ### Create Release Branch
 
 Suppose ShardingSphere source codes downloaded from github is under `~/incubator-shardingsphere/` directory and the version to be released is `4.0.0-RC`. 
