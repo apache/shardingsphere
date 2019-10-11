@@ -83,14 +83,14 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         // FIXME: can process all part of insert value is ? or literal, can not process mix ? and literal
         // For example: values (?, ?), (1, 1) can process
         // For example: values (?, 1), (?, 2) can not process
-        parameterBuilder.getReplacedIndexAndParameters().put(columnIndex, shardingEncryptor.encrypt(originalValue));
+        parameterBuilder.addReplacedParameters(columnIndex, shardingEncryptor.encrypt(originalValue));
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
             Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, encryptLogicColumnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            parameterBuilder.getAddedParameters().add(((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()));
+            parameterBuilder.addAddedParameter(((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()));
         }
         if (encryptRule.findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
-            parameterBuilder.getAddedParameters().add(originalValue);
+            parameterBuilder.addAddedParameter(originalValue);
         }
     }
 }

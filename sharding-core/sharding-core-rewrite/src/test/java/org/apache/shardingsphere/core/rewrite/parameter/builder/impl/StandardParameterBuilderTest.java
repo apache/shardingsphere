@@ -35,7 +35,7 @@ public final class StandardParameterBuilderTest {
     @Before
     public void setUp() {
         parameterBuilder = new StandardParameterBuilder(parameters);
-        parameterBuilder.getAddedParameters().add(7);
+        parameterBuilder.addAddedParameter(7);
     }
     
     @Test

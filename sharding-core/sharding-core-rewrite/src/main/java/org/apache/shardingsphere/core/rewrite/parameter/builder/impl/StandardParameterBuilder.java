@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.parameter.builder.impl;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 
@@ -42,11 +41,28 @@ public final class StandardParameterBuilder implements ParameterBuilder {
     
     private Integer whereClauseParameterStartIndex;
     
-    @Getter
     private final Collection<Object> addedParameters = new LinkedList<>();
     
-    @Getter
     private final Map<Integer, Object> replacedIndexAndParameters = new LinkedHashMap<>();
+    
+    /**
+     * Add added parameter.
+     * 
+     * @param parameter parameter to be added
+     */
+    public void addAddedParameter(final Object parameter) {
+        addedParameters.add(parameter);
+    }
+    
+    /**
+     * Add replaced parameter.
+     * 
+     * @param index parameter index to be replaced
+     * @param parameter parameter to be replaced
+     */
+    public void addReplacedParameters(final int index, final Object parameter) {
+        replacedIndexAndParameters.put(index, parameter);
+    }
     
     @Override
     public List<Object> getParameters() {

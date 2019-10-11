@@ -59,13 +59,13 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
         Object originalValue = parameters.get(parameterMarkerIndex);
         Object cipherValue = encryptRule.getEncryptValues(tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
         if (encryptRule.findPlainColumn(tableName, columnName).isPresent()) {
-            ((StandardParameterBuilder) parameterBuilder).getAddedParameters().add(cipherValue);
+            ((StandardParameterBuilder) parameterBuilder).addAddedParameter(cipherValue);
         } else {
-            ((StandardParameterBuilder) parameterBuilder).getReplacedIndexAndParameters().put(parameterMarkerIndex, cipherValue);
+            ((StandardParameterBuilder) parameterBuilder).addReplacedParameters(parameterMarkerIndex, cipherValue);
         }
         if (encryptRule.findAssistedQueryColumn(tableName, columnName).isPresent()) {
             Object assistedQueryValue = encryptRule.getEncryptAssistedQueryValues(tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
-            ((StandardParameterBuilder) parameterBuilder).getAddedParameters().add(assistedQueryValue);
+            ((StandardParameterBuilder) parameterBuilder).addAddedParameter(assistedQueryValue);
         }
     }
 }
