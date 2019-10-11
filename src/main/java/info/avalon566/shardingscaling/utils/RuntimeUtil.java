@@ -17,7 +17,7 @@
 
 package info.avalon566.shardingscaling.utils;
 
-import info.avalon566.shardingscaling.Engine;
+import info.avalon566.shardingscaling.Bootstrap;
 
 /**
  * Runtime util.
@@ -30,6 +30,6 @@ public final class RuntimeUtil {
      * @return classpath
      */
     public static String getBasePath() {
-        return Engine.class.getResource("/").getFile();
+        return Bootstrap.class.getResource("/").getFile();
     }
 }
