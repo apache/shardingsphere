@@ -4,6 +4,8 @@
 
 MySQL: 5.1.15 ~ 5.7.x
 
+Sharding-Proxy: 3.x ~ 4.x 
+
 ## How to Build
 
 Install `maven` and run command:
