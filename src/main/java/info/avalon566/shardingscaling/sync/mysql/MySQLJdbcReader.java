@@ -17,6 +17,7 @@
 
 package info.avalon566.shardingscaling.sync.mysql;
 
+import info.avalon566.shardingscaling.sync.core.JdbcDataSourceConfiguration;
 import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
 import info.avalon566.shardingscaling.sync.jdbc.AbstractJdbcReader;
 import info.avalon566.shardingscaling.sync.jdbc.JdbcUri;
@@ -37,7 +38,8 @@ public final class MySQLJdbcReader extends AbstractJdbcReader {
 
     @Override
     public List<RdbmsConfiguration> split(final int concurrency) {
-        getRdbmsConfiguration().setJdbcUrl(fixMysqlUrl(getRdbmsConfiguration().getJdbcUrl()));
+        JdbcDataSourceConfiguration jdbcDataSourceConfiguration = (JdbcDataSourceConfiguration) getRdbmsConfiguration().getDataSourceConfiguration();
+        jdbcDataSourceConfiguration.setJdbcUrl(fixMysqlUrl(jdbcDataSourceConfiguration.getJdbcUrl()));
         return super.split(concurrency);
     }
 

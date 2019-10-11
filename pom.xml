@@ -11,6 +11,7 @@
         <lombok.version>1.18.4</lombok.version>
         <slf4j.version>1.7.28</slf4j.version>
         <netty.version>4.1.16.Final</netty.version>
+        <dbcp2.version>2.7.0</dbcp2.version>
         
         <junit.version>4.12</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
@@ -56,6 +57,11 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
+            <version>${dbcp2.version}</version>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>

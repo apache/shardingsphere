@@ -22,18 +22,13 @@ import lombok.SneakyThrows;
 
 /**
  * Rdbms configuration.
+ *
  * @author avalon566
  */
 @Data
 public class RdbmsConfiguration implements Cloneable {
 
-    private String className;
-
-    private String jdbcUrl;
-
-    private String username;
-
-    private String password;
+    private DataSourceConfiguration dataSourceConfiguration;
 
     private String tableName;
 

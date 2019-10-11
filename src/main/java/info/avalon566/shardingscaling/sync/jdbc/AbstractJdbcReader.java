@@ -20,7 +20,9 @@ package info.avalon566.shardingscaling.sync.jdbc;
 import info.avalon566.shardingscaling.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.sync.core.AbstractRunner;
 import info.avalon566.shardingscaling.sync.core.Channel;
+import info.avalon566.shardingscaling.sync.core.DataSourceFactory;
 import info.avalon566.shardingscaling.sync.core.FinishedRecord;
+import info.avalon566.shardingscaling.sync.core.JdbcDataSourceConfiguration;
 import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
 import info.avalon566.shardingscaling.sync.core.Reader;
 import lombok.AccessLevel;
@@ -28,8 +30,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -55,6 +57,9 @@ public abstract class AbstractJdbcReader extends AbstractRunner implements Reade
     private Channel channel;
 
     public AbstractJdbcReader(final RdbmsConfiguration rdbmsConfiguration) {
+        if (!JdbcDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
+            throw new UnsupportedOperationException("AbstractJdbcReader only support JdbcDataSourceConfiguration");
+        }
         this.rdbmsConfiguration = rdbmsConfiguration;
     }
 
@@ -66,11 +71,9 @@ public abstract class AbstractJdbcReader extends AbstractRunner implements Reade
 
     @Override
     public final void read(final Channel channel) {
+        DataSource dataSource = DataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
         try {
-            Connection conn = DriverManager.getConnection(
-                    rdbmsConfiguration.getJdbcUrl(),
-                    rdbmsConfiguration.getUsername(),
-                    rdbmsConfiguration.getPassword());
+            Connection conn = dataSource.getConnection();
             String sql = String.format("select * from %s %s", rdbmsConfiguration.getTableName(), rdbmsConfiguration.getWhereCondition());
             PreparedStatement ps = conn.prepareStatement(sql, java.sql.ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             ps.setFetchSize(Integer.MIN_VALUE);
@@ -99,7 +102,9 @@ public abstract class AbstractJdbcReader extends AbstractRunner implements Reade
      */
     @Override
     public List<RdbmsConfiguration> split(final int concurrency) {
-        List<String> primaryKeys = new DbMetaDataUtil(rdbmsConfiguration).getPrimaryKeys(rdbmsConfiguration.getTableName());
+        DataSource dataSource = DataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
+        DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil(dataSource);
+        List<String> primaryKeys = dbMetaDataUtil.getPrimaryKeys(rdbmsConfiguration.getTableName());
         if (primaryKeys == null || primaryKeys.size() == 0) {
             log.warn("{} 表主键不存在, 不支持并发执行", rdbmsConfiguration.getTableName());
             return Collections.singletonList(rdbmsConfiguration);
@@ -108,7 +113,7 @@ public abstract class AbstractJdbcReader extends AbstractRunner implements Reade
             log.warn("{} 表为联合主键, 不支持并发执行", rdbmsConfiguration.getTableName());
             return Collections.singletonList(rdbmsConfiguration);
         }
-        List<ColumnMetaData> metaData = new DbMetaDataUtil(rdbmsConfiguration).getColumnNames(rdbmsConfiguration.getTableName());
+        List<ColumnMetaData> metaData = dbMetaDataUtil.getColumnNames(rdbmsConfiguration.getTableName());
         int index = DbMetaDataUtil.findColumnIndex(metaData, primaryKeys.get(0));
         if (Types.INTEGER != metaData.get(index).getColumnType()) {
             log.warn("{} 主键不是整形,不支持并发执行", rdbmsConfiguration.getTableName());
@@ -116,7 +121,7 @@ public abstract class AbstractJdbcReader extends AbstractRunner implements Reade
         }
         String pk = primaryKeys.get(0);
         try {
-            try (Connection connection = DriverManager.getConnection(rdbmsConfiguration.getJdbcUrl(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword())) {
+            try (Connection connection = dataSource.getConnection()) {
                 PreparedStatement ps = connection.prepareStatement(String.format("select min(%s),max(%s) from %s limit 1", pk, pk, rdbmsConfiguration.getTableName()));
                 ResultSet rs = ps.executeQuery();
                 rs.next();

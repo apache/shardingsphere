@@ -17,19 +17,10 @@
 
 package info.avalon566.shardingscaling.sync.core;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-public class RdbmsConfigurationTest {
-    
-    @Test
-    public void assertClone() {
-        RdbmsConfiguration origin = new RdbmsConfiguration();
-        RdbmsConfiguration clone = RdbmsConfiguration.clone(origin);
-        assertTrue(origin.equals(clone));
-        origin.setTableName("t1");
-        assertFalse(origin.equals(clone));
-    }
+/**
+ * Data source configuration.
+ *
+ * @author avalon566
+ */
+public interface DataSourceConfiguration {
 }

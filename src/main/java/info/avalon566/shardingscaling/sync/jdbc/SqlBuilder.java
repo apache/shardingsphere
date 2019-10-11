@@ -20,8 +20,8 @@ package info.avalon566.shardingscaling.sync.jdbc;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
 
+import javax.sql.DataSource;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -42,15 +42,12 @@ public final class SqlBuilder {
 
     private static final String DELETE_SQL_CACHE_KEY_PREFIX = "DELETE_";
 
-    private final RdbmsConfiguration rdbmsConfiguration;
-
     private final LoadingCache<String, String> sqlCache;
 
     private final DbMetaDataUtil dbMetaDataUtil;
 
-    public SqlBuilder(final RdbmsConfiguration rdbmsConfiguration) {
-        this.rdbmsConfiguration = rdbmsConfiguration;
-        this.dbMetaDataUtil = new DbMetaDataUtil(rdbmsConfiguration);
+    public SqlBuilder(final DataSource dataSource) {
+        this.dbMetaDataUtil = new DbMetaDataUtil(dataSource);
         sqlCache = CacheBuilder.newBuilder()
                 .maximumSize(64)
                 .build(new CacheLoader<String, String>() {

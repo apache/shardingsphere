@@ -19,11 +19,12 @@ package info.avalon566.shardingscaling.sync.mysql;
 
 import info.avalon566.shardingscaling.sync.core.AbstractRunner;
 import info.avalon566.shardingscaling.sync.core.Channel;
+import info.avalon566.shardingscaling.sync.core.DataSourceFactory;
+import info.avalon566.shardingscaling.sync.core.JdbcDataSourceConfiguration;
 import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
 import info.avalon566.shardingscaling.sync.core.Reader;
 import info.avalon566.shardingscaling.sync.jdbc.Column;
 import info.avalon566.shardingscaling.sync.jdbc.DataRecord;
-import info.avalon566.shardingscaling.sync.jdbc.DbMetaDataUtil;
 import info.avalon566.shardingscaling.sync.jdbc.JdbcUri;
 import info.avalon566.shardingscaling.sync.mysql.binlog.MySQLConnector;
 import info.avalon566.shardingscaling.sync.mysql.binlog.event.AbstractBinlogEvent;
@@ -32,16 +33,15 @@ import info.avalon566.shardingscaling.sync.mysql.binlog.event.UpdateRowsEvent;
 import info.avalon566.shardingscaling.sync.mysql.binlog.event.WriteRowsEvent;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+
+import javax.sql.DataSource;
 import java.io.Serializable;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * MySQL binlog reader.
@@ -52,20 +52,18 @@ import java.util.Map;
 @Slf4j
 public final class MySQLBinlogReader extends AbstractRunner implements Reader {
 
-    private final Map<Long, String> tableMapCache = new HashMap<>();
-
     private final BinlogPosition binlogPosition = new BinlogPosition();
 
     private final RdbmsConfiguration rdbmsConfiguration;
-
-    private final DbMetaDataUtil dbMetaDataUtil;
 
     @Setter
     private Channel channel;
 
     public MySQLBinlogReader(final RdbmsConfiguration rdbmsConfiguration) {
+        if (!JdbcDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
+            throw new UnsupportedOperationException("MySQLBinlogReader only support JdbcDataSourceConfiguration");
+        }
         this.rdbmsConfiguration = rdbmsConfiguration;
-        this.dbMetaDataUtil = new DbMetaDataUtil(rdbmsConfiguration);
     }
 
     @Override
@@ -79,7 +77,8 @@ public final class MySQLBinlogReader extends AbstractRunner implements Reader {
      */
     public void markPosition() {
         try {
-            try (Connection connection = DriverManager.getConnection(rdbmsConfiguration.getJdbcUrl(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword())) {
+            DataSource dataSource = DataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
+            try (Connection connection = dataSource.getConnection()) {
                 PreparedStatement ps = connection.prepareStatement("show master status");
                 ResultSet rs = ps.executeQuery();
                 rs.next();
@@ -97,8 +96,9 @@ public final class MySQLBinlogReader extends AbstractRunner implements Reader {
 
     @Override
     public void read(final Channel channel) {
-        final JdbcUri uri = new JdbcUri(rdbmsConfiguration.getJdbcUrl());
-        MySQLConnector client = new MySQLConnector(123456, uri.getHostname(), uri.getPort(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword());
+        JdbcDataSourceConfiguration jdbcDataSourceConfiguration = (JdbcDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration();
+        final JdbcUri uri = new JdbcUri(jdbcDataSourceConfiguration.getJdbcUrl());
+        MySQLConnector client = new MySQLConnector(123456, uri.getHostname(), uri.getPort(), jdbcDataSourceConfiguration.getUsername(), jdbcDataSourceConfiguration.getPassword());
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
         while (true) {

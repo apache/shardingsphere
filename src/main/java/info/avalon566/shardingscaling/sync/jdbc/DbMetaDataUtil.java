@@ -20,11 +20,10 @@ package info.avalon566.shardingscaling.sync.jdbc;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -49,14 +48,14 @@ public final class DbMetaDataUtil {
 
     private static final String TABLE_NAME = "TABLE_NAME";
 
-    private final RdbmsConfiguration rdbmsConfiguration;
+    private final DataSource dataSource;
 
     private LoadingCache<String, List<String>> pksCache;
 
     private LoadingCache<String, List<ColumnMetaData>> cmdCache;
 
-    public DbMetaDataUtil(final RdbmsConfiguration rdbmsConfiguration) {
-        this.rdbmsConfiguration = rdbmsConfiguration;
+    public DbMetaDataUtil(final DataSource dataSource) {
+        this.dataSource = dataSource;
 
         pksCache = CacheBuilder.newBuilder()
                 .maximumSize(64)
@@ -93,7 +92,7 @@ public final class DbMetaDataUtil {
 
     private List<String> getPrimaryKeysInternal(final String tableName) {
         try {
-            try (Connection connection = DriverManager.getConnection(rdbmsConfiguration.getJdbcUrl(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword())) {
+            try (Connection connection = dataSource.getConnection()) {
                 ResultSet rs = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), null, tableName);
                 List<String> primaryKeys = new ArrayList<>(rs.getRow());
                 while (rs.next()) {
@@ -113,7 +112,7 @@ public final class DbMetaDataUtil {
      */
     public List<String> getTableNames() {
         try {
-            try (Connection connection = DriverManager.getConnection(rdbmsConfiguration.getJdbcUrl(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword())) {
+            try (Connection connection = dataSource.getConnection()) {
                 ResultSet rs = connection.getMetaData().getTables(connection.getCatalog(), null, "%", new String[]{"TABLE"});
                 List<String> tableNames = new LinkedList<>();
                 while (rs.next()) {
@@ -142,7 +141,7 @@ public final class DbMetaDataUtil {
 
     private List<ColumnMetaData> getColumNamesInternal(final String tableName) {
         try {
-            try (Connection connection = DriverManager.getConnection(rdbmsConfiguration.getJdbcUrl(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword())) {
+            try (Connection connection = dataSource.getConnection()) {
                 List<ColumnMetaData> result = new ArrayList<>();
                 ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), connection.getSchema(), tableName, "%");
                 while (resultSet.next()) {

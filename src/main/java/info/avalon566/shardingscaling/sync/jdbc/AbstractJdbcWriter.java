@@ -20,6 +20,7 @@ package info.avalon566.shardingscaling.sync.jdbc;
 import info.avalon566.shardingscaling.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.sync.core.AbstractRunner;
 import info.avalon566.shardingscaling.sync.core.Channel;
+import info.avalon566.shardingscaling.sync.core.DataSourceFactory;
 import info.avalon566.shardingscaling.sync.core.FinishedRecord;
 import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
 import info.avalon566.shardingscaling.sync.core.Record;
@@ -27,8 +28,8 @@ import info.avalon566.shardingscaling.sync.core.Writer;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
@@ -55,8 +56,9 @@ public abstract class AbstractJdbcWriter extends AbstractRunner implements Write
 
     public AbstractJdbcWriter(final RdbmsConfiguration rdbmsConfiguration) {
         this.rdbmsConfiguration = rdbmsConfiguration;
-        this.dbMetaDataUtil = new DbMetaDataUtil(rdbmsConfiguration);
-        this.sqlBuilder = new SqlBuilder(rdbmsConfiguration);
+        DataSource dataSource = DataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
+        this.dbMetaDataUtil = new DbMetaDataUtil(dataSource);
+        this.sqlBuilder = new SqlBuilder(dataSource);
     }
 
     @Override
@@ -67,6 +69,7 @@ public abstract class AbstractJdbcWriter extends AbstractRunner implements Write
 
     @Override
     public final void write(final Channel channel) {
+        DataSource dataSource = DataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
         List<DataRecord> buffer = new ArrayList<>(2000);
         long lastFlushTime = System.currentTimeMillis();
         try {
@@ -87,11 +90,11 @@ public abstract class AbstractJdbcWriter extends AbstractRunner implements Write
                     buffer.add((DataRecord) record);
                 }
                 if (100 <= buffer.size() || 5 * 1000 < (System.currentTimeMillis() - lastFlushTime)) {
-                    flush(rdbmsConfiguration, buffer);
+                    flush(dataSource, buffer);
                 }
             }
             if (0 < buffer.size()) {
-                flush(rdbmsConfiguration, buffer);
+                flush(dataSource, buffer);
             }
         } catch (SQLException ex) {
             log.error(null, ex);
@@ -99,8 +102,8 @@ public abstract class AbstractJdbcWriter extends AbstractRunner implements Write
         }
     }
 
-    private void flush(final RdbmsConfiguration config, final List<DataRecord> buffer) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(config.getJdbcUrl(), config.getUsername(), config.getPassword())) {
+    private void flush(final DataSource dataSource, final List<DataRecord> buffer) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
             for (DataRecord record : buffer) {
                 if ("bootstrap-insert".equals(record.getType())

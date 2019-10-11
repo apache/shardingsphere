@@ -21,6 +21,8 @@ import info.avalon566.shardingscaling.job.config.RuleConfiguration;
 import info.avalon566.shardingscaling.job.config.SyncConfiguration;
 import info.avalon566.shardingscaling.job.config.SyncType;
 import info.avalon566.shardingscaling.job.schedule.Scheduler;
+import info.avalon566.shardingscaling.sync.core.DataSourceConfiguration;
+import info.avalon566.shardingscaling.sync.core.JdbcDataSourceConfiguration;
 import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
 import info.avalon566.shardingscaling.utils.RuntimeUtil;
 import info.avalon566.shardingscaling.utils.YamlUtil;
@@ -38,6 +40,7 @@ import java.util.Map;
 
 /**
  * Scaling job.
+ *
  * @author avalon566
  */
 public class ScalingJob {
@@ -86,13 +89,17 @@ public class ScalingJob {
         List<SyncConfiguration> syncConfigurations = new ArrayList<SyncConfiguration>(ruleConfig.getDataSources().size());
         for (Map.Entry<String, RuleConfiguration.YamlDataSourceParameter> entry : ruleConfig.getDataSources().entrySet()) {
             RdbmsConfiguration readerConfiguration = new RdbmsConfiguration();
-            readerConfiguration.setJdbcUrl(entry.getValue().getUrl());
-            readerConfiguration.setUsername(entry.getValue().getUsername());
-            readerConfiguration.setPassword(entry.getValue().getPassword());
+            DataSourceConfiguration readerDataSourceConfiguration = new JdbcDataSourceConfiguration(
+                    entry.getValue().getUrl(),
+                    entry.getValue().getUsername(),
+                    entry.getValue().getPassword());
+            readerConfiguration.setDataSourceConfiguration(readerDataSourceConfiguration);
             RdbmsConfiguration writerConfiguration = new RdbmsConfiguration();
-            writerConfiguration.setJdbcUrl(commandLine.getOptionValue(OUTPUT_JDBC_URL));
-            writerConfiguration.setUsername(commandLine.getOptionValue(OUTPUT_JDBC_USERNAME));
-            writerConfiguration.setPassword(commandLine.getOptionValue(OUTPUT_JDBC_PASSWORD));
+            DataSourceConfiguration writerDataSourceConfiguration = new JdbcDataSourceConfiguration(
+                    commandLine.getOptionValue(OUTPUT_JDBC_URL),
+                    commandLine.getOptionValue(OUTPUT_JDBC_USERNAME),
+                    commandLine.getOptionValue(OUTPUT_JDBC_PASSWORD));
+            writerConfiguration.setDataSourceConfiguration(writerDataSourceConfiguration);
             syncConfigurations.add(new SyncConfiguration(SyncType.Database, 3, readerConfiguration, writerConfiguration));
         }
         return syncConfigurations;

@@ -17,19 +17,21 @@
 
 package info.avalon566.shardingscaling.sync.core;
 
-import org.junit.Test;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+/**
+ * Jdbc data source configuration.
+ *
+ * @author avalon566
+ */
+@Data
+@AllArgsConstructor
+public class JdbcDataSourceConfiguration implements DataSourceConfiguration {
 
-public class RdbmsConfigurationTest {
-    
-    @Test
-    public void assertClone() {
-        RdbmsConfiguration origin = new RdbmsConfiguration();
-        RdbmsConfiguration clone = RdbmsConfiguration.clone(origin);
-        assertTrue(origin.equals(clone));
-        origin.setTableName("t1");
-        assertFalse(origin.equals(clone));
-    }
+    private String jdbcUrl;
+
+    private String username;
+
+    private String password;
 }
