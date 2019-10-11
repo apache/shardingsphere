@@ -14,13 +14,17 @@ mvn clean package
 
 ## How to Run
 
-Install `java` and run command:
+1. Copy target\sharding-scaling-1.0.0-SNAPSHOT-bin.zip to work directory and unzip.
+
+1. Download mysql jdbc jar to lib directory.
+
+1. Run below command.
 
 ```shell
 bin/start.sh \
   scaling \
-  --input-sharding-config conf/config-sharding.yaml \
-  --output-jdbc-url jdbc:mysql://127.0.0.1/test2?useSSL=false \
-  --output-jdbc-username root \
-  --output-jdbc-password 123456
+  --input-sharding-config conf/config-sharding.yaml \ # old ss proxy sharding rule config file
+  --output-jdbc-url jdbc:mysql://127.0.0.1/test2?useSSL=false \ # new sharding rule ss proxy jdbc url
+  --output-jdbc-username root \ # new sharding rule ss proxy jdbc username
+  --output-jdbc-password 123456 # new sharding rule ss proxy jdbc password
 ```
