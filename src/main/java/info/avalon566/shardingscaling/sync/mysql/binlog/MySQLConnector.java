@@ -41,7 +41,6 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
-import lombok.var;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteOrder;
@@ -116,7 +115,7 @@ public final class MySQLConnector {
      */
     public synchronized boolean execute(final String queryString) {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
-        var queryCommandPacket = new QueryCommandPacket();
+        QueryCommandPacket queryCommandPacket = new QueryCommandPacket();
         queryCommandPacket.setQueryString(queryString);
         channel.writeAndFlush(queryCommandPacket);
         return null != waitExpectedResponse(OkPacket.class);
@@ -130,7 +129,7 @@ public final class MySQLConnector {
      */
     public synchronized int executeUpdate(final String queryString) {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
-        var queryCommandPacket = new QueryCommandPacket();
+        QueryCommandPacket queryCommandPacket = new QueryCommandPacket();
         queryCommandPacket.setQueryString(queryString);
         channel.writeAndFlush(queryCommandPacket);
         return (int) waitExpectedResponse(OkPacket.class).getAffectedRows();
@@ -144,7 +143,7 @@ public final class MySQLConnector {
      */
     public synchronized InternalResultSet executeQuery(final String queryString) {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
-        var queryCommandPacket = new QueryCommandPacket();
+        QueryCommandPacket queryCommandPacket = new QueryCommandPacket();
         queryCommandPacket.setQueryString(queryString);
         channel.writeAndFlush(queryCommandPacket);
         return waitExpectedResponse(InternalResultSet.class);
@@ -206,7 +205,7 @@ public final class MySQLConnector {
     private void registerSlave() {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
         RegisterSlaveCommandPacket cmd = new RegisterSlaveCommandPacket();
-        var localAddress = (InetSocketAddress) channel.localAddress();
+        InetSocketAddress localAddress = (InetSocketAddress) channel.localAddress();
         cmd.setReportHost(localAddress.getHostName());
         cmd.setReportPort((short) localAddress.getPort());
         cmd.setReportPassword(password);
@@ -218,7 +217,7 @@ public final class MySQLConnector {
 
     private <T> T waitExpectedResponse(final Class<T> type) {
         try {
-            var response = responseCallback.get();
+            Object response = responseCallback.get();
             if (null == response) {
                 return null;
             }

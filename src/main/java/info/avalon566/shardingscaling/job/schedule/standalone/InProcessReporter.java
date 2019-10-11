@@ -19,12 +19,12 @@ package info.avalon566.shardingscaling.job.schedule.standalone;
 
 import info.avalon566.shardingscaling.job.schedule.Event;
 import info.avalon566.shardingscaling.job.schedule.Reporter;
-import lombok.var;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * In process reportor.
+ * In process reporter.
+ *
  * @author avalon566
  */
 public class InProcessReporter implements Reporter {
@@ -39,7 +39,7 @@ public class InProcessReporter implements Reporter {
     @Override
     public final Event consumeEvent() {
         while (true) {
-            var event = queue.poll();
+            Event event = queue.poll();
             if (null != event) {
                 return event;
             }

@@ -20,7 +20,6 @@ package info.avalon566.shardingscaling.sync.mysql.binlog;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.ColumnDef;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog.TableMapEvent;
 import lombok.Data;
-import lombok.var;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,7 +54,7 @@ public class BinlogContext {
      * @return full table name
      */
     public String getFullTableName(final long tableId) {
-        var tableMapEvent = tableMap.get(tableId);
+        TableMapEvent tableMapEvent = tableMap.get(tableId);
         return String.format("%s.%s", tableMapEvent.getSchemaName(), tableMapEvent.getTableName());
     }
     

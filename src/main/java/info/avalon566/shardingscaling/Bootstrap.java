@@ -21,7 +21,6 @@ import info.avalon566.shardingscaling.job.ScalingJob;
 import info.avalon566.shardingscaling.job.schedule.standalone.InProcessScheduler;
 import info.avalon566.shardingscaling.utils.RuntimeUtil;
 import lombok.extern.slf4j.Slf4j;
-import lombok.var;
 import org.apache.log4j.PropertyConfigurator;
 
 import java.io.File;
@@ -46,7 +45,7 @@ public class Bootstrap {
      */
     public static void main(final String[] args) {
         log.info("ShardingScaling Startup");
-        var scheduler = new InProcessScheduler();
+        InProcessScheduler scheduler = new InProcessScheduler();
         if ("scaling".equals(args[0])) {
             new ScalingJob(Arrays.copyOfRange(args, 1, args.length), scheduler).run();
         }

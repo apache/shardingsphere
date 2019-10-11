@@ -21,7 +21,6 @@ import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import lombok.Data;
-import lombok.var;
 
 import java.nio.charset.StandardCharsets;
 
@@ -42,7 +41,7 @@ public final class QueryCommandPacket extends AbstractCommandPacket {
 
     @Override
     public ByteBuf toByteBuf() {
-        var result = ByteBufAllocator.DEFAULT.heapBuffer();
+        ByteBuf result = ByteBufAllocator.DEFAULT.heapBuffer();
         DataTypesCodec.writeByte(getCommand(), result);
         DataTypesCodec.writeBytes(getQueryString().getBytes(StandardCharsets.UTF_8), result);
         return result;

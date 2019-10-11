@@ -22,7 +22,6 @@ import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import lombok.Data;
-import lombok.var;
 
 /**
  * MySQL binlog dump command packet.
@@ -47,7 +46,7 @@ public final class BinlogDumpCommandPacket extends AbstractCommandPacket {
 
     @Override
     public ByteBuf toByteBuf() {
-        var result = ByteBufAllocator.DEFAULT.heapBuffer();
+        ByteBuf result = ByteBufAllocator.DEFAULT.heapBuffer();
         DataTypesCodec.writeByte(getCommand(), result);
         DataTypesCodec.writeInt4LE((int) binlogPosition, result);
         byte binlogFlags = 0;

@@ -20,7 +20,6 @@ package info.avalon566.shardingscaling.sync.mysql.binlog.packet;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import lombok.Data;
-import lombok.var;
 
 /**
  * MySQL packet header.
@@ -42,7 +41,7 @@ public final class HeaderPacket implements Packet {
 
     @Override
     public ByteBuf toByteBuf() {
-        var result = ByteBufAllocator.DEFAULT.heapBuffer(4);
+        ByteBuf result = ByteBufAllocator.DEFAULT.heapBuffer(4);
         result.writeByte((byte) (packetBodyLength & 0xFF));
         result.writeByte((byte) (packetBodyLength >>> 8));
         result.writeByte((byte) (packetBodyLength >>> 16));
@@ -52,7 +51,7 @@ public final class HeaderPacket implements Packet {
 
     @Override
     public void fromByteBuf(final ByteBuf data) {
-        var buffer = new byte[4];
+        byte[] buffer = new byte[4];
         buffer[0] = data.readByte();
         buffer[1] = data.readByte();
         buffer[2] = data.readByte();
