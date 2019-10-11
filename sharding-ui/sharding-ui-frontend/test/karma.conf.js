@@ -29,6 +29,12 @@ module.exports = function(config) {
       dir: './coverage',
       reporters: [{ type: 'lcov', subdir: '.' }, { type: 'text-summary' }]
     },
-    browsers: ['Chrome']
+    browsers: ['ChromeHeadless'],
+    customLaunchers: {
+      ChromeHeadless: {
+        base: 'Chrome',
+        flags: ['--headless', '--disable-gpu', '--remote-debugging-port=9222']
+      }
+    }
   })
 }
