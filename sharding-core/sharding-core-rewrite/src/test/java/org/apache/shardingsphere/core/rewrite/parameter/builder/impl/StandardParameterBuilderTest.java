@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -35,7 +36,7 @@ public final class StandardParameterBuilderTest {
     @Before
     public void setUp() {
         parameterBuilder = new StandardParameterBuilder(parameters);
-        parameterBuilder.addAddedParameter(7);
+        parameterBuilder.addAddedParameters(4, Collections.<Object>singleton(7));
     }
     
     @Test

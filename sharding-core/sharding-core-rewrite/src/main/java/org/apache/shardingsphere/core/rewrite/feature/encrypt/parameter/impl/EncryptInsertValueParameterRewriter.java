@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.rewrite.feature.encrypt.parameter.impl;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
@@ -33,7 +34,9 @@ import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -48,7 +51,7 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        if (!(sqlStatementContext instanceof InsertSQLStatementContext) || parameters.isEmpty()) {
+        if (!(sqlStatementContext instanceof InsertSQLStatementContext) || ((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent() || parameters.isEmpty()) {
             return;
         }
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
@@ -84,13 +87,17 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         // For example: values (?, ?), (1, 1) can process
         // For example: values (?, 1), (?, 2) can not process
         parameterBuilder.addReplacedParameters(columnIndex, shardingEncryptor.encrypt(originalValue));
+        Collection<Object> addedParameters = new LinkedList<>();
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
             Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, encryptLogicColumnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            parameterBuilder.addAddedParameter(((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()));
+            addedParameters.add(((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()));
         }
         if (encryptRule.findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
-            parameterBuilder.addAddedParameter(originalValue);
+            addedParameters.add(originalValue);
+        }
+        if (!addedParameters.isEmpty()) {
+            parameterBuilder.addAddedParameters(parameterSize + parameterBuilder.getAddedIndexAndParameters().size(), addedParameters);
         }
     }
 }

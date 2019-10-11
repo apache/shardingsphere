@@ -23,17 +23,16 @@ import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguratio
 import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.preprocessor.SQLStatementContextFactory;
-import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.preprocessor.SQLStatementContextFactory;
+import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.core.rewrite.engine.impl.DefaultSQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteResult;
+import org.apache.shardingsphere.core.rewrite.engine.impl.DefaultSQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -225,7 +224,7 @@ public final class EncryptSQLRewriteEngineTest {
     public void assertUpdateWithoutPlaceholderWithPlainEncrypt() {
         String sql = "UPDATE t_plain_encrypt set col3 = 3 where col4 = 2";
         SQLRewriteResult actual = getSQLRewriteResult(sql, Collections.emptyList(), false);
-        assertThat(actual.getSql(), is("UPDATE t_plain_encrypt set plain1 = 3, col1 = 'encryptValue' where plain2 = '2'"));
+        assertThat(actual.getSql(), is("UPDATE t_plain_encrypt set col1 = 'encryptValue', plain1 = 3 where plain2 = '2'"));
         assertTrue(actual.getParameters().isEmpty());
     }
     
@@ -244,28 +243,27 @@ public final class EncryptSQLRewriteEngineTest {
     public void assertUpdateWithPlaceholderWithQueryPlainEncrypt() {
         String sql = "UPDATE t_plain_query set col3 = ? where col4 = ?";
         SQLRewriteResult actual = getSQLRewriteResult(sql, parametersOfEqual, true);
-        assertThat(actual.getSql(), is("UPDATE t_plain_query set plain1 = ?, col1 = ?, query1 = ? where query2 = ?"));
+        assertThat(actual.getSql(), is("UPDATE t_plain_query set col1 = ?, query1 = ?, plain1 = ? where query2 = ?"));
         assertThat(actual.getParameters().size(), is(4));
-        assertThat(actual.getParameters().get(0), is((Object) 1));
-        assertThat(actual.getParameters().get(1), is((Object) "encryptValue"));
-        assertThat(actual.getParameters().get(2), is((Object) "assistedEncryptValue"));
+        assertThat(actual.getParameters().get(0), is((Object) "encryptValue"));
+        assertThat(actual.getParameters().get(1), is((Object) "assistedEncryptValue"));
+        assertThat(actual.getParameters().get(2), is((Object) 1));
         assertThat(actual.getParameters().get(3), is((Object) "assistedEncryptValue"));
     }
     
     @Test
-    @Ignore
     public void assertUpdateMultipleEncryptColumnsWithPlaceholder() {
         String sql = "UPDATE t_plain_query set col3 = ?, col4 = ?, other_col1 = ? where other_col2 = ?";
         List<Object> parameters = Arrays.<Object>asList(1, 2, "update_regular", "query_regular");
         SQLRewriteResult actual = getSQLRewriteResult(sql, parameters, true);
-        assertThat(actual.getSql(), is("UPDATE t_plain_query set plain1 = ?, col1 = ?, query1 = ?, plain2 = ?, col2 = ?, query2 = ?, other_col1 = ? where other_col2 = ?"));
+        assertThat(actual.getSql(), is("UPDATE t_plain_query set col1 = ?, query1 = ?, plain1 = ?, col2 = ?, query2 = ?, plain2 = ?, other_col1 = ? where other_col2 = ?"));
         assertThat(actual.getParameters().size(), is(8));
-        assertThat(actual.getParameters().get(0), is((Object) 1));
-        assertThat(actual.getParameters().get(1), is((Object) "encryptValue"));
-        assertThat(actual.getParameters().get(2), is((Object) "assistedEncryptValue"));
-        assertThat(actual.getParameters().get(3), is((Object) 2));
-        assertThat(actual.getParameters().get(4), is((Object) "encryptValue"));
-        assertThat(actual.getParameters().get(5), is((Object) "assistedEncryptValue"));
+        assertThat(actual.getParameters().get(0), is((Object) "encryptValue"));
+        assertThat(actual.getParameters().get(1), is((Object) "assistedEncryptValue"));
+        assertThat(actual.getParameters().get(2), is((Object) 1));
+        assertThat(actual.getParameters().get(3), is((Object) "encryptValue"));
+        assertThat(actual.getParameters().get(4), is((Object) "assistedEncryptValue"));
+        assertThat(actual.getParameters().get(5), is((Object) 2));
         assertThat(actual.getParameters().get(6), is((Object) "update_regular"));
         assertThat(actual.getParameters().get(7), is((Object) "query_regular"));
     }
@@ -323,7 +321,7 @@ public final class EncryptSQLRewriteEngineTest {
     public void assertInsertWithSetWithoutPlaceholderWithPlainEncrypt() {
         String sql = "INSERT INTO t_plain_encrypt SET col3 = 1, col4 = 2";
         SQLRewriteResult actual = getSQLRewriteResult(sql, Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("INSERT INTO t_plain_encrypt SET col1 = 'encryptValue', col2 = 'encryptValue', plain1 = 1, plain2 = 2"));
+        assertThat(actual.getSql(), is("INSERT INTO t_plain_encrypt SET col1 = 'encryptValue', plain1 = 1, col2 = 'encryptValue', plain2 = 2"));
         assertTrue(actual.getParameters().isEmpty());
     }
     
@@ -331,11 +329,11 @@ public final class EncryptSQLRewriteEngineTest {
     public void assertInsertWithSetWithPlaceholderWithQueryEncrypt() {
         String sql = "INSERT INTO t_query_encrypt SET col1 = ?, col2 = ?";
         SQLRewriteResult actual = getSQLRewriteResult(sql, parametersOfEqual, true);
-        assertThat(actual.getSql(), is("INSERT INTO t_query_encrypt SET col1 = ?, col2 = ?, query1 = ?, query2 = ?"));
+        assertThat(actual.getSql(), is("INSERT INTO t_query_encrypt SET col1 = ?, query1 = ?, col2 = ?, query2 = ?"));
         assertThat(actual.getParameters().size(), is(4));
         assertThat(actual.getParameters().get(0), is((Object) "encryptValue"));
-        assertThat(actual.getParameters().get(1), is((Object) "encryptValue"));
-        assertThat(actual.getParameters().get(2), is((Object) "assistedEncryptValue"));
+        assertThat(actual.getParameters().get(1), is((Object) "assistedEncryptValue"));
+        assertThat(actual.getParameters().get(2), is((Object) "encryptValue"));
         assertThat(actual.getParameters().get(3), is((Object) "assistedEncryptValue"));
     }
     
@@ -343,12 +341,12 @@ public final class EncryptSQLRewriteEngineTest {
     public void assertInsertWithSetWithPlaceholderWithQueryPlainEncrypt() {
         String sql = "INSERT INTO t_plain_query SET col3 = ?, col4 = ?";
         SQLRewriteResult actual = getSQLRewriteResult(sql, parametersOfEqual, false);
-        assertThat(actual.getSql(), is("INSERT INTO t_plain_query SET col1 = ?, col2 = ?, query1 = ?, plain1 = ?, query2 = ?, plain2 = ?"));
+        assertThat(actual.getSql(), is("INSERT INTO t_plain_query SET col1 = ?, query1 = ?, plain1 = ?, col2 = ?, query2 = ?, plain2 = ?"));
         assertThat(actual.getParameters().size(), is(6));
         assertThat(actual.getParameters().get(0), is((Object) "encryptValue"));
-        assertThat(actual.getParameters().get(1), is((Object) "encryptValue"));
-        assertThat(actual.getParameters().get(2), is((Object) "assistedEncryptValue"));
-        assertThat(actual.getParameters().get(3), is((Object) 1));
+        assertThat(actual.getParameters().get(1), is((Object) "assistedEncryptValue"));
+        assertThat(actual.getParameters().get(2), is((Object) 1));
+        assertThat(actual.getParameters().get(3), is((Object) "encryptValue"));
         assertThat(actual.getParameters().get(4), is((Object) "assistedEncryptValue"));
         assertThat(actual.getParameters().get(5), is((Object) 2));
     }

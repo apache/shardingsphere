@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.rewrite.context;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.parse.sql.statement.generic.WhereSegmentAvailable;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
@@ -63,12 +62,7 @@ public final class SQLRewriteContext {
         this.parameters = parameters;
         addSQLTokenGenerators(new DefaultTokenGeneratorBuilder().getSQLTokenGenerators());
         parameterBuilder = sqlStatementContext instanceof InsertSQLStatementContext
-                ? new GroupedParameterBuilder(((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) : new StandardParameterBuilder(parameters, getParameterStartIndex());
-    }
-    
-    private Integer getParameterStartIndex() {
-        return sqlStatementContext.getSqlStatement() instanceof WhereSegmentAvailable && ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().isPresent()
-                ? ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().get().getParameterStartIndex() : null;
+                ? new GroupedParameterBuilder(((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) : new StandardParameterBuilder(parameters);
     }
     
     /**
