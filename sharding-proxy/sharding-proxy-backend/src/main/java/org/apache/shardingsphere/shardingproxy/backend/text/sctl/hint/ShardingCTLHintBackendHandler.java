@@ -49,6 +49,7 @@ public final class ShardingCTLHintBackendHandler implements TextProtocolBackendH
         this.backendConnection = backendConnection;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public BackendResponse execute() {
         if (!backendConnection.isSupportHint()) {

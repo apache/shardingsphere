@@ -38,7 +38,7 @@ public final class DataSourceConverterTest {
         dataSourceConfiguration0.getProperties().put("url", "jdbc:mysql://localhost:3306/demo_ds_0");
         dataSourceConfigurationMap.put("ds_0", dataSourceConfiguration0);
         DataSourceConfiguration dataSourceConfiguration1 = new DataSourceConfiguration(HikariDataSource.class.getName());
-        dataSourceConfiguration1.getProperties().put("url", "jdbc:mysql://localhost:3306/demo_ds_1");
+        dataSourceConfiguration1.getProperties().put("jdbcUrl", "jdbc:mysql://localhost:3306/demo_ds_1");
         dataSourceConfigurationMap.put("ds_1", dataSourceConfiguration1);
         Map<String, YamlDataSourceParameter> actual = DataSourceConverter.getDataSourceParameterMap(dataSourceConfigurationMap);
         assertThat(actual.size(), is(2));
@@ -69,11 +69,11 @@ public final class DataSourceConverterTest {
         Map<String, Object> properties = actual.getProperties();
         assertThat(properties.get("maxPoolSize"), CoreMatchers.<Object>is(50));
         assertThat(properties.get("minPoolSize"), CoreMatchers.<Object>is(1));
-        assertThat(properties.get("connectionTimeoutMilliseconds"), CoreMatchers.<Object>is(30 * 1000L));
-        assertThat(properties.get("idleTimeoutMilliseconds"), CoreMatchers.<Object>is(60 * 1000L));
-        assertThat(properties.get("maxLifetimeMilliseconds"), CoreMatchers.<Object>is(0L));
+        assertThat(properties.get("connectionTimeout"), CoreMatchers.<Object>is(30 * 1000L));
+        assertThat(properties.get("idleTimeout"), CoreMatchers.<Object>is(60 * 1000L));
+        assertThat(properties.get("maxLifetime"), CoreMatchers.<Object>is(0L));
         assertThat(properties.get("maintenanceIntervalMilliseconds"), CoreMatchers.<Object>is(30 * 1000L));
-        assertThat(properties.get("url"), CoreMatchers.<Object>is("jdbc:mysql://localhost:3306/demo_ds"));
+        assertThat(properties.get("jdbcUrl"), CoreMatchers.<Object>is("jdbc:mysql://localhost:3306/demo_ds"));
         assertThat(properties.get("username"), CoreMatchers.<Object>is("root"));
         assertThat(properties.get("password"), CoreMatchers.<Object>is("root"));
     }
