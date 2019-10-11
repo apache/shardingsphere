@@ -125,7 +125,7 @@ public abstract class AbstractJdbcReader extends AbstractRunner implements Reade
                 int step = (max - min) / concurrency;
                 List<RdbmsConfiguration> configs = new ArrayList<>(concurrency);
                 for (int i = 0; i < concurrency; i++) {
-                    RdbmsConfiguration tmp = rdbmsConfiguration.clone();
+                    RdbmsConfiguration tmp = RdbmsConfiguration.clone(rdbmsConfiguration);
                     if (i < concurrency - 1) {
                         tmp.setWhereCondition(String.format("where id between %d and %d", min, min + step));
                         min = min + step + 1;
