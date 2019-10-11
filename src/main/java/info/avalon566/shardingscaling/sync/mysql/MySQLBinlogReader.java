@@ -180,7 +180,7 @@ public final class MySQLBinlogReader extends AbstractRunner implements Reader {
     }
 
     private Object getColumnValue(final String tableName, final int index, final Serializable data) {
-        //var columns = dbMetaDataUtil.getColumNames(tableName);
+        //var columns = dbMetaDataUtil.getColumnNames(tableName);
         return data;
     }
 }

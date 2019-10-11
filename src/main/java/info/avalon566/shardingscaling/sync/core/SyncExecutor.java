@@ -17,6 +17,7 @@
 
 package info.avalon566.shardingscaling.sync.core;
 
+import info.avalon566.shardingscaling.exception.SyncExecuteException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -77,10 +78,27 @@ public class SyncExecutor {
         for (Future<?> writerFuture : writerFutures) {
             try {
                 writerFuture.get();
-            } catch (InterruptedException | ExecutionException ex) {
-                //TODO shutdown reader and other writer
-                throw new RuntimeException(ex);
+            } catch (InterruptedException ignored) {
+                shutDownReaderAndWriters();
+            } catch (ExecutionException ex) {
+                shutDownReaderAndWriters();
+                handleExecutionException(ex.getCause());
             }
         }
     }
+    
+    private void shutDownReaderAndWriters() {
+        reader.stop();
+        for (Writer each : writers) {
+            each.stop();
+        }
+    }
+    
+    private void handleExecutionException(final Throwable cause) {
+        if (cause instanceof SyncExecuteException) {
+            throw (SyncExecuteException) cause;
+        }
+        throw new SyncExecuteException(cause);
+    }
+    
 }
