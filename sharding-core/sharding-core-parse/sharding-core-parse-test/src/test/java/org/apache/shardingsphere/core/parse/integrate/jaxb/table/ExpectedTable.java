@@ -34,4 +34,10 @@ public final class ExpectedTable {
     
     @XmlAttribute
     private String alias;
+    
+    @XmlAttribute(name = "start-index")
+    private int startIndex;
+    
+    @XmlAttribute(name = "stop-index")
+    private int stopIndex;
 }
