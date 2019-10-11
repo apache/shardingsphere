@@ -25,6 +25,7 @@ import java.util.Map;
 
 /**
  * One provider to multi consumer channel model.
+ * 
  * @author avalon566
  */
 public class DispatcherChannel implements Channel {
@@ -32,12 +33,12 @@ public class DispatcherChannel implements Channel {
     private final int channelNumber;
 
     /**
-     * 通道Id : 通道.
+     * key = channel id, value = channel.
      */
     private final Map<String, MemoryChannel> channels = new HashMap<>();
 
     /**
-     * 线程Id : 通道Id.
+     * key = thread id, value = channel id.
      */
     private final Map<String, String> channelAssignment = new HashMap<>();
 
