@@ -1,5 +1,3 @@
-test approve
-
 ## 4.0.0.RC2
 
 ### API Changes
