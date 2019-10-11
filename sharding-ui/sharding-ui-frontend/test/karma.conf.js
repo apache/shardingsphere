@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 const webpackConfig = require('../build/webpack.unit.conf')
+process.env.CHROME_BIN = require('puppeteer').executablePath()
 
 module.exports = function(config) {
   config.set({
@@ -29,12 +30,6 @@ module.exports = function(config) {
       dir: './coverage',
       reporters: [{ type: 'lcov', subdir: '.' }, { type: 'text-summary' }]
     },
-    browsers: ['ChromeHeadless'],
-    customLaunchers: {
-      ChromeHeadless: {
-        base: 'Chrome',
-        flags: ['--headless', '--disable-gpu', '--remote-debugging-port=9222']
-      }
-    }
+    browsers: ['ChromeHeadless']
   })
 }

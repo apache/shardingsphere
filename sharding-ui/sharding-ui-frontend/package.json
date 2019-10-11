@@ -76,6 +76,7 @@
     "postcss-import": "^11.0.0",
     "postcss-loader": "^2.0.8",
     "postcss-url": "^7.2.1",
+    "puppeteer": "^1.20.0",
     "rimraf": "^2.6.0",
     "sass-loader": "^7.1.0",
     "semver": "^5.3.0",
