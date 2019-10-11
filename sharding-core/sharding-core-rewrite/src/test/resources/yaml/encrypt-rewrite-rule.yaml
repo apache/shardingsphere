@@ -25,43 +25,43 @@ encryptRule:
   tables:
     t_cipher:
       columns:
-        encrypt_col_1:
-          cipherColumn: cipher_col_1
+        encrypt_1:
+          cipherColumn: cipher_1
           encryptor: test
-        encrypt_col_2:
-          cipherColumn: cipher_col_2
+        encrypt_2:
+          cipherColumn: cipher_2
           encryptor: test
     t_cipher_assisted_query:
       columns:
-        encrypt_col_1:
-          cipherColumn: cipher_col_1
-          assistedQueryColumn: assisted_query_col_1
+        encrypt_1:
+          cipherColumn: cipher_1
+          assistedQueryColumn: assisted_query_1
           encryptor: assist_test
-        encrypt_col_2:
-          cipherColumn: cipher_col_2
-          assistedQueryColumn: assisted_query_col_2
+        encrypt_2:
+          cipherColumn: cipher_2
+          assistedQueryColumn: assisted_query_2
           encryptor: assist_test
     t_cipher_plain:
       columns:
-        encrypt_col_1:
-          cipherColumn: cipher_col_1
-          plainColumn: plain_col_1
+        encrypt_1:
+          cipherColumn: cipher_1
+          plainColumn: plain_1
           encryptor: test
-        encrypt_col_2:
-          cipherColumn: cipher_col_2
-          plainColumn: plain_col_2
+        encrypt_2:
+          cipherColumn: cipher_2
+          plainColumn: plain_2
           encryptor: test
     t_cipher_assisted_query_plain:
       columns:
-        encrypt_col_1:
-          cipherColumn: cipher_col_1
-          assistedQueryColumn: assisted_query_col_1
-          plainColumn: plain_col_1
+        encrypt_1:
+          cipherColumn: cipher_1
+          assistedQueryColumn: assisted_query_1
+          plainColumn: plain_1
           encryptor: assist_test
-        encrypt_col_2:
-          cipherColumn: cipher_col_2
-          assistedQueryColumn: assisted_query_col_2
-          plainColumn: plain_col_2
+        encrypt_2:
+          cipherColumn: cipher_2
+          assistedQueryColumn: assisted_query_2
+          plainColumn: plain_2
           encryptor: assist_test
   encryptors:
     test:
