@@ -60,7 +60,7 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
             }
             PredicateRightValue rightValue = each.getRightValue();
             int shardingColumnWhereIndex = -1;
-            // =
+            // handle PredicateCompareRightValue
             if (rightValue instanceof PredicateCompareRightValue) {
                 ExpressionSegment segment = ((PredicateCompareRightValue) rightValue).getExpression();
                 if (segment instanceof ParameterMarkerExpressionSegment) {
@@ -70,7 +70,7 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
                     return Optional.of(((LiteralExpressionSegment) segment).getLiterals());
                 }
             }
-            // in
+            // handle PredicateInRightValue
             if (rightValue instanceof PredicateInRightValue) {
                 Collection<ExpressionSegment> segments = ((PredicateInRightValue) rightValue).getSqlExpressions();
                 return handlePredicateInRightValue(segments, parameters, shardingColumn);
@@ -118,20 +118,18 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
     @Override
     public void validate(final ShardingRule shardingRule, final UpdateStatement sqlStatement, final List<Object> parameters) {
         String tableName = new TablesContext(sqlStatement).getSingleTableName();
-        Object shardingColumnWhereValue = null;
         for (AssignmentSegment each : sqlStatement.getSetAssignment().getAssignments()) {
             String shardingColumn = each.getColumn().getName();
             if (shardingRule.isShardingColumn(shardingColumn, tableName)) {
                 // get the sharding column value in the set segment
                 Object shardingColumnSetAssignValue = getShardingColumnSetAssignValue(each, parameters).get();
+                Object shardingColumnWhereValue = null;
                 Optional<WhereSegment> whereSegmentOptional = sqlStatement.getWhere();
                 if (whereSegmentOptional.isPresent()) {
                     // get the sharding column value in the where segment
                     shardingColumnWhereValue = getShardingColumnWhereValue(whereSegmentOptional.get(), parameters, shardingColumn).get();
                 }
-                // if shardingColumnWhereValue equal to
-                // shardingColumnSetAssignValue, do not judge "Can not update
-                // sharding key"
+                // if shardingColumnWhereValue equal to shardingColumnSetAssignValue, do not judge "Can not update sharding key"
                 if (null != shardingColumnWhereValue && null != shardingColumnSetAssignValue
                         && shardingColumnSetAssignValue.toString().equals(shardingColumnWhereValue.toString())) {
                     continue;

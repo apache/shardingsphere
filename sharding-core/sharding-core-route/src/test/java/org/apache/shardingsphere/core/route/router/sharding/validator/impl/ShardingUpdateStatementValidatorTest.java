@@ -65,10 +65,8 @@ public final class ShardingUpdateStatementValidatorTest {
     @Test
     public void assertValidateUpdateWithoutShardingKeyAndParameters() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
-        List<Object> parameters = Lists.newArrayList();
-        parameters.add(1);
-        parameters.add(1);
-        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatementAndParameters(1), parameters);
+        List parameters = Arrays.asList(1, 1);
+        new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatement(), parameters);
     }
 
     @Test
