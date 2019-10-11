@@ -28,18 +28,20 @@ import java.io.File;
 import java.util.Arrays;
 
 /**
- * Engine.
+ * Bootstrap of ShardingScaling.
+ *
  * @author avalon566
  */
 @Slf4j
-public class Engine {
+public class Bootstrap {
 
     static {
         PropertyConfigurator.configure(RuntimeUtil.getBasePath() + "conf" + File.separator + "log4j.properties");
     }
-
+    
     /**
      * Main entry.
+     *
      * @param args running args
      */
     public static void main(final String[] args) {

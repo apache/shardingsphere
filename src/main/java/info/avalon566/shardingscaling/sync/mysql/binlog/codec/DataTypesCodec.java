@@ -18,7 +18,6 @@
 package info.avalon566.shardingscaling.sync.mysql.binlog.codec;
 
 import io.netty.buffer.ByteBuf;
-import lombok.var;
 
 import java.math.BigInteger;
 import java.util.BitSet;
@@ -79,7 +78,7 @@ public final class DataTypesCodec {
      * @return bitset value
      */
     public static BitSet readBitmap(final int length, final ByteBuf in) {
-        var bitSet = new BitSet(length);
+        BitSet bitSet = new BitSet(length);
         for (int bit = 0; bit < length; bit += 8) {
             int flag = ((int) in.readByte()) & 0xff;
             if (flag != 0) {
@@ -284,7 +283,7 @@ public final class DataTypesCodec {
      * @return byte array
      */
     public static byte[] readBytes(final int length, final ByteBuf in) {
-        var buffer = new byte[length];
+        byte[] buffer = new byte[length];
         in.readBytes(buffer, 0, length);
         return buffer;
     }
@@ -297,7 +296,7 @@ public final class DataTypesCodec {
      * @return string value
      */
     public static String readFixedLengthString(final int length, final ByteBuf in) {
-        var buffer = new byte[length];
+        byte[] buffer = new byte[length];
         in.readBytes(buffer, 0, length);
         return new String(buffer);
     }
@@ -309,7 +308,7 @@ public final class DataTypesCodec {
      * @return string value
      */
     public static String readLengthCodedString(final ByteBuf in) {
-        var length = (int) readLengthCodedIntLE(in);
+        int length = (int) readLengthCodedIntLE(in);
         return readFixedLengthString(length, in);
     }
 
@@ -320,8 +319,8 @@ public final class DataTypesCodec {
      * @return string value
      */
     public static String readNulTerminatedString(final ByteBuf in) {
-        var length = in.bytesBefore((byte) 0x00);
-        var str = readFixedLengthString(length, in);
+        int length = in.bytesBefore((byte) 0x00);
+        String str = readFixedLengthString(length, in);
         readNul(in);
         return str;
     }

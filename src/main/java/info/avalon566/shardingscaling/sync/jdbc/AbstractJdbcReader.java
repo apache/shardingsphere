@@ -17,6 +17,7 @@
 
 package info.avalon566.shardingscaling.sync.jdbc;
 
+import info.avalon566.shardingscaling.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.sync.core.AbstractRunner;
 import info.avalon566.shardingscaling.sync.core.Channel;
 import info.avalon566.shardingscaling.sync.core.FinishedRecord;
@@ -26,20 +27,23 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import lombok.var;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * generic jdbc reader implement.
+ *
  * @author avalon566
+ * @author yangyi
  */
 @Slf4j
 public abstract class AbstractJdbcReader extends AbstractRunner implements Reader {
@@ -67,14 +71,14 @@ public abstract class AbstractJdbcReader extends AbstractRunner implements Reade
                     rdbmsConfiguration.getJdbcUrl(),
                     rdbmsConfiguration.getUsername(),
                     rdbmsConfiguration.getPassword());
-            var sql = String.format("select * from %s %s", rdbmsConfiguration.getTableName(), rdbmsConfiguration.getWhereCondition());
-            var ps = conn.prepareStatement(sql, java.sql.ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            String sql = String.format("select * from %s %s", rdbmsConfiguration.getTableName(), rdbmsConfiguration.getWhereCondition());
+            PreparedStatement ps = conn.prepareStatement(sql, java.sql.ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             ps.setFetchSize(Integer.MIN_VALUE);
             ps.setFetchDirection(ResultSet.FETCH_REVERSE);
-            var rs = ps.executeQuery();
-            var metaData = rs.getMetaData();
+            ResultSet rs = ps.executeQuery();
+            ResultSetMetaData metaData = rs.getMetaData();
             while (isRunning() && rs.next()) {
-                var record = new DataRecord(metaData.getColumnCount());
+                DataRecord record = new DataRecord(metaData.getColumnCount());
                 record.setType("bootstrap-insert");
                 record.setFullTableName(String.format("%s.%s", conn.getCatalog(), rdbmsConfiguration.getTableName()));
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
@@ -86,7 +90,7 @@ public abstract class AbstractJdbcReader extends AbstractRunner implements Reade
         } catch (SQLException e) {
             // make sure writer thread can exit
             channel.pushRecord(new FinishedRecord());
-            throw new RuntimeException(e);
+            throw new SyncExecuteException(e);
         }
     }
 
@@ -95,33 +99,33 @@ public abstract class AbstractJdbcReader extends AbstractRunner implements Reade
      */
     @Override
     public List<RdbmsConfiguration> split(final int concurrency) {
-        var primaryKeys = new DbMetaDataUtil(rdbmsConfiguration).getPrimaryKeys(rdbmsConfiguration.getTableName());
+        List<String> primaryKeys = new DbMetaDataUtil(rdbmsConfiguration).getPrimaryKeys(rdbmsConfiguration.getTableName());
         if (primaryKeys == null || primaryKeys.size() == 0) {
             log.warn("{} 表主键不存在, 不支持并发执行", rdbmsConfiguration.getTableName());
-            return Arrays.asList(rdbmsConfiguration);
+            return Collections.singletonList(rdbmsConfiguration);
         }
         if (1 < primaryKeys.size()) {
             log.warn("{} 表为联合主键, 不支持并发执行", rdbmsConfiguration.getTableName());
-            return Arrays.asList(rdbmsConfiguration);
+            return Collections.singletonList(rdbmsConfiguration);
         }
-        var metaData = new DbMetaDataUtil(rdbmsConfiguration).getColumNames(rdbmsConfiguration.getTableName());
-        var index = DbMetaDataUtil.findColumnIndex(metaData, primaryKeys.get(0));
+        List<ColumnMetaData> metaData = new DbMetaDataUtil(rdbmsConfiguration).getColumnNames(rdbmsConfiguration.getTableName());
+        int index = DbMetaDataUtil.findColumnIndex(metaData, primaryKeys.get(0));
         if (Types.INTEGER != metaData.get(index).getColumnType()) {
             log.warn("{} 主键不是整形,不支持并发执行", rdbmsConfiguration.getTableName());
-            return Arrays.asList(rdbmsConfiguration);
+            return Collections.singletonList(rdbmsConfiguration);
         }
-        var pk = primaryKeys.get(0);
+        String pk = primaryKeys.get(0);
         try {
-            try (var connection = DriverManager.getConnection(rdbmsConfiguration.getJdbcUrl(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword())) {
-                var ps = connection.prepareStatement(String.format("select min(%s),max(%s) from %s limit 1", pk, pk, rdbmsConfiguration.getTableName()));
-                var rs = ps.executeQuery();
+            try (Connection connection = DriverManager.getConnection(rdbmsConfiguration.getJdbcUrl(), rdbmsConfiguration.getUsername(), rdbmsConfiguration.getPassword())) {
+                PreparedStatement ps = connection.prepareStatement(String.format("select min(%s),max(%s) from %s limit 1", pk, pk, rdbmsConfiguration.getTableName()));
+                ResultSet rs = ps.executeQuery();
                 rs.next();
-                var min = rs.getInt(1);
-                var max = rs.getInt(2);
-                var step = (max - min) / concurrency;
-                var configs = new ArrayList<RdbmsConfiguration>(concurrency);
+                int min = rs.getInt(1);
+                int max = rs.getInt(2);
+                int step = (max - min) / concurrency;
+                List<RdbmsConfiguration> configs = new ArrayList<>(concurrency);
                 for (int i = 0; i < concurrency; i++) {
-                    var tmp = rdbmsConfiguration.clone();
+                    RdbmsConfiguration tmp = RdbmsConfiguration.clone(rdbmsConfiguration);
                     if (i < concurrency - 1) {
                         tmp.setWhereCondition(String.format("where id between %d and %d", min, min + step));
                         min = min + step + 1;

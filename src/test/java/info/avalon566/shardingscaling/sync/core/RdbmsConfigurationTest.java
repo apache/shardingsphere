@@ -17,36 +17,19 @@
 
 package info.avalon566.shardingscaling.sync.core;
 
-import lombok.Data;
-import lombok.SneakyThrows;
+import org.junit.Test;
 
-/**
- * Rdbms configuration.
- * @author avalon566
- */
-@Data
-public class RdbmsConfiguration implements Cloneable {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-    private String className;
-
-    private String jdbcUrl;
-
-    private String username;
-
-    private String password;
-
-    private String tableName;
-
-    private String whereCondition;
+public class RdbmsConfigurationTest {
     
-    /**
-     * Clone to new rdbms configuration.
-     *
-     * @param origin origin rdbms configuration
-     * @return new rdbms configuration
-     */
-    @SneakyThrows
-    public static RdbmsConfiguration clone(final RdbmsConfiguration origin) {
-        return (RdbmsConfiguration) origin.clone();
+    @Test
+    public void assertClone() {
+        RdbmsConfiguration origin = new RdbmsConfiguration();
+        RdbmsConfiguration clone = RdbmsConfiguration.clone(origin);
+        assertTrue(origin.equals(clone));
+        origin.setUsername("root");
+        assertFalse(origin.equals(clone));
     }
 }

@@ -15,38 +15,25 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.sync.core;
-
-import lombok.Data;
-import lombok.SneakyThrows;
+package info.avalon566.shardingscaling.exception;
 
 /**
- * Rdbms configuration.
- * @author avalon566
+ * Synchronize task execute exception.
+ *
+ * @author yangyi
  */
-@Data
-public class RdbmsConfiguration implements Cloneable {
-
-    private String className;
-
-    private String jdbcUrl;
-
-    private String username;
-
-    private String password;
-
-    private String tableName;
-
-    private String whereCondition;
+public final class SyncExecuteException extends RuntimeException {
     
-    /**
-     * Clone to new rdbms configuration.
-     *
-     * @param origin origin rdbms configuration
-     * @return new rdbms configuration
-     */
-    @SneakyThrows
-    public static RdbmsConfiguration clone(final RdbmsConfiguration origin) {
-        return (RdbmsConfiguration) origin.clone();
+    public SyncExecuteException(final String message) {
+        super(message);
     }
+    
+    public SyncExecuteException(final Throwable cause) {
+        super(cause);
+    }
+    
+    public SyncExecuteException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+    
 }

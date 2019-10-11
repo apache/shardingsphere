@@ -17,6 +17,7 @@
 
 package info.avalon566.shardingscaling.job;
 
+import info.avalon566.shardingscaling.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.job.config.SyncConfiguration;
 import info.avalon566.shardingscaling.job.schedule.Event;
 import info.avalon566.shardingscaling.job.schedule.EventType;
@@ -25,15 +26,15 @@ import info.avalon566.shardingscaling.sync.core.SyncExecutor;
 import info.avalon566.shardingscaling.sync.core.Writer;
 import info.avalon566.shardingscaling.sync.mysql.MySQLJdbcReader;
 import info.avalon566.shardingscaling.sync.mysql.MySQLWriter;
-import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Table slice sync job.
+ *
  * @author avalon566
+ * @author yangyi
  */
 public class TableSliceSyncJob {
 
@@ -49,12 +50,12 @@ public class TableSliceSyncJob {
     }
 
     /**
-     * Run.
+     * Run synchronize task.
      */
     public void run() {
-        var reader = new MySQLJdbcReader(syncConfiguration.getReaderConfiguration());
-        var writer = new MySQLWriter(syncConfiguration.getWriterConfiguration());
-        final var executor = new SyncExecutor(reader, Arrays.<Writer>asList(writer));
+        MySQLJdbcReader reader = new MySQLJdbcReader(syncConfiguration.getReaderConfiguration());
+        MySQLWriter writer = new MySQLWriter(syncConfiguration.getWriterConfiguration());
+        final SyncExecutor executor = new SyncExecutor(reader, Collections.<Writer>singletonList(writer));
         executor.run();
         new Thread(new Runnable() {
             @Override
@@ -63,7 +64,7 @@ public class TableSliceSyncJob {
                     executor.waitFinish();
                     LOGGER.info("{} table slice sync finish", syncConfiguration.getReaderConfiguration().getTableName());
                     reporter.report(new Event(EventType.FINISHED));
-                } catch (Exception ex) {
+                } catch (SyncExecuteException ex) {
                     LOGGER.info("{} table slice sync exception exit", syncConfiguration.getReaderConfiguration().getTableName());
                     reporter.report(new Event(EventType.FINISHED));
                 }

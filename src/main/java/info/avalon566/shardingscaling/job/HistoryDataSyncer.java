@@ -19,19 +19,21 @@ package info.avalon566.shardingscaling.job;
 
 import info.avalon566.shardingscaling.job.config.SyncConfiguration;
 import info.avalon566.shardingscaling.job.config.SyncType;
+import info.avalon566.shardingscaling.job.schedule.Event;
 import info.avalon566.shardingscaling.job.schedule.EventType;
 import info.avalon566.shardingscaling.job.schedule.Reporter;
 import info.avalon566.shardingscaling.job.schedule.standalone.InProcessScheduler;
+import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
 import info.avalon566.shardingscaling.sync.jdbc.DbMetaDataUtil;
 import info.avalon566.shardingscaling.sync.mysql.MySQLJdbcReader;
 import lombok.extern.slf4j.Slf4j;
-import lombok.var;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * History data syncer.
+ *
  * @author avalon566
  */
 @Slf4j
@@ -47,8 +49,8 @@ public class HistoryDataSyncer {
      * Run.
      */
     public final void run() {
-        var configs = split(syncConfiguration);
-        var reporter = new InProcessScheduler().schedule(configs);
+        List<SyncConfiguration> configs = split(syncConfiguration);
+        Reporter reporter = new InProcessScheduler().schedule(configs);
         waitSlicesFinished(configs, reporter);
     }
 
@@ -56,21 +58,21 @@ public class HistoryDataSyncer {
         List<SyncConfiguration> syncConfigurations = new ArrayList<>();
         // split by table
         for (String tableName : new DbMetaDataUtil(syncConfiguration.getReaderConfiguration()).getTableNames()) {
-            var readerConfig = syncConfiguration.getReaderConfiguration().clone();
+            RdbmsConfiguration readerConfig = RdbmsConfiguration.clone(syncConfiguration.getReaderConfiguration());
             readerConfig.setTableName(tableName);
             // split by primary key range
-            for (var sliceConfig : new MySQLJdbcReader(readerConfig).split(syncConfiguration.getConcurrency())) {
+            for (RdbmsConfiguration sliceConfig : new MySQLJdbcReader(readerConfig).split(syncConfiguration.getConcurrency())) {
                 syncConfigurations.add(new SyncConfiguration(SyncType.TableSlice, syncConfiguration.getConcurrency(),
-                        sliceConfig, syncConfiguration.getWriterConfiguration().clone()));
+                        sliceConfig, RdbmsConfiguration.clone(syncConfiguration.getWriterConfiguration())));
             }
         }
         return syncConfigurations;
     }
 
     private void waitSlicesFinished(final List<SyncConfiguration> syncConfigurations, final Reporter reporter) {
-        var counter = 0;
+        int counter = 0;
         while (true) {
-            var event = reporter.consumeEvent();
+            Event event = reporter.consumeEvent();
             if (EventType.FINISHED == event.getEventType()) {
                 counter++;
             }

@@ -36,6 +36,7 @@ import java.util.concurrent.ExecutionException;
  * Database meta util.
  *
  * @author avalon566
+ * @author yangyi
  */
 @Slf4j
 public final class DbMetaDataUtil {
@@ -131,7 +132,7 @@ public final class DbMetaDataUtil {
      * @param tableName table name
      * @return list of column meta data
      */
-    public List<ColumnMetaData> getColumNames(final String tableName) {
+    public List<ColumnMetaData> getColumnNames(final String tableName) {
         try {
             return cmdCache.get(tableName);
         } catch (ExecutionException e) {

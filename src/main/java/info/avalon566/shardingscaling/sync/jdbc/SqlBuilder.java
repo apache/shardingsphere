@@ -22,19 +22,15 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import info.avalon566.shardingscaling.sync.core.RdbmsConfiguration;
 import lombok.var;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.concurrent.ExecutionException;
 
 /**
  * Sql builder.
+ *
  * @author avalon566
  */
 public final class SqlBuilder {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SqlBuilder.class);
-
+    
     private static final String LEFT_ESCAPE_QUOTE = "`";
 
     private static final String RIGHT_ESCAPE_QUOTE = "`";
@@ -110,7 +106,7 @@ public final class SqlBuilder {
     }
 
     private String buildInsertSqlInternal(final String tableName) {
-        var metaData = dbMetaDataUtil.getColumNames(tableName);
+        var metaData = dbMetaDataUtil.getColumnNames(tableName);
         var columns = "";
         var holder = "";
         for (int i = 0; i < metaData.size(); i++) {

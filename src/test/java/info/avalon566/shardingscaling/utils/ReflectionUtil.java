@@ -21,6 +21,15 @@ import java.lang.reflect.Field;
 
 public class ReflectionUtil {
     
+    /**
+     * Get field from class.
+     *
+     * @param targetClass target class
+     * @param fieldName field name
+     * @param isDeclared is declared
+     * @return {@link Field}
+     * @throws NoSuchFieldException no such field exception
+     */
     public static Field getFieldFromClass(final Class<?> targetClass, final String fieldName, final boolean isDeclared) throws NoSuchFieldException {
         Field targetField = null;
         if (isDeclared) {
@@ -34,6 +43,17 @@ public class ReflectionUtil {
         return targetField;
     }
     
+    /**
+     * Get field value from instance target object.
+     *
+     * @param target target object
+     * @param fieldName field name
+     * @param valueClass expected value class
+     * @param <T> expected value class
+     * @return target filed value
+     * @throws NoSuchFieldException no such field exception
+     * @throws IllegalAccessException illegal access exception
+     */
     public static <T> T getFieldValueFromClass(final Object target, final String fieldName, final Class<T> valueClass) throws NoSuchFieldException, IllegalAccessException {
         Field field = getFieldFromClass(target.getClass(), fieldName, true);
         Object value = field.get(target);
@@ -46,6 +66,15 @@ public class ReflectionUtil {
         throw new ClassCastException("field " + fieldName + " is " + target.getClass().getName() + " can cast to " + valueClass.getName());
     }
     
+    /**
+     * Set value to target object field.
+     *
+     * @param target target object
+     * @param fieldName field name
+     * @param value new value
+     * @throws NoSuchFieldException no such field exception
+     * @throws IllegalAccessException illegal access exception
+     */
     public static void setFieldValueToClass(final Object target, final String fieldName, final Object value) throws NoSuchFieldException, IllegalAccessException {
         Field field = getFieldFromClass(target.getClass(), fieldName, true);
         field.set(target, value);
