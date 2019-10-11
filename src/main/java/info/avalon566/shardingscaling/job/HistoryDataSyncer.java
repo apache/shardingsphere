@@ -63,7 +63,7 @@ public class HistoryDataSyncer {
             // split by primary key range
             for (RdbmsConfiguration sliceConfig : new MySQLJdbcReader(readerConfig).split(syncConfiguration.getConcurrency())) {
                 syncConfigurations.add(new SyncConfiguration(SyncType.TableSlice, syncConfiguration.getConcurrency(),
-                        sliceConfig, RdbmsConfiguration.clone(syncConfiguration.getReaderConfiguration())));
+                        sliceConfig, RdbmsConfiguration.clone(syncConfiguration.getWriterConfiguration())));
             }
         }
         return syncConfigurations;
