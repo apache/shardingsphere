@@ -23,7 +23,7 @@ dataSource: !!com.zaxxer.hikari.HikariDataSource
 
 encryptRule:
   tables:
-    t_encrypt:
+    t_cipher:
       columns:
         encrypt_col_1:
           cipherColumn: cipher_col_1
