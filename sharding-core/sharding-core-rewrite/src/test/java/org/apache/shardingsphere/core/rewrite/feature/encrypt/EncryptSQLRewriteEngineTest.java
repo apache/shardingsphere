@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.feature.encrypt;
 
-import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
@@ -32,15 +29,18 @@ import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.core.rewrite.engine.impl.DefaultSQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlRootEncryptRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -58,60 +58,18 @@ public final class EncryptSQLRewriteEngineTest {
     private SQLParseEngine parseEngine;
     
     @Before
-    public void setUp() {
-        encryptRule = new EncryptRule(createEncryptRuleConfiguration());
+    public void setUp() throws IOException {
+        encryptRule = createEncryptRule();
         parametersOfEqual = Arrays.<Object>asList(1, 2);
         parametersOfIn = Arrays.<Object>asList(1, 2, 3, 4);
         parseEngine = new SQLParseEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
     }
     
-    private EncryptRuleConfiguration createEncryptRuleConfiguration() {
-        EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("test", new Properties());
-        EncryptorRuleConfiguration encryptorQueryConfig = new EncryptorRuleConfiguration("assistedTest", new Properties());
-        EncryptRuleConfiguration result = new EncryptRuleConfiguration();
-        result.getEncryptors().put("test", encryptorConfig);
-        result.getEncryptors().put("assistedTest", encryptorQueryConfig);
-        result.getTables().put("t_encrypt", createEncryptTableConfig1());
-        result.getTables().put("t_query_encrypt", createEncryptTableConfig2());
-        result.getTables().put("t_plain_encrypt", createEncryptTableConfig3());
-        result.getTables().put("t_plain_query", createEncryptTableConfig4());
-        return result;
-    }
-    
-    private EncryptTableRuleConfiguration createEncryptTableConfig1() {
-        EncryptColumnRuleConfiguration columnConfig1 = new EncryptColumnRuleConfiguration(null, "col1", null, "test");
-        EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration(null, "col2", null, "test");
-        Map<String, EncryptColumnRuleConfiguration> columns1 = new LinkedHashMap<>();
-        columns1.put("col1", columnConfig1);
-        columns1.put("col2", columnConfig2);
-        return new EncryptTableRuleConfiguration(columns1);
-    }
-    
-    private EncryptTableRuleConfiguration createEncryptTableConfig2() {
-        EncryptColumnRuleConfiguration columnConfig1 = new EncryptColumnRuleConfiguration(null, "col1", "query1", "assistedTest");
-        EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration(null, "col2", "query2", "assistedTest");
-        Map<String, EncryptColumnRuleConfiguration> columns2 = new LinkedHashMap<>();
-        columns2.put("col1", columnConfig1);
-        columns2.put("col2", columnConfig2);
-        return new EncryptTableRuleConfiguration(columns2);
-    }
-    
-    private EncryptTableRuleConfiguration createEncryptTableConfig3() {
-        EncryptColumnRuleConfiguration columnConfig1 = new EncryptColumnRuleConfiguration("plain1", "col1", null, "test");
-        EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration("plain2", "col2", null, "test");
-        Map<String, EncryptColumnRuleConfiguration> columns2 = new LinkedHashMap<>();
-        columns2.put("col3", columnConfig1);
-        columns2.put("col4", columnConfig2);
-        return new EncryptTableRuleConfiguration(columns2);
-    }
-    
-    private EncryptTableRuleConfiguration createEncryptTableConfig4() {
-        EncryptColumnRuleConfiguration columnConfig1 = new EncryptColumnRuleConfiguration("plain1", "col1", "query1", "assistedTest");
-        EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration("plain2", "col2", "query2", "assistedTest");
-        Map<String, EncryptColumnRuleConfiguration> columns2 = new LinkedHashMap<>();
-        columns2.put("col3", columnConfig1);
-        columns2.put("col4", columnConfig2);
-        return new EncryptTableRuleConfiguration(columns2);
+    private EncryptRule createEncryptRule() throws IOException {
+        URL url = EncryptSQLRewriteEngineTest.class.getClassLoader().getResource("yaml/encrypt-rewrite-rule.yaml");
+        Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
+        YamlRootEncryptRuleConfiguration yamlEncryptConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootEncryptRuleConfiguration.class);
+        return new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(yamlEncryptConfig.getEncryptRule()));
     }
 
     @Test

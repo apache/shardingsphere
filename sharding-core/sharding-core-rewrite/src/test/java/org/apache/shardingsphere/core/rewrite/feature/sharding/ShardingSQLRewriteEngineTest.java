@@ -110,7 +110,7 @@ public final class ShardingSQLRewriteEngineTest {
     }
     
     private ShardingRule createShardingRule() throws IOException {
-        URL url = ShardingSQLRewriteEngineTest.class.getClassLoader().getResource("yaml/rewrite-rule.yaml");
+        URL url = ShardingSQLRewriteEngineTest.class.getClassLoader().getResource("yaml/sharding-rewrite-rule.yaml");
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         YamlRootShardingConfiguration yamlShardingConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class);
         return new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(yamlShardingConfig.getShardingRule()), yamlShardingConfig.getDataSources().keySet());
