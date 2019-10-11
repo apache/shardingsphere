@@ -98,9 +98,9 @@ public final class EncryptSQLRewriteEngineTest {
     
     @Test
     public void assertSelectWithPlaceholderWithQueryEncrypt() {
-        String sql = "SELECT * FROM t_plain_query WHERE col3 in (?, ?) and col4 in (?, ?)";
+        String sql = "SELECT * FROM t_cipher_assisted_query_plain WHERE encrypt_col_1 in (?, ?) and encrypt_col_2 in (?, ?)";
         SQLRewriteResult actual = getSQLRewriteResult(sql, parametersOfIn, true);
-        assertThat(actual.getSql(), is("SELECT * FROM t_plain_query WHERE query1 IN (?, ?) and query2 IN (?, ?)"));
+        assertThat(actual.getSql(), is("SELECT * FROM t_cipher_assisted_query_plain WHERE assisted_query_col_1 IN (?, ?) and assisted_query_col_2 IN (?, ?)"));
         assertThat(actual.getParameters().size(), is(4));
         assertThat(actual.getParameters().get(0), is((Object) "assistedEncryptValue"));
         assertThat(actual.getParameters().get(1), is((Object) "assistedEncryptValue"));
@@ -110,9 +110,9 @@ public final class EncryptSQLRewriteEngineTest {
     
     @Test
     public void assertSelectWithPlaceholderWithQueryEncryptWithLogicColumn() {
-        String sql = "SELECT col3 as alias FROM t_plain_query WHERE col3 in (?, ?) and col4 in (?, ?)";
+        String sql = "SELECT encrypt_col_1 as alias FROM t_cipher_assisted_query_plain WHERE encrypt_col_1 in (?, ?) and encrypt_col_2 in (?, ?)";
         SQLRewriteResult actual = getSQLRewriteResult(sql, parametersOfIn, true);
-        assertThat(actual.getSql(), is("SELECT col1 as alias FROM t_plain_query WHERE query1 IN (?, ?) and query2 IN (?, ?)"));
+        assertThat(actual.getSql(), is("SELECT cipher_col_1 as alias FROM t_cipher_assisted_query_plain WHERE assisted_query_col_1 IN (?, ?) and assisted_query_col_2 IN (?, ?)"));
         assertThat(actual.getParameters().size(), is(4));
         assertThat(actual.getParameters().get(0), is((Object) "assistedEncryptValue"));
         assertThat(actual.getParameters().get(1), is((Object) "assistedEncryptValue"));
@@ -122,9 +122,9 @@ public final class EncryptSQLRewriteEngineTest {
     
     @Test
     public void assertSelectWithPlaceholderWithQueryPlainEncrypt() {
-        String sql = "SELECT * FROM t_plain_query WHERE col3 = ? or col4 = ?";
+        String sql = "SELECT * FROM t_cipher_assisted_query_plain WHERE encrypt_col_1 = ? or encrypt_col_2 = ?";
         SQLRewriteResult actual = getSQLRewriteResult(sql, parametersOfEqual, false);
-        assertThat(actual.getSql(), is("SELECT * FROM t_plain_query WHERE plain1 = ? or plain2 = ?"));
+        assertThat(actual.getSql(), is("SELECT * FROM t_cipher_assisted_query_plain WHERE plain_col_1 = ? or plain_col_2 = ?"));
         assertThat(actual.getParameters().size(), is(2));
         assertThat(actual.getParameters().get(0), is((Object) 1));
         assertThat(actual.getParameters().get(1), is((Object) 2));
@@ -164,9 +164,10 @@ public final class EncryptSQLRewriteEngineTest {
     
     @Test
     public void assertDeleteWithoutPlaceholderWithQueryPlainEncrypt() {
-        String sql = "DELETE FROM t_plain_query WHERE col3 = 1 or col4 IN (2,3,4)";
+        String sql = "DELETE FROM t_cipher_assisted_query_plain WHERE encrypt_col_1 = 1 or encrypt_col_2 IN (2,3,4)";
         SQLRewriteResult actual = getSQLRewriteResult(sql, Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("DELETE FROM t_plain_query WHERE query1 = 'assistedEncryptValue' or query2 IN ('assistedEncryptValue', 'assistedEncryptValue', 'assistedEncryptValue')"));
+        assertThat(actual.getSql(), is("DELETE FROM t_cipher_assisted_query_plain "
+                + "WHERE assisted_query_col_1 = 'assistedEncryptValue' or assisted_query_col_2 IN ('assistedEncryptValue', 'assistedEncryptValue', 'assistedEncryptValue')"));
         assertTrue(actual.getParameters().isEmpty());
     }
     
@@ -199,9 +200,9 @@ public final class EncryptSQLRewriteEngineTest {
     
     @Test
     public void assertUpdateWithPlaceholderWithQueryPlainEncrypt() {
-        String sql = "UPDATE t_plain_query set col3 = ? where col4 = ?";
+        String sql = "UPDATE t_cipher_assisted_query_plain set encrypt_col_1 = ? where encrypt_col_2 = ?";
         SQLRewriteResult actual = getSQLRewriteResult(sql, parametersOfEqual, true);
-        assertThat(actual.getSql(), is("UPDATE t_plain_query set col1 = ?, query1 = ?, plain1 = ? where query2 = ?"));
+        assertThat(actual.getSql(), is("UPDATE t_cipher_assisted_query_plain set cipher_col_1 = ?, assisted_query_col_1 = ?, plain_col_1 = ? where assisted_query_col_2 = ?"));
         assertThat(actual.getParameters().size(), is(4));
         assertThat(actual.getParameters().get(0), is((Object) "encryptValue"));
         assertThat(actual.getParameters().get(1), is((Object) "assistedEncryptValue"));
@@ -211,10 +212,11 @@ public final class EncryptSQLRewriteEngineTest {
     
     @Test
     public void assertUpdateMultipleEncryptColumnsWithPlaceholder() {
-        String sql = "UPDATE t_plain_query set col3 = ?, col4 = ?, other_col1 = ? where other_col2 = ?";
+        String sql = "UPDATE t_cipher_assisted_query_plain set encrypt_col_1 = ?, encrypt_col_2 = ?, other_col_1 = ? where other_col_2 = ?";
         List<Object> parameters = Arrays.<Object>asList(1, 2, "update_regular", "query_regular");
         SQLRewriteResult actual = getSQLRewriteResult(sql, parameters, true);
-        assertThat(actual.getSql(), is("UPDATE t_plain_query set col1 = ?, query1 = ?, plain1 = ?, col2 = ?, query2 = ?, plain2 = ?, other_col1 = ? where other_col2 = ?"));
+        assertThat(actual.getSql(), is("UPDATE t_cipher_assisted_query_plain set cipher_col_1 = ?, "
+                + "assisted_query_col_1 = ?, plain_col_1 = ?, cipher_col_2 = ?, assisted_query_col_2 = ?, plain_col_2 = ?, other_col_1 = ? where other_col_2 = ?"));
         assertThat(actual.getParameters().size(), is(8));
         assertThat(actual.getParameters().get(0), is((Object) "encryptValue"));
         assertThat(actual.getParameters().get(1), is((Object) "assistedEncryptValue"));
@@ -259,9 +261,9 @@ public final class EncryptSQLRewriteEngineTest {
     
     @Test
     public void assertInsertWithValuesWithoutPlaceholderWithQueryPlainEncrypt() {
-        String sql = "INSERT INTO t_plain_query(col3, col4) VALUES (1, 2), (3, 4)";
+        String sql = "INSERT INTO t_cipher_assisted_query_plain(encrypt_col_1, encrypt_col_2) VALUES (1, 2), (3, 4)";
         SQLRewriteResult actual = getSQLRewriteResult(sql, Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("INSERT INTO t_plain_query(col1, col2, query1, plain1, query2, plain2) " 
+        assertThat(actual.getSql(), is("INSERT INTO t_cipher_assisted_query_plain(cipher_col_1, cipher_col_2, assisted_query_col_1, plain_col_1, assisted_query_col_2, plain_col_2) " 
                 + "VALUES ('encryptValue', 'encryptValue', 'assistedEncryptValue', 1, 'assistedEncryptValue', 2), " 
                 + "('encryptValue', 'encryptValue', 'assistedEncryptValue', 3, 'assistedEncryptValue', 4)"));
         assertTrue(actual.getParameters().isEmpty());
@@ -297,9 +299,10 @@ public final class EncryptSQLRewriteEngineTest {
     
     @Test
     public void assertInsertWithSetWithPlaceholderWithQueryPlainEncrypt() {
-        String sql = "INSERT INTO t_plain_query SET col3 = ?, col4 = ?";
+        String sql = "INSERT INTO t_cipher_assisted_query_plain SET encrypt_col_1 = ?, encrypt_col_2 = ?";
         SQLRewriteResult actual = getSQLRewriteResult(sql, parametersOfEqual, false);
-        assertThat(actual.getSql(), is("INSERT INTO t_plain_query SET col1 = ?, query1 = ?, plain1 = ?, col2 = ?, query2 = ?, plain2 = ?"));
+        assertThat(actual.getSql(), is("INSERT INTO t_cipher_assisted_query_plain SET "
+                + "cipher_col_1 = ?, assisted_query_col_1 = ?, plain_col_1 = ?, cipher_col_2 = ?, assisted_query_col_2 = ?, plain_col_2 = ?"));
         assertThat(actual.getParameters().size(), is(6));
         assertThat(actual.getParameters().get(0), is((Object) "encryptValue"));
         assertThat(actual.getParameters().get(1), is((Object) "assistedEncryptValue"));

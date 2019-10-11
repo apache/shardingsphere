@@ -51,17 +51,17 @@ encryptRule:
           cipherColumn: cipher_col_2
           plainColumn: plain_col_2
           encryptor: test
-    t_plain_query:
+    t_cipher_assisted_query_plain:
       columns:
-        col3:
-          cipherColumn: col1
-          assistedQueryColumn: query1
-          plainColumn: plain1
+        encrypt_col_1:
+          cipherColumn: cipher_col_1
+          assistedQueryColumn: assisted_query_col_1
+          plainColumn: plain_col_1
           encryptor: assist_test
-        col4:
-          cipherColumn: col2
-          assistedQueryColumn: query2
-          plainColumn: plain2
+        encrypt_col_2:
+          cipherColumn: cipher_col_2
+          assistedQueryColumn: assisted_query_col_2
+          plainColumn: plain_col_2
           encryptor: assist_test
   encryptors:
     test:
