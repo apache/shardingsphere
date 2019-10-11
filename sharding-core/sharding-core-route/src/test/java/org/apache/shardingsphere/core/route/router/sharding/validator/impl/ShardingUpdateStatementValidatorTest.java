@@ -42,8 +42,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.google.common.collect.Lists;
-
 @RunWith(MockitoJUnitRunner.class)
 public final class ShardingUpdateStatementValidatorTest {
 
