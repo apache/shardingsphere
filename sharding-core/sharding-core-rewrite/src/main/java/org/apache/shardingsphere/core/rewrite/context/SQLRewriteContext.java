@@ -19,15 +19,16 @@ package org.apache.shardingsphere.core.rewrite.context;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.parse.sql.statement.generic.WhereSegmentAvailable;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.sql.SQLBuilder;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerators;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.builder.DefaultTokenGeneratorBuilder;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerator;
 
 import java.util.Collection;
 import java.util.List;
@@ -62,7 +63,12 @@ public final class SQLRewriteContext {
         this.parameters = parameters;
         addSQLTokenGenerators(new DefaultTokenGeneratorBuilder().getSQLTokenGenerators());
         parameterBuilder = sqlStatementContext instanceof InsertSQLStatementContext
-                ? new GroupedParameterBuilder(((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) : new StandardParameterBuilder(parameters);
+                ? new GroupedParameterBuilder(((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) : new StandardParameterBuilder(parameters, getParameterStartIndex());
+    }
+    
+    private Integer getParameterStartIndex() {
+        return sqlStatementContext.getSqlStatement() instanceof WhereSegmentAvailable && ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().isPresent()
+                ? ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().get().getParameterStartIndex() : null;
     }
     
     /**

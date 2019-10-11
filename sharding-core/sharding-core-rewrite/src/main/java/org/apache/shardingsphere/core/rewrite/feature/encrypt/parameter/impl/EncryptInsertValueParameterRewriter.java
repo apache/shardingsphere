@@ -87,11 +87,10 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
             Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, encryptLogicColumnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            parameterBuilder.getAddedIndexAndParameters().put(parameterSize + parameterBuilder.getAddedIndexAndParameters().size(), 
-                    ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()));
+            parameterBuilder.getAddedParameters().add(((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()));
         }
         if (encryptRule.findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
-            parameterBuilder.getAddedIndexAndParameters().put(parameterSize + parameterBuilder.getAddedIndexAndParameters().size(), originalValue);
+            parameterBuilder.getAddedParameters().add(originalValue);
         }
     }
 }

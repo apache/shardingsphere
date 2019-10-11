@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.core.rewrite.parameter.builder.impl;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,12 +35,15 @@ import java.util.Map.Entry;
  * @author panjuan
  */
 @RequiredArgsConstructor
+@AllArgsConstructor
 public final class StandardParameterBuilder implements ParameterBuilder {
     
     private final List<Object> originalParameters;
     
+    private Integer whereClauseParameterStartIndex;
+    
     @Getter
-    private final Map<Integer, Object> addedIndexAndParameters = new LinkedHashMap<>();
+    private final Collection<Object> addedParameters = new LinkedList<>();
     
     @Getter
     private final Map<Integer, Object> replacedIndexAndParameters = new LinkedHashMap<>();
@@ -49,13 +54,10 @@ public final class StandardParameterBuilder implements ParameterBuilder {
         for (Entry<Integer, Object> entry : replacedIndexAndParameters.entrySet()) {
             result.set(entry.getKey(), entry.getValue());
         }
-        for (Entry<Integer, Object> entry : addedIndexAndParameters.entrySet()) {
-            int index = entry.getKey();
-            if (index < result.size()) {
-                result.add(index, entry.getValue());
-            } else {
-                result.add(entry.getValue());
-            }
+        if (null == whereClauseParameterStartIndex) {
+            result.addAll(addedParameters);
+        } else {
+            result.addAll(whereClauseParameterStartIndex, addedParameters);
         }
         return result;
     }

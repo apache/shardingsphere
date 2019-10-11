@@ -47,7 +47,7 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriter implements P
             for (List<Object> each : ((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) {
                 Comparable<?> generatedValue = generatedValues.next();
                 if (!each.isEmpty()) {
-                    ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(count).getAddedIndexAndParameters().put(each.size(), generatedValue);
+                    ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(count).getAddedParameters().add(generatedValue);
                 }
                 count++;
             }
