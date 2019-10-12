@@ -27,7 +27,7 @@ import java.sql.SQLException;
  * @author zhangyonglun
  */
 public interface PostgreSQLBinaryProtocolValue {
-    
+
     /**
      * Get column length.
      *
@@ -35,32 +35,22 @@ public interface PostgreSQLBinaryProtocolValue {
      * @return column length
      */
     int getColumnLength(Object value);
-    
+
     /**
      * Read binary protocol value.
      *
      * @param payload payload operation for PostgreSQL packet
+     * @param len     need read length
      * @return binary value result
      * @throws SQLException SQL exception
      */
-    Object read(PostgreSQLPacketPayload payload) throws SQLException;
-    
-    /**
-     * Read binary protocol value.
-     *
-     * @param payload payload operation for PostgreSQL packet
-     * @param len need read length
-     * @return binary value result
-     * @throws SQLException SQL exception
-     */
-    default Object read(PostgreSQLPacketPayload payload ,int len) throws SQLException{
-        return  read(payload);
-    }
+    Object read(PostgreSQLPacketPayload payload, int len) throws SQLException;
+
     /**
      * Write binary protocol value.
      *
      * @param payload payload operation for PostgreSQL packet
-     * @param value value to be written
+     * @param value   value to be written
      */
     void write(PostgreSQLPacketPayload payload, Object value);
 }

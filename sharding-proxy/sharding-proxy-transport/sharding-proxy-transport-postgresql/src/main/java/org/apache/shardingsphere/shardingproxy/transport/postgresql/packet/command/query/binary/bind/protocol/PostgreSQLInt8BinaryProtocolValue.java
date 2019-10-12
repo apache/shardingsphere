@@ -23,21 +23,21 @@ import java.math.BigDecimal;
 
 /**
  * Binary protocol value for int8 for PostgreSQL.
- * 
+ *
  * @author zhangyonglun
  */
 public final class PostgreSQLInt8BinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
-    
+
     @Override
     public int getColumnLength(final Object value) {
         return 8;
     }
-    
+
     @Override
-    public Object read(final PostgreSQLPacketPayload payload) {
+    public Object read(final PostgreSQLPacketPayload payload, int length) {
         return payload.readInt8();
     }
-    
+
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
         payload.writeInt8(value instanceof BigDecimal ? ((BigDecimal) value).longValue() : (Long) value);

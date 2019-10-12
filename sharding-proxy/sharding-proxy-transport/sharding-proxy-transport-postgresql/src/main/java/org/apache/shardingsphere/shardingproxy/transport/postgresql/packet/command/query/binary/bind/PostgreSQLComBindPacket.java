@@ -41,15 +41,15 @@ import java.util.List;
 @Getter
 @ToString
 public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
-    
+
     private final String statementId;
-    
+
     private final String sql;
-    
+
     private final List<Object> parameters;
-    
+
     private final boolean binaryRowData;
-    
+
     public PostgreSQLComBindPacket(final PostgreSQLPacketPayload payload, final int connectionId) throws SQLException {
         payload.readInt4();
         payload.readStringNul();
@@ -67,22 +67,22 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
             payload.readInt2();
         }
     }
-    
+
     private List<Object> getParameters(final PostgreSQLPacketPayload payload, final List<PostgreSQLBinaryStatementParameterType> parameterTypes) throws SQLException {
         int parametersCount = payload.readInt2();
         List<Object> result = new ArrayList<>(parametersCount);
         for (int parameterIndex = 0; parameterIndex < parametersCount; parameterIndex++) {
-           int length= payload.readInt4();
-           PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(parameterTypes.get(parameterIndex).getColumnType());
-           result.add(binaryProtocolValue.read(payload,length));
+            int length = payload.readInt4();
+            PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(parameterTypes.get(parameterIndex).getColumnType());
+            result.add(binaryProtocolValue.read(payload, length));
         }
         return result;
     }
-    
+
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
     }
-    
+
     @Override
     public char getMessageType() {
         return PostgreSQLCommandPacketType.BIND.getValue();

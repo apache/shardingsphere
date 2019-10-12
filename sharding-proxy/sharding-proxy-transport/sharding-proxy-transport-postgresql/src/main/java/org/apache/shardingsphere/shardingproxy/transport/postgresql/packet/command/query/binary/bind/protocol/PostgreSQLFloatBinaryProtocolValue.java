@@ -25,17 +25,17 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
  * @author zhangyonglun
  */
 public final class PostgreSQLFloatBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
-    
+
     @Override
     public int getColumnLength(final Object value) {
         return 4;
     }
-    
+
     @Override
-    public Object read(final PostgreSQLPacketPayload payload) {
+    public Object read(final PostgreSQLPacketPayload payload, int length) {
         return payload.getByteBuf().readFloat();
     }
-    
+
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
         payload.getByteBuf().writeFloat(Float.parseFloat(value.toString()));

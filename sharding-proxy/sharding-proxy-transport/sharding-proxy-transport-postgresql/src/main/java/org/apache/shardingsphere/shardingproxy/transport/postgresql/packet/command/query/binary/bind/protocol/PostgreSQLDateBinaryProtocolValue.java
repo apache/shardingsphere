@@ -35,7 +35,7 @@ public final class PostgreSQLDateBinaryProtocolValue implements PostgreSQLBinary
     }
     
     @Override
-    public Object read(final PostgreSQLPacketPayload payload) throws SQLException {
+    public Object read(final PostgreSQLPacketPayload payload, int length) throws SQLException {
         return payload.readInt8();
     }
     
