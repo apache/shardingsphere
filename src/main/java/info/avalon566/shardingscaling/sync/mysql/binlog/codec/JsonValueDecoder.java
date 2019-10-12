@@ -18,7 +18,6 @@
 package info.avalon566.shardingscaling.sync.mysql.binlog.codec;
 
 import io.netty.buffer.ByteBuf;
-import lombok.var;
 
 import java.io.Serializable;
 
@@ -44,7 +43,7 @@ public final class JsonValueDecoder {
     }
 
     private static void decodeValue(final int type, final int offset, final ByteBuf in, final StringBuilder out) {
-        var oldOffset = in.readerIndex();
+        int oldOffset = in.readerIndex();
         // set reader index to entry start position
         in.readerIndex(offset);
         try {
@@ -96,8 +95,8 @@ public final class JsonValueDecoder {
     private static void decodeJsonObject(final boolean isSmall, final ByteBuf in, final StringBuilder out) {
         out.append('{');
         int count = isSmall ? DataTypesCodec.readUnsignedInt2LE(in) : (int) DataTypesCodec.readUnsignedInt4LE(in);
-        var size = isSmall ? DataTypesCodec.readUnsignedInt2LE(in) : (int) DataTypesCodec.readUnsignedInt4LE(in);
-        var keys = new String[count];
+        int size = isSmall ? DataTypesCodec.readUnsignedInt2LE(in) : (int) DataTypesCodec.readUnsignedInt4LE(in);
+        String[] keys = new String[count];
         for (int i = 0; i < count; i++) {
             keys[i] = decodeKeyEntry(isSmall, in);
         }
@@ -110,8 +109,8 @@ public final class JsonValueDecoder {
 
     private static void decodeJsonArray(final boolean isSmall, final ByteBuf in, final StringBuilder out) {
         out.append('[');
-        var count = isSmall ? DataTypesCodec.readUnsignedInt2LE(in) : (int) DataTypesCodec.readUnsignedInt4LE(in);
-        var size = isSmall ? DataTypesCodec.readUnsignedInt2LE(in) : (int) DataTypesCodec.readUnsignedInt4LE(in);
+        int count = isSmall ? DataTypesCodec.readUnsignedInt2LE(in) : (int) DataTypesCodec.readUnsignedInt4LE(in);
+        int size = isSmall ? DataTypesCodec.readUnsignedInt2LE(in) : (int) DataTypesCodec.readUnsignedInt4LE(in);
         for (int i = 0; i < count; i++) {
             if (0 < i) {
                 out.append(',');
@@ -122,16 +121,16 @@ public final class JsonValueDecoder {
     }
 
     private static String decodeKeyEntry(final boolean isSmall, final ByteBuf in) {
-        var offset = isSmall ? DataTypesCodec.readUnsignedInt2LE(in) : (int) DataTypesCodec.readUnsignedInt4LE(in);
-        var length = DataTypesCodec.readUnsignedInt2LE(in);
-        var data = new byte[length];
+        int offset = isSmall ? DataTypesCodec.readUnsignedInt2LE(in) : (int) DataTypesCodec.readUnsignedInt4LE(in);
+        int length = DataTypesCodec.readUnsignedInt2LE(in);
+        byte[] data = new byte[length];
         in.getBytes(offset, data, 0, length);
         return new String(data);
     }
 
     private static void decodeValueEntry(final boolean isSmall, final ByteBuf in, final StringBuilder out) {
-        var type = DataTypesCodec.readUnsignedInt1(in);
-        var offsetOrInlinedValue = isSmall ? DataTypesCodec.readUnsignedInt2LE(in) : (int) DataTypesCodec.readUnsignedInt4LE(in);
+        int type = DataTypesCodec.readUnsignedInt1(in);
+        int offsetOrInlinedValue = isSmall ? DataTypesCodec.readUnsignedInt2LE(in) : (int) DataTypesCodec.readUnsignedInt4LE(in);
         switch (type) {
             case JsonValueTypes.SMALL_JSON_OBJECT:
             case JsonValueTypes.LARGE_JSON_OBJECT:
@@ -180,14 +179,14 @@ public final class JsonValueDecoder {
     }
 
     private static String decodeString(final ByteBuf in) {
-        var length = decodeDataLength(in);
+        int length = decodeDataLength(in);
         return DataTypesCodec.readFixedLengthString(length, in);
     }
 
     private static int decodeDataLength(final ByteBuf in) {
-        var length = 0;
+        int length = 0;
         for (int i = 0; ; i++) {
-            var data = DataTypesCodec.readUnsignedInt1(in);
+            int data = DataTypesCodec.readUnsignedInt1(in);
             length |= (data & 0x7f) << (7 * i);
             if (0 == (data & 0x80)) {
                 break;
