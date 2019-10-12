@@ -56,7 +56,7 @@ public final class EncryptAssignmentTokenGenerator implements CollectionSQLToken
     }
     
     private boolean isSetAssignmentStatement(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext.getSqlStatement() instanceof UpdateStatement 
+        return sqlStatementContext.getSqlStatement() instanceof UpdateStatement
                 || sqlStatementContext instanceof InsertSQLStatementContext && sqlStatementContext.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class).isPresent();
     }
     
@@ -66,7 +66,10 @@ public final class EncryptAssignmentTokenGenerator implements CollectionSQLToken
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         for (AssignmentSegment each : getSetAssignmentsSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
             if (encryptRule.findShardingEncryptor(tableName, each.getColumn().getName()).isPresent()) {
-                result.add(generateSQLToken(tableName, each));
+                Optional<EncryptAssignmentToken> sqlToken = generateSQLToken(tableName, each);
+                if (sqlToken.isPresent()) {
+                    result.add(sqlToken.get());
+                }
             }
         }
         return result;
@@ -81,9 +84,14 @@ public final class EncryptAssignmentTokenGenerator implements CollectionSQLToken
         return ((UpdateStatement) sqlStatement).getSetAssignment();
     }
     
-    private EncryptAssignmentToken generateSQLToken(final String tableName, final AssignmentSegment assignmentSegment) {
-        return assignmentSegment.getValue() instanceof ParameterMarkerExpressionSegment 
-                ? generateParameterSQLToken(tableName, assignmentSegment) : generateLiteralSQLToken(tableName, assignmentSegment);
+    private Optional<EncryptAssignmentToken> generateSQLToken(final String tableName, final AssignmentSegment assignmentSegment) {
+        if (assignmentSegment.getValue() instanceof ParameterMarkerExpressionSegment) {
+            return Optional.of(generateParameterSQLToken(tableName, assignmentSegment));
+        }
+        if (assignmentSegment.getValue() instanceof LiteralExpressionSegment) {
+            return Optional.of(generateLiteralSQLToken(tableName, assignmentSegment));
+        }
+        return Optional.absent();
     }
     
     private EncryptAssignmentToken generateParameterSQLToken(final String tableName, final AssignmentSegment assignmentSegment) {
