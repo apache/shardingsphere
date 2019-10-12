@@ -81,7 +81,7 @@ public class RowsEvent {
      * @param binlogContext binlog context
      * @param in buffer
      */
-    public void parsePaylod(final BinlogContext binlogContext, final ByteBuf in) {
+    public void parsePayload(final BinlogContext binlogContext, final ByteBuf in) {
         int columnsLength = (int) DataTypesCodec.readLengthCodedIntLE(in);
         columnsPresentBitmap = DataTypesCodec.readBitmap(columnsLength, in);
         if (EventTypes.UPDATE_ROWS_EVENT_V1 == binlogEventHeader.getTypeCode()
@@ -122,7 +122,7 @@ public class RowsEvent {
             case ColumnTypes.MYSQL_TYPE_LONG:
                 return decodeLong(columnDef.getMeta(), in);
             case ColumnTypes.MYSQL_TYPE_TINY:
-                return docodeTiny(columnDef.getMeta(), in);
+                return decodeTiny(columnDef.getMeta(), in);
             case ColumnTypes.MYSQL_TYPE_SHORT:
                 return decodeShort(columnDef.getMeta(), in);
             case ColumnTypes.MYSQL_TYPE_INT24:
@@ -202,7 +202,7 @@ public class RowsEvent {
         return DataTypesCodec.readUnsignedInt4LE(in);
     }
 
-    private Serializable docodeTiny(final int meta, final ByteBuf in) {
+    private Serializable decodeTiny(final int meta, final ByteBuf in) {
         return DataTypesCodec.readUnsignedInt1(in);
     }
 
