@@ -30,10 +30,9 @@ public final class PostgreSQLStringBinaryProtocolValue implements PostgreSQLBina
     public int getColumnLength(final Object value) {
         return value.toString().length();
     }
-
-
+    
     @Override
-    public Object read(PostgreSQLPacketPayload payload, int len) {
+    public Object read(final PostgreSQLPacketPayload payload, final int len) {
         byte[] result = new byte[len];
         payload.getByteBuf().readBytes(result);
         return new String(result);
