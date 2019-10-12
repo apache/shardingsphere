@@ -32,7 +32,7 @@ shardingRule:
     table_x:
       actualDataNodes: db${0..1}.table_x
       keyGenerator:
-        type: SNOWFLAKE
+        type: TEST
         column: id
         props:
           worker.id: 123

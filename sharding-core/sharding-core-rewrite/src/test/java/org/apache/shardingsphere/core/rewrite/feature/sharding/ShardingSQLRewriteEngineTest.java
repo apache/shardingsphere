@@ -108,6 +108,7 @@ public final class ShardingSQLRewriteEngineTest {
     private RoutingUnit createRoutingUnit() {
         RoutingUnit result = new RoutingUnit("db0");
         result.getTableUnits().add(new TableUnit("table_x", "table_1"));
+        result.getTableUnits().add(new TableUnit("table_y", "table_y"));
         result.getTableUnits().add(new TableUnit("table_w", "table_1"));
         return result;
     }
@@ -735,26 +736,9 @@ public final class ShardingSQLRewriteEngineTest {
     
     @Test
     public void assertRewriteTableTokenWithSchemaForInsert() {
-        // TODO case maybe incorrect
-//        SQLRewriteResult actual = getSQLRewriteResult("INSERT INTO sharding_db.table_x (order_id, user_id, status) values (1, 1, 'OK')", Collections.emptyList(), true);
-//        assertThat(actual.getSql(), is("INSERT INTO table_1 (order_id, user_id, status) values (1, 1, 'OK')"));
-//        assertThat(actual.getParameters(), is(Collections.emptyList()));
-        SQLRouteResult sqlRouteResult = createSQLRouteResultForTableTokenWithSchemaForInsert();
-        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sqlRouteResult, "INSERT INTO sharding_db.table_x (order_id, user_id, status) values (1, 1, 'OK')", Collections.emptyList());
-        assertThat(new ShardingSQLRewriteEngine(sqlRouteResult.getShardingConditions(), null, logicAndActualTables).rewrite(sqlRewriteContext).getSql(), 
-                is("INSERT INTO table_1 (order_id, user_id, status) values (1, 1, 'OK')"));
-    }
-    
-    private SQLRouteResult createSQLRouteResultForTableTokenWithSchemaForInsert() {
-        InsertStatement insertStatement = new InsertStatement();
-        insertStatement.getAllSQLSegments().add(new TableSegment(12, 30, "table_x"));
-        insertStatement.getColumns().add(new ColumnSegment(33, 41, "order_id"));
-        insertStatement.getColumns().add(new ColumnSegment(43, 50, "user_id"));
-        insertStatement.getColumns().add(new ColumnSegment(52, 58, "status"));
-        InsertSQLStatementContext insertSQLStatementContext = new InsertSQLStatementContext(null, Collections.emptyList(), insertStatement);
-        SQLRouteResult result = new SQLRouteResult(insertSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        result.setRoutingResult(new RoutingResult());
-        return result;
+        SQLRewriteResult actual = getSQLRewriteResult("INSERT INTO sharding_db.table_y (order_id, user_id, status) values (1, 1, 'OK')", Collections.emptyList(), true);
+        assertThat(actual.getSql(), is("INSERT INTO table_y (order_id, user_id, status) values (1, 1, 'OK')"));
+        assertThat(actual.getParameters(), is(Collections.emptyList()));
     }
     
     @Test
