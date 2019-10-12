@@ -33,6 +33,6 @@ public final class ExpressionConditionUtils {
      * @return true or false
      */
     public static boolean isNowExpression(final ExpressionSegment segment) {
-        return segment instanceof ComplexExpressionSegment && "now()".equals(((ComplexExpressionSegment) segment).getText().toLowerCase());
+        return segment instanceof ComplexExpressionSegment && "now()".equalsIgnoreCase(((ComplexExpressionSegment) segment).getText());
     }
 }
