@@ -229,16 +229,6 @@ public final class EncryptSQLRewriteEngineTest {
     }
     
     @Test
-    public void assertInsertWithValuesWithPlaceholderWithEncrypt() {
-        String sql = "INSERT INTO t_cipher(encrypt_1, encrypt_2) VALUES (?, ?), (3, 4)";
-        SQLRewriteResult actual = getSQLRewriteResult(sql, parametersOfEqual, true);
-        assertThat(actual.getSql(), is("INSERT INTO t_cipher(cipher_1, cipher_2) VALUES (?, ?), ('encryptValue', 'encryptValue')"));
-        assertThat(actual.getParameters().size(), is(2));
-        assertThat(actual.getParameters().get(0), is((Object) "encryptValue"));
-        assertThat(actual.getParameters().get(1), is((Object) "encryptValue"));
-    }
-    
-    @Test
     public void assertInsertWithValuesWithPlaceholderWithPlainEncrypt() {
         String sql = "INSERT INTO t_cipher_plain(encrypt_1, encrypt_2) VALUES (?, ?), (3, 4)";
         SQLRewriteResult actual = getSQLRewriteResult(sql, parametersOfEqual, true);
