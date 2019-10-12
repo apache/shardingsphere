@@ -24,6 +24,9 @@
   </div>
 </template>
 <script>
+export default {
+  name: 'Logo'
+}
 </script>
 <style lang="scss">
 .s-pro-components-sider-menu-index-logo {

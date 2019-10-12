@@ -19,10 +19,12 @@ package org.apache.shardingsphere.core.route.router.sharding.condition.generator
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.route.router.sharding.condition.Column;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.core.route.router.sharding.condition.generator.ConditionValue;
 import org.apache.shardingsphere.core.route.router.sharding.condition.generator.ConditionValueGenerator;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateInRightValue;
+import org.apache.shardingsphere.core.route.spi.SPITimeService;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
@@ -39,10 +41,15 @@ public final class ConditionValueInOperatorGenerator implements ConditionValueGe
     @Override
     public Optional<RouteValue> generate(final PredicateInRightValue predicateRightValue, final Column column, final List<Object> parameters) {
         List<Comparable> routeValues = new LinkedList<>();
+        SPITimeService timeService = new SPITimeService();
         for (ExpressionSegment each : predicateRightValue.getSqlExpressions()) {
             Optional<Comparable> routeValue = new ConditionValue(each, parameters).getValue();
             if (routeValue.isPresent()) {
                 routeValues.add(routeValue.get());
+                continue;
+            }
+            if (ExpressionConditionUtils.isNowExpression(each)) {
+                routeValues.add(timeService.getTime());
             }
         }
         return routeValues.isEmpty() ? Optional.<RouteValue>absent() : Optional.<RouteValue>of(new ListRouteValue<>(column.getName(), column.getTableName(), routeValues));

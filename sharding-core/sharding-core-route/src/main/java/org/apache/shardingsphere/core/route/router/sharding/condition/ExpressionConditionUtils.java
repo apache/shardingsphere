@@ -14,13 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { expect } from 'chai'
-import { shallowMount } from '@vue/test-utils'
-import Logo from '../../../src/components/Logo/index.vue'
 
-describe('Logo/index.vue', () => {
-  it('Logo Does the component exist？', () => {
-    const wrapper = shallowMount(Logo)
-    expect(wrapper.isVueInstance()).to.be.true
-  })
-})
+package org.apache.shardingsphere.core.route.router.sharding.condition;
+
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
+
+/**
+ * Expression judgment tool for route.
+ *
+ * @author chenchuangliu
+ */
+public final class ExpressionConditionUtils {
+
+    /**
+     * Judge now() expression.
+     * @param segment ExpressionSegment
+     * @return true or false
+     */
+    public static boolean isNowExpression(final ExpressionSegment segment) {
+        return segment instanceof ComplexExpressionSegment && "now()".equalsIgnoreCase(((ComplexExpressionSegment) segment).getText());
+    }
+}

@@ -14,13 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { expect } from 'chai'
-import { shallowMount } from '@vue/test-utils'
-import Logo from '../../../src/components/Logo/index.vue'
+const webpackConfig = require('../build/webpack.unit.conf')
+process.env.CHROME_BIN = require('puppeteer').executablePath()
 
-describe('Logo/index.vue', () => {
-  it('Logo Does the component exist？', () => {
-    const wrapper = shallowMount(Logo)
-    expect(wrapper.isVueInstance()).to.be.true
+module.exports = function(config) {
+  config.set({
+    frameworks: ['mocha'],
+    files: ['specs/**/*.spec.js'],
+    preprocessors: {
+      '**/*.spec.js': ['webpack', 'sourcemap']
+    },
+    webpack: webpackConfig,
+    reporters: ['spec', 'coverage'],
+    coverageReporter: {
+      dir: './coverage',
+      reporters: [{ type: 'lcov', subdir: '.' }, { type: 'text-summary' }]
+    },
+    browsers: ['ChromeHeadless']
   })
-})
+}

@@ -18,14 +18,14 @@
 <template>
   <div class="s-layout-header">
     <div class="s-pro-components-header">
-      <i :class="classes" @click="togger"/>
+      <i :class="classes" @click="togger" />
       <div class="s-pro-components-header-right">
         <div class="avatar">
           <el-dropdown @command="handlerClick">
             <el-tag type="success">
               <span class="el-dropdown-link">
-                {{ username || '未登陆' }}
-                <i class="el-icon-arrow-down el-icon--right"/>
+                {{ username || 'Not logged in' }}
+                <i class="el-icon-arrow-down el-icon--right" />
               </span>
             </el-tag>
             <el-dropdown-menu slot="dropdown">
@@ -126,10 +126,10 @@ export default {
       margin: 24px;
     }
     i.icon-shrink {
-      background: url("../../assets/img/shrink.png") no-repeat left center;
+      background: url('../../assets/img/shrink.png') no-repeat left center;
     }
     .icon-expand {
-      background: url("../../assets/img/expand.png") no-repeat left center;
+      background: url('../../assets/img/expand.png') no-repeat left center;
     }
     .s-pro-components-header-right {
       float: right;

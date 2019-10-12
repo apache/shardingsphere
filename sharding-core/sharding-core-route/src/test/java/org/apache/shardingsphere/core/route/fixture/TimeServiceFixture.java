@@ -14,13 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { expect } from 'chai'
-import { shallowMount } from '@vue/test-utils'
-import Logo from '../../../src/components/Logo/index.vue'
 
-describe('Logo/index.vue', () => {
-  it('Logo Does the component exist？', () => {
-    const wrapper = shallowMount(Logo)
-    expect(wrapper.isVueInstance()).to.be.true
-  })
-})
+package org.apache.shardingsphere.core.route.fixture;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.core.route.spi.TimeService;
+
+import java.util.Date;
+
+public final class TimeServiceFixture implements TimeService {
+
+    @Getter
+    @Setter
+    private Date date;
+
+    @Override
+    public Date getTime() {
+        return date;
+    }
+}
