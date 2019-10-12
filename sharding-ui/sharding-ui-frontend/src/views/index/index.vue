@@ -16,7 +16,7 @@
   -->
 
 <template>
-  <s-regist-config/>
+  <s-regist-config />
 </template>
 
 <script>

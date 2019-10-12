@@ -14,13 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { expect } from 'chai'
-import { shallowMount } from '@vue/test-utils'
-import Logo from '../../../src/components/Logo/index.vue'
 
-describe('Logo/index.vue', () => {
-  it('Logo Does the component exist？', () => {
-    const wrapper = shallowMount(Logo)
-    expect(wrapper.isVueInstance()).to.be.true
-  })
-})
+package org.apache.shardingsphere.core.route.spi;
+
+import java.util.Date;
+
+/**
+ * Default time service.
+ *
+ * @author chenchuangliu
+ */
+public final class DefaultTimeService implements TimeService {
+
+    @Override
+    public Date getTime() {
+        return new Date();
+    }
+}
+

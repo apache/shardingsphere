@@ -14,13 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { expect } from 'chai'
-import { shallowMount } from '@vue/test-utils'
-import Logo from '../../../src/components/Logo/index.vue'
-
-describe('Logo/index.vue', () => {
-  it('Logo Does the component exist？', () => {
-    const wrapper = shallowMount(Logo)
-    expect(wrapper.isVueInstance()).to.be.true
-  })
-})
+$--color-primary: #E17425;
+$--font-path: '~element-ui/lib/theme-chalk/fonts';
+@import "~element-ui/packages/theme-chalk/src/index";
