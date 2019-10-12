@@ -31,7 +31,7 @@ public final class TestQueryAssistedShardingEncryptor implements ShardingQueryAs
     
     @Override
     public String getType() {
-        return "assistedTest";
+        return "ASSISTED_QUERY_TEST";
     }
     
     @Override

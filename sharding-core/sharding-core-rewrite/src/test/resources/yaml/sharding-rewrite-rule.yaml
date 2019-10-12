@@ -56,7 +56,7 @@ shardingRule:
       z_encryptor:
         type: TEST
       k_encryptor:
-        type: ASSISTEDTEST
+        type: ASSISTED_QUERY_TEST
     tables:
       table_z:
         columns:

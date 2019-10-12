@@ -31,7 +31,7 @@ public final class TestShardingEncryptor implements ShardingEncryptor {
     
     @Override
     public String getType() {
-        return "test";
+        return "TEST";
     }
     
     @Override

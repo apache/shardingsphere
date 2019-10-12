@@ -36,11 +36,11 @@ encryptRule:
         encrypt_1:
           cipherColumn: cipher_1
           assistedQueryColumn: assisted_query_1
-          encryptor: assist_test
+          encryptor: assisted_query_test
         encrypt_2:
           cipherColumn: cipher_2
           assistedQueryColumn: assisted_query_2
-          encryptor: assist_test
+          encryptor: assisted_query_test
     t_cipher_plain:
       columns:
         encrypt_1:
@@ -57,14 +57,14 @@ encryptRule:
           cipherColumn: cipher_1
           assistedQueryColumn: assisted_query_1
           plainColumn: plain_1
-          encryptor: assist_test
+          encryptor: assisted_query_test
         encrypt_2:
           cipherColumn: cipher_2
           assistedQueryColumn: assisted_query_2
           plainColumn: plain_2
-          encryptor: assist_test
+          encryptor: assisted_query_test
   encryptors:
     test:
       type: TEST
-    assist_test:
-      type: ASSISTEDTEST
+    assisted_query_test:
+      type: ASSISTED_QUERY_TEST
