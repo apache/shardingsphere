@@ -52,10 +52,6 @@ public final class ApolloConfigCenter implements ConfigCenter {
 
     @Override
     public void init(final ConfigCenterConfiguration config) {
-        initApolloConfig(config);
-    }
-
-    private void initApolloConfig(final ConfigCenterConfiguration config) {
         System.getProperties().setProperty("app.id", properties.getProperty("appId", "APOLLO_SHARDING_SPHERE"));
         System.getProperties().setProperty("env", properties.getProperty("env", "DEV"));
         System.getProperties().setProperty(ConfigConsts.APOLLO_CLUSTER_KEY, properties.getProperty("clusterName", ConfigConsts.CLUSTER_NAME_DEFAULT));
