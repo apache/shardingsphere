@@ -22,7 +22,6 @@ import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
-import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
 import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.segment.dal.FromSchemaSegment;
@@ -50,7 +49,6 @@ import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderB
 import org.apache.shardingsphere.core.preprocessor.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.Projection;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.CommonSQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
@@ -917,28 +915,9 @@ public final class ShardingSQLRewriteEngineTest {
     
     @Test
     public void assertRewriteSelectInWithAggregationDistinct() {
-        // TODO case maybe incorrect
-//        SQLRewriteResult actual = getSQLRewriteResult("SELECT COUNT(DISTINCT id), SUM(DISTINCT id) FROM table_z WHERE id in (3,5)", Collections.emptyList(), true);
-//        assertThat(actual.getSql(), is("SELECT DISTINCT id, id FROM table_z WHERE id in (3,5)"));
-//        assertThat(actual.getParameters(), is(Collections.emptyList()));
-        SQLRouteResult sqlRouteResult = createSQLRouteResultForSelectInWithAggregationDistinct();
-        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sqlRouteResult, "SELECT COUNT(DISTINCT id), SUM(DISTINCT id) FROM table_z WHERE id in (3,5)", Collections.emptyList());
-        assertThat(new ShardingSQLRewriteEngine(sqlRouteResult.getShardingConditions(), null, logicAndActualTables).rewrite(sqlRewriteContext).getSql(), 
-                is("SELECT DISTINCT id, id FROM table_z WHERE id in (3,5)"));
-    }
-    
-    private SQLRouteResult createSQLRouteResultForSelectInWithAggregationDistinct() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getAllSQLSegments().add(new TableSegment(49, 55, "table_z"));
-        Projection projection1 = new AggregationDistinctProjection(7, 24, AggregationType.COUNT, "(DISTINCT id)", "a", "id");
-        Projection projection2 = new AggregationDistinctProjection(27, 42, AggregationType.SUM, "(DISTINCT id)", "a", "id");
-        ProjectionsContext projectionsContext = new ProjectionsContext(7, 42, true, Arrays.asList(projection1, projection2));
-        SQLRouteResult result = new SQLRouteResult(new SelectSQLStatementContext(selectStatement, 
-                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
-                projectionsContext, new PaginationContext(null, null, Collections.emptyList())), 
-                new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        result.setRoutingResult(new RoutingResult());
-        return result;
+        SQLRewriteResult actual = getSQLRewriteResult("SELECT COUNT(DISTINCT id) a, SUM(DISTINCT id) a FROM table_z WHERE id IN (3,5)", Collections.emptyList(), true);
+        assertThat(actual.getSql(), is("SELECT DISTINCT id a, id a FROM table_z WHERE cipher IN ('encryptValue', 'encryptValue')"));
+        assertThat(actual.getParameters(), is(Collections.emptyList()));
     }
     
     @Test
