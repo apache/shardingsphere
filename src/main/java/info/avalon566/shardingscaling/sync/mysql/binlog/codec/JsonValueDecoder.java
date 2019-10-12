@@ -130,7 +130,7 @@ public final class JsonValueDecoder {
 
     private static void decodeValueEntry(final boolean isSmall, final ByteBuf in, final StringBuilder out) {
         int type = DataTypesCodec.readUnsignedInt1(in);
-        int offsetOrInlineValue = isSmall ? DataTypesCodec.readUnsignedInt2LE(in) : (int) DataTypesCodec.readUnsignedInt4LE(in);
+        int offsetOrInlinedValue = isSmall ? DataTypesCodec.readUnsignedInt2LE(in) : (int) DataTypesCodec.readUnsignedInt4LE(in);
         switch (type) {
             case JsonValueTypes.SMALL_JSON_OBJECT:
             case JsonValueTypes.LARGE_JSON_OBJECT:
@@ -140,22 +140,22 @@ public final class JsonValueDecoder {
             case JsonValueTypes.UINT64:
             case JsonValueTypes.DOUBLE:
             case JsonValueTypes.STRING:
-                decodeValue(type, offsetOrInlineValue, in, out);
+                decodeValue(type, offsetOrInlinedValue, in, out);
                 break;
             case JsonValueTypes.INT16:
             case JsonValueTypes.UINT16:
-                out.append(offsetOrInlineValue);
+                out.append(offsetOrInlinedValue);
                 break;
             case JsonValueTypes.INT32:
             case JsonValueTypes.UINT32:
                 if (isSmall) {
-                    decodeValue(type, offsetOrInlineValue, in, out);
+                    decodeValue(type, offsetOrInlinedValue, in, out);
                 } else {
-                    out.append(offsetOrInlineValue);
+                    out.append(offsetOrInlinedValue);
                 }
                 break;
             case JsonValueTypes.LITERAL:
-                outputLiteral(offsetOrInlineValue, out);
+                outputLiteral(offsetOrInlinedValue, out);
                 break;
             default:
                 throw new UnsupportedOperationException();
