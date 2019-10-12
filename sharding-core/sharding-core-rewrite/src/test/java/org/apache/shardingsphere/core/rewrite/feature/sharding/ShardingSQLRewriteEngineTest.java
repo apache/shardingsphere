@@ -24,7 +24,6 @@ import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.sql.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
@@ -39,7 +38,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.Num
 import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.expression.DerivedLiteralExpressionSegment;
@@ -50,7 +48,6 @@ import org.apache.shardingsphere.core.preprocessor.segment.select.pagination.Pag
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.Projection;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.preprocessor.statement.impl.CommonSQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
@@ -671,25 +668,9 @@ public final class ShardingSQLRewriteEngineTest {
     
     @Test
     public void assertRewriteTableTokenWithoutBackQuoteFromSchemaForShow() {
-        // TODO case maybe incorrect
-//        SQLRewriteResult actual = getSQLRewriteResult("SHOW COLUMNS FROM table_x FROM 'sharding_db'", Collections.emptyList(), true);
-//        assertThat(actual.getSql(), is("SHOW COLUMNS FROM table_x"));
-//        assertThat(actual.getParameters(), is(Collections.emptyList()));
-        SQLRouteResult sqlRouteResult = createRouteResultForTableTokenWithoutBackQuoteFromSchemaForShow();
-        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sqlRouteResult, "SHOW COLUMNS FROM table_x FROM 'sharding_db'", Collections.emptyList());
-        assertThat(new ShardingSQLRewriteEngine(sqlRouteResult.getShardingConditions(), null, Collections.singletonMap("table_x", "table_x")).rewrite(sqlRewriteContext).getSql(), 
-                is("SHOW COLUMNS FROM table_x"));
-    }
-    
-    private SQLRouteResult createRouteResultForTableTokenWithoutBackQuoteFromSchemaForShow() {
-        DALStatement showTablesStatement = new DALStatement();
-        showTablesStatement.getAllSQLSegments().add(new FromSchemaSegment(25, 43));
-        showTablesStatement.getAllSQLSegments().add(new TableSegment(18, 24, "table_x"));
-        SQLRouteResult result = new SQLRouteResult(new CommonSQLStatementContext(showTablesStatement), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        RoutingResult routingResult = new RoutingResult();
-        routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
-        result.setRoutingResult(routingResult);
-        return result;
+        SQLRewriteResult actual = getSQLRewriteResult("SHOW COLUMNS FROM table_x FROM `sharding_db`", Collections.emptyList(), true);
+        assertThat(actual.getSql(), is("SHOW COLUMNS FROM table_1 "));
+        assertThat(actual.getParameters(), is(Collections.emptyList()));
     }
     
     @Test
@@ -701,24 +682,9 @@ public final class ShardingSQLRewriteEngineTest {
     
     @Test
     public void assertRewriteTableTokenWithBackQuoteFromSchemaForShow() {
-        // TODO case maybe incorrect
-//        SQLRewriteResult actual = getSQLRewriteResult("SHOW COLUMNS FROM `table_x` FROM 'sharding_db'", Collections.emptyList(), true);
-//        assertThat(actual.getSql(), is("SHOW COLUMNS FROM `table_1` FROM 'sharding_db'"));
-//        assertThat(actual.getParameters(), is(Collections.emptyList()));
-        SQLRouteResult sqlRouteResult = createSQLRouteResultForTableTokenWithBackQuoteFromSchemaForShow();
-        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sqlRouteResult, "SHOW COLUMNS FROM `table_x` FROM 'sharding_db'", Collections.emptyList());
-        assertThat(new ShardingSQLRewriteEngine(sqlRouteResult.getShardingConditions(), null, logicAndActualTables).rewrite(sqlRewriteContext).getSql(),
-                is("SHOW COLUMNS FROM `table_1` FROM 'sharding_db'"));
-    }
-    
-    private SQLRouteResult createSQLRouteResultForTableTokenWithBackQuoteFromSchemaForShow() {
-        DALStatement showTablesStatement = new DALStatement();
-        showTablesStatement.getAllSQLSegments().add(new TableSegment(18, 26, "`table_x`"));
-        SQLRouteResult result = new SQLRouteResult(new CommonSQLStatementContext(showTablesStatement), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        RoutingResult routingResult = new RoutingResult();
-        routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
-        result.setRoutingResult(routingResult);
-        return result;
+        SQLRewriteResult actual = getSQLRewriteResult("SHOW COLUMNS FROM `table_x` FROM `sharding_db`", Collections.emptyList(), true);
+        assertThat(actual.getSql(), is("SHOW COLUMNS FROM `table_1` "));
+        assertThat(actual.getParameters(), is(Collections.emptyList()));
     }
     
     @Test
@@ -730,24 +696,9 @@ public final class ShardingSQLRewriteEngineTest {
     
     @Test
     public void assertRewriteTableTokenWithSchemaFromSchemaForShow() {
-        // TODO case maybe incorrect
-//        SQLRewriteResult actual = getSQLRewriteResult("SHOW COLUMNS FROM sharding_db.table_x FROM sharding_db", Collections.emptyList(), true);
-//        assertThat(actual.getSql(), is("SHOW COLUMNS FROM table_1 FROM sharding_db"));
-//        assertThat(actual.getParameters(), is(Collections.emptyList()));
-        SQLRouteResult sqlRouteResult = createSQLRouteResultForTableTokenWithSchemaFromSchemaForShow();
-        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sqlRouteResult, "SHOW COLUMNS FROM sharding_db.table_x FROM sharding_db", Collections.emptyList());
-        assertThat(new ShardingSQLRewriteEngine(sqlRouteResult.getShardingConditions(), null, logicAndActualTables).rewrite(sqlRewriteContext).getSql(), 
-                is("SHOW COLUMNS FROM table_1 FROM sharding_db"));
-    }
-    
-    private SQLRouteResult createSQLRouteResultForTableTokenWithSchemaFromSchemaForShow() {
-        DALStatement showTablesStatement = new DALStatement();
-        showTablesStatement.getAllSQLSegments().add(new TableSegment(18, 36, "table_x"));
-        SQLRouteResult result = new SQLRouteResult(new CommonSQLStatementContext(showTablesStatement), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        RoutingResult routingResult = new RoutingResult();
-        routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
-        result.setRoutingResult(routingResult);
-        return result;
+        SQLRewriteResult actual = getSQLRewriteResult("SHOW COLUMNS FROM sharding_db.table_x FROM sharding_db", Collections.emptyList(), true);
+        assertThat(actual.getSql(), is("SHOW COLUMNS FROM table_1 "));
+        assertThat(actual.getParameters(), is(Collections.emptyList()));
     }
     
     @Test
@@ -759,24 +710,9 @@ public final class ShardingSQLRewriteEngineTest {
     
     @Test
     public void assertRewriteTableTokenWithBackQuoteWithSchemaFromSchemaForShow() {
-        // TODO case maybe incorrect
-//        SQLRewriteResult actual = getSQLRewriteResult("SHOW COLUMNS FROM sharding_db.`table_x` FROM sharding_db", Collections.emptyList(), true);
-//        assertThat(actual.getSql(), is("SHOW COLUMNS FROM `table_1` FROM sharding_db"));
-//        assertThat(actual.getParameters(), is(Collections.emptyList()));
-        SQLRouteResult sqlRouteResult = createSQLRouteResultForTableTokenWithBackQuoteWithSchemaFromSchemaForShow();
-        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sqlRouteResult, "SHOW COLUMNS FROM sharding_db.`table_x` FROM sharding_db", Collections.emptyList());
-        assertThat(new ShardingSQLRewriteEngine(sqlRouteResult.getShardingConditions(), null, logicAndActualTables).rewrite(sqlRewriteContext).getSql(), 
-                is("SHOW COLUMNS FROM `table_1` FROM sharding_db"));
-    }
-    
-    private SQLRouteResult createSQLRouteResultForTableTokenWithBackQuoteWithSchemaFromSchemaForShow() {
-        DALStatement showTablesStatement = new DALStatement();
-        showTablesStatement.getAllSQLSegments().add(new TableSegment(18, 38, "`table_x`"));
-        SQLRouteResult result = new SQLRouteResult(new CommonSQLStatementContext(showTablesStatement), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        RoutingResult routingResult = new RoutingResult();
-        routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
-        result.setRoutingResult(routingResult);
-        return result;
+        SQLRewriteResult actual = getSQLRewriteResult("SHOW COLUMNS FROM sharding_db.`table_x` FROM sharding_db", Collections.emptyList(), true);
+        assertThat(actual.getSql(), is("SHOW COLUMNS FROM `table_1` "));
+        assertThat(actual.getParameters(), is(Collections.emptyList()));
     }
     
     @Test
@@ -788,24 +724,9 @@ public final class ShardingSQLRewriteEngineTest {
     
     @Test
     public void assertRewriteTableTokenWithSchemaWithBackQuoteFromSchemaForShow() {
-        // TODO case maybe incorrect
-//        SQLRewriteResult actual = getSQLRewriteResult("SHOW COLUMNS FROM `sharding_db`.`table_x` FROM sharding_db", Collections.emptyList(), true);
-//        assertThat(actual.getSql(), is("SHOW COLUMNS FROM `table_1` FROM sharding_db"));
-//        assertThat(actual.getParameters(), is(Collections.emptyList()));
-        SQLRouteResult sqlRouteResult = createSQLRouteResultForTableTokenWithSchemaWithBackQuoteFromSchemaForShow();
-        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sqlRouteResult, "SHOW COLUMNS FROM `sharding_db`.`table_x` FROM sharding_db", Collections.emptyList());
-        assertThat(new ShardingSQLRewriteEngine(sqlRouteResult.getShardingConditions(), null, logicAndActualTables).rewrite(sqlRewriteContext).getSql(), 
-                is("SHOW COLUMNS FROM `table_1` FROM sharding_db"));
-    }
-    
-    private SQLRouteResult createSQLRouteResultForTableTokenWithSchemaWithBackQuoteFromSchemaForShow() {
-        DALStatement showTablesStatement = new DALStatement();
-        showTablesStatement.getAllSQLSegments().add(new TableSegment(18, 40, "`table_x`"));
-        SQLRouteResult result = new SQLRouteResult(new CommonSQLStatementContext(showTablesStatement), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        RoutingResult routingResult = new RoutingResult();
-        routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
-        result.setRoutingResult(routingResult);
-        return result;
+        SQLRewriteResult actual = getSQLRewriteResult("SHOW COLUMNS FROM `sharding_db`.`table_x` FROM sharding_db", Collections.emptyList(), true);
+        assertThat(actual.getSql(), is("SHOW COLUMNS FROM `table_1` "));
+        assertThat(actual.getParameters(), is(Collections.emptyList()));
     }
     
     @Test
