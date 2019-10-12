@@ -312,9 +312,7 @@ public final class EncryptSQLRewriteEngineTest {
         assertThat(actual.getParameters().get(5), is((Object) 2));
     }
     
-    @SuppressWarnings("unchecked")
     private SQLRewriteResult getSQLRewriteResult(final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
-        // TODO panjuan: should mock sqlStatement, do not call parse module on rewrite test case
         SQLStatement sqlStatement = parseEngine.parse(sql, false);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(mock(TableMetas.class), sql, parameters, sqlStatement);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(TableMetas.class), sqlStatementContext, sql, parameters);
