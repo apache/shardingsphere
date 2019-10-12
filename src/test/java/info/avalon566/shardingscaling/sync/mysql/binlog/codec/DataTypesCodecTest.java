@@ -24,6 +24,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import io.netty.buffer.ByteBuf;
+import java.math.BigInteger;
 import java.util.BitSet;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -73,6 +74,20 @@ public class DataTypesCodecTest {
             expected.set(i * 8 + i);
         }
         assertThat(DataTypesCodec.readBitmap(64, byteBuf), is(expected));
+    }
+    
+    @Test
+    public void assertReadInt2LE() {
+        when(byteBuf.readShortLE()).thenReturn(Short.MAX_VALUE, Short.MIN_VALUE);
+        assertThat(DataTypesCodec.readInt2LE(byteBuf), is((int) Short.MAX_VALUE));
+        assertThat(DataTypesCodec.readInt2LE(byteBuf), is((int) Short.MIN_VALUE));
+    }
+    
+    @Test
+    public void assertReadInt4LE() {
+        when(byteBuf.readIntLE()).thenReturn(Integer.MAX_VALUE, Integer.MIN_VALUE);
+        assertThat(DataTypesCodec.readInt4LE(byteBuf), is(Integer.MAX_VALUE));
+        assertThat(DataTypesCodec.readInt4LE(byteBuf), is(Integer.MIN_VALUE));
     }
     
     @Test
@@ -133,6 +148,13 @@ public class DataTypesCodecTest {
     public void assertReadUnsignedInt6LE() {
         when(byteBuf.readByte()).thenReturn((byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x03, (byte) 0x02, (byte) 0x01);
         assertThat(DataTypesCodec.readUnsignedInt6LE(byteBuf), is(1108152091137L));
+    }
+    
+    @Test
+    public void assertReadUnsignedInt8LE() {
+        when(byteBuf.readLongLE()).thenReturn(Long.MIN_VALUE, Long.MAX_VALUE);
+        assertThat(DataTypesCodec.readUnsignedInt8LE(byteBuf), is(new BigInteger("9223372036854775808")));
+        assertThat(DataTypesCodec.readUnsignedInt8LE(byteBuf), is(new BigInteger("9223372036854775807")));
     }
     
     @Test

@@ -115,7 +115,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     private DeleteRowsEvent decodeDeleteRowsEventV2(final BinlogEventHeader binlogEventHeader, final ByteBuf in) {
         RowsEvent rowsEvent = new RowsEvent(binlogEventHeader);
         rowsEvent.parsePostHeader(in);
-        rowsEvent.parsePaylod(binlogContext, in);
+        rowsEvent.parsePayload(binlogContext, in);
         DeleteRowsEvent result = new DeleteRowsEvent();
         result.setTableName(binlogContext.getFullTableName(rowsEvent.getTableId()));
         result.setBeforeColumns(rowsEvent.getColumnValues1());
@@ -125,7 +125,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     private UpdateRowsEvent decodeUpdateRowsEventV2(final BinlogEventHeader binlogEventHeader, final ByteBuf in) {
         RowsEvent rowsEvent = new RowsEvent(binlogEventHeader);
         rowsEvent.parsePostHeader(in);
-        rowsEvent.parsePaylod(binlogContext, in);
+        rowsEvent.parsePayload(binlogContext, in);
         UpdateRowsEvent result = new UpdateRowsEvent();
         result.setTableName(binlogContext.getFullTableName(rowsEvent.getTableId()));
         result.setBeforeColumns(rowsEvent.getColumnValues1());
@@ -136,7 +136,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     private WriteRowsEvent decodeWriteRowsEventV2(final BinlogEventHeader binlogEventHeader, final ByteBuf in) {
         RowsEvent rowsEvent = new RowsEvent(binlogEventHeader);
         rowsEvent.parsePostHeader(in);
-        rowsEvent.parsePaylod(binlogContext, in);
+        rowsEvent.parsePayload(binlogContext, in);
         WriteRowsEvent result = new WriteRowsEvent();
         result.setTableName(binlogContext.getFullTableName(rowsEvent.getTableId()));
         result.setAfterColumns(rowsEvent.getColumnValues1());

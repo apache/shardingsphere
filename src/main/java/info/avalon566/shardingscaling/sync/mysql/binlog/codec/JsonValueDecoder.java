@@ -37,9 +37,9 @@ public final class JsonValueDecoder {
      */
     public static Serializable decode(final ByteBuf in) {
         int valueType = DataTypesCodec.readUnsignedInt1(in);
-        StringBuilder out = new StringBuilder();
-        decodeValue(valueType, 1, in, out);
-        return out.toString();
+        StringBuilder result = new StringBuilder();
+        decodeValue(valueType, 1, in, result);
+        return result.toString();
     }
 
     private static void decodeValue(final int type, final int offset, final ByteBuf in, final StringBuilder out) {
@@ -130,7 +130,7 @@ public final class JsonValueDecoder {
 
     private static void decodeValueEntry(final boolean isSmall, final ByteBuf in, final StringBuilder out) {
         int type = DataTypesCodec.readUnsignedInt1(in);
-        int offsetOrInlinedValue = isSmall ? DataTypesCodec.readUnsignedInt2LE(in) : (int) DataTypesCodec.readUnsignedInt4LE(in);
+        int offsetOrInlineValue = isSmall ? DataTypesCodec.readUnsignedInt2LE(in) : (int) DataTypesCodec.readUnsignedInt4LE(in);
         switch (type) {
             case JsonValueTypes.SMALL_JSON_OBJECT:
             case JsonValueTypes.LARGE_JSON_OBJECT:
@@ -140,22 +140,22 @@ public final class JsonValueDecoder {
             case JsonValueTypes.UINT64:
             case JsonValueTypes.DOUBLE:
             case JsonValueTypes.STRING:
-                decodeValue(type, offsetOrInlinedValue, in, out);
+                decodeValue(type, offsetOrInlineValue, in, out);
                 break;
             case JsonValueTypes.INT16:
             case JsonValueTypes.UINT16:
-                out.append(offsetOrInlinedValue);
+                out.append(offsetOrInlineValue);
                 break;
             case JsonValueTypes.INT32:
             case JsonValueTypes.UINT32:
                 if (isSmall) {
-                    decodeValue(type, offsetOrInlinedValue, in, out);
+                    decodeValue(type, offsetOrInlineValue, in, out);
                 } else {
-                    out.append(offsetOrInlinedValue);
+                    out.append(offsetOrInlineValue);
                 }
                 break;
             case JsonValueTypes.LITERAL:
-                outputLiteral(offsetOrInlinedValue, out);
+                outputLiteral(offsetOrInlineValue, out);
                 break;
             default:
                 throw new UnsupportedOperationException();
