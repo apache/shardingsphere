@@ -45,7 +45,7 @@ shardingRule:
     table_w:
       actualDataNodes: db${0..1}.table_w
       keyGenerator:
-        type: SNOWFLAKE
+        type: TEST
         column: id
         props:
           worker.id: 123 

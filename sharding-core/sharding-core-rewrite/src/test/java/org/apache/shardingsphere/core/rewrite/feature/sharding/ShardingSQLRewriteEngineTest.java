@@ -25,9 +25,7 @@ import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
@@ -40,7 +38,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.preprocessor.segment.insert.expression.DerivedLiteralExpressionSegment;
 import org.apache.shardingsphere.core.preprocessor.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderByItem;
@@ -804,34 +801,9 @@ public final class ShardingSQLRewriteEngineTest {
     
     @Test
     public void assertRewriteInsertWithGeneratedKeyAndQueryAssistedShardingEncryptor() {
-        // TODO case maybe incorrect
-//        SQLRewriteResult actual = getSQLRewriteResult("INSERT INTO `table_w` set name = 10 ON DUPLICATE KEY UPDATE name = VALUES(name)", Collections.emptyList(), true);
-//        assertThat(actual.getSql(), is("INSERT INTO `table_w` set cipher = 'encryptValue', query = 'assistedEncryptValue', plain = 10, id = 1 ON DUPLICATE KEY UPDATE name = VALUES(name)"));
-//        assertThat(actual.getParameters(), is(Collections.emptyList()));
-        SQLRouteResult sqlRouteResult = createSQLRouteResultForInsertWithGeneratedKeyAndQueryAssistedShardingEncryptor();
-        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sqlRouteResult, "INSERT INTO `table_w` set name = 10 ON DUPLICATE KEY UPDATE name = VALUES(name)", Collections.emptyList());
-        assertThat(new ShardingSQLRewriteEngine(sqlRouteResult.getShardingConditions(), routingUnit, logicAndActualTables).rewrite(sqlRewriteContext).getSql(),
-                is("INSERT INTO `table_w` set cipher = 'encryptValue', query = 'assistedEncryptValue', plain = 10, id = 1 ON DUPLICATE KEY UPDATE name = VALUES(name)"));
-    }
-    
-    private SQLRouteResult createSQLRouteResultForInsertWithGeneratedKeyAndQueryAssistedShardingEncryptor() {
-        InsertStatement insertStatement = new InsertStatement();
-        insertStatement.getAllSQLSegments().add(new TableSegment(12, 20, "`table_w`"));
-        insertStatement.setTable(new TableSegment(0, 0, "table_w"));
-        insertStatement.getColumns().add(new ColumnSegment(0, 0, "name"));
-        ColumnSegment columnSegment = new ColumnSegment(26, 29, "name");
-        LiteralExpressionSegment expressionSegment = new LiteralExpressionSegment(33, 34, 10);
-        insertStatement.getAllSQLSegments().add(new SetAssignmentsSegment(26, 34, Collections.singletonList(new AssignmentSegment(26, 34, columnSegment, expressionSegment))));
-        insertStatement.setSetAssignment(new SetAssignmentsSegment(26, 34, Collections.singletonList(new AssignmentSegment(26, 34, columnSegment, expressionSegment))));
-        InsertSQLStatementContext insertSQLStatementContext = new InsertSQLStatementContext(null, Collections.emptyList(), insertStatement);
-        insertSQLStatementContext.getInsertValueContexts().get(0).getValueExpressions().add(new DerivedLiteralExpressionSegment(1));
-        ShardingCondition shardingCondition = new ShardingCondition();
-        shardingCondition.getDataNodes().add(new DataNode("db0.table_1"));
-        GeneratedKey generatedKey = new GeneratedKey("id", true);
-        generatedKey.getGeneratedValues().add(1);
-        SQLRouteResult result = new SQLRouteResult(insertSQLStatementContext, new ShardingConditions(Collections.singletonList(shardingCondition)), generatedKey);
-        result.setRoutingResult(new RoutingResult());
-        return result;
+        SQLRewriteResult actual = getSQLRewriteResult("INSERT INTO `table_w` set name = 10 ON DUPLICATE KEY UPDATE name = VALUES(name)", Collections.emptyList(), true);
+        assertThat(actual.getSql(), is("INSERT INTO `table_w` set cipher = 'encryptValue', query = 'assistedEncryptValue', plain = 10, id = 1 ON DUPLICATE KEY UPDATE name = VALUES(name)"));
+        assertThat(actual.getParameters(), is(Collections.emptyList()));
     }
     
     @Test
