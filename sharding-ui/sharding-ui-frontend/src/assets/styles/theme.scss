@@ -14,4 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.el-aside{overflow:auto;-webkit-box-sizing:border-box;box-sizing:border-box;-ms-flex-negative:0;flex-shrink:0}
+$--color-primary: #E17425;
+$--font-path: '~element-ui/lib/theme-chalk/fonts';
+@import "~element-ui/packages/theme-chalk/src/index";

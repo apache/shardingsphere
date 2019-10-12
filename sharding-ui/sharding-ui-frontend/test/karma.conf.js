@@ -14,4 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.el-container{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-webkit-box-flex:1;-ms-flex:1;flex:1;-ms-flex-preferred-size:auto;flex-basis:auto;-webkit-box-sizing:border-box;box-sizing:border-box;min-width:0}.el-container.is-vertical{-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column}
+const webpackConfig = require('../build/webpack.unit.conf')
+process.env.CHROME_BIN = require('puppeteer').executablePath()
+
+module.exports = function(config) {
+  config.set({
+    frameworks: ['mocha'],
+    files: ['specs/**/*.spec.js'],
+    preprocessors: {
+      '**/*.spec.js': ['webpack', 'sourcemap']
+    },
+    webpack: webpackConfig,
+    reporters: ['spec', 'coverage'],
+    coverageReporter: {
+      dir: './coverage',
+      reporters: [{ type: 'lcov', subdir: '.' }, { type: 'text-summary' }]
+    },
+    browsers: ['ChromeHeadless']
+  })
+}

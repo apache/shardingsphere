@@ -27,7 +27,7 @@
       />
       <el-table-column :label="$t('index.table.operate')" fixed="right" width="80" align="center">
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.enabled" @change="handleChange(scope.row)"/>
+          <el-switch v-model="scope.row.enabled" @change="handleChange(scope.row)" />
         </template>
       </el-table-column>
     </el-table>
@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import _ from 'lodash'
+import clone from 'lodash/clone'
 import API from '../api'
 export default {
   name: 'Instance',
@@ -72,14 +72,14 @@ export default {
   },
   methods: {
     handleCurrentChange(val) {
-      const data = _.clone(this.cloneTableData)
+      const data = clone(this.cloneTableData)
       this.tableData = data.splice(val - 1, this.pageSize)
     },
     getOrcheInstance() {
       API.getOrcheInstance().then(res => {
         const data = res.model
         this.total = data.length
-        this.cloneTableData = _.clone(res.model)
+        this.cloneTableData = clone(res.model)
         this.tableData = data.splice(0, this.pageSize)
       })
     },

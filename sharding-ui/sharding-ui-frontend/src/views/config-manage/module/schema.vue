@@ -32,15 +32,15 @@
             <span>{{ item.title }}</span>
           </div>
           <div v-for="(itm, idex) in item.children" :key="idex" class="coll-item">
-            <div :class="'itm icon-' + idex"/>
+            <div :class="'itm icon-' + idex" />
             <div class="txt">{{ itm }}</div>
-            <i class="icon-edit" @click="handlerClick(item.title, itm)"/>
+            <i class="icon-edit" @click="handlerClick(item.title, itm)" />
           </div>
         </el-card>
       </el-col>
     </el-row>
     <el-row>
-      <el-button type="primary" icon="el-icon-plus" @click="add"/>
+      <el-button type="primary" icon="el-icon-plus" @click="add" />
     </el-row>
     <el-dialog :visible.sync="centerDialogVisible" :title="type" width="80%" top="3vh">
       <el-row :gutter="20">
@@ -74,7 +74,7 @@
     <el-dialog :visible.sync="addSchemaDialogVisible" title="Add Schema" width="80%" top="3vh">
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-form-item label="name" prop="name">
-          <el-input v-model="form.name" autocomplete="off"/>
+          <el-input v-model="form.name" autocomplete="off" />
         </el-form-item>
         <el-form-item label="ruleConfig" prop="ruleConfig">
           <el-input
@@ -291,10 +291,10 @@ export default {
       height: 16px;
     }
     .icon-0 {
-      background: url("../../../assets/img/rules.png") no-repeat left center;
+      background: url('../../../assets/img/rules.png') no-repeat left center;
     }
     .icon-1 {
-      background: url("../../../assets/img/data-source.png") no-repeat left
+      background: url('../../../assets/img/data-source.png') no-repeat left
         center;
     }
     .edit-btn {
@@ -320,7 +320,7 @@ export default {
     }
   }
   .icon-edit {
-    background: url("../../../assets/img/edit.png") no-repeat left center;
+    background: url('../../../assets/img/edit.png') no-repeat left center;
     width: 16px;
     height: 16px;
     display: inline-block;
