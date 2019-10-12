@@ -46,6 +46,17 @@ public interface PostgreSQLBinaryProtocolValue {
     Object read(PostgreSQLPacketPayload payload) throws SQLException;
     
     /**
+     * Read binary protocol value.
+     *
+     * @param payload payload operation for PostgreSQL packet
+     * @param len need read length
+     * @return binary value result
+     * @throws SQLException SQL exception
+     */
+    default Object read(PostgreSQLPacketPayload payload ,int len) throws SQLException{
+        return  read(payload);
+    }
+    /**
      * Write binary protocol value.
      *
      * @param payload payload operation for PostgreSQL packet

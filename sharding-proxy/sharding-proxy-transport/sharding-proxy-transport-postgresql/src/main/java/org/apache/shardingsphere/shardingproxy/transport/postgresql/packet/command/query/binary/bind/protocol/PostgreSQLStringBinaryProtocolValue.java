@@ -35,6 +35,13 @@ public final class PostgreSQLStringBinaryProtocolValue implements PostgreSQLBina
     public Object read(final PostgreSQLPacketPayload payload) {
         return payload.readStringNul();
     }
+
+    @Override
+    public Object read(PostgreSQLPacketPayload payload, int len) {
+         byte[] result = new byte[len];
+         payload.getByteBuf().readBytes(result);
+        return  new String(result);
+    }
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
