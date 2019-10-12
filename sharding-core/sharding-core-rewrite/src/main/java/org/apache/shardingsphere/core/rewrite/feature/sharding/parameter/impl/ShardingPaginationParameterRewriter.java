@@ -61,10 +61,10 @@ public final class ShardingPaginationParameterRewriter implements ParameterRewri
     }
     
     private void rewriteOffset(final PaginationContext pagination, final int offsetParameterIndex, final StandardParameterBuilder parameterBuilder) {
-        parameterBuilder.getReplacedIndexAndParameters().put(offsetParameterIndex, pagination.getRevisedOffset());
+        parameterBuilder.addReplacedParameters(offsetParameterIndex, pagination.getRevisedOffset());
     }
     
     private void rewriteRowCount(final PaginationContext pagination, final int rowCountParameterIndex, final StandardParameterBuilder parameterBuilder) {
-        parameterBuilder.getReplacedIndexAndParameters().put(rowCountParameterIndex, pagination.getRevisedRowCount((SelectSQLStatementContext) sqlRouteResult.getSqlStatementContext()));
+        parameterBuilder.addReplacedParameters(rowCountParameterIndex, pagination.getRevisedRowCount((SelectSQLStatementContext) sqlRouteResult.getSqlStatementContext()));
     }
 }

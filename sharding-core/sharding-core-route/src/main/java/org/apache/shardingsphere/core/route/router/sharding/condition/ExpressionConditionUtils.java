@@ -15,29 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.jaxb.table;
+package org.apache.shardingsphere.core.route.router.sharding.condition;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+/**
+ * Expression judgment tool for route.
+ *
+ * @author chenchuangliu
+ */
+public final class ExpressionConditionUtils {
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@Getter
-@Setter
-public final class ExpectedTable {
-    
-    @XmlAttribute
-    private String name;
-    
-    @XmlAttribute
-    private String alias;
-    
-    @XmlAttribute(name = "start-index")
-    private int startIndex;
-    
-    @XmlAttribute(name = "stop-index")
-    private int stopIndex;
+    /**
+     * Judge now() expression.
+     * @param segment ExpressionSegment
+     * @return true or false
+     */
+    public static boolean isNowExpression(final ExpressionSegment segment) {
+        return segment instanceof ComplexExpressionSegment && "now()".equals(((ComplexExpressionSegment) segment).getText().toLowerCase());
+    }
 }

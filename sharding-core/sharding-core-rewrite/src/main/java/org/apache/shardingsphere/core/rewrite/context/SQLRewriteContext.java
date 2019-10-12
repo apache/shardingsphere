@@ -25,9 +25,9 @@ import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.sql.SQLBuilder;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerators;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.builder.DefaultTokenGeneratorBuilder;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerator;
 
 import java.util.Collection;
 import java.util.List;

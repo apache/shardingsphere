@@ -990,7 +990,7 @@ public final class ShardingSQLRewriteEngineTest {
         SQLRouteResult sqlRouteResult = createSQLRouteResultForUpdateWithShardingEncryptor();
         SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sqlRouteResult, "UPDATE table_z SET id = 1 WHERE id = 2", Collections.emptyList());
         assertThat(new ShardingSQLRewriteEngine(sqlRouteResult.getShardingConditions(), null, logicTableAndActualTables).rewrite(sqlRewriteContext).getSql(), 
-                is("UPDATE table_z SET plain = 1, cipher = 'encryptValue' WHERE cipher = 'encryptValue'"));
+                is("UPDATE table_z SET cipher = 'encryptValue', plain = 1 WHERE cipher = 'encryptValue'"));
     }
     
     private SQLRouteResult createSQLRouteResultForUpdateWithShardingEncryptor() {
@@ -1013,7 +1013,7 @@ public final class ShardingSQLRewriteEngineTest {
         SQLRouteResult sqlRouteResult = createSQLRouteResultForInsertWithGeneratedKeyAndQueryAssistedShardingEncryptor();
         SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sqlRouteResult, "INSERT INTO `table_w` set name = 10 ON DUPLICATE KEY UPDATE name = VALUES(name)", Collections.emptyList());
         assertThat(new ShardingSQLRewriteEngine(sqlRouteResult.getShardingConditions(), routingUnit, logicTableAndActualTables).rewrite(sqlRewriteContext).getSql(),
-                is("INSERT INTO `table_w` set cipher = 'encryptValue', id = 1, query = 'assistedEncryptValue', plain = 10 ON DUPLICATE KEY UPDATE name = VALUES(name)"));
+                is("INSERT INTO `table_w` set cipher = 'encryptValue', query = 'assistedEncryptValue', plain = 10, id = 1 ON DUPLICATE KEY UPDATE name = VALUES(name)"));
     }
     
     private SQLRouteResult createSQLRouteResultForInsertWithGeneratedKeyAndQueryAssistedShardingEncryptor() {

@@ -15,29 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parse.integrate.jaxb.table;
+package org.apache.shardingsphere.core.route.spi;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.Date;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+/**
+ * Time service.
+ *
+ * @author chenchuangliu
+ */
+public interface TimeService {
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@Getter
-@Setter
-public final class ExpectedTable {
-    
-    @XmlAttribute
-    private String name;
-    
-    @XmlAttribute
-    private String alias;
-    
-    @XmlAttribute(name = "start-index")
-    private int startIndex;
-    
-    @XmlAttribute(name = "stop-index")
-    private int stopIndex;
+    /**
+     * Get date from time server.
+     * @return date
+     */
+    Date getTime();
 }

@@ -15,32 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.parameter.builder.impl;
+package org.apache.shardingsphere.core.route.router.sharding.condition;
 
-import org.junit.Before;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+public final class ExpressionConditionUtilsTest {
 
-public final class StandardParameterBuilderTest {
-    
-    private final List<Object> parameters = Arrays.<Object>asList(1, 2, 1, 5);
-    
-    private StandardParameterBuilder parameterBuilder;
-    
-    @Before
-    public void setUp() {
-        parameterBuilder = new StandardParameterBuilder(parameters);
-        parameterBuilder.addAddedParameters(4, Collections.<Object>singleton(7));
-    }
-    
     @Test
-    public void assertGetParameters() {
-        assertThat(parameterBuilder.getParameters(), is(Arrays.<Object>asList(1, 2, 1, 5, 7)));
+    public void assertIsNowExpression() {
+        assertFalse(ExpressionConditionUtils.isNowExpression(new LiteralExpressionSegment(0, 0, new Object())));
+        assertFalse(ExpressionConditionUtils.isNowExpression(new CommonExpressionSegment(0, 0, "shardingsphere")));
+        assertTrue(ExpressionConditionUtils.isNowExpression(new CommonExpressionSegment(0, 0, "NOW()")));
     }
 }
