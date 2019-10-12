@@ -63,13 +63,13 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
     
     private final String name;
     
-    private final String sql;
+    private final String inputSQL;
     
-    private final List<Object> parameters;
+    private final List<Object> inputParameters;
     
-    private final String rewritedSQL;
+    private final String outputSQL;
     
-    private final List<Object> rewritedParameters;
+    private final List<Object> outputParameters;
     
     private final String databaseType;
     
@@ -94,10 +94,10 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
         Object[] result = new Object[7];
         result[0] = rootAssertions.getYamlRule();
         result[1] = assertion.getId();
-        result[2] = assertion.getSql();
-        result[3] = null == assertion.getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getParameters());
-        result[4] = assertion.getRewritedSQL();
-        result[5] = null == assertion.getRewritedParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getRewritedParameters());
+        result[2] = assertion.getInput().getSql();
+        result[3] = null == assertion.getInput().getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getInput().getParameters());
+        result[4] = assertion.getOutput().getSql();
+        result[5] = null == assertion.getOutput().getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getOutput().getParameters());
         result[6] = assertion.getDatabaseType();
         return result;
     }
@@ -114,8 +114,8 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
     @Test
     public void assertRewrite() throws IOException {
         SQLRewriteResult actual = getSQLRewriteResult();
-        assertThat(actual.getSql(), is(rewritedSQL));
-        assertThat(actual.getParameters(), is(rewritedParameters));
+        assertThat(actual.getSql(), is(outputSQL));
+        assertThat(actual.getParameters(), is(outputParameters));
     }
     
     private SQLRewriteResult getSQLRewriteResult() throws IOException {
@@ -125,9 +125,9 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
     }
     
     private SQLRewriteContext getSQLRewriteContext() {
-        SQLStatement sqlStatement = new SQLParseEngine(DatabaseTypes.getActualDatabaseType(null == databaseType ? "SQL92" : databaseType)).parse(sql, false);
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(mock(TableMetas.class), sql, parameters, sqlStatement);
-        return new SQLRewriteContext(mock(TableMetas.class), sqlStatementContext, sql, parameters);
+        SQLStatement sqlStatement = new SQLParseEngine(DatabaseTypes.getActualDatabaseType(null == databaseType ? "SQL92" : databaseType)).parse(inputSQL, false);
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(mock(TableMetas.class), inputSQL, inputParameters, sqlStatement);
+        return new SQLRewriteContext(mock(TableMetas.class), sqlStatementContext, inputSQL, inputParameters);
     }
     
     private EncryptRule createEncryptRule() throws IOException {
