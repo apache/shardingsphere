@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -94,9 +95,9 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
         result[0] = rootAssertions.getYamlRule();
         result[1] = assertion.getId();
         result[2] = assertion.getSql();
-        result[3] = Splitter.on(",").trimResults().splitToList(assertion.getParameters());
+        result[3] = null == assertion.getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getParameters());
         result[4] = assertion.getRewritedSQL();
-        result[5] = Splitter.on(",").trimResults().splitToList(assertion.getRewritedParameters());
+        result[5] = null == assertion.getRewritedParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getRewritedParameters());
         result[6] = assertion.getDatabaseType();
         return result;
     }
