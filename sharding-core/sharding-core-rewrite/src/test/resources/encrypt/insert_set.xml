@@ -37,18 +37,23 @@
         <output sql="INSERT INTO t_cipher_assisted_query SET cipher_1 = 'encrypt_1', assisted_query_1 = 'assisted_query_1', cipher_2 = 'encrypt_2', assisted_query_2 = 'assisted_query_2'" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="insert_set_for_query_plain_encrypt_with_parameter" db-type="MySQL">
-        <input sql="INSERT INTO t_cipher_assisted_query_plain SET encrypt_1 = ?, encrypt_2 = ?" parameters="1, 2" />
-        <output sql="INSERT INTO t_cipher_assisted_query_plain SET cipher_1 = ?, assisted_query_1 = ?, plain_1 = ?, cipher_2 = ?, assisted_query_2 = ?, plain_2 = ?" parameters="encrypt_1, assisted_query_1, 1, encrypt_2, assisted_query_2, 2" />
-    </rewrite-assertion>
-    
-    <rewrite-assertion id="insert_set_for_encrypt_only_with_literal" db-type="MySQL">
-        <input sql="INSERT INTO t_cipher SET encrypt_1 = 1, encrypt_2 = 2" />
-        <output sql="INSERT INTO t_cipher SET cipher_1 = 'encrypt_1', cipher_2 = 'encrypt_2'" />
+    <rewrite-assertion id="insert_set_for_plain_encrypt_with_parameter" db-type="MySQL">
+        <input sql="INSERT INTO t_cipher_plain SET encrypt_1 = ?, encrypt_2 = ?" parameters="1, 2" />
+        <output sql="INSERT INTO t_cipher_plain SET cipher_1 = ?, plain_1 = ?, cipher_2 = ?, plain_2 = ?" parameters="encrypt_1, 1, encrypt_2, 2" />
     </rewrite-assertion>
     
     <rewrite-assertion id="insert_set_for_plain_encrypt_with_literal" db-type="MySQL">
         <input sql="INSERT INTO t_cipher_plain SET encrypt_1 = 1, encrypt_2 = 2" />
         <output sql="INSERT INTO t_cipher_plain SET cipher_1 = 'encrypt_1', plain_1 = 1, cipher_2 = 'encrypt_2', plain_2 = 2" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_set_for_query_plain_encrypt_with_parameter" db-type="MySQL">
+        <input sql="INSERT INTO t_cipher_assisted_query_plain SET encrypt_1 = ?, encrypt_2 = ?" parameters="1, 2" />
+        <output sql="INSERT INTO t_cipher_assisted_query_plain SET cipher_1 = ?, assisted_query_1 = ?, plain_1 = ?, cipher_2 = ?, assisted_query_2 = ?, plain_2 = ?" parameters="encrypt_1, assisted_query_1, 1, encrypt_2, assisted_query_2, 2" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_set_for_query_plain_encrypt_with_literal" db-type="MySQL">
+        <input sql="INSERT INTO t_cipher_assisted_query_plain SET encrypt_1 = 1, encrypt_2 = 2" />
+        <output sql="INSERT INTO t_cipher_assisted_query_plain SET cipher_1 = 'encrypt_1', assisted_query_1 = 'assisted_query_1', plain_1 = 1, cipher_2 = 'encrypt_2', assisted_query_2 = 'assisted_query_2', plain_2 = 2" />
     </rewrite-assertion>
 </rewrite-assertions>
