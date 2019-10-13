@@ -39,12 +39,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class EncryptSQLRewriteEngineTest {
@@ -70,42 +68,6 @@ public final class EncryptSQLRewriteEngineTest {
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         YamlRootEncryptRuleConfiguration yamlEncryptConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootEncryptRuleConfiguration.class);
         return new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(yamlEncryptConfig.getEncryptRule()));
-    }
-
-    @Test
-    public void assertSelectWithoutPlaceholderWithEncrypt() {
-        String sql = "SELECT * FROM t_cipher WHERE encrypt_1 = 1 or encrypt_2 = 2";
-        SQLRewriteResult actual = getSQLRewriteResult(sql, Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("SELECT * FROM t_cipher WHERE cipher_1 = 'encrypt_1' or cipher_2 = 'encrypt_2'"));
-        assertTrue(actual.getParameters().isEmpty());
-    }
-    
-    @Test
-    public void assertSelectWithoutPlaceholderWithPlainEncrypt() {
-        String sql = "SELECT * FROM t_cipher_plain WHERE encrypt_1 = 1 or encrypt_2 = 2";
-        SQLRewriteResult actual = getSQLRewriteResult(sql, Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("SELECT * FROM t_cipher_plain WHERE cipher_1 = 'encrypt_1' or cipher_2 = 'encrypt_2'"));
-        assertTrue(actual.getParameters().isEmpty());
-    }
-    
-    @Test
-    public void assertSelectWithoutPlaceholderWithPlainEncryptWithLogicColumn() {
-        String sql = "SELECT encrypt_1, encrypt_2 FROM t_cipher_plain WHERE encrypt_1 = 1 or encrypt_2 = 2";
-        SQLRewriteResult actual = getSQLRewriteResult(sql, Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("SELECT cipher_1, cipher_2 FROM t_cipher_plain WHERE cipher_1 = 'encrypt_1' or cipher_2 = 'encrypt_2'"));
-        assertTrue(actual.getParameters().isEmpty());
-    }
-    
-    @Test
-    public void assertSelectWithPlaceholderWithQueryEncrypt() {
-        String sql = "SELECT * FROM t_cipher_assisted_query_plain WHERE encrypt_1 in (?, ?) and encrypt_2 in (?, ?)";
-        SQLRewriteResult actual = getSQLRewriteResult(sql, parametersOfIn, true);
-        assertThat(actual.getSql(), is("SELECT * FROM t_cipher_assisted_query_plain WHERE assisted_query_1 IN (?, ?) and assisted_query_2 IN (?, ?)"));
-        assertThat(actual.getParameters().size(), is(4));
-        assertThat(actual.getParameters().get(0), is((Object) "assisted_query_1"));
-        assertThat(actual.getParameters().get(1), is((Object) "assisted_query_2"));
-        assertThat(actual.getParameters().get(2), is((Object) "assisted_query_3"));
-        assertThat(actual.getParameters().get(3), is((Object) "assisted_query_4"));
     }
     
     @Test
