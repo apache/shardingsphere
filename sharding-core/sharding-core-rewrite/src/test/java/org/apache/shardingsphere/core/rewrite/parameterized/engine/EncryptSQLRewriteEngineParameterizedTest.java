@@ -47,8 +47,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -58,6 +61,8 @@ import static org.mockito.Mockito.mock;
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
 public final class EncryptSQLRewriteEngineParameterizedTest {
+    
+    private final String fileName;
     
     private final String ruleFile;
     
@@ -73,41 +78,42 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
     
     private final String databaseType;
     
-    @Parameters(name = "{1}")
+    @Parameters(name = "{2} -> {0}")
     public static Collection<Object[]> getTestParameters() {
         Collection<Object[]> result = new LinkedList<>();
-        for (EncryptRewriteAssertionsRootEntity each : getAllEncryptRewriteAssertionsRootEntities()) {
-            result.addAll(getTestParameters(each));
+        for (Entry<String, EncryptRewriteAssertionsRootEntity> entry : getAllEncryptRewriteAssertionsRootEntities().entrySet()) {
+            result.addAll(getTestParameters(entry.getKey(), entry.getValue()));
         }
         return result;
     }
     
-    private static Collection<Object[]> getTestParameters(final EncryptRewriteAssertionsRootEntity rootAssertions) {
+    private static Collection<Object[]> getTestParameters(final String fileName, final EncryptRewriteAssertionsRootEntity rootAssertions) {
         Collection<Object[]> result = new LinkedList<>();
         for (EncryptRewriteAssertionEntity each : rootAssertions.getAssertions()) {
-            result.add(getTestParameter(rootAssertions, each));
+            result.add(getTestParameter(fileName, rootAssertions, each));
         }
         return result;
     }
     
-    private static Object[] getTestParameter(final EncryptRewriteAssertionsRootEntity rootAssertions, final EncryptRewriteAssertionEntity assertion) {
-        Object[] result = new Object[7];
-        result[0] = rootAssertions.getYamlRule();
-        result[1] = assertion.getId();
-        result[2] = assertion.getInput().getSql();
-        result[3] = null == assertion.getInput().getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getInput().getParameters());
-        result[4] = assertion.getOutput().getSql();
-        result[5] = null == assertion.getOutput().getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getOutput().getParameters());
-        result[6] = assertion.getDatabaseType();
+    private static Object[] getTestParameter(final String fileName, final EncryptRewriteAssertionsRootEntity rootAssertions, final EncryptRewriteAssertionEntity assertion) {
+        Object[] result = new Object[8];
+        result[0] = fileName;
+        result[1] = rootAssertions.getYamlRule();
+        result[2] = assertion.getId();
+        result[3] = assertion.getInput().getSql();
+        result[4] = null == assertion.getInput().getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getInput().getParameters());
+        result[5] = assertion.getOutput().getSql();
+        result[6] = null == assertion.getOutput().getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getOutput().getParameters());
+        result[7] = assertion.getDatabaseType();
         return result;
     }
     
-    private static Collection<EncryptRewriteAssertionsRootEntity> getAllEncryptRewriteAssertionsRootEntities() {
-        Collection<EncryptRewriteAssertionsRootEntity> result = new LinkedList<>();
+    private static Map<String, EncryptRewriteAssertionsRootEntity> getAllEncryptRewriteAssertionsRootEntities() {
+        Map<String, EncryptRewriteAssertionsRootEntity> result = new LinkedHashMap<>();
         File file = new File(EncryptSQLRewriteEngineParameterizedTest.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "/encrypt");
         for (File each : Objects.requireNonNull(file.listFiles())) {
             if (each.getName().endsWith(".xml")) {
-                result.add(new EncryptRewriteAssertionsRootEntityLoader().load("encrypt/" + each.getName()));
+                result.put(each.getName(), new EncryptRewriteAssertionsRootEntityLoader().load("encrypt/" + each.getName()));
             }
         }
         return result;
