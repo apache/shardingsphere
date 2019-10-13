@@ -32,10 +32,10 @@ import static org.junit.Assert.assertThat;
 
 public class ApolloConfigCenterTest {
 
-    private static ConfigCenter configCenter = new ApolloConfigCenter();
-
     @ClassRule
     public static EmbeddedApollo embeddedApollo = new EmbeddedApollo();
+
+    private static ConfigCenter configCenter = new ApolloConfigCenter();
 
     @BeforeClass
     public static void init() {
