@@ -658,13 +658,6 @@ public final class ShardingSQLRewriteEngineTest {
     }
     
     @Test
-    public void assertRewriteTableTokenWithoutBackQuoteForShow() {
-        SQLRewriteResult actual = getSQLRewriteResult("SHOW COLUMNS FROM table_x", Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("SHOW COLUMNS FROM table_1"));
-        assertThat(actual.getParameters(), is(Collections.emptyList()));
-    }
-    
-    @Test
     public void assertRewriteTableTokenWithoutBackQuoteFromSchemaForShow() {
         SQLRewriteResult actual = getSQLRewriteResult("SHOW COLUMNS FROM table_x FROM `sharding_db`", Collections.emptyList(), true);
         assertThat(actual.getSql(), is("SHOW COLUMNS FROM table_1 "));

@@ -21,22 +21,27 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.preprocessor.SQLStatementContextFactory;
-import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteResult;
-import org.apache.shardingsphere.core.rewrite.engine.impl.DefaultSQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.context.EncryptSQLRewriteContextDecorator;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.ShardingSQLRewriteEngineTest;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.context.ShardingSQLRewriteContextDecorator;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.engine.ShardingSQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.parameterized.jaxb.entity.RewriteAssertionEntity;
 import org.apache.shardingsphere.core.rewrite.parameterized.jaxb.entity.RewriteAssertionsRootEntity;
+import org.apache.shardingsphere.core.rewrite.parameterized.jaxb.entity.RewriteOutputEntity;
 import org.apache.shardingsphere.core.rewrite.parameterized.jaxb.loader.EncryptRewriteAssertionsRootEntityLoader;
-import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlRootEncryptRuleConfiguration;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.router.sharding.ShardingRouter;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -45,6 +50,7 @@ import org.junit.runners.Parameterized.Parameters;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -60,9 +66,11 @@ import static org.mockito.Mockito.mock;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class EncryptSQLRewriteEngineParameterizedTest {
+public final class ShardingSQLRewriteEngineParameterizedTest {
     
-    private static final String PATH = "encrypt";
+    private static final String PATH = "sharding";
+    
+    private static final Map<String, String> LOGIC_AND_ACTUAL_TABLES = Collections.singletonMap("table_x", "table_1");
     
     private final String fileName;
     
@@ -74,9 +82,9 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
     
     private final List<Object> inputParameters;
     
-    private final String outputSQL;
+    private final List<String> outputSQLs;
     
-    private final List<Object> outputParameters;
+    private final List<List<Object>> outputGroupedParameters;
     
     private final String databaseType;
     
@@ -104,15 +112,22 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
         result[2] = assertion.getId();
         result[3] = assertion.getInput().getSql();
         result[4] = null == assertion.getInput().getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getInput().getParameters());
-        result[5] = assertion.getOutputs().get(0).getSql();
-        result[6] = null == assertion.getOutputs().get(0).getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getOutputs().get(0).getParameters());
+        List<RewriteOutputEntity> outputs = assertion.getOutputs();
+        List<String> outputSQLs = new ArrayList<>(outputs.size());
+        List<Object> outputGroupedParameters = new ArrayList<>(outputs.size());
+        for (RewriteOutputEntity each : outputs) {
+            outputSQLs.add(each.getSql());
+            outputGroupedParameters.add(null == each.getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(each.getParameters()));
+        }
+        result[5] = outputSQLs;
+        result[6] = outputGroupedParameters;
         result[7] = assertion.getDatabaseType();
         return result;
     }
     
     private static Map<String, RewriteAssertionsRootEntity> getAllRewriteAssertionsRootEntities() {
         Map<String, RewriteAssertionsRootEntity> result = new LinkedHashMap<>();
-        File file = new File(EncryptSQLRewriteEngineParameterizedTest.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "/" + PATH);
+        File file = new File(ShardingSQLRewriteEngineParameterizedTest.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "/" + PATH);
         for (File each : Objects.requireNonNull(file.listFiles())) {
             if (each.getName().endsWith(".xml")) {
                 result.put(each.getName(), new EncryptRewriteAssertionsRootEntityLoader().load(PATH + "/" + each.getName()));
@@ -123,29 +138,37 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
     
     @Test
     public void assertRewrite() throws IOException {
-        SQLRewriteResult actual = getSQLRewriteResult();
-        assertThat(actual.getSql(), is(outputSQL));
-        assertThat(actual.getParameters(), is(outputParameters));
+        Collection<SQLRewriteResult> actual = getSQLRewriteResults();
+        assertThat(actual.size(), is(outputSQLs.size()));
+        int count = 0;
+        for (SQLRewriteResult each : actual) {
+            assertThat(each.getSql(), is(outputSQLs.get(count)));
+            assertThat(each.getParameters(), is(outputGroupedParameters.get(count)));
+            count++;
+        }
     }
     
-    private SQLRewriteResult getSQLRewriteResult() throws IOException {
-        SQLRewriteContext sqlRewriteContext = getSQLRewriteContext();
-        YamlRootEncryptRuleConfiguration ruleConfiguration = createRuleConfiguration();
-        EncryptRule encryptRule = new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(ruleConfiguration.getEncryptRule()));
+    private Collection<SQLRewriteResult> getSQLRewriteResults() throws IOException {
+        YamlRootShardingConfiguration ruleConfiguration = createRuleConfiguration();
+        ShardingRule shardingRule = new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(ruleConfiguration.getShardingRule()), ruleConfiguration.getDataSources().keySet());
+        SQLParseEngine parseEngine = new SQLParseEngine(DatabaseTypes.getActualDatabaseType(null == databaseType ? "SQL92" : databaseType));
+        ShardingRouter shardingRouter = new ShardingRouter(shardingRule, mock(ShardingSphereMetaData.class), parseEngine);
+        SQLStatement sqlStatement = shardingRouter.parse(inputSQL, false);
+        SQLRouteResult sqlRouteResult = shardingRouter.route(inputSQL, inputParameters, sqlStatement);
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(TableMetas.class), sqlRouteResult.getSqlStatementContext(), inputSQL, inputParameters);
+        new ShardingSQLRewriteContextDecorator(shardingRule, sqlRouteResult).decorate(sqlRewriteContext);
         boolean isQueryWithCipherColumn = (boolean) ruleConfiguration.getProps().get("query.with.cipher.column");
-        new EncryptSQLRewriteContextDecorator(encryptRule, isQueryWithCipherColumn).decorate(sqlRewriteContext);
-        return new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
+        new EncryptSQLRewriteContextDecorator(shardingRule.getEncryptRule(), isQueryWithCipherColumn).decorate(sqlRewriteContext);
+        Collection<SQLRewriteResult> result = new LinkedList<>();
+        for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
+            result.add(new ShardingSQLRewriteEngine(sqlRouteResult.getShardingConditions(), each, LOGIC_AND_ACTUAL_TABLES).rewrite(sqlRewriteContext));
+        }
+        return result;
     }
     
-    private SQLRewriteContext getSQLRewriteContext() {
-        SQLStatement sqlStatement = new SQLParseEngine(DatabaseTypes.getActualDatabaseType(null == databaseType ? "SQL92" : databaseType)).parse(inputSQL, false);
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(mock(TableMetas.class), inputSQL, inputParameters, sqlStatement);
-        return new SQLRewriteContext(mock(TableMetas.class), sqlStatementContext, inputSQL, inputParameters);
-    }
-    
-    private YamlRootEncryptRuleConfiguration createRuleConfiguration() throws IOException {
-        URL url = EncryptSQLRewriteEngineParameterizedTest.class.getClassLoader().getResource(ruleFile);
+    private YamlRootShardingConfiguration createRuleConfiguration() throws IOException {
+        URL url = ShardingSQLRewriteEngineTest.class.getClassLoader().getResource(ruleFile);
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
-        return YamlEngine.unmarshal(new File(url.getFile()), YamlRootEncryptRuleConfiguration.class);
+        return YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class);
     }
 }
