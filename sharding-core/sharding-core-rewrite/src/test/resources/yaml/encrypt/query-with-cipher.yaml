@@ -27,47 +27,47 @@ encryptRule:
       columns:
         encrypt_1:
           cipherColumn: cipher_1
-          encryptor: test
+          encryptor: normal
         encrypt_2:
           cipherColumn: cipher_2
-          encryptor: test
+          encryptor: normal
     t_cipher_assisted_query:
       columns:
         encrypt_1:
           cipherColumn: cipher_1
           assistedQueryColumn: assisted_query_1
-          encryptor: assisted_query_test
+          encryptor: assisted_query
         encrypt_2:
           cipherColumn: cipher_2
           assistedQueryColumn: assisted_query_2
-          encryptor: assisted_query_test
+          encryptor: assisted_query
     t_cipher_plain:
       columns:
         encrypt_1:
           cipherColumn: cipher_1
           plainColumn: plain_1
-          encryptor: test
+          encryptor: normal
         encrypt_2:
           cipherColumn: cipher_2
           plainColumn: plain_2
-          encryptor: test
+          encryptor: normal
     t_cipher_assisted_query_plain:
       columns:
         encrypt_1:
           cipherColumn: cipher_1
           assistedQueryColumn: assisted_query_1
           plainColumn: plain_1
-          encryptor: assisted_query_test
+          encryptor: assisted_query
         encrypt_2:
           cipherColumn: cipher_2
           assistedQueryColumn: assisted_query_2
           plainColumn: plain_2
-          encryptor: assisted_query_test
+          encryptor: assisted_query
   encryptors:
-    test:
-      type: TEST
-    assisted_query_test:
-      type: ASSISTED_QUERY_TEST
+    normal:
+      type: NORMAL_ENCRYPT
+    assisted_query:
+      type: ASSISTED_QUERY_ENCRYPT
 
 props:
   query.with.cipher.column: true

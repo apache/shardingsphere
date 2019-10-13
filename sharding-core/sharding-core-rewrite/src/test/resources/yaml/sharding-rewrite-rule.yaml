@@ -54,17 +54,17 @@ shardingRule:
   
   encryptRule:
     encryptors:
-      test:
-        type: TEST
+      normal:
+        type: NORMAL_ENCRYPT
       k_encryptor:
-        type: ASSISTED_QUERY_TEST
+        type: ASSISTED_QUERY_ENCRYPT
     tables:
       t_cipher:
         columns:
           password:
             cipherColumn: cipher_password
             plainColumn: plain_password
-            encryptor: test
+            encryptor: normal
       table_k:
         columns:
           id:

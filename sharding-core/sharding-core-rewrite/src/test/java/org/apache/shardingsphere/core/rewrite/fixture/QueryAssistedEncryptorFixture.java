@@ -25,13 +25,13 @@ import java.util.Properties;
 
 @Getter
 @Setter
-public final class TestQueryAssistedShardingEncryptor implements ShardingQueryAssistedEncryptor {
+public final class QueryAssistedEncryptorFixture implements ShardingQueryAssistedEncryptor {
     
     private Properties properties = new Properties();
     
     @Override
     public String getType() {
-        return "ASSISTED_QUERY_TEST";
+        return "ASSISTED_QUERY_ENCRYPT";
     }
     
     @Override
