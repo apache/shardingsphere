@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<rewrite-assertions yaml-rule="yaml/encrypt-rewrite-rule-query-without-cipher.yaml">
+<rewrite-assertions yaml-rule="yaml/encrypt/query-without-cipher.yaml">
     <!-- FIXME SQL92 -->
     <rewrite-assertion id="plain_encrypt_with_parameters" db-type="MySQL">
         <input sql="SELECT encrypt_1, encrypt_2 FROM t_cipher_plain WHERE encrypt_1 = ? or encrypt_2 = ?" parameters="1, 2" />

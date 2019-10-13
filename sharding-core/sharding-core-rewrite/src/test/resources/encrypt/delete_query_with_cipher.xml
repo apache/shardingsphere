@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<rewrite-assertions yaml-rule="yaml/encrypt-rewrite-rule-query-with-cipher.yaml">
+<rewrite-assertions yaml-rule="yaml/encrypt/query-with-cipher.yaml">
     <rewrite-assertion id="encrypt_only_with_parameters">
         <input sql="DELETE FROM t_cipher WHERE encrypt_1 = ? and encrypt_2 = ?" parameters="1, 2" />
         <output sql="DELETE FROM t_cipher WHERE cipher_1 = ? and cipher_2 = ?" parameters="encrypt_1, encrypt_2" />

@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<rewrite-assertions yaml-rule="yaml/encrypt-rewrite-rule-query-with-cipher.yaml">
+<rewrite-assertions yaml-rule="yaml/encrypt/query-with-cipher.yaml">
     <rewrite-assertion id="encrypt_only_with_parameters">
         <input sql="UPDATE t_cipher set encrypt_1 = ? where encrypt_2 = ?" parameters="1, 2" />
         <output sql="UPDATE t_cipher set cipher_1 = ? where cipher_2 = ?" parameters="encrypt_1, encrypt_2" />
