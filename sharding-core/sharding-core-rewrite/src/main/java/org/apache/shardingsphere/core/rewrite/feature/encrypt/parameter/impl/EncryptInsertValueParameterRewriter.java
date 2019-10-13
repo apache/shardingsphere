@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.preprocessor.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.EncryptRuleAware;
@@ -35,7 +34,6 @@ import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -67,15 +65,14 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         }
     }
     
-    private void encryptInsertValues(final GroupedParameterBuilder parameterBuilder, final InsertSQLStatementContext sqlStatementContext, 
+    private void encryptInsertValues(final GroupedParameterBuilder parameterBuilder, final InsertSQLStatementContext sqlStatementContext,
                                      final EncryptRule encryptRule, final ShardingEncryptor shardingEncryptor, final String tableName, final String encryptLogicColumnName) {
         int columnIndex = sqlStatementContext.getColumnNames().indexOf(encryptLogicColumnName);
-        Iterator<InsertValueContext> insertValueContexts = sqlStatementContext.getInsertValueContexts().iterator();
         int count = 0;
         for (List<Object> each : sqlStatementContext.getGroupedParameters()) {
             if (!each.isEmpty()) {
-                encryptInsertValue(encryptRule, shardingEncryptor, tableName, columnIndex, each.size(), 
-                        insertValueContexts.next().getValue(columnIndex), parameterBuilder.getParameterBuilders().get(count), encryptLogicColumnName);
+                encryptInsertValue(encryptRule, shardingEncryptor, tableName, columnIndex, each.size(),
+                        sqlStatementContext.getInsertValueContexts().get(count).getValue(columnIndex), parameterBuilder.getParameterBuilders().get(count), encryptLogicColumnName);
             }
             count++;
         }
