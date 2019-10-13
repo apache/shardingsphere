@@ -122,7 +122,10 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
     
     private SQLRewriteResult getSQLRewriteResult() throws IOException {
         SQLRewriteContext sqlRewriteContext = getSQLRewriteContext();
-        new EncryptSQLRewriteContextDecorator(createEncryptRule(), true).decorate(sqlRewriteContext);
+        YamlRootEncryptRuleConfiguration encryptRuleConfiguration = createEncryptRuleConfiguration();
+        EncryptRule encryptRule = new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(encryptRuleConfiguration.getEncryptRule()));
+        boolean isQueryWithCipherColumn = (boolean) encryptRuleConfiguration.getProps().get("query.with.cipher.column");
+        new EncryptSQLRewriteContextDecorator(encryptRule, isQueryWithCipherColumn).decorate(sqlRewriteContext);
         return new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
     }
     
@@ -132,10 +135,9 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
         return new SQLRewriteContext(mock(TableMetas.class), sqlStatementContext, inputSQL, inputParameters);
     }
     
-    private EncryptRule createEncryptRule() throws IOException {
+    private YamlRootEncryptRuleConfiguration createEncryptRuleConfiguration() throws IOException {
         URL url = EncryptSQLRewriteEngineParameterizedTest.class.getClassLoader().getResource(ruleFile);
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
-        YamlRootEncryptRuleConfiguration yamlEncryptConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootEncryptRuleConfiguration.class);
-        return new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(yamlEncryptConfig.getEncryptRule()));
+        return YamlEngine.unmarshal(new File(url.getFile()), YamlRootEncryptRuleConfiguration.class);
     }
 }

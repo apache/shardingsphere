@@ -77,7 +77,11 @@ public final class EncryptPredicateToken extends SQLToken implements Substitutab
             if (parameterMarkerIndexes.contains(i)) {
                 result.append("?");
             } else {
-                result.append("'").append(indexValues.get(i)).append("'");
+                if (indexValues.get(i) instanceof String) {
+                    result.append("'").append(indexValues.get(i)).append("'");
+                } else {
+                    result.append(indexValues.get(i));
+                }
             }
             result.append(", ");
         }

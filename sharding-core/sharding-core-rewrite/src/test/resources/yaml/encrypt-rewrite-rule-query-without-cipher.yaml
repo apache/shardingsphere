@@ -68,3 +68,6 @@ encryptRule:
       type: TEST
     assisted_query_test:
       type: ASSISTED_QUERY_TEST
+
+props:
+  query.with.cipher.column: false

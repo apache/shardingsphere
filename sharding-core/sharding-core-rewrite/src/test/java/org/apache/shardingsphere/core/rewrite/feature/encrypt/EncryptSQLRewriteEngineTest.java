@@ -66,7 +66,7 @@ public final class EncryptSQLRewriteEngineTest {
     }
     
     private EncryptRule createEncryptRule() throws IOException {
-        URL url = EncryptSQLRewriteEngineTest.class.getClassLoader().getResource("yaml/encrypt-rewrite-rule.yaml");
+        URL url = EncryptSQLRewriteEngineTest.class.getClassLoader().getResource("yaml/encrypt-rewrite-rule-query-with-cipher.yaml");
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         YamlRootEncryptRuleConfiguration yamlEncryptConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootEncryptRuleConfiguration.class);
         return new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(yamlEncryptConfig.getEncryptRule()));
@@ -128,47 +128,6 @@ public final class EncryptSQLRewriteEngineTest {
         assertThat(actual.getParameters().size(), is(2));
         assertThat(actual.getParameters().get(0), is((Object) 1));
         assertThat(actual.getParameters().get(1), is((Object) 2));
-    }
-    
-    @Test
-    public void assertDeleteWithPlaceholderWithEncrypt() {
-        String sql = "DELETE FROM t_cipher WHERE encrypt_1 = ? and encrypt_2 = ?";
-        SQLRewriteResult actual = getSQLRewriteResult(sql, parametersOfEqual, true);
-        assertThat(actual.getSql(), is("DELETE FROM t_cipher WHERE cipher_1 = ? and cipher_2 = ?"));
-        assertThat(actual.getParameters().size(), is(2));
-        assertThat(actual.getParameters().get(0), is((Object) "encrypt_1"));
-        assertThat(actual.getParameters().get(1), is((Object) "encrypt_2"));
-        
-    }
-    
-    @Test
-    public void assertDeleteWithPlaceholderWithPlainEncrypt() {
-        String sql = "DELETE FROM t_cipher_plain WHERE encrypt_1 in (?, ?) or encrypt_2 in (?, ?)";
-        SQLRewriteResult actual = getSQLRewriteResult(sql, parametersOfIn, false);
-        assertThat(actual.getSql(), is("DELETE FROM t_cipher_plain WHERE plain_1 IN (?, ?) or plain_2 IN (?, ?)"));
-        assertThat(actual.getParameters().size(), is(4));
-        assertThat(actual.getParameters().get(0), is((Object) 1));
-        assertThat(actual.getParameters().get(1), is((Object) 2));
-        assertThat(actual.getParameters().get(2), is((Object) 3));
-        assertThat(actual.getParameters().get(3), is((Object) 4));
-        
-    }
-    
-    @Test
-    public void assertDeleteWithoutPlaceholderWithQueryEncrypt() {
-        String sql = "DELETE FROM t_cipher_assisted_query WHERE encrypt_1 = 1 and encrypt_2 = 2";
-        SQLRewriteResult actual = getSQLRewriteResult(sql, Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("DELETE FROM t_cipher_assisted_query WHERE assisted_query_1 = 'assisted_query_1' and assisted_query_2 = 'assisted_query_2'"));
-        assertTrue(actual.getParameters().isEmpty());
-    }
-    
-    @Test
-    public void assertDeleteWithoutPlaceholderWithQueryPlainEncrypt() {
-        String sql = "DELETE FROM t_cipher_assisted_query_plain WHERE encrypt_1 = 1 or encrypt_2 IN (2,3,4)";
-        SQLRewriteResult actual = getSQLRewriteResult(sql, Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("DELETE FROM t_cipher_assisted_query_plain "
-                + "WHERE assisted_query_1 = 'assisted_query_1' or assisted_query_2 IN ('assisted_query_2', 'assisted_query_3', 'assisted_query_4')"));
-        assertTrue(actual.getParameters().isEmpty());
     }
     
     @Test
