@@ -15,36 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.fixture;
+package org.apache.shardingsphere.core.rewrite.parameterized.jaxb.entity;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
-import java.util.Properties;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
+/**
+ * Encrypt rewrite input entity for JAXB.
+ *
+ * @author zhangliang
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-@Setter
-public final class TestShardingEncryptor implements ShardingEncryptor {
+public final class EncryptRewriteOutputEntity {
     
-    private Properties properties = new Properties();
+    @XmlAttribute(required = true)
+    private String sql;
     
-    @Override
-    public String getType() {
-        return "TEST";
-    }
-    
-    @Override
-    public void init() {
-    }
-    
-    @Override
-    public String encrypt(final Object plaintext) {
-        return "encrypt_" + plaintext;
-    }
-    
-    @Override
-    public Object decrypt(final String ciphertext) {
-        return ciphertext.replaceAll("encrypt_", "");
-    }
+    @XmlAttribute
+    private String parameters;
 }

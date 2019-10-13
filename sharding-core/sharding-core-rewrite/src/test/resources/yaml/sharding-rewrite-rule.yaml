@@ -32,7 +32,7 @@ shardingRule:
     table_x:
       actualDataNodes: db${0..1}.table_x
       keyGenerator:
-        type: SNOWFLAKE
+        type: TEST
         column: id
         props:
           worker.id: 123
@@ -45,7 +45,7 @@ shardingRule:
     table_w:
       actualDataNodes: db${0..1}.table_w
       keyGenerator:
-        type: SNOWFLAKE
+        type: TEST
         column: id
         props:
           worker.id: 123 
@@ -56,7 +56,7 @@ shardingRule:
       z_encryptor:
         type: TEST
       k_encryptor:
-        type: ASSISTEDTEST
+        type: ASSISTED_QUERY_TEST
     tables:
       table_z:
         columns:

@@ -15,36 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.fixture;
+package org.apache.shardingsphere.core.rewrite.parameterized.jaxb.entity;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
-import java.util.Properties;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
+import java.util.LinkedList;
 
+/**
+ * Encrypt rewrite assertions root entity for JAXB.
+ *
+ * @author zhangliang
+ */
+@XmlRootElement(name = "rewrite-assertions")
 @Getter
-@Setter
-public final class TestShardingEncryptor implements ShardingEncryptor {
+public final class EncryptRewriteAssertionsRootEntity {
     
-    private Properties properties = new Properties();
+    @XmlAttribute(name = "yaml-rule", required = true)
+    private String yamlRule;
     
-    @Override
-    public String getType() {
-        return "TEST";
-    }
-    
-    @Override
-    public void init() {
-    }
-    
-    @Override
-    public String encrypt(final Object plaintext) {
-        return "encrypt_" + plaintext;
-    }
-    
-    @Override
-    public Object decrypt(final String ciphertext) {
-        return ciphertext.replaceAll("encrypt_", "");
-    }
+    @XmlElement(name = "rewrite-assertion")
+    private Collection<EncryptRewriteAssertionEntity> assertions = new LinkedList<>();
 }
