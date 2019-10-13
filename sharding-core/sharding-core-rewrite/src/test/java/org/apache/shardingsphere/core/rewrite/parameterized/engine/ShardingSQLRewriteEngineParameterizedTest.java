@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.parameterized.engine;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,8 @@ import org.apache.shardingsphere.core.rewrite.parameterized.jaxb.loader.EncryptR
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.ShardingRouter;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import org.apache.shardingsphere.core.route.type.TableUnit;
+import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
@@ -53,6 +56,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -161,7 +165,8 @@ public final class ShardingSQLRewriteEngineParameterizedTest {
         new EncryptSQLRewriteContextDecorator(shardingRule.getEncryptRule(), isQueryWithCipherColumn).decorate(sqlRewriteContext);
         Collection<SQLRewriteResult> result = new LinkedList<>();
         for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
-            result.add(new ShardingSQLRewriteEngine(sqlRouteResult.getShardingConditions(), each, LOGIC_AND_ACTUAL_TABLES).rewrite(sqlRewriteContext));
+            result.add(new ShardingSQLRewriteEngine(sqlRouteResult.getShardingConditions(), 
+                    each, getLogicAndActualTables(shardingRule, each, sqlRouteResult.getSqlStatementContext().getTablesContext().getTableNames())).rewrite(sqlRewriteContext));
         }
         return result;
     }
@@ -170,5 +175,37 @@ public final class ShardingSQLRewriteEngineParameterizedTest {
         URL url = ShardingSQLRewriteEngineTest.class.getClassLoader().getResource(ruleFile);
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class);
+    }
+    
+    private Map<String, String> getLogicAndActualTables(final ShardingRule shardingRule, final RoutingUnit routingUnit, final Collection<String> parsedTableNames) {
+        Map<String, String> result = new HashMap<>();
+        for (TableUnit each : routingUnit.getTableUnits()) {
+            String logicTableName = each.getLogicTableName().toLowerCase();
+            result.put(logicTableName, each.getActualTableName());
+            result.putAll(getLogicAndActualTablesFromBindingTable(shardingRule, routingUnit.getMasterSlaveLogicDataSourceName(), each, parsedTableNames));
+        }
+        return result;
+    }
+    
+    private Map<String, String> getLogicAndActualTablesFromBindingTable(final ShardingRule shardingRule, 
+                                                                        final String dataSourceName, final TableUnit tableUnit, final Collection<String> parsedTableNames) {
+        Map<String, String> result = new LinkedHashMap<>();
+        Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(tableUnit.getLogicTableName());
+        if (bindingTableRule.isPresent()) {
+            result.putAll(getLogicAndActualTablesFromBindingTable(dataSourceName, tableUnit, parsedTableNames, bindingTableRule.get()));
+        }
+        return result;
+    }
+    
+    private Map<String, String> getLogicAndActualTablesFromBindingTable(
+            final String dataSourceName, final TableUnit tableUnit, final Collection<String> parsedTableNames, final BindingTableRule bindingTableRule) {
+        Map<String, String> result = new LinkedHashMap<>();
+        for (String each : parsedTableNames) {
+            String tableName = each.toLowerCase();
+            if (!tableName.equals(tableUnit.getLogicTableName().toLowerCase()) && bindingTableRule.hasLogicTable(tableName)) {
+                result.put(tableName, bindingTableRule.getBindingActualTable(dataSourceName, tableName, tableUnit.getActualTableName()));
+            }
+        }
+        return result;
     }
 }
