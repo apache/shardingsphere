@@ -52,10 +52,16 @@
         <input sql="SELECT encrypt_1, encrypt_2 FROM t_cipher_plain WHERE encrypt_1 = 1 or encrypt_2 = 2" />
         <output sql="SELECT cipher_1, cipher_2 FROM t_cipher_plain WHERE cipher_1 = 'encrypt_1' or cipher_2 = 'encrypt_2'" />
     </rewrite-assertion>
-
+    
     <!-- FIXME SQL92 -->
     <rewrite-assertion id="plain_encrypt_with_parameters" db-type="MySQL">
         <input sql="SELECT encrypt_1 as alias FROM t_cipher_assisted_query_plain WHERE encrypt_1 in (?, ?) and encrypt_2 in (?, ?)" parameters="1, 2, 3, 4" />
         <output sql="SELECT cipher_1 as alias FROM t_cipher_assisted_query_plain WHERE assisted_query_1 IN (?, ?) and assisted_query_2 IN (?, ?)" parameters="assisted_query_1, assisted_query_2, assisted_query_3, assisted_query_4" />
+    </rewrite-assertion>
+    
+    <!-- FIXME SQL92 -->
+    <rewrite-assertion id="plain_encrypt_with_literals" db-type="MySQL">
+        <input sql="SELECT encrypt_1 as alias FROM t_cipher_assisted_query_plain WHERE encrypt_1 in (1, 2) and encrypt_2 in (3, 4)" />
+        <output sql="SELECT cipher_1 as alias FROM t_cipher_assisted_query_plain WHERE assisted_query_1 IN ('assisted_query_1', 'assisted_query_2') and assisted_query_2 IN ('assisted_query_3', 'assisted_query_4')" />
     </rewrite-assertion>
 </rewrite-assertions>
