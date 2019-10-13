@@ -42,24 +42,18 @@
         <output sql="DELETE FROM t_cipher_plain WHERE cipher_1 IN (?, ?) or cipher_2 IN (?, ?)" parameters="encrypt_1, encrypt_2, encrypt_3, encrypt_4" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="plain_encrypt_with_literals">
-        <input sql="DELETE FROM t_cipher_plain WHERE encrypt_1 IN (1, 2) or encrypt_2 in (3, 4)" />
+    <rewrite-assertion id="plain_encrypt_with_literals" db-type="MySQL">
+        <input sql="DELETE FROM t_cipher_plain WHERE encrypt_1 IN (1, '2') or encrypt_2 in (3, '4')" />
         <output sql="DELETE FROM t_cipher_plain WHERE cipher_1 IN ('encrypt_1', 'encrypt_2') or cipher_2 IN ('encrypt_3', 'encrypt_4')" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="query_plain_encrypt_with_parameters" db-type="MySQL" >
+    <rewrite-assertion id="query_plain_encrypt_with_parameters" db-type="MySQL">
         <input sql="DELETE FROM t_cipher_assisted_query_plain WHERE encrypt_1 = ? or encrypt_2 IN (?,?,?)" parameters="1, 2, 3, 4" />
         <output sql="DELETE FROM t_cipher_assisted_query_plain WHERE assisted_query_1 = ? or assisted_query_2 IN (?, ?, ?)" parameters="assisted_query_1, assisted_query_2, assisted_query_3, assisted_query_4" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="query_plain_encrypt_with_literals" db-type="MySQL" >
+    <rewrite-assertion id="query_plain_encrypt_with_literals" db-type="MySQL">
         <input sql="DELETE FROM t_cipher_assisted_query_plain WHERE encrypt_1 = 1 or encrypt_2 IN (2,3,4)" />
         <output sql="DELETE FROM t_cipher_assisted_query_plain WHERE assisted_query_1 = 'assisted_query_1' or assisted_query_2 IN ('assisted_query_2', 'assisted_query_3', 'assisted_query_4')" />
     </rewrite-assertion>
-    
-    <!-- FIXME -->
-    <!--<rewrite-assertion id="plain_encrypt_with_literal_for_varchar">-->
-        <!--<input sql="DELETE FROM t_cipher_plain WHERE encrypt_1 IN (1, 2) or encrypt_2 in (3, '4')" />-->
-        <!--<output sql="DELETE FROM t_cipher_plain WHERE cipher_1 IN ('encrypt_1', 'encrypt_2') or cipher_2 IN ('encrypt_3', 'encrypt_4')" />-->
-    <!--</rewrite-assertion>-->
 </rewrite-assertions>
