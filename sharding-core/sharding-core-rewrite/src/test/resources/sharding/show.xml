@@ -21,4 +21,5 @@
         <input sql="SHOW COLUMNS FROM table_x" />
         <output sql="SHOW COLUMNS FROM table_x" />
     </rewrite-assertion>
+    
 </rewrite-assertions>

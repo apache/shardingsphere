@@ -74,8 +74,6 @@ public final class ShardingSQLRewriteEngineParameterizedTest {
     
     private static final String PATH = "sharding";
     
-    private static final Map<String, String> LOGIC_AND_ACTUAL_TABLES = Collections.singletonMap("table_x", "table_1");
-    
     private final String fileName;
     
     private final String ruleFile;
