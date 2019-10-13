@@ -27,7 +27,8 @@ encryptRule:
       columns:
         password:
           cipherColumn: cipher_password
-          encryptor: normal
+          assistedQueryColumn: assisted_query_password
+          encryptor: assisted_query
         amount:
           cipherColumn: cipher_amount
           encryptor: normal
@@ -35,8 +36,9 @@ encryptRule:
       columns:
         password:
           cipherColumn: cipher_password
+          assistedQueryColumn: assisted_query_password
           plainColumn: plain_password
-          encryptor: normal
+          encryptor: assisted_query
         amount:
           cipherColumn: cipher_amount
           plainColumn: plain_amount
@@ -44,6 +46,8 @@ encryptRule:
   encryptors:
     normal:
       type: NORMAL_ENCRYPT
+    assisted_query:
+      type: ASSISTED_QUERY_ENCRYPT
 
 props:
   query.with.cipher.column: true
