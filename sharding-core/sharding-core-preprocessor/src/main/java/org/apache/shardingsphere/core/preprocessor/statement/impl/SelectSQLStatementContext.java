@@ -63,6 +63,8 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
     private final PaginationContext paginationContext;
     
     private final boolean containsSubquery;
+
+    private final TableMetas tableMetas;
     
     // TODO to be remove, for test case only
     public SelectSQLStatementContext(final SelectStatement sqlStatement, final GroupByContext groupByContext,
@@ -72,6 +74,7 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
         this.orderByContext = orderByContext;
         this.projectionsContext = projectionsContext;
         this.paginationContext = paginationContext;
+        this.tableMetas = null;
         containsSubquery = containsSubquery();
     }
     
@@ -81,6 +84,7 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
         projectionsContext = new ProjectionsContextEngine(tableMetas).createProjectionsContext(sql, sqlStatement, groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
+        this.tableMetas = tableMetas;
         containsSubquery = containsSubquery();
     }
     
@@ -176,5 +180,13 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
      */
     public boolean isSameGroupByAndOrderByItems() {
         return !groupByContext.getItems().isEmpty() && groupByContext.getItems().equals(orderByContext.getItems());
+    }
+
+    /**
+     * the table metadata.
+     * @return table metadata
+     */
+    public TableMetas tableMetas() {
+        return this.tableMetas;
     }
 }

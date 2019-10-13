@@ -71,7 +71,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
         this.sqlStatementContext = sqlStatementContext;
         this.encryptStatement = encryptStatement;
         originalResultSet = resultSet;
-        QueryResult queryResult = new StreamQueryResult(resultSet, encryptRule, encryptRuntimeContext.getProps());
+        QueryResult queryResult = new StreamQueryResult(resultSet, encryptRule, encryptRuntimeContext.getProps(), sqlStatementContext);
         this.resultSet = new IteratorStreamMergedResult(Collections.singletonList(queryResult));
         logicAndActualColumns = createLogicAndActualColumns(encryptRuntimeContext.getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
     }
