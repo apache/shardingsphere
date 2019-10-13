@@ -130,63 +130,6 @@ public final class EncryptSQLRewriteEngineTest {
         assertThat(actual.getParameters().get(1), is((Object) 2));
     }
     
-    @Test
-    public void assertUpdateWithoutPlaceholderWithEncrypt() {
-        String sql = "UPDATE t_cipher set encrypt_1 = 1 where encrypt_2 = 2";
-        SQLRewriteResult actual = getSQLRewriteResult(sql, Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("UPDATE t_cipher set cipher_1 = 'encrypt_1' where cipher_2 = 'encrypt_2'"));
-        assertTrue(actual.getParameters().isEmpty());
-    }
-    
-    @Test
-    public void assertUpdateWithoutPlaceholderWithPlainEncrypt() {
-        String sql = "UPDATE t_cipher_plain set encrypt_1 = 1 where encrypt_2 = 2";
-        SQLRewriteResult actual = getSQLRewriteResult(sql, Collections.emptyList(), false);
-        assertThat(actual.getSql(), is("UPDATE t_cipher_plain set cipher_1 = 'encrypt_1', plain_1 = 1 where plain_2 = '2'"));
-        assertTrue(actual.getParameters().isEmpty());
-    }
-    
-    @Test
-    public void assertUpdateWithPlaceholderWithQueryEncrypt() {
-        String sql = "UPDATE t_cipher_assisted_query set encrypt_1 = ? where encrypt_2 = ?";
-        SQLRewriteResult actual = getSQLRewriteResult(sql, parametersOfEqual, true);
-        assertThat(actual.getSql(), is("UPDATE t_cipher_assisted_query set cipher_1 = ?, assisted_query_1 = ? where assisted_query_2 = ?"));
-        assertThat(actual.getParameters().size(), is(3));
-        assertThat(actual.getParameters().get(0), is((Object) "encrypt_1"));
-        assertThat(actual.getParameters().get(1), is((Object) "assisted_query_1"));
-        assertThat(actual.getParameters().get(2), is((Object) "assisted_query_2"));
-    }
-    
-    @Test
-    public void assertUpdateWithPlaceholderWithQueryPlainEncrypt() {
-        String sql = "UPDATE t_cipher_assisted_query_plain set encrypt_1 = ? where encrypt_2 = ?";
-        SQLRewriteResult actual = getSQLRewriteResult(sql, parametersOfEqual, true);
-        assertThat(actual.getSql(), is("UPDATE t_cipher_assisted_query_plain set cipher_1 = ?, assisted_query_1 = ?, plain_1 = ? where assisted_query_2 = ?"));
-        assertThat(actual.getParameters().size(), is(4));
-        assertThat(actual.getParameters().get(0), is((Object) "encrypt_1"));
-        assertThat(actual.getParameters().get(1), is((Object) "assisted_query_1"));
-        assertThat(actual.getParameters().get(2), is((Object) 1));
-        assertThat(actual.getParameters().get(3), is((Object) "assisted_query_2"));
-    }
-    
-    @Test
-    public void assertUpdateMultipleEncryptColumnsWithPlaceholder() {
-        String sql = "UPDATE t_cipher_assisted_query_plain set encrypt_1 = ?, encrypt_2 = ?, other_1 = ? where other_2 = ?";
-        List<Object> parameters = Arrays.<Object>asList(1, 2, "update_regular", "query_regular");
-        SQLRewriteResult actual = getSQLRewriteResult(sql, parameters, true);
-        assertThat(actual.getSql(), is("UPDATE t_cipher_assisted_query_plain set cipher_1 = ?, "
-                + "assisted_query_1 = ?, plain_1 = ?, cipher_2 = ?, assisted_query_2 = ?, plain_2 = ?, other_1 = ? where other_2 = ?"));
-        assertThat(actual.getParameters().size(), is(8));
-        assertThat(actual.getParameters().get(0), is((Object) "encrypt_1"));
-        assertThat(actual.getParameters().get(1), is((Object) "assisted_query_1"));
-        assertThat(actual.getParameters().get(2), is((Object) 1));
-        assertThat(actual.getParameters().get(3), is((Object) "encrypt_2"));
-        assertThat(actual.getParameters().get(4), is((Object) "assisted_query_2"));
-        assertThat(actual.getParameters().get(5), is((Object) 2));
-        assertThat(actual.getParameters().get(6), is((Object) "update_regular"));
-        assertThat(actual.getParameters().get(7), is((Object) "query_regular"));
-    }
-    
     private SQLRewriteResult getSQLRewriteResult(final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
         SQLStatement sqlStatement = parseEngine.parse(sql, false);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(mock(TableMetas.class), sql, parameters, sqlStatement);
