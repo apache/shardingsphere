@@ -24,13 +24,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Encrypt rewrite input entity for JAXB.
+ * Rewrite input entity for JAXB.
  *
  * @author zhangliang
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-public final class EncryptRewriteOutputEntity {
+public final class RewriteOutputEntity {
     
     @XmlAttribute(required = true)
     private String sql;

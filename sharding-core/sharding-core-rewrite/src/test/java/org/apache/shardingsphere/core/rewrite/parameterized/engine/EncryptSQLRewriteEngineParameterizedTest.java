@@ -30,8 +30,8 @@ import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.core.rewrite.engine.impl.DefaultSQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.context.EncryptSQLRewriteContextDecorator;
-import org.apache.shardingsphere.core.rewrite.parameterized.jaxb.entity.EncryptRewriteAssertionEntity;
-import org.apache.shardingsphere.core.rewrite.parameterized.jaxb.entity.EncryptRewriteAssertionsRootEntity;
+import org.apache.shardingsphere.core.rewrite.parameterized.jaxb.entity.RewriteAssertionEntity;
+import org.apache.shardingsphere.core.rewrite.parameterized.jaxb.entity.RewriteAssertionsRootEntity;
 import org.apache.shardingsphere.core.rewrite.parameterized.jaxb.loader.EncryptRewriteAssertionsRootEntityLoader;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlRootEncryptRuleConfiguration;
@@ -81,21 +81,21 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
     @Parameters(name = "{2} -> {0}")
     public static Collection<Object[]> getTestParameters() {
         Collection<Object[]> result = new LinkedList<>();
-        for (Entry<String, EncryptRewriteAssertionsRootEntity> entry : getAllEncryptRewriteAssertionsRootEntities().entrySet()) {
+        for (Entry<String, RewriteAssertionsRootEntity> entry : getAllEncryptRewriteAssertionsRootEntities().entrySet()) {
             result.addAll(getTestParameters(entry.getKey(), entry.getValue()));
         }
         return result;
     }
     
-    private static Collection<Object[]> getTestParameters(final String fileName, final EncryptRewriteAssertionsRootEntity rootAssertions) {
+    private static Collection<Object[]> getTestParameters(final String fileName, final RewriteAssertionsRootEntity rootAssertions) {
         Collection<Object[]> result = new LinkedList<>();
-        for (EncryptRewriteAssertionEntity each : rootAssertions.getAssertions()) {
+        for (RewriteAssertionEntity each : rootAssertions.getAssertions()) {
             result.add(getTestParameter(fileName, rootAssertions, each));
         }
         return result;
     }
     
-    private static Object[] getTestParameter(final String fileName, final EncryptRewriteAssertionsRootEntity rootAssertions, final EncryptRewriteAssertionEntity assertion) {
+    private static Object[] getTestParameter(final String fileName, final RewriteAssertionsRootEntity rootAssertions, final RewriteAssertionEntity assertion) {
         Object[] result = new Object[8];
         result[0] = fileName;
         result[1] = rootAssertions.getYamlRule();
@@ -108,8 +108,8 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
         return result;
     }
     
-    private static Map<String, EncryptRewriteAssertionsRootEntity> getAllEncryptRewriteAssertionsRootEntities() {
-        Map<String, EncryptRewriteAssertionsRootEntity> result = new LinkedHashMap<>();
+    private static Map<String, RewriteAssertionsRootEntity> getAllEncryptRewriteAssertionsRootEntities() {
+        Map<String, RewriteAssertionsRootEntity> result = new LinkedHashMap<>();
         File file = new File(EncryptSQLRewriteEngineParameterizedTest.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "/encrypt");
         for (File each : Objects.requireNonNull(file.listFiles())) {
             if (each.getName().endsWith(".xml")) {

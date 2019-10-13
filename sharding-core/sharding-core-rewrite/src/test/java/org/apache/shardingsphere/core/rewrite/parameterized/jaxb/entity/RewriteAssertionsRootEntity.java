@@ -26,17 +26,17 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Encrypt rewrite assertions root entity for JAXB.
+ * Rewrite assertions root entity for JAXB.
  *
  * @author zhangliang
  */
 @XmlRootElement(name = "rewrite-assertions")
 @Getter
-public final class EncryptRewriteAssertionsRootEntity {
+public final class RewriteAssertionsRootEntity {
     
     @XmlAttribute(name = "yaml-rule", required = true)
     private String yamlRule;
     
     @XmlElement(name = "rewrite-assertion")
-    private Collection<EncryptRewriteAssertionEntity> assertions = new LinkedList<>();
+    private Collection<RewriteAssertionEntity> assertions = new LinkedList<>();
 }

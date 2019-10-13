@@ -22,27 +22,19 @@ import lombok.Getter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.List;
 
 /**
- * Encrypt rewrite assertion entity for JAXB.
+ * Rewrite input entity for JAXB.
  *
  * @author zhangliang
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-public final class EncryptRewriteAssertionEntity {
+public final class RewriteInputEntity {
     
     @XmlAttribute(required = true)
-    private String id;
+    private String sql;
     
-    @XmlElement(required = true)
-    private EncryptRewriteInputEntity input;
-    
-    @XmlElement(required = true, name = "output")
-    private List<EncryptRewriteOutputEntity> outputs;
-    
-    @XmlAttribute(name = "db-type")
-    private String databaseType;
+    @XmlAttribute
+    private String parameters;
 }
