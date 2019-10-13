@@ -106,7 +106,9 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
         Collection<EncryptRewriteAssertionsRootEntity> result = new LinkedList<>();
         File file = new File(EncryptSQLRewriteEngineParameterizedTest.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "/encrypt");
         for (File each : Objects.requireNonNull(file.listFiles())) {
-            result.add(new EncryptRewriteAssertionsRootEntityLoader().load("encrypt/" + each.getName()));
+            if (each.getName().endsWith(".xml")) {
+                result.add(new EncryptRewriteAssertionsRootEntityLoader().load("encrypt/" + each.getName()));
+            }
         }
         return result;
     }
