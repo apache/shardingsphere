@@ -25,6 +25,7 @@ import com.ctrip.framework.apollo.enums.PropertyChangeType;
 import com.ctrip.framework.apollo.model.ConfigChange;
 import com.ctrip.framework.apollo.model.ConfigChangeEvent;
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -101,10 +102,13 @@ public final class ApolloConfigCenter implements ConfigCenter {
             public void onChange(final ConfigChangeEvent changeEvent) {
                 for (String key : changeEvent.changedKeys()) {
                     ConfigChange change = changeEvent.getChange(key);
-                    dataChangedEventListener.onChange(new DataChangedEvent(key, change.getNewValue(), getChangedType(change.getChangeType())));
+                    DataChangedEvent.ChangedType changedType = getChangedType(change.getChangeType());
+                    if (DataChangedEvent.ChangedType.IGNORED != changedType) {
+                        dataChangedEventListener.onChange(new DataChangedEvent(key, change.getNewValue(), changedType));
+                    }
                 }
             }
-        });
+        }, Sets.newHashSet(key));
     }
 
     private DataChangedEvent.ChangedType getChangedType(final PropertyChangeType changeType) {
