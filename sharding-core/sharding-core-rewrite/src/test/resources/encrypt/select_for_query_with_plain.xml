@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<rewrite-assertions yaml-rule="yaml/encrypt/normal-encrypt-for-query-with-plain.yaml">
+<rewrite-assertions yaml-rule="yaml/encrypt/query-with-plain.yaml">
     <!-- FIXME lost owner of predicate when rewrite -->
     <rewrite-assertion id="select_plain_for_parameters">
         <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = ? AND a.password = ? AND a.amount = ? AND a.status = ?" parameters="1, aaa, 1000, OK" />

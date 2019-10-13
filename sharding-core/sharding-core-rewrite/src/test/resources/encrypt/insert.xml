@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<rewrite-assertions yaml-rule="yaml/encrypt/normal-encrypt-for-query-with-cipher.yaml">
+<rewrite-assertions yaml-rule="yaml/encrypt/query-with-cipher.yaml">
     <!-- FIXME fix sql92 -->
     <rewrite-assertion id="insert_values_for_parameters" db-type="MySQL">
         <input sql="INSERT INTO t_account(account_id, password, amount, status) VALUES (?, ?, ?, ?), (2, 'bbb', 2000, 'OK'), (?, ?, ?, ?), (4, 'ddd', 4000, 'OK')" parameters="1, aaa, 1000, OK, 3, ccc, 3000, OK" />

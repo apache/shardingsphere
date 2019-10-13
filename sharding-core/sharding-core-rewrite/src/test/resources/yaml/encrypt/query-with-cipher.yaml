@@ -23,46 +23,26 @@ dataSource: !!com.zaxxer.hikari.HikariDataSource
 
 encryptRule:
   tables:
-    t_cipher:
+    t_account:
       columns:
-        encrypt_1:
-          cipherColumn: cipher_1
+        password:
+          cipherColumn: cipher_password
+          assistedQueryColumn: assisted_query_password
+          encryptor: assisted_query
+        amount:
+          cipherColumn: cipher_amount
           encryptor: normal
-        encrypt_2:
-          cipherColumn: cipher_2
-          encryptor: normal
-    t_cipher_assisted_query:
+    t_account_bak:
       columns:
-        encrypt_1:
-          cipherColumn: cipher_1
-          assistedQueryColumn: assisted_query_1
+        password:
+          cipherColumn: cipher_password
+          assistedQueryColumn: assisted_query_password
+          plainColumn: plain_password
           encryptor: assisted_query
-        encrypt_2:
-          cipherColumn: cipher_2
-          assistedQueryColumn: assisted_query_2
-          encryptor: assisted_query
-    t_cipher_plain:
-      columns:
-        encrypt_1:
-          cipherColumn: cipher_1
-          plainColumn: plain_1
+        amount:
+          cipherColumn: cipher_amount
+          plainColumn: plain_amount
           encryptor: normal
-        encrypt_2:
-          cipherColumn: cipher_2
-          plainColumn: plain_2
-          encryptor: normal
-    t_cipher_assisted_query_plain:
-      columns:
-        encrypt_1:
-          cipherColumn: cipher_1
-          assistedQueryColumn: assisted_query_1
-          plainColumn: plain_1
-          encryptor: assisted_query
-        encrypt_2:
-          cipherColumn: cipher_2
-          assistedQueryColumn: assisted_query_2
-          plainColumn: plain_2
-          encryptor: assisted_query
   encryptors:
     normal:
       type: NORMAL_ENCRYPT

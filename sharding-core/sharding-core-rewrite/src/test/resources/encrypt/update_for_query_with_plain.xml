@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<rewrite-assertions yaml-rule="yaml/encrypt/normal-encrypt-for-query-with-plain.yaml">
+<rewrite-assertions yaml-rule="yaml/encrypt/query-with-plain.yaml">
     <rewrite-assertion id="update_plain_for_parameters">
         <input sql="UPDATE t_account_bak SET account_id = ?, password = ?, amount = ?, status = ? WHERE account_id = ? AND password = ? AND amount = ? AND status = ?" parameters="1, aaa, 1000, OK, 1, aaa, 1000, OK" />
         <output sql="UPDATE t_account_bak SET account_id = ?, cipher_password = ?, assisted_query_password = ?, plain_password = ?, cipher_amount = ?, plain_amount = ?, status = ? WHERE account_id = ? AND plain_password = ? AND plain_amount = ? AND status = ?" parameters="1, encrypt_aaa, assisted_query_aaa, aaa, encrypt_1000, 1000, OK, 1, aaa, 1000, OK" />

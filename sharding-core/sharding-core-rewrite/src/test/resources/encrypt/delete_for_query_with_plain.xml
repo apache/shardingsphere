@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<rewrite-assertions yaml-rule="yaml/encrypt/normal-encrypt-for-query-with-plain.yaml">
+<rewrite-assertions yaml-rule="yaml/encrypt/query-with-plain.yaml">
     <rewrite-assertion id="delete_plain_for_parameters">
         <input sql="DELETE FROM t_account_bak WHERE account_id = ? AND password = ? AND amount = ? AND status = ?" parameters="1, aaa, 1000, OK" />
         <output sql="DELETE FROM t_account_bak WHERE account_id = ? AND plain_password = ? AND plain_amount = ? AND status = ?" parameters="1, aaa, 1000, OK" />
