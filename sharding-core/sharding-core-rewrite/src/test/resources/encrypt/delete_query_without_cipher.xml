@@ -22,9 +22,19 @@
         <output sql="DELETE FROM t_cipher_plain WHERE plain_1 IN (?, ?) or plain_2 IN (?, ?)" parameters="1, 2, 3, 4" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="plain_encrypt_with_literal">
+    <rewrite-assertion id="plain_encrypt_with_literals">
         <input sql="DELETE FROM t_cipher_plain WHERE encrypt_1 IN (1, 2) or encrypt_2 IN (3, 4)" />
         <output sql="DELETE FROM t_cipher_plain WHERE plain_1 IN (1, 2) or plain_2 IN (3, 4)" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="plain_query_encrypt_with_parameters">
+        <input sql="DELETE FROM t_cipher_assisted_query_plain WHERE encrypt_1 IN (?, ?) or encrypt_2 IN (?, ?)" parameters="1, 2, 3, 4" />
+        <output sql="DELETE FROM t_cipher_assisted_query_plain WHERE plain_1 IN (?, ?) or plain_2 IN (?, ?)" parameters="1, 2, 3, 4" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="plain_query_encrypt_with_literals">
+        <input sql="DELETE FROM t_cipher_assisted_query_plain WHERE encrypt_1 IN (1, 2) or encrypt_2 IN (3, 4)" />
+        <output sql="DELETE FROM t_cipher_assisted_query_plain WHERE plain_1 IN (1, 2) or plain_2 IN (3, 4)" />
     </rewrite-assertion>
     
     <!-- FIXME -->
