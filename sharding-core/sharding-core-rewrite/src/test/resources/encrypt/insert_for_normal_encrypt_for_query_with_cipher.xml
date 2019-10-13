@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<rewrite-assertions yaml-rule="yaml/encrypt/normal-encrypt-for-query-with-cipher.yaml">
+    <!-- FIXME fix sql92 -->
+    <rewrite-assertion id="insert_values_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account(account_id, password, amount, status) VALUES (?, ?, ?, ?), (2, 'bbb', 2000, 'OK'), (?, ?, ?, ?), (4, 'ddd', 4000, 'OK')" parameters="1, aaa, 1000, OK, 3, ccc, 3000, OK" />
+        <output sql="INSERT INTO t_account(account_id, cipher_password, cipher_amount, status) VALUES (?, ?, ?, ?), (2, 'encrypt_bbb', 'encrypt_2000', 'OK'), (?, ?, ?, ?), (4, 'encrypt_ddd', 'encrypt_4000', 'OK')" parameters="1, encrypt_aaa, encrypt_1000, OK, 3, encrypt_ccc, encrypt_3000, OK" />
+    </rewrite-assertion>
+    
+    <!-- FIXME fix sql92 -->
+    <rewrite-assertion id="insert_values_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account(account_id, password, amount, status) VALUES (1, 'aaa', 1000, 'OK'), (2, 'bbb', 2000, 'OK'), (3, 'ccc', 3000, 'OK'), (4, 'ddd', 4000, 'OK')" />
+        <output sql="INSERT INTO t_account(account_id, cipher_password, cipher_amount, status) VALUES (1, 'encrypt_aaa', 'encrypt_1000', 'OK'), (2, 'encrypt_bbb', 'encrypt_2000', 'OK'), (3, 'encrypt_ccc', 'encrypt_3000', 'OK'), (4, 'encrypt_ddd', 'encrypt_4000', 'OK')" />
+    </rewrite-assertion>
+    
+    <!-- FIXME fix sql92 -->
+    <rewrite-assertion id="insert_values_with_plain_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account_bak(account_id, password, amount, status) VALUES (?, ?, ?, ?), (2, 'bbb', 2000, 'OK'), (?, ?, ?, ?), (4, 'ddd', 4000, 'OK')" parameters="1, aaa, 1000, OK, 3, ccc, 3000, OK" />
+        <output sql="INSERT INTO t_account_bak(account_id, cipher_password, cipher_amount, status, plain_password, plain_amount) VALUES (?, ?, ?, ?, ?, ?), (2, 'encrypt_bbb', 'encrypt_2000', 'OK', 'bbb', 2000), (?, ?, ?, ?, ?, ?), (4, 'encrypt_ddd', 'encrypt_4000', 'OK', 'ddd', 4000)" parameters="1, encrypt_aaa, encrypt_1000, OK, aaa, 1000, 3, encrypt_ccc, encrypt_3000, OK, ccc, 3000" />
+    </rewrite-assertion>
+    
+    <!-- FIXME fix sql92 -->
+    <rewrite-assertion id="insert_values_with_plain_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account_bak(account_id, password, amount, status) VALUES (1, 'aaa', 1000, 'OK'), (2, 'bbb', 2000, 'OK'), (3, 'ccc', 3000, 'OK'), (4, 'ddd', 4000, 'OK')" />
+        <output sql="INSERT INTO t_account_bak(account_id, cipher_password, cipher_amount, status, plain_password, plain_amount) VALUES (1, 'encrypt_aaa', 'encrypt_1000', 'OK', 'aaa', 1000), (2, 'encrypt_bbb', 'encrypt_2000', 'OK', 'bbb', 2000), (3, 'encrypt_ccc', 'encrypt_3000', 'OK', 'ccc', 3000), (4, 'encrypt_ddd', 'encrypt_4000', 'OK', 'ddd', 4000)" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_set_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account SET account_id = ?, password = ?, amount = ?, status = ?" parameters="1, aaa, 1000, OK" />
+        <output sql="INSERT INTO t_account SET account_id = ?, cipher_password = ?, cipher_amount = ?, status = ?" parameters="1, encrypt_aaa, encrypt_1000, OK" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_set_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account SET account_id = 1, password = 'aaa', amount = 1000, status = 'OK'" />
+        <output sql="INSERT INTO t_account SET account_id = 1, cipher_password = 'encrypt_aaa', cipher_amount = 'encrypt_1000', status = 'OK'" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_set_with_plain_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_account_bak SET account_id = ?, password = ?, amount = ?, status = ?" parameters="1, aaa, 1000, OK" />
+        <output sql="INSERT INTO t_account_bak SET account_id = ?, cipher_password = ?, plain_password = ?, cipher_amount = ?, plain_amount = ?, status = ?" parameters="1, encrypt_aaa, aaa, encrypt_1000, 1000, OK" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_set_with_plain_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_account_bak SET account_id = 1, password = 'aaa', amount = 1000, status = 'OK'" />
+        <output sql="INSERT INTO t_account_bak SET account_id = 1, cipher_password = 'encrypt_aaa', plain_password = 'aaa', cipher_amount = 'encrypt_1000', plain_amount = 1000, status = 'OK'" />
+    </rewrite-assertion>
+</rewrite-assertions>
