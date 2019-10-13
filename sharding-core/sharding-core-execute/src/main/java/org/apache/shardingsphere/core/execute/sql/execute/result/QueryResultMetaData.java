@@ -17,17 +17,23 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -46,23 +52,29 @@ public final class QueryResultMetaData {
     private final EncryptRule encryptRule;
 
     private final Map<String, Integer> columnLabelAndIndexes;
+
+    private final SQLStatementContext sqlStatementContext;
     
     @Getter
     private final boolean queryWithCipherColumn;
     
-    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule, final ShardingProperties properties) throws SQLException {
+    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext)
+            throws SQLException {
         this.resultSetMetaData = resultSetMetaData;
         this.shardingRule = shardingRule;
         this.encryptRule = shardingRule.getEncryptRule();
         columnLabelAndIndexes = getColumnLabelAndIndexMap();
+        this.sqlStatementContext = sqlStatementContext;
         queryWithCipherColumn = properties.getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
     }
     
-    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final EncryptRule encryptRule, final ShardingProperties properties) throws SQLException {
+    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final EncryptRule encryptRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext)
+            throws SQLException {
         this.resultSetMetaData = resultSetMetaData;
         this.shardingRule = null;
         this.encryptRule = encryptRule;
         columnLabelAndIndexes = getColumnLabelAndIndexMap();
+        this.sqlStatementContext = sqlStatementContext;
         queryWithCipherColumn = properties.getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
     }
     
@@ -71,6 +83,7 @@ public final class QueryResultMetaData {
         this.shardingRule = null;
         this.encryptRule = new EncryptRule();
         columnLabelAndIndexes = getColumnLabelAndIndexMap();
+        this.sqlStatementContext = null;
         queryWithCipherColumn = false;
     }
     
@@ -144,6 +157,9 @@ public final class QueryResultMetaData {
      */
     public Optional<ShardingEncryptor> getShardingEncryptor(final int columnIndex) throws SQLException {
         String logicTable = getTableName(columnIndex);
+        if (Strings.isNullOrEmpty(logicTable) && !sqlStatementContext.getTablesContext().isEmpty()) {
+            logicTable = getTableName(columnIndex, sqlStatementContext);
+        }
         return encryptRule.findShardingEncryptor(logicTable, getLogicColumn(logicTable, columnIndex));
     }
     
@@ -154,6 +170,29 @@ public final class QueryResultMetaData {
         }
         Optional<TableRule> tableRule = shardingRule.findTableRuleByActualTable(actualTableName);
         return tableRule.isPresent() ? tableRule.get().getLogicTable() : actualTableName;
+    }
+
+    private String getTableName(final int columnIndex, final SQLStatementContext sqlStatementContext) throws SQLException {
+        final Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        for (String each : tableNames) {
+            if (isCurrentTable(columnIndex, each)) {
+                return each;
+            }
+        }
+        return "";
+    }
+
+    private boolean isCurrentTable(final int columnIndex, final String logicTableName) throws SQLException {
+        Collection<String> actualColumns = encryptRule.findEncryptTable(logicTableName)
+                .transform(new Function<EncryptTable, Collection<String>>() {
+                    @Override
+                    public Collection<String> apply(final EncryptTable encryptTable) {
+                        return encryptTable.getCipherColumns();
+                    }
+                })
+                .or(Collections.<String>emptyList());
+        String actualColumn = resultSetMetaData.getColumnName(columnIndex);
+        return actualColumns.contains(actualColumn);
     }
     
     private String getLogicColumn(final String tableName, final int columnIndex) throws SQLException {

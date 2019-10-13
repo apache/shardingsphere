@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
@@ -52,16 +53,18 @@ import static org.mockito.Mockito.when;
 public final class MemoryQueryResultTest {
     
     private final ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
+
+    private final SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
     
     @Test
     public void assertConstructorWithShardingRule() throws SQLException {
-        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet(), getShardingRule(), new ShardingProperties(new Properties()));
+        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet(), getShardingRule(), new ShardingProperties(new Properties()), sqlStatementContext);
         assertThat(queryResult.getQueryResultMetaData().getShardingEncryptor(1), is(Optional.fromNullable(shardingEncryptor)));
     }
     
     @Test
     public void assertConstructorWithEncryptRule() throws SQLException {
-        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet(), getEncryptRule(), new ShardingProperties(new Properties()));
+        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet(), getEncryptRule(), new ShardingProperties(new Properties()), sqlStatementContext);
         assertThat(queryResult.getQueryResultMetaData().getShardingEncryptor(1), is(Optional.fromNullable(shardingEncryptor)));
     }
     
@@ -117,7 +120,7 @@ public final class MemoryQueryResultTest {
     @Test
     public void assertGetValueWithShardingRule() throws SQLException {
         when(shardingEncryptor.decrypt("1")).thenReturn("1");
-        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet(), getShardingRule(), new ShardingProperties(new Properties()));
+        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet(), getShardingRule(), new ShardingProperties(new Properties()), sqlStatementContext);
         queryResult.next();
         assertThat(queryResult.getValue("order_id", Integer.class), Is.<Object>is("1"));
     }
