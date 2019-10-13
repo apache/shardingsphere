@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.List;
 
 /**
  * Encrypt rewrite assertion entity for JAXB.
@@ -39,8 +40,8 @@ public final class EncryptRewriteAssertionEntity {
     @XmlElement(required = true)
     private EncryptRewriteInputEntity input;
     
-    @XmlElement(required = true)
-    private EncryptRewriteOutputEntity output;
+    @XmlElement(required = true, name = "output")
+    private List<EncryptRewriteOutputEntity> outputs;
     
     @XmlAttribute(name = "db-type")
     private String databaseType;

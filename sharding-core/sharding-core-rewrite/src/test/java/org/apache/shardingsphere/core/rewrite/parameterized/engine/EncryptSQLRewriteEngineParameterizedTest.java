@@ -102,8 +102,8 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
         result[2] = assertion.getId();
         result[3] = assertion.getInput().getSql();
         result[4] = null == assertion.getInput().getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getInput().getParameters());
-        result[5] = assertion.getOutput().getSql();
-        result[6] = null == assertion.getOutput().getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getOutput().getParameters());
+        result[5] = assertion.getOutputs().get(0).getSql();
+        result[6] = null == assertion.getOutputs().get(0).getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getOutputs().get(0).getParameters());
         result[7] = assertion.getDatabaseType();
         return result;
     }
