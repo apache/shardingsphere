@@ -17,28 +17,23 @@
 
 package info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog;
 
-import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import io.netty.buffer.ByteBuf;
-import lombok.Getter;
+import io.netty.buffer.Unpooled;
+import org.junit.Test;
 
-/**
- * Rotate event.
- *
- * @author avalon566
- */
-@Getter
-public class RotateEvent {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-    private long position;
-
-    private String nextFileName;
-
-    /**
-     * Parse rotate event from {@code ByteBuf}.
-     * @param in buffer
-     */
-    public void parse(final ByteBuf in) {
-        position = DataTypesCodec.readInt8LE(in);
-        nextFileName = DataTypesCodec.readFixedLengthString(in.readableBytes(), in);
+public class RotateEventTest {
+    
+    @Test
+    public void assertParse() {
+        ByteBuf rotateEventByteBuf = Unpooled.buffer();
+        rotateEventByteBuf.writeLongLE(Long.MAX_VALUE);
+        rotateEventByteBuf.writeBytes("binlog-000001".getBytes());
+        RotateEvent actual = new RotateEvent();
+        actual.parse(rotateEventByteBuf);
+        assertThat(actual.getPosition(), is(Long.MAX_VALUE));
+        assertThat(actual.getNextFileName(), is("binlog-000001"));
     }
 }
