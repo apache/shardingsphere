@@ -658,69 +658,6 @@ public final class ShardingSQLRewriteEngineTest {
     }
     
     @Test
-    public void assertRewriteTableTokenWithoutBackQuoteFromSchemaForShow() {
-        SQLRewriteResult actual = getSQLRewriteResult("SHOW COLUMNS FROM table_x FROM `sharding_db`", Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("SHOW COLUMNS FROM table_1 "));
-        assertThat(actual.getParameters(), is(Collections.emptyList()));
-    }
-    
-    @Test
-    public void assertRewriteTableTokenWithBackQuoteForShow() {
-        SQLRewriteResult actual = getSQLRewriteResult("SHOW COLUMNS FROM `table_x`", Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("SHOW COLUMNS FROM `table_1`"));
-        assertThat(actual.getParameters(), is(Collections.emptyList()));
-    }
-    
-    @Test
-    public void assertRewriteTableTokenWithBackQuoteFromSchemaForShow() {
-        SQLRewriteResult actual = getSQLRewriteResult("SHOW COLUMNS FROM `table_x` FROM `sharding_db`", Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("SHOW COLUMNS FROM `table_1` "));
-        assertThat(actual.getParameters(), is(Collections.emptyList()));
-    }
-    
-    @Test
-    public void assertRewriteTableTokenWithSchemaForShow() {
-        SQLRewriteResult actual = getSQLRewriteResult("SHOW COLUMNS FROM sharding_db.table_x", Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("SHOW COLUMNS FROM table_1"));
-        assertThat(actual.getParameters(), is(Collections.emptyList()));
-    }
-    
-    @Test
-    public void assertRewriteTableTokenWithSchemaFromSchemaForShow() {
-        SQLRewriteResult actual = getSQLRewriteResult("SHOW COLUMNS FROM sharding_db.table_x FROM sharding_db", Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("SHOW COLUMNS FROM table_1 "));
-        assertThat(actual.getParameters(), is(Collections.emptyList()));
-    }
-    
-    @Test
-    public void assertRewriteTableTokenWithBackQuoteWithSchemaForShow() {
-        SQLRewriteResult actual = getSQLRewriteResult("SHOW COLUMNS FROM sharding_db.`table_x`", Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("SHOW COLUMNS FROM `table_1`"));
-        assertThat(actual.getParameters(), is(Collections.emptyList()));
-    }
-    
-    @Test
-    public void assertRewriteTableTokenWithBackQuoteWithSchemaFromSchemaForShow() {
-        SQLRewriteResult actual = getSQLRewriteResult("SHOW COLUMNS FROM sharding_db.`table_x` FROM sharding_db", Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("SHOW COLUMNS FROM `table_1` "));
-        assertThat(actual.getParameters(), is(Collections.emptyList()));
-    }
-    
-    @Test
-    public void assertRewriteTableTokenWithSchemaWithBackQuoteForShow() {
-        SQLRewriteResult actual = getSQLRewriteResult("SHOW COLUMNS FROM `sharding_db`.`table_x`", Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("SHOW COLUMNS FROM `table_1`"));
-        assertThat(actual.getParameters(), is(Collections.emptyList()));
-    }
-    
-    @Test
-    public void assertRewriteTableTokenWithSchemaWithBackQuoteFromSchemaForShow() {
-        SQLRewriteResult actual = getSQLRewriteResult("SHOW COLUMNS FROM `sharding_db`.`table_x` FROM sharding_db", Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("SHOW COLUMNS FROM `table_1` "));
-        assertThat(actual.getParameters(), is(Collections.emptyList()));
-    }
-    
-    @Test
     public void assertRewriteTableTokenWithSchemaForSelect() {
         SQLRewriteResult actual = getSQLRewriteResult("SELECT * FROM sharding_db.table_x", Collections.emptyList(), true);
         assertThat(actual.getSql(), is("SELECT * FROM table_1"));
