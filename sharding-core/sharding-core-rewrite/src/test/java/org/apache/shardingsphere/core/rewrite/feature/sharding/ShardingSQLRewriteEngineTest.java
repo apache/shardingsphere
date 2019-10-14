@@ -23,8 +23,6 @@ import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
-import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
@@ -607,54 +605,6 @@ public final class ShardingSQLRewriteEngineTest {
         SQLRewriteResult actual = getSQLRewriteResult("SELECT x.id, x.name FROM table_x x GROUP BY x.id, x.name DESC", Collections.emptyList(), true);
         assertThat(actual.getSql(), is("SELECT x.id, x.name FROM table_1 x GROUP BY x.id, x.name DESC ORDER BY x.id ASC,x.name DESC "));
         assertThat(actual.getParameters(), is(Collections.emptyList()));
-    }
-    
-    @Test
-    public void assertRewriteIndexTokenForIndexNameTableName() {
-        // TODO case maybe incorrect
-//        SQLRewriteResult actual = getSQLRewriteResult("CREATE INDEX index_name ON table_x ('column')", Collections.emptyList(), true);
-//        assertThat(actual.getSql(), is("CREATE INDEX index_name_table_1 ON table_1 ('column')"));
-//        assertThat(actual.getParameters(), is(Collections.emptyList()));
-        SQLRouteResult sqlRouteResult = createRouteResultForIndexTokenForIndexNameTableName();
-        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sqlRouteResult, "CREATE INDEX index_name ON table_x ('column')", Collections.emptyList());
-        assertThat(new ShardingSQLRewriteEngine(sqlRouteResult.getShardingConditions(), null, logicAndActualTables).rewrite(sqlRewriteContext).getSql(), 
-                is("CREATE INDEX index_name_table_1 ON table_1 ('column')"));
-    }
-    
-    private SQLRouteResult createRouteResultForIndexTokenForIndexNameTableName() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getAllSQLSegments().add(new IndexSegment(13, 22, "index_name", QuoteCharacter.NONE));
-        selectStatement.getAllSQLSegments().add(new TableSegment(27, 33, "table_x"));
-        SQLRouteResult result = new SQLRouteResult(new SelectSQLStatementContext(selectStatement, 
-                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
-                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), new PaginationContext(null, null, Collections.emptyList())),
-                new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        result.setRoutingResult(new RoutingResult());
-        return result;
-    }
-    
-    @Test
-    public void assertRewriteIndexTokenForIndexNameTableNameWithoutLogicTableName() {
-        // TODO case maybe incorrect
-//        SQLRewriteResult actual = getSQLRewriteResult("CREATE INDEX logic_index ON table_x ('column')", Collections.emptyList(), true);
-//        assertThat(actual.getSql(), is("CREATE INDEX logic_index_table_1 ON table_1 ('column')"));
-//        assertThat(actual.getParameters(), is(Collections.emptyList()));
-        SQLRouteResult sqlRouteResult = createRouteResultForIndexTokenForIndexNameTableNameWithoutLogicTableName();
-        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sqlRouteResult, "CREATE INDEX logic_index ON table_x ('column')", Collections.emptyList());
-        assertThat(new ShardingSQLRewriteEngine(sqlRouteResult.getShardingConditions(), null, logicAndActualTables).rewrite(sqlRewriteContext).getSql(), 
-                is("CREATE INDEX logic_index_table_1 ON table_1 ('column')"));
-    }
-    
-    private SQLRouteResult createRouteResultForIndexTokenForIndexNameTableNameWithoutLogicTableName() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getAllSQLSegments().add(new IndexSegment(13, 23, "logic_index", QuoteCharacter.NONE));
-        selectStatement.getAllSQLSegments().add(new TableSegment(28, 34, "table_x"));
-        SQLRouteResult result = new SQLRouteResult(new SelectSQLStatementContext(selectStatement, 
-                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
-                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), new PaginationContext(null, null, Collections.emptyList())),
-                new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        result.setRoutingResult(new RoutingResult());
-        return result;
     }
     
     @Test
