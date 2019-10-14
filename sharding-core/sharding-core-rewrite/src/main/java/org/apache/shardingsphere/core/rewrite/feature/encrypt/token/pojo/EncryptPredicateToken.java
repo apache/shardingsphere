@@ -67,7 +67,10 @@ public final class EncryptPredicateToken extends SQLToken implements Substitutab
     }
     
     private String toStringForEqual() {
-        return parameterMarkerIndexes.isEmpty() ? String.format("%s = '%s'", columnName, indexValues.get(0)) : String.format("%s = ?", columnName);
+        if (parameterMarkerIndexes.isEmpty()) {
+            return indexValues.get(0) instanceof String ? String.format("%s = '%s'", columnName, indexValues.get(0)) : String.format("%s = %s", columnName, indexValues.get(0));
+        }
+        return String.format("%s = ?", columnName);
     }
     
     private String toStringForIn() {
@@ -77,7 +80,11 @@ public final class EncryptPredicateToken extends SQLToken implements Substitutab
             if (parameterMarkerIndexes.contains(i)) {
                 result.append("?");
             } else {
-                result.append("'").append(indexValues.get(i)).append("'");
+                if (indexValues.get(i) instanceof String) {
+                    result.append("'").append(indexValues.get(i)).append("'");
+                } else {
+                    result.append(indexValues.get(i));
+                }
             }
             result.append(", ");
         }
