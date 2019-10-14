@@ -70,7 +70,16 @@ public final class HandshakeInitializationPacket extends AbstractPacket {
     private byte[] authPluginDataPart2;
     
     private String authPluginName;
-
+    
+    /**
+     * There are some different between implement of handshake initialization packet and document.
+     * In source code of 5.7 version, authPluginDataPart2 should be at least 12 bytes,
+     * and then follow a nul byte.
+     * But in document, authPluginDataPart2 is at least 13 bytes, and not nul byte.
+     * From test, the 13th byte is nul byte and should be excluded from authPluginDataPart2.
+     *
+     * @param data buffer
+     */
     @Override
     public void fromByteBuf(final ByteBuf data) {
         protocolVersion = DataTypesCodec.readUnsignedInt1(data);
