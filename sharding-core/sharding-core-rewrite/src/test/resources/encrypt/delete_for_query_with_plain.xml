@@ -22,8 +22,7 @@
         <output sql="DELETE FROM t_account_bak WHERE account_id = ? AND plain_password = ? AND plain_amount = ? AND status = ?" parameters="1, aaa, 1000, OK" />
     </rewrite-assertion>
     
-    <!-- FIXME SQL92 dialect has problem -->
-    <rewrite-assertion id="delete_for_literals" db-type="MySQL">
+    <rewrite-assertion id="delete_for_literals">
         <input sql="DELETE FROM t_account_bak WHERE account_id = 1 AND password = 'aaa' AND amount = 1000 AND status = 'OK'" />
         <output sql="DELETE FROM t_account_bak WHERE account_id = 1 AND plain_password = 'aaa' AND plain_amount = 1000 AND status = 'OK'" />
     </rewrite-assertion>

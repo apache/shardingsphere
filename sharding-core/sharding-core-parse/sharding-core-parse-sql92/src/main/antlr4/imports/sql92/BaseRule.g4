@@ -183,7 +183,6 @@ simpleExpr
     | columnName
     | simpleExpr COLLATE (STRING_ | identifier_)
     | variable_
-    | simpleExpr OR simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | NOT_) simpleExpr
     | LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
