@@ -27,28 +27,20 @@ import static org.junit.Assert.assertTrue;
 public final class DerivedColumnTest {
     
     @Test
-    public void assertGetDerivedColumnAlias() {
+    public void assertGetDerivedColumnNameAlias() {
         assertThat(DerivedColumn.AVG_COUNT_ALIAS.getDerivedColumnAlias(0), is("AVG_DERIVED_COUNT_0"));
         assertThat(DerivedColumn.AVG_SUM_ALIAS.getDerivedColumnAlias(1), is("AVG_DERIVED_SUM_1"));
         assertThat(DerivedColumn.ORDER_BY_ALIAS.getDerivedColumnAlias(0), is("ORDER_BY_DERIVED_0"));
         assertThat(DerivedColumn.GROUP_BY_ALIAS.getDerivedColumnAlias(1), is("GROUP_BY_DERIVED_1"));
     }
-    
+
     @Test
-    public void assertIsDerivedColumn() {
+    public void assertIsDerivedColumnName() {
         assertTrue(DerivedColumn.isDerivedColumnName("AVG_DERIVED_COUNT_0"));
         assertTrue(DerivedColumn.isDerivedColumnName("AVG_DERIVED_SUM_1"));
         assertTrue(DerivedColumn.isDerivedColumnName("ORDER_BY_DERIVED_0"));
         assertTrue(DerivedColumn.isDerivedColumnName("GROUP_BY_DERIVED_1"));
-    }
-    
-    @Test
-    public void assertIsNotDerivedColumn() {
-        assertFalse(DerivedColumn.isDerivedColumnName("OTHER_DERIVED_COLUMN_0"));
-    }
-    
-    @Test
-    public void assertIsDerivedColumnName() {
+
         assertTrue(DerivedColumn.isDerivedColumnName("AVG_DERIVED_COUNT_"));
         assertTrue(DerivedColumn.isDerivedColumnName("AVG_DERIVED_SUM_"));
         assertTrue(DerivedColumn.isDerivedColumnName("ORDER_BY_DERIVED_"));
@@ -58,6 +50,7 @@ public final class DerivedColumnTest {
     
     @Test
     public void assertIsNotDerivedColumnName() {
+        assertFalse(DerivedColumn.isDerivedColumnName("OTHER_DERIVED_COLUMN_0"));
         assertFalse(DerivedColumn.isDerivedColumnName("OTHER_DERIVED_COLUMN_0"));
     }
 }
