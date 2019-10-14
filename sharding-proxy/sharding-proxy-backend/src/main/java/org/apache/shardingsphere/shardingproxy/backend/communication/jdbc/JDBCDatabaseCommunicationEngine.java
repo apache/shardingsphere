@@ -144,7 +144,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         List<QueryHeader> toRemove = new LinkedList<>();
         List<QueryHeader> queryHeaders = ((QueryResponse) response).getQueryHeaders();
         for (QueryHeader each : queryHeaders) {
-            if (DerivedColumn.isDerivedColumn(each.getColumnLabel())) {
+            if (DerivedColumn.isDerivedColumnName(each.getColumnLabel())) {
                 toRemove.add(each);
             }
         }

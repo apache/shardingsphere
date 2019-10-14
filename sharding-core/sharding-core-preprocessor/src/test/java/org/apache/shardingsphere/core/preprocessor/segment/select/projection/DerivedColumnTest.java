@@ -36,15 +36,15 @@ public final class DerivedColumnTest {
     
     @Test
     public void assertIsDerivedColumn() {
-        assertTrue(DerivedColumn.isDerivedColumn("AVG_DERIVED_COUNT_0"));
-        assertTrue(DerivedColumn.isDerivedColumn("AVG_DERIVED_SUM_1"));
-        assertTrue(DerivedColumn.isDerivedColumn("ORDER_BY_DERIVED_0"));
-        assertTrue(DerivedColumn.isDerivedColumn("GROUP_BY_DERIVED_1"));
+        assertTrue(DerivedColumn.isDerivedColumnName("AVG_DERIVED_COUNT_0"));
+        assertTrue(DerivedColumn.isDerivedColumnName("AVG_DERIVED_SUM_1"));
+        assertTrue(DerivedColumn.isDerivedColumnName("ORDER_BY_DERIVED_0"));
+        assertTrue(DerivedColumn.isDerivedColumnName("GROUP_BY_DERIVED_1"));
     }
     
     @Test
     public void assertIsNotDerivedColumn() {
-        assertFalse(DerivedColumn.isDerivedColumn("OTHER_DERIVED_COLUMN_0"));
+        assertFalse(DerivedColumn.isDerivedColumnName("OTHER_DERIVED_COLUMN_0"));
     }
     
     @Test

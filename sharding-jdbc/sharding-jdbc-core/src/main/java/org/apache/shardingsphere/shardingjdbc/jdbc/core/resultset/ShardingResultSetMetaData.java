@@ -64,7 +64,7 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
         Collection<String> assistedQueryColumns = getAssistedQueryColumns();
         for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
             String columnLabel = resultSetMetaData.getColumnLabel(columnIndex);
-            if (DerivedColumn.isDerivedColumn(columnLabel) || assistedQueryColumns.contains(columnLabel)) {
+            if (DerivedColumn.isDerivedColumnName(columnLabel) || assistedQueryColumns.contains(columnLabel)) {
                 result++;
             }
         }
