@@ -388,20 +388,6 @@ public final class ShardingSQLRewriteEngineTest {
     }
     
     @Test
-    public void assertRewriteTableTokenWithSchemaForUpdate() {
-        SQLRewriteResult actual = getSQLRewriteResult("UPDATE `sharding_db`.table_x SET user_id=1 WHERE order_id=1", Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("UPDATE table_1 SET user_id=1 WHERE order_id=1"));
-        assertThat(actual.getParameters(), is(Collections.emptyList()));
-    }
-    
-    @Test
-    public void assertRewriteTableTokenWithSchemaForDelete() {
-        SQLRewriteResult actual = getSQLRewriteResult("DELETE FROM `sharding_db`.`table_x` WHERE user_id=1", Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("DELETE FROM `table_1` WHERE user_id=1"));
-        assertThat(actual.getParameters(), is(Collections.emptyList()));
-    }
-    
-    @Test
     public void assertRewriteInsertWithGeneratedKeyAndQueryAssistedShardingEncryptor() {
         SQLRewriteResult actual = getSQLRewriteResult("INSERT INTO `table_w` set name = 10 ON DUPLICATE KEY UPDATE name = VALUES(name)", Collections.emptyList(), true);
         assertThat(actual.getSql(), is("INSERT INTO `table_w` set cipher = 'encrypt_10', query = 'assisted_query_10', plain = 10, id = 1 ON DUPLICATE KEY UPDATE name = VALUES(name)"));
