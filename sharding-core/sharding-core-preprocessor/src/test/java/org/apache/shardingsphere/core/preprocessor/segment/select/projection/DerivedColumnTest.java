@@ -40,24 +40,16 @@ public final class DerivedColumnTest {
         assertTrue(DerivedColumn.isDerivedColumn("AVG_DERIVED_SUM_1"));
         assertTrue(DerivedColumn.isDerivedColumn("ORDER_BY_DERIVED_0"));
         assertTrue(DerivedColumn.isDerivedColumn("GROUP_BY_DERIVED_1"));
+
+        assertTrue(DerivedColumn.isDerivedColumn("AVG_DERIVED_COUNT_"));
+        assertTrue(DerivedColumn.isDerivedColumn("AVG_DERIVED_SUM_"));
+        assertTrue(DerivedColumn.isDerivedColumn("ORDER_BY_DERIVED_"));
+        assertTrue(DerivedColumn.isDerivedColumn("GROUP_BY_DERIVED_"));
+        assertFalse(DerivedColumn.isDerivedColumn("AGGREGATION_DISTINCT_DERIVED_"));
     }
-    
+
     @Test
     public void assertIsNotDerivedColumn() {
         assertFalse(DerivedColumn.isDerivedColumn("OTHER_DERIVED_COLUMN_0"));
-    }
-    
-    @Test
-    public void assertIsDerivedColumnName() {
-        assertTrue(DerivedColumn.isDerivedColumnName("AVG_DERIVED_COUNT_"));
-        assertTrue(DerivedColumn.isDerivedColumnName("AVG_DERIVED_SUM_"));
-        assertTrue(DerivedColumn.isDerivedColumnName("ORDER_BY_DERIVED_"));
-        assertTrue(DerivedColumn.isDerivedColumnName("GROUP_BY_DERIVED_"));
-        assertTrue(DerivedColumn.isDerivedColumnName("AGGREGATION_DISTINCT_DERIVED_"));
-    }
-    
-    @Test
-    public void assertIsNotDerivedColumnName() {
-        assertFalse(DerivedColumn.isDerivedColumnName("OTHER_DERIVED_COLUMN_0"));
     }
 }
