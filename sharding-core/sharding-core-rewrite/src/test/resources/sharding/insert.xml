@@ -103,4 +103,25 @@
         <input sql="INSERT INTO t_order VALUES (10, 'OK'), (10, 'OK')" />
         <output sql="INSERT INTO t_order_1(user_id, status, order_id) VALUES (10, 'OK', 1), (10, 'OK', 1)" />
     </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_set_with_columns_with_id_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_order SET order_id = ?, user_id = ?, status = ?" parameters="100, 10, OK" />
+        <output sql="INSERT INTO t_order_0 SET order_id = ?, user_id = ?, status = ?" parameters="100, 10, OK" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_set_with_columns_with_id_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_order SET order_id = 100, user_id = 10, status = 'OK'" />
+        <output sql="INSERT INTO t_order_0 SET order_id = 100, user_id = 10, status = 'OK'" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_set_with_columns_without_id_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_order SET user_id = ?, status = ?" parameters="10, OK" />
+        <output sql="INSERT INTO t_order_1 SET user_id = ?, status = ?, order_id = ?" parameters="10, OK, 1" />
+    </rewrite-assertion>
+    
+    <!-- FIXME -->
+    <!--<rewrite-assertion id="insert_set_with_columns_without_id_for_literals" db-type="MySQL">-->
+        <!--<input sql="INSERT INTO t_order SET user_id = 10, status = 'OK'" parameters="10, OK" />-->
+        <!--<output sql="INSERT INTO t_order_1 SET user_id = 10, status = 'OK', order_id = 1" />-->
+    <!--</rewrite-assertion>-->
 </rewrite-assertions>
