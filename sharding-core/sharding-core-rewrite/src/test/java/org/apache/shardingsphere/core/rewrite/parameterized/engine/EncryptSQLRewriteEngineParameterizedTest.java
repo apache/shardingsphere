@@ -30,8 +30,8 @@ import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.core.rewrite.engine.impl.DefaultSQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.context.EncryptSQLRewriteContextDecorator;
-import org.apache.shardingsphere.core.rewrite.parameterized.jaxb.entity.EncryptRewriteAssertionEntity;
-import org.apache.shardingsphere.core.rewrite.parameterized.jaxb.entity.EncryptRewriteAssertionsRootEntity;
+import org.apache.shardingsphere.core.rewrite.parameterized.jaxb.entity.RewriteAssertionEntity;
+import org.apache.shardingsphere.core.rewrite.parameterized.jaxb.entity.RewriteAssertionsRootEntity;
 import org.apache.shardingsphere.core.rewrite.parameterized.jaxb.loader.EncryptRewriteAssertionsRootEntityLoader;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlRootEncryptRuleConfiguration;
@@ -62,6 +62,8 @@ import static org.mockito.Mockito.mock;
 @RequiredArgsConstructor
 public final class EncryptSQLRewriteEngineParameterizedTest {
     
+    private static final String PATH = "encrypt";
+    
     private final String fileName;
     
     private final String ruleFile;
@@ -81,39 +83,39 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
     @Parameters(name = "{2} -> {0}")
     public static Collection<Object[]> getTestParameters() {
         Collection<Object[]> result = new LinkedList<>();
-        for (Entry<String, EncryptRewriteAssertionsRootEntity> entry : getAllEncryptRewriteAssertionsRootEntities().entrySet()) {
+        for (Entry<String, RewriteAssertionsRootEntity> entry : getAllRewriteAssertionsRootEntities().entrySet()) {
             result.addAll(getTestParameters(entry.getKey(), entry.getValue()));
         }
         return result;
     }
     
-    private static Collection<Object[]> getTestParameters(final String fileName, final EncryptRewriteAssertionsRootEntity rootAssertions) {
+    private static Collection<Object[]> getTestParameters(final String fileName, final RewriteAssertionsRootEntity rootAssertions) {
         Collection<Object[]> result = new LinkedList<>();
-        for (EncryptRewriteAssertionEntity each : rootAssertions.getAssertions()) {
+        for (RewriteAssertionEntity each : rootAssertions.getAssertions()) {
             result.add(getTestParameter(fileName, rootAssertions, each));
         }
         return result;
     }
     
-    private static Object[] getTestParameter(final String fileName, final EncryptRewriteAssertionsRootEntity rootAssertions, final EncryptRewriteAssertionEntity assertion) {
+    private static Object[] getTestParameter(final String fileName, final RewriteAssertionsRootEntity rootAssertions, final RewriteAssertionEntity assertion) {
         Object[] result = new Object[8];
         result[0] = fileName;
         result[1] = rootAssertions.getYamlRule();
         result[2] = assertion.getId();
         result[3] = assertion.getInput().getSql();
         result[4] = null == assertion.getInput().getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getInput().getParameters());
-        result[5] = assertion.getOutput().getSql();
-        result[6] = null == assertion.getOutput().getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getOutput().getParameters());
+        result[5] = assertion.getOutputs().get(0).getSql();
+        result[6] = null == assertion.getOutputs().get(0).getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getOutputs().get(0).getParameters());
         result[7] = assertion.getDatabaseType();
         return result;
     }
     
-    private static Map<String, EncryptRewriteAssertionsRootEntity> getAllEncryptRewriteAssertionsRootEntities() {
-        Map<String, EncryptRewriteAssertionsRootEntity> result = new LinkedHashMap<>();
-        File file = new File(EncryptSQLRewriteEngineParameterizedTest.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "/encrypt");
+    private static Map<String, RewriteAssertionsRootEntity> getAllRewriteAssertionsRootEntities() {
+        Map<String, RewriteAssertionsRootEntity> result = new LinkedHashMap<>();
+        File file = new File(EncryptSQLRewriteEngineParameterizedTest.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "/" + PATH);
         for (File each : Objects.requireNonNull(file.listFiles())) {
             if (each.getName().endsWith(".xml")) {
-                result.put(each.getName(), new EncryptRewriteAssertionsRootEntityLoader().load("encrypt/" + each.getName()));
+                result.put(each.getName(), new EncryptRewriteAssertionsRootEntityLoader().load(PATH + "/" + each.getName()));
             }
         }
         return result;
@@ -128,9 +130,9 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
     
     private SQLRewriteResult getSQLRewriteResult() throws IOException {
         SQLRewriteContext sqlRewriteContext = getSQLRewriteContext();
-        YamlRootEncryptRuleConfiguration encryptRuleConfiguration = createEncryptRuleConfiguration();
-        EncryptRule encryptRule = new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(encryptRuleConfiguration.getEncryptRule()));
-        boolean isQueryWithCipherColumn = (boolean) encryptRuleConfiguration.getProps().get("query.with.cipher.column");
+        YamlRootEncryptRuleConfiguration ruleConfiguration = createRuleConfiguration();
+        EncryptRule encryptRule = new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(ruleConfiguration.getEncryptRule()));
+        boolean isQueryWithCipherColumn = (boolean) ruleConfiguration.getProps().get("query.with.cipher.column");
         new EncryptSQLRewriteContextDecorator(encryptRule, isQueryWithCipherColumn).decorate(sqlRewriteContext);
         return new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
     }
@@ -141,7 +143,7 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
         return new SQLRewriteContext(mock(TableMetas.class), sqlStatementContext, inputSQL, inputParameters);
     }
     
-    private YamlRootEncryptRuleConfiguration createEncryptRuleConfiguration() throws IOException {
+    private YamlRootEncryptRuleConfiguration createRuleConfiguration() throws IOException {
         URL url = EncryptSQLRewriteEngineParameterizedTest.class.getClassLoader().getResource(ruleFile);
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootEncryptRuleConfiguration.class);

@@ -15,41 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.fixture;
+package org.apache.shardingsphere.core.rewrite.parameterized.jaxb.entity;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
-import java.util.Properties;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.List;
 
+/**
+ * Rewrite assertion entity for JAXB.
+ *
+ * @author zhangliang
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-@Setter
-public final class TestQueryAssistedShardingEncryptor implements ShardingQueryAssistedEncryptor {
+public final class RewriteAssertionEntity {
     
-    private Properties properties = new Properties();
+    @XmlAttribute(required = true)
+    private String id;
     
-    @Override
-    public String getType() {
-        return "ASSISTED_QUERY_TEST";
-    }
+    @XmlElement(required = true)
+    private RewriteInputEntity input;
     
-    @Override
-    public void init() {
-    }
+    @XmlElement(required = true, name = "output")
+    private List<RewriteOutputEntity> outputs;
     
-    @Override
-    public String encrypt(final Object plaintext) {
-        return "encrypt_" + plaintext;
-    }
-    
-    @Override
-    public Object decrypt(final String ciphertext) {
-        return ciphertext.replaceAll("encrypt_", "");
-    }
-    
-    @Override
-    public String queryAssistedEncrypt(final String plaintext) {
-        return "assisted_query_" + plaintext;
-    }
+    @XmlAttribute(name = "db-type")
+    private String databaseType;
 }

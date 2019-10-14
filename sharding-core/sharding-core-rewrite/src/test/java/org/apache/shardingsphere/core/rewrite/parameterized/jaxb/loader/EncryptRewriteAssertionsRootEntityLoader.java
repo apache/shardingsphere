@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.parameterized.jaxb.loader;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.rewrite.parameterized.jaxb.entity.EncryptRewriteAssertionsRootEntity;
+import org.apache.shardingsphere.core.rewrite.parameterized.jaxb.entity.RewriteAssertionsRootEntity;
 
 import javax.xml.bind.JAXBContext;
 import java.io.InputStream;
@@ -37,9 +37,9 @@ public final class EncryptRewriteAssertionsRootEntityLoader {
      * @return rewrite assertions entity for JAXB
      */
     @SneakyThrows
-    public EncryptRewriteAssertionsRootEntity load(final String file) {
+    public RewriteAssertionsRootEntity load(final String file) {
         InputStream inputStream = EncryptRewriteAssertionsRootEntityLoader.class.getClassLoader().getResourceAsStream(file);
-        return null == inputStream ? new EncryptRewriteAssertionsRootEntity()
-                : (EncryptRewriteAssertionsRootEntity) JAXBContext.newInstance(EncryptRewriteAssertionsRootEntity.class).createUnmarshaller().unmarshal(inputStream);
+        return null == inputStream ? new RewriteAssertionsRootEntity()
+                : (RewriteAssertionsRootEntity) JAXBContext.newInstance(RewriteAssertionsRootEntity.class).createUnmarshaller().unmarshal(inputStream);
     }
 }
