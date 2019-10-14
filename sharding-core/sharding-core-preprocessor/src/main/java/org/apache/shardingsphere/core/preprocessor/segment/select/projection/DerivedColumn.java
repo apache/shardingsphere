@@ -51,21 +51,6 @@ public enum DerivedColumn {
     }
     
     /**
-     * Judge is derived column name or not.
-     *
-     * @param columnName column name to be judged
-     * @return is derived column name or not
-     */
-    public static boolean isDerivedColumnName(final String columnName) {
-        for (DerivedColumn each : DerivedColumn.values()) {
-            if (columnName.startsWith(each.pattern)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    /**
      * Judge is derived column or not.
      *
      * @param columnName column name to be judged
