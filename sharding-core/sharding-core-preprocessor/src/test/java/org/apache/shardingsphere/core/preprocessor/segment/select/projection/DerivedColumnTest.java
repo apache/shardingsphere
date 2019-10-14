@@ -32,7 +32,6 @@ public final class DerivedColumnTest {
         assertThat(DerivedColumn.AVG_SUM_ALIAS.getDerivedColumnAlias(1), is("AVG_DERIVED_SUM_1"));
         assertThat(DerivedColumn.ORDER_BY_ALIAS.getDerivedColumnAlias(0), is("ORDER_BY_DERIVED_0"));
         assertThat(DerivedColumn.GROUP_BY_ALIAS.getDerivedColumnAlias(1), is("GROUP_BY_DERIVED_1"));
-        assertThat(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(0), is("AGGREGATION_DISTINCT_DERIVED_0"));
     }
 
     @Test
@@ -41,7 +40,6 @@ public final class DerivedColumnTest {
         assertTrue(DerivedColumn.isDerivedColumn("AVG_DERIVED_SUM_1"));
         assertTrue(DerivedColumn.isDerivedColumn("ORDER_BY_DERIVED_0"));
         assertTrue(DerivedColumn.isDerivedColumn("GROUP_BY_DERIVED_1"));
-        assertTrue(DerivedColumn.isDerivedColumn("AGGREGATION_DISTINCT_DERIVED_0"));
     }
 
     @Test
