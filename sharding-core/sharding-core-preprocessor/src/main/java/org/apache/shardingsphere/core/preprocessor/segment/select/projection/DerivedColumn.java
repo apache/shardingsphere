@@ -65,21 +65,6 @@ public enum DerivedColumn {
         return false;
     }
     
-    /**
-     * Judge is derived column or not.
-     *
-     * @param columnName column name to be judged
-     * @return is derived column or not
-     */
-    public static boolean isDerivedColumn(final String columnName) {
-        for (DerivedColumn each : DerivedColumn.getValues()) {
-            if (columnName.startsWith(each.pattern)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
     private static Collection<DerivedColumn> getValues() {
         Collection<DerivedColumn> result = new ArrayList<>(Arrays.asList(DerivedColumn.values()));
         result.remove(DerivedColumn.AGGREGATION_DISTINCT_DERIVED);
