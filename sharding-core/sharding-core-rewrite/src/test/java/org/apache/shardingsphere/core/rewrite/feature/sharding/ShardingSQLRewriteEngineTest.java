@@ -749,13 +749,6 @@ public final class ShardingSQLRewriteEngineTest {
     }
     
     @Test
-    public void assertRewriteSelectInWithQueryAssistedShardingEncryptorWithQuery() {
-        SQLRewriteResult actual = getSQLRewriteResult("SELECT id, name FROM table_k WHERE id in (3,5)", Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("SELECT cipher, name FROM table_k WHERE query IN ('assisted_query_3', 'assisted_query_5')"));
-        assertThat(actual.getParameters(), is(Collections.emptyList()));
-    }
-    
-    @Test
     public void assertRewriteInsertWithGeneratedKeyAndQueryAssistedShardingEncryptor() {
         SQLRewriteResult actual = getSQLRewriteResult("INSERT INTO `table_w` set name = 10 ON DUPLICATE KEY UPDATE name = VALUES(name)", Collections.emptyList(), true);
         assertThat(actual.getSql(), is("INSERT INTO `table_w` set cipher = 'encrypt_10', query = 'assisted_query_10', plain = 10, id = 1 ON DUPLICATE KEY UPDATE name = VALUES(name)"));
@@ -767,13 +760,6 @@ public final class ShardingSQLRewriteEngineTest {
         SQLRewriteResult actual = getSQLRewriteResult("SELECT COUNT(DISTINCT id) a, SUM(DISTINCT id) a FROM table_x WHERE id IN (3,5)", Collections.emptyList(), true);
         assertThat(actual.getSql(), is("SELECT DISTINCT id a, id a FROM table_1 WHERE id IN (3,5)"));
         assertThat(actual.getParameters(), is(Collections.emptyList()));
-    }
-    
-    @Test
-    public void assertRewriteSelectEqualWithQueryAssistedShardingEncryptor() {
-        SQLRewriteResult actual = getSQLRewriteResult("SELECT id as alias FROM table_k WHERE id=? AND name=?", Arrays.<Object>asList(1, "k"), true);
-        assertThat(actual.getSql(), is("SELECT cipher as alias FROM table_k WHERE query = ? AND name=?"));
-        assertThat(actual.getParameters(), is(Arrays.<Object>asList("assisted_query_1", "k")));
     }
     
     private SQLRewriteContext createSQLRewriteContext(final SQLRouteResult routeResult, final String sql, final List<Object> parameters) {

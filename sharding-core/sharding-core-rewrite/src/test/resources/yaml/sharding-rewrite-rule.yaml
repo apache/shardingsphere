@@ -38,8 +38,6 @@ shardingRule:
           worker.id: 123
     table_y:
       actualDataNodes: db${0..1}.table_y
-    table_k:
-      actualDataNodes: db${0..1}.table_k
     table_w:
       actualDataNodes: db${0..1}.table_w
       keyGenerator:
@@ -57,16 +55,6 @@ shardingRule:
       k_encryptor:
         type: ASSISTED_QUERY_ENCRYPT
     tables:
-      table_k:
-        columns:
-          id:
-            cipherColumn: cipher
-            assistedQueryColumn: query
-            encryptor: k_encryptor
-          id1:
-            cipherColumn: id1
-            assistedQueryColumn: query_id1
-            encryptor: k_encryptor
       table_w:
         columns:
           name:
