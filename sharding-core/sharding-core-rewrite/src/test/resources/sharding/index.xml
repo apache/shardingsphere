@@ -17,16 +17,28 @@
   -->
 
 <rewrite-assertions yaml-rule="yaml/sharding/sharding-rule.yaml">
-    <rewrite-assertion id="create_index" db-type="PostgreSQL">
+    <rewrite-assertion id="create_index_for_mysql" db-type="MySQL">
+        <input sql="CREATE INDEX index_name ON t_order ('user_id')" />
+        <output sql="CREATE INDEX index_name ON t_order_0 ('user_id')" />
+        <output sql="CREATE INDEX index_name ON t_order_1 ('user_id')" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="create_index_for_postgresql" db-type="PostgreSQL">
         <input sql="CREATE INDEX index_name ON t_order ('user_id')" />
         <output sql="CREATE INDEX index_name_t_order_0 ON t_order_0 ('user_id')" />
         <output sql="CREATE INDEX index_name_t_order_1 ON t_order_1 ('user_id')" />
     </rewrite-assertion>
     
-    <!-- FIXME -->
-    <rewrite-assertion id="drop_index_without_table" db-type="PostgreSQL">
-        <input sql="DROP INDEX index_name" />
-        <output sql="DROP INDEX index_name_t_order_0" />
-        <output sql="DROP INDEX index_name_t_order_1" />
+    <rewrite-assertion id="drop_index_for_mysql" db-type="MySQL">
+        <input sql="DROP INDEX index_name ON t_order" />
+        <output sql="DROP INDEX index_name ON t_order_0" />
+        <output sql="DROP INDEX index_name ON t_order_1" />
     </rewrite-assertion>
+    
+    <!-- FIXME -->
+    <!--<rewrite-assertion id="drop_index_for_postgresql" db-type="PostgreSQL">-->
+        <!--<input sql="DROP INDEX index_name" />-->
+        <!--<output sql="DROP INDEX index_name_t_order_0" />-->
+        <!--<output sql="DROP INDEX index_name_t_order_1" />-->
+    <!--</rewrite-assertion>-->
 </rewrite-assertions>
