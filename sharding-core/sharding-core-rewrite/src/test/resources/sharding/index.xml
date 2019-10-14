@@ -35,10 +35,9 @@
         <output sql="DROP INDEX index_name ON t_order_1" />
     </rewrite-assertion>
     
-    <!-- FIXME -->
-    <!--<rewrite-assertion id="drop_index_for_postgresql" db-type="PostgreSQL">-->
-        <!--<input sql="DROP INDEX index_name" />-->
-        <!--<output sql="DROP INDEX index_name_t_order_0" />-->
-        <!--<output sql="DROP INDEX index_name_t_order_1" />-->
-    <!--</rewrite-assertion>-->
+    <rewrite-assertion id="drop_index_for_postgresql" db-type="PostgreSQL">
+        <input sql="DROP INDEX index_name" />
+        <output sql="DROP INDEX index_name_t_order_0" />
+        <output sql="DROP INDEX index_name_t_order_1" />
+    </rewrite-assertion>
 </rewrite-assertions>

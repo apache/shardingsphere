@@ -62,20 +62,20 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     
     private Collection<String> getLogicTableNames() {
         return sqlStatementContext.getSqlStatement() instanceof DropIndexStatement && !((DropIndexStatement) sqlStatementContext.getSqlStatement()).getIndexes().isEmpty()
-                ? getTableNames((DropIndexStatement) sqlStatementContext.getSqlStatement()) : sqlStatementContext.getTablesContext().getTableNames();
+                ? getTableNamesFromMetaData((DropIndexStatement) sqlStatementContext.getSqlStatement()) : sqlStatementContext.getTablesContext().getTableNames();
     }
     
-    private Collection<String> getTableNames(final DropIndexStatement dropIndexStatement) {
+    private Collection<String> getTableNamesFromMetaData(final DropIndexStatement dropIndexStatement) {
         Collection<String> result = new LinkedList<>();
         for (IndexSegment each : dropIndexStatement.getIndexes()) {
-            Optional<String> tableName = findLogicTableName(each.getName());
+            Optional<String> tableName = findLogicTableNameFromMetaData(each.getName());
             Preconditions.checkState(tableName.isPresent(), "Cannot find index name `%s`.", each.getName());
             result.add(tableName.get());
         }
         return result;
     }
     
-    private Optional<String> findLogicTableName(final String logicIndexName) {
+    private Optional<String> findLogicTableNameFromMetaData(final String logicIndexName) {
         for (String each : tableMetas.getAllTableNames()) {
             if (tableMetas.get(each).containsIndex(logicIndexName)) {
                 return Optional.of(each);

@@ -23,6 +23,8 @@ import com.google.common.base.Splitter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
@@ -53,6 +55,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -65,7 +68,9 @@ import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
@@ -153,7 +158,7 @@ public final class ShardingSQLRewriteEngineParameterizedTest {
         YamlRootShardingConfiguration ruleConfiguration = createRuleConfiguration();
         ShardingRule shardingRule = new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(ruleConfiguration.getShardingRule()), ruleConfiguration.getDataSources().keySet());
         SQLParseEngine parseEngine = new SQLParseEngine(DatabaseTypes.getActualDatabaseType(null == databaseType ? "SQL92" : databaseType));
-        ShardingRouter shardingRouter = new ShardingRouter(shardingRule, mock(ShardingSphereMetaData.class), parseEngine);
+        ShardingRouter shardingRouter = new ShardingRouter(shardingRule, createShardingSphereMetaData(), parseEngine);
         SQLStatement sqlStatement = shardingRouter.parse(inputSQL, false);
         SQLRouteResult sqlRouteResult = shardingRouter.route(inputSQL, inputParameters, sqlStatement);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(TableMetas.class), sqlRouteResult.getSqlStatementContext(), inputSQL, inputParameters);
@@ -170,6 +175,16 @@ public final class ShardingSQLRewriteEngineParameterizedTest {
         URL url = ShardingSQLRewriteEngineTest.class.getClassLoader().getResource(ruleFile);
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class);
+    }
+    
+    private ShardingSphereMetaData createShardingSphereMetaData() {
+        TableMetas tableMetas = mock(TableMetas.class);
+        when(tableMetas.getAllTableNames()).thenReturn(Arrays.asList("t_order", "t_order_item"));
+        TableMetaData orderTableMetaData = mock(TableMetaData.class);
+        when(orderTableMetaData.containsIndex(anyString())).thenReturn(true);
+        when(tableMetas.get("t_order")).thenReturn(orderTableMetaData);
+        when(tableMetas.get("t_order_item")).thenReturn(mock(TableMetaData.class));
+        return new ShardingSphereMetaData(mock(DataSourceMetas.class), tableMetas);
     }
     
     private Map<String, String> getLogicAndActualTables(final ShardingRule shardingRule, final RoutingUnit routingUnit, final Collection<String> parsedTableNames) {
