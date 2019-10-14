@@ -40,6 +40,10 @@ public final class DerivedColumnTest {
         assertTrue(DerivedColumn.isDerivedColumn("AVG_DERIVED_SUM_"));
         assertTrue(DerivedColumn.isDerivedColumn("ORDER_BY_DERIVED_"));
         assertTrue(DerivedColumn.isDerivedColumn("GROUP_BY_DERIVED_"));
+    }
+
+    @Test
+    public void assertIsNotDerivedColumn() {
         assertFalse(DerivedColumn.isDerivedColumn("AGGREGATION_DISTINCT_DERIVED_"));
     }
 
