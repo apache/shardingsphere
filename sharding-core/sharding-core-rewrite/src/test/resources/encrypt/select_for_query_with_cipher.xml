@@ -22,8 +22,7 @@
         <output sql="SELECT account_id, cipher_password, cipher_amount AS a, status AS s FROM t_account WHERE account_id = ? AND assisted_query_password IN (?, ?) AND cipher_amount = ? AND status = ?" parameters="1, assisted_query_aaa, assisted_query_bbb, encrypt_1000, OK" />
     </rewrite-assertion>
     
-    <!-- FIXME SQL92 dialect has problem -->
-    <rewrite-assertion id="select_for_literals" db-type="MySQL">
+    <rewrite-assertion id="select_for_literals">
         <input sql="SELECT account_id, password, amount AS a, status AS s FROM t_account WHERE account_id = 1 AND password IN ('aaa', 'bbb') AND amount = 1000 AND status = 'OK'" />
         <output sql="SELECT account_id, cipher_password, cipher_amount AS a, status AS s FROM t_account WHERE account_id = 1 AND assisted_query_password IN ('assisted_query_aaa', 'assisted_query_bbb') AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
     </rewrite-assertion>
@@ -34,9 +33,8 @@
         <output sql="SELECT a.account_id, a.cipher_password, a.cipher_amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = ? AND assisted_query_password IN (?, ?) AND cipher_amount = ? AND a.status = ?" parameters="1, assisted_query_aaa, assisted_query_bbb, encrypt_1000, OK" />
     </rewrite-assertion>
     
-    <!-- FIXME SQL92 dialect has problem -->
     <!-- FIXME lost owner of predicate when rewrite -->
-    <rewrite-assertion id="select_plain_for_literals" db-type="MySQL">
+    <rewrite-assertion id="select_plain_for_literals">
         <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = 1 AND a.password IN ('aaa', 'bbb') AND a.amount = 1000 AND a.status = 'OK'" />
         <output sql="SELECT a.account_id, a.cipher_password, a.cipher_amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = 1 AND assisted_query_password IN ('assisted_query_aaa', 'assisted_query_bbb') AND cipher_amount = 'encrypt_1000' AND a.status = 'OK'" />
     </rewrite-assertion>
