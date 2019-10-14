@@ -18,13 +18,13 @@
 
 <rewrite-assertions yaml-rule="yaml/sharding/sharding-rule.yaml">
     <rewrite-assertion id="insert_values_with_columns_with_id_for_parameters">
-        <input sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)" parameters="100, 10, OK" />
-        <output sql="INSERT INTO t_order_0 (order_id, user_id, status) VALUES (?, ?, ?)" parameters="100, 10, OK" />
+        <input sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE user_id = VALUES(user_id)" parameters="100, 10, OK" />
+        <output sql="INSERT INTO t_order_0 (order_id, user_id, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE user_id = VALUES(user_id)" parameters="100, 10, OK" />
     </rewrite-assertion>
     
     <rewrite-assertion id="insert_values_with_columns_with_id_for_literals" db-type="MySQL">
-        <input sql="INSERT INTO t_order (order_id, user_id, status) VALUES (100, 10, 'OK')" />
-        <output sql="INSERT INTO t_order_0 (order_id, user_id, status) VALUES (100, 10, 'OK')" />
+        <input sql="INSERT INTO t_order (order_id, user_id, status) VALUES (100, 10, 'OK') ON DUPLICATE KEY UPDATE user_id = VALUES(user_id)" />
+        <output sql="INSERT INTO t_order_0 (order_id, user_id, status) VALUES (100, 10, 'OK') ON DUPLICATE KEY UPDATE user_id = VALUES(user_id)" />
     </rewrite-assertion>
     
     <rewrite-assertion id="insert_values_with_columns_without_id_for_parameters">
@@ -124,4 +124,9 @@
         <!--<input sql="INSERT INTO t_order SET user_id = 10, status = 'OK'" parameters="10, OK" />-->
         <!--<output sql="INSERT INTO t_order_1 SET user_id = 10, status = 'OK', order_id = 1" />-->
     <!--</rewrite-assertion>-->
+    
+    <rewrite-assertion id="insert_into_with_columns_without_id_for_parameters" db-type="MySQL">
+        <input sql="INSERT INTO t_order SET user_id = ?, status = ?" parameters="10, OK" />
+        <output sql="INSERT INTO t_order_1 SET user_id = ?, status = ?, order_id = ?" parameters="10, OK, 1" />
+    </rewrite-assertion>
 </rewrite-assertions>
