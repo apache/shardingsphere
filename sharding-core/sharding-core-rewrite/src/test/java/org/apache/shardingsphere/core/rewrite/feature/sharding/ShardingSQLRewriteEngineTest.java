@@ -749,13 +749,6 @@ public final class ShardingSQLRewriteEngineTest {
     }
     
     @Test
-    public void assertRewriteSelectInWithShardingEncryptorWithCipher() {
-        SQLRewriteResult actual = getSQLRewriteResult("SELECT password FROM t_cipher WHERE password in (3,5)", Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("SELECT cipher_password FROM t_cipher WHERE cipher_password IN ('encrypt_3', 'encrypt_5')"));
-        assertThat(actual.getParameters(), is(Collections.emptyList()));
-    }
-    
-    @Test
     public void assertRewriteSelectInWithShardingEncryptorWithPlain() {
         SQLRewriteResult actual = getSQLRewriteResult("SELECT password FROM t_cipher WHERE password in (3,5)", Collections.emptyList(), false);
         assertThat(actual.getSql(), is("SELECT plain_password FROM t_cipher WHERE plain_password IN (3, 5)"));

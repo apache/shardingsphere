@@ -18,14 +18,14 @@
 
 <rewrite-assertions yaml-rule="yaml/encrypt/query-with-cipher.yaml">
     <rewrite-assertion id="select_for_parameters">
-        <input sql="SELECT account_id, password, amount AS a, status AS s FROM t_account WHERE account_id = ? AND password = ? AND amount = ? AND status = ?" parameters="1, aaa, 1000, OK" />
-        <output sql="SELECT account_id, cipher_password, cipher_amount AS a, status AS s FROM t_account WHERE account_id = ? AND assisted_query_password = ? AND cipher_amount = ? AND status = ?" parameters="1, assisted_query_aaa, encrypt_1000, OK" />
+        <input sql="SELECT account_id, password, amount AS a, status AS s FROM t_account WHERE account_id = ? AND password IN (?, ?) AND amount = ? AND status = ?" parameters="1, aaa, bbb, 1000, OK" />
+        <output sql="SELECT account_id, cipher_password, cipher_amount AS a, status AS s FROM t_account WHERE account_id = ? AND assisted_query_password IN (?, ?) AND cipher_amount = ? AND status = ?" parameters="1, assisted_query_aaa, assisted_query_bbb, encrypt_1000, OK" />
     </rewrite-assertion>
     
     <!-- FIXME SQL92 dialect has problem -->
     <rewrite-assertion id="select_for_literals" db-type="MySQL">
-        <input sql="SELECT account_id, password, amount AS a, status AS s FROM t_account WHERE account_id = 1 AND password = 'aaa' AND amount = 1000 AND status = 'OK'" />
-        <output sql="SELECT account_id, cipher_password, cipher_amount AS a, status AS s FROM t_account WHERE account_id = 1 AND assisted_query_password = 'assisted_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
+        <input sql="SELECT account_id, password, amount AS a, status AS s FROM t_account WHERE account_id = 1 AND password IN ('aaa', 'bbb') AND amount = 1000 AND status = 'OK'" />
+        <output sql="SELECT account_id, cipher_password, cipher_amount AS a, status AS s FROM t_account WHERE account_id = 1 AND assisted_query_password IN ('assisted_query_aaa', 'assisted_query_bbb') AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
     </rewrite-assertion>
     
     <!-- FIXME lost owner of predicate when rewrite -->
