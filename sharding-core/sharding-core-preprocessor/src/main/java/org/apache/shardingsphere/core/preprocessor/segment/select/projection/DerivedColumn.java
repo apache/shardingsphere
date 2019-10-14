@@ -31,15 +31,15 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum DerivedColumn {
-    
-    AVG_COUNT_ALIAS("AVG_DERIVED_COUNT_"), 
-    AVG_SUM_ALIAS("AVG_DERIVED_SUM_"), 
-    ORDER_BY_ALIAS("ORDER_BY_DERIVED_"), 
+
+    AVG_COUNT_ALIAS("AVG_DERIVED_COUNT_"),
+    AVG_SUM_ALIAS("AVG_DERIVED_SUM_"),
+    ORDER_BY_ALIAS("ORDER_BY_DERIVED_"),
     GROUP_BY_ALIAS("GROUP_BY_DERIVED_"),
     AGGREGATION_DISTINCT_DERIVED("AGGREGATION_DISTINCT_DERIVED_");
-    
+
     private final String pattern;
-    
+
     /**
      * Get alias of derived column.
      *
@@ -49,7 +49,7 @@ public enum DerivedColumn {
     public String getDerivedColumnAlias(final int derivedColumnCount) {
         return String.format(pattern + "%s", derivedColumnCount);
     }
-    
+
     /**
      * Judge is derived column or not.
      *
@@ -64,7 +64,7 @@ public enum DerivedColumn {
         }
         return false;
     }
-    
+
     private static Collection<DerivedColumn> getValues() {
         Collection<DerivedColumn> result = new ArrayList<>(Arrays.asList(DerivedColumn.values()));
         result.remove(DerivedColumn.AGGREGATION_DISTINCT_DERIVED);

@@ -35,12 +35,12 @@ import java.util.LinkedList;
  * @author panjuan
  */
 public final class AggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator, IgnoreForSingleRoute {
-    
+
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof SelectSQLStatementContext;
     }
-    
+
     @Override
     public Collection<AggregationDistinctToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<AggregationDistinctToken> result = new LinkedList<>();
@@ -49,10 +49,10 @@ public final class AggregationDistinctTokenGenerator implements CollectionSQLTok
         }
         return result;
     }
-    
+
     private AggregationDistinctToken generateSQLToken(final AggregationDistinctProjection projection) {
         Preconditions.checkArgument(projection.getAlias().isPresent());
-        String derivedAlias = DerivedColumn.isDerivedColumnName(projection.getAlias().get()) ? projection.getAlias().get() : null;
+        String derivedAlias = DerivedColumn.isDerivedColumn(projection.getAlias().get()) ? projection.getAlias().get() : null;
         return new AggregationDistinctToken(projection.getStartIndex(), projection.getStopIndex(), projection.getDistinctInnerExpression(), derivedAlias);
     }
 }
