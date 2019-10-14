@@ -50,14 +50,15 @@
     </rewrite-assertion>
     
     <rewrite-assertion id="select_binding_table_without_sharding_value_for_parameters">
-        <input sql="SELECT * FROM t_order o, t_order_item i WHERE o.order_id=i.order_id AND o.user_id = ?" parameters="10" />
-        <output sql="SELECT * FROM t_order_0 o, t_order_item_0 i WHERE o.order_id=i.order_id AND o.user_id = ?" parameters="10" />
-        <output sql="SELECT * FROM t_order_1 o, t_order_item_1 i WHERE o.order_id=i.order_id AND o.user_id = ?" parameters="10" />
+        <input sql="SELECT * FROM t_order JOIN t_order_item ON order_id WHERE t_order.user_id = ?" parameters="10" />
+        <output sql="SELECT * FROM t_order_0 JOIN t_order_item_0 ON order_id WHERE t_order_0.user_id = ?" parameters="10" />
+        <output sql="SELECT * FROM t_order_1 JOIN t_order_item_1 ON order_id WHERE t_order_1.user_id = ?" parameters="10" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_binding_table_without_sharding_value_for_literals">
-        <input sql="SELECT * FROM t_order o, t_order_item i WHERE o.order_id=i.order_id AND o.user_id = 10" parameters="10" />
-        <output sql="SELECT * FROM t_order_0 o, t_order_item_0 i WHERE o.order_id=i.order_id AND o.user_id = 10" parameters="10" />
-        <output sql="SELECT * FROM t_order_1 o, t_order_item_1 i WHERE o.order_id=i.order_id AND o.user_id = 10" parameters="10" />
+        <input sql="SELECT * FROM t_order JOIN t_order_item ON order_id WHERE t_order.user_id = 10" parameters="10" />
+        <output sql="SELECT * FROM t_order_0 JOIN t_order_item_0 ON order_id WHERE t_order_0.user_id = 10" parameters="10" />
+        <output sql="SELECT * FROM t_order_1 JOIN t_order_item_1 ON order_id WHERE t_order_1.user_id = 10" parameters="10" />
     </rewrite-assertion>
+    
 </rewrite-assertions>

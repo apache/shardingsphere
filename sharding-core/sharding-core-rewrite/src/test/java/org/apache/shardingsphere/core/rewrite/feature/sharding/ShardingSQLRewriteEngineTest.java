@@ -60,7 +60,6 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -98,38 +97,6 @@ public final class ShardingSQLRewriteEngineTest {
         result.getTableUnits().add(new TableUnit("table_x", "table_1"));
         result.getTableUnits().add(new TableUnit("table_y", "table_y"));
         result.getTableUnits().add(new TableUnit("table_w", "table_1"));
-        return result;
-    }
-    
-    @Test
-    public void assertRewriteWithoutChange() {
-        SQLRewriteResult actual = getSQLRewriteResult("SELECT table_y.id FROM table_y WHERE table_y.id=?", Collections.<Object>singletonList(1), true);
-        assertThat(actual.getSql(), is("SELECT table_y.id FROM table_y WHERE table_y.id=?"));
-        assertThat(actual.getParameters(), is(Collections.<Object>singletonList(1)));
-    }
-    
-    @Test
-    public void assertRewriteTableName() {
-        // TODO case maybe incorrect
-//        SQLRewriteResult actual = getSQLRewriteResult("SELECT table_x.id, x.name FROM table_x x WHERE table_x.id=? AND x.name=?", Arrays.<Object>asList(1, "x"), true);
-//        assertThat(actual.getSql(), is("SELECT table_1.id, x.name FROM table_1 x WHERE table_1.id=? AND x.name=?"));
-//        assertThat(actual.getParameters(), is(Arrays.<Object>asList(1, "x")));
-        SQLRouteResult sqlRouteResult = createRouteResultForTableName();
-        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sqlRouteResult, "SELECT table_x.id, x.name FROM table_x x WHERE table_x.id=? AND x.name=?", Arrays.<Object>asList(1, "x"));
-        assertThat(new ShardingSQLRewriteEngine(sqlRouteResult.getShardingConditions(), null, logicAndActualTables).rewrite(sqlRewriteContext).getSql(),
-                is("SELECT table_1.id, x.name FROM table_1 x WHERE table_1.id=? AND x.name=?"));
-    }
-    
-    private SQLRouteResult createRouteResultForTableName() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getAllSQLSegments().add(new TableSegment(7, 13, "table_x"));
-        selectStatement.getAllSQLSegments().add(new TableSegment(31, 37, "table_x"));
-        selectStatement.getAllSQLSegments().add(new TableSegment(47, 53, "table_x"));
-        SQLRouteResult result = new SQLRouteResult(new SelectSQLStatementContext(selectStatement,  
-                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
-                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), new PaginationContext(null, null, Collections.emptyList())),
-                new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        result.setRoutingResult(new RoutingResult());
         return result;
     }
     
