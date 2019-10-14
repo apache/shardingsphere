@@ -45,10 +45,6 @@ public final class DerivedColumnTest {
     @Test
     public void assertIsNotDerivedColumn() {
         assertFalse(DerivedColumn.isDerivedColumn("AGGREGATION_DISTINCT_DERIVED_"));
-    }
-
-    @Test
-    public void assertIsNotDerivedColumn() {
         assertFalse(DerivedColumn.isDerivedColumn("OTHER_DERIVED_COLUMN_0"));
     }
 }
