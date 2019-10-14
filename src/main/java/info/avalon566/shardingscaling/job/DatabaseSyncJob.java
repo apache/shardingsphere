@@ -18,6 +18,7 @@
 package info.avalon566.shardingscaling.job;
 
 import info.avalon566.shardingscaling.job.config.SyncConfiguration;
+import info.avalon566.shardingscaling.job.schedule.Reporter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -27,16 +28,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DatabaseSyncJob {
 
-    private final SyncConfiguration syncConfiguration;
-
     private final HistoryDataSyncer historyDataSyncer;
 
     private final RealtimeDataSyncer realtimeDataSyncer;
 
-    public DatabaseSyncJob(final SyncConfiguration syncConfiguration) {
-        this.syncConfiguration = syncConfiguration;
+    public DatabaseSyncJob(final SyncConfiguration syncConfiguration, final Reporter reporter) {
         this.historyDataSyncer = new HistoryDataSyncer(syncConfiguration);
-        this.realtimeDataSyncer = new RealtimeDataSyncer(syncConfiguration);
+        this.realtimeDataSyncer = new RealtimeDataSyncer(syncConfiguration, reporter);
     }
 
     /**

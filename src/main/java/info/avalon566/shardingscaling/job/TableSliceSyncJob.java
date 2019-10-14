@@ -26,8 +26,8 @@ import info.avalon566.shardingscaling.sync.core.SyncExecutor;
 import info.avalon566.shardingscaling.sync.core.Writer;
 import info.avalon566.shardingscaling.sync.mysql.MySQLJdbcReader;
 import info.avalon566.shardingscaling.sync.mysql.MySQLWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Collections;
 
 /**
@@ -36,9 +36,8 @@ import java.util.Collections;
  * @author avalon566
  * @author yangyi
  */
+@Slf4j
 public class TableSliceSyncJob {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(TableSliceSyncJob.class);
 
     private final SyncConfiguration syncConfiguration;
 
@@ -62,10 +61,10 @@ public class TableSliceSyncJob {
             public void run() {
                 try {
                     executor.waitFinish();
-                    LOGGER.info("{} table slice sync finish", syncConfiguration.getReaderConfiguration().getTableName());
+                    log.info("{} table slice sync finish", syncConfiguration.getReaderConfiguration().getTableName());
                     reporter.report(new Event(EventType.FINISHED));
                 } catch (SyncExecuteException ex) {
-                    LOGGER.info("{} table slice sync exception exit", syncConfiguration.getReaderConfiguration().getTableName());
+                    log.info("{} table slice sync exception exit", syncConfiguration.getReaderConfiguration().getTableName());
                     reporter.report(new Event(EventType.FINISHED));
                 }
             }

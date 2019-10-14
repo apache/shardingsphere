@@ -20,6 +20,7 @@ package info.avalon566.shardingscaling.job;
 import info.avalon566.shardingscaling.job.config.RuleConfiguration;
 import info.avalon566.shardingscaling.job.config.SyncConfiguration;
 import info.avalon566.shardingscaling.job.config.SyncType;
+import info.avalon566.shardingscaling.job.schedule.Reporter;
 import info.avalon566.shardingscaling.job.schedule.Scheduler;
 import info.avalon566.shardingscaling.sync.core.DataSourceConfiguration;
 import info.avalon566.shardingscaling.sync.core.JdbcDataSourceConfiguration;
@@ -69,7 +70,7 @@ public class ScalingJob {
         try {
             CommandLine commandLine = parseCommand(args);
             List<SyncConfiguration> syncConfigurations = toSyncConfigurations(commandLine);
-            scheduler.schedule(syncConfigurations);
+            Reporter reporter = scheduler.schedule(syncConfigurations);
         } catch (FileNotFoundException | ParseException e) {
             throw new RuntimeException(e);
         }

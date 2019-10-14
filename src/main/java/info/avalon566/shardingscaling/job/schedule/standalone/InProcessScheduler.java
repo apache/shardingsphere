@@ -38,7 +38,7 @@ public class InProcessScheduler implements Scheduler {
         InProcessReporter reporter = new InProcessReporter();
         for (SyncConfiguration syncConfiguration : syncConfigurations) {
             if (SyncType.Database.equals(syncConfiguration.getSyncType())) {
-                new DatabaseSyncJob(syncConfiguration).run();
+                new DatabaseSyncJob(syncConfiguration, reporter).run();
             } else if (SyncType.TableSlice.equals(syncConfiguration.getSyncType())) {
                 new TableSliceSyncJob(syncConfiguration, reporter).run();
             }
