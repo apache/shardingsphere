@@ -32,7 +32,7 @@ shardingRule:
           algorithmExpression: t_order_${order_id % 2}
       keyGenerator:
         type: TEST
-        column: id
+        column: order_id
     t_order_item:
       actualDataNodes: db.t_order_item_${0..1}
       tableStrategy: 

@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.core.rewrite.parameterized.engine;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
@@ -118,12 +120,41 @@ public final class ShardingSQLRewriteEngineParameterizedTest {
         result[2] = assertion.getId();
         result[3] = assertion.getInput().getSql();
         result[4] = null == assertion.getInput().getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getInput().getParameters());
+        if (null == assertion.getInput().getParameters()) {
+            result[4] = Collections.emptyList();
+        } else {
+            result[4] = Lists.transform(Splitter.on(",").trimResults().splitToList(assertion.getInput().getParameters()), new Function<String, Object>() {
+                
+                @Override
+                public Object apply(final String input) {
+                    try {
+                        return Integer.parseInt(input);
+                    } catch (final NumberFormatException ignore) {
+                        return input;
+                    }
+                }
+            });
+        }
         List<RewriteOutputEntity> outputs = assertion.getOutputs();
         List<String> outputSQLs = new ArrayList<>(outputs.size());
         List<Object> outputGroupedParameters = new ArrayList<>(outputs.size());
         for (RewriteOutputEntity each : outputs) {
             outputSQLs.add(each.getSql());
-            outputGroupedParameters.add(null == each.getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(each.getParameters()));
+            if (null == each.getParameters()) {
+                outputGroupedParameters.add(Collections.emptyList());
+            } else {
+                outputGroupedParameters.add(Lists.transform(Splitter.on(",").trimResults().splitToList(each.getParameters()), new Function<String, Object>() {
+                    
+                    @Override
+                    public Object apply(final String input) {
+                        try {
+                            return Integer.parseInt(input);
+                        } catch (final NumberFormatException ignore) {
+                            return input;
+                        }
+                    }
+                }));
+            }
         }
         result[5] = outputSQLs;
         result[6] = outputGroupedParameters;
@@ -184,6 +215,7 @@ public final class ShardingSQLRewriteEngineParameterizedTest {
         when(orderTableMetaData.containsIndex(anyString())).thenReturn(true);
         when(tableMetas.get("t_order")).thenReturn(orderTableMetaData);
         when(tableMetas.get("t_order_item")).thenReturn(mock(TableMetaData.class));
+        when(tableMetas.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "user_id", "status"));
         return new ShardingSphereMetaData(mock(DataSourceMetas.class), tableMetas);
     }
     

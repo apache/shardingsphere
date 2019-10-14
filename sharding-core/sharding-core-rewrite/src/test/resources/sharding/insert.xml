@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<rewrite-assertions yaml-rule="yaml/sharding/sharding-rule.yaml">
+    <rewrite-assertion id="insert_values_with_columns_with_id_for_parameters">
+        <input sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)" parameters="100, 10, OK" />
+        <output sql="INSERT INTO t_order_0 (order_id, user_id, status) VALUES (?, ?, ?)" parameters="100, 10, OK" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_values_with_columns_with_id_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_order (order_id, user_id, status) VALUES (100, 10, 'OK')" />
+        <output sql="INSERT INTO t_order_0 (order_id, user_id, status) VALUES (100, 10, 'OK')" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_values_with_columns_without_id_for_parameters">
+        <input sql="INSERT INTO t_order (user_id, status) VALUES (?, ?)" parameters="10, OK" />
+        <output sql="INSERT INTO t_order_1 (user_id, status, order_id) VALUES (?, ?, ?)" parameters="10, OK, 1" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_values_with_columns_without_id_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_order (user_id, status) VALUES (10, 'OK')" />
+        <output sql="INSERT INTO t_order_1 (user_id, status, order_id) VALUES (10, 'OK', 1)" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_values_without_columns_with_id_for_parameters">
+        <input sql="INSERT INTO t_order VALUES (?, ?, ?)" parameters="100, 10, OK" />
+        <output sql="INSERT INTO t_order_0 VALUES (?, ?, ?)" parameters="100, 10, OK" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_values_without_columns_with_id_for_literals" db-type="MySQL">
+        <input sql="INSERT INTO t_order VALUES (100, 10, 'OK')" />
+        <output sql="INSERT INTO t_order_0 VALUES (100, 10, 'OK')" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_values_without_columns_without_id_for_parameters">
+        <input sql="INSERT INTO t_order VALUES (?, ?)" parameters="10, OK" />
+        <output sql="INSERT INTO t_order_1(user_id, status, order_id) VALUES (?, ?, ?)" parameters="10, OK, 1" />
+    </rewrite-assertion>
+    
+    <!--<rewrite-assertion id="insert_values_without_columns_without_id_for_literals" db-type="MySQL">-->
+        <!--<input sql="INSERT INTO t_order VALUES (10, 'OK')" parameters="10, OK" />-->
+        <!--<output sql="INSERT INTO t_order_1(user_id, status, order_id) VALUES (10, 'OK', 1)" parameters="10, OK, 1" />-->
+    <!--</rewrite-assertion>-->
+</rewrite-assertions>
