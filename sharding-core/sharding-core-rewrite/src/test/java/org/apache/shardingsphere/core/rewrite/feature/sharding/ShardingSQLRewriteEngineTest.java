@@ -756,13 +756,6 @@ public final class ShardingSQLRewriteEngineTest {
     }
     
     @Test
-    public void assertRewriteUpdateWithShardingEncryptor() {
-        SQLRewriteResult actual = getSQLRewriteResult("UPDATE t_cipher SET password = 1 WHERE password = 2", Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("UPDATE t_cipher SET cipher_password = 'encrypt_1', plain_password = 1 WHERE cipher_password = 'encrypt_2'"));
-        assertThat(actual.getParameters(), is(Collections.emptyList()));
-    }
-    
-    @Test
     public void assertRewriteInsertWithGeneratedKeyAndQueryAssistedShardingEncryptor() {
         SQLRewriteResult actual = getSQLRewriteResult("INSERT INTO `table_w` set name = 10 ON DUPLICATE KEY UPDATE name = VALUES(name)", Collections.emptyList(), true);
         assertThat(actual.getSql(), is("INSERT INTO `table_w` set cipher = 'encrypt_10', query = 'assisted_query_10', plain = 10, id = 1 ON DUPLICATE KEY UPDATE name = VALUES(name)"));
@@ -774,34 +767,6 @@ public final class ShardingSQLRewriteEngineTest {
         SQLRewriteResult actual = getSQLRewriteResult("SELECT COUNT(DISTINCT id) a, SUM(DISTINCT id) a FROM table_x WHERE id IN (3,5)", Collections.emptyList(), true);
         assertThat(actual.getSql(), is("SELECT DISTINCT id a, id a FROM table_1 WHERE id IN (3,5)"));
         assertThat(actual.getParameters(), is(Collections.emptyList()));
-    }
-    
-    @Test
-    public void assertRewriteSelectEqualWithShardingEncryptorWithCipher() {
-        SQLRewriteResult actual = getSQLRewriteResult("SELECT password FROM t_cipher WHERE password=? AND name=?", Arrays.<Object>asList(1, "x"), true);
-        assertThat(actual.getSql(), is("SELECT cipher_password FROM t_cipher WHERE cipher_password = ? AND name=?"));
-        assertThat(actual.getParameters(), is(Arrays.<Object>asList("encrypt_1", "x")));
-    }
-    
-    @Test
-    public void assertRewriteSelectEqualWithShardingEncryptorWithPlain() {
-        SQLRewriteResult actual = getSQLRewriteResult("SELECT password FROM t_cipher WHERE password=? AND name=?", Arrays.<Object>asList(1, "x"), false);
-        assertThat(actual.getSql(), is("SELECT plain_password FROM t_cipher WHERE plain_password = ? AND name=?"));
-        assertThat(actual.getParameters(), is(Arrays.<Object>asList(1, "x")));
-    }
-    
-    @Test
-    public void assertRewriteSelectInWithShardingEncryptorWithParameterWithCipher() {
-        SQLRewriteResult actual = getSQLRewriteResult("SELECT password FROM t_cipher WHERE password in (?, ?) or password = 3", Arrays.<Object>asList(1, 2), true);
-        assertThat(actual.getSql(), is("SELECT cipher_password FROM t_cipher WHERE cipher_password IN (?, ?) or cipher_password = 'encrypt_3'"));
-        assertThat(actual.getParameters(), is(Arrays.<Object>asList("encrypt_1", "encrypt_2")));
-    }
-    
-    @Test
-    public void assertRewriteSelectInWithShardingEncryptorWithParameterWithPlain() {
-        SQLRewriteResult actual = getSQLRewriteResult("SELECT password FROM t_cipher WHERE password in (?, ?) or password = 3", Arrays.<Object>asList(1, 2), false);
-        assertThat(actual.getSql(), is("SELECT plain_password FROM t_cipher WHERE plain_password IN (?, ?) or plain_password = 3"));
-        assertThat(actual.getParameters(), is(Arrays.<Object>asList(1, 2)));
     }
     
     @Test
