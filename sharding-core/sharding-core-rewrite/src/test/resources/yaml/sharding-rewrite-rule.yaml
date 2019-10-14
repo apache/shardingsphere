@@ -32,38 +32,39 @@ shardingRule:
     table_x:
       actualDataNodes: db${0..1}.table_x
       keyGenerator:
-        type: SNOWFLAKE
+        type: TEST
         column: id
         props:
           worker.id: 123
     table_y:
       actualDataNodes: db${0..1}.table_y
-    table_z:
+    t_cipher:
       actualDataNodes: db${0..1}.table_z
     table_k:
       actualDataNodes: db${0..1}.table_k
     table_w:
       actualDataNodes: db${0..1}.table_w
       keyGenerator:
-        type: SNOWFLAKE
+        type: TEST
         column: id
         props:
           worker.id: 123 
   bindingTables:
     - table_x, table_y
+  
   encryptRule:
     encryptors:
-      z_encryptor:
-        type: TEST
+      normal:
+        type: NORMAL_ENCRYPT
       k_encryptor:
-        type: ASSISTEDTEST
+        type: ASSISTED_QUERY_ENCRYPT
     tables:
-      table_z:
+      t_cipher:
         columns:
-          id:
-            cipherColumn: cipher
-            plainColumn: plain
-            encryptor: z_encryptor
+          password:
+            cipherColumn: cipher_password
+            plainColumn: plain_password
+            encryptor: normal
       table_k:
         columns:
           id:
@@ -81,3 +82,6 @@ shardingRule:
             cipherColumn: cipher
             assistedQueryColumn: query
             encryptor: k_encryptor
+
+props:
+  query.with.cipher.column: true

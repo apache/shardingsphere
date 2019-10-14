@@ -16,22 +16,10 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <artifactId>sharding-orchestration</artifactId>
-        <groupId>org.apache.shardingsphere</groupId>
-        <version>4.0.0-RC3-SNAPSHOT</version>
-    </parent>
-    <artifactId>sharding-orchestration-config</artifactId>
-    <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
+<rewrite-assertions yaml-rule="yaml/sharding-rewrite-rule.yaml">
+    <rewrite-assertion id="show_columns_from_table" db-type="MySQL">
+        <input sql="SHOW COLUMNS FROM table_x" />
+        <output sql="SHOW COLUMNS FROM table_x" />
+    </rewrite-assertion>
     
-    <modules>
-        <module>sharding-orchestration-config-api</module>
-        <module>sharding-orchestration-config-zookeeper-curator</module>
-        <module>sharding-orchestration-config-apollo</module>
-    </modules>
-</project>
+</rewrite-assertions>

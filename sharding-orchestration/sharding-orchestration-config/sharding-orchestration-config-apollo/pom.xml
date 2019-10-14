@@ -21,17 +21,34 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>sharding-orchestration</artifactId>
+        <artifactId>sharding-orchestration-config</artifactId>
         <groupId>org.apache.shardingsphere</groupId>
         <version>4.0.0-RC3-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-orchestration-config</artifactId>
+    <artifactId>sharding-orchestration-config-apollo</artifactId>
     <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
+
+    <properties>
+        <apollo.client.version>1.4.0</apollo.client.version>
+    </properties>
     
-    <modules>
-        <module>sharding-orchestration-config-api</module>
-        <module>sharding-orchestration-config-zookeeper-curator</module>
-        <module>sharding-orchestration-config-apollo</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-orchestration-config-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ctrip.framework.apollo</groupId>
+            <artifactId>apollo-client</artifactId>
+            <version>${apollo.client.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ctrip.framework.apollo</groupId>
+            <artifactId>apollo-mockserver</artifactId>
+            <version>${apollo.client.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>
