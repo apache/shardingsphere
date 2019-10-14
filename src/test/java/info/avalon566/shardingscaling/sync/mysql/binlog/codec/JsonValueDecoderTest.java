@@ -18,10 +18,10 @@
 package info.avalon566.shardingscaling.sync.mysql.binlog.codec;
 
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.JsonValueDecoder.JsonValueTypes;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -123,6 +123,35 @@ public class JsonValueDecoderTest {
         ByteBuf payload = mockJsonByteBuf(jsonEntries, false);
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"key1\":2147483647,\"key2\":2147483648}"));
+    }
+
+    @Test
+    public void assertDecodeSmallJsonObjectWithInt64() {
+        List<JsonEntry> jsonEntries = new LinkedList<>();
+        jsonEntries.add(new JsonEntry(JsonValueTypes.INT64, "key1", Long.MAX_VALUE));
+        jsonEntries.add(new JsonEntry(JsonValueTypes.INT64, "key2", Long.MIN_VALUE));
+        ByteBuf payload = mockJsonByteBuf(jsonEntries, true);
+        String actual = (String) JsonValueDecoder.decode(payload);
+        assertThat(actual, is("{\"key1\":9223372036854775807,\"key2\":-9223372036854775808}"));
+    }
+
+    @Test
+    public void assertDecodeSmallJsonObjectWithUInt64() {
+        List<JsonEntry> jsonEntries = new LinkedList<>();
+        jsonEntries.add(new JsonEntry(JsonValueTypes.UINT64, "key1", Long.MAX_VALUE));
+        jsonEntries.add(new JsonEntry(JsonValueTypes.UINT64, "key2", Long.MIN_VALUE));
+        ByteBuf payload = mockJsonByteBuf(jsonEntries, true);
+        String actual = (String) JsonValueDecoder.decode(payload);
+        assertThat(actual, is("{\"key1\":9223372036854775807,\"key2\":9223372036854775808}"));
+    }
+
+    @Test
+    public void assertDecodeSmallJsonObjectWithDouble() {
+        List<JsonEntry> jsonEntries = new LinkedList<>();
+        jsonEntries.add(new JsonEntry(JsonValueTypes.DOUBLE, "key1", Double.MAX_VALUE));
+        ByteBuf payload = mockJsonByteBuf(jsonEntries, true);
+        String actual = (String) JsonValueDecoder.decode(payload);
+        assertThat(actual, is("{\"key1\":1.7976931348623157E308}"));
     }
     
     @Test
