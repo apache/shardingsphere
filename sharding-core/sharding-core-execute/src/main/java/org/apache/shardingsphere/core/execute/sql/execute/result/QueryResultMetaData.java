@@ -169,6 +169,7 @@ public final class QueryResultMetaData {
         }
         final Collection<String> actualColumns = encryptRule.findEncryptTable(logicTableName)
                 .transform(new Function<EncryptTable, Collection<String>>() {
+
                     @Override
                     public Collection<String> apply(final EncryptTable encryptTable) {
                         return encryptTable.getCipherColumns();
