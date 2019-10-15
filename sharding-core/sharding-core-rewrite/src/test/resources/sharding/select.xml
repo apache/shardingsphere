@@ -72,6 +72,23 @@
         <output sql="SELECT AVG(amount) , COUNT(amount) AS AVG_DERIVED_COUNT_0 , SUM(amount) AS AVG_DERIVED_SUM_0 FROM t_order_1 WHERE user_id = ?" parameters="10" />
     </rewrite-assertion>
     
+    <rewrite-assertion id="select_distinct_with_single_route">
+        <input sql="SELECT COUNT(DISTINCT order_id) a, SUM(DISTINCT order_id) a FROM t_order WHERE order_id = ?" parameters="100" />
+        <output sql="SELECT COUNT(DISTINCT order_id) a, SUM(DISTINCT order_id) a FROM t_order_0 WHERE order_id = ?" parameters="100" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_distinct_with_alias_with_multiple_route">
+        <input sql="SELECT COUNT(DISTINCT order_id) a, SUM(DISTINCT order_id) b FROM t_order" />
+        <output sql="SELECT DISTINCT order_id a, order_id b FROM t_order_0" />
+        <output sql="SELECT DISTINCT order_id a, order_id b FROM t_order_1" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_distinct_without_alias_with_multiple_route">
+        <input sql="SELECT COUNT(DISTINCT order_id), SUM(DISTINCT order_id) FROM t_order" />
+        <output sql="SELECT DISTINCT order_id AS AGGREGATION_DISTINCT_DERIVED_0, order_id AS AGGREGATION_DISTINCT_DERIVED_1 FROM t_order_0" />
+        <output sql="SELECT DISTINCT order_id AS AGGREGATION_DISTINCT_DERIVED_0, order_id AS AGGREGATION_DISTINCT_DERIVED_1 FROM t_order_1" />
+    </rewrite-assertion>
+    
     <rewrite-assertion id="select_order_by_with_single_route">
         <input sql="SELECT order_id FROM t_order WHERE order_id = ? ORDER BY user_id" parameters="100" />
         <output sql="SELECT order_id FROM t_order_0 WHERE order_id = ? ORDER BY user_id" parameters="100" />

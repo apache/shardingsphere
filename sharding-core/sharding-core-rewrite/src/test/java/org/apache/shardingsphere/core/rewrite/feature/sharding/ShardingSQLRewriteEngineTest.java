@@ -89,13 +89,6 @@ public final class ShardingSQLRewriteEngineTest {
         assertThat(actual.getParameters(), is(Collections.emptyList()));
     }
     
-    @Test
-    public void assertRewriteSelectInWithAggregationDistinct() {
-        SQLRewriteResult actual = getSQLRewriteResult("SELECT COUNT(DISTINCT id) a, SUM(DISTINCT id) a FROM table_x WHERE id IN (3,5)", Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("SELECT DISTINCT id a, id a FROM table_1 WHERE id IN (3,5)"));
-        assertThat(actual.getParameters(), is(Collections.emptyList()));
-    }
-    
     private SQLRewriteResult getSQLRewriteResult(final String sql, final List<Object> parameters, final boolean isQueryWithCipherColumn) {
         ShardingRouter shardingRouter = new ShardingRouter(shardingRule, mock(ShardingSphereMetaData.class), parseEngine);
         SQLStatement sqlStatement = shardingRouter.parse(sql, false);
