@@ -39,7 +39,7 @@
     <rewrite-assertion id="select_plain_for_literals" db-type="MySQL">
         <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = 1 AND a.password = 'aaa' AND a.amount = 1000 AND a.status = 'OK'" />
         <output sql="SELECT a.account_id, a.cipher_password, a.cipher_amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = 1 AND assisted_query_password = 'assisted_query_aaa' AND cipher_amount = 'encrypt_1000' AND a.status = 'OK'" />
-        <!--Here is the correct rewritten SQL. If you want to test and fix me, please note the above output, and make me valid.-->
+        <!--Here is the correct rewritten SQL. If you want to test and fix me, please note the above output, and make output under me valid.-->
         <!--<output sql="SELECT a.account_id, a.cipher_password, a.cipher_amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = 1 AND a.assisted_query_password = 'assisted_query_aaa' AND a.cipher_amount = 'encrypt_1000' AND a.status = 'OK'" />-->
     </rewrite-assertion>
 </rewrite-assertions>
