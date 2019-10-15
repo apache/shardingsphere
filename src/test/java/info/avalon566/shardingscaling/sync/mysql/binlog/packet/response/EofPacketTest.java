@@ -17,35 +17,25 @@
 
 package info.avalon566.shardingscaling.sync.mysql.binlog.packet.response;
 
-import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
-import info.avalon566.shardingscaling.sync.mysql.binlog.packet.AbstractPacket;
-import lombok.Getter;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import org.junit.Test;
 
-/**
- * MySQL EOF packet.
- *
- * <p>
- *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Overview  /  Generic Response Packets  /  EOF_Packet
- *     https://dev.mysql.com/doc/internals/en/packet-EOF_Packet.html
- * </p>
- *
- * @author avalon566
- * @author yangyi
- */
-@Getter
-public final class EofPacket extends AbstractPacket {
-    
-    private short fieldCount;
-    
-    private int warningCount;
-    
-    private int statusFlag;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-    @Override
-    public void fromByteBuf(final ByteBuf data) {
-        fieldCount = DataTypesCodec.readUnsignedInt1(data);
-        warningCount = DataTypesCodec.readUnsignedInt2LE(data);
-        statusFlag = DataTypesCodec.readUnsignedInt2LE(data);
+public class EofPacketTest {
+    
+    @Test
+    public void assertFromByteBuf() {
+        ByteBuf byteBuf = Unpooled.buffer();
+        byteBuf.writeByte(0x01);
+        byteBuf.writeShortLE(Short.MIN_VALUE);
+        byteBuf.writeShortLE(Short.MIN_VALUE);
+        EofPacket actual = new EofPacket();
+        actual.fromByteBuf(byteBuf);
+        assertThat(actual.getFieldCount(), is((short) 1));
+        assertThat(actual.getWarningCount(), is(32768));
+        assertThat(actual.getStatusFlag(), is(32768));
     }
 }
