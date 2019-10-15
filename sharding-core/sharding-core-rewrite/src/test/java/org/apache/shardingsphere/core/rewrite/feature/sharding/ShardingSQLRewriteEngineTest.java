@@ -101,20 +101,6 @@ public final class ShardingSQLRewriteEngineTest {
     }
     
     @Test
-    public void assertRewriteOrderByAndGroupByDerivedColumns() {
-        SQLRewriteResult actual = getSQLRewriteResult("SELECT x.age FROM table_x x GROUP BY x.id ORDER BY x.name", Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("SELECT x.age , x.id AS GROUP_BY_DERIVED_0 , x.name AS ORDER_BY_DERIVED_0 FROM table_1 x GROUP BY x.id ORDER BY x.name"));
-        assertThat(actual.getParameters(), is(Collections.emptyList()));
-    }
-    
-    @Test
-    public void assertRewriteAggregationDerivedColumns() {
-        SQLRewriteResult actual = getSQLRewriteResult("SELECT AVG(x.age) FROM table_x x", Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("SELECT AVG(x.age) , COUNT(x.age) AS AVG_DERIVED_COUNT_0 , SUM(x.age) AS AVG_DERIVED_SUM_0 FROM table_1 x"));
-        assertThat(actual.getParameters(), is(Collections.emptyList()));
-    }
-    
-    @Test
     public void assertRewriteLimit() {
         SQLRewriteResult actual = getSQLRewriteResult("SELECT x.id FROM table_x x LIMIT 2, 2", Collections.emptyList(), true);
         assertThat(actual.getSql(), is("SELECT x.id FROM table_1 x LIMIT 0, 4"));
@@ -338,13 +324,6 @@ public final class ShardingSQLRewriteEngineTest {
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         result.setRoutingResult(routingResult);
         return result;
-    }
-    
-    @Test
-    public void assertRewriteDerivedOrderBy() {
-        SQLRewriteResult actual = getSQLRewriteResult("SELECT x.id, x.name FROM table_x x GROUP BY x.id, x.name DESC", Collections.emptyList(), true);
-        assertThat(actual.getSql(), is("SELECT x.id, x.name FROM table_1 x GROUP BY x.id, x.name DESC ORDER BY x.id ASC,x.name DESC "));
-        assertThat(actual.getParameters(), is(Collections.emptyList()));
     }
     
     @Test

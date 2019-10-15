@@ -62,13 +62,95 @@
     </rewrite-assertion>
     
     <rewrite-assertion id="select_avg_with_single_route">
-        <input sql="SELECT AVG(amount) FROM t_order o WHERE o.order_id = ?" parameters="100" />
-        <output sql="SELECT AVG(amount) FROM t_order_0 o WHERE o.order_id = ?" parameters="100" />
+        <input sql="SELECT AVG(amount) FROM t_order WHERE order_id = ?" parameters="100" />
+        <output sql="SELECT AVG(amount) FROM t_order_0 WHERE order_id = ?" parameters="100" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_avg_with_multiple_route">
-        <input sql="SELECT AVG(amount) FROM t_order o WHERE o.user_id = ?" parameters="10" />
-        <output sql="SELECT AVG(amount) , COUNT(amount) AS AVG_DERIVED_COUNT_0 , SUM(amount) AS AVG_DERIVED_SUM_0 FROM t_order_0 o WHERE o.user_id = ?" parameters="10" />
-        <output sql="SELECT AVG(amount) , COUNT(amount) AS AVG_DERIVED_COUNT_0 , SUM(amount) AS AVG_DERIVED_SUM_0 FROM t_order_1 o WHERE o.user_id = ?" parameters="10" />
+        <input sql="SELECT AVG(amount) FROM t_order WHERE user_id = ?" parameters="10" />
+        <output sql="SELECT AVG(amount) , COUNT(amount) AS AVG_DERIVED_COUNT_0 , SUM(amount) AS AVG_DERIVED_SUM_0 FROM t_order_0 WHERE user_id = ?" parameters="10" />
+        <output sql="SELECT AVG(amount) , COUNT(amount) AS AVG_DERIVED_COUNT_0 , SUM(amount) AS AVG_DERIVED_SUM_0 FROM t_order_1 WHERE user_id = ?" parameters="10" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_order_by_with_single_route">
+        <input sql="SELECT order_id FROM t_order WHERE order_id = ? ORDER BY user_id" parameters="100" />
+        <output sql="SELECT order_id FROM t_order_0 WHERE order_id = ? ORDER BY user_id" parameters="100" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_order_by_with_order_by_projection_with_multiple_route">
+        <input sql="SELECT order_id FROM t_order ORDER BY order_id" />
+        <output sql="SELECT order_id FROM t_order_0 ORDER BY order_id" />
+        <output sql="SELECT order_id FROM t_order_1 ORDER BY order_id" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_order_by_without_order_by_projection_with_multiple_route">
+        <input sql="SELECT order_id FROM t_order ORDER BY user_id" />
+        <output sql="SELECT order_id , user_id AS ORDER_BY_DERIVED_0 FROM t_order_0 ORDER BY user_id" />
+        <output sql="SELECT order_id , user_id AS ORDER_BY_DERIVED_0 FROM t_order_1 ORDER BY user_id" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_order_by_without_unqualified_shorthand_with_multiple_route">
+        <input sql="SELECT * FROM t_order ORDER BY user_id" />
+        <output sql="SELECT * FROM t_order_0 ORDER BY user_id" />
+        <output sql="SELECT * FROM t_order_1 ORDER BY user_id" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_order_by_without_qualified_shorthand_contains_order_by_projection_with_multiple_route">
+        <input sql="SELECT o.* FROM t_order o JOIN t_order_item i ON order_id ORDER BY o.user_id" />
+        <output sql="SELECT o.* FROM t_order_0 o JOIN t_order_item_0 i ON order_id ORDER BY o.user_id" />
+        <output sql="SELECT o.* FROM t_order_1 o JOIN t_order_item_1 i ON order_id ORDER BY o.user_id" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_order_by_without_qualified_shorthand_not_contains_order_by_projection_with_multiple_route">
+        <input sql="SELECT o.* FROM t_order o JOIN t_order_item i ON order_id ORDER BY i.user_id" />
+        <output sql="SELECT o.* , i.user_id AS ORDER_BY_DERIVED_0 FROM t_order_0 o JOIN t_order_item_0 i ON order_id ORDER BY i.user_id" />
+        <output sql="SELECT o.* , i.user_id AS ORDER_BY_DERIVED_0 FROM t_order_1 o JOIN t_order_item_1 i ON order_id ORDER BY i.user_id" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_group_by_with_single_route">
+        <input sql="SELECT order_id FROM t_order WHERE order_id = ? GROUP BY user_id" parameters="100" />
+        <output sql="SELECT order_id FROM t_order_0 WHERE order_id = ? GROUP BY user_id" parameters="100" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_group_by_with_group_by_projection_with_multiple_route">
+        <input sql="SELECT order_id FROM t_order GROUP BY order_id" />
+        <output sql="SELECT order_id FROM t_order_0 GROUP BY order_id ORDER BY order_id ASC " />
+        <output sql="SELECT order_id FROM t_order_1 GROUP BY order_id ORDER BY order_id ASC " />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_group_by_without_group_by_projection_with_multiple_route">
+        <input sql="SELECT order_id FROM t_order GROUP BY user_id" />
+        <output sql="SELECT order_id , user_id AS GROUP_BY_DERIVED_0 FROM t_order_0 GROUP BY user_id ORDER BY user_id ASC " />
+        <output sql="SELECT order_id , user_id AS GROUP_BY_DERIVED_0 FROM t_order_1 GROUP BY user_id ORDER BY user_id ASC " />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_group_by_without_unqualified_shorthand_with_multiple_route">
+        <input sql="SELECT * FROM t_order GROUP BY user_id" />
+        <output sql="SELECT * FROM t_order_0 GROUP BY user_id ORDER BY user_id ASC " />
+        <output sql="SELECT * FROM t_order_1 GROUP BY user_id ORDER BY user_id ASC " />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_group_by_without_qualified_shorthand_contains_group_by_projection_with_multiple_route">
+        <input sql="SELECT o.* FROM t_order o JOIN t_order_item i ON order_id GROUP BY o.user_id" />
+        <output sql="SELECT o.* FROM t_order_0 o JOIN t_order_item_0 i ON order_id GROUP BY o.user_id ORDER BY o.user_id ASC " />
+        <output sql="SELECT o.* FROM t_order_1 o JOIN t_order_item_1 i ON order_id GROUP BY o.user_id ORDER BY o.user_id ASC " />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_group_by_without_qualified_shorthand_not_contains_group_by_projection_with_multiple_route">
+        <input sql="SELECT o.* FROM t_order o JOIN t_order_item i ON order_id GROUP BY i.user_id" />
+        <output sql="SELECT o.* , i.user_id AS GROUP_BY_DERIVED_0 FROM t_order_0 o JOIN t_order_item_0 i ON order_id GROUP BY i.user_id ORDER BY i.user_id ASC " />
+        <output sql="SELECT o.* , i.user_id AS GROUP_BY_DERIVED_0 FROM t_order_1 o JOIN t_order_item_1 i ON order_id GROUP BY i.user_id ORDER BY i.user_id ASC " />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_group_by_and_order_by_with_different_item_with_multiple_route">
+        <input sql="SELECT status FROM t_order GROUP BY user_id ORDER BY order_id" />
+        <output sql="SELECT status , user_id AS GROUP_BY_DERIVED_0 , order_id AS ORDER_BY_DERIVED_0 FROM t_order_0 GROUP BY user_id ORDER BY order_id" />
+        <output sql="SELECT status , user_id AS GROUP_BY_DERIVED_0 , order_id AS ORDER_BY_DERIVED_0 FROM t_order_1 GROUP BY user_id ORDER BY order_id" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_group_by_and_order_by_with_different_direction_with_multiple_route">
+        <input sql="SELECT status FROM t_order GROUP BY order_id ORDER BY order_id DESC" />
+        <output sql="SELECT status , order_id AS GROUP_BY_DERIVED_0 FROM t_order_0 GROUP BY order_id ORDER BY order_id DESC" />
+        <output sql="SELECT status , order_id AS GROUP_BY_DERIVED_0 FROM t_order_1 GROUP BY order_id ORDER BY order_id DESC" />
     </rewrite-assertion>
 </rewrite-assertions>
