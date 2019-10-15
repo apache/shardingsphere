@@ -36,7 +36,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -200,8 +199,8 @@ public final class TablesContextTest {
         SchemaSegment schemaSegment = mock(SchemaSegment.class);
         when(schemaSegment.getName()).thenReturn("SchemaSegmentName");
         tableSegment.setOwner(schemaSegment);
-        when(sqlStatement.findSQLSegments(TableAvailable.class)).thenReturn(Collections.singletonList((TableAvailable)tableSegment));
-        assertNotNull(new TablesContext(sqlStatement));
+        when(sqlStatement.findSQLSegments(TableAvailable.class)).thenReturn(Collections.singletonList((TableAvailable) tableSegment));
+        new TablesContext(sqlStatement);
     }
     
     private TableSegment createTableSegment(final String tableName, final String alias) {
