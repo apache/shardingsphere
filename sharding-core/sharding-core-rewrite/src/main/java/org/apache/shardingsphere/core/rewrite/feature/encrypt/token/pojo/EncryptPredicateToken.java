@@ -32,14 +32,14 @@ import java.util.Map;
  * @author panjuan
  */
 public final class EncryptPredicateToken extends SQLToken implements Substitutable {
-    
+
     @Getter
     private final int stopIndex;
 
     private final String tableOwner;
 
     private final String columnName;
-    
+
     private final Map<Integer, Object> indexValues;
     
     private final Collection<Integer> parameterMarkerIndexes;
@@ -47,7 +47,8 @@ public final class EncryptPredicateToken extends SQLToken implements Substitutab
     private final ShardingOperator operator;
     
     public EncryptPredicateToken(final int startIndex, final int stopIndex,
-                                 final String tableOwner, final String columnName, final Map<Integer, Object> indexValues, final Collection<Integer> parameterMarkerIndexes, final ShardingOperator operator) {
+                                 final String tableOwner, final String columnName, final Map<Integer, Object> indexValues,
+                                 final Collection<Integer> parameterMarkerIndexes, final ShardingOperator operator) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.tableOwner = tableOwner;
@@ -71,7 +72,8 @@ public final class EncryptPredicateToken extends SQLToken implements Substitutab
     
     private String toStringForEqual() {
         if (parameterMarkerIndexes.isEmpty()) {
-            return indexValues.get(0) instanceof String ? String.format("%s = '%s'", getColumnNameWithOwner(), indexValues.get(0)) : String.format("%s = %s", getColumnNameWithOwner(), indexValues.get(0));
+            return indexValues.get(0) instanceof String ? String.format("%s = '%s'", getColumnNameWithOwner(), indexValues.get(0))
+                : String.format("%s = %s", getColumnNameWithOwner(), indexValues.get(0));
         }
         return String.format("%s = ?", getColumnNameWithOwner());
     }
