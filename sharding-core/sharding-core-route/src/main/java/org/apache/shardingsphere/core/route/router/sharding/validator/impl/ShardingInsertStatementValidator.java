@@ -25,6 +25,8 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.route.router.sharding.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
+import java.util.List;
+
 /**
  * Sharding insert statement validator.
  *
@@ -33,7 +35,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 public final class ShardingInsertStatementValidator implements ShardingStatementValidator<InsertStatement> {
     
     @Override
-    public void validate(final ShardingRule shardingRule, final InsertStatement sqlStatement) {
+    public void validate(final ShardingRule shardingRule, final InsertStatement sqlStatement, final List<Object> parameters) {
         Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = sqlStatement.findSQLSegment(OnDuplicateKeyColumnsSegment.class);
         if (onDuplicateKeyColumnsSegment.isPresent() && isUpdateShardingKey(shardingRule, onDuplicateKeyColumnsSegment.get(), sqlStatement.getTable().getTableName())) {
             throw new ShardingException("INSERT INTO .... ON DUPLICATE KEY UPDATE can not support update for sharding column.");

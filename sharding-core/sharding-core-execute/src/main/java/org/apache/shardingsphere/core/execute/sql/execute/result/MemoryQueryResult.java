@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.execute.sql.execute.row.QueryRow;
+import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
@@ -55,14 +56,14 @@ public final class MemoryQueryResult implements QueryResult {
     @Getter
     private final QueryResultMetaData queryResultMetaData;
     
-    public MemoryQueryResult(final ResultSet resultSet, final ShardingRule shardingRule, final ShardingProperties properties) throws SQLException {
+    public MemoryQueryResult(final ResultSet resultSet, final ShardingRule shardingRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext) throws SQLException {
         resultData = getResultData(resultSet);
-        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule, properties);
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule, properties, sqlStatementContext);
     }
     
-    public MemoryQueryResult(final ResultSet resultSet, final EncryptRule encryptRule, final ShardingProperties properties) throws SQLException {
+    public MemoryQueryResult(final ResultSet resultSet, final EncryptRule encryptRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext) throws SQLException {
         resultData = getResultData(resultSet);
-        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule, properties);
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule, properties, sqlStatementContext);
     }
     
     public MemoryQueryResult(final ResultSet resultSet) throws SQLException {

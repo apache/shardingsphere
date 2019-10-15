@@ -62,7 +62,9 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Override
     public void setUp() throws SQLException {
         super.setUp();
-        actual = spy(new StatementExecutor(1, 1, 1, getConnection()));
+        StatementExecutor statementExecutor = new StatementExecutor(1, 1, 1, getConnection());
+        statementExecutor.setSqlStatementContext(getSQLStatementContext());
+        actual = spy(statementExecutor);
         doReturn(true).when(actual).isAccumulate();
     }
     

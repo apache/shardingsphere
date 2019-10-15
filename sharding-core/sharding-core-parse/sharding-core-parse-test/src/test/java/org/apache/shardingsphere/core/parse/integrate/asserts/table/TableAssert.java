@@ -23,12 +23,7 @@ import org.apache.shardingsphere.core.parse.integrate.jaxb.table.ExpectedTable;
 import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -50,33 +45,12 @@ public final class TableAssert {
      * @param expected expected tables
      */
     public void assertTables(final Collection<TableSegment> actual, final List<ExpectedTable> expected) {
-        Collection<TableSegment> mergedActual = mergeTableSegments(actual);
-        Map<String, ExpectedTable> expectedMap = getExpectedMap(expected);
-        assertThat(assertMessage.getFullAssertMessage("Tables size assertion error: "), mergedActual.size(), is(expectedMap.size()));
-        for (TableSegment each : mergedActual) {
-            assertThat(assertMessage.getFullAssertMessage("Table name assertion error: "), each.getTableName(), is(expectedMap.get(each.getTableName()).getName()));
-            assertThat(assertMessage.getFullAssertMessage("Table alias assertion error: "), each.getAlias().orNull(), is(expectedMap.get(each.getTableName()).getAlias()));
-        }
-    }
-    
-    // TODO yanan remove this method and make sure the table number of xml is correct
-    private Collection<TableSegment> mergeTableSegments(final Collection<TableSegment> actual) {
-        Collection<TableSegment> result = new LinkedList<>();
-        Set<String> tableNames = new HashSet<>(actual.size(), 1);
+        assertThat(assertMessage.getFullAssertMessage("Tables size assertion error: "), actual.size(), is(expected.size()));
+        int count = 0;
         for (TableSegment each : actual) {
-            if (tableNames.add(each.getTableName())) {
-                result.add(each);
-            }
+            assertThat(assertMessage.getFullAssertMessage("Table name assertion error: "), each.getTableName(), is(expected.get(count).getName()));
+            assertThat(assertMessage.getFullAssertMessage("Table alias assertion error: "), each.getAlias().orNull(), is(expected.get(count).getAlias()));
+            count++;
         }
-        return result;
-    }
-
-    // TODO yanan remove this method and make sure the seq of xml is correct
-    private Map<String, ExpectedTable> getExpectedMap(final List<ExpectedTable> expected) {
-        Map<String, ExpectedTable> result = new HashMap<>(expected.size(), 1);
-        for (ExpectedTable each : expected) {
-            result.put(each.getName(), each);
-        }
-        return result;
     }
 }

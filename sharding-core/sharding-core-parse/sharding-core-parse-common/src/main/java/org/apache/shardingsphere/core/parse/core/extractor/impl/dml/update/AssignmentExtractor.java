@@ -49,8 +49,16 @@ public final class AssignmentExtractor implements OptionalSQLSegmentExtractor {
             return Optional.absent();
         }
         Optional<ColumnSegment> columnSegment = columnExtractor.extract((ParserRuleContext) assignmentNode.get().getChild(0), parameterMarkerIndexes);
-        Optional<? extends ExpressionSegment> expressionSegment = expressionExtractor.extract((ParserRuleContext) assignmentNode.get().getChild(2), parameterMarkerIndexes);
-        Preconditions.checkState(columnSegment.isPresent() && expressionSegment.isPresent());
-        return Optional.of(new AssignmentSegment(assignmentNode.get().getStart().getStartIndex(), assignmentNode.get().getStop().getStopIndex(), columnSegment.get(), expressionSegment.get()));
+        Preconditions.checkState(columnSegment.isPresent());
+        ExpressionSegment assignmentValue = getAssignmentValue(parameterMarkerIndexes, assignmentNode.get());
+        return Optional.of(new AssignmentSegment(assignmentNode.get().getStart().getStartIndex(), assignmentNode.get().getStop().getStopIndex(), columnSegment.get(), assignmentValue));
+    }
+    
+    private ExpressionSegment getAssignmentValue(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext assignmentNode) {
+        ParserRuleContext assignmentValueNode = 3 == assignmentNode.getChildCount() ? (ParserRuleContext) assignmentNode.getChild(2) : (ParserRuleContext) assignmentNode.getChild(4);
+        Optional<? extends ExpressionSegment> result = expressionExtractor.extract(assignmentValueNode, parameterMarkerIndexes);
+        Preconditions.checkState(result.isPresent());
+        return result.get();
     }
 }
+

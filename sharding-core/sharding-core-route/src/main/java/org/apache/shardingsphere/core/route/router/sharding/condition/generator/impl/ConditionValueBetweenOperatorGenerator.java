@@ -20,12 +20,15 @@ package org.apache.shardingsphere.core.route.router.sharding.condition.generator
 import com.google.common.base.Optional;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.core.route.router.sharding.condition.Column;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.core.route.router.sharding.condition.generator.ConditionValue;
 import org.apache.shardingsphere.core.route.router.sharding.condition.generator.ConditionValueGenerator;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
+import org.apache.shardingsphere.core.route.spi.SPITimeService;
 import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,7 +42,18 @@ public final class ConditionValueBetweenOperatorGenerator implements ConditionVa
     public Optional<RouteValue> generate(final PredicateBetweenRightValue predicateRightValue, final Column column, final List<Object> parameters) {
         Optional<Comparable> betweenRouteValue = new ConditionValue(predicateRightValue.getBetweenExpression(), parameters).getValue();
         Optional<Comparable> andRouteValue = new ConditionValue(predicateRightValue.getAndExpression(), parameters).getValue();
+        if (betweenRouteValue.isPresent() && andRouteValue.isPresent()) {
+            return Optional.<RouteValue>of(new RangeRouteValue<>(column.getName(), column.getTableName(), Range.closed(betweenRouteValue.get(), andRouteValue.get())));
+        }
+        Date date = new SPITimeService().getTime();
+        if (!betweenRouteValue.isPresent() && ExpressionConditionUtils.isNowExpression(predicateRightValue.getBetweenExpression())) {
+            betweenRouteValue = Optional.of((Comparable) date);
+        }
+        if (!andRouteValue.isPresent() && ExpressionConditionUtils.isNowExpression(predicateRightValue.getAndExpression())) {
+            andRouteValue = Optional.of((Comparable) date);
+        }
         return betweenRouteValue.isPresent() && andRouteValue.isPresent()
-                ? Optional.<RouteValue>of(new RangeRouteValue<>(column.getName(), column.getTableName(), Range.closed(betweenRouteValue.get(), andRouteValue.get()))) : Optional.<RouteValue>absent();
+                ? Optional.<RouteValue>of(new RangeRouteValue<>(column.getName(), column.getTableName(), Range.closed(betweenRouteValue.get(), andRouteValue.get())))
+                : Optional.<RouteValue>absent();
     }
 }

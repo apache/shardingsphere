@@ -61,7 +61,9 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     @Override
     public void setUp() throws SQLException {
         super.setUp();
-        actual = spy(new PreparedStatementExecutor(1, 1, 1, false, getConnection()));
+        PreparedStatementExecutor preparedStatementExecutor = new PreparedStatementExecutor(1, 1, 1, false, getConnection());
+        preparedStatementExecutor.setSqlStatementContext(getSQLStatementContext());
+        actual = spy(preparedStatementExecutor);
         doReturn(true).when(actual).isAccumulate();
     }
     
