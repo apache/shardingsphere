@@ -51,7 +51,7 @@ public class JsonValueDecoderTest {
         List<JsonEntry> jsonEntries = new LinkedList<>();
         jsonEntries.add(new JsonEntry(JsonValueTypes.INT16, "key1", 0x00007fff));
         jsonEntries.add(new JsonEntry(JsonValueTypes.INT16, "key2", 0x00008000));
-        ByteBuf payload = mockJsonByteBuf(jsonEntries, true);
+        ByteBuf payload = mockJsonObjectByteBuf(jsonEntries, true);
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"key1\":32767,\"key2\":-32768}"));
     }
@@ -61,7 +61,7 @@ public class JsonValueDecoderTest {
         List<JsonEntry> jsonEntries = new LinkedList<>();
         jsonEntries.add(new JsonEntry(JsonValueTypes.INT16, "key1", 0x00007fff));
         jsonEntries.add(new JsonEntry(JsonValueTypes.INT16, "key2", 0x00008000));
-        ByteBuf payload = mockJsonByteBuf(jsonEntries, false);
+        ByteBuf payload = mockJsonObjectByteBuf(jsonEntries, false);
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"key1\":32767,\"key2\":-32768}"));
     }
@@ -71,7 +71,7 @@ public class JsonValueDecoderTest {
         List<JsonEntry> jsonEntries = new LinkedList<>();
         jsonEntries.add(new JsonEntry(JsonValueTypes.UINT16, "key1", 0x00007fff));
         jsonEntries.add(new JsonEntry(JsonValueTypes.UINT16, "key2", 0x00008000));
-        ByteBuf payload = mockJsonByteBuf(jsonEntries, true);
+        ByteBuf payload = mockJsonObjectByteBuf(jsonEntries, true);
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"key1\":32767,\"key2\":32768}"));
     }
@@ -81,7 +81,7 @@ public class JsonValueDecoderTest {
         List<JsonEntry> jsonEntries = new LinkedList<>();
         jsonEntries.add(new JsonEntry(JsonValueTypes.UINT16, "key1", 0x00007fff));
         jsonEntries.add(new JsonEntry(JsonValueTypes.UINT16, "key2", 0x00008000));
-        ByteBuf payload = mockJsonByteBuf(jsonEntries, false);
+        ByteBuf payload = mockJsonObjectByteBuf(jsonEntries, false);
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"key1\":32767,\"key2\":32768}"));
     }
@@ -91,7 +91,7 @@ public class JsonValueDecoderTest {
         List<JsonEntry> jsonEntries = new LinkedList<>();
         jsonEntries.add(new JsonEntry(JsonValueTypes.INT32, "key1", Integer.MAX_VALUE));
         jsonEntries.add(new JsonEntry(JsonValueTypes.INT32, "key2", Integer.MIN_VALUE));
-        ByteBuf payload = mockJsonByteBuf(jsonEntries, true);
+        ByteBuf payload = mockJsonObjectByteBuf(jsonEntries, true);
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"key1\":2147483647,\"key2\":-2147483648}"));
     }
@@ -101,7 +101,7 @@ public class JsonValueDecoderTest {
         List<JsonEntry> jsonEntries = new LinkedList<>();
         jsonEntries.add(new JsonEntry(JsonValueTypes.INT32, "key1", Integer.MAX_VALUE));
         jsonEntries.add(new JsonEntry(JsonValueTypes.INT32, "key2", Integer.MIN_VALUE));
-        ByteBuf payload = mockJsonByteBuf(jsonEntries, false);
+        ByteBuf payload = mockJsonObjectByteBuf(jsonEntries, false);
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"key1\":2147483647,\"key2\":-2147483648}"));
     }
@@ -111,7 +111,7 @@ public class JsonValueDecoderTest {
         List<JsonEntry> jsonEntries = new LinkedList<>();
         jsonEntries.add(new JsonEntry(JsonValueTypes.UINT32, "key1", Integer.MAX_VALUE));
         jsonEntries.add(new JsonEntry(JsonValueTypes.UINT32, "key2", Integer.MIN_VALUE));
-        ByteBuf payload = mockJsonByteBuf(jsonEntries, true);
+        ByteBuf payload = mockJsonObjectByteBuf(jsonEntries, true);
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"key1\":2147483647,\"key2\":2147483648}"));
     }
@@ -121,7 +121,7 @@ public class JsonValueDecoderTest {
         List<JsonEntry> jsonEntries = new LinkedList<>();
         jsonEntries.add(new JsonEntry(JsonValueTypes.UINT32, "key1", Integer.MAX_VALUE));
         jsonEntries.add(new JsonEntry(JsonValueTypes.UINT32, "key2", Integer.MIN_VALUE));
-        ByteBuf payload = mockJsonByteBuf(jsonEntries, false);
+        ByteBuf payload = mockJsonObjectByteBuf(jsonEntries, false);
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"key1\":2147483647,\"key2\":2147483648}"));
     }
@@ -131,7 +131,7 @@ public class JsonValueDecoderTest {
         List<JsonEntry> jsonEntries = new LinkedList<>();
         jsonEntries.add(new JsonEntry(JsonValueTypes.INT64, "key1", Long.MAX_VALUE));
         jsonEntries.add(new JsonEntry(JsonValueTypes.INT64, "key2", Long.MIN_VALUE));
-        ByteBuf payload = mockJsonByteBuf(jsonEntries, true);
+        ByteBuf payload = mockJsonObjectByteBuf(jsonEntries, true);
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"key1\":9223372036854775807,\"key2\":-9223372036854775808}"));
     }
@@ -141,7 +141,7 @@ public class JsonValueDecoderTest {
         List<JsonEntry> jsonEntries = new LinkedList<>();
         jsonEntries.add(new JsonEntry(JsonValueTypes.UINT64, "key1", Long.MAX_VALUE));
         jsonEntries.add(new JsonEntry(JsonValueTypes.UINT64, "key2", Long.MIN_VALUE));
-        ByteBuf payload = mockJsonByteBuf(jsonEntries, true);
+        ByteBuf payload = mockJsonObjectByteBuf(jsonEntries, true);
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"key1\":9223372036854775807,\"key2\":9223372036854775808}"));
     }
@@ -150,7 +150,7 @@ public class JsonValueDecoderTest {
     public void assertDecodeSmallJsonObjectWithDouble() {
         List<JsonEntry> jsonEntries = new LinkedList<>();
         jsonEntries.add(new JsonEntry(JsonValueTypes.DOUBLE, "key1", Double.MAX_VALUE));
-        ByteBuf payload = mockJsonByteBuf(jsonEntries, true);
+        ByteBuf payload = mockJsonObjectByteBuf(jsonEntries, true);
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"key1\":1.7976931348623157E308}"));
     }
@@ -166,7 +166,7 @@ public class JsonValueDecoderTest {
         jsonEntries.add(new JsonEntry(JsonValueTypes.STRING, "key2", value2));
         jsonEntries.add(new JsonEntry(JsonValueTypes.STRING, "key3", value3));
         jsonEntries.add(new JsonEntry(JsonValueTypes.STRING, "key4", value4));
-        ByteBuf payload = mockJsonByteBuf(jsonEntries, true);
+        ByteBuf payload = mockJsonObjectByteBuf(jsonEntries, true);
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is(String.format("{\"key1\":\"%s\",\"key2\":\"%s\",\"key3\":\"%s\",\"key4\":\"%s\"}", value1, value2, value3, value4)));
     }
@@ -174,7 +174,7 @@ public class JsonValueDecoderTest {
     @Test
     public void assertDecodeSmallJsonObjectWithSubJson() {
         List<JsonEntry> subJsons = Collections.singletonList(new JsonEntry(JsonValueTypes.INT32, "key1", 111));
-        ByteBuf payload = mockJsonByteBuf(Collections.singletonList(new JsonEntry(JsonValueTypes.SMALL_JSON_OBJECT, "subJson", subJsons)), true);
+        ByteBuf payload = mockJsonObjectByteBuf(Collections.singletonList(new JsonEntry(JsonValueTypes.SMALL_JSON_OBJECT, "subJson", subJsons)), true);
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"subJson\":{\"key1\":111}}"));
     }
@@ -182,19 +182,19 @@ public class JsonValueDecoderTest {
     @Test
     public void assertDecodeLargeJsonObjectWithSubJson() {
         List<JsonEntry> subJsons = Collections.singletonList(new JsonEntry(JsonValueTypes.INT32, "key1", 111));
-        ByteBuf payload = mockJsonByteBuf(Collections.singletonList(new JsonEntry(JsonValueTypes.SMALL_JSON_OBJECT, "subJson", subJsons)), false);
+        ByteBuf payload = mockJsonObjectByteBuf(Collections.singletonList(new JsonEntry(JsonValueTypes.SMALL_JSON_OBJECT, "subJson", subJsons)), false);
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"subJson\":{\"key1\":111}}"));
     }
 
-    private ByteBuf mockJsonByteBuf(final List<JsonEntry> jsonEntries, final boolean isSmall) {
+    private ByteBuf mockJsonObjectByteBuf(final List<JsonEntry> jsonEntries, final boolean isSmall) {
         ByteBuf result = Unpooled.buffer();
         result.writeByte(isSmall ? JsonValueTypes.SMALL_JSON_OBJECT : JsonValueTypes.LARGE_JSON_OBJECT);
-        result.writeBytes(mockJsonByteBufValue(jsonEntries, isSmall));
+        result.writeBytes(mockJsonObjectByteBufValue(jsonEntries, isSmall));
         return result;
     }
 
-    private ByteBuf mockJsonByteBufValue(final List<JsonEntry> jsonEntries, final boolean isSmall) {
+    private ByteBuf mockJsonObjectByteBufValue(final List<JsonEntry> jsonEntries, final boolean isSmall) {
         ByteBuf result = Unpooled.buffer();
         writeInt(result, jsonEntries.size(), isSmall);
         writeInt(result, 0, isSmall);
@@ -256,10 +256,10 @@ public class JsonValueDecoderTest {
     private void writeValueToByteBuf(final JsonEntry jsonEntry, final ByteBuf byteBuf, final boolean isSmall) {
         switch (jsonEntry.getType()) {
             case JsonValueTypes.SMALL_JSON_OBJECT:
-                byteBuf.writeBytes(mockJsonByteBufValue((List<JsonEntry>) jsonEntry.getValue(), true));
+                byteBuf.writeBytes(mockJsonObjectByteBufValue((List<JsonEntry>) jsonEntry.getValue(), true));
                 break;
             case JsonValueTypes.LARGE_JSON_OBJECT:
-                byteBuf.writeBytes(mockJsonByteBufValue((List<JsonEntry>) jsonEntry.getValue(), false));
+                byteBuf.writeBytes(mockJsonObjectByteBufValue((List<JsonEntry>) jsonEntry.getValue(), false));
                 break;
             case JsonValueTypes.INT32:
             case JsonValueTypes.UINT32:
