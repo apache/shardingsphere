@@ -11,6 +11,7 @@ Supplementary instruction about the figure:
 2. The process of migration splits into two step, history data migration and realtime data migration.
 
    (1) During history data migration, we use 'select *' syntax to acquire the data, and use 'insert' syntax to migrate the data to the target schema;
+   
    (2) During realtime data migration, we use binlog to migrate the data, and we mark the binlog position before migration.
 3. If the table in the source schema has primary key, we can migrate it concurrently using 'where condition'.
                                                                             
