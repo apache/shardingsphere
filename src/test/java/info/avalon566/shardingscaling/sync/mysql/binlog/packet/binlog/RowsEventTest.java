@@ -17,24 +17,23 @@
 
 package info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog;
 
+import info.avalon566.shardingscaling.sync.mysql.binlog.BinlogContext;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 
+import java.io.Serializable;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.List;
+
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.util.BitSet;
-import java.util.HashMap;
-
-import info.avalon566.shardingscaling.sync.mysql.binlog.BinlogContext;
 
 public class RowsEventTest {
     
@@ -75,9 +74,7 @@ public class RowsEventTest {
         BitSet expectedBitSet = new BitSet(1);
         expectedBitSet.set(0);
         assertThat(actual.getColumnsPresentBitmap(), is(expectedBitSet));
-        assertThat(actual.getColumnValues1().size(), is(1));
-        assertThat(actual.getColumnValues1().get(0).length, is(1));
-        assertNull(actual.getColumnValues1().get(0)[0]);
+        assertColumnValue(actual.getColumnValues1(), null);
     }
     
     @Test
@@ -91,12 +88,77 @@ public class RowsEventTest {
         expectedBitSet.set(0);
         assertThat(actual.getColumnsPresentBitmap(), is(expectedBitSet));
         assertThat(actual.getColumnsPresentBitmap2(), is(expectedBitSet));
-        assertThat(actual.getColumnValues1().size(), is(1));
-        assertThat(actual.getColumnValues1().get(0).length, is(1));
-        assertNull(actual.getColumnValues1().get(0)[0]);
-        assertThat(actual.getColumnValues2().size(), is(1));
-        assertThat(actual.getColumnValues2().get(0).length, is(1));
-        assertNull(actual.getColumnValues2().get(0)[0]);
+        assertColumnValue(actual.getColumnValues1(), null);
+        assertColumnValue(actual.getColumnValues2(), null);
+    }
+    
+    @Test
+    public void assertParsePayloadWithWriteLongRow() {
+        binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
+        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_LONG);
+        ByteBuf byteBuf = Unpooled.buffer();
+        byteBuf.writeBytes(new byte[] {1, 0, 0});
+        byteBuf.writeIntLE(Integer.MIN_VALUE);
+        RowsEvent actual = new RowsEvent(binlogEventHeader);
+        actual.parsePayload(binlogContext, byteBuf);
+        assertColumnValue(actual.getColumnValues1(), 2147483648L);
+    }
+    
+    @Test
+    public void assertParsePayloadWithUpdateLongRow() {
+        binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
+        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_LONG);
+        ByteBuf byteBuf = Unpooled.buffer();
+        byteBuf.writeBytes(new byte[] {1, 0, 0, 0});
+        byteBuf.writeIntLE(Integer.MAX_VALUE);
+        byteBuf.writeByte(0);
+        byteBuf.writeIntLE(Integer.MIN_VALUE);
+        RowsEvent actual = new RowsEvent(binlogEventHeader);
+        actual.parsePayload(binlogContext, byteBuf);
+        assertColumnValue(actual.getColumnValues1(), 2147483647L);
+        assertColumnValue(actual.getColumnValues2(), 2147483648L);
+    }
+    
+    @Test
+    public void assertParsePayloadWithWriteTinyRow() {
+        binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
+        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_TINY);
+        ByteBuf byteBuf = Unpooled.buffer();
+        byteBuf.writeBytes(new byte[] {1, 0, 0});
+        byteBuf.writeByte(0x80);
+        RowsEvent actual = new RowsEvent(binlogEventHeader);
+        actual.parsePayload(binlogContext, byteBuf);
+        assertColumnValue(actual.getColumnValues1(), (short) 0x80);
+    }
+    
+    @Test
+    public void assertParsePayloadWithUpdateTinyRow() {
+        binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
+        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_TINY);
+        ByteBuf byteBuf = Unpooled.buffer();
+        byteBuf.writeBytes(new byte[] {1, 0, 0, 0});
+        byteBuf.writeByte(0x79);
+        byteBuf.writeByte(0);
+        byteBuf.writeByte(0x80);
+        RowsEvent actual = new RowsEvent(binlogEventHeader);
+        actual.parsePayload(binlogContext, byteBuf);
+        assertColumnValue(actual.getColumnValues1(), (short) 0x79);
+        assertColumnValue(actual.getColumnValues2(), (short) 0x80);
+    }
+    
+    private void assertColumnValue(final List<Serializable[]> actual, final Serializable value) {
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).length, is(1));
+        assertThat(actual.get(0)[0], is(value));
+    }
+    
+    private void mockTableMapEvent(final int meta, final int columnType) {
+        TableMapEvent result = mock(TableMapEvent.class);
+        ColumnDef longColumnDef = new ColumnDef();
+        longColumnDef.setMeta(meta);
+        longColumnDef.setType(columnType);
+        when(result.getColumnDefs()).thenReturn(new ColumnDef[] {longColumnDef});
+        binlogContext.getTableMap().put(0L, result);
     }
 }
 
