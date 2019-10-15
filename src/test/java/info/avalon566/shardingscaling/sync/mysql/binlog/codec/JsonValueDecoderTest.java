@@ -17,6 +17,7 @@
 
 package info.avalon566.shardingscaling.sync.mysql.binlog.codec;
 
+import com.google.common.base.Strings;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.JsonValueDecoder.JsonValueTypes;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -32,19 +33,19 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class JsonValueDecoderTest {
-    
+
     private static final int SMALL_JSON_INT_LENGTH = 2;
-    
+
     private static final int LARGE_JSON_INT_LENGTH = 4;
-    
+
     private static final int SMALL_JSON_KEY_META_DATA_LENGTH = SMALL_JSON_INT_LENGTH + 2;
-    
+
     private static final int SMALL_JSON_VALUE_META_DATA_LENGTH = SMALL_JSON_INT_LENGTH + 1;
-    
+
     private static final int LARGE_JSON_KEY_META_DATA_LENGTH = LARGE_JSON_INT_LENGTH + 2;
-    
+
     private static final int LARGE_JSON_VALUE_META_DATA_LENGTH = LARGE_JSON_INT_LENGTH + 1;
-    
+
     @Test
     public void assertDecodeSmallJsonObjectWithInt16() {
         List<JsonEntry> jsonEntries = new LinkedList<>();
@@ -54,7 +55,7 @@ public class JsonValueDecoderTest {
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"key1\":32767,\"key2\":-32768}"));
     }
-    
+
     @Test
     public void assertDecodeLargeJsonObjectWithInt16() {
         List<JsonEntry> jsonEntries = new LinkedList<>();
@@ -64,7 +65,7 @@ public class JsonValueDecoderTest {
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"key1\":32767,\"key2\":-32768}"));
     }
-    
+
     @Test
     public void assertDecodeSmallJsonObjectWithUInt16() {
         List<JsonEntry> jsonEntries = new LinkedList<>();
@@ -74,7 +75,7 @@ public class JsonValueDecoderTest {
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"key1\":32767,\"key2\":32768}"));
     }
-    
+
     @Test
     public void assertDecodeLargeJsonObjectWithUInt16() {
         List<JsonEntry> jsonEntries = new LinkedList<>();
@@ -84,7 +85,7 @@ public class JsonValueDecoderTest {
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"key1\":32767,\"key2\":32768}"));
     }
-    
+
     @Test
     public void assertDecodeSmallJsonObjectWithInt32() {
         List<JsonEntry> jsonEntries = new LinkedList<>();
@@ -94,7 +95,7 @@ public class JsonValueDecoderTest {
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"key1\":2147483647,\"key2\":-2147483648}"));
     }
-    
+
     @Test
     public void assertDecodeLargeJsonObjectWithInt32() {
         List<JsonEntry> jsonEntries = new LinkedList<>();
@@ -104,7 +105,7 @@ public class JsonValueDecoderTest {
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"key1\":2147483647,\"key2\":-2147483648}"));
     }
-    
+
     @Test
     public void assertDecodeSmallJsonObjectWithUInt32() {
         List<JsonEntry> jsonEntries = new LinkedList<>();
@@ -114,7 +115,7 @@ public class JsonValueDecoderTest {
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"key1\":2147483647,\"key2\":2147483648}"));
     }
-    
+
     @Test
     public void assertDecodeLargeJsonObjectWithUInt32() {
         List<JsonEntry> jsonEntries = new LinkedList<>();
@@ -153,7 +154,23 @@ public class JsonValueDecoderTest {
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"key1\":1.7976931348623157E308}"));
     }
-    
+
+    @Test
+    public void assertDecodeSmallJsonObjectWithString() {
+        List<JsonEntry> jsonEntries = new LinkedList<>();
+        String value1 = "";
+        String value2 = Strings.repeat("1", (int) (Math.pow(2, 7) - 1));
+        String value3 = Strings.repeat("1", (int) (Math.pow(2, 7) - 1 + 1));
+        String value4 = Strings.repeat("1", (int) (Math.pow(2, 14) - 1));
+        jsonEntries.add(new JsonEntry(JsonValueTypes.STRING, "key1", value1));
+        jsonEntries.add(new JsonEntry(JsonValueTypes.STRING, "key2", value2));
+        jsonEntries.add(new JsonEntry(JsonValueTypes.STRING, "key3", value3));
+        jsonEntries.add(new JsonEntry(JsonValueTypes.STRING, "key4", value4));
+        ByteBuf payload = mockJsonByteBuf(jsonEntries, true);
+        String actual = (String) JsonValueDecoder.decode(payload);
+        assertThat(actual, is(String.format("{\"key1\":\"%s\",\"key2\":\"%s\",\"key3\":\"%s\",\"key4\":\"%s\"}", value1, value2, value3, value4)));
+    }
+
     @Test
     public void assertDecodeSmallJsonObjectWithSubJson() {
         List<JsonEntry> subJsons = Collections.singletonList(new JsonEntry(JsonValueTypes.INT32, "key1", 111));
@@ -161,7 +178,7 @@ public class JsonValueDecoderTest {
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"subJson\":{\"key1\":111}}"));
     }
-    
+
     @Test
     public void assertDecodeLargeJsonObjectWithSubJson() {
         List<JsonEntry> subJsons = Collections.singletonList(new JsonEntry(JsonValueTypes.INT32, "key1", 111));
@@ -169,21 +186,21 @@ public class JsonValueDecoderTest {
         String actual = (String) JsonValueDecoder.decode(payload);
         assertThat(actual, is("{\"subJson\":{\"key1\":111}}"));
     }
-    
+
     private ByteBuf mockJsonByteBuf(final List<JsonEntry> jsonEntries, final boolean isSmall) {
         ByteBuf result = Unpooled.buffer();
         result.writeByte(isSmall ? JsonValueTypes.SMALL_JSON_OBJECT : JsonValueTypes.LARGE_JSON_OBJECT);
         result.writeBytes(mockJsonByteBufValue(jsonEntries, isSmall));
         return result;
     }
-    
+
     private ByteBuf mockJsonByteBufValue(final List<JsonEntry> jsonEntries, final boolean isSmall) {
         ByteBuf result = Unpooled.buffer();
         writeInt(result, jsonEntries.size(), isSmall);
         writeInt(result, 0, isSmall);
         int startOffset = isSmall
-            ? 1 + SMALL_JSON_INT_LENGTH + SMALL_JSON_INT_LENGTH + jsonEntries.size() * SMALL_JSON_KEY_META_DATA_LENGTH + jsonEntries.size() * SMALL_JSON_VALUE_META_DATA_LENGTH - 1
-            : 1 + LARGE_JSON_INT_LENGTH + LARGE_JSON_INT_LENGTH + jsonEntries.size() * LARGE_JSON_KEY_META_DATA_LENGTH + jsonEntries.size() * LARGE_JSON_VALUE_META_DATA_LENGTH - 1;
+                ? 1 + SMALL_JSON_INT_LENGTH + SMALL_JSON_INT_LENGTH + jsonEntries.size() * SMALL_JSON_KEY_META_DATA_LENGTH + jsonEntries.size() * SMALL_JSON_VALUE_META_DATA_LENGTH - 1
+                : 1 + LARGE_JSON_INT_LENGTH + LARGE_JSON_INT_LENGTH + jsonEntries.size() * LARGE_JSON_KEY_META_DATA_LENGTH + jsonEntries.size() * LARGE_JSON_VALUE_META_DATA_LENGTH - 1;
         ByteBuf keyByteBuf = writeKeys(result, jsonEntries, startOffset, isSmall);
         startOffset += keyByteBuf.readableBytes();
         ByteBuf valueByteBuf = writeValues(result, jsonEntries, startOffset, isSmall);
@@ -191,7 +208,7 @@ public class JsonValueDecoderTest {
         result.writeBytes(valueByteBuf);
         return result;
     }
-    
+
     private void writeInt(final ByteBuf jsonByteBuf, final int value, final boolean isSmall) {
         if (isSmall) {
             jsonByteBuf.writeShortLE(value);
@@ -199,7 +216,7 @@ public class JsonValueDecoderTest {
             jsonByteBuf.writeIntLE(value);
         }
     }
-    
+
     private ByteBuf writeKeys(final ByteBuf jsonByteBuf, final List<JsonEntry> jsonEntries, final int startOffset, final boolean isSmall) {
         ByteBuf result = Unpooled.buffer();
         for (JsonEntry each : jsonEntries) {
@@ -210,7 +227,7 @@ public class JsonValueDecoderTest {
         }
         return result;
     }
-    
+
     private ByteBuf writeValues(final ByteBuf jsonByteBuf, final List<JsonEntry> jsonEntries, final int startOffset, final boolean isSmall) {
         ByteBuf result = Unpooled.buffer();
         for (JsonEntry each : jsonEntries) {
@@ -221,7 +238,7 @@ public class JsonValueDecoderTest {
         }
         return result;
     }
-    
+
     private int getOffsetOrInlineValue(final int startOffset, final int readableBytes, final JsonEntry jsonEntry, final boolean isSmall) {
         switch (jsonEntry.getType()) {
             case JsonValueTypes.INT16:
@@ -235,7 +252,7 @@ public class JsonValueDecoderTest {
                 return startOffset + readableBytes;
         }
     }
-    
+
     private void writeValueToByteBuf(final JsonEntry jsonEntry, final ByteBuf byteBuf, final boolean isSmall) {
         switch (jsonEntry.getType()) {
             case JsonValueTypes.SMALL_JSON_OBJECT:
@@ -258,20 +275,46 @@ public class JsonValueDecoderTest {
                 byteBuf.writeDoubleLE((double) jsonEntry.getValue());
                 break;
             case JsonValueTypes.STRING:
-                byteBuf.writeBytes(((String) jsonEntry.getValue()).getBytes());
+                writeString(byteBuf, (String) jsonEntry.getValue());
                 break;
             default:
         }
     }
-    
+
+    private void writeString(final ByteBuf jsonByteBuf, final String value) {
+        byte[] result = codecDataLength(value.length());
+        jsonByteBuf.writeBytes(result, 0, result.length);
+        jsonByteBuf.writeBytes(value.getBytes());
+    }
+
+    private byte[] codecDataLength(final int length) {
+        byte[] lengthData = new byte[32 / 7 + (32 % 7 == 0 ? 0 : 1)];
+        for (int i = 0; i < lengthData.length; i++) {
+            lengthData[i] = (byte) ((length >> (7 * i)) & 0x7f);
+        }
+        // compress
+        int index = lengthData.length - 1;
+        for (; index > 0; index--) {
+            if (0 != lengthData[index]) {
+                break;
+            }
+        }
+        for (int i = 0; i < index; i++) {
+            lengthData[i] |= 0x80;
+        }
+        byte[] result = new byte[index + 1];
+        System.arraycopy(lengthData, 0, result, 0, index + 1);
+        return result;
+    }
+
     @RequiredArgsConstructor
     @Getter
     private class JsonEntry {
-        
+
         private final byte type;
-        
+
         private final String key;
-        
+
         private final Object value;
     }
 }
