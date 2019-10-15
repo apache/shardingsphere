@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.core.route.router.sharding.validator.impl;
 
+import static org.mockito.Mockito.when;
+
+import java.util.Collections;
+
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
@@ -28,10 +32,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collections;
-
-import static org.mockito.Mockito.when;
-
 @RunWith(MockitoJUnitRunner.class)
 public final class ShardingInsertStatementValidatorTest {
     
@@ -41,13 +41,13 @@ public final class ShardingInsertStatementValidatorTest {
     @Test
     public void assertValidateOnDuplicateKeyWithoutShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
-        new ShardingInsertStatementValidator().validate(shardingRule, createInsertStatement());
+        new ShardingInsertStatementValidator().validate(shardingRule, createInsertStatement(), Collections.emptyList());
     }
     
     @Test(expected = ShardingException.class)
     public void assertValidateOnDuplicateKeyWithShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        new ShardingInsertStatementValidator().validate(shardingRule, createInsertStatement());
+        new ShardingInsertStatementValidator().validate(shardingRule, createInsertStatement(), Collections.emptyList());
     }
     
     private InsertStatement createInsertStatement() {

@@ -18,11 +18,11 @@
 <template>
   <el-row class="box-card">
     <el-radio-group v-model="radioValue" @change="onChange">
-      <el-radio-button label="schema"/>
-      <el-radio-button label="authentication"/>
-      <el-radio-button label="props"/>
+      <el-radio-button label="schema" />
+      <el-radio-button label="authentication" />
+      <el-radio-button label="props" />
     </el-radio-group>
-    <component :is="currentView"/>
+    <component :is="currentView" />
   </el-row>
 </template>
 <script>

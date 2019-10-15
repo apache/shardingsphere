@@ -21,11 +21,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 /**
  * Standard parameter builder.
@@ -38,10 +40,29 @@ public final class StandardParameterBuilder implements ParameterBuilder {
     private final List<Object> originalParameters;
     
     @Getter
-    private final Map<Integer, Object> addedIndexAndParameters = new LinkedHashMap<>();
+    private final Map<Integer, Collection<Object>> addedIndexAndParameters = new TreeMap<>();
     
-    @Getter
     private final Map<Integer, Object> replacedIndexAndParameters = new LinkedHashMap<>();
+    
+    /**
+     * Add added parameters.
+     * 
+     * @param index parameters index to be added
+     * @param parameters parameters to be added
+     */
+    public void addAddedParameters(final int index, final Collection<Object> parameters) {
+        addedIndexAndParameters.put(index, parameters);
+    }
+    
+    /**
+     * Add replaced parameter.
+     * 
+     * @param index parameter index to be replaced
+     * @param parameter parameter to be replaced
+     */
+    public void addReplacedParameters(final int index, final Object parameter) {
+        replacedIndexAndParameters.put(index, parameter);
+    }
     
     @Override
     public List<Object> getParameters() {
@@ -49,12 +70,11 @@ public final class StandardParameterBuilder implements ParameterBuilder {
         for (Entry<Integer, Object> entry : replacedIndexAndParameters.entrySet()) {
             result.set(entry.getKey(), entry.getValue());
         }
-        for (Entry<Integer, Object> entry : addedIndexAndParameters.entrySet()) {
-            int index = entry.getKey();
-            if (index < result.size()) {
-                result.add(index, entry.getValue());
+        for (Entry<Integer, Collection<Object>> entry : ((TreeMap<Integer, Collection<Object>>) addedIndexAndParameters).descendingMap().entrySet()) {
+            if (entry.getKey() > result.size()) {
+                result.addAll(entry.getValue());
             } else {
-                result.add(entry.getValue());
+                result.addAll(entry.getKey(), entry.getValue());
             }
         }
         return result;

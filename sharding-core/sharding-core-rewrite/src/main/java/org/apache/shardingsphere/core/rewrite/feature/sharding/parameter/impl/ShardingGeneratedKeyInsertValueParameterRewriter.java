@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewrit
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.SQLRouteResultAware;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -47,7 +48,7 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriter implements P
             for (List<Object> each : ((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) {
                 Comparable<?> generatedValue = generatedValues.next();
                 if (!each.isEmpty()) {
-                    ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(count).getAddedIndexAndParameters().put(each.size(), generatedValue);
+                    ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(count).addAddedParameters(parameters.size(), Collections.<Object>singleton(generatedValue));
                 }
                 count++;
             }

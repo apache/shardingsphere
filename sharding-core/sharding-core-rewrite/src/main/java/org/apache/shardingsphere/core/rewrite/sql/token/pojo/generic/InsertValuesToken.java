@@ -69,24 +69,24 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
     @Override
     public String toString(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
         StringBuilder result = new StringBuilder();
-        appendUnits(routingUnit, result);
+        appendInsertValue(routingUnit, result);
         result.delete(result.length() - 2, result.length());
         return result.toString();
     }
     
-    private void appendUnits(final RoutingUnit routingUnit, final StringBuilder result) {
+    private void appendInsertValue(final RoutingUnit routingUnit, final StringBuilder stringBuilder) {
         for (InsertValueToken each : insertValueTokens) {
-            if (isToAppendInsertOptimizeResult(routingUnit, each)) {
-                result.append(each).append(", ");
+            if (isAppend(routingUnit, each)) {
+                stringBuilder.append(each).append(", ");
             }
         }
     }
     
-    private boolean isToAppendInsertOptimizeResult(final RoutingUnit routingUnit, final InsertValueToken unit) {
-        if (unit.getDataNodes().isEmpty() || null == routingUnit) {
+    private boolean isAppend(final RoutingUnit routingUnit, final InsertValueToken insertValueToken) {
+        if (insertValueToken.getDataNodes().isEmpty() || null == routingUnit) {
             return true;
         }
-        for (DataNode each : unit.getDataNodes()) {
+        for (DataNode each : insertValueToken.getDataNodes()) {
             if (routingUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
                 return true;
             }

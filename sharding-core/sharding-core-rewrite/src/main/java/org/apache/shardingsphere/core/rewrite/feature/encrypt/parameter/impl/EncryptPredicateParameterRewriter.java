@@ -71,7 +71,7 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     private void encryptParameters(final ParameterBuilder parameterBuilder, final Map<Integer, Integer> positionIndexes, final List<Object> encryptValues) {
         if (!positionIndexes.isEmpty()) {
             for (Entry<Integer, Integer> entry : positionIndexes.entrySet()) {
-                ((StandardParameterBuilder) parameterBuilder).getReplacedIndexAndParameters().put(entry.getValue(), encryptValues.get(entry.getKey()));
+                ((StandardParameterBuilder) parameterBuilder).addReplacedParameters(entry.getValue(), encryptValues.get(entry.getKey()));
             }
         }
     }
