@@ -20,7 +20,7 @@ package info.avalon566.shardingscaling.sync.mysql.binlog.packet.command;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import lombok.Data;
+import lombok.Setter;
 
 /**
  * Register salve command packet.
@@ -28,7 +28,7 @@ import lombok.Data;
  * @author avalon566
  * @author yangyi
  */
-@Data
+@Setter
 public final class RegisterSlaveCommandPacket extends AbstractCommandPacket {
     
     private String reportHost;
