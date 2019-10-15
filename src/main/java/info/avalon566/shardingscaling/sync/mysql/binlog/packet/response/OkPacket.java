@@ -20,7 +20,7 @@ package info.avalon566.shardingscaling.sync.mysql.binlog.packet.response;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.AbstractPacket;
 import io.netty.buffer.ByteBuf;
-import lombok.Data;
+import lombok.Getter;
 
 /**
  * MySQL OK packet.
@@ -33,7 +33,7 @@ import lombok.Data;
  * @author avalon566
  * @author yangyi
  */
-@Data
+@Getter
 public final class OkPacket extends AbstractPacket {
     
     private short fieldCount;
