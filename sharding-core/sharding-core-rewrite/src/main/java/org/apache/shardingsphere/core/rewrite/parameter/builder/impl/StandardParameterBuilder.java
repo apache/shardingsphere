@@ -70,7 +70,7 @@ public final class StandardParameterBuilder implements ParameterBuilder {
         for (Entry<Integer, Object> entry : replacedIndexAndParameters.entrySet()) {
             result.set(entry.getKey(), entry.getValue());
         }
-        for (Entry<Integer, Collection<Object>> entry : ((TreeMap<Integer, Collection<Object>>) addedIndexAndParameters).descendingMap().entrySet()) {
+        for (Entry<Integer, Collection<Object>> entry : addedIndexAndParameters.entrySet()) {
             if (entry.getKey() > result.size()) {
                 result.addAll(entry.getValue());
             } else {

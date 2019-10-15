@@ -37,8 +37,8 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Arrays;
 
 /**
  * Assignment parameter rewriter for encrypt.
@@ -54,11 +54,14 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
         if (isSetAssignmentStatement(sqlStatementContext)) {
             String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
+            int count = 0;
+            Collection<String> assistedQueryColumns = encryptRule.getAssistedQueryColumns(tableName);
             for (AssignmentSegment each : getSetAssignmentsSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
                 if (each.getValue() instanceof ParameterMarkerExpressionSegment && encryptRule.findShardingEncryptor(tableName, each.getColumn().getName()).isPresent()) {
                     StandardParameterBuilder standardParameterBuilder = parameterBuilder instanceof StandardParameterBuilder
-                            ? (StandardParameterBuilder) parameterBuilder : ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(0);  
-                    encryptParameters(standardParameterBuilder, tableName, each, parameters);
+                            ? (StandardParameterBuilder) parameterBuilder : ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(0);
+                    encryptParameters(standardParameterBuilder, tableName, each, parameters, count, assistedQueryColumns);
+                    count++;
                 }
             }
         }
@@ -78,22 +81,24 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
         return ((UpdateStatement) sqlStatement).getSetAssignment();
     }
     
-    private void encryptParameters(final StandardParameterBuilder parameterBuilder, final String tableName, final AssignmentSegment assignmentSegment, final List<Object> parameters) {
+    private void encryptParameters(final StandardParameterBuilder parameterBuilder, final String tableName, final AssignmentSegment assignmentSegment, final List<Object> parameters,
+                                   final int count, final Collection<String> assistedQueryColumns) {
         String columnName = assignmentSegment.getColumn().getName();
         int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) assignmentSegment.getValue()).getParameterMarkerIndex();
         Object originalValue = parameters.get(parameterMarkerIndex);
         Object cipherValue = encryptRule.getEncryptValues(tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
         parameterBuilder.addReplacedParameters(parameterMarkerIndex, cipherValue);
-        Collection<Object> addedParameters = new LinkedList<>();
+        int addedPlainParameterMarkerIndex = parameterMarkerIndex + count + 1;
+        if (!assistedQueryColumns.isEmpty()) {
+            addedPlainParameterMarkerIndex = parameterMarkerIndex + count + 2;
+        }
         if (encryptRule.findAssistedQueryColumn(tableName, columnName).isPresent()) {
             Object assistedQueryValue = encryptRule.getEncryptAssistedQueryValues(tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
-            addedParameters.add(assistedQueryValue);
+            int addedAssistedParameterMakerIndex = parameterMarkerIndex + count + 1;
+            parameterBuilder.addAddedParameters(addedAssistedParameterMakerIndex, Arrays.asList(assistedQueryValue));
         }
         if (encryptRule.findPlainColumn(tableName, columnName).isPresent()) {
-            addedParameters.add(originalValue);
-        }
-        if (!addedParameters.isEmpty()) {
-            parameterBuilder.addAddedParameters(parameterMarkerIndex + 1, addedParameters);
+            parameterBuilder.addAddedParameters(addedPlainParameterMarkerIndex, Arrays.asList(originalValue));
         }
     }
 }
