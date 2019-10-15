@@ -56,6 +56,8 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
     private final BackendConnection backendConnection;
     
     private final JDBCExecutorWrapper jdbcExecutorWrapper;
+
+    private final SQLStatementContext sqlStatementContext;
     
     private final boolean isReturnGeneratedKeys;
     
@@ -63,16 +65,14 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
     
     private boolean hasMetaData;
 
-    private SQLStatementContext sqlStatementContext;
-    
-    public ProxySQLExecuteCallback(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper, 
-                                   final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData, final SQLStatementContext sqlStatementContext) {
+    public ProxySQLExecuteCallback(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper, final SQLStatementContext sqlStatementContext,
+                                   final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
         super(LogicSchemas.getInstance().getDatabaseType(), isExceptionThrown);
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
+        this.sqlStatementContext = sqlStatementContext;
         this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         this.fetchMetaData = fetchMetaData;
-        this.sqlStatementContext = sqlStatementContext;
     }
     
     @Override

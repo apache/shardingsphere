@@ -80,8 +80,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> sqlExecuteGroups = sqlExecutePrepareTemplate.getExecuteUnitGroups(
                 routeResult.getRouteUnits(), new ProxyJDBCExecutePrepareCallback(backendConnection, jdbcExecutorWrapper, isReturnGeneratedKeys));
         Collection<ExecuteResponse> executeResponses = sqlExecuteTemplate.executeGroup((Collection) sqlExecuteGroups, 
-                new ProxySQLExecuteCallback(backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true, sqlStatementContext),
-                new ProxySQLExecuteCallback(backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false, sqlStatementContext));
+                new ProxySQLExecuteCallback(backendConnection, jdbcExecutorWrapper, sqlStatementContext, isExceptionThrown, isReturnGeneratedKeys, true),
+                new ProxySQLExecuteCallback(backendConnection, jdbcExecutorWrapper, sqlStatementContext, isExceptionThrown, isReturnGeneratedKeys, false));
         ExecuteResponse executeResponse = executeResponses.iterator().next();
         return executeResponse instanceof ExecuteQueryResponse
                 ? getExecuteQueryResponse(((ExecuteQueryResponse) executeResponse).getQueryHeaders(), executeResponses) : new UpdateResponse(executeResponses);

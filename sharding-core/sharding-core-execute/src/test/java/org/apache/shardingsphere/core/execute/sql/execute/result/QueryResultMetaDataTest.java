@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.preprocessor.segment.table.TablesContext;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.junit.Before;
@@ -47,23 +46,18 @@ public final class QueryResultMetaDataTest {
     
     private QueryResultMetaData queryResultMetaData;
 
-    private QueryResultMetaData queryResultMetaDataInOracle;
-    
     private ShardingEncryptor shardingEncryptor;
     
     @Before
     public void setUp() throws SQLException {
         final SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        ResultSetMetaData resultSetMetaData = getResultMetaData();
-        ShardingRule shardingRule = getShardingRule();
-        ShardingProperties shardingProperties = new ShardingProperties(new Properties());
-        queryResultMetaData = new QueryResultMetaData(resultSetMetaData, shardingRule, shardingProperties, sqlStatementContext);
-
         final TablesContext tablesContext = mock(TablesContext.class);
+        final ResultSetMetaData resultSetMetaData = getResultMetaData();
+        final ShardingRule shardingRule = getShardingRule();
+        final ShardingProperties shardingProperties = new ShardingProperties(new Properties());
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(tablesContext.getTableNames()).thenReturn(Collections.singleton("table"));
-        ResultSetMetaData resultSetMetaDataInOracle = getResultMetaDataInOracle();
-        queryResultMetaDataInOracle = new QueryResultMetaData(resultSetMetaDataInOracle, shardingRule, shardingProperties, sqlStatementContext);
+        queryResultMetaData = new QueryResultMetaData(resultSetMetaData, shardingRule, shardingProperties, sqlStatementContext);
     }
     
     @SuppressWarnings("unchecked")
@@ -74,11 +68,9 @@ public final class QueryResultMetaDataTest {
         EncryptTable encryptTable = mock(EncryptTable.class);
         when(encryptRule.findShardingEncryptor(anyString(), anyString())).thenReturn(Optional.of(shardingEncryptor));
         when(encryptRule.findEncryptTable(anyString())).thenReturn(Optional.of(encryptTable));
+        when(encryptRule.getLogicColumn(anyString(), anyString())).thenReturn("column");
         when(encryptTable.getCipherColumns()).thenReturn(Collections.singleton("column"));
         when(result.getEncryptRule()).thenReturn(encryptRule);
-        when(result.getLogicTableNames(anyString())).thenReturn(Collections.<String>emptyList());
-        when(result.findTableRuleByActualTable("table")).thenReturn(Optional.<TableRule>absent());
-        when(result.findTableRuleByActualTable("")).thenReturn(Optional.<TableRule>absent());
         return result;
     }
     
@@ -92,13 +84,6 @@ public final class QueryResultMetaDataTest {
         return result;
     }
 
-    private ResultSetMetaData getResultMetaDataInOracle() throws SQLException {
-        ResultSetMetaData result = mock(ResultSetMetaData.class);
-        when(result.getColumnName(anyInt())).thenReturn("column");
-        when(result.getTableName(anyInt())).thenReturn("");
-        return result;
-    }
-    
     @Test
     public void assertGetColumnCount() throws SQLException {
         assertThat(queryResultMetaData.getColumnCount(), is(1));
@@ -128,11 +113,5 @@ public final class QueryResultMetaDataTest {
     public void assertGetShardingEncryptor() throws SQLException {
         assertTrue(queryResultMetaData.getShardingEncryptor(1).isPresent());
         assertThat(queryResultMetaData.getShardingEncryptor(1).get(), is(shardingEncryptor));
-    }
-
-    @Test
-    public void assertGetShardingEncryptorInOracle() throws SQLException {
-        assertTrue(queryResultMetaDataInOracle.getShardingEncryptor(1).isPresent());
-        assertThat(queryResultMetaDataInOracle.getShardingEncryptor(1).get(), is(shardingEncryptor));
     }
 }

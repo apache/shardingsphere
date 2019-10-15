@@ -19,12 +19,14 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.core.preprocessor.segment.table.TablesContext;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.hamcrest.core.Is;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -36,12 +38,14 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -53,6 +57,14 @@ public final class StreamQueryResultTest {
     private final ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
 
     private final SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+
+    private final TablesContext tablesContext = mock(TablesContext.class);
+
+    @Before
+    public void setUp() {
+        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
+        when(tablesContext.getTableNames()).thenReturn(Collections.singleton("order"));
+    }
 
     @Test
     public void assertConstructorWithShardingRule() throws SQLException {
@@ -69,20 +81,16 @@ public final class StreamQueryResultTest {
     private ShardingRule getShardingRule() {
         ShardingRule result = mock(ShardingRule.class);
         doReturn(getEncryptRule()).when(result).getEncryptRule();
-        doReturn(Optional.fromNullable(getTableRule())).when(result).findTableRuleByActualTable("order");
-        return result;
-    }
-    
-    private TableRule getTableRule() {
-        TableRule result = mock(TableRule.class);
-        when(result.getLogicTable()).thenReturn("order");
         return result;
     }
     
     private EncryptRule getEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
+        EncryptTable encryptTable = mock(EncryptTable.class);
         when(result.findShardingEncryptor("order", "order_id")).thenReturn(Optional.fromNullable(shardingEncryptor));
-        when(result.isCipherColumn("order", "order_id")).thenReturn(false);
+        when(result.findEncryptTable(anyString())).thenReturn(Optional.of(encryptTable));
+        when(result.getLogicColumn(anyString(), anyString())).thenReturn("order_id");
+        when(encryptTable.getCipherColumns()).thenReturn(Collections.singleton("order_id"));
         return result;
     }
     
@@ -136,7 +144,6 @@ public final class StreamQueryResultTest {
         when(result.getColumnCount()).thenReturn(1);
         when(result.getColumnLabel(1)).thenReturn("order_id");
         when(result.getColumnName(1)).thenThrow(new SQLException());
-        when(result.getTableName(1)).thenReturn("order");
         return result;
     }
     
@@ -325,7 +332,6 @@ public final class StreamQueryResultTest {
         when(metaData.getColumnCount()).thenReturn(1);
         when(metaData.getColumnLabel(1)).thenReturn("order_id");
         when(metaData.getColumnName(1)).thenReturn("order_id");
-        when(metaData.getTableName(1)).thenReturn("order");
         when(metaData.isCaseSensitive(1)).thenReturn(false);
         return metaData;
     }
