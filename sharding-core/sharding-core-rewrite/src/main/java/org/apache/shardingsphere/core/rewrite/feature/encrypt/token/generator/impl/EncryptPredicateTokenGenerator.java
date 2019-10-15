@@ -84,7 +84,7 @@ public final class EncryptPredicateTokenGenerator implements CollectionSQLTokenG
         String encryptedColumnName = encryptRule.findAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName())
                 .or(encryptRule.getCipherColumn(encryptCondition.getTableName(), encryptCondition.getColumnName()));
         List<Object> encryptedValues = getEncryptedValues(encryptCondition, originalValues);
-        return new EncryptPredicateToken(encryptCondition.getStartIndex(), encryptCondition.getStopIndex(), encryptCondition.getTableOwner() , encryptedColumnName, 
+        return new EncryptPredicateToken(encryptCondition.getStartIndex(), encryptCondition.getStopIndex(), encryptCondition.getTableOwner(), encryptedColumnName, 
                 getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptedValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
     
