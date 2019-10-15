@@ -181,13 +181,13 @@ public final class JsonValueDecoder {
     
     private static void outputLiteral(final int inlinedValue, final StringBuilder out) {
         switch (inlinedValue) {
-            case 0x00:
+            case JsonValueTypes.LITERAL_NULL:
                 out.append("null");
                 break;
-            case 0x01:
+            case JsonValueTypes.LITERAL_TRUE:
                 out.append("true");
                 break;
-            case 0x02:
+            case JsonValueTypes.LITERAL_FALSE:
                 out.append("false");
                 break;
             default:
@@ -240,6 +240,12 @@ public final class JsonValueDecoder {
          * Literal(true/false/null).
          */
         public static final byte LITERAL = 0x04;
+
+        public static final byte LITERAL_NULL = 0x00;
+
+        public static final byte LITERAL_TRUE = 0x01;
+
+        public static final byte LITERAL_FALSE = 0x02;
 
         public static final byte INT16 = 0x05;
 

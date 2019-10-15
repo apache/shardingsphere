@@ -47,6 +47,28 @@ public class JsonValueDecoderTest {
     private static final int LARGE_JSON_VALUE_META_DATA_LENGTH = LARGE_JSON_INT_LENGTH + 1;
 
     @Test
+    public void assertDecodeSmallJsonObjectWithLiteral() {
+        List<JsonEntry> jsonEntries = new LinkedList<>();
+        jsonEntries.add(new JsonEntry(JsonValueTypes.LITERAL, "key1", JsonValueTypes.LITERAL_NULL));
+        jsonEntries.add(new JsonEntry(JsonValueTypes.LITERAL, "key2", JsonValueTypes.LITERAL_TRUE));
+        jsonEntries.add(new JsonEntry(JsonValueTypes.LITERAL, "key3", JsonValueTypes.LITERAL_FALSE));
+        ByteBuf payload = mockJsonObjectByteBuf(jsonEntries, true);
+        String actual = (String) JsonValueDecoder.decode(payload);
+        assertThat(actual, is("{\"key1\":null,\"key2\":true,\"key3\":false}"));
+    }
+
+    @Test
+    public void assertDecodeLargeJsonObjectWithLiteral() {
+        List<JsonEntry> jsonEntries = new LinkedList<>();
+        jsonEntries.add(new JsonEntry(JsonValueTypes.LITERAL, "key1", JsonValueTypes.LITERAL_NULL));
+        jsonEntries.add(new JsonEntry(JsonValueTypes.LITERAL, "key2", JsonValueTypes.LITERAL_TRUE));
+        jsonEntries.add(new JsonEntry(JsonValueTypes.LITERAL, "key3", JsonValueTypes.LITERAL_FALSE));
+        ByteBuf payload = mockJsonObjectByteBuf(jsonEntries, false);
+        String actual = (String) JsonValueDecoder.decode(payload);
+        assertThat(actual, is("{\"key1\":null,\"key2\":true,\"key3\":false}"));
+    }
+
+    @Test
     public void assertDecodeSmallJsonObjectWithInt16() {
         List<JsonEntry> jsonEntries = new LinkedList<>();
         jsonEntries.add(new JsonEntry(JsonValueTypes.INT16, "key1", 0x00007fff));
@@ -187,6 +209,34 @@ public class JsonValueDecoderTest {
         assertThat(actual, is("{\"subJson\":{\"key1\":111}}"));
     }
 
+    @Test
+    public void assertDecodeSmallJsonObjectWithSubArray() {
+        List<JsonEntry> subArrays = Collections.singletonList(new JsonEntry(JsonValueTypes.INT32, null, 111));
+        ByteBuf payload = mockJsonObjectByteBuf(Collections.singletonList(new JsonEntry(JsonValueTypes.SMALL_JSON_ARRAY, "subJson", subArrays)), true);
+        String actual = (String) JsonValueDecoder.decode(payload);
+        assertThat(actual, is("{\"subJson\":[111]}"));
+    }
+
+    @Test
+    public void assertDecodeSmallJsonArray() {
+        List<JsonEntry> jsonEntries = new LinkedList<>();
+        jsonEntries.add(new JsonEntry(JsonValueTypes.INT16, null, 0x00007fff));
+        jsonEntries.add(new JsonEntry(JsonValueTypes.INT16, null, 0x00008000));
+        ByteBuf payload = mockJsonArrayByteBuf(jsonEntries, true);
+        String actual = (String) JsonValueDecoder.decode(payload);
+        assertThat(actual, is("[32767,-32768]"));
+    }
+
+    @Test
+    public void assertDecodeLargeJsonArray() {
+        List<JsonEntry> jsonEntries = new LinkedList<>();
+        jsonEntries.add(new JsonEntry(JsonValueTypes.INT16, null, 0x00007fff));
+        jsonEntries.add(new JsonEntry(JsonValueTypes.INT16, null, 0x00008000));
+        ByteBuf payload = mockJsonArrayByteBuf(jsonEntries, false);
+        String actual = (String) JsonValueDecoder.decode(payload);
+        assertThat(actual, is("[32767,-32768]"));
+    }
+
     private ByteBuf mockJsonObjectByteBuf(final List<JsonEntry> jsonEntries, final boolean isSmall) {
         ByteBuf result = Unpooled.buffer();
         result.writeByte(isSmall ? JsonValueTypes.SMALL_JSON_OBJECT : JsonValueTypes.LARGE_JSON_OBJECT);
@@ -205,6 +255,25 @@ public class JsonValueDecoderTest {
         startOffset += keyByteBuf.readableBytes();
         ByteBuf valueByteBuf = writeValues(result, jsonEntries, startOffset, isSmall);
         result.writeBytes(keyByteBuf);
+        result.writeBytes(valueByteBuf);
+        return result;
+    }
+
+    private ByteBuf mockJsonArrayByteBuf(final List<JsonEntry> jsonEntries, final boolean isSmall) {
+        ByteBuf result = Unpooled.buffer();
+        result.writeByte(isSmall ? JsonValueTypes.SMALL_JSON_ARRAY : JsonValueTypes.LARGE_JSON_ARRAY);
+        result.writeBytes(mockJsonArrayByteBufValue(jsonEntries, isSmall));
+        return result;
+    }
+
+    private ByteBuf mockJsonArrayByteBufValue(final List<JsonEntry> jsonEntries, final boolean isSmall) {
+        ByteBuf result = Unpooled.buffer();
+        writeInt(result, jsonEntries.size(), isSmall);
+        writeInt(result, 0, isSmall);
+        int startOffset = isSmall
+                ? 1 + SMALL_JSON_INT_LENGTH + SMALL_JSON_INT_LENGTH + jsonEntries.size() * SMALL_JSON_VALUE_META_DATA_LENGTH - 1
+                : 1 + LARGE_JSON_INT_LENGTH + LARGE_JSON_INT_LENGTH + jsonEntries.size() * LARGE_JSON_VALUE_META_DATA_LENGTH - 1;
+        ByteBuf valueByteBuf = writeValues(result, jsonEntries, startOffset, isSmall);
         result.writeBytes(valueByteBuf);
         return result;
     }
@@ -243,8 +312,9 @@ public class JsonValueDecoderTest {
         switch (jsonEntry.getType()) {
             case JsonValueTypes.INT16:
             case JsonValueTypes.UINT16:
-            case JsonValueTypes.LITERAL:
                 return (int) jsonEntry.getValue();
+            case JsonValueTypes.LITERAL:
+                return (byte) jsonEntry.getValue();
             case JsonValueTypes.INT32:
             case JsonValueTypes.UINT32:
                 return isSmall ? startOffset + readableBytes : (int) jsonEntry.getValue();
@@ -260,6 +330,12 @@ public class JsonValueDecoderTest {
                 break;
             case JsonValueTypes.LARGE_JSON_OBJECT:
                 byteBuf.writeBytes(mockJsonObjectByteBufValue((List<JsonEntry>) jsonEntry.getValue(), false));
+                break;
+            case JsonValueTypes.SMALL_JSON_ARRAY:
+                byteBuf.writeBytes(mockJsonArrayByteBufValue((List<JsonEntry>) jsonEntry.getValue(), true));
+                break;
+            case JsonValueTypes.LARGE_JSON_ARRAY:
+                byteBuf.writeBytes(mockJsonArrayByteBufValue((List<JsonEntry>) jsonEntry.getValue(), false));
                 break;
             case JsonValueTypes.INT32:
             case JsonValueTypes.UINT32:
