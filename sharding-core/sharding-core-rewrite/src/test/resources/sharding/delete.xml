@@ -17,23 +17,25 @@
   -->
 
 <rewrite-assertions yaml-rule="yaml/sharding/sharding-rule.yaml">
-    <rewrite-assertion id="show_columns_from_table_without_schema" db-type="MySQL">
-        <input sql="SHOW COLUMNS FROM t_order" />
-        <output sql="SHOW COLUMNS FROM t_order_0" />
+    <rewrite-assertion id="delete_with_sharding_value_for_parameters">
+        <input sql="DELETE FROM t_order WHERE order_id = ?" parameters="100" />
+        <output sql="DELETE FROM t_order_0 WHERE order_id = ?" parameters="100" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="show_columns_from_table_with_schema" db-type="MySQL">
-        <input sql="SHOW COLUMNS FROM t_order FROM sharding_db" />
-        <output sql="SHOW COLUMNS FROM t_order_0 " />
+    <rewrite-assertion id="delete_with_sharding_value_for_literals">
+        <input sql="DELETE FROM t_order WHERE order_id = 100" />
+        <output sql="DELETE FROM t_order_0 WHERE order_id = 100" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="show_columns_from_table_with_owner" db-type="MySQL">
-        <input sql="SHOW COLUMNS FROM sharding_db.t_order" />
-        <output sql="SHOW COLUMNS FROM t_order_0" />
+    <rewrite-assertion id="delete_without_sharding_value_for_parameters">
+        <input sql="DELETE FROM sharding_db.t_order WHERE user_id = ?" parameters="10" />
+        <output sql="DELETE FROM t_order_0 WHERE user_id = ?" parameters="10" />
+        <output sql="DELETE FROM t_order_1 WHERE user_id = ?" parameters="10" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="show_columns_from_table_with_back_quote" db-type="MySQL">
-        <input sql="SHOW COLUMNS FROM `sharding_db`.`t_order` FROM `sharding_db`" />
-        <output sql="SHOW COLUMNS FROM `t_order_0` " />
+    <rewrite-assertion id="delete_without_sharding_value_for_literals">
+        <input sql="DELETE FROM sharding_db.t_order WHERE user_id = 10" />
+        <output sql="DELETE FROM t_order_0 WHERE user_id = 10" />
+        <output sql="DELETE FROM t_order_1 WHERE user_id = 10" />
     </rewrite-assertion>
 </rewrite-assertions>

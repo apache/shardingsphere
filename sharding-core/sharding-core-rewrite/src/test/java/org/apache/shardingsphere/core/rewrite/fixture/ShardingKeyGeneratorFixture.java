@@ -31,7 +31,7 @@ public final class ShardingKeyGeneratorFixture implements ShardingKeyGenerator {
     
     @Override
     public Comparable<?> generateKey() {
-        return 1L;
+        return 1;
     }
     
     @Override
