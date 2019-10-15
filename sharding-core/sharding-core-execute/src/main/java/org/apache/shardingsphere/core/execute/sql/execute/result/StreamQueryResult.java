@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
@@ -46,14 +47,14 @@ public final class StreamQueryResult implements QueryResult {
     
     private final ResultSet resultSet;
     
-    public StreamQueryResult(final ResultSet resultSet, final ShardingRule shardingRule, final ShardingProperties properties) throws SQLException {
+    public StreamQueryResult(final ResultSet resultSet, final ShardingRule shardingRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext) throws SQLException {
         this.resultSet = resultSet;
-        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule, properties);
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule, properties, sqlStatementContext);
     }
-    
-    public StreamQueryResult(final ResultSet resultSet, final EncryptRule encryptRule, final ShardingProperties properties) throws SQLException {
+
+    public StreamQueryResult(final ResultSet resultSet, final EncryptRule encryptRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext) throws SQLException {
         this.resultSet = resultSet;
-        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule, properties);
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule, properties, sqlStatementContext);
     }
     
     public StreamQueryResult(final ResultSet resultSet) throws SQLException {
