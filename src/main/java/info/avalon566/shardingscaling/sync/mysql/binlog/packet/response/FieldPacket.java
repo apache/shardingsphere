@@ -20,7 +20,7 @@ package info.avalon566.shardingscaling.sync.mysql.binlog.packet.response;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.AbstractPacket;
 import io.netty.buffer.ByteBuf;
-import lombok.Data;
+import lombok.Getter;
 
 /**
  * MySQL field packet.
@@ -33,20 +33,20 @@ import lombok.Data;
  * @author avalon566
  * @author yangyi
  */
-@Data
+@Getter
 public final class FieldPacket extends AbstractPacket {
     
     private String catalog;
     
-    private String db;
+    private String schema;
     
     private String table;
     
     private String originalTable;
     
-    private String name;
+    private String fieldName;
     
-    private String originalName;
+    private String originalFieldName;
     
     private int character;
     
@@ -63,11 +63,11 @@ public final class FieldPacket extends AbstractPacket {
     @Override
     public void fromByteBuf(final ByteBuf data) {
         catalog = DataTypesCodec.readLengthCodedString(data);
-        db = DataTypesCodec.readLengthCodedString(data);
+        schema = DataTypesCodec.readLengthCodedString(data);
         table = DataTypesCodec.readLengthCodedString(data);
         originalTable = DataTypesCodec.readLengthCodedString(data);
-        name = DataTypesCodec.readLengthCodedString(data);
-        originalName = DataTypesCodec.readLengthCodedString(data);
+        fieldName = DataTypesCodec.readLengthCodedString(data);
+        originalFieldName = DataTypesCodec.readLengthCodedString(data);
         character = DataTypesCodec.readUnsignedInt2LE(data);
         length = DataTypesCodec.readUnsignedInt4LE(data);
         type = DataTypesCodec.readUnsignedInt1(data);
