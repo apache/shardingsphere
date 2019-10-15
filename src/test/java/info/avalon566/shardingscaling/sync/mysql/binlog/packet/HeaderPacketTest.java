@@ -19,40 +19,37 @@ package info.avalon566.shardingscaling.sync.mysql.binlog.packet;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
-import lombok.Data;
+import org.junit.Test;
 
-/**
- * MySQL packet header.
- *
- * <p>
- *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Overview  /  MySQL Packets
- *     https://dev.mysql.com/doc/internals/en/mysql-packet.html
- * </p>
- *
- * @author avalon566
- * @author yangyi
- */
-@Data
-public final class HeaderPacket implements Packet {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-    private int packetBodyLength;
+public class HeaderPacketTest {
     
-    private byte packetSequenceNumber;
-
-    @Override
-    public ByteBuf toByteBuf() {
-        ByteBuf result = ByteBufAllocator.DEFAULT.heapBuffer(4);
-        result.writeByte((byte) (packetBodyLength & 0xFF));
-        result.writeByte((byte) (packetBodyLength >>> 8));
-        result.writeByte((byte) (packetBodyLength >>> 16));
-        result.writeByte(getPacketSequenceNumber());
-        return result;
+    private static final int PACKET_LENGTH = 0x00101010;
+    
+    @Test
+    public void assertToByteBuf() {
+        HeaderPacket headerPacket = new HeaderPacket();
+        headerPacket.setPacketSequenceNumber((byte) 1);
+        headerPacket.setPacketBodyLength(PACKET_LENGTH);
+        assertThat(headerPacket.toByteBuf(), is(getHeaderPacketByteBuf()));
     }
-
-    @Override
-    public void fromByteBuf(final ByteBuf data) {
-        this.packetBodyLength = DataTypesCodec.readUnsignedInt3LE(data);
-        this.setPacketSequenceNumber(data.readByte());
+    
+    @Test
+    public void assertFromByteBuf() {
+        HeaderPacket actual = new HeaderPacket();
+        actual.fromByteBuf(getHeaderPacketByteBuf());
+        assertThat(actual.getPacketSequenceNumber(), is((byte) 1));
+        assertThat(actual.getPacketBodyLength(), is(PACKET_LENGTH));
+    }
+    
+    private ByteBuf getHeaderPacketByteBuf() {
+        ByteBuf result = ByteBufAllocator.DEFAULT.heapBuffer(4);
+        result.writeByte((byte) PACKET_LENGTH);
+        result.writeByte((byte) (PACKET_LENGTH >>> 8));
+        result.writeByte((byte) (PACKET_LENGTH >>> 16));
+        result.writeByte(1);
+        return result;
     }
 }
