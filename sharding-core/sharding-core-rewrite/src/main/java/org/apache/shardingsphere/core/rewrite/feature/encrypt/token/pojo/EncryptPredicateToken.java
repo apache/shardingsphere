@@ -35,7 +35,9 @@ public final class EncryptPredicateToken extends SQLToken implements Substitutab
     
     @Getter
     private final int stopIndex;
-    
+
+    private final String tableOwner;
+
     private final String columnName;
     
     private final Map<Integer, Object> indexValues;
@@ -45,9 +47,10 @@ public final class EncryptPredicateToken extends SQLToken implements Substitutab
     private final ShardingOperator operator;
     
     public EncryptPredicateToken(final int startIndex, final int stopIndex,
-                                 final String columnName, final Map<Integer, Object> indexValues, final Collection<Integer> parameterMarkerIndexes, final ShardingOperator operator) {
+                                 final String tableOwner, final String columnName, final Map<Integer, Object> indexValues, final Collection<Integer> parameterMarkerIndexes, final ShardingOperator operator) {
         super(startIndex);
         this.stopIndex = stopIndex;
+        this.tableOwner = tableOwner;
         this.columnName = columnName;
         this.indexValues = indexValues;
         this.parameterMarkerIndexes = parameterMarkerIndexes;
@@ -68,14 +71,14 @@ public final class EncryptPredicateToken extends SQLToken implements Substitutab
     
     private String toStringForEqual() {
         if (parameterMarkerIndexes.isEmpty()) {
-            return indexValues.get(0) instanceof String ? String.format("%s = '%s'", columnName, indexValues.get(0)) : String.format("%s = %s", columnName, indexValues.get(0));
+            return indexValues.get(0) instanceof String ? String.format("%s = '%s'", getColumnNameWithOwner(), indexValues.get(0)) : String.format("%s = %s", getColumnNameWithOwner(), indexValues.get(0));
         }
-        return String.format("%s = ?", columnName);
+        return String.format("%s = ?", getColumnNameWithOwner());
     }
     
     private String toStringForIn() {
         StringBuilder result = new StringBuilder();
-        result.append(columnName).append(" ").append(operator.name()).append(" (");
+        result.append(getColumnNameWithOwner()).append(" ").append(operator.name()).append(" (");
         for (int i = 0; i < indexValues.size() + parameterMarkerIndexes.size(); i++) {
             if (parameterMarkerIndexes.contains(i)) {
                 result.append("?");
@@ -90,5 +93,9 @@ public final class EncryptPredicateToken extends SQLToken implements Substitutab
         }
         result.delete(result.length() - 2, result.length()).append(")");
         return result.toString();
+    }
+
+    private String getColumnNameWithOwner() {
+        return null == tableOwner ? columnName : String.format("%s.%s", tableOwner, columnName);
     }
 }

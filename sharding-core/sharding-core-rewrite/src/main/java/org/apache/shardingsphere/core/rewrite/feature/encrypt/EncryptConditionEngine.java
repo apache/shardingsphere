@@ -116,7 +116,7 @@ public final class EncryptConditionEngine {
     private static Optional<EncryptCondition> createCompareEncryptCondition(final String tableName, final PredicateSegment predicateSegment, final PredicateCompareRightValue compareRightValue) {
         return compareRightValue.getExpression() instanceof SimpleExpressionSegment
                 ? Optional.of(
-                        new EncryptCondition(predicateSegment.getColumn().getName(), tableName, predicateSegment.getStartIndex(), predicateSegment.getStopIndex(), compareRightValue.getExpression()))
+                        new EncryptCondition(predicateSegment.getColumn().getName(), tableName, predicateSegment.getColumn().getOwnerName(), predicateSegment.getStartIndex(), predicateSegment.getStopIndex(), compareRightValue.getExpression()))
                 : Optional.<EncryptCondition>absent();
     }
     
@@ -128,7 +128,7 @@ public final class EncryptConditionEngine {
             }
         }
         return expressionSegments.isEmpty() ? Optional.<EncryptCondition>absent()
-                : Optional.of(new EncryptCondition(predicateSegment.getColumn().getName(), tableName, predicateSegment.getStartIndex(), predicateSegment.getStopIndex(), expressionSegments));
+                : Optional.of(new EncryptCondition(predicateSegment.getColumn().getName(), tableName, predicateSegment.getColumn().getOwnerName(), predicateSegment.getStartIndex(), predicateSegment.getStopIndex(), expressionSegments));
     }
     
     private boolean isSupportedOperator(final String operator) {

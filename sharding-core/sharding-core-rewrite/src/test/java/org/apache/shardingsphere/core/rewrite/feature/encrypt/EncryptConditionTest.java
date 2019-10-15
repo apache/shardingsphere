@@ -32,7 +32,7 @@ public final class EncryptConditionTest {
     
     @Test
     public void assertGetConditionValuesForEqual() {
-        List<Object> actual = new EncryptCondition("col", "tbl", 0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());
+        List<Object> actual = new EncryptCondition("col", "tbl", null, 0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());
         assertThat(actual.size(), is(1));
         assertThat((Integer) actual.get(0), is(1));
     }
@@ -40,7 +40,7 @@ public final class EncryptConditionTest {
     @Test
     public void assertGetConditionValuesForIn() {
         List<Object> actual = new EncryptCondition(
-                "col", "tbl", 0, 0, Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2))).getValues(Collections.emptyList());
+                "col", "tbl", null, 0, 0, Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2))).getValues(Collections.emptyList());
         assertThat(actual.size(), is(2));
         assertThat((Integer) actual.get(0), is(1));
         assertThat((Integer) actual.get(1), is(2));
