@@ -37,7 +37,7 @@ public final class DataTypesCodec {
      * Skip length byte in {@code ByteBuf}.
      *
      * @param length to skip
-     * @param in byte buffer
+     * @param in     byte buffer
      */
     public static void skipBytes(final int length, final ByteBuf in) {
         in.skipBytes(length);
@@ -76,7 +76,7 @@ public final class DataTypesCodec {
      * Read bitmap from {@code ByteBuf}.
      *
      * @param length length
-     * @param in byte buffer
+     * @param in     byte buffer
      * @return bitset value
      */
     public static BitSet readBitmap(final int length, final ByteBuf in) {
@@ -84,29 +84,10 @@ public final class DataTypesCodec {
         for (int bit = 0; bit < length; bit += 8) {
             int flag = ((int) in.readByte()) & 0xff;
             if (flag != 0) {
-                if ((flag & 0x01) != 0) {
-                    bitSet.set(bit);
-                }
-                if ((flag & 0x02) != 0) {
-                    bitSet.set(bit + 1);
-                }
-                if ((flag & 0x04) != 0) {
-                    bitSet.set(bit + 2);
-                }
-                if ((flag & 0x08) != 0) {
-                    bitSet.set(bit + 3);
-                }
-                if ((flag & 0x10) != 0) {
-                    bitSet.set(bit + 4);
-                }
-                if ((flag & 0x20) != 0) {
-                    bitSet.set(bit + 5);
-                }
-                if ((flag & 0x40) != 0) {
-                    bitSet.set(bit + 6);
-                }
-                if ((flag & 0x80) != 0) {
-                    bitSet.set(bit + 7);
+                for (int i = 0; i < 8; i++) {
+                    if ((flag & (0x01 << i)) != 0) {
+                        bitSet.set(bit + i);
+                    }
                 }
             }
         }
@@ -220,11 +201,11 @@ public final class DataTypesCodec {
      * @return long value
      */
     public static long readUnsignedInt5BE(final ByteBuf in) {
-        return (long) (0xff & in.readByte()) << 32
-                | ((long) (0xff & in.readByte())) << 24
-                | ((long) (0xff & in.readByte())) << 16
-                | ((long) (0xff & in.readByte())) << 8
-                | ((long) (0xff & in.readByte()));
+        long result = 0;
+        for (int i = 4; i >= 0; i--) {
+            result |= ((long) (0xff & in.readByte())) << (8 * i);
+        }
+        return result;
     }
 
     /**
@@ -234,12 +215,11 @@ public final class DataTypesCodec {
      * @return long value
      */
     public static long readUnsignedInt6LE(final ByteBuf in) {
-        return (long) (0xff & in.readByte())
-                | ((long) (0xff & in.readByte())) << 8
-                | ((long) (0xff & in.readByte())) << 16
-                | ((long) (0xff & in.readByte())) << 24
-                | ((long) (0xff & in.readByte())) << 32
-                | ((long) (0xff & in.readByte())) << 40;
+        long result = 0;
+        for (int i = 0; i < 6; i++) {
+            result |= ((long) (0xff & in.readByte())) << (8 * i);
+        }
+        return result;
     }
 
     /**
@@ -279,7 +259,7 @@ public final class DataTypesCodec {
      * Read byte array from {@code ByteBuf}.
      *
      * @param length length
-     * @param in byte buffer
+     * @param in     byte buffer
      * @return byte array
      */
     public static byte[] readBytes(final int length, final ByteBuf in) {
@@ -292,7 +272,7 @@ public final class DataTypesCodec {
      * Read fixed length string from {@code ByteBuf}.
      *
      * @param length length
-     * @param in byte buffer
+     * @param in     byte buffer
      * @return string value
      */
     public static String readFixedLengthString(final int length, final ByteBuf in) {
@@ -329,7 +309,7 @@ public final class DataTypesCodec {
      * Write byte array to {@code ByteBuf}.
      *
      * @param data wrote value
-     * @param out target byte buf
+     * @param out  target byte buf
      */
     public static void writeByte(final byte data, final ByteBuf out) {
         out.writeByte(data);
@@ -339,7 +319,7 @@ public final class DataTypesCodec {
      * Write little endian byte order 2 byte integer to {@code ByteBuf}.
      *
      * @param data the data
-     * @param out target byte buf
+     * @param out  target byte buf
      */
     public static void writeInt2LE(final short data, final ByteBuf out) {
         out.writeShortLE(data);
@@ -349,7 +329,7 @@ public final class DataTypesCodec {
      * Write little endian byte order 4 byte integer to {@code ByteBuf}.
      *
      * @param data the data
-     * @param out target byte buf
+     * @param out  target byte buf
      */
     public static void writeInt4LE(final int data, final ByteBuf out) {
         out.writeIntLE(data);
@@ -359,7 +339,7 @@ public final class DataTypesCodec {
      * Write little endian byte order length coded integer to {@code ByteBuf}.
      *
      * @param data the data
-     * @param out target byte buf
+     * @param out  target byte buf
      */
     public static void writeLengthCodedInt(final int data, final ByteBuf out) {
         if (data < 252) {
@@ -380,7 +360,7 @@ public final class DataTypesCodec {
      * Write byte array to {@code ByteBuf}.
      *
      * @param data wrote value
-     * @param out target byte buf
+     * @param out  target byte buf
      */
     public static void writeBytes(final byte[] data, final ByteBuf out) {
         out.writeBytes(data);
@@ -390,7 +370,7 @@ public final class DataTypesCodec {
      * Write nul terminated string to {@code ByteBuf}.
      *
      * @param data wrote value
-     * @param out target byte buf
+     * @param out  target byte buf
      */
     public static void writeNulTerminatedString(final String data, final ByteBuf out) {
         out.writeBytes(data.getBytes());
@@ -401,7 +381,7 @@ public final class DataTypesCodec {
      * Write length coded binary to {@code ByteBuf}.
      *
      * @param data wrote value
-     * @param out target byte buf
+     * @param out  target byte buf
      */
     public static void writeLengthCodedBinary(final byte[] data, final ByteBuf out) {
         writeLengthCodedInt(data.length, out);
