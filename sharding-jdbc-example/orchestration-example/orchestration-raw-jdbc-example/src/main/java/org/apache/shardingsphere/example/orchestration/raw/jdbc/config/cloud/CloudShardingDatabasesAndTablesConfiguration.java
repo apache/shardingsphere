@@ -28,7 +28,7 @@ import java.sql.SQLException;
 public final class CloudShardingDatabasesAndTablesConfiguration implements ExampleConfiguration {
     
     private final RegistryCenterConfiguration registryCenterConfig;
-    
+
     public CloudShardingDatabasesAndTablesConfiguration(final RegistryCenterConfiguration registryCenterConfig) {
         this.registryCenterConfig = registryCenterConfig;
     }

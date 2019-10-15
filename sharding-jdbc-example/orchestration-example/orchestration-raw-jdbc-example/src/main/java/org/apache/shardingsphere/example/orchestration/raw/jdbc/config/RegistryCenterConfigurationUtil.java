@@ -19,6 +19,8 @@ package org.apache.shardingsphere.example.orchestration.raw.jdbc.config;
 
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 
+import java.util.Properties;
+
 public class RegistryCenterConfigurationUtil {
     
     private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
@@ -26,6 +28,10 @@ public class RegistryCenterConfigurationUtil {
     private static final String NAMESPACE = "orchestration-java-demo";
     
     private static final String ETCD_CONNECTION_STRING = "http://localhost:2379";
+
+    private static final String NACOS_CONNECTION_STRING = "localhost:8848";
+
+    private static final String NACOS_NAMESPACE = "";
     
     public static RegistryCenterConfiguration getZooKeeperConfiguration() {
         RegistryCenterConfiguration result = new RegistryCenterConfiguration("zookeeper");
@@ -37,6 +43,16 @@ public class RegistryCenterConfigurationUtil {
     public static RegistryCenterConfiguration getEtcdConfiguration() {
         RegistryCenterConfiguration result = new RegistryCenterConfiguration("etcd");
         result.setServerLists(ETCD_CONNECTION_STRING);
+        return result;
+    }
+
+    public static RegistryCenterConfiguration getNacosConfiguration() {
+        Properties properties = new Properties();
+        properties.setProperty("group", "SHARDING_SPHERE_DEFAULT_GROUP");
+        properties.setProperty("timeout", "3000");
+        RegistryCenterConfiguration result = new RegistryCenterConfiguration("nacos", properties);
+        result.setServerLists(NACOS_CONNECTION_STRING);
+        result.setNamespace(NACOS_NAMESPACE);
         return result;
     }
 }

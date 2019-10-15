@@ -35,9 +35,10 @@ public class ExampleMain {
     private static boolean loadConfigFromRegCenter = false;
 //    private static boolean loadConfigFromRegCenter = true;
     
-    private static RegistryCenterType registryCenterType = RegistryCenterType.ZOOKEEPER;
+//    private static RegistryCenterType registryCenterType = RegistryCenterType.ZOOKEEPER;
 //    private static RegistryCenterType registryCenterType = RegistryCenterType.ETCD;
-    
+    private static RegistryCenterType registryCenterType = RegistryCenterType.NACOS;
+
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(getApplicationFile())) {
             ExampleExecuteTemplate.run(applicationContext.getBean(ExampleService.class));

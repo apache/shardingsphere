@@ -30,14 +30,23 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.shardingsphere</groupId>-->
+            <!--<artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>-->
+        <!--</dependency>-->
         <!--<dependency>-->
             <!--<groupId>io.shardingsphere</groupId>-->
             <!--<artifactId>sharding-orchestration-reg-etcd</artifactId>-->
         <!--</dependency>-->
-        
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-orchestration-reg-nacos</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.nacos</groupId>
+            <artifactId>nacos-client</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 </project>
