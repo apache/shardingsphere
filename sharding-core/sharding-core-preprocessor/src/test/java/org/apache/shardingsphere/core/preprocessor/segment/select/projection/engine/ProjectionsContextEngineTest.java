@@ -64,7 +64,7 @@ public final class ProjectionsContextEngineTest {
     }
     
     @Test
-    public void assertProjectionsContextCreatedProperlyWhenOrderByContextOrderItemsPresent() {
+    public void createProjectionsContextWhenOrderByContextOrderItemsPresent() {
         SelectStatement selectStatement = mock(SelectStatement.class);
         SelectItemsSegment selectItemsSegment = mock(SelectItemsSegment.class);
         when(selectStatement.getSelectItems()).thenReturn(selectItemsSegment);
@@ -77,8 +77,8 @@ public final class ProjectionsContextEngineTest {
         OrderByItem orderByItem = mock(OrderByItem.class);
         when(orderByItem.getSegment()).thenReturn(mock(IndexOrderByItemSegment.class));
         when(orderByContext.getItems()).thenReturn(Collections.singletonList(orderByItem));
-        ProjectionsContext projectionsContext = new ProjectionsContextEngine(null).createProjectionsContext(null, selectStatement, mock(GroupByContext.class), orderByContext);
-        assertNotNull(projectionsContext);
+        ProjectionsContext actual = new ProjectionsContextEngine(null).createProjectionsContext(null, selectStatement, mock(GroupByContext.class), orderByContext);
+        assertNotNull(actual);
     }
     
     @Test

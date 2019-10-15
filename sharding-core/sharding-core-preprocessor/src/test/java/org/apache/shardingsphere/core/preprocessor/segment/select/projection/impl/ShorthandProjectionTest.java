@@ -19,6 +19,8 @@ package org.apache.shardingsphere.core.preprocessor.segment.select.projection.im
 
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -26,12 +28,17 @@ public final class ShorthandProjectionTest {
     
     @Test
     public void assertGetExpression() {
-        assertTrue(new ShorthandProjection("owner").getExpression().contains(".*"));
+        assertThat(new ShorthandProjection("owner").getExpression(), is("owner.*"));
     }
     
     @Test
-    public void assertGetAlias() {
+    public void assertGetAliasWhenAbsent() {
         assertFalse(new ShorthandProjection("owner").getAlias().isPresent());
+    }
+    
+    @Test
+    public void assertGetAliasWhenPresent() {
+    
     }
     
     @Test
