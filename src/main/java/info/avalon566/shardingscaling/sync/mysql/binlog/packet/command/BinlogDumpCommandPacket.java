@@ -19,9 +19,9 @@ package info.avalon566.shardingscaling.sync.mysql.binlog.packet.command;
 
 import com.google.common.base.Strings;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
+import lombok.Setter;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import lombok.Data;
 
 /**
  * MySQL binlog dump command packet.
@@ -29,7 +29,7 @@ import lombok.Data;
  * @author avalon566
  * @author yangyi
  */
-@Data
+@Setter
 public final class BinlogDumpCommandPacket extends AbstractCommandPacket {
     
     private static final int BINLOG_SEND_ANNOTATE_ROWS_EVENT = 2;
