@@ -119,7 +119,6 @@ public final class ShardingSQLRewriteEngineParameterizedTest {
         result[1] = rootAssertions.getYamlRule();
         result[2] = assertion.getId();
         result[3] = assertion.getInput().getSql();
-        result[4] = null == assertion.getInput().getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getInput().getParameters());
         if (null == assertion.getInput().getParameters()) {
             result[4] = Collections.emptyList();
         } else {
@@ -140,21 +139,7 @@ public final class ShardingSQLRewriteEngineParameterizedTest {
         List<Object> outputGroupedParameters = new ArrayList<>(outputs.size());
         for (RewriteOutputEntity each : outputs) {
             outputSQLs.add(each.getSql());
-            if (null == each.getParameters()) {
-                outputGroupedParameters.add(Collections.emptyList());
-            } else {
-                outputGroupedParameters.add(Lists.transform(Splitter.on(",").trimResults().splitToList(each.getParameters()), new Function<String, Object>() {
-                    
-                    @Override
-                    public Object apply(final String input) {
-                        try {
-                            return Integer.parseInt(input);
-                        } catch (final NumberFormatException ignore) {
-                            return input;
-                        }
-                    }
-                }));
-            }
+            outputGroupedParameters.add(null == each.getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(each.getParameters()));
         }
         result[5] = outputSQLs;
         result[6] = outputGroupedParameters;
@@ -180,7 +165,10 @@ public final class ShardingSQLRewriteEngineParameterizedTest {
         int count = 0;
         for (SQLRewriteResult each : actual) {
             assertThat(each.getSql(), is(outputSQLs.get(count)));
-            assertThat(each.getParameters(), is(outputGroupedParameters.get(count)));
+            assertThat(each.getParameters().size(), is(outputGroupedParameters.get(count).size()));
+            for (int i = 0; i < each.getParameters().size(); i++) {
+                assertThat(each.getParameters().get(i).toString(), is(outputGroupedParameters.get(count).get(i).toString()));
+            }
             count++;
         }
     }

@@ -164,14 +164,62 @@
         <output sql="SELECT * FROM t_order_0 WHERE order_id = 100 LIMIT 100, 10" />
     </rewrite-assertion>
     
+    <rewrite-assertion id="select_limit_with_multiple_route_for_parameters_for_mysql" db-type="MySQL">
+        <input sql="SELECT * FROM t_order WHERE order_id IN (100, 101) LIMIT ?, ?" parameters="100, 10" />
+        <output sql="SELECT * FROM t_order_0 WHERE order_id IN (100, 101) LIMIT ?, ?" parameters="0, 110" />
+        <output sql="SELECT * FROM t_order_1 WHERE order_id IN (100, 101) LIMIT ?, ?" parameters="0, 110" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_limit_with_multiple_route_for_literals_for_mysql" db-type="MySQL">
+        <input sql="SELECT * FROM t_order WHERE order_id IN (100, 101) LIMIT 100, 10" />
+        <output sql="SELECT * FROM t_order_0 WHERE order_id IN (100, 101) LIMIT 0, 110" />
+        <output sql="SELECT * FROM t_order_1 WHERE order_id IN (100, 101) LIMIT 0, 110" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_limit_with_multiple_route_with_memory_group_by_for_parameters_for_mysql" db-type="MySQL">
+        <input sql="SELECT * FROM t_order WHERE order_id IN (100, 101) GROUP BY order_id ORDER BY order_id DESC LIMIT ?, ?" parameters="100, 10" />
+        <output sql="SELECT * FROM t_order_0 WHERE order_id IN (100, 101) GROUP BY order_id ORDER BY order_id DESC LIMIT ?, ?" parameters="0, 2147483647" />
+        <output sql="SELECT * FROM t_order_1 WHERE order_id IN (100, 101) GROUP BY order_id ORDER BY order_id DESC LIMIT ?, ?" parameters="0, 2147483647" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_limit_with_multiple_route_with_memory_group_by_for_literals_for_mysql" db-type="MySQL">
+        <input sql="SELECT * FROM t_order WHERE order_id IN (100, 101) GROUP BY order_id ORDER BY order_id DESC LIMIT 100, 10" />
+        <output sql="SELECT * FROM t_order_0 WHERE order_id IN (100, 101) GROUP BY order_id ORDER BY order_id DESC LIMIT 0, 2147483647" />
+        <output sql="SELECT * FROM t_order_1 WHERE order_id IN (100, 101) GROUP BY order_id ORDER BY order_id DESC LIMIT 0, 2147483647" />
+    </rewrite-assertion>
+    
     <rewrite-assertion id="select_limit_with_single_route_for_parameters_for_postgresql" db-type="PostgreSQL">
         <input sql="SELECT * FROM t_order WHERE order_id = 100 LIMIT ? OFFSET ?" parameters="10, 100" />
         <output sql="SELECT * FROM t_order_0 WHERE order_id = 100 LIMIT ? OFFSET ?" parameters="10, 100" />
     </rewrite-assertion>
-
+    
     <rewrite-assertion id="select_limit_with_single_route_for_literals_for_postgresql" db-type="PostgreSQL">
         <input sql="SELECT * FROM t_order WHERE order_id = 100 LIMIT 10 OFFSET 100" />
         <output sql="SELECT * FROM t_order_0 WHERE order_id = 100 LIMIT 10 OFFSET 100" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_limit_with_multiple_route_for_parameters_for_postgresql" db-type="PostgreSQL">
+        <input sql="SELECT * FROM t_order WHERE order_id IN (100, 101) LIMIT ? OFFSET ?" parameters="10, 100" />
+        <output sql="SELECT * FROM t_order_0 WHERE order_id IN (100, 101) LIMIT ? OFFSET ?" parameters="110, 0" />
+        <output sql="SELECT * FROM t_order_1 WHERE order_id IN (100, 101) LIMIT ? OFFSET ?" parameters="110, 0" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_limit_with_multiple_route_for_literals_for_postgresql" db-type="PostgreSQL">
+        <input sql="SELECT * FROM t_order WHERE order_id IN (100, 101) LIMIT 10 OFFSET 100" />
+        <output sql="SELECT * FROM t_order_0 WHERE order_id IN (100, 101) LIMIT 110 OFFSET 0" />
+        <output sql="SELECT * FROM t_order_1 WHERE order_id IN (100, 101) LIMIT 110 OFFSET 0" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_limit_with_multiple_route_with_memory_group_by_for_parameters_for_postgresql" db-type="PostgreSQL">
+        <input sql="SELECT * FROM t_order WHERE order_id IN (100, 101) GROUP BY order_id ORDER BY order_id DESC LIMIT ? OFFSET ?" parameters="10, 100" />
+        <output sql="SELECT * FROM t_order_0 WHERE order_id IN (100, 101) GROUP BY order_id ORDER BY order_id DESC LIMIT ? OFFSET ?" parameters="2147483647, 0" />
+        <output sql="SELECT * FROM t_order_1 WHERE order_id IN (100, 101) GROUP BY order_id ORDER BY order_id DESC LIMIT ? OFFSET ?" parameters="2147483647, 0" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_limit_with_multiple_route_with_memory_group_by_for_literals_for_postgresql" db-type="PostgreSQL">
+        <input sql="SELECT * FROM t_order WHERE order_id IN (100, 101) GROUP BY order_id ORDER BY order_id DESC LIMIT 10 OFFSET 100" />
+        <output sql="SELECT * FROM t_order_0 WHERE order_id IN (100, 101) GROUP BY order_id ORDER BY order_id DESC LIMIT 2147483647 OFFSET 0" />
+        <output sql="SELECT * FROM t_order_1 WHERE order_id IN (100, 101) GROUP BY order_id ORDER BY order_id DESC LIMIT 2147483647 OFFSET 0" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_row_number_with_single_route_for_parameters_for_oracle" db-type="Oracle">
@@ -185,14 +233,70 @@
     </rewrite-assertion>
     
     <!-- FIXME -->
+    <!--<rewrite-assertion id="select_row_number_with_single_route_for_parameters_for_oracle" db-type="Oracle">-->
+        <!--<input sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.order_id FROM t_order o WHERE o.order_id IN (100, 101)) row_ WHERE rownum &lt;= ?) t WHERE t.rownum_ &gt; ?" parameters="110, 100" />-->
+        <!--<output sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.order_id FROM t_order_0 o WHERE o.order_id IN (100, 101)) row_ WHERE rownum &lt;= ?) t WHERE t.rownum_ &gt; ?" parameters="110, 0" />-->
+        <!--<output sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.order_id FROM t_order_1 o WHERE o.order_id IN (100, 101)) row_ WHERE rownum &lt;= ?) t WHERE t.rownum_ &gt; ?" parameters="110, 0" />-->
+    <!--</rewrite-assertion>-->
+    
+    <!-- FIXME -->
+    <!--<rewrite-assertion id="select_row_number_with_single_route_for_literals_for_oracle" db-type="Oracle">-->
+        <!--<input sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.order_id FROM t_order o WHERE o.order_id IN (100, 101)) row_ WHERE rownum &lt;= 110) t WHERE t.rownum_ &gt; 100" />-->
+        <!--<output sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.order_id FROM t_order_0 o WHERE o.order_id IN (100, 101)) row_ WHERE rownum &lt;= 110) t WHERE t.rownum_ &gt; 0" />-->
+        <!--<output sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.order_id FROM t_order_1 o WHERE o.order_id IN (100, 101)) row_ WHERE rownum &lt;= 110) t WHERE t.rownum_ &gt; 0" />-->
+    <!--</rewrite-assertion>-->
+    
+    <!-- FIXME -->
+    <!--<rewrite-assertion id="select_row_number_with_single_route_with_memory_group_by_for_parameters_for_oracle" db-type="Oracle">-->
+        <!--<input sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.order_id FROM t_order o WHERE o.order_id IN (100, 101)) row_ WHERE rownum &lt;= ? GROUP BY order_id ORDER BY order_id DESC) t WHERE t.rownum_ &gt; ?" parameters="110, 100" />-->
+        <!--<output sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.order_id FROM t_order_0 o WHERE o.order_id IN (100, 101)) row_ WHERE rownum &lt;= ? GROUP BY order_id ORDER BY order_id DESC) t WHERE t.rownum_ &gt; ?" parameters="2147483647, 0" />-->
+        <!--<output sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.order_id FROM t_order_1 o WHERE o.order_id IN (100, 101)) row_ WHERE rownum &lt;= ? GROUP BY order_id ORDER BY order_id DESC) t WHERE t.rownum_ &gt; ?" parameters="2147483647, 0" />-->
+    <!--</rewrite-assertion>-->
+    
+    <!-- FIXME -->
+    <!--<rewrite-assertion id="select_row_number_with_single_route_with_memory_group_by_for_literals_for_oracle" db-type="Oracle">-->
+        <!--<input sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.order_id FROM t_order o WHERE o.order_id IN (100, 101)) row_ WHERE rownum &lt;= 110 GROUP BY order_id ORDER BY order_id DESC) t WHERE t.rownum_ &gt; 100" />-->
+        <!--<output sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.order_id FROM t_order_0 o WHERE o.order_id IN (100, 101)) row_ WHERE rownum &lt;= 2147483647 GROUP BY order_id ORDER BY order_id DESC) t WHERE t.rownum_ &gt; 0" />-->
+        <!--<output sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.order_id FROM t_order_1 o WHERE o.order_id IN (100, 101)) row_ WHERE rownum &lt;= 2147483647 GROUP BY order_id ORDER BY order_id DESC) t WHERE t.rownum_ &gt; 0" />-->
+    <!--</rewrite-assertion>-->
+    
+    <!-- FIXME -->
     <!--<rewrite-assertion id="select_top_with_single_route_for_parameters_for_sqlserver" db-type="SQLServer">-->
         <!--<input sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.order_id.id) AS rownum_, o.order_id FROM t_order o WHERE o.order_id = 100) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />-->
         <!--<output sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.order_id.id) AS rownum_, o.order_id FROM t_order_0 o WHERE o.order_id = 100) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />-->
     <!--</rewrite-assertion>-->
-
+    
     <!-- FIXME -->
     <!--<rewrite-assertion id="select_top_with_single_route_for_literals_for_sqlserver" db-type="SQLServer">-->
         <!--<input sql="SELECT * FROM (SELECT TOP(110) row_number() OVER (ORDER BY o.order_id.id) AS rownum_, o.order_id FROM t_order o WHERE o.order_id = 100) AS row_ WHERE row_.rownum_ &gt; 100" />-->
         <!--<output sql="SELECT * FROM (SELECT TOP(110) row_number() OVER (ORDER BY o.order_id.id) AS rownum_, o.order_id FROM t_order_0 o WHERE o.order_id = 100) AS row_ WHERE row_.rownum_ &gt; 100" />-->
+    <!--</rewrite-assertion>-->
+    
+    <!-- FIXME -->
+    <!--<rewrite-assertion id="select_top_with_multiple_route_for_parameters_for_sqlserver" db-type="SQLServer">-->
+        <!--<input sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.order_id.id) AS rownum_, o.order_id FROM t_order o WHERE o.order_id IN (100, 101)) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />-->
+        <!--<output sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.order_id.id) AS rownum_, o.order_id FROM t_order_0 o WHERE o.order_id IN (100, 101)) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 0" />-->
+        <!--<output sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.order_id.id) AS rownum_, o.order_id FROM t_order_1 o WHERE o.order_id IN (100, 101)) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 0" />-->
+    <!--</rewrite-assertion>-->
+    
+    <!-- FIXME -->
+    <!--<rewrite-assertion id="select_top_with_multiple_route_for_literals_for_sqlserver" db-type="SQLServer">-->
+        <!--<input sql="SELECT * FROM (SELECT TOP(110) row_number() OVER (ORDER BY o.order_id.id) AS rownum_, o.order_id FROM t_order o WHERE o.order_id IN (100, 101)) AS row_ WHERE row_.rownum_ &gt; 100" />-->
+        <!--<output sql="SELECT * FROM (SELECT TOP(110) row_number() OVER (ORDER BY o.order_id.id) AS rownum_, o.order_id FROM t_order_0 o WHERE o.order_id IN (100, 101)) AS row_ WHERE row_.rownum_ &gt; 0" />-->
+        <!--<output sql="SELECT * FROM (SELECT TOP(110) row_number() OVER (ORDER BY o.order_id.id) AS rownum_, o.order_id FROM t_order_1 o WHERE o.order_id IN (100, 101)) AS row_ WHERE row_.rownum_ &gt; 0" />-->
+    <!--</rewrite-assertion>-->
+    
+    <!-- FIXME -->
+    <!--<rewrite-assertion id="select_top_with_multiple_route_with_memory_group_by_for_parameters_for_sqlserver" db-type="SQLServer">-->
+        <!--<input sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.order_id.id) AS rownum_, o.order_id FROM t_order o WHERE o.order_id IN (100, 101) GROUP BY order_id ORDER BY order_id DESC) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />-->
+        <!--<output sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.order_id.id) AS rownum_, o.order_id FROM t_order_0 o WHERE o.order_id IN (100, 101) GROUP BY order_id ORDER BY order_id DESC) AS row_ WHERE row_.rownum_ &gt; ?" parameters="2147483647, 0" />-->
+        <!--<output sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.order_id.id) AS rownum_, o.order_id FROM t_order_1 o WHERE o.order_id IN (100, 101) GROUP BY order_id ORDER BY order_id DESC) AS row_ WHERE row_.rownum_ &gt; ?" parameters="2147483647, 0" />-->
+    <!--</rewrite-assertion>-->
+    
+    <!-- FIXME -->
+    <!--<rewrite-assertion id="select_top_with_multiple_route_with_memory_group_by_for_literals_for_sqlserver" db-type="SQLServer">-->
+        <!--<input sql="SELECT * FROM (SELECT TOP(110) row_number() OVER (ORDER BY o.order_id.id) AS rownum_, o.order_id FROM t_order o WHERE o.order_id IN (100, 101) GROUP BY order_id ORDER BY order_id DESC) AS row_ WHERE row_.rownum_ &gt; 100" />-->
+        <!--<output sql="SELECT * FROM (SELECT TOP(2147483647) row_number() OVER (ORDER BY o.order_id.id) AS rownum_, o.order_id FROM t_order_0 o WHERE o.order_id IN (100, 101) GROUP BY order_id ORDER BY order_id DESC) AS row_ WHERE row_.rownum_ &gt; 0" />-->
+        <!--<output sql="SELECT * FROM (SELECT TOP(2147483647) row_number() OVER (ORDER BY o.order_id.id) AS rownum_, o.order_id FROM t_order_1 o WHERE o.order_id IN (100, 101) GROUP BY order_id ORDER BY order_id DESC) AS row_ WHERE row_.rownum_ &gt; 0" />-->
     <!--</rewrite-assertion>-->
 </rewrite-assertions>
