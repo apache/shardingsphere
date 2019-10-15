@@ -17,33 +17,32 @@
 
 package info.avalon566.shardingscaling.sync.mysql.binlog.packet.command;
 
-import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import lombok.Setter;
+import org.junit.Test;
 
-import java.nio.charset.StandardCharsets;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * Mysql Query command packet.
- *
- * @author avalon566
- * @author yangyi
- */
-@Setter
-public final class QueryCommandPacket extends AbstractCommandPacket {
-
-    private String queryString;
-
-    public QueryCommandPacket() {
-        setCommand((byte) 0x03);
+public class BinlogDumpCommandPacketTest {
+    
+    @Test
+    public void assertToByteBuf() {
+        BinlogDumpCommandPacket binlogDumpCommandPacket = new BinlogDumpCommandPacket();
+        binlogDumpCommandPacket.setBinlogFileName("binlog-000001");
+        binlogDumpCommandPacket.setBinlogPosition(4);
+        binlogDumpCommandPacket.setSlaveServerId(1);
+        assertThat(binlogDumpCommandPacket.toByteBuf(), is(getExpectedByteBuf()));
     }
-
-    @Override
-    public ByteBuf toByteBuf() {
+    
+    private ByteBuf getExpectedByteBuf() {
         ByteBuf result = ByteBufAllocator.DEFAULT.heapBuffer();
-        DataTypesCodec.writeByte(getCommand(), result);
-        DataTypesCodec.writeBytes(queryString.getBytes(StandardCharsets.UTF_8), result);
+        result.writeByte(0x12);
+        result.writeIntLE(4);
+        result.writeByte(2);
+        result.writeByte(0);
+        result.writeIntLE(1);
+        result.writeBytes("binlog-000001".getBytes());
         return result;
     }
 }

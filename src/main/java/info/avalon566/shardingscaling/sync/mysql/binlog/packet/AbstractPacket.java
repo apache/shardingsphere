@@ -33,6 +33,7 @@ import lombok.Data;
  */
 @Data
 public abstract class AbstractPacket implements Packet {
+    
     private byte sequenceNumber;
 
     /**

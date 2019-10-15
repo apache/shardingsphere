@@ -15,30 +15,27 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog;
+package info.avalon566.shardingscaling.sync.mysql.binlog.packet.response;
 
-import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import io.netty.buffer.ByteBuf;
-import lombok.Getter;
+import io.netty.buffer.Unpooled;
+import org.junit.Test;
 
-/**
- * Rotate event.
- *
- * @author avalon566
- */
-@Getter
-public class RotateEvent {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-    private long position;
-
-    private String nextFileName;
-
-    /**
-     * Parse rotate event from {@code ByteBuf}.
-     * @param in buffer
-     */
-    public void parse(final ByteBuf in) {
-        position = DataTypesCodec.readInt8LE(in);
-        nextFileName = DataTypesCodec.readFixedLengthString(in.readableBytes(), in);
+public class EofPacketTest {
+    
+    @Test
+    public void assertFromByteBuf() {
+        ByteBuf byteBuf = Unpooled.buffer();
+        byteBuf.writeByte(0x01);
+        byteBuf.writeShortLE(Short.MIN_VALUE);
+        byteBuf.writeShortLE(Short.MIN_VALUE);
+        EofPacket actual = new EofPacket();
+        actual.fromByteBuf(byteBuf);
+        assertThat(actual.getFieldCount(), is((short) 1));
+        assertThat(actual.getWarningCount(), is(32768));
+        assertThat(actual.getStatusFlag(), is(32768));
     }
 }

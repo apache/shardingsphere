@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog;
+package info.avalon566.shardingscaling.sync.mysql.binlog.packet.command;
 
-import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import io.netty.buffer.ByteBuf;
-import lombok.Getter;
+import io.netty.buffer.ByteBufAllocator;
 
-/**
- * Rotate event.
- *
- * @author avalon566
- */
-@Getter
-public class RotateEvent {
+import org.junit.Test;
 
-    private long position;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-    private String nextFileName;
-
-    /**
-     * Parse rotate event from {@code ByteBuf}.
-     * @param in buffer
-     */
-    public void parse(final ByteBuf in) {
-        position = DataTypesCodec.readInt8LE(in);
-        nextFileName = DataTypesCodec.readFixedLengthString(in.readableBytes(), in);
+public class QueryCommandPacketTest {
+    
+    @Test
+    public void assertToByteBuf() {
+        QueryCommandPacket queryCommandPacket = new QueryCommandPacket();
+        queryCommandPacket.setQueryString("SELECT 1");
+        assertThat(queryCommandPacket.toByteBuf(), is(mockExpectedByteBuf()));
+    }
+    
+    private ByteBuf mockExpectedByteBuf() {
+        ByteBuf result = ByteBufAllocator.DEFAULT.heapBuffer();
+        result.writeByte(3);
+        result.writeBytes("SELECT 1".getBytes());
+        return result;
     }
 }
