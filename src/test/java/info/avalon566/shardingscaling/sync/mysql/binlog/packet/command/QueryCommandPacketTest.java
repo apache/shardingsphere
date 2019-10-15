@@ -17,33 +17,27 @@
 
 package info.avalon566.shardingscaling.sync.mysql.binlog.packet.command;
 
-import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import lombok.Setter;
 
-import java.nio.charset.StandardCharsets;
+import org.junit.Test;
 
-/**
- * Mysql Query command packet.
- *
- * @author avalon566
- * @author yangyi
- */
-@Setter
-public final class QueryCommandPacket extends AbstractCommandPacket {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-    private String queryString;
-
-    public QueryCommandPacket() {
-        setCommand((byte) 0x03);
+public class QueryCommandPacketTest {
+    
+    @Test
+    public void assertToByteBuf() {
+        QueryCommandPacket queryCommandPacket = new QueryCommandPacket();
+        queryCommandPacket.setQueryString("SELECT 1");
+        assertThat(queryCommandPacket.toByteBuf(), is(mockExpectedByteBuf()));
     }
-
-    @Override
-    public ByteBuf toByteBuf() {
+    
+    private ByteBuf mockExpectedByteBuf() {
         ByteBuf result = ByteBufAllocator.DEFAULT.heapBuffer();
-        DataTypesCodec.writeByte(getCommand(), result);
-        DataTypesCodec.writeBytes(queryString.getBytes(StandardCharsets.UTF_8), result);
+        result.writeByte(3);
+        result.writeBytes("SELECT 1".getBytes());
         return result;
     }
 }
