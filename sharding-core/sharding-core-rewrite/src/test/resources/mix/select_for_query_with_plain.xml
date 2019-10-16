@@ -17,15 +17,13 @@
   -->
 
 <rewrite-assertions yaml-rule="yaml/mix/query-with-plain.yaml">
-    <!-- FIXME lost owner of predicate when rewrite -->
     <rewrite-assertion id="select_plain_for_parameters">
         <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = ? AND a.password = ? AND a.amount = ? AND a.status = ?" parameters="1, aaa, 1000, OK" />
-        <output sql="SELECT a.account_id, a.plain_password, a.plain_amount AS a, a.status AS s FROM t_account_bak_1 AS a WHERE a.account_id = ? AND plain_password = ? AND plain_amount = ? AND a.status = ?" parameters="1, aaa, 1000, OK" />
+        <output sql="SELECT a.account_id, a.plain_password, a.plain_amount AS a, a.status AS s FROM t_account_bak_1 AS a WHERE a.account_id = ? AND a.plain_password = ? AND a.plain_amount = ? AND a.status = ?" parameters="1, aaa, 1000, OK" />
     </rewrite-assertion>
     
-    <!-- FIXME lost owner of predicate when rewrite -->
     <rewrite-assertion id="select_plain_for_literals">
         <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = 1 AND a.password = 'aaa' AND a.amount = 1000 AND a.status = 'OK'" />
-        <output sql="SELECT a.account_id, a.plain_password, a.plain_amount AS a, a.status AS s FROM t_account_bak_1 AS a WHERE a.account_id = 1 AND plain_password = 'aaa' AND plain_amount = 1000 AND a.status = 'OK'" />
+        <output sql="SELECT a.account_id, a.plain_password, a.plain_amount AS a, a.status AS s FROM t_account_bak_1 AS a WHERE a.account_id = 1 AND a.plain_password = 'aaa' AND a.plain_amount = 1000 AND a.status = 'OK'" />
     </rewrite-assertion>
 </rewrite-assertions>
