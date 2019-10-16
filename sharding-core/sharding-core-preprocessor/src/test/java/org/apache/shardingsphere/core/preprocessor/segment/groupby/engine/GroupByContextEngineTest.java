@@ -29,9 +29,11 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -44,7 +46,7 @@ public final class GroupByContextEngineTest {
         when(selectStatement.getGroupBy()).thenReturn(Optional.<GroupBySegment>absent());
         GroupByContext groupByContext = new GroupByContextEngine().createGroupByContext(selectStatement);
         assertTrue(groupByContext.getItems().isEmpty());
-        assertEquals(groupByContext.getLastIndex(), 0);
+        assertThat(groupByContext.getLastIndex(), is(0));
     }
     
     @Test
@@ -59,16 +61,16 @@ public final class GroupByContextEngineTest {
         when(groupBySegment.getGroupByItems()).thenReturn(Arrays.asList(columnOrderByItemSegment, indexOrderByItemSegment1, indexOrderByItemSegment2));
         when(groupBySegment.getStopIndex()).thenReturn(10);
         when(selectStatement.getGroupBy()).thenReturn(Optional.of(groupBySegment));
-        GroupByContext groupByContext = new GroupByContextEngine().createGroupByContext(selectStatement);
+        GroupByContext actualGroupByContext = new GroupByContextEngine().createGroupByContext(selectStatement);
         OrderByItem orderByItem1 = new OrderByItem(indexOrderByItemSegment1);
         orderByItem1.setIndex(2);
         OrderByItem orderByItem2 = new OrderByItem(indexOrderByItemSegment2);
         orderByItem2.setIndex(3);
-        assertEquals(groupByContext.getItems(), Arrays.asList(new OrderByItem(columnOrderByItemSegment), orderByItem1, orderByItem2));
-        assertEquals(groupByContext.getLastIndex(), 10);
-        List<OrderByItem> results = new ArrayList<>(groupByContext.getItems());
-        assertEquals(results.get(0).getIndex(), 0);
-        assertEquals(results.get(1).getIndex(), 2);
-        assertEquals(results.get(2).getIndex(), 3);
+        assertThat(actualGroupByContext.getItems(), is((Collection<OrderByItem>) Arrays.asList(new OrderByItem(columnOrderByItemSegment), orderByItem1, orderByItem2)));
+        assertThat(actualGroupByContext.getLastIndex(), is(10));
+        List<OrderByItem> results = new ArrayList<>(actualGroupByContext.getItems());
+        assertThat(results.get(0).getIndex(), is(0));
+        assertThat(results.get(1).getIndex(), is(2));
+        assertThat(results.get(2).getIndex(), is(3));
     }
 }
