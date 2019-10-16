@@ -205,8 +205,10 @@ public final class MixSQLRewriteEngineParameterizedTest {
         TableMetaData accountTableMetaData = mock(TableMetaData.class);
         when(accountTableMetaData.containsIndex(anyString())).thenReturn(true);
         when(tableMetas.get("t_account")).thenReturn(accountTableMetaData);
+        when(tableMetas.get("t_account_bak")).thenReturn(mock(TableMetaData.class));
         when(tableMetas.get("t_account_detail")).thenReturn(mock(TableMetaData.class));
-        when(tableMetas.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "amount", "status"));
+        when(tableMetas.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
+        when(tableMetas.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
         return new ShardingSphereMetaData(mock(DataSourceMetas.class), tableMetas);
     }
     
