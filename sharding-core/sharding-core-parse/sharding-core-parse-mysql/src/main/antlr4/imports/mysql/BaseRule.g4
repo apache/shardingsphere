@@ -377,7 +377,7 @@ frameBetween_
 
 specialFunction_
     : groupConcatFunction_ | windowFunction_ | castFunction_ | convertFunction_ | positionFunction_ | substringFunction_ | extractFunction_ 
-    | charFunction_ | trimFunction_ | weightStringFunction_
+    | charFunction_ | trimFunction_ | weightStringFunction_ | valuesFunction_
     ;
 
 groupConcatFunction_
@@ -415,6 +415,10 @@ charFunction_
 
 trimFunction_
     : TRIM LP_ (LEADING | BOTH | TRAILING) STRING_ FROM STRING_ RP_
+    ;
+
+valuesFunction_
+    : VALUES LP_ columnName RP_
     ;
 
 weightStringFunction_
