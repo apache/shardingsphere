@@ -36,7 +36,7 @@ public final class EncryptPredicateToken extends SQLToken implements Substitutab
     @Getter
     private final int stopIndex;
 
-    private final String tableOwner;
+    private final String columnOwner;
 
     private final String columnName;
 
@@ -47,11 +47,11 @@ public final class EncryptPredicateToken extends SQLToken implements Substitutab
     private final ShardingOperator operator;
     
     public EncryptPredicateToken(final int startIndex, final int stopIndex,
-                                 final String tableOwner, final String columnName, final Map<Integer, Object> indexValues,
+                                 final String columnOwner, final String columnName, final Map<Integer, Object> indexValues,
                                  final Collection<Integer> parameterMarkerIndexes, final ShardingOperator operator) {
         super(startIndex);
         this.stopIndex = stopIndex;
-        this.tableOwner = tableOwner;
+        this.columnOwner = columnOwner;
         this.columnName = columnName;
         this.indexValues = indexValues;
         this.parameterMarkerIndexes = parameterMarkerIndexes;
@@ -98,6 +98,6 @@ public final class EncryptPredicateToken extends SQLToken implements Substitutab
     }
 
     private String getColumnNameWithOwner() {
-        return null == tableOwner ? columnName : String.format("%s.%s", tableOwner, columnName);
+        return null == columnOwner ? columnName : String.format("%s.%s", columnOwner, columnName);
     }
 }
