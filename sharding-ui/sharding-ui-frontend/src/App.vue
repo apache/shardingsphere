@@ -23,10 +23,10 @@
         <el-breadcrumb-item>Data governance</el-breadcrumb-item>
         <el-breadcrumb-item>{{ name }}</el-breadcrumb-item>
       </el-breadcrumb>
-      <router-view/>
+      <router-view />
     </s-container>
     <template v-else>
-      <router-view/>
+      <router-view />
     </template>
   </div>
 </template>

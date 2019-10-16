@@ -22,13 +22,13 @@
         <span
           style="font-size: 14px; color: #4a4a4a; margin-bottom: 10px;display: inline-block;"
         >Edit source here:</span>
-        <el-input :rows="20" v-model="textarea" type="textarea" class="edit-text"/>
+        <el-input :rows="20" v-model="textarea" type="textarea" class="edit-text" />
       </el-col>
       <el-col :span="12">
         <span
           style="font-size: 14px; color: #4a4a4a; margin-bottom: 10px;display: inline-block;"
         >Result (JS object dump):</span>
-        <el-input :rows="20" v-model="textarea2" type="textarea" readonly class="show-text"/>
+        <el-input :rows="20" v-model="textarea2" type="textarea" readonly class="show-text" />
       </el-col>
     </el-row>
     <el-row>
