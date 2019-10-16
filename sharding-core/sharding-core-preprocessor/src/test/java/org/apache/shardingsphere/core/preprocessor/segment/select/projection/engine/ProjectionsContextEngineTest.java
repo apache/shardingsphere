@@ -82,7 +82,7 @@ public final class ProjectionsContextEngineTest {
     }
     
     @Test
-    public void assertProjectionsContextCreatedProperlyWhenOrderByItemSegmentNotInstanceOfIndexOrderByItemSegment() {
+    public void assertCreateProjectionsContextWithoutIndexOrderByItemSegment() {
         SelectStatement selectStatement = mock(SelectStatement.class);
         SelectItemsSegment selectItemsSegment = mock(SelectItemsSegment.class);
         when(selectStatement.getSelectItems()).thenReturn(selectItemsSegment);
