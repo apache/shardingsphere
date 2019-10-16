@@ -48,4 +48,7 @@
     <sql-case id="insert_with_null_value" value="INSERT INTO t_null_value_test(col1) VALUES(null)" db-types="MySQL" />
     <sql-case id="insert_with_blob_value" value="INSERT INTO t_blob_value_test(col1) VALUES(_BINARY'This is a binary value.')" db-types="MySQL" />
     <sql-case id="insert_with_function" value="INSERT INTO t_order(current_date, order_id, user_id) VALUES (curdate(), ?, ?)" db-types="MySQL" />
+    <sql-case id="insert_with_duplicate_key_way_1" value="INSERT INTO emp(id,age,salary) VALUES (?,?,?) ON DUPLICATE KEY UPDATE salary = salary+1" db-types="MySQL"/>
+    <sql-case id="insert_with_duplicate_key_way_2" value="INSERT INTO emp(id,age,salary) VALUES (?,?,?),(?,?,?) ON DUPLICATE KEY UPDATE salary = VALUES(id)+VALUES(age)" db-types="MySQL"/>
+    <sql-case id="insert_with_duplicate_key_way_3" value="INSERT INTO emp(id,age,salary) VALUES (?,?,?) ON DUPLICATE KEY UPDATE salary = VALUES(id)" db-types="MySQL"/>
 </sql-cases>
