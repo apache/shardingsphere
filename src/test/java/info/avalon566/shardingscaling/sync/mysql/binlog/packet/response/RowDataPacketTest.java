@@ -17,34 +17,30 @@
 
 package info.avalon566.shardingscaling.sync.mysql.binlog.packet.response;
 
-import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
-import info.avalon566.shardingscaling.sync.mysql.binlog.packet.AbstractPacket;
 import io.netty.buffer.ByteBuf;
-import lombok.Getter;
+import io.netty.buffer.Unpooled;
+import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * MySQL row data packet.
- *
- * <p>
- *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Text Protocol  /  COM_QUERY  /  COM_QUERY Response
- *     https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-ProtocolText::ResultsetRow
- * </p>
- *
- * @author avalon566
- * @author yangyi
- */
-@Getter
-public final class RowDataPacket extends AbstractPacket {
+public class RowDataPacketTest {
     
-    private List<String> columns = new ArrayList<>();
-
-    @Override
-    public void fromByteBuf(final ByteBuf data) {
-        while (data.isReadable()) {
-            columns.add(DataTypesCodec.readLengthCodedString(data));
-        }
+    private static final String VALUE_1 = "value_1";
+    
+    private static final String VALUE_2 = "111";
+    
+    @Test
+    public void assertFromByteBuf() {
+        ByteBuf byteBuf = Unpooled.buffer();
+        byteBuf.writeByte(VALUE_1.length());
+        byteBuf.writeBytes(VALUE_1.getBytes());
+        byteBuf.writeByte(VALUE_2.length());
+        byteBuf.writeBytes(VALUE_2.getBytes());
+        RowDataPacket actual = new RowDataPacket();
+        actual.fromByteBuf(byteBuf);
+        assertThat(actual.getColumns().size(), is(2));
+        assertThat(actual.getColumns().get(0), is(VALUE_1));
+        assertThat(actual.getColumns().get(1), is(VALUE_2));
     }
 }
