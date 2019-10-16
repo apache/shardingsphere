@@ -60,7 +60,7 @@ assignment
     ;
 
 assignmentRight_
-    : VALUES LP_ RP_ | assignmentValue
+    : VALUES LP_ assignmentValue RP_ | assignmentValue
     ;
 
 setAssignmentsClause
