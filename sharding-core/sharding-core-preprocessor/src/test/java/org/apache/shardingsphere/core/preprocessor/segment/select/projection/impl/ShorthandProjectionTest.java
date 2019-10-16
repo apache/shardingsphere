@@ -37,11 +37,6 @@ public final class ShorthandProjectionTest {
     }
     
     @Test
-    public void assertGetAliasWhenPresent() {
-    
-    }
-    
-    @Test
     public void assertGetColumnLabel() {
         assertTrue(new ShorthandProjection("owner").getColumnLabel().contains("*"));
     }
