@@ -20,6 +20,8 @@ package org.apache.shardingsphere.core.rewrite.feature.encrypt.parameter.impl;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
@@ -33,6 +35,7 @@ import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,10 +60,14 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         if (!encryptTable.isPresent()) {
             return;
         }
-        for (String each : encryptTable.get().getLogicColumns()) {
-            Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(tableName, each);
+        Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
+        if (!insertColumnsSegment.isPresent()) {
+            return;
+        }
+        for (ColumnSegment each : insertColumnsSegment.get().getColumns()) {
+            Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(tableName, each.getName());
             if (shardingEncryptor.isPresent()) {
-                encryptInsertValues((GroupedParameterBuilder) parameterBuilder, (InsertSQLStatementContext) sqlStatementContext, encryptRule, shardingEncryptor.get(), tableName, each);
+                encryptInsertValues((GroupedParameterBuilder) parameterBuilder, (InsertSQLStatementContext) sqlStatementContext, encryptRule, shardingEncryptor.get(), tableName, each.getName());
             }
         }
     }
@@ -88,13 +95,11 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
             Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, encryptLogicColumnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            addedParameters.add(((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()));
+            Object assistedQueryValue = ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString());
+            parameterBuilder.addAddedParameters(parameterSize + parameterBuilder.getAddedIndexAndParameters().size(), Arrays.asList(assistedQueryValue));
         }
         if (encryptRule.findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
-            addedParameters.add(originalValue);
-        }
-        if (!addedParameters.isEmpty()) {
-            parameterBuilder.addAddedParameters(parameterSize + parameterBuilder.getAddedIndexAndParameters().size(), addedParameters);
+            parameterBuilder.addAddedParameters(parameterSize + parameterBuilder.getAddedIndexAndParameters().size(), Arrays.asList(originalValue));
         }
     }
 }

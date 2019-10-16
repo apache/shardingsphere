@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.i
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
@@ -56,19 +57,19 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator implements Opt
         Optional<InsertColumnsSegment> sqlSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         Preconditions.checkState(sqlSegment.isPresent());
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        return new AssistQueryAndPlainInsertColumnsToken(sqlSegment.get().getStopIndex(), getEncryptDerivedColumnNames(tableName));
+        return new AssistQueryAndPlainInsertColumnsToken(sqlSegment.get().getStopIndex(), getEncryptDerivedColumnNames(tableName, sqlSegment.get()));
     }
     
-    private List<String> getEncryptDerivedColumnNames(final String tableName) {
+    private List<String> getEncryptDerivedColumnNames(final String tableName, final InsertColumnsSegment sqlSegment) {
         List<String> result = new LinkedList<>();
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
         Preconditions.checkState(encryptTable.isPresent());
-        for (String each : encryptTable.get().getLogicColumns()) {
-            Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, each);
+        for (ColumnSegment each : sqlSegment.getColumns()) {
+            Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, each.getName());
             if (assistedQueryColumn.isPresent()) {
                 result.add(assistedQueryColumn.get());
             }
-            Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, each);
+            Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, each.getName());
             if (plainColumn.isPresent()) {
                 result.add(plainColumn.get());
             }
