@@ -100,7 +100,7 @@ public final class DataTypesCodec {
      * @param in byte buffer
      * @return int value
      */
-    public static int readInt1(final ByteBuf in) {
+    public static byte readInt1(final ByteBuf in) {
         return in.readByte();
     }
 
@@ -110,7 +110,7 @@ public final class DataTypesCodec {
      * @param in byte buffer
      * @return int value
      */
-    public static int readInt2LE(final ByteBuf in) {
+    public static short readInt2LE(final ByteBuf in) {
         return in.readShortLE();
     }
 
