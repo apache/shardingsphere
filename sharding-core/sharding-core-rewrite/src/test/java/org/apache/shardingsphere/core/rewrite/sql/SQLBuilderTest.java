@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.rewrite.sql;
 
 import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.TableToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -30,14 +31,13 @@ public final class SQLBuilderTest {
     
     @Test
     public void assertToSQLWithoutTokens() {
-        SQLBuilder sqlBuilderWithoutTokens = new SQLBuilder("SELECT * FROM t_config");
+        SQLBuilder sqlBuilderWithoutTokens = new SQLBuilder("SELECT * FROM t_config", Collections.<SQLToken>emptyList());
         assertThat(sqlBuilderWithoutTokens.toSQL(), is("SELECT * FROM t_config"));
     }
     
     @Test
     public void assertToSQLWithTokens() {
-        SQLBuilder sqlBuilderWithTokens = new SQLBuilder("SELECT * FROM t_order WHERE order_id > 1");
-        sqlBuilderWithTokens.getSqlTokens().add(new TableToken(14, 20, "t_order", QuoteCharacter.NONE));
+        SQLBuilder sqlBuilderWithTokens = new SQLBuilder("SELECT * FROM t_order WHERE order_id > 1", Collections.<SQLToken>singletonList(new TableToken(14, 20, "t_order", QuoteCharacter.NONE)));
         assertThat(sqlBuilderWithTokens.toSQL(null, Collections.singletonMap("t_order", "t_order_0")), is("SELECT * FROM t_order_0 WHERE order_id > 1"));
     }
 }
