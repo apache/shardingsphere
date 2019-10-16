@@ -55,8 +55,7 @@ public final class AssignmentExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private ExpressionSegment getAssignmentValue(final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ParserRuleContext assignmentNode) {
-        ParserRuleContext assignmentValueNode = 3 == assignmentNode.getChildCount() ? (ParserRuleContext) assignmentNode.getChild(2) : (ParserRuleContext) assignmentNode.getChild(3);
-        Optional<? extends ExpressionSegment> result = expressionExtractor.extract(assignmentValueNode, parameterMarkerIndexes);
+        Optional<? extends ExpressionSegment> result = expressionExtractor.extract((ParserRuleContext) assignmentNode.getChild(2), parameterMarkerIndexes);
         Preconditions.checkState(result.isPresent());
         return result.get();
     }
