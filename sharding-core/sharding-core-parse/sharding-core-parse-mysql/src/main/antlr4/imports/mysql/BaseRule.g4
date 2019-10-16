@@ -434,7 +434,7 @@ regularFunction_
     ;
 
 regularFunctionName_
-    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | INTERVAL | SUBSTRING
+    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | INTERVAL | SUBSTRING | LEFT | RIGHT
     ;
 
 matchExpression_
