@@ -185,6 +185,7 @@ public final class MixSQLRewriteEngineParameterizedTest {
         new ShardingSQLRewriteContextDecorator(shardingRule, sqlRouteResult).decorate(sqlRewriteContext);
         boolean isQueryWithCipherColumn = (boolean) ruleConfiguration.getProps().get("query.with.cipher.column");
         new EncryptSQLRewriteContextDecorator(shardingRule.getEncryptRule(), isQueryWithCipherColumn).decorate(sqlRewriteContext);
+        sqlRewriteContext.generateSQLTokens();
         Collection<SQLRewriteResult> result = new LinkedList<>();
         for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
             result.add(new ShardingSQLRewriteEngine(sqlRouteResult.getShardingConditions(), 

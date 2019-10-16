@@ -134,6 +134,7 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
         EncryptRule encryptRule = new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(ruleConfiguration.getEncryptRule()));
         boolean isQueryWithCipherColumn = (boolean) ruleConfiguration.getProps().get("query.with.cipher.column");
         new EncryptSQLRewriteContextDecorator(encryptRule, isQueryWithCipherColumn).decorate(sqlRewriteContext);
+        sqlRewriteContext.generateSQLTokens();
         return new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
     }
     

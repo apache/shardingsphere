@@ -182,6 +182,7 @@ public final class ShardingSQLRewriteEngineParameterizedTest {
         SQLRouteResult sqlRouteResult = shardingRouter.route(inputSQL, inputParameters, sqlStatement);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(TableMetas.class), sqlRouteResult.getSqlStatementContext(), inputSQL, inputParameters);
         new ShardingSQLRewriteContextDecorator(shardingRule, sqlRouteResult).decorate(sqlRewriteContext);
+        sqlRewriteContext.generateSQLTokens();
         Collection<SQLRewriteResult> result = new LinkedList<>();
         for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
             result.add(new ShardingSQLRewriteEngine(sqlRouteResult.getShardingConditions(), 
