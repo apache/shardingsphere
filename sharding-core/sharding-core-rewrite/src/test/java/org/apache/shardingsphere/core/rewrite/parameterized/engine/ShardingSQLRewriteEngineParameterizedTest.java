@@ -32,7 +32,6 @@ import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteResult;
-import org.apache.shardingsphere.core.rewrite.feature.sharding.ShardingSQLRewriteEngineTest;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.context.ShardingSQLRewriteContextDecorator;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.engine.ShardingSQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.parameterized.jaxb.entity.RewriteAssertionEntity;
@@ -192,7 +191,7 @@ public final class ShardingSQLRewriteEngineParameterizedTest {
     }
     
     private YamlRootShardingConfiguration createRuleConfiguration() throws IOException {
-        URL url = ShardingSQLRewriteEngineTest.class.getClassLoader().getResource(ruleFile);
+        URL url = ShardingSQLRewriteEngineParameterizedTest.class.getClassLoader().getResource(ruleFile);
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class);
     }
