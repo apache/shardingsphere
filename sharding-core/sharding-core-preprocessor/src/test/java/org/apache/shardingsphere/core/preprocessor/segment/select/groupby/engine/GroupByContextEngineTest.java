@@ -43,9 +43,9 @@ public final class GroupByContextEngineTest {
     public void assertCreateGroupByContextWithoutGroupBy() {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getGroupBy()).thenReturn(Optional.<GroupBySegment>absent());
-        GroupByContext groupByContext = new GroupByContextEngine().createGroupByContext(selectStatement);
-        assertTrue(groupByContext.getItems().isEmpty());
-        assertThat(groupByContext.getLastIndex(), is(0));
+        GroupByContext actualGroupByContext = new GroupByContextEngine().createGroupByContext(selectStatement);
+        assertTrue(actualGroupByContext.getItems().isEmpty());
+        assertThat(actualGroupByContext.getLastIndex(), is(0));
     }
     
     @Test
