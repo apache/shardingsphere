@@ -17,13 +17,12 @@
 
 package info.avalon566.shardingscaling.sync.mysql.binlog.packet.response;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import org.junit.Test;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class FieldPacketTest {
     
