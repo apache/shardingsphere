@@ -138,7 +138,7 @@ public final class EncryptConditionEngine {
         return "=".equals(operator) || "<>".equals(operator) || "!=".equals(operator);
     }
 
-    private static String getTableAlias(TableSegment owner) {
+    private static String getTableAlias(final TableSegment owner) {
         if (null == owner) {
             return null;
         }
