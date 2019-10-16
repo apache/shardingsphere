@@ -80,7 +80,7 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
     
     private final String databaseType;
     
-    @Parameters(name = "{2} -> {0}")
+    @Parameters(name = "ENCRYPT: {2} -> {0}")
     public static Collection<Object[]> getTestParameters() {
         Collection<Object[]> result = new LinkedList<>();
         for (Entry<String, RewriteAssertionsRootEntity> entry : getAllRewriteAssertionsRootEntities().entrySet()) {
