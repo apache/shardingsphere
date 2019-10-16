@@ -105,9 +105,9 @@ public final class QueryResultUtil {
             case Types.TINYINT:
             case Types.SMALLINT:
             case Types.INTEGER:
-                return resultSet.getInt(columnIndex);
+                return getIntTypeValue(resultSet, columnIndex);
             case Types.BIGINT:
-                return resultSet.getLong(columnIndex);
+                return getBigIntTypeValue(resultSet, columnIndex);
             case Types.NUMERIC:
             case Types.DECIMAL:
                 return resultSet.getBigDecimal(columnIndex);
@@ -134,5 +134,29 @@ public final class QueryResultUtil {
             default:
                 return resultSet.getObject(columnIndex);
         }
+    }
+
+    private static Object getIntTypeValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+        ResultSetMetaData metaData = resultSet.getMetaData();
+        if (metaData.isSigned(columnIndex)) {
+            return resultSet.getInt(columnIndex);
+        }
+        long value = resultSet.getLong(columnIndex);
+        if (value > Integer.MAX_VALUE) {
+            return value;
+        }
+        return (int) value;
+    }
+
+    private static Object getBigIntTypeValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+        ResultSetMetaData metaData = resultSet.getMetaData();
+        if (metaData.isSigned(columnIndex)) {
+            return resultSet.getLong(columnIndex);
+        }
+        BigDecimal value = resultSet.getBigDecimal(columnIndex);
+        if (new BigDecimal(Long.MAX_VALUE).compareTo(value) <= -1) {
+            return value;
+        }
+        return value.longValue();
     }
 }
