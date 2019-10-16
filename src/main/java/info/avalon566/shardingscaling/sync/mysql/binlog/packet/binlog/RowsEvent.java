@@ -199,19 +199,19 @@ public class RowsEvent {
     }
 
     private Serializable decodeLong(final int meta, final ByteBuf in) {
-        return DataTypesCodec.readUnsignedInt4LE(in);
+        return DataTypesCodec.readInt4LE(in);
     }
 
     private Serializable decodeTiny(final int meta, final ByteBuf in) {
-        return DataTypesCodec.readUnsignedInt1(in);
+        return DataTypesCodec.readInt1(in);
     }
 
     private Serializable decodeShort(final int meta, final ByteBuf in) {
-        return DataTypesCodec.readUnsignedInt2LE(in);
+        return DataTypesCodec.readInt2LE(in);
     }
 
     private Serializable decodeInt24(final int meta, final ByteBuf in) {
-        return DataTypesCodec.readUnsignedInt3LE(in);
+        return DataTypesCodec.readInt3LE(in);
     }
 
     private Serializable decodeLonglong(final int meta, final ByteBuf in) {

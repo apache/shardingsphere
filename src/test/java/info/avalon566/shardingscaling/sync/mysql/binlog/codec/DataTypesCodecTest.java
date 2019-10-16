@@ -40,6 +40,10 @@ public class DataTypesCodecTest {
 
     private static final String EXPECTED_STRING = "0123456789";
 
+    private static final int UNSIGNED_INT3_MAV_VALUE = (int) Math.pow(2, 8 * 3 - 1) - 1;
+
+    private static final int UNSIGNED_INT3_MIN_VALUE = (int) -Math.pow(2, 8 * 3 - 1);
+
     @Mock
     private ByteBuf byteBuf;
 
@@ -78,10 +82,24 @@ public class DataTypesCodecTest {
     }
 
     @Test
+    public void assertReadInt1() {
+        when(byteBuf.readByte()).thenReturn(Byte.MAX_VALUE, Byte.MIN_VALUE);
+        assertThat(DataTypesCodec.readInt1(byteBuf), is((int) Byte.MAX_VALUE));
+        assertThat(DataTypesCodec.readInt1(byteBuf), is((int) Byte.MIN_VALUE));
+    }
+
+    @Test
     public void assertReadInt2LE() {
         when(byteBuf.readShortLE()).thenReturn(Short.MAX_VALUE, Short.MIN_VALUE);
         assertThat(DataTypesCodec.readInt2LE(byteBuf), is((int) Short.MAX_VALUE));
         assertThat(DataTypesCodec.readInt2LE(byteBuf), is((int) Short.MIN_VALUE));
+    }
+
+    @Test
+    public void assertReadInt3LE() {
+        when(byteBuf.readMediumLE()).thenReturn(UNSIGNED_INT3_MAV_VALUE, UNSIGNED_INT3_MIN_VALUE);
+        assertThat(DataTypesCodec.readInt3LE(byteBuf), is(UNSIGNED_INT3_MAV_VALUE));
+        assertThat(DataTypesCodec.readInt3LE(byteBuf), is(UNSIGNED_INT3_MIN_VALUE));
     }
 
     @Test

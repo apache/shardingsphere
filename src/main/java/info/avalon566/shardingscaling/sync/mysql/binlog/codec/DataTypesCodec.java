@@ -95,6 +95,16 @@ public final class DataTypesCodec {
     }
 
     /**
+     * Read 1 byte integer from {@code ByteBuf}.
+     *
+     * @param in byte buffer
+     * @return int value
+     */
+    public static int readInt1(final ByteBuf in) {
+        return in.readByte();
+    }
+
+    /**
      * Read little endian byte order 2 byte integer from {@code ByteBuf}.
      *
      * @param in byte buffer
@@ -102,6 +112,16 @@ public final class DataTypesCodec {
      */
     public static int readInt2LE(final ByteBuf in) {
         return in.readShortLE();
+    }
+
+    /**
+     * Read little endian byte order 3 byte integer from {@code ByteBuf}.
+     *
+     * @param in byte buffer
+     * @return int value
+     */
+    public static int readInt3LE(final ByteBuf in) {
+        return in.readMediumLE();
     }
 
     /**
