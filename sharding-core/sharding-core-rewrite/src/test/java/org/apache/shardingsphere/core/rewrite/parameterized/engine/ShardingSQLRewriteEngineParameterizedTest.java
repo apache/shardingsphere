@@ -198,12 +198,12 @@ public final class ShardingSQLRewriteEngineParameterizedTest {
     
     private ShardingSphereMetaData createShardingSphereMetaData() {
         TableMetas tableMetas = mock(TableMetas.class);
-        when(tableMetas.getAllTableNames()).thenReturn(Arrays.asList("t_order", "t_order_item"));
-        TableMetaData orderTableMetaData = mock(TableMetaData.class);
-        when(orderTableMetaData.containsIndex(anyString())).thenReturn(true);
-        when(tableMetas.get("t_order")).thenReturn(orderTableMetaData);
-        when(tableMetas.get("t_order_item")).thenReturn(mock(TableMetaData.class));
-        when(tableMetas.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "user_id", "status"));
+        when(tableMetas.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_detail"));
+        TableMetaData accountTableMetaData = mock(TableMetaData.class);
+        when(accountTableMetaData.containsIndex(anyString())).thenReturn(true);
+        when(tableMetas.get("t_account")).thenReturn(accountTableMetaData);
+        when(tableMetas.get("t_account_detail")).thenReturn(mock(TableMetaData.class));
+        when(tableMetas.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "amount", "status"));
         return new ShardingSphereMetaData(mock(DataSourceMetas.class), tableMetas);
     }
     
