@@ -155,6 +155,7 @@ public final class MemoryQueryResultTest {
         when(metaData.getColumnLabel(1)).thenReturn("order_id");
         when(metaData.getColumnName(1)).thenThrow(new SQLException());
         when(metaData.getColumnType(1)).thenReturn(Types.INTEGER);
+        when(metaData.isSigned(1)).thenReturn(true);
         return metaData;
     }
     
@@ -242,6 +243,7 @@ public final class MemoryQueryResultTest {
         when(result.getColumnLabel(1)).thenReturn("order_id");
         when(result.getColumnName(1)).thenReturn("order_id");
         when(result.getColumnType(1)).thenReturn(Types.INTEGER);
+        when(result.isSigned(1)).thenReturn(true);
         when(result.isCaseSensitive(1)).thenReturn(false);
         return result;
     }
