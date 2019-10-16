@@ -32,6 +32,7 @@ import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteResult;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.context.ShardingSQLRewriteContextDecorator;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.engine.ShardingSQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.parameterized.jaxb.entity.RewriteAssertionEntity;
@@ -75,9 +76,9 @@ import static org.mockito.Mockito.when;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class ShardingSQLRewriteEngineParameterizedTest {
+public final class MixSQLRewriteEngineParameterizedTest {
     
-    private static final String PATH = "sharding";
+    private static final String PATH = "mix";
     
     private final String fileName;
     
@@ -95,7 +96,7 @@ public final class ShardingSQLRewriteEngineParameterizedTest {
     
     private final String databaseType;
     
-    @Parameters(name = "SHARDING: {2} -> {0}")
+    @Parameters(name = "MIX: {2} -> {0}")
     public static Collection<Object[]> getTestParameters() {
         Collection<Object[]> result = new LinkedList<>();
         for (Entry<String, RewriteAssertionsRootEntity> entry : getAllRewriteAssertionsRootEntities().entrySet()) {
@@ -148,7 +149,7 @@ public final class ShardingSQLRewriteEngineParameterizedTest {
     
     private static Map<String, RewriteAssertionsRootEntity> getAllRewriteAssertionsRootEntities() {
         Map<String, RewriteAssertionsRootEntity> result = new LinkedHashMap<>();
-        File file = new File(ShardingSQLRewriteEngineParameterizedTest.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "/" + PATH);
+        File file = new File(MixSQLRewriteEngineParameterizedTest.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "/" + PATH);
         for (File each : Objects.requireNonNull(file.listFiles())) {
             if (each.getName().endsWith(".xml")) {
                 result.put(each.getName(), new EncryptRewriteAssertionsRootEntityLoader().load(PATH + "/" + each.getName()));
@@ -181,6 +182,8 @@ public final class ShardingSQLRewriteEngineParameterizedTest {
         SQLRouteResult sqlRouteResult = shardingRouter.route(inputSQL, inputParameters, sqlStatement);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(TableMetas.class), sqlRouteResult.getSqlStatementContext(), inputSQL, inputParameters);
         new ShardingSQLRewriteContextDecorator(shardingRule, sqlRouteResult).decorate(sqlRewriteContext);
+        boolean isQueryWithCipherColumn = (boolean) ruleConfiguration.getProps().get("query.with.cipher.column");
+        new EncryptSQLRewriteContextDecorator(shardingRule.getEncryptRule(), isQueryWithCipherColumn).decorate(sqlRewriteContext);
         sqlRewriteContext.generateSQLTokens();
         Collection<SQLRewriteResult> result = new LinkedList<>();
         for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
@@ -191,19 +194,19 @@ public final class ShardingSQLRewriteEngineParameterizedTest {
     }
     
     private YamlRootShardingConfiguration createRuleConfiguration() throws IOException {
-        URL url = ShardingSQLRewriteEngineParameterizedTest.class.getClassLoader().getResource(ruleFile);
+        URL url = MixSQLRewriteEngineParameterizedTest.class.getClassLoader().getResource(ruleFile);
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class);
     }
     
     private ShardingSphereMetaData createShardingSphereMetaData() {
         TableMetas tableMetas = mock(TableMetas.class);
-        when(tableMetas.getAllTableNames()).thenReturn(Arrays.asList("t_order", "t_order_item"));
+        when(tableMetas.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_detail"));
         TableMetaData orderTableMetaData = mock(TableMetaData.class);
         when(orderTableMetaData.containsIndex(anyString())).thenReturn(true);
-        when(tableMetas.get("t_order")).thenReturn(orderTableMetaData);
-        when(tableMetas.get("t_order_item")).thenReturn(mock(TableMetaData.class));
-        when(tableMetas.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "user_id", "status"));
+        when(tableMetas.get("t_account")).thenReturn(orderTableMetaData);
+        when(tableMetas.get("t_account_detail")).thenReturn(mock(TableMetaData.class));
+        when(tableMetas.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "amount", "status"));
         return new ShardingSphereMetaData(mock(DataSourceMetas.class), tableMetas);
     }
     

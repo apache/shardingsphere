@@ -69,8 +69,6 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
         result.add(new EncryptPredicateTokenGenerator());
         result.add(new InsertCipherNameTokenGenerator());
         result.add(new AssistQueryAndPlainInsertColumnsTokenGenerator());
-//        result.add(new InsertCipherAssignmentTokenGenerator());
-//        result.add(new InsertAssistedQueryAndPlainAssignmentsTokenGenerator());
         result.add(new EncryptInsertValuesTokenGenerator());
         return result;
     }

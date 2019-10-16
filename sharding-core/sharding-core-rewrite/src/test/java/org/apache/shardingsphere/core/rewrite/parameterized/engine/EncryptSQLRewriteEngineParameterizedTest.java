@@ -80,7 +80,7 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
     
     private final String databaseType;
     
-    @Parameters(name = "{2} -> {0}")
+    @Parameters(name = "ENCRYPT: {2} -> {0}")
     public static Collection<Object[]> getTestParameters() {
         Collection<Object[]> result = new LinkedList<>();
         for (Entry<String, RewriteAssertionsRootEntity> entry : getAllRewriteAssertionsRootEntities().entrySet()) {
@@ -134,6 +134,7 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
         EncryptRule encryptRule = new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(ruleConfiguration.getEncryptRule()));
         boolean isQueryWithCipherColumn = (boolean) ruleConfiguration.getProps().get("query.with.cipher.column");
         new EncryptSQLRewriteContextDecorator(encryptRule, isQueryWithCipherColumn).decorate(sqlRewriteContext);
+        sqlRewriteContext.generateSQLTokens();
         return new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
     }
     
