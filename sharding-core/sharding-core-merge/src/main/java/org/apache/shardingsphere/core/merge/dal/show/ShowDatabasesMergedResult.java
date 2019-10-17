@@ -45,7 +45,7 @@ public final class ShowDatabasesMergedResult extends LocalMergedResultAdapter im
     private final List<String> schemas;
     
     private int currentIndex;
-
+    
     public ShowDatabasesMergedResult() {
         this(Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME));
     }
