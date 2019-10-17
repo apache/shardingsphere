@@ -153,7 +153,7 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
         when(result.get("t_account")).thenReturn(mock(TableMetaData.class));
         when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
         when(result.get("t_account_bak")).thenReturn(mock(TableMetaData.class));
-        when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
+        when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "password", "amount", "idcard", "mobile", "status"));
         return result;
     }
     
