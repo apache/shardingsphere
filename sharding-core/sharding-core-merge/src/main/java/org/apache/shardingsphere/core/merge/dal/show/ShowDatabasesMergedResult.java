@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.merge.dal.show;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
@@ -37,6 +38,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  * Merged result for show databases.
  *
  * @author chenqingyang
+ * @author xiayan
  */
 public final class ShowDatabasesMergedResult extends LocalMergedResultAdapter implements MergedResult {
     
@@ -48,24 +50,23 @@ public final class ShowDatabasesMergedResult extends LocalMergedResultAdapter im
         this(Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME));
     }
 
-    //for proxy backend, just return logic database
     public ShowDatabasesMergedResult(final List<String> schemas) {
         this.schemas = schemas;
         this.currentIndex = 0;
     }
 
     public ShowDatabasesMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults)throws SQLException {
-        this.schemas = new ArrayList<>();
-        this.currentIndex = 0;
-        init(queryResults);
+       this(convertToScheme(queryResults));
     }
 
-    private void init(final List<QueryResult> queryResults) throws SQLException {
+    private static List<String> convertToScheme(final List<QueryResult> queryResults) throws SQLException {
+        final LinkedList<String> result = new LinkedList<>();
         for (QueryResult queryResult : queryResults) {
             while (queryResult.next()) {
-                this.schemas.add((String) queryResult.getValue(1, String.class));
+                result.add((String) queryResult.getValue(1, String.class));
             }
         }
+        return new ArrayList<>(result);
     }
     
     @Override

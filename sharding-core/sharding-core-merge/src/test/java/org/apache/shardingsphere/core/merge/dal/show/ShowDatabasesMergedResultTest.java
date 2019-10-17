@@ -109,16 +109,12 @@ public final class ShowDatabasesMergedResultTest {
         ShowDatabasesMergedResult showDatabasesMergedResult = buildMergedShowDatabasesMergedResult();
         showDatabasesMergedResult.next();
         Assert.assertEquals("A", showDatabasesMergedResult.getValue(1, String.class));
-
         showDatabasesMergedResult.next();
         Assert.assertEquals("B", showDatabasesMergedResult.getValue(1, String.class));
-
         showDatabasesMergedResult.next();
         Assert.assertEquals("C", showDatabasesMergedResult.getValue(1, String.class));
-
         showDatabasesMergedResult.next();
         Assert.assertEquals("D", showDatabasesMergedResult.getValue(1, String.class));
-
         showDatabasesMergedResult.next();
         Assert.assertEquals("E", showDatabasesMergedResult.getValue(1, String.class));
     }
