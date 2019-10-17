@@ -666,7 +666,7 @@
         </sharding-conditions>
     </parser-result>
 
-    <parser-result sql-case-id="insert_duplicate_key_update_with_function_common" parameters="1, 2, 3">
+    <parser-result sql-case-id="insert_on_duplicate_key_update_with_complicated_expression" parameters="1, 2, 45, 2000">
         <tables>
             <table name="emp" />
         </tables>
@@ -675,69 +675,20 @@
         </tokens>
         <sharding-conditions>
             <and-condition>
-                <condition column-name="id" table-name="emp" operator="EQUAL">
+                <condition column-name="order_id" table-name="emp" operator="EQUAL">
                     <value index="0" literal="1" type="int" />
                 </condition>
-                <condition column-name="age" table-name="emp" operator="EQUAL">
+                <condition column-name="emp_id" table-name="emp" operator="EQUAL">
                     <value index="1" literal="2" type="int" />
                 </condition>
+                <condition column-name="age" table-name="emp" operator="EQUAL">
+                    <value index="2" literal="45" type="int" />
+                </condition>
                 <condition column-name="salary" table-name="emp" operator="EQUAL">
-                    <value index="2" literal="3" type="int" />
+                    <value index="2" literal="2000" type="int" />
                 </condition>
             </and-condition>
         </sharding-conditions>
     </parser-result>
-    <parser-result sql-case-id="insert_duplicate_key_update_two_group_data" parameters="4, 5, 6, 10, 11, 12">
-        <tables>
-            <table name="emp" />
-        </tables>
-        <tokens>
-            <table-token start-index="12" table-name="emp" length="7" />
-        </tokens>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="id" table-name="emp" operator="EQUAL">
-                    <value index="0" literal="4" type="int" />
-                </condition>
-                <condition column-name="age" table-name="emp" operator="EQUAL">
-                    <value index="1" literal="5" type="int" />
-                </condition>
-                <condition column-name="salary" table-name="emp" operator="EQUAL">
-                    <value index="2" literal="6" type="int" />
-                </condition>
-            </and-condition>
-            <and-condition>
-                <condition column-name="id" table-name="emp" operator="EQUAL">
-                    <value index="3" literal="10" type="int" />
-                </condition>
-                <condition column-name="age" table-name="emp" operator="EQUAL">
-                    <value index="4" literal="11" type="int" />
-                </condition>
-                <condition column-name="salary" table-name="emp" operator="EQUAL">
-                    <value index="5" literal="12" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
-    </parser-result>
-    <parser-result sql-case-id="insert_duplicate_key_update_with_function_values" parameters="7, 8, 9">
-        <tables>
-            <table name="emp" />
-        </tables>
-        <tokens>
-            <table-token start-index="12" table-name="emp" length="7" />
-        </tokens>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="id" table-name="emp" operator="EQUAL">
-                    <value index="0" literal="7" type="int" />
-                </condition>
-                <condition column-name="age" table-name="emp" operator="EQUAL">
-                    <value index="1" literal="8" type="int" />
-                </condition>
-                <condition column-name="salary" table-name="emp" operator="EQUAL">
-                    <value index="2" literal="9" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
-    </parser-result>
+
 </parser-result-sets>
