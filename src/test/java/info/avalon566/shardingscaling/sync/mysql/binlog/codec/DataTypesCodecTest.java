@@ -17,13 +17,13 @@
 
 package info.avalon566.shardingscaling.sync.mysql.binlog.codec;
 
+import io.netty.buffer.ByteBuf;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
-import io.netty.buffer.ByteBuf;
 
 import java.math.BigInteger;
 import java.util.BitSet;
@@ -32,6 +32,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -229,6 +230,14 @@ public class DataTypesCodecTest {
         final byte data = 0x00;
         DataTypesCodec.writeByte(data, byteBuf);
         verify(byteBuf).writeByte(data);
+    }
+
+    @Test
+    public void assertWriteInt5() {
+        final long data = 1L << 32;
+        DataTypesCodec.writeInt5(data, byteBuf);
+        verify(byteBuf).writeByte(0x01);
+        verify(byteBuf, times(4)).writeByte(0x00);
     }
 
     @Test

@@ -336,6 +336,18 @@ public final class DataTypesCodec {
     }
 
     /**
+     * Write big endian byte order 5 byte integer to {@code ByteBuf}.
+     *
+     * @param data the data
+     * @param out  target byte buf
+     */
+    public static void writeInt5(final long data, final ByteBuf out) {
+        for (int i = 4; i >= 0; i--) {
+            out.writeByte((byte) (data >> (8 * i)));
+        }
+    }
+
+    /**
      * Write little endian byte order 2 byte integer to {@code ByteBuf}.
      *
      * @param data the data
