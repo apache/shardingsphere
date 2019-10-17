@@ -20,20 +20,20 @@ package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.i
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.expression.DerivedLiteralExpressionSegment;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.expression.DerivedParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.expression.DerivedSimpleExpressionSegment;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.EncryptRuleAware;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValuesToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValuesToken.InsertValueToken;
@@ -67,21 +67,22 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
     
     @Override
     public InsertValuesToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        Optional<InsertValuesToken> previousSQLToken = findPreviousSQLToken();
-        if (previousSQLToken.isPresent()) {
-            processPreviousSQLToken((InsertSQLStatementContext) sqlStatementContext, previousSQLToken.get());
-            return previousSQLToken.get();
+        InsertValuesToken previousSQLToken = findPreviousSQLToken(InsertValuesToken.class);
+        if (null != previousSQLToken) {
+            processPreviousSQLToken((InsertSQLStatementContext) sqlStatementContext, previousSQLToken);
+            return previousSQLToken;
         }
         return generateNewSQLToken(sqlStatementContext);
     }
     
-    private Optional<InsertValuesToken> findPreviousSQLToken() {
+    @SuppressWarnings("unchecked")
+    private <T extends SQLToken> T findPreviousSQLToken(final Class<T> sqlToken) {
         for (SQLToken each : previousSQLTokens) {
-            if (each instanceof InsertValuesToken) {
-                return Optional.of((InsertValuesToken) each);
+            if (each.getClass().equals(sqlToken)) {
+                return (T) each;
             }
         }
-        return Optional.absent();
+        return null;
     }
     
     private void processPreviousSQLToken(final InsertSQLStatementContext sqlStatementContext, final InsertValuesToken previousSQLToken) {
