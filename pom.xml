@@ -34,7 +34,7 @@
         
         <module>sharding-jdbc</module>
         <module>sharding-proxy</module>
-        <!-- <module>sharding-ui</module> -->
+        <module>sharding-ui</module>
         
         <module>sharding-transaction</module>
         <module>sharding-orchestration</module> 
@@ -662,7 +662,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--<plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${maven-checkstyle-plugin.version}</version>
@@ -680,7 +680,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>-->
+            </plugin>
             <plugin>
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
@@ -742,7 +742,7 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>${docker-maven-plugin.version}</version>
             </plugin>
-            <!-- <plugin>
+            <plugin>
                 <groupId>org.apache.rat</groupId>
                 <artifactId>apache-rat-plugin</artifactId>
                 <version>${apache-rat-plugin.version}</version>
@@ -751,29 +751,28 @@
                         <exclude>**/target/**</exclude>
                         <exclude>**/logs/**</exclude>
                         <exclude>**/*.log</exclude>
-                        IDE files
+                        <!-- IDE files -->
                         <exclude>**/*.iml</exclude>
                         <exclude>**/.idea/**</exclude>
                         <exclude>**/*.classpath</exclude>
                         <exclude>**/.project</exclude>
                         <exclude>**/.settings/**</exclude>
                         <exclude>**/dependency-reduced-pom.xml</exclude>
-                        git files
+                        <!-- git files -->
                         <exclude>**/.gitignore</exclude>
                         <exclude>**/.gitmodules</exclude>
                         <exclude>**/.git/**</exclude>
-                        <exclude>**/.gitkeep</exclude>
-                        CI files
+                        <!-- CI files -->
                         <exclude>**/.travis.yml</exclude>
                         <exclude>**/.mvn/jvm.config</exclude>
-                        GitHub files
+                        <!-- GitHub files -->
                         <exclude>**/.github/**</exclude>
-                        document files
+                        <!-- document files -->
                         <exclude>**/*.md</exclude>
                         <excldue>**/*.MD</excldue>
                         <exclude>**/*.txt</exclude>
                         <exclude>**/docs/**</exclude>
-                        UI files
+                        <!-- UI files -->
                         <exclude>**/.babelrc</exclude>
                         <exclude>**/.editorconfig</exclude>
                         <exclude>**/.eslintignore</exclude>
@@ -789,7 +788,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin> -->
+            </plugin>
         </plugins>
     </build>
     
@@ -837,7 +836,7 @@
                     <effort>Max</effort>
                 </configuration>
             </plugin>
-            <!--<plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${maven-checkstyle-plugin.version}</version>
@@ -846,7 +845,7 @@
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
                     <excludes>**/autogen/**/*</excludes>
                 </configuration>
-            </plugin>-->
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
@@ -898,16 +897,4 @@
             <unsubscribe>dev-unsubscribe@shardingsphere.incubator.apache.org</unsubscribe>
         </mailingList>
     </mailingLists>
-    <distributionManagement>
-		<repository>
-			<id>releases</id> 
-			<name>releases</name>
-			<url>http://nexus.msxf.com/content/repositories/releases/</url>
-		</repository>
-		<snapshotRepository>
-			<id>snapshots</id>
-			<name>snapshots</name>
-			<url>http://nexus.msxf.com/content/repositories/snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
 </project>
