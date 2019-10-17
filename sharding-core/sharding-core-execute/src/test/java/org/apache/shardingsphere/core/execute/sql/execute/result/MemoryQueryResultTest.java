@@ -112,14 +112,14 @@ public final class MemoryQueryResultTest {
     public void assertGetValueWithColumnIndex() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
-        assertThat(queryResult.getValue(1, Integer.class), Is.<Object>is(1));
+        assertThat(queryResult.getValue(1, Integer.class), Is.<Object>is(Long.valueOf(1)));
     }
     
     @Test
     public void assertGetValueWithColumnLabel() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
-        assertThat(queryResult.getValue("order_id", Integer.class), Is.<Object>is(1));
+        assertThat(queryResult.getValue("order_id", Integer.class), Is.<Object>is(Long.valueOf(1)));
     }
     
     @Test
@@ -158,21 +158,21 @@ public final class MemoryQueryResultTest {
         when(metaData.isSigned(1)).thenReturn(true);
         return metaData;
     }
-    
+
     @Test
     public void assertGetCalendarValueWithColumnIndex() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
-        assertThat(queryResult.getCalendarValue(1, Integer.class, Calendar.getInstance()), Is.<Object>is(1));
+        assertThat(queryResult.getCalendarValue(1, Integer.class, Calendar.getInstance()), Is.<Object>is(Long.valueOf(1)));
     }
-    
+
     @Test
     public void assertGetCalendarValueWithColumnLabel() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
-        assertThat(queryResult.getCalendarValue("order_id", Integer.class, Calendar.getInstance()), Is.<Object>is(1));
+        assertThat(queryResult.getCalendarValue("order_id", Integer.class, Calendar.getInstance()), Is.<Object>is(Long.valueOf(1)));
     }
-    
+
     @Test
     @SneakyThrows
     public void assertGetInputStreamWithColumnIndex() {
@@ -181,7 +181,7 @@ public final class MemoryQueryResultTest {
         InputStream inputStream = queryResult.getInputStream(1, "Unicode");
         assertThat(inputStream.read(), is(getInputStream(1).read()));
     }
-    
+
     @Test
     @SneakyThrows
     public void assertGetInputStreamWithColumnLabel() {
@@ -190,7 +190,7 @@ public final class MemoryQueryResultTest {
         InputStream inputStream = queryResult.getInputStream("order_id", "Unicode");
         assertThat(inputStream.read(), is(getInputStream(1).read()));
     }
-    
+
     @SneakyThrows
     private InputStream getInputStream(final Object value) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -200,7 +200,7 @@ public final class MemoryQueryResultTest {
         objectOutputStream.close();
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
-    
+
     @Test
     public void assertWasNull() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
@@ -209,25 +209,25 @@ public final class MemoryQueryResultTest {
         queryResult.next();
         assertTrue(queryResult.wasNull());
     }
-    
+
     @Test
     public void assertIsCaseSensitive() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         assertFalse(queryResult.isCaseSensitive(1));
     }
-    
+
     @Test
     public void assertGetColumnCount() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         assertThat(queryResult.getColumnCount(), is(1));
     }
-    
+
     @Test
     public void assertGetColumnLabel() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         assertThat(queryResult.getColumnLabel(1), is("order_id"));
     }
-    
+
     private ResultSet getResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true).thenReturn(false);
@@ -236,7 +236,7 @@ public final class MemoryQueryResultTest {
         doReturn(getResultSetMetaData()).when(result).getMetaData();
         return result;
     }
-    
+
     private ResultSetMetaData getResultSetMetaData() throws SQLException {
         ResultSetMetaData result = mock(ResultSetMetaData.class);
         when(result.getColumnCount()).thenReturn(1);

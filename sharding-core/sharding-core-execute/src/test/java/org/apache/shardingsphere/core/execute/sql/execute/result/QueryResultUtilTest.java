@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
@@ -73,66 +74,43 @@ public final class QueryResultUtilTest {
     }
 
     @Test
-    public void assertGetValueBySignedTinyint() throws SQLException {
+    public void assertGetValueByTinyint() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TINYINT);
-        when(resultSetMetaData.isSigned(1)).thenReturn(true);
         when(resultSet.getInt(1)).thenReturn(1);
         assertThat((int) QueryResultUtil.getValue(resultSet, 1), is(1));
         assertThat((int) QueryResultUtil.getValue(resultSet, 1, int.class), is(1));
     }
-    
+
     @Test
-    public void assertGetValueByUnSignedTinyint() throws SQLException {
-        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TINYINT);
-        when(resultSetMetaData.isSigned(1)).thenReturn(false);
-        when(resultSet.getLong(1)).thenReturn(Long.valueOf(1));
-        assertThat((int) QueryResultUtil.getValue(resultSet, 1), is(1));
-    }
-    
-    @Test
-    public void assertGetValueBySignedSmallint() throws SQLException {
+    public void assertGetValueBySmallint() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.SMALLINT);
-        when(resultSetMetaData.isSigned(1)).thenReturn(true);
         when(resultSet.getInt(1)).thenReturn(32767);
         assertThat((int) QueryResultUtil.getValue(resultSet, 1), is(32767));
         assertThat((int) QueryResultUtil.getValue(resultSet, 1, int.class), is(32767));
+
     }
 
     @Test
-    public void assertGetValueByUnSignedSmallint() throws SQLException {
-        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.SMALLINT);
-        when(resultSetMetaData.isSigned(1)).thenReturn(false);
-        when(resultSet.getLong(1)).thenReturn(Long.valueOf(32767));
-        assertThat((int) QueryResultUtil.getValue(resultSet, 1), is(32767));
-    }
-    
-    @Test
-    public void assertGetValueBySignedInteger() throws SQLException {
+    public void assertGetValueByInteger() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.INTEGER);
         when(resultSetMetaData.isSigned(1)).thenReturn(true);
         when(resultSet.getInt(1)).thenReturn(Integer.MAX_VALUE);
-        assertThat((int) QueryResultUtil.getValue(resultSet, 1), is(Integer.MAX_VALUE));
+        assertThat((long) QueryResultUtil.getValue(resultSet, 1), is(Long.valueOf(Integer.MAX_VALUE)));
         assertThat((int) QueryResultUtil.getValue(resultSet, 1, int.class), is(Integer.MAX_VALUE));
     }
 
     @Test
-    public void assertGetValueByUnSignedBeyondIntegerRange() throws SQLException {
+    public void assertGetValueByUnSignedInteger() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.INTEGER);
         when(resultSetMetaData.isSigned(1)).thenReturn(false);
         when(resultSet.getLong(1)).thenReturn(Long.MAX_VALUE);
+        when(resultSet.getInt(1)).thenReturn(Integer.MAX_VALUE);
         assertThat((long) QueryResultUtil.getValue(resultSet, 1), is(Long.MAX_VALUE));
+        assertThat((int) QueryResultUtil.getValue(resultSet, 1, int.class), is(Integer.MAX_VALUE));
     }
 
     @Test
-    public void assertGetValueByUnSignedInIntegerRange() throws SQLException {
-        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.INTEGER);
-        when(resultSetMetaData.isSigned(1)).thenReturn(false);
-        when(resultSet.getLong(1)).thenReturn(Long.valueOf(Integer.MAX_VALUE));
-        assertThat((int) QueryResultUtil.getValue(resultSet, 1), is(Integer.MAX_VALUE));
-    }
-    
-    @Test
-    public void assertGetValueBySignedBigint() throws SQLException {
+    public void assertGetValueByBigint() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.BIGINT);
         when(resultSetMetaData.isSigned(1)).thenReturn(true);
         when(resultSet.getLong(1)).thenReturn(Long.MAX_VALUE);
@@ -141,22 +119,13 @@ public final class QueryResultUtilTest {
     }
 
     @Test
-    public void assertGetValueByUnSignedBeyondBigintRange() throws SQLException {
-        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.BIGINT);
-        when(resultSetMetaData.isSigned(1)).thenReturn(false);
-        BigDecimal bigDecimal = new BigDecimal(Long.MAX_VALUE).multiply(new BigDecimal(2));
-        when(resultSet.getBigDecimal(1)).thenReturn(bigDecimal);
-        assertThat((BigDecimal) QueryResultUtil.getValue(resultSet, 1), is(bigDecimal));
-    }
-
-    @Test
-    public void assertGetValueByUnSignedInBigintRange() throws SQLException {
+    public void assertGetValueByUnSignedBigint() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.BIGINT);
         when(resultSetMetaData.isSigned(1)).thenReturn(false);
         when(resultSet.getBigDecimal(1)).thenReturn(new BigDecimal(Long.MAX_VALUE));
-        assertThat((long) QueryResultUtil.getValue(resultSet, 1), is(Long.MAX_VALUE));
+        assertThat((BigInteger) QueryResultUtil.getValue(resultSet, 1), is(BigInteger.valueOf(Long.MAX_VALUE)));
     }
-    
+
     @Test
     public void assertGetValueByNumeric() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.NUMERIC);
@@ -164,16 +133,16 @@ public final class QueryResultUtilTest {
         assertThat((BigDecimal) QueryResultUtil.getValue(resultSet, 1), is(BigDecimal.TEN));
         assertThat((BigDecimal) QueryResultUtil.getValue(resultSet, 1, BigDecimal.class), is(BigDecimal.TEN));
     }
-    
+
     @Test
     public void assertGetValueByDecimal() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.DECIMAL);
         when(resultSet.getBigDecimal(1)).thenReturn(BigDecimal.TEN);
         assertThat((BigDecimal) QueryResultUtil.getValue(resultSet, 1), is(BigDecimal.TEN));
         assertThat((BigDecimal) QueryResultUtil.getValue(resultSet, 1, BigDecimal.class), is(BigDecimal.TEN));
-    
+
     }
-    
+
     @Test
     public void assertGetValueByFloat() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.FLOAT);
@@ -182,16 +151,16 @@ public final class QueryResultUtilTest {
         assertThat((double) QueryResultUtil.getValue(resultSet, 1), is(Double.MAX_VALUE));
         assertThat((float) QueryResultUtil.getValue(resultSet, 1, float.class), is(Float.MAX_VALUE));
     }
-    
+
     @Test
     public void assertGetValueByDouble() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.DOUBLE);
         when(resultSet.getDouble(1)).thenReturn(Double.MAX_VALUE);
         assertThat((double) QueryResultUtil.getValue(resultSet, 1), is(Double.MAX_VALUE));
         assertThat((double) QueryResultUtil.getValue(resultSet, 1, double.class), is(Double.MAX_VALUE));
-    
+
     }
-    
+
     @Test
     public void assertGetValueByChar() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.CHAR);
@@ -199,7 +168,7 @@ public final class QueryResultUtilTest {
         assertThat((String) QueryResultUtil.getValue(resultSet, 1), is("x"));
         assertThat((String) QueryResultUtil.getValue(resultSet, 1, String.class), is("x"));
     }
-    
+
     @Test
     public void assertGetValueByVarchar() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.VARCHAR);
@@ -207,7 +176,7 @@ public final class QueryResultUtilTest {
         assertThat((String) QueryResultUtil.getValue(resultSet, 1), is("xxxxx"));
         assertThat((String) QueryResultUtil.getValue(resultSet, 1, String.class), is("xxxxx"));
     }
-    
+
     @Test
     public void assertGetValueByLongVarchar() throws SQLException {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.LONGVARCHAR);
@@ -215,7 +184,7 @@ public final class QueryResultUtilTest {
         assertThat((String) QueryResultUtil.getValue(resultSet, 1), is("xxxxx"));
         assertThat((String) QueryResultUtil.getValue(resultSet, 1, String.class), is("xxxxx"));
     }
-    
+
     @Test
     public void assertGetValueByBinary() throws SQLException {
         Blob blob = mock(Blob.class);
@@ -224,7 +193,7 @@ public final class QueryResultUtilTest {
         assertThat((Blob) QueryResultUtil.getValue(resultSet, 1), is(blob));
         assertThat((Blob) QueryResultUtil.getValue(resultSet, 1, Blob.class), is(blob));
     }
-    
+
     @Test
     public void assertGetValueByVarBinary() throws SQLException {
         Blob blob = mock(Blob.class);
@@ -232,8 +201,9 @@ public final class QueryResultUtilTest {
         when(resultSet.getBlob(1)).thenReturn(blob);
         assertThat((Blob) QueryResultUtil.getValue(resultSet, 1), is(blob));
         assertThat((Blob) QueryResultUtil.getValue(resultSet, 1, Blob.class), is(blob));
+
     }
-    
+
     @Test
     public void assertGetValueByLongVarBinary() throws SQLException {
         Blob blob = mock(Blob.class);
@@ -241,6 +211,7 @@ public final class QueryResultUtilTest {
         when(resultSet.getBlob(1)).thenReturn(blob);
         assertThat((Blob) QueryResultUtil.getValue(resultSet, 1), is(blob));
         assertThat((Blob) QueryResultUtil.getValue(resultSet, 1, Blob.class), is(blob));
+
     }
     
     @Test
