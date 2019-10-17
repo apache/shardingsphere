@@ -179,7 +179,7 @@ public final class MySQLBinlogReader extends AbstractRunner implements Reader {
     }
 
     private boolean filter(final String database, final String fullTableName) {
-        return !fullTableName.startsWith(database);
+        return !fullTableName.startsWith(database + ".");
     }
 
     private Object getColumnValue(final String tableName, final int index, final Serializable data) {
