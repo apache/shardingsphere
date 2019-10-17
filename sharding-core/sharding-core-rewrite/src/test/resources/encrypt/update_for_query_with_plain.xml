@@ -26,4 +26,16 @@
         <input sql="UPDATE t_account_bak SET account_id = 1, password = 'aaa', amount = 1000, status = 'OK' WHERE account_id = 1 AND password = 'aaa' AND amount = 1000 AND status = 'OK'" />
         <output sql="UPDATE t_account_bak SET account_id = 1, cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', plain_password = 'aaa', cipher_amount = 'encrypt_1000', plain_amount = 1000, status = 'OK' WHERE account_id = 1 AND plain_password = 'aaa' AND plain_amount = 1000 AND status = 'OK'" />
     </rewrite-assertion>
+
+    <!-- FIXME -->
+    <rewrite-assertion id="update_plain_for_parameters_for_4_cipher_columns">
+        <input sql="UPDATE t_account_bak SET account_id = ?, password = ?, idcard = ?, mobile = ?, amount = ?, status = ? WHERE account_id = ? AND password = ? AND amount = ? AND status = ? AND idcard = ? AND mobile = ?" parameters="1, aaa, aaa_idcard, aaa_mobile, 1000, OK, 1, aaa, 1000, OK, aaa_idcard, aaa_mobile" />
+        <output sql="UPDATE t_account_bak SET account_id = ?, cipher_password = ?, assisted_query_password = ?, plain_password = ?, cipher_idcard = ?, plain_idcard = ?, cipher_mobile = ?, plain_mobile = ?, cipher_amount = ?, plain_amount = ?, status = ? WHERE account_id = ? AND plain_password = ? AND plain_amount = ? AND status = ? AND plain_idcard = ? AND plain_mobile = ?" parameters="1, encrypt_aaa, assisted_query_aaa, aaa, encrypt_aaa_idcard, aaa_idcard, encrypt_aaa_mobile, aaa_mobile, encrypt_1000, 1000, OK, 1, aaa, 1000, OK, aaa_idcard, aaa_mobile" />
+    </rewrite-assertion>
+
+    <!-- FIXME -->
+    <rewrite-assertion id="update_plain_for_literals_for_4_cipher_columns">
+        <input sql="UPDATE t_account_bak SET account_id = 1, password = 'aaa', idcard = 'aaa_idcard', mobile = 'aaa_mobile', amount = 1000, status = 'OK' WHERE account_id = 1 AND password = 'aaa' AND amount = 1000 AND status = 'OK' AND idcard = 'aaa_idcard' AND mobile = 'aaa_mobile'" />
+        <output sql="UPDATE t_account_bak SET account_id = 1, cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', plain_password = 'aaa', cipher_idcard = 'encrypt_aaa_idcard', plain_idcard = 'aaa_idcard', cipher_mobile = 'encrypt_aaa_mobile', plain_mobile = 'aaa_mobile', cipher_amount = 'encrypt_1000', plain_amount = 1000, status = 'OK' WHERE account_id = 1 AND plain_password = 'aaa' AND plain_amount = 1000 AND status = 'OK' AND plain_idcard = 'aaa_idcard' AND plain_mobile = 'aaa_mobile'" />
+    </rewrite-assertion>
 </rewrite-assertions>

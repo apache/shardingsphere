@@ -20,20 +20,20 @@ package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.i
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.expression.DerivedLiteralExpressionSegment;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.expression.DerivedParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.expression.DerivedSimpleExpressionSegment;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.EncryptRuleAware;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValuesToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValuesToken.InsertValueToken;
@@ -99,7 +99,8 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         InsertValuesToken result = new InsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
         for (InsertValueContext each : ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts()) {
             InsertValueToken insertValueToken = result.addInsertValue(each.getValueExpressions(), Collections.<DataNode>emptyList());
-            encryptInsertValueToken(insertValueToken, tableName, ((InsertSQLStatementContext) sqlStatementContext).getColumnNames(), each);
+            List<String> insertColumns = ((InsertSQLStatementContext) sqlStatementContext).getColumnNames();
+            encryptInsertValueToken(insertValueToken, tableName, insertColumns, each);
         }
         return result;
     }
@@ -107,7 +108,10 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
     private void encryptInsertValueToken(final InsertValueToken insertValueToken, final String tableName, final List<String> columnNames, final InsertValueContext insertValueContext) {
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
         Preconditions.checkState(encryptTable.isPresent());
-        for (String each : encryptTable.get().getLogicColumns()) {
+        for (String each : columnNames) {
+            if (!encryptTable.get().getLogicColumns().contains(each)) {
+                continue;
+            }
             int index = columnNames.indexOf(each);
             Optional<ShardingEncryptor> encryptor = encryptRule.findShardingEncryptor(tableName, each);
             Preconditions.checkState(encryptor.isPresent());

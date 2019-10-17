@@ -25,15 +25,23 @@ encryptRule:
   tables:
     t_account:
       columns:
+        amount:
+          cipherColumn: cipher_amount
+          encryptor: normal
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
           encryptor: assisted_query
-        amount:
-          cipherColumn: cipher_amount
-          encryptor: normal
     t_account_bak:
       columns:
+        mobile:
+          cipherColumn: cipher_mobile
+          plainColumn: plain_mobile
+          encryptor: normal
+        idcard:
+          cipherColumn: cipher_idcard
+          plainColumn: plain_idcard
+          encryptor: normal
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
