@@ -27,19 +27,15 @@
         <output sql="SELECT account_id, cipher_password, cipher_amount AS a, status AS s FROM t_account_1 WHERE account_id = 1 AND assisted_query_password = 'assisted_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
     </rewrite-assertion>
     
-    <!-- FIXME lost owner of predicate when rewrite -->
-    <!--<rewrite-assertion id="select_plain_for_parameters">-->
-        <!--<input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = ? AND a.password = ? AND a.amount = ? AND a.status = ?" parameters="1, aaa, 1000, OK" />-->
-        <!--<output sql="SELECT a.account_id, a.cipher_password, a.cipher_amount AS a, a.status AS s FROM t_account_bak_1 AS a WHERE a.account_id = ? AND assisted_query_password = ? AND cipher_amount = ? AND a.status = ?" parameters="1, assisted_query_aaa, encrypt_1000, OK" />-->
-    <!--</rewrite-assertion>-->
+    <rewrite-assertion id="select_plain_for_parameters">
+        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = ? AND a.password = ? AND a.amount = ? AND a.status = ?" parameters="1, aaa, 1000, OK" />
+        <output sql="SELECT a.account_id, a.cipher_password, a.cipher_amount AS a, a.status AS s FROM t_account_bak_1 AS a WHERE a.account_id = ? AND a.assisted_query_password = ? AND a.cipher_amount = ? AND a.status = ?" parameters="1, assisted_query_aaa, encrypt_1000, OK" />
+    </rewrite-assertion>
     
-    <!-- FIXME lost owner of predicate when rewrite -->
-    <!--<rewrite-assertion id="select_plain_for_literals">-->
-        <!--<input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = 1 AND a.password = 'aaa' AND a.amount = 1000 AND a.status = 'OK'" />-->
-        <!--<output sql="SELECT a.account_id, a.cipher_password, a.cipher_amount AS a, a.status AS s FROM t_account_bak_1 AS a WHERE a.account_id = 1 AND assisted_query_password = 'assisted_query_aaa' AND cipher_amount = 'encrypt_1000' AND a.status = 'OK'" />-->
-        <!--&lt;!&ndash;Here is the correct rewritten SQL. If you want to test and fix me, please note the above output, and make output under me valid.&ndash;&gt;-->
-        <!--&lt;!&ndash;<output sql="SELECT a.account_id, a.cipher_password, a.cipher_amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = 1 AND a.assisted_query_password = 'assisted_query_aaa' AND a.cipher_amount = 'encrypt_1000' AND a.status = 'OK'" />&ndash;&gt;-->
-    <!--</rewrite-assertion>-->
+    <rewrite-assertion id="select_plain_for_literals">
+        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = 1 AND a.password = 'aaa' AND a.amount = 1000 AND a.status = 'OK'" />
+        <output sql="SELECT a.account_id, a.cipher_password, a.cipher_amount AS a, a.status AS s FROM t_account_bak_1 AS a WHERE a.account_id = 1 AND a.assisted_query_password = 'assisted_query_aaa' AND a.cipher_amount = 'encrypt_1000' AND a.status = 'OK'" />
+    </rewrite-assertion>
     
     <!-- FIXME -->
     <!--<rewrite-assertion id="select_with_table_as_qualified_name">-->
