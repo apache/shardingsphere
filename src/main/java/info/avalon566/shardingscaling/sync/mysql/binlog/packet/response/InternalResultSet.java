@@ -17,7 +17,8 @@
 
 package info.avalon566.shardingscaling.sync.mysql.binlog.packet.response;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,16 +29,13 @@ import java.util.List;
  * @author avalon566
  * @author yangyi
  */
-@Data
+@RequiredArgsConstructor
+@Getter
 public final class InternalResultSet {
     
-    private ResultSetHeaderPacket header;
+    private final ResultSetHeaderPacket header;
     
     private List<FieldPacket> fieldDescriptors = new ArrayList<>();
     
     private List<RowDataPacket> fieldValues = new ArrayList<>();
-
-    public InternalResultSet(final ResultSetHeaderPacket header) {
-        this.header = header;
-    }
 }

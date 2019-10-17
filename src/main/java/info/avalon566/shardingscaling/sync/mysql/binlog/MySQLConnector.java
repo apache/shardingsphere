@@ -40,6 +40,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -54,6 +55,7 @@ import java.util.concurrent.ExecutionException;
  * @author yangyi
  */
 @Slf4j
+@RequiredArgsConstructor
 public final class MySQLConnector {
 
     private final int serverId;
@@ -76,14 +78,6 @@ public final class MySQLConnector {
 
     private ServerInfo serverInfo;
 
-    public MySQLConnector(final int serverId, final String host, final int port, final String username, final String password) {
-        this.serverId = serverId;
-        this.host = host;
-        this.port = port;
-        this.username = username;
-        this.password = password;
-    }
-
     /**
      * Connect to MySQL.
      */
@@ -99,7 +93,7 @@ public final class MySQLConnector {
                         socketChannel.pipeline().addLast(MySQLLengthFieldBasedFrameEncoder.class.getSimpleName(), new MySQLLengthFieldBasedFrameEncoder());
                         socketChannel.pipeline().addLast(new MySQLCommandPacketDecoder());
                         socketChannel.pipeline().addLast(new MySQLNegotiateHandler(username, password, responseCallback));
-                        socketChannel.pipeline().addLast(new MySQLCommandResponHandler());
+                        socketChannel.pipeline().addLast(new MySQLCommandResponseHandler());
                     }
                 })
                 .option(ChannelOption.AUTO_READ, true)
@@ -165,12 +159,18 @@ public final class MySQLConnector {
         binlogDumpCmd.setBinlogPosition(binlogPosition);
         binlogDumpCmd.setSlaveServerId(serverId);
         channel.pipeline().remove(MySQLCommandPacketDecoder.class);
-        channel.pipeline().remove(MySQLCommandResponHandler.class);
+        channel.pipeline().remove(MySQLCommandResponseHandler.class);
         channel.pipeline().addLast(new MySQLBinlogEventPacketDecoder(checksumLength));
         channel.pipeline().addLast(new MySQLBinlogEventHandler());
         channel.writeAndFlush(binlogDumpCmd);
     }
-
+    
+    private void initDumpConnectSession() {
+        if (serverInfo.getServerVersion().greaterThanOrEqualTo(5, 6, 0)) {
+            execute("set @master_binlog_checksum= @@global.binlog_checksum");
+        }
+    }
+    
     private int queryChecksumLength() {
         if (!serverInfo.getServerVersion().greaterThanOrEqualTo(5, 6, 0)) {
             return 0;
@@ -186,22 +186,7 @@ public final class MySQLConnector {
                 throw new UnsupportedOperationException();
         }
     }
-
-    /**
-     * Poll binlog event.
-     *
-     * @return binlog event
-     */
-    public synchronized AbstractBinlogEvent poll() {
-        return blockingEventQueue.poll();
-    }
-
-    private void initDumpConnectSession() {
-        if (serverInfo.getServerVersion().greaterThanOrEqualTo(5, 6, 0)) {
-            execute("set @master_binlog_checksum= @@global.binlog_checksum");
-        }
-    }
-
+    
     private void registerSlave() {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
         RegisterSlaveCommandPacket cmd = new RegisterSlaveCommandPacket();
@@ -213,6 +198,15 @@ public final class MySQLConnector {
         cmd.setServerId(123456);
         channel.writeAndFlush(cmd);
         waitExpectedResponse(OkPacket.class);
+    }
+
+    /**
+     * Poll binlog event.
+     *
+     * @return binlog event
+     */
+    public synchronized AbstractBinlogEvent poll() {
+        return blockingEventQueue.poll();
     }
 
     private <T> T waitExpectedResponse(final Class<T> type) {
@@ -233,7 +227,7 @@ public final class MySQLConnector {
         }
     }
 
-    class MySQLCommandResponHandler extends ChannelInboundHandlerAdapter {
+    class MySQLCommandResponseHandler extends ChannelInboundHandlerAdapter {
         @Override
         public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
             if (null != responseCallback) {

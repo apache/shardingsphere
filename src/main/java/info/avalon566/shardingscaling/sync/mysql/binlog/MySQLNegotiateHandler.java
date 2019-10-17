@@ -21,6 +21,7 @@ import info.avalon566.shardingscaling.sync.mysql.binlog.packet.auth.ClientAuthen
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.auth.HandshakeInitializationPacket;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.response.ErrorPacket;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.response.OkPacket;
+import lombok.RequiredArgsConstructor;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.concurrent.Promise;
@@ -31,6 +32,7 @@ import io.netty.util.concurrent.Promise;
  * @author avalon566
  * @author yangyi
  */
+@RequiredArgsConstructor
 public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
 
     private final String username;
@@ -40,12 +42,6 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
     private final Promise<Object> authResultCallback;
 
     private ServerInfo serverInfo;
-
-    public MySQLNegotiateHandler(final String username, final String password, final Promise<Object> authResultCallback) {
-        this.username = username;
-        this.password = password;
-        this.authResultCallback = authResultCallback;
-    }
 
     @Override
     public void channelRead(final ChannelHandlerContext ctx, final Object msg) {

@@ -24,24 +24,23 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class OkPacketTest {
+public class RowDataPacketTest {
+    
+    private static final String VALUE_1 = "value_1";
+    
+    private static final String VALUE_2 = "111";
     
     @Test
     public void assertFromByteBuf() {
         ByteBuf byteBuf = Unpooled.buffer();
-        byteBuf.writeByte(0x01);
-        byteBuf.writeByte(0x0a);
-        byteBuf.writeByte(0xff);
-        byteBuf.writeShortLE(Short.MIN_VALUE);
-        byteBuf.writeShortLE(Short.MIN_VALUE);
-        byteBuf.writeBytes("test message".getBytes());
-        OkPacket actual = new OkPacket();
+        byteBuf.writeByte(VALUE_1.length());
+        byteBuf.writeBytes(VALUE_1.getBytes());
+        byteBuf.writeByte(VALUE_2.length());
+        byteBuf.writeBytes(VALUE_2.getBytes());
+        RowDataPacket actual = new RowDataPacket();
         actual.fromByteBuf(byteBuf);
-        assertThat(actual.getFieldCount(), is((short) 1));
-        assertThat(actual.getAffectedRows(), is(10L));
-        assertThat(actual.getInsertId(), is(255L));
-        assertThat(actual.getServerStatus(), is(32768));
-        assertThat(actual.getWarningCount(), is(32768));
-        assertThat(actual.getMessage(), is("test message"));
+        assertThat(actual.getColumns().size(), is(2));
+        assertThat(actual.getColumns().get(0), is(VALUE_1));
+        assertThat(actual.getColumns().get(1), is(VALUE_2));
     }
 }

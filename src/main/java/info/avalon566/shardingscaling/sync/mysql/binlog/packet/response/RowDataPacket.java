@@ -20,7 +20,7 @@ package info.avalon566.shardingscaling.sync.mysql.binlog.packet.response;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.AbstractPacket;
 import io.netty.buffer.ByteBuf;
-import lombok.Data;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,7 @@ import java.util.List;
  * @author avalon566
  * @author yangyi
  */
-@Data
+@Getter
 public final class RowDataPacket extends AbstractPacket {
     
     private List<String> columns = new ArrayList<>();

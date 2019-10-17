@@ -24,24 +24,26 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class OkPacketTest {
+public class ResultSetHeaderPacketTest {
     
     @Test
-    public void assertFromByteBuf() {
+    public void assertFromByteBufWithoutExtra() {
         ByteBuf byteBuf = Unpooled.buffer();
-        byteBuf.writeByte(0x01);
-        byteBuf.writeByte(0x0a);
-        byteBuf.writeByte(0xff);
-        byteBuf.writeShortLE(Short.MIN_VALUE);
-        byteBuf.writeShortLE(Short.MIN_VALUE);
-        byteBuf.writeBytes("test message".getBytes());
-        OkPacket actual = new OkPacket();
+        byteBuf.writeByte((byte) 0x80);
+        ResultSetHeaderPacket actual = new ResultSetHeaderPacket();
         actual.fromByteBuf(byteBuf);
-        assertThat(actual.getFieldCount(), is((short) 1));
-        assertThat(actual.getAffectedRows(), is(10L));
-        assertThat(actual.getInsertId(), is(255L));
-        assertThat(actual.getServerStatus(), is(32768));
-        assertThat(actual.getWarningCount(), is(32768));
-        assertThat(actual.getMessage(), is("test message"));
+        assertThat(actual.getColumnCount(), is(128L));
+        assertThat(actual.getExtra(), is(0L));
+    }
+    
+    @Test
+    public void assertFromByteBufWithExtra() {
+        ByteBuf byteBuf = Unpooled.buffer();
+        byteBuf.writeByte((byte) 0x80);
+        byteBuf.writeByte((byte) 0xff);
+        ResultSetHeaderPacket actual = new ResultSetHeaderPacket();
+        actual.fromByteBuf(byteBuf);
+        assertThat(actual.getColumnCount(), is(128L));
+        assertThat(actual.getExtra(), is(255L));
     }
 }
