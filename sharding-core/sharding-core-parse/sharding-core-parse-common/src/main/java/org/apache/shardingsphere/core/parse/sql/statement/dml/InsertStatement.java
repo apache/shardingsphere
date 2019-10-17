@@ -83,7 +83,7 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
     private List<String> getColumnNamesForInsertColumns() {
         List<String> result = new LinkedList<>();
         for (ColumnSegment each : columns) {
-            result.add(each.getName().toLowerCase());
+            result.add(each.getName());
         }
         return result;
     }
@@ -91,7 +91,7 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
     private List<String> getColumnNamesForSetAssignment() {
         List<String> result = new LinkedList<>();
         for (AssignmentSegment each : setAssignment.getAssignments()) {
-            result.add(each.getColumn().getName().toLowerCase());
+            result.add(each.getColumn().getName());
         }
         return result;
     }
