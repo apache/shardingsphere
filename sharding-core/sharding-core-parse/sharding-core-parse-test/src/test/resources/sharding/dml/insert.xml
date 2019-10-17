@@ -666,7 +666,7 @@
         </sharding-conditions>
     </parser-result>
 
-    <parser-result sql-case-id="insert_duplicate_key_update_with_equation_common" parameters="1, 2, 3">
+    <parser-result sql-case-id="insert_duplicate_key_update_with_function_common" parameters="1, 2, 3">
         <tables>
             <table name="emp" />
         </tables>
@@ -719,7 +719,7 @@
             </and-condition>
         </sharding-conditions>
     </parser-result>
-    <parser-result sql-case-id="insert_duplicate_key_update_with_equation_values" parameters="7, 8, 9">
+    <parser-result sql-case-id="insert_duplicate_key_update_with_function_values" parameters="7, 8, 9">
         <tables>
             <table name="emp" />
         </tables>
