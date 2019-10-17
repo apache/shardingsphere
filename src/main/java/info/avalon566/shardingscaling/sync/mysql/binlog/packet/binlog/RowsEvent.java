@@ -79,7 +79,7 @@ public class RowsEvent {
      * Parse payload.
      *
      * @param binlogContext binlog context
-     * @param in buffer
+     * @param in            buffer
      */
     public void parsePayload(final BinlogContext binlogContext, final ByteBuf in) {
         int columnsLength = (int) DataTypesCodec.readLengthCodedIntLE(in);
@@ -179,6 +179,9 @@ public class RowsEvent {
 
     private Serializable decodeTimestamp(final int meta, final ByteBuf in) {
         long second = DataTypesCodec.readUnsignedInt4LE(in);
+        if (0 == second) {
+            return "0000-00-00 00:00:00";
+        }
         String secondStr = new Timestamp(second * 1000).toString();
         // remove millsecond data
         return secondStr.substring(0, secondStr.length() - 2);
@@ -224,6 +227,9 @@ public class RowsEvent {
 
     private Serializable decodeTimestamp2(final int meta, final ByteBuf in) {
         long second = DataTypesCodec.readUnsignedInt4BE(in);
+        if (0 == second) {
+            return "0000-00-00 00:00:00";
+        }
         String secondStr = new Timestamp(second * 1000).toString();
         // remove millsecond data
         secondStr = secondStr.substring(0, secondStr.length() - 2);
@@ -235,6 +241,9 @@ public class RowsEvent {
 
     private Serializable decodeDatetime2(final int meta, final ByteBuf in) {
         long datetime = DataTypesCodec.readUnsignedInt5BE(in) - 0x8000000000L;
+        if (0 == datetime) {
+            return "0000-00-00 00:00:00";
+        }
         long ymd = datetime >> 17;
         long ym = ymd >> 5;
         long hms = datetime % (1 << 17);
@@ -258,6 +267,9 @@ public class RowsEvent {
 
     private Serializable decodeDate(final int meta, final ByteBuf in) {
         int date = DataTypesCodec.readUnsignedInt3LE(in);
+        if (0 == date) {
+            return "0000-00-00";
+        }
         return String.format("%d-%02d-%02d",
                 date / 16 / 32,
                 date / 32 % 16,
@@ -324,7 +336,6 @@ public class RowsEvent {
     }
 
     private Serializable decodeJson(final int meta, final ByteBuf in) {
-        //TODO decode json data to string
         int length = 0;
         switch (meta) {
             case 1:
