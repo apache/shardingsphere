@@ -377,7 +377,7 @@ frameBetween_
 
 specialFunction_
     : groupConcatFunction_ | windowFunction_ | castFunction_ | convertFunction_ | positionFunction_ | substringFunction_ | extractFunction_ 
-    | charFunction_ | trimFunction_ | weightStringFunction_
+    | charFunction_ | trimFunction_ | weightStringFunction_ | valuesFunction_
     ;
 
 groupConcatFunction_
@@ -417,6 +417,10 @@ trimFunction_
     : TRIM LP_ (LEADING | BOTH | TRAILING) STRING_ FROM STRING_ RP_
     ;
 
+valuesFunction_
+    : VALUES LP_ columnName RP_
+    ;
+
 weightStringFunction_
     : WEIGHT_STRING LP_ expr (AS dataType)? levelClause_? RP_
     ;
@@ -434,7 +438,7 @@ regularFunction_
     ;
 
 regularFunctionName_
-    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | INTERVAL | SUBSTRING
+    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | INTERVAL | SUBSTRING | LEFT | RIGHT
     ;
 
 matchExpression_

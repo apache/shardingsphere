@@ -99,7 +99,8 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         InsertValuesToken result = new InsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
         for (InsertValueContext each : ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts()) {
             InsertValueToken insertValueToken = result.addInsertValue(each.getValueExpressions(), Collections.<DataNode>emptyList());
-            encryptInsertValueToken(insertValueToken, tableName, ((InsertSQLStatementContext) sqlStatementContext).getColumnNames(), each);
+            List<String> insertColumns = ((InsertSQLStatementContext) sqlStatementContext).getColumnNames();
+            encryptInsertValueToken(insertValueToken, tableName, insertColumns, each);
         }
         return result;
     }

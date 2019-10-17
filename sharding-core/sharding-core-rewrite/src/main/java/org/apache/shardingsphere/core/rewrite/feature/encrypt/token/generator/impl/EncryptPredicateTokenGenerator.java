@@ -25,11 +25,11 @@ import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.EncryptCondition;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.EncryptConditionEngine;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.EncryptRuleAware;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.ParametersAware;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.QueryWithCipherColumnAware;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.TableMetasAware;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptPredicateToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.ParametersAware;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.TableMetasAware;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.Collection;
@@ -84,7 +84,7 @@ public final class EncryptPredicateTokenGenerator implements CollectionSQLTokenG
         String encryptedColumnName = encryptRule.findAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName())
                 .or(encryptRule.getCipherColumn(encryptCondition.getTableName(), encryptCondition.getColumnName()));
         List<Object> encryptedValues = getEncryptedValues(encryptCondition, originalValues);
-        return new EncryptPredicateToken(encryptCondition.getStartIndex(), encryptCondition.getStopIndex(), encryptedColumnName,
+        return new EncryptPredicateToken(encryptCondition.getStartIndex(), encryptCondition.getStopIndex(), encryptCondition.getColumnOwner(), encryptedColumnName, 
                 getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptedValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
     
@@ -98,7 +98,7 @@ public final class EncryptPredicateTokenGenerator implements CollectionSQLTokenG
     private EncryptPredicateToken generateSQLTokenForQueryWithoutCipherColumn(final EncryptCondition encryptCondition, final List<Object> originalValues) {
         Optional<String> plainColumn = encryptRule.findPlainColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
         Preconditions.checkState(plainColumn.isPresent(), "Plain column should be required.");
-        return new EncryptPredicateToken(encryptCondition.getStartIndex(), encryptCondition.getStopIndex(), plainColumn.get(),
+        return new EncryptPredicateToken(encryptCondition.getStartIndex(), encryptCondition.getStopIndex(), encryptCondition.getColumnOwner(), plainColumn.get(), 
                 getPositionValues(encryptCondition.getPositionValueMap().keySet(), originalValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
     

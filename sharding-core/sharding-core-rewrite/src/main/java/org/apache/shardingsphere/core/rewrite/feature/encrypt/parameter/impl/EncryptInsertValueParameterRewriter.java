@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.rewrite.feature.encrypt.parameter.impl;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
@@ -61,13 +60,14 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
             return;
         }
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
-        if (!insertColumnsSegment.isPresent()) {
-            return;
+        Collection<String> columns = new LinkedList<>();
+        if (insertColumnsSegment.isPresent()) {
+            columns = ((InsertSQLStatementContext) sqlStatementContext).getColumnNames();
         }
-        for (ColumnSegment each : insertColumnsSegment.get().getColumns()) {
-            Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(tableName, each.getName());
+        for (String each : columns) {
+            Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(tableName, each);
             if (shardingEncryptor.isPresent()) {
-                encryptInsertValues((GroupedParameterBuilder) parameterBuilder, (InsertSQLStatementContext) sqlStatementContext, encryptRule, shardingEncryptor.get(), tableName, each.getName());
+                encryptInsertValues((GroupedParameterBuilder) parameterBuilder, (InsertSQLStatementContext) sqlStatementContext, encryptRule, shardingEncryptor.get(), tableName, each);
             }
         }
     }

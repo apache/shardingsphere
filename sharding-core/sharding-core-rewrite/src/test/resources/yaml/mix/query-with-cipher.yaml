@@ -33,11 +33,51 @@ shardingRule:
       keyGenerator:
         type: TEST
         column: account_id
+    t_account_bak:
+      actualDataNodes: db.t_account_bak_${0..1}
+      tableStrategy: 
+        inline:
+          shardingColumn: account_id
+          algorithmExpression: t_account_bak_${account_id % 2}
+      keyGenerator:
+        type: TEST
+        column: account_id
     t_account_detail:
       actualDataNodes: db.t_account_detail_${0..1}
       tableStrategy: 
         inline:
-          shardingColumn: order_id
-          algorithmExpression: t_account_detail_${account_id % 2}
+          shardingColumn: account_id
+          algorithmExpression: t_account_${account_id % 2}
   bindingTables:
     - t_account, t_account_detail
+  
+  encryptRule:
+    tables:
+      t_account:
+        columns:
+          password:
+            cipherColumn: cipher_password
+            assistedQueryColumn: assisted_query_password
+            encryptor: assisted_query
+          amount:
+            cipherColumn: cipher_amount
+            encryptor: normal
+      t_account_bak:
+        columns:
+          password:
+            cipherColumn: cipher_password
+            assistedQueryColumn: assisted_query_password
+            plainColumn: plain_password
+            encryptor: assisted_query
+          amount:
+            cipherColumn: cipher_amount
+            plainColumn: plain_amount
+            encryptor: normal
+    encryptors:
+      normal:
+        type: NORMAL_ENCRYPT
+      assisted_query:
+        type: ASSISTED_QUERY_ENCRYPT
+
+props:
+  query.with.cipher.column: true

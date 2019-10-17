@@ -28,8 +28,10 @@ import org.apache.shardingsphere.core.rewrite.sql.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerators;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.builder.DefaultTokenGeneratorBuilder;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -49,6 +51,8 @@ public final class SQLRewriteContext {
     
     @Getter
     private final List<Object> parameters;
+    
+    private final List<SQLToken> sqlTokens = new LinkedList<>();
     
     private final SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
     
@@ -75,13 +79,18 @@ public final class SQLRewriteContext {
     }
     
     /**
+     * Generate SQL tokens.
+     */
+    public void generateSQLTokens() {
+        sqlTokens.addAll(sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, tableMetas));
+    }
+    
+    /**
      * Get SQL builder.
      * 
      * @return SQL builder
      */
     public SQLBuilder getSQLBuilder() {
-        SQLBuilder result = new SQLBuilder(sql);
-        result.getSqlTokens().addAll(sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, tableMetas));
-        return result;
+        return new SQLBuilder(sql, sqlTokens);
     }
 }
