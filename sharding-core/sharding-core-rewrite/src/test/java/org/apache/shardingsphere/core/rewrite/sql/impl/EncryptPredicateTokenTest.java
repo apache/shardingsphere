@@ -31,31 +31,60 @@ import static org.junit.Assert.assertThat;
 public final class EncryptPredicateTokenTest {
     
     @Test
-    public void assertToStringWithoutPlaceholderWithEqual() {
+    public void assertToStringWithoutPlaceholderWithoutTableOwnerWithEqual() {
         Map<Integer, Object> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "a");
-        EncryptPredicateToken actual = new EncryptPredicateToken(0, 0, "column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.EQUAL);
+        EncryptPredicateToken actual = new EncryptPredicateToken(0, 0, null, "column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.EQUAL);
         assertThat(actual.toString(), is("column_x = 'a'"));
     }
-    
+
     @Test
-    public void assertToStringWithPlaceholderWithEqual() {
-        EncryptPredicateToken actual = new EncryptPredicateToken(0, 0, "column_x", Collections.<Integer, Object>emptyMap(), Collections.singletonList(0), ShardingOperator.EQUAL);
+    public void assertToStringWithoutPlaceholderWithTableOwnerWithEqual() {
+        Map<Integer, Object> indexValues = new LinkedHashMap<>();
+        indexValues.put(0, "a");
+        EncryptPredicateToken actual = new EncryptPredicateToken(0, 0, "table_x", "column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.EQUAL);
+        assertThat(actual.toString(), is("table_x.column_x = 'a'"));
+    }
+
+    @Test
+    public void assertToStringWithPlaceholderWithoutTableOwnerWithEqual() {
+        EncryptPredicateToken actual = new EncryptPredicateToken(0, 0, null, "column_x", Collections.<Integer, Object>emptyMap(), Collections.singletonList(0), ShardingOperator.EQUAL);
         assertThat(actual.toString(), is("column_x = ?"));
     }
     
     @Test
-    public void assertToStringWithoutPlaceholderWithIn() {
+    public void assertToStringWithPlaceholderWithTableOwnerWithEqual() {
+        EncryptPredicateToken actual = new EncryptPredicateToken(0, 0, "table_x", "column_x", Collections.<Integer, Object>emptyMap(), Collections.singletonList(0), ShardingOperator.EQUAL);
+        assertThat(actual.toString(), is("table_x.column_x = ?"));
+    }
+
+    @Test
+    public void assertToStringWithoutPlaceholderWithoutTableOwnerWithIn() {
         Map<Integer, Object> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "a");
         indexValues.put(1, "b");
-        EncryptPredicateToken actual = new EncryptPredicateToken(0, 0, "column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.IN);
+        EncryptPredicateToken actual = new EncryptPredicateToken(0, 0, null, "column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.IN);
         assertThat(actual.toString(), is("column_x IN ('a', 'b')"));
     }
     
     @Test
-    public void assertToStringWithPlaceholderWithIn() {
-        EncryptPredicateToken actual = new EncryptPredicateToken(0, 0, "column_x", Collections.<Integer, Object>emptyMap(), Collections.singletonList(0), ShardingOperator.IN);
+    public void assertToStringWithoutPlaceholderWithTableOwnerWithIn() {
+        Map<Integer, Object> indexValues = new LinkedHashMap<>();
+        indexValues.put(0, "a");
+        indexValues.put(1, "b");
+        EncryptPredicateToken actual = new EncryptPredicateToken(0, 0, "table_x", "column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.IN);
+        assertThat(actual.toString(), is("table_x.column_x IN ('a', 'b')"));
+    }
+
+    @Test
+    public void assertToStringWithPlaceholderWithoutTableOwnerWithIn() {
+        EncryptPredicateToken actual = new EncryptPredicateToken(0, 0, null, "column_x", Collections.<Integer, Object>emptyMap(), Collections.singletonList(0), ShardingOperator.IN);
         assertThat(actual.toString(), is("column_x IN (?)"));
+    }
+    
+    @Test
+    public void assertToStringWithPlaceholderWithTableOwnerWithIn() {
+        EncryptPredicateToken actual = new EncryptPredicateToken(0, 0, "table_x", "column_x", Collections.<Integer, Object>emptyMap(), Collections.singletonList(0), ShardingOperator.IN);
+        assertThat(actual.toString(), is("table_x.column_x IN (?)"));
     }
 }

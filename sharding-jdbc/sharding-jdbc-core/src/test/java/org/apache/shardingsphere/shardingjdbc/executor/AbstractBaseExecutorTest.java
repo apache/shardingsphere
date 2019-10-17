@@ -25,9 +25,12 @@ import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesCons
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
+import org.apache.shardingsphere.core.preprocessor.segment.table.TablesContext;
+import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
@@ -86,10 +89,22 @@ public abstract class AbstractBaseExecutorTest {
         ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
         when(shardingEncryptor.decrypt(anyString())).thenReturn("decryptValue");
         EncryptRule encryptRule = mock(EncryptRule.class);
+        EncryptTable encryptTable = mock(EncryptTable.class);
         when(encryptRule.findShardingEncryptor(anyString(), anyString())).thenReturn(Optional.of(shardingEncryptor));
+        when(encryptRule.getLogicColumn(anyString(), anyString())).thenReturn("column");
+        when(encryptRule.findEncryptTable("table_x")).thenReturn(Optional.of(encryptTable));
+        when(encryptTable.getCipherColumns()).thenReturn(Collections.singleton("column"));
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         when(shardingRule.findTableRuleByActualTable("table_x")).thenReturn(Optional.<TableRule>absent());
         return shardingRule;
+    }
+
+    protected SQLStatementContext getSQLStatementContext() {
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        TablesContext tablesContext = mock(TablesContext.class);
+        when(tablesContext.getTableNames()).thenReturn(Collections.singleton("table_x"));
+        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
+        return sqlStatementContext;
     }
     
     private ShardingProperties getShardingProperties() {
