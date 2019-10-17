@@ -56,7 +56,7 @@ public final class ShowDatabasesMergedResult extends LocalMergedResultAdapter im
     }
 
     public ShowDatabasesMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults)throws SQLException {
-       this(convertToScheme(queryResults));
+        this(convertToScheme(queryResults));
     }
 
     private static List<String> convertToScheme(final List<QueryResult> queryResults) throws SQLException {
