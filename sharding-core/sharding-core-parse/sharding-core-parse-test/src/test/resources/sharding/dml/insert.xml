@@ -665,4 +665,30 @@
             </and-condition>
         </sharding-conditions>
     </parser-result>
+
+    <parser-result sql-case-id="insert_on_duplicate_key_update_with_complicated_expression" parameters="1, 2, 45, 2000">
+        <tables>
+            <table name="emp" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="emp" length="7" />
+        </tokens>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="order_id" table-name="emp" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="emp_id" table-name="emp" operator="EQUAL">
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="age" table-name="emp" operator="EQUAL">
+                    <value index="2" literal="45" type="int" />
+                </condition>
+                <condition column-name="salary" table-name="emp" operator="EQUAL">
+                    <value index="2" literal="2000" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+    </parser-result>
+
 </parser-result-sets>
