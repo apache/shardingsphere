@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.preprocessor.segment.select.pagination.engine;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.preprocessor.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateS
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.junit.Test;
 
-import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
