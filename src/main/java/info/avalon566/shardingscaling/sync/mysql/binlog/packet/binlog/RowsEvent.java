@@ -17,16 +17,15 @@
 
 package info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog;
 
-import com.google.common.base.Strings;
 import info.avalon566.shardingscaling.sync.mysql.binlog.BinlogContext;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
+import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DateAndTimeValueDecoder;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DecimalValueDecoder;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.JsonValueDecoder;
 import io.netty.buffer.ByteBuf;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -136,21 +135,21 @@ public class RowsEvent {
             case ColumnTypes.MYSQL_TYPE_DOUBLE:
                 return DataTypesCodec.readDoubleLE(in);
             case ColumnTypes.MYSQL_TYPE_TIMESTAMP2:
-                return decodeTimestamp2(columnDef.getMeta(), in);
+                return DateAndTimeValueDecoder.decodeTimestamp2(columnDef.getMeta(), in);
             case ColumnTypes.MYSQL_TYPE_DATETIME2:
-                return decodeDatetime2(columnDef.getMeta(), in);
+                return DateAndTimeValueDecoder.decodeDatetime2(columnDef.getMeta(), in);
             case ColumnTypes.MYSQL_TYPE_TIME:
-                return decodeTime(columnDef.getMeta(), in);
+                return DateAndTimeValueDecoder.decodeTime(columnDef.getMeta(), in);
             case ColumnTypes.MYSQL_TYPE_TIME2:
-                return decodeTime2(columnDef.getMeta(), in);
+                return DateAndTimeValueDecoder.decodeTime2(columnDef.getMeta(), in);
             case ColumnTypes.MYSQL_TYPE_DATE:
-                return decodeDate(columnDef.getMeta(), in);
+                return DateAndTimeValueDecoder.decodeDate(columnDef.getMeta(), in);
             case ColumnTypes.MYSQL_TYPE_DATETIME:
-                return decodeDateTime(columnDef.getMeta(), in);
+                return DateAndTimeValueDecoder.decodeDateTime(columnDef.getMeta(), in);
             case ColumnTypes.MYSQL_TYPE_TIMESTAMP:
-                return decodeTimestamp(columnDef.getMeta(), in);
+                return DateAndTimeValueDecoder.decodeTimestamp(columnDef.getMeta(), in);
             case ColumnTypes.MYSQL_TYPE_YEAR:
-                return decodeYear(columnDef.getMeta(), in);
+                return DateAndTimeValueDecoder.decodeYear(columnDef.getMeta(), in);
             case ColumnTypes.MYSQL_TYPE_BLOB:
                 return decodeBlob(columnDef.getMeta(), in);
             case ColumnTypes.MYSQL_TYPE_VARCHAR:
@@ -163,42 +162,6 @@ public class RowsEvent {
             default:
                 throw new UnsupportedOperationException();
         }
-    }
-
-    private Serializable decodeTime(final int meta, final ByteBuf in) {
-        String datetime = Long.toString(DataTypesCodec.readUnsignedInt3LE(in));
-        if ("0".equals(datetime)) {
-            return "00:00:00";
-        }
-        datetime = Strings.padStart(datetime, 6, '0');
-        final String hour = datetime.substring(0, 2);
-        final String minute = datetime.substring(2, 4);
-        final String second = datetime.substring(4, 6);
-        return String.format("%s:%s:%s", hour, minute, second);
-    }
-
-    private Serializable decodeTimestamp(final int meta, final ByteBuf in) {
-        long second = DataTypesCodec.readUnsignedInt4LE(in);
-        if (0 == second) {
-            return "0000-00-00 00:00:00";
-        }
-        String secondStr = new Timestamp(second * 1000).toString();
-        // remove millsecond data
-        return secondStr.substring(0, secondStr.length() - 2);
-    }
-
-    private Serializable decodeDateTime(final int meta, final ByteBuf in) {
-        final String datetime = Long.toString(DataTypesCodec.readInt8LE(in));
-        if ("0".equals(datetime)) {
-            return "0000-00-00 00:00:00";
-        }
-        final String year = datetime.substring(0, 4);
-        final String month = datetime.substring(4, 6);
-        final String day = datetime.substring(6, 8);
-        final String hour = datetime.substring(8, 10);
-        final String minute = datetime.substring(10, 12);
-        final String second = datetime.substring(12, 14);
-        return String.format("%s-%s-%s %s:%s:%s", year, month, day, hour, minute, second);
     }
 
     private Serializable decodeLong(final int meta, final ByteBuf in) {
@@ -223,61 +186,6 @@ public class RowsEvent {
 
     private Serializable decodeFloat(final int meta, final ByteBuf in) {
         return DataTypesCodec.readFloatLE(in);
-    }
-
-    private Serializable decodeTimestamp2(final int meta, final ByteBuf in) {
-        long second = DataTypesCodec.readUnsignedInt4BE(in);
-        if (0 == second) {
-            return "0000-00-00 00:00:00";
-        }
-        String secondStr = new Timestamp(second * 1000).toString();
-        // remove millsecond data
-        secondStr = secondStr.substring(0, secondStr.length() - 2);
-        if (0 < meta) {
-            secondStr += "." + readAndAlignMillisecond(meta, in);
-        }
-        return secondStr;
-    }
-
-    private Serializable decodeDatetime2(final int meta, final ByteBuf in) {
-        long datetime = DataTypesCodec.readUnsignedInt5BE(in) - 0x8000000000L;
-        if (0 == datetime) {
-            return "0000-00-00 00:00:00";
-        }
-        long ymd = datetime >> 17;
-        long ym = ymd >> 5;
-        long hms = datetime % (1 << 17);
-        return String.format("%d-%02d-%02d %02d:%02d:%02d%s",
-                ym / 13,
-                ym % 13,
-                ymd % (1 << 5),
-                hms >> 12,
-                (hms >> 6) % (1 << 6),
-                hms % (1 << 6),
-                0 < meta ? "." + readAndAlignMillisecond(meta, in) : "");
-    }
-
-    private Serializable decodeTime2(final int meta, final ByteBuf in) {
-        long time = DataTypesCodec.readUnsignedInt3BE(in) - 0x800000L;
-        return String.format("%02d:%02d:%02d",
-                (time >> 12) % (1 << 10),
-                (time >> 6) % (1 << 6),
-                time % (1 << 6));
-    }
-
-    private Serializable decodeDate(final int meta, final ByteBuf in) {
-        int date = DataTypesCodec.readUnsignedInt3LE(in);
-        if (0 == date) {
-            return "0000-00-00";
-        }
-        return String.format("%d-%02d-%02d",
-                date / 16 / 32,
-                date / 32 % 16,
-                date % 32);
-    }
-
-    private Serializable decodeYear(final int meta, final ByteBuf in) {
-        return DataTypesCodec.readUnsignedInt1(in) + 1900;
     }
 
     private Serializable decodeNewDecimal(final int meta, final ByteBuf in) {
@@ -358,37 +266,5 @@ public class RowsEvent {
         } else {
             return JsonValueDecoder.decode(in.readBytes(length));
         }
-    }
-
-    private String readAndAlignMillisecond(final int meta, final ByteBuf in) {
-        int fraction = 0;
-        switch (meta) {
-            case 1:
-            case 2:
-                fraction = DataTypesCodec.readUnsignedInt1(in) * 10000;
-                break;
-            case 3:
-            case 4:
-                fraction = DataTypesCodec.readUnsignedInt2BE(in) * 100;
-                break;
-            case 5:
-            case 6:
-                fraction = DataTypesCodec.readUnsignedInt3BE(in);
-                break;
-            default:
-                throw new UnsupportedOperationException();
-        }
-        return alignMillisecond(meta, fraction);
-    }
-
-    private String alignMillisecond(final int meta, final int fraction) {
-        StringBuilder result = new StringBuilder(6);
-        String str = Integer.toString(fraction);
-        int append = 6 - str.length();
-        for (int i = 0; i < append; i++) {
-            result.append("0");
-        }
-        result.append(str);
-        return result.substring(0, meta);
     }
 }
