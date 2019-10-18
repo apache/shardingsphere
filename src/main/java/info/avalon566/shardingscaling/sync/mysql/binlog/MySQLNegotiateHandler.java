@@ -59,7 +59,7 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
             clientAuth.setAuthPluginName(handshake.getAuthPluginName());
             ctx.channel().writeAndFlush(clientAuth);
             serverInfo = new ServerInfo();
-            serverInfo.setServerVersion(new ServerInfo.ServerVersion(handshake.getServerVersion()));
+            serverInfo.setServerVersion(new ServerVersion(handshake.getServerVersion()));
             return;
         }
         if (msg instanceof OkPacket) {

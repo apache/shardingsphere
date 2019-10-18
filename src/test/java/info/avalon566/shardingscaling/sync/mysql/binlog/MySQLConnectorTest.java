@@ -20,7 +20,6 @@ package info.avalon566.shardingscaling.sync.mysql.binlog;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
 import io.netty.util.concurrent.Promise;
-import info.avalon566.shardingscaling.sync.mysql.binlog.ServerInfo.ServerVersion;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.command.BinlogDumpCommandPacket;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.command.QueryCommandPacket;
 import info.avalon566.shardingscaling.sync.mysql.binlog.packet.command.RegisterSlaveCommandPacket;

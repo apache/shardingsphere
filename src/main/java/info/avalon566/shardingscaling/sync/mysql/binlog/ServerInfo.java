@@ -19,9 +19,6 @@ package info.avalon566.shardingscaling.sync.mysql.binlog;
 
 import lombok.Data;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * MySQL server info.
  *
@@ -31,49 +28,4 @@ import java.util.regex.Pattern;
 public class ServerInfo {
 
     private ServerVersion serverVersion;
-
-    @Data
-    public static class ServerVersion {
-
-        private static final Pattern VERSION_PATTERN = Pattern.compile("^(\\d+)\\.(\\d+)\\.(\\d+).*");
-
-        private int major;
-
-        private int minor;
-
-        private int series;
-
-        public ServerVersion(final String version) {
-            Matcher matcher = VERSION_PATTERN.matcher(version);
-            if (matcher.matches()) {
-                major = Short.valueOf(matcher.group(1));
-                minor = Short.valueOf(matcher.group(2));
-                series = Short.valueOf(matcher.group(3));
-            }
-        }
-
-        /**
-         * Greater than or equal to current version.
-         *
-         * @param major  the major
-         * @param minor  the minor
-         * @param series the series
-         * @return the boolean
-         */
-        public boolean greaterThanOrEqualTo(final int major, final int minor, final int series) {
-            if (this.major < major) {
-                return false;
-            }
-            if (this.major > major) {
-                return true;
-            }
-            if (this.minor < minor) {
-                return false;
-            }
-            if (this.minor > minor) {
-                return true;
-            }
-            return this.series >= series;
-        }
-    }
 }
