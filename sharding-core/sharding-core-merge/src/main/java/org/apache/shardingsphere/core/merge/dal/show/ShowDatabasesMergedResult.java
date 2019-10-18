@@ -60,7 +60,7 @@ public final class ShowDatabasesMergedResult extends LocalMergedResultAdapter im
     }
 
     private static List<String> convertToScheme(final List<QueryResult> queryResults) throws SQLException {
-        final LinkedList<String> result = new LinkedList<>();
+        LinkedList<String> result = new LinkedList<>();
         for (QueryResult queryResult : queryResults) {
             while (queryResult.next()) {
                 result.add((String) queryResult.getValue(1, String.class));
