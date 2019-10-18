@@ -3,7 +3,7 @@
 ## Overview
 The following figure may clearly express this component's role:
 
-![scale out](https://user-images.githubusercontent.com/14773179/67068352-6a346b80-f1ac-11e9-81c8-cb89f18e8901.png)
+![scale out](https://user-images.githubusercontent.com/14773179/67069115-994bdc80-f1ae-11e9-884f-d06f91ba2011.png)
 
 Supplementary instruction about the figure:
 
