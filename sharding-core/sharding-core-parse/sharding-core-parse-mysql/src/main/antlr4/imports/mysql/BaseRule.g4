@@ -262,6 +262,7 @@ expr
     | notOperator_ expr
     | LP_ expr RP_
     | booleanPrimary_
+    | predicate
     ;
 
 logicalOperator
@@ -439,6 +440,7 @@ regularFunction_
 
 regularFunctionName_
     : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | INTERVAL | SUBSTRING | LEFT | RIGHT
+    | LOWER | UNIX_TIMESTAMP
     ;
 
 matchExpression_
