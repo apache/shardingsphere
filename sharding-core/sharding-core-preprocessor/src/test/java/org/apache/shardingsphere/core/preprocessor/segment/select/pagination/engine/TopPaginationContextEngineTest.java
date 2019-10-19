@@ -63,10 +63,19 @@ public final class TopPaginationContextEngineTest {
     
     @Test
     public void assertCreatePaginationContextWhenRowNumberPredicatePresentAndOperatorIsGreatThan() {
+        assertCreatePaginationContextWhenRowNumberPredicatePresentAndWithGivenOperator(">");
+    }
+    
+    @Test
+    public void assertCreatePaginationContextWhenRowNumberPredicatePresentAndOperatorIsGreatThanEqual() {
+        assertCreatePaginationContextWhenRowNumberPredicatePresentAndWithGivenOperator(">=");
+    }
+    
+    private void assertCreatePaginationContextWhenRowNumberPredicatePresentAndWithGivenOperator(final String operator) {
         String name = "rowNumberAlias";
         ColumnSegment columnSegment = new ColumnSegment(0, 10, name);
         PredicateCompareRightValue predicateCompareRightValue = mock(PredicateCompareRightValue.class);
-        when(predicateCompareRightValue.getOperator()).thenReturn(">");
+        when(predicateCompareRightValue.getOperator()).thenReturn(operator);
         when(predicateCompareRightValue.getExpression()).thenReturn(new LiteralExpressionSegment(0, 10, 100));
         PredicateSegment predicateSegment = new PredicateSegment(0, 10, columnSegment, predicateCompareRightValue);
         AndPredicate andPredicate = new AndPredicate();

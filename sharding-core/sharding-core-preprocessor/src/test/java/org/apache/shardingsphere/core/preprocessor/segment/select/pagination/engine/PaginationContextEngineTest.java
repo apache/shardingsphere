@@ -29,8 +29,10 @@ import org.junit.Test;
 
 import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -69,5 +71,14 @@ public final class PaginationContextEngineTest {
         PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(selectStatement, projectionsContext, Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
+    }
+    
+    @Test
+    public void assertCreatePaginationContextWhenResultIsPaginationContext() {
+        SelectStatement selectStatement = mock(SelectStatement.class);
+        when(selectStatement.findSQLSegment(LimitSegment.class)).thenReturn(Optional.<LimitSegment>absent());
+        when(selectStatement.findSQLSegment(TopSegment.class)).thenReturn(Optional.<TopSegment>absent());
+        when(selectStatement.findSQLSegment(WhereSegment.class)).thenReturn(Optional.<WhereSegment>absent());
+        assertThat(new PaginationContextEngine().createPaginationContext(selectStatement, mock(ProjectionsContext.class), Collections.emptyList()), instanceOf(PaginationContext.class));
     }
 }
