@@ -91,4 +91,20 @@ public final class ProjectionEngineTest {
         assertThat(projection.get(), instanceOf(AggregationProjection.class));
     }
     
+    @Test
+    public void assertProjectionCreatedWhenSelectItemSegmentInstanceOfAggregationDistinctSelectItemSegmentAndAggregationTypeIsAvg() {
+        AggregationDistinctSelectItemSegment aggregationDistinctSelectItemSegment = new AggregationDistinctSelectItemSegment(0, 10, "text", AggregationType.AVG, 0, "distinctExpression");
+        Optional<Projection> projection = new ProjectionEngine().createProjection("select count(1) from table_1", aggregationDistinctSelectItemSegment);
+        assertTrue(projection.isPresent());
+        assertThat(projection.get(), instanceOf(AggregationDistinctProjection.class));
+    }
+    
+    @Test
+    public void assertProjectionCreatedWhenSelectItemSegmentInstanceOfAggregationSelectItemSegmentAndAggregationTypeIsAvg() {
+        AggregationSelectItemSegment aggregationSelectItemSegment = new AggregationSelectItemSegment(0, 10, "text", AggregationType.AVG, 0);
+        Optional<Projection> projection = new ProjectionEngine().createProjection("select count(1) from table_1", aggregationSelectItemSegment);
+        assertTrue(projection.isPresent());
+        assertThat(projection.get(), instanceOf(AggregationProjection.class));
+    }
+    
 }
