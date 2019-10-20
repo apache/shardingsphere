@@ -61,32 +61,37 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         Preconditions.checkState(((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().isPresent());
         Collection<EncryptColumnNameToken> result = new LinkedList<>();
         for (AndPredicate each : ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().get().getAndPredicates()) {
-            for (PredicateSegment predicateSegment : each.getPredicates()) {
-                Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(predicateSegment.getColumn(), tableMetas);
-                if (!tableName.isPresent()) {
-                    continue;
-                }
-                Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName.get());
-                if (!encryptTable.isPresent() || !encryptTable.get().findShardingEncryptor(predicateSegment.getColumn().getName()).isPresent()) {
-                    continue;
-                }
-                int startIndex = predicateSegment.getColumn().getOwner().isPresent() ? predicateSegment.getColumn().getOwner().get().getStopIndex() + 2 : predicateSegment.getColumn().getStartIndex();
-                int stopIndex = predicateSegment.getColumn().getStopIndex();
-                if (!queryWithCipherColumn) { 
-                    Optional<String> plainColumn = encryptTable.get().findPlainColumn(predicateSegment.getColumn().getName());
-                    if (plainColumn.isPresent()) {
-                        result.add(new EncryptColumnNameToken(startIndex, stopIndex, plainColumn.get()));
-                        continue;
-                    }
-                }
-                Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(predicateSegment.getColumn().getName());
-                if (assistedQueryColumn.isPresent()) {
-                    result.add(new EncryptColumnNameToken(startIndex, stopIndex, assistedQueryColumn.get()));
-                } else {
-                    result.add(new EncryptColumnNameToken(startIndex, stopIndex, encryptTable.get().getCipherColumn(predicateSegment.getColumn().getName())));
-                }
-            }
+            result.addAll(sss(sqlStatementContext, each));
         }
         return result;
+    }
+    
+    private Collection<EncryptColumnNameToken> sss(final SQLStatementContext sqlStatementContext, final AndPredicate andPredicate) {
+        Collection<EncryptColumnNameToken> result = new LinkedList<>();
+        for (PredicateSegment each : andPredicate.getPredicates()) {
+            Optional<EncryptTable> encryptTable = findEncryptTable(sqlStatementContext, each);
+            if (!encryptTable.isPresent() || !encryptTable.get().findShardingEncryptor(each.getColumn().getName()).isPresent()) {
+                continue;
+            }
+            int startIndex = each.getColumn().getOwner().isPresent() ? each.getColumn().getOwner().get().getStopIndex() + 2 : each.getColumn().getStartIndex();
+            int stopIndex = each.getColumn().getStopIndex();
+            if (!queryWithCipherColumn) { 
+                Optional<String> plainColumn = encryptTable.get().findPlainColumn(each.getColumn().getName());
+                if (plainColumn.isPresent()) {
+                    result.add(new EncryptColumnNameToken(startIndex, stopIndex, plainColumn.get()));
+                    continue;
+                }
+            }
+            Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(each.getColumn().getName());
+            EncryptColumnNameToken encryptColumnNameToken = assistedQueryColumn.isPresent() ? new EncryptColumnNameToken(startIndex, stopIndex, assistedQueryColumn.get())
+                    : new EncryptColumnNameToken(startIndex, stopIndex, encryptTable.get().getCipherColumn(each.getColumn().getName()));
+            result.add(encryptColumnNameToken);
+        }
+        return result;
+    }
+    
+    private Optional<EncryptTable> findEncryptTable(final SQLStatementContext sqlStatementContext, final PredicateSegment segment) {
+        Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(segment.getColumn(), tableMetas);
+        return tableName.isPresent() ? encryptRule.findEncryptTable(tableName.get()) : Optional.<EncryptTable>absent();
     }
 }
