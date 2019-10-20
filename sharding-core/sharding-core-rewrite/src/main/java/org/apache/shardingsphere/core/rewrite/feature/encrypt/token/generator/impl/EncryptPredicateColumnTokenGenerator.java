@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.generic.WhereSegmentAv
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.QueryWithCipherColumnAware;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptProjectionToken;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptColumnNameToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.TableMetasAware;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -57,9 +57,9 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     }
     
     @Override
-    public Collection<EncryptProjectionToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+    public Collection<EncryptColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Preconditions.checkState(((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().isPresent());
-        Collection<EncryptProjectionToken> result = new LinkedList<>();
+        Collection<EncryptColumnNameToken> result = new LinkedList<>();
         for (AndPredicate each : ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().get().getAndPredicates()) {
             for (PredicateSegment predicateSegment : each.getPredicates()) {
                 Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(predicateSegment.getColumn(), tableMetas);
@@ -75,15 +75,15 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
                 if (!queryWithCipherColumn) { 
                     Optional<String> plainColumn = encryptTable.get().findPlainColumn(predicateSegment.getColumn().getName());
                     if (plainColumn.isPresent()) {
-                        result.add(new EncryptProjectionToken(startIndex, stopIndex, plainColumn.get()));
+                        result.add(new EncryptColumnNameToken(startIndex, stopIndex, plainColumn.get()));
                         continue;
                     }
                 }
                 Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(predicateSegment.getColumn().getName());
                 if (assistedQueryColumn.isPresent()) {
-                    result.add(new EncryptProjectionToken(startIndex, stopIndex, assistedQueryColumn.get()));
+                    result.add(new EncryptColumnNameToken(startIndex, stopIndex, assistedQueryColumn.get()));
                 } else {
-                    result.add(new EncryptProjectionToken(startIndex, stopIndex, encryptTable.get().getCipherColumn(predicateSegment.getColumn().getName())));
+                    result.add(new EncryptColumnNameToken(startIndex, stopIndex, encryptTable.get().getCipherColumn(predicateSegment.getColumn().getName())));
                 }
             }
         }
