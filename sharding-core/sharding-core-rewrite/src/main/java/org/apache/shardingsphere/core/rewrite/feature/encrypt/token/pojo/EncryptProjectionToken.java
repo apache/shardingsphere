@@ -33,21 +33,14 @@ public final class EncryptProjectionToken extends SQLToken implements Substituta
     
     private final String columnName;
     
-    private final String owner;
-    
-    public EncryptProjectionToken(final int startIndex, final int stopIndex, final String columnName, final String owner) {
+    public EncryptProjectionToken(final int startIndex, final int stopIndex, final String columnName) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.columnName = columnName;
-        this.owner = owner;
-    }
-    
-    public EncryptProjectionToken(final int startIndex, final int stopIndex, final String columnName) {
-        this(startIndex, stopIndex, columnName, null);
     }
     
     @Override
     public String toString() {
-        return null == owner ? columnName : String.format("%s.%s", owner, columnName);
+        return columnName;
     }
 }

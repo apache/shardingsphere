@@ -82,7 +82,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     private EncryptProjectionToken generateSQLToken(final ColumnSelectItemSegment segment, final String tableName) {
         Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, segment.getName());
         String columnName = plainColumn.isPresent() && !queryWithCipherColumn ? plainColumn.get() : encryptRule.getCipherColumn(tableName, segment.getName());
-        return segment.getOwner().isPresent() ? new EncryptProjectionToken(segment.getStartIndex(), segment.getStopIndex(), columnName, segment.getOwner().get().getTableName())
+        return segment.getOwner().isPresent() ? new EncryptProjectionToken(segment.getOwner().get().getStopIndex() + 2, segment.getStopIndex(), columnName)
                 : new EncryptProjectionToken(segment.getStartIndex(), segment.getStopIndex(), columnName);
     }
 }
