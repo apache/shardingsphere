@@ -262,7 +262,6 @@ expr
     | notOperator_ expr
     | LP_ expr RP_
     | booleanPrimary_
-    | predicate
     ;
 
 logicalOperator
