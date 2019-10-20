@@ -84,7 +84,8 @@ public final class EncryptPredicateTokenGenerator implements CollectionSQLTokenG
         String encryptedColumnName = encryptRule.findAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName())
                 .or(encryptRule.getCipherColumn(encryptCondition.getTableName(), encryptCondition.getColumnName()));
         List<Object> encryptedValues = getEncryptedValues(encryptCondition, originalValues);
-        return new EncryptPredicateToken(encryptCondition.getStartIndex(), encryptCondition.getStopIndex(), encryptCondition.getColumnOwner(), encryptedColumnName, 
+        int startIndex = -1 != encryptCondition.getColumnOwnerStopIndex() ? encryptCondition.getColumnOwnerStopIndex() + 2 : encryptCondition.getStartIndex();
+        return new EncryptPredicateToken(startIndex, encryptCondition.getStopIndex(), encryptedColumnName, 
                 getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptedValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
     
@@ -98,7 +99,8 @@ public final class EncryptPredicateTokenGenerator implements CollectionSQLTokenG
     private EncryptPredicateToken generateSQLTokenForQueryWithoutCipherColumn(final EncryptCondition encryptCondition, final List<Object> originalValues) {
         Optional<String> plainColumn = encryptRule.findPlainColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
         Preconditions.checkState(plainColumn.isPresent(), "Plain column should be required.");
-        return new EncryptPredicateToken(encryptCondition.getStartIndex(), encryptCondition.getStopIndex(), encryptCondition.getColumnOwner(), plainColumn.get(), 
+        int startIndex = -1 != encryptCondition.getColumnOwnerStopIndex() ? encryptCondition.getColumnOwnerStopIndex() + 2 : encryptCondition.getStartIndex();
+        return new EncryptPredicateToken(startIndex, encryptCondition.getStopIndex(), plainColumn.get(), 
                 getPositionValues(encryptCondition.getPositionValueMap().keySet(), originalValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
     
