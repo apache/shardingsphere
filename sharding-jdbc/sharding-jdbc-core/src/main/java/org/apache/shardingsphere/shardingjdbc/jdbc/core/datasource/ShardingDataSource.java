@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContextHolder;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
@@ -47,6 +48,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
         super(dataSourceMap);
         checkDataSourceType(dataSourceMap);
         runtimeContext = new ShardingRuntimeContext(dataSourceMap, shardingRule, props, getDatabaseType());
+        RuntimeContextHolder.getInstance().addRuntimeContext(runtimeContext);
     }
     
     private void checkDataSourceType(final Map<String, DataSource> dataSourceMap) {
@@ -64,11 +66,13 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     public final void close() throws Exception {
         super.close();
         runtimeContext.close();
+        RuntimeContextHolder.getInstance().removeRuntimeContext(runtimeContext);
     }
     
     @Override
     public final void close(final Collection<String> dataSourceNames) throws Exception {
         super.close(dataSourceNames);
         runtimeContext.close();
+        RuntimeContextHolder.getInstance().removeRuntimeContext(runtimeContext);
     }
 }

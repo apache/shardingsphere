@@ -22,9 +22,11 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContextHolder;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Properties;
 
 /**
@@ -40,6 +42,7 @@ public class EncryptDataSource extends AbstractDataSourceAdapter {
     public EncryptDataSource(final DataSource dataSource, final EncryptRule encryptRule, final Properties props) throws SQLException {
         super(dataSource);
         runtimeContext = new EncryptRuntimeContext(dataSource, encryptRule, props, getDatabaseType());
+        RuntimeContextHolder.getInstance().addRuntimeContext(runtimeContext);
     }
     
     @Override
@@ -54,5 +57,17 @@ public class EncryptDataSource extends AbstractDataSourceAdapter {
      */
     public DataSource getDataSource() {
         return getDataSourceMap().values().iterator().next();
+    }
+
+    @Override
+    public final void close() throws Exception {
+        super.close();
+        RuntimeContextHolder.getInstance().removeRuntimeContext(runtimeContext);
+    }
+
+    @Override
+    public final void close(final Collection<String> dataSourceNames) throws Exception {
+        super.close(dataSourceNames);
+        RuntimeContextHolder.getInstance().removeRuntimeContext(runtimeContext);
     }
 }

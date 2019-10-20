@@ -22,9 +22,11 @@ import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.MasterSlaveRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContextHolder;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 
@@ -43,10 +45,23 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule, final Properties props) throws SQLException {
         super(dataSourceMap);
         runtimeContext = new MasterSlaveRuntimeContext(dataSourceMap, masterSlaveRule, props, getDatabaseType());
+        RuntimeContextHolder.getInstance().addRuntimeContext(runtimeContext);
     }
     
     @Override
     public final MasterSlaveConnection getConnection() {
         return new MasterSlaveConnection(getDataSourceMap(), runtimeContext);
+    }
+
+    @Override
+    public final void close() throws Exception {
+        super.close();
+        RuntimeContextHolder.getInstance().removeRuntimeContext(runtimeContext);
+    }
+
+    @Override
+    public final void close(final Collection<String> dataSourceNames) throws Exception {
+        super.close(dataSourceNames);
+        RuntimeContextHolder.getInstance().removeRuntimeContext(runtimeContext);
     }
 }
