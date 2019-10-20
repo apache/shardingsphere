@@ -114,10 +114,9 @@ public final class EncryptConditionEngine {
     }
     
     private static Optional<EncryptCondition> createCompareEncryptCondition(final String tableName, final PredicateSegment predicateSegment, final PredicateCompareRightValue compareRightValue) {
-        int columnOwnerStopIndex = predicateSegment.getColumn().getOwner().isPresent() ? predicateSegment.getColumn().getOwner().get().getStopIndex() : -1;
         return compareRightValue.getExpression() instanceof SimpleExpressionSegment
-                ? Optional.of(new EncryptCondition(
-                        predicateSegment.getColumn().getName(), tableName, columnOwnerStopIndex, predicateSegment.getStartIndex(), predicateSegment.getStopIndex(), compareRightValue.getExpression()))
+                ? Optional.of(new EncryptCondition(predicateSegment.getColumn().getName(), tableName, compareRightValue.getExpression().getStartIndex(), 
+                predicateSegment.getStopIndex(), compareRightValue.getExpression()))
                 : Optional.<EncryptCondition>absent();
     }
     
@@ -128,10 +127,9 @@ public final class EncryptConditionEngine {
                 expressionSegments.add(each);
             }
         }
-        int columnOwnerStopIndex = predicateSegment.getColumn().getOwner().isPresent() ? predicateSegment.getColumn().getOwner().get().getStopIndex() : -1;
         return expressionSegments.isEmpty() ? Optional.<EncryptCondition>absent()
                 : Optional.of(new EncryptCondition(
-                        predicateSegment.getColumn().getName(), tableName, columnOwnerStopIndex, predicateSegment.getStartIndex(), predicateSegment.getStopIndex(), expressionSegments));
+                        predicateSegment.getColumn().getName(), tableName, inRightValue.getSqlExpressions().iterator().next().getStartIndex(), predicateSegment.getStopIndex(), expressionSegments));
     }
     
     private boolean isSupportedOperator(final String operator) {

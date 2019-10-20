@@ -27,28 +27,25 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Predicate token for encrypt.
+ * Predicate right value token for encrypt.
  *
  * @author panjuan
  */
-public final class EncryptPredicateToken extends SQLToken implements Substitutable {
-
+public final class EncryptPredicateRightValueToken extends SQLToken implements Substitutable {
+    
     @Getter
     private final int stopIndex;
-
-    private final String columnName;
-
+    
     private final Map<Integer, Object> indexValues;
     
     private final Collection<Integer> parameterMarkerIndexes;
     
     private final ShardingOperator operator;
     
-    public EncryptPredicateToken(final int startIndex, final int stopIndex, final String columnName, 
-                                 final Map<Integer, Object> indexValues, final Collection<Integer> parameterMarkerIndexes, final ShardingOperator operator) {
+    public EncryptPredicateRightValueToken(final int startIndex, final int stopIndex,
+                                           final Map<Integer, Object> indexValues, final Collection<Integer> parameterMarkerIndexes, final ShardingOperator operator) {
         super(startIndex);
         this.stopIndex = stopIndex;
-        this.columnName = columnName;
         this.indexValues = indexValues;
         this.parameterMarkerIndexes = parameterMarkerIndexes;
         this.operator = operator;
@@ -68,15 +65,14 @@ public final class EncryptPredicateToken extends SQLToken implements Substitutab
     
     private String toStringForEqual() {
         if (parameterMarkerIndexes.isEmpty()) {
-            return indexValues.get(0) instanceof String ? String.format("%s = '%s'", columnName, indexValues.get(0))
-                : String.format("%s = %s", columnName, indexValues.get(0));
+            return indexValues.get(0) instanceof String ? String.format("'%s'", indexValues.get(0)) : indexValues.get(0).toString();
         }
-        return String.format("%s = ?", columnName);
+        return "?";
     }
     
     private String toStringForIn() {
         StringBuilder result = new StringBuilder();
-        result.append(columnName).append(" ").append(operator.name()).append(" (");
+        result.append("(");
         for (int i = 0; i < indexValues.size() + parameterMarkerIndexes.size(); i++) {
             if (parameterMarkerIndexes.contains(i)) {
                 result.append("?");
