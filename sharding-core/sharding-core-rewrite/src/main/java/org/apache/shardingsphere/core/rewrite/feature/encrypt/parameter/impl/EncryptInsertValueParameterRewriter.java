@@ -71,14 +71,21 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         int count = 0;
         for (List<Object> each : sqlStatementContext.getGroupedParameters()) {
             if (!each.isEmpty()) {
-                encryptInsertValue(shardingEncryptor, tableName, columnIndex, each.size(),
+                int parameterOffset;
+                if (null != parameterBuilder.getParameterBuilders().get(count).getAddedIndexAndParameters()
+                        && !parameterBuilder.getParameterBuilders().get(count).getAddedIndexAndParameters().isEmpty()) {
+                    parameterOffset = parameterBuilder.getParameterBuilders().get(count).getAddedIndexAndParameters().keySet().iterator().next();
+                } else {
+                    parameterOffset = each.size();
+                }
+                encryptInsertValue(shardingEncryptor, tableName, columnIndex, parameterOffset,
                         sqlStatementContext.getInsertValueContexts().get(count).getValue(columnIndex), parameterBuilder.getParameterBuilders().get(count), encryptLogicColumnName);
             }
             count++;
         }
     }
     
-    private void encryptInsertValue(final ShardingEncryptor shardingEncryptor, final String tableName, final int columnIndex, final int parameterSize,
+    private void encryptInsertValue(final ShardingEncryptor shardingEncryptor, final String tableName, final int columnIndex, final int parameterOffset,
                                     final Object originalValue, final StandardParameterBuilder parameterBuilder, final String encryptLogicColumnName) {
         // FIXME: can process all part of insert value is ? or literal, can not process mix ? and literal
         // For example: values (?, ?), (1, 1) can process
@@ -94,7 +101,10 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
             addedParameters.add(originalValue);
         }
         if (!addedParameters.isEmpty()) {
-            parameterBuilder.addAddedParameters(parameterSize + parameterBuilder.getAddedIndexAndParameters().size(), addedParameters);
+            if (!parameterBuilder.getAddedIndexAndParameters().containsKey(parameterOffset)) {
+                parameterBuilder.getAddedIndexAndParameters().put(parameterOffset, new LinkedList<>());
+            }
+            parameterBuilder.getAddedIndexAndParameters().get(parameterOffset).addAll(addedParameters);
         }
     }
 }
