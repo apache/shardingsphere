@@ -283,18 +283,15 @@
         <!--<output sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id = 100) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />-->
     <!--</rewrite-assertion>-->
     
-    <!-- FIXME -->
-    <!--<rewrite-assertion id="select_top_with_single_route_for_literals_for_sqlserver" db-type="SQLServer">-->
-        <!--<input sql="SELECT * FROM (SELECT TOP(110) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account o WHERE o.account_id = 100) AS row_ WHERE row_.rownum_ &gt; 100" />-->
-        <!--<output sql="SELECT * FROM (SELECT TOP(110) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id = 100) AS row_ WHERE row_.rownum_ &gt; 100" />-->
-    <!--</rewrite-assertion>-->
+    <rewrite-assertion id="select_top_with_single_route_for_parameters_for_sqlserver" db-type="SQLServer">
+        <input sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account o WHERE o.account_id = 100) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />
+        <output sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id = 100) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />
+    </rewrite-assertion>
     
-    <!-- FIXME -->
-    <!--<rewrite-assertion id="select_top_with_multiple_route_for_parameters_for_sqlserver" db-type="SQLServer">-->
-        <!--<input sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account o WHERE o.account_id IN (100, 101)) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />-->
-        <!--<output sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id IN (100, 101)) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 0" />-->
-        <!--<output sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_1 o WHERE o.account_id IN (100, 101)) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 0" />-->
-    <!--</rewrite-assertion>-->
+    <rewrite-assertion id="select_top_with_single_route_for_literals_for_sqlserver" db-type="SQLServer">
+        <input sql="SELECT * FROM (SELECT TOP(110) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account o WHERE o.account_id = 100) AS row_ WHERE row_.rownum_ &gt; 100" />
+        <output sql="SELECT * FROM (SELECT TOP(110) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id = 100) AS row_ WHERE row_.rownum_ &gt; 100" />
+    </rewrite-assertion>
     
     <!-- FIXME -->
     <!--<rewrite-assertion id="select_top_with_multiple_route_for_literals_for_sqlserver" db-type="SQLServer">-->
