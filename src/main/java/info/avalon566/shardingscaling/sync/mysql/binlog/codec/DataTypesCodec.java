@@ -348,6 +348,19 @@ public final class DataTypesCodec {
     }
 
     /**
+     * Write big endian byte order n byte integer to {@code ByteBuf}.
+     *
+     * @param length length of n
+     * @param data the data
+     * @param out  target byte buf
+     */
+    public static void writeIntN(final int length, final long data, final ByteBuf out) {
+        for (int i = length - 1; i >= 0; i--) {
+            out.writeByte((byte) (data >> (8 * i)));
+        }
+    }
+
+    /**
      * Write little endian byte order 2 byte integer to {@code ByteBuf}.
      *
      * @param data the data
@@ -365,6 +378,19 @@ public final class DataTypesCodec {
      */
     public static void writeInt4LE(final int data, final ByteBuf out) {
         out.writeIntLE(data);
+    }
+
+    /**
+     * Write little endian byte order n byte integer to {@code ByteBuf}.
+     *
+     * @param length length of n
+     * @param data the data
+     * @param out  target byte buf
+     */
+    public static void writeIntNLE(final int length, final long data, final ByteBuf out) {
+        for (int i = 0; i < length; i++) {
+            out.writeByte((byte) (data >> (8 * i)));
+        }
     }
 
     /**

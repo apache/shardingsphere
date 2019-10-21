@@ -18,6 +18,7 @@
 package info.avalon566.shardingscaling.sync.mysql.binlog.packet.binlog;
 
 import info.avalon566.shardingscaling.sync.mysql.binlog.BinlogContext;
+import info.avalon566.shardingscaling.sync.mysql.binlog.codec.BlobValueDecoder;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DataTypesCodec;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DateAndTimeValueDecoder;
 import info.avalon566.shardingscaling.sync.mysql.binlog.codec.DecimalValueDecoder;
@@ -151,7 +152,7 @@ public class RowsEvent {
             case ColumnTypes.MYSQL_TYPE_YEAR:
                 return DateAndTimeValueDecoder.decodeYear(columnDef.getMeta(), in);
             case ColumnTypes.MYSQL_TYPE_BLOB:
-                return decodeBlob(columnDef.getMeta(), in);
+                return BlobValueDecoder.decodeBlob(columnDef.getMeta(), in);
             case ColumnTypes.MYSQL_TYPE_VARCHAR:
             case ColumnTypes.MYSQL_TYPE_VAR_STRING:
                 return decodeVarString(columnDef.getMeta(), in);
@@ -198,21 +199,6 @@ public class RowsEvent {
                 return DataTypesCodec.readUnsignedInt1(in);
             case 2:
                 return DataTypesCodec.readUnsignedInt2LE(in);
-            default:
-                throw new UnsupportedOperationException();
-        }
-    }
-
-    private Serializable decodeBlob(final int meta, final ByteBuf in) {
-        switch (meta) {
-            case 1:
-                return DataTypesCodec.readBytes(DataTypesCodec.readUnsignedInt1(in), in);
-            case 2:
-                return DataTypesCodec.readBytes(DataTypesCodec.readUnsignedInt2LE(in), in);
-            case 3:
-                return DataTypesCodec.readBytes(DataTypesCodec.readUnsignedInt3LE(in), in);
-            case 4:
-                return DataTypesCodec.readBytes((int) DataTypesCodec.readUnsignedInt4LE(in), in);
             default:
                 throw new UnsupportedOperationException();
         }

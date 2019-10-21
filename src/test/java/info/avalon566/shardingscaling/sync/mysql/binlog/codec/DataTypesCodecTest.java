@@ -18,6 +18,7 @@
 package info.avalon566.shardingscaling.sync.mysql.binlog.codec;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -241,6 +242,26 @@ public class DataTypesCodecTest {
     }
 
     @Test
+    public void assertWriteIntN() {
+        long value = 0xff;
+        long actual = writeIntN(1, value).readUnsignedByte();
+        assertThat(actual, is(value));
+        value = 0xff00;
+        actual = writeIntN(2, value).readUnsignedShort();
+        assertThat(actual, is(value));
+        value = 0x00ff;
+        actual = writeIntN(2, value).readUnsignedShort();
+        assertThat(actual, is(value));
+        assertThat(writeIntN(2, value).writerIndex(), is(2));
+    }
+
+    private ByteBuf writeIntN(final int length, final long value) {
+        ByteBuf byteBuf = Unpooled.buffer();
+        DataTypesCodec.writeIntN(length, value, byteBuf);
+        return byteBuf;
+    }
+
+    @Test
     public void assertWriteInt2LE() {
         final short data = 0x00;
         DataTypesCodec.writeInt2LE(data, byteBuf);
@@ -252,6 +273,26 @@ public class DataTypesCodecTest {
         final int data = 0x00;
         DataTypesCodec.writeInt4LE(data, byteBuf);
         verify(byteBuf).writeIntLE(data);
+    }
+
+    @Test
+    public void assertWriteIntNLE() {
+        long value = 0xff;
+        long actual = writeIntNLE(1, value).readUnsignedByte();
+        assertThat(actual, is(value));
+        value = 0xff00;
+        actual = writeIntNLE(2, value).readUnsignedShortLE();
+        assertThat(actual, is(value));
+        value = 0x00ff;
+        actual = writeIntNLE(2, value).readUnsignedShortLE();
+        assertThat(actual, is(value));
+        assertThat(writeIntNLE(2, value).writerIndex(), is(2));
+    }
+
+    private ByteBuf writeIntNLE(final int length, final long value) {
+        ByteBuf byteBuf = Unpooled.buffer();
+        DataTypesCodec.writeIntNLE(length, value, byteBuf);
+        return byteBuf;
     }
 
     @Test
