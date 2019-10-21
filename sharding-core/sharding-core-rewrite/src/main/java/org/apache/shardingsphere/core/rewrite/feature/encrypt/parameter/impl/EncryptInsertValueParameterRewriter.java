@@ -71,15 +71,10 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         int count = 0;
         for (List<Object> each : sqlStatementContext.getGroupedParameters()) {
             if (!each.isEmpty()) {
-                int parameterOffset;
-                if (null != parameterBuilder.getParameterBuilders().get(count).getAddedIndexAndParameters()
-                        && !parameterBuilder.getParameterBuilders().get(count).getAddedIndexAndParameters().isEmpty()) {
-                    parameterOffset = parameterBuilder.getParameterBuilders().get(count).getAddedIndexAndParameters().keySet().iterator().next();
-                } else {
-                    parameterOffset = each.size();
-                }
-                encryptInsertValue(shardingEncryptor, tableName, columnIndex, parameterOffset,
-                        sqlStatementContext.getInsertValueContexts().get(count).getValue(columnIndex), parameterBuilder.getParameterBuilders().get(count), encryptLogicColumnName);
+                StandardParameterBuilder standardParameterBuilder = parameterBuilder.getParameterBuilders().get(count);
+                int parameterOffset = standardParameterBuilder.getAddedIndexAndParameters().isEmpty() ? each.size() : standardParameterBuilder.getAddedIndexAndParameters().keySet().iterator().next();
+                encryptInsertValue(shardingEncryptor, tableName, columnIndex, 
+                        parameterOffset, sqlStatementContext.getInsertValueContexts().get(count).getValue(columnIndex), standardParameterBuilder, encryptLogicColumnName);
             }
             count++;
         }
