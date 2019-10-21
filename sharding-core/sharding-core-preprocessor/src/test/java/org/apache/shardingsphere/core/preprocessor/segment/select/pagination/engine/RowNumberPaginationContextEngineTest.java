@@ -108,10 +108,8 @@ public final class RowNumberPaginationContextEngineTest {
                 .createPaginationContext(Collections.singleton(andPredicate), projectionsContext, Collections.<Object>singletonList(1));
         Optional<PaginationValueSegment> offSetSegmentPaginationValue = paginationContext.getOffsetSegment();
         assertTrue(offSetSegmentPaginationValue.isPresent());
-        PaginationValueSegment actual = offSetSegmentPaginationValue.get();
-        assertThat(actual, instanceOf(ParameterMarkerRowNumberValueSegment.class));
-        Optional<PaginationValueSegment> paginationValueSegmentOptional = paginationContext.getRowCountSegment();
-        assertFalse(paginationValueSegmentOptional.isPresent());
+        assertThat(offSetSegmentPaginationValue.get(), instanceOf(ParameterMarkerRowNumberValueSegment.class));
+        assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
     
     private void assertCreatePaginationContextWhenRowNumberAliasPresentAndRowNumberPredicatedNotEmptyWithGivenOperator(final String operator) {

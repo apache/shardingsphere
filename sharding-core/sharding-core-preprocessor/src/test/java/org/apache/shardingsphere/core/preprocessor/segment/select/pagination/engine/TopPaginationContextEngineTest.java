@@ -86,8 +86,7 @@ public final class TopPaginationContextEngineTest {
         ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
         when(projectionsContext.findAlias(anyString())).thenReturn(Optional.of("predicateRowNumberAlias"));
         PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(new TopSegment(0, 10, "text", null, name), andPredicates, Collections.emptyList());
-        Optional<PaginationValueSegment> contextOffsetSegment = paginationContext.getOffsetSegment();
-        assertFalse(contextOffsetSegment.isPresent());
+        assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
     
