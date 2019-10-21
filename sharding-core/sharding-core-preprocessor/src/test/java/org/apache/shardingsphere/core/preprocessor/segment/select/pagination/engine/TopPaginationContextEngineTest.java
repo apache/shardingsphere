@@ -86,8 +86,8 @@ public final class TopPaginationContextEngineTest {
         ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
         when(projectionsContext.findAlias(anyString())).thenReturn(Optional.of("predicateRowNumberAlias"));
         PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(new TopSegment(0, 10, "text", null, name), andPredicates, Collections.emptyList());
-        Optional<PaginationValueSegment> paginationValueSegmentOptional = paginationContext.getOffsetSegment();
-        assertFalse(paginationValueSegmentOptional.isPresent());
+        Optional<PaginationValueSegment> contextOffsetSegment = paginationContext.getOffsetSegment();
+        assertFalse(contextOffsetSegment.isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
     
@@ -105,9 +105,8 @@ public final class TopPaginationContextEngineTest {
         ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
         when(projectionsContext.findAlias(anyString())).thenReturn(Optional.of("predicateRowNumberAlias"));
         PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(new TopSegment(0, 10, "text", null, name), andPredicates, Collections.<Object>singletonList(1));
-        Optional<PaginationValueSegment> paginationValueSegmentOptional = paginationContext.getOffsetSegment();
-        assertTrue(paginationValueSegmentOptional.isPresent());
-        PaginationValueSegment paginationValueSegment = paginationValueSegmentOptional.get();
+        assertTrue(paginationContext.getOffsetSegment().isPresent());
+        PaginationValueSegment paginationValueSegment = paginationContext.getOffsetSegment().get();
         assertThat(paginationValueSegment, instanceOf(ParameterMarkerRowNumberValueSegment.class));
         ParameterMarkerRowNumberValueSegment parameterMarkerRowNumberValueSegment = (ParameterMarkerRowNumberValueSegment) paginationValueSegment;
         assertThat(parameterMarkerRowNumberValueSegment.getStartIndex(), is(0));
@@ -129,9 +128,8 @@ public final class TopPaginationContextEngineTest {
         ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
         when(projectionsContext.findAlias(anyString())).thenReturn(Optional.of("predicateRowNumberAlias"));
         PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(new TopSegment(0, 10, "text", null, name), andPredicates, Collections.emptyList());
-        Optional<PaginationValueSegment> paginationValueSegmentOptional = paginationContext.getOffsetSegment();
-        assertTrue(paginationValueSegmentOptional.isPresent());
-        PaginationValueSegment paginationValueSegment = paginationValueSegmentOptional.get();
+        assertTrue(paginationContext.getOffsetSegment().isPresent());
+        PaginationValueSegment paginationValueSegment = paginationContext.getOffsetSegment().get();
         assertThat(paginationValueSegment, instanceOf(NumberLiteralRowNumberValueSegment.class));
         NumberLiteralRowNumberValueSegment numberLiteralRowNumberValueSegment = (NumberLiteralRowNumberValueSegment) paginationValueSegment;
         assertThat(numberLiteralRowNumberValueSegment.getStartIndex(), is(0));
