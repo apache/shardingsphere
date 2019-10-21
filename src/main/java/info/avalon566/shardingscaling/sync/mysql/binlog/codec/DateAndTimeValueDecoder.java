@@ -17,8 +17,9 @@
 
 package info.avalon566.shardingscaling.sync.mysql.binlog.codec;
 
-import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -31,6 +32,14 @@ import java.sql.Timestamp;
  */
 public final class DateAndTimeValueDecoder {
 
+    public static final String ZERO_OF_TIME = "00:00:00";
+
+    public static final String ZERO_OF_DATE = "0000-00-00";
+
+    public static final String YEAR_OF_ZERO = "0000";
+
+    public static final String DATETIME_OF_ZERO = "0000-00-00 00:00:00";
+
     /**
      * Decode time.
      *
@@ -39,15 +48,15 @@ public final class DateAndTimeValueDecoder {
      * @return time string value
      */
     public static Serializable decodeTime(final int meta, final ByteBuf in) {
-        String datetime = Long.toString(DataTypesCodec.readUnsignedInt3LE(in));
-        if ("0".equals(datetime)) {
-            return "00:00:00";
+        int datetime = DataTypesCodec.readInt3LE(in);
+        if (0 == datetime) {
+            return ZERO_OF_TIME;
         }
-        datetime = Strings.padStart(datetime, 6, '0');
-        final String hour = datetime.substring(0, 2);
-        final String minute = datetime.substring(2, 4);
-        final String second = datetime.substring(4, 6);
-        return String.format("%s:%s:%s", hour, minute, second);
+        int hour = datetime / 10000;
+        int minuteSecond = Math.abs(datetime) % 10000;
+        int minute = minuteSecond / 100;
+        int second = minuteSecond % 100;
+        return String.format("%02d:%02d:%02d", hour, minute, second);
     }
 
     /**
@@ -58,11 +67,50 @@ public final class DateAndTimeValueDecoder {
      * @return time string value
      */
     public static Serializable decodeTime2(final int meta, final ByteBuf in) {
-        long time = DataTypesCodec.readUnsignedInt3BE(in) - 0x800000L;
-        return String.format("%02d:%02d:%02d",
-                (time >> 12) % (1 << 10),
-                (time >> 6) % (1 << 6),
-                time % (1 << 6));
+        TimeValue timeValue = decodeTime2Value(meta, in);
+        if (0 == timeValue.time) {
+            return ZERO_OF_TIME;
+        }
+        int hour = (timeValue.time >> 12) % (1 << 10);
+        int minute = (timeValue.time >> 6) % (1 << 6);
+        int second = timeValue.time % (1 << 6);
+        return (timeValue.nonNegative ? "" : "-") + String.format("%02d:%02d:%02d%s", hour, minute, second,
+                0 < meta ? "." + alignMillisecond(meta, timeValue.fraction) : "");
+    }
+
+    private static TimeValue decodeTime2Value(final int meta, final ByteBuf in) {
+        // first bit for sign (1 = non negative, 0 = negative)
+        // reverse first bit
+        int signedTime = DataTypesCodec.readUnsignedInt3BE(in) - 0x800000;
+        int fraction = 0;
+        byte offset = 0;
+        switch (meta) {
+            case 0:
+                break;
+            case 1:
+            case 2:
+                fraction = DataTypesCodec.readUnsignedInt1(in);
+                offset = 8;
+                break;
+            case 3:
+            case 4:
+                fraction = DataTypesCodec.readUnsignedInt2BE(in);
+                offset = 16;
+                break;
+            case 5:
+            case 6:
+                fraction = DataTypesCodec.readUnsignedInt3BE(in);
+                offset = 24;
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
+        signedTime = signedTime << 8;
+        if (0 < offset && 0 > signedTime && 0 < fraction) {
+            signedTime++;
+            fraction -= 0x1 << offset;
+        }
+        return new TimeValue(signedTime > 0, Math.abs(signedTime) >> 8, Math.abs(fraction));
     }
 
     /**
@@ -75,7 +123,7 @@ public final class DateAndTimeValueDecoder {
     public static Serializable decodeDate(final int meta, final ByteBuf in) {
         int date = DataTypesCodec.readUnsignedInt3LE(in);
         if (0 == date) {
-            return "0000-00-00";
+            return ZERO_OF_DATE;
         }
         return String.format("%d-%02d-%02d",
                 date / 16 / 32,
@@ -91,7 +139,11 @@ public final class DateAndTimeValueDecoder {
      * @return year int value
      */
     public static Serializable decodeYear(final int meta, final ByteBuf in) {
-        return DataTypesCodec.readUnsignedInt1(in) + 1900;
+        short value = DataTypesCodec.readUnsignedInt1(in);
+        if (0 == value) {
+            return YEAR_OF_ZERO;
+        }
+        return Integer.toString(value + 1900);
     }
 
     /**
@@ -104,10 +156,10 @@ public final class DateAndTimeValueDecoder {
     public static Serializable decodeTimestamp(final int meta, final ByteBuf in) {
         long second = DataTypesCodec.readUnsignedInt4LE(in);
         if (0 == second) {
-            return "0000-00-00 00:00:00";
+            return DATETIME_OF_ZERO;
         }
         String secondStr = new Timestamp(second * 1000).toString();
-        // remove millsecond data
+        // remove millisecond data
         return secondStr.substring(0, secondStr.length() - 2);
     }
 
@@ -121,13 +173,13 @@ public final class DateAndTimeValueDecoder {
     public static Serializable decodeTimestamp2(final int meta, final ByteBuf in) {
         long second = DataTypesCodec.readUnsignedInt4BE(in);
         if (0 == second) {
-            return "0000-00-00 00:00:00";
+            return DATETIME_OF_ZERO;
         }
         String secondStr = new Timestamp(second * 1000).toString();
-        // remove millsecond data
+        // remove millisecond data
         secondStr = secondStr.substring(0, secondStr.length() - 2);
         if (0 < meta) {
-            secondStr += "." + readAndAlignMillisecond(meta, in);
+            secondStr += "." + alignMillisecond(meta, readMillisecond(meta, in));
         }
         return secondStr;
     }
@@ -140,17 +192,19 @@ public final class DateAndTimeValueDecoder {
      * @return datetime string value
      */
     public static Serializable decodeDateTime(final int meta, final ByteBuf in) {
-        final String datetime = Long.toString(DataTypesCodec.readInt8LE(in));
-        if ("0".equals(datetime)) {
-            return "0000-00-00 00:00:00";
+        final long datetime = DataTypesCodec.readInt8LE(in);
+        if (0 == datetime) {
+            return DATETIME_OF_ZERO;
         }
-        final String year = datetime.substring(0, 4);
-        final String month = datetime.substring(4, 6);
-        final String day = datetime.substring(6, 8);
-        final String hour = datetime.substring(8, 10);
-        final String minute = datetime.substring(10, 12);
-        final String second = datetime.substring(12, 14);
-        return String.format("%s-%s-%s %s:%s:%s", year, month, day, hour, minute, second);
+        final int d = (int) (datetime / 1000000);
+        final int t = (int) (datetime % 1000000);
+        final int year = d / 10000;
+        final int month = (d % 10000) / 100;
+        final int day = d % 100;
+        final int hour = t / 10000;
+        final int minute = (t % 10000) / 100;
+        final int second = t % 100;
+        return String.format("%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
     }
 
     /**
@@ -161,9 +215,10 @@ public final class DateAndTimeValueDecoder {
      * @return datetime string value
      */
     public static Serializable decodeDatetime2(final int meta, final ByteBuf in) {
-        long datetime = DataTypesCodec.readUnsignedInt5BE(in) - 0x8000000000L;
+        long datetime = DataTypesCodec.readUnsignedInt5BE(in);
+        datetime = datetime - 0x8000000000L;
         if (0 == datetime) {
-            return "0000-00-00 00:00:00";
+            return DATETIME_OF_ZERO;
         }
         long ymd = datetime >> 17;
         long ym = ymd >> 5;
@@ -175,31 +230,47 @@ public final class DateAndTimeValueDecoder {
                 hms >> 12,
                 (hms >> 6) % (1 << 6),
                 hms % (1 << 6),
-                0 < meta ? "." + readAndAlignMillisecond(meta, in) : "");
+                0 < meta ? "." + alignMillisecond(meta, readMillisecond(meta, in)) : "");
     }
 
-    private static String readAndAlignMillisecond(final int meta, final ByteBuf in) {
-        int fraction = 0;
+    private static int readMillisecond(final int meta, final ByteBuf in) {
         switch (meta) {
             case 1:
             case 2:
-                fraction = DataTypesCodec.readUnsignedInt1(in) * 10000;
+                return DataTypesCodec.readUnsignedInt1(in);
+            case 3:
+            case 4:
+                return DataTypesCodec.readUnsignedInt2BE(in);
+            case 5:
+            case 6:
+                return DataTypesCodec.readUnsignedInt3BE(in);
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+
+    private static String alignMillisecond(final int meta, final int fraction) {
+        int value = 0;
+        switch (meta) {
+            case 1:
+            case 2:
+                value = fraction * 10000;
                 break;
             case 3:
             case 4:
-                fraction = DataTypesCodec.readUnsignedInt2BE(in) * 100;
+                value = fraction * 100;
                 break;
             case 5:
             case 6:
-                fraction = DataTypesCodec.readUnsignedInt3BE(in);
+                value = fraction;
                 break;
             default:
                 throw new UnsupportedOperationException();
         }
-        return alignMillisecond(meta, fraction);
+        return alignMillisecond0(meta, value);
     }
 
-    private static String alignMillisecond(final int meta, final int fraction) {
+    private static String alignMillisecond0(final int meta, final int fraction) {
         StringBuilder result = new StringBuilder(6);
         String str = Integer.toString(fraction);
         int append = 6 - str.length();
@@ -208,5 +279,16 @@ public final class DateAndTimeValueDecoder {
         }
         result.append(str);
         return result.substring(0, meta);
+    }
+
+    @Getter
+    @AllArgsConstructor
+    private static class TimeValue {
+
+        private boolean nonNegative;
+
+        private int time;
+
+        private int fraction;
     }
 }
