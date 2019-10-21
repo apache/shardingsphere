@@ -46,8 +46,6 @@ public final class EncryptCondition {
     
     private final String tableName;
 
-    private final String columnOwner;
-    
     private final int startIndex;
     
     private final int stopIndex;
@@ -58,20 +56,18 @@ public final class EncryptCondition {
     
     private final Map<Integer, Object> positionValueMap = new LinkedHashMap<>();
     
-    public EncryptCondition(final String columnName, final String tableName, final String columnOwner, final int startIndex, final int stopIndex, final ExpressionSegment expressionSegment) {
+    public EncryptCondition(final String columnName, final String tableName, final int startIndex, final int stopIndex, final ExpressionSegment expressionSegment) {
         this.columnName = columnName;
         this.tableName = tableName;
-        this.columnOwner = columnOwner;
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         operator = ShardingOperator.EQUAL;
         putPositionMap(0, expressionSegment);
     }
     
-    public EncryptCondition(final String columnName, final String tableName, final String columnOwner, final int startIndex, final int stopIndex, final List<ExpressionSegment> expressionSegments) {
+    public EncryptCondition(final String columnName, final String tableName, final int startIndex, final int stopIndex, final List<ExpressionSegment> expressionSegments) {
         this.columnName = columnName;
         this.tableName = tableName;
-        this.columnOwner = columnOwner;
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         operator = ShardingOperator.IN;
