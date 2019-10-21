@@ -192,7 +192,7 @@ public class RowsEvent {
         return DecimalValueDecoder.decodeNewDecimal(meta, in);
     }
 
-    private Serializable decodeEnumVale(final int meta, final ByteBuf in) {
+    private Serializable decodeEnumValue(final int meta, final ByteBuf in) {
         switch (meta) {
             case 1:
                 return DataTypesCodec.readUnsignedInt1(in);
@@ -231,7 +231,7 @@ public class RowsEvent {
     private Serializable decodeString(final int meta, final ByteBuf in) {
         switch (meta >> 8) {
             case ColumnTypes.MYSQL_TYPE_ENUM:
-                return decodeEnumVale(meta & 0xff, in);
+                return decodeEnumValue(meta & 0xff, in);
             case ColumnTypes.MYSQL_TYPE_SET:
                 // hardcode
                 return in.readByte();

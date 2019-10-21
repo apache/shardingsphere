@@ -629,6 +629,14 @@ public class RowsEventTest {
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getColumnValues1(), (short) 0);
+        binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
+        mockTableMapEvent((ColumnTypes.MYSQL_TYPE_ENUM << 8) | 2, ColumnTypes.MYSQL_TYPE_STRING);
+        byteBuf = Unpooled.buffer();
+        byteBuf.writeBytes(new byte[]{1, 0, 0});
+        byteBuf.writeShortLE(256);
+        actual = new RowsEvent(binlogEventHeader);
+        actual.parsePayload(binlogContext, byteBuf);
+        assertColumnValue(actual.getColumnValues1(), 256);
     }
 
     @Test
