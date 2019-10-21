@@ -33,7 +33,7 @@ import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.i
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.impl.RowCountTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.impl.DistinctProjectionPrefixTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.impl.keygen.GeneratedKeyAssignmentTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.impl.keygen.GeneratedKeyForInsertColumnsTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.impl.keygen.GeneratedKeyForUseDefaultColumnsTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.impl.keygen.GeneratedKeyInsertColumnTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.impl.keygen.GeneratedKeyInsertValuesTokenGenerator;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -79,7 +79,7 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
         addSQLTokenGenerator(result, new OffsetTokenGenerator());
         addSQLTokenGenerator(result, new RowCountTokenGenerator());
         addSQLTokenGenerator(result, new GeneratedKeyInsertColumnTokenGenerator());
-        addSQLTokenGenerator(result, new GeneratedKeyForInsertColumnsTokenGenerator());
+        addSQLTokenGenerator(result, new GeneratedKeyForUseDefaultColumnsTokenGenerator());
         addSQLTokenGenerator(result, new GeneratedKeyAssignmentTokenGenerator());
         addSQLTokenGenerator(result, new InsertValuesTokenGenerator());
         addSQLTokenGenerator(result, new GeneratedKeyInsertValuesTokenGenerator());

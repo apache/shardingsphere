@@ -57,7 +57,7 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         if (!encryptTable.isPresent()) {
             return;
         }
-        for (String each : encryptTable.get().getLogicColumns()) {
+        for (String each : ((InsertSQLStatementContext) sqlStatementContext).getColumnNames()) {
             Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(tableName, each);
             if (shardingEncryptor.isPresent()) {
                 encryptInsertValues((GroupedParameterBuilder) parameterBuilder, (InsertSQLStatementContext) sqlStatementContext, shardingEncryptor.get(), tableName, each);
