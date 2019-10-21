@@ -33,6 +33,7 @@ import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,7 +68,7 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
     
     private void encryptInsertValues(final GroupedParameterBuilder parameterBuilder, 
                                      final InsertSQLStatementContext sqlStatementContext, final ShardingEncryptor shardingEncryptor, final String tableName, final String encryptLogicColumnName) {
-        int columnIndex = sqlStatementContext.getColumnNames().indexOf(encryptLogicColumnName);
+        int columnIndex = getColumnIndex(parameterBuilder, sqlStatementContext, encryptLogicColumnName);
         int count = 0;
         for (List<Object> each : sqlStatementContext.getGroupedParameters()) {
             if (!each.isEmpty()) {
@@ -79,6 +80,17 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
             count++;
         }
     }
+    
+    private int getColumnIndex(final GroupedParameterBuilder parameterBuilder, final InsertSQLStatementContext sqlStatementContext, final String encryptLogicColumnName) {
+        List<String> columnNames;
+        if (parameterBuilder.getDerivedColumnName().isPresent()) {
+            columnNames = new ArrayList<>(sqlStatementContext.getColumnNames());
+            columnNames.remove(parameterBuilder.getDerivedColumnName().get());
+        } else {
+            columnNames = sqlStatementContext.getColumnNames();
+        }
+        return columnNames.indexOf(encryptLogicColumnName);
+    } 
     
     private void encryptInsertValue(final ShardingEncryptor shardingEncryptor, final String tableName, final int columnIndex, final int parameterOffset,
                                     final Object originalValue, final StandardParameterBuilder parameterBuilder, final String encryptLogicColumnName) {
