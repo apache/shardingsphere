@@ -60,25 +60,25 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         for (String each : encryptTable.get().getLogicColumns()) {
             Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(tableName, each);
             if (shardingEncryptor.isPresent()) {
-                encryptInsertValues((GroupedParameterBuilder) parameterBuilder, (InsertSQLStatementContext) sqlStatementContext, encryptRule, shardingEncryptor.get(), tableName, each);
+                encryptInsertValues((GroupedParameterBuilder) parameterBuilder, (InsertSQLStatementContext) sqlStatementContext, shardingEncryptor.get(), tableName, each);
             }
         }
     }
     
-    private void encryptInsertValues(final GroupedParameterBuilder parameterBuilder, final InsertSQLStatementContext sqlStatementContext,
-                                     final EncryptRule encryptRule, final ShardingEncryptor shardingEncryptor, final String tableName, final String encryptLogicColumnName) {
+    private void encryptInsertValues(final GroupedParameterBuilder parameterBuilder, 
+                                     final InsertSQLStatementContext sqlStatementContext, final ShardingEncryptor shardingEncryptor, final String tableName, final String encryptLogicColumnName) {
         int columnIndex = sqlStatementContext.getColumnNames().indexOf(encryptLogicColumnName);
         int count = 0;
         for (List<Object> each : sqlStatementContext.getGroupedParameters()) {
             if (!each.isEmpty()) {
-                encryptInsertValue(encryptRule, shardingEncryptor, tableName, columnIndex, each.size(),
+                encryptInsertValue(shardingEncryptor, tableName, columnIndex, each.size(),
                         sqlStatementContext.getInsertValueContexts().get(count).getValue(columnIndex), parameterBuilder.getParameterBuilders().get(count), encryptLogicColumnName);
             }
             count++;
         }
     }
     
-    private void encryptInsertValue(final EncryptRule encryptRule, final ShardingEncryptor shardingEncryptor, final String tableName, final int columnIndex, final int parameterSize,
+    private void encryptInsertValue(final ShardingEncryptor shardingEncryptor, final String tableName, final int columnIndex, final int parameterSize,
                                     final Object originalValue, final StandardParameterBuilder parameterBuilder, final String encryptLogicColumnName) {
         // FIXME: can process all part of insert value is ? or literal, can not process mix ? and literal
         // For example: values (?, ?), (1, 1) can process
