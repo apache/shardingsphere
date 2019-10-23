@@ -18,9 +18,10 @@
 package info.avalon566.shardingscaling.core.config;
 
 import org.junit.Test;
-import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class RdbmsConfigurationTest {
@@ -32,5 +33,13 @@ public class RdbmsConfigurationTest {
         assertTrue(origin.equals(clone));
         origin.setTableName("t1");
         assertFalse(origin.equals(clone));
+    }
+    
+    @Test
+    public void assertGetWhereCondition() {
+        RdbmsConfiguration rdbmsConfiguration = new RdbmsConfiguration();
+        assertThat(rdbmsConfiguration.getWhereCondition(), is(""));
+        rdbmsConfiguration.setWhereCondition("where 1=1");
+        assertThat(rdbmsConfiguration.getWhereCondition(), is("where 1=1"));
     }
 }

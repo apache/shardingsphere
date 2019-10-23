@@ -21,7 +21,7 @@ import lombok.Data;
 import lombok.SneakyThrows;
 
 /**
- * Rdbms configuration.
+ * Relational database management system configuration.
  *
  * @author avalon566
  */
@@ -43,5 +43,14 @@ public class RdbmsConfiguration implements Cloneable {
     @SneakyThrows
     public static RdbmsConfiguration clone(final RdbmsConfiguration origin) {
         return (RdbmsConfiguration) origin.clone();
+    }
+    
+    /**
+     * Get where condition.
+     *
+     * @return "" if whereCondition is null, otherwise whereCondition
+     */
+    public String getWhereCondition() {
+        return null == whereCondition ? "" : whereCondition;
     }
 }
