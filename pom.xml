@@ -765,6 +765,7 @@
                         <!-- CI files -->
                         <exclude>**/.travis.yml</exclude>
                         <exclude>**/.mvn/jvm.config</exclude>
+                        <exclude>**/.mvn/wrapper/maven-wrapper.properties</exclude>
                         <!-- GitHub files -->
                         <exclude>**/.github/**</exclude>
                         <!-- document files -->
