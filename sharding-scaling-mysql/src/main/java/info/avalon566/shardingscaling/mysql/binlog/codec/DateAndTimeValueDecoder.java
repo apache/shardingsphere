@@ -23,6 +23,8 @@ import lombok.Getter;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 /**
  * Date and time value decoder.
@@ -39,6 +41,15 @@ public final class DateAndTimeValueDecoder {
     public static final String YEAR_OF_ZERO = "0000";
 
     public static final String DATETIME_OF_ZERO = "0000-00-00 00:00:00";
+
+    public static final ThreadLocal<SimpleDateFormat> TIMESTAMP_FORMAT = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            sdf.setTimeZone(TimeZone.getTimeZone("GMT+0:00"));
+            return sdf;
+        }
+    };
 
     /**
      * Decode time.
@@ -158,9 +169,7 @@ public final class DateAndTimeValueDecoder {
         if (0 == second) {
             return DATETIME_OF_ZERO;
         }
-        String secondStr = new Timestamp(second * 1000).toString();
-        // remove millisecond data
-        return secondStr.substring(0, secondStr.length() - 2);
+        return TIMESTAMP_FORMAT.get().format(new Timestamp(second * 1000));
     }
 
     /**
@@ -175,9 +184,7 @@ public final class DateAndTimeValueDecoder {
         if (0 == second) {
             return DATETIME_OF_ZERO;
         }
-        String secondStr = new Timestamp(second * 1000).toString();
-        // remove millisecond data
-        secondStr = secondStr.substring(0, secondStr.length() - 2);
+        String secondStr = TIMESTAMP_FORMAT.get().format(new Timestamp(second * 1000));
         if (0 < meta) {
             secondStr += "." + alignMillisecond(meta, readMillisecond(meta, in));
         }

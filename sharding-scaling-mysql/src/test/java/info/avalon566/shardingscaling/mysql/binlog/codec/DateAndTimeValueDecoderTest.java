@@ -115,8 +115,8 @@ public class DateAndTimeValueDecoderTest {
     @Test
     public void assertDecodeTimestamp() {
         assertDecodeTimestamp(0, DateAndTimeValueDecoder.DATETIME_OF_ZERO);
-        assertDecodeTimestamp(1, "1970-01-01 08:00:01");
-        assertDecodeTimestamp(2147483647, "2038-01-19 11:14:07");
+        assertDecodeTimestamp(1, "1970-01-01 00:00:01");
+        assertDecodeTimestamp(2147483647, "2038-01-19 03:14:07");
     }
 
     private void assertDecodeTimestamp(final int value, final String expect) {
@@ -129,8 +129,8 @@ public class DateAndTimeValueDecoderTest {
     @Test
     public void assertDecodeTimestamp2() {
         assertDecodeTimestamp2(0, 0, 0, DateAndTimeValueDecoder.DATETIME_OF_ZERO);
-        assertDecodeTimestamp2(0, 1, 0, "1970-01-01 08:00:01");
-        assertDecodeTimestamp2(0, 2147483647, 0, "2038-01-19 11:14:07");
+        assertDecodeTimestamp2(0, 1, 0, "1970-01-01 00:00:01");
+        assertDecodeTimestamp2(0, 2147483647, 0, "2038-01-19 03:14:07");
     }
 
     private void assertDecodeTimestamp2(final int meta, final int value, final int value2, final String expect) {
@@ -143,18 +143,18 @@ public class DateAndTimeValueDecoderTest {
 
     @Test
     public void assertDecodeTimestamp2Millisecond() {
-        assertDecodeTimestamp2(1, 1, 0, "1970-01-01 08:00:01.0");
-        assertDecodeTimestamp2(1, 1, 90, "1970-01-01 08:00:01.9");
-        assertDecodeTimestamp2(2, 1, 0, "1970-01-01 08:00:01.00");
-        assertDecodeTimestamp2(2, 1, 99, "1970-01-01 08:00:01.99");
-        assertDecodeTimestamp2(3, 1, 0, "1970-01-01 08:00:01.000");
-        assertDecodeTimestamp2(3, 1, 9990, "1970-01-01 08:00:01.999");
-        assertDecodeTimestamp2(4, 1, 0, "1970-01-01 08:00:01.0000");
-        assertDecodeTimestamp2(4, 1, 9999, "1970-01-01 08:00:01.9999");
-        assertDecodeTimestamp2(5, 1, 0, "1970-01-01 08:00:01.00000");
-        assertDecodeTimestamp2(5, 1, 999990, "1970-01-01 08:00:01.99999");
-        assertDecodeTimestamp2(6, 1, 0, "1970-01-01 08:00:01.000000");
-        assertDecodeTimestamp2(6, 1, 999999, "1970-01-01 08:00:01.999999");
+        assertDecodeTimestamp2(1, 1, 0, "1970-01-01 00:00:01.0");
+        assertDecodeTimestamp2(1, 1, 90, "1970-01-01 00:00:01.9");
+        assertDecodeTimestamp2(2, 1, 0, "1970-01-01 00:00:01.00");
+        assertDecodeTimestamp2(2, 1, 99, "1970-01-01 00:00:01.99");
+        assertDecodeTimestamp2(3, 1, 0, "1970-01-01 00:00:01.000");
+        assertDecodeTimestamp2(3, 1, 9990, "1970-01-01 00:00:01.999");
+        assertDecodeTimestamp2(4, 1, 0, "1970-01-01 00:00:01.0000");
+        assertDecodeTimestamp2(4, 1, 9999, "1970-01-01 00:00:01.9999");
+        assertDecodeTimestamp2(5, 1, 0, "1970-01-01 00:00:01.00000");
+        assertDecodeTimestamp2(5, 1, 999990, "1970-01-01 00:00:01.99999");
+        assertDecodeTimestamp2(6, 1, 0, "1970-01-01 00:00:01.000000");
+        assertDecodeTimestamp2(6, 1, 999999, "1970-01-01 00:00:01.999999");
     }
 
     @Test
