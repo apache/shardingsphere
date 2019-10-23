@@ -25,7 +25,16 @@
             <table-token start-index="13" table-name="t_log" length="5" />
         </tokens>
     </parser-result>
-    
+
+    <parser-result sql-case-id="create_table_with_keyword">
+        <tables>
+            <table name="t_log" />
+        </tables>
+        <tokens>
+            <table-token start-index="26" table-name="t_log" length="5" />
+        </tokens>
+    </parser-result>
+
     <parser-result sql-case-id="create_table_if_not_exists">
         <tables>
             <table name="t_log" />
