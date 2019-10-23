@@ -17,7 +17,9 @@
 
 package info.avalon566.shardingscaling.core.config;
 
-import lombok.AllArgsConstructor;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.spi.database.DatabaseType;
+
 import lombok.Data;
 
 /**
@@ -26,7 +28,6 @@ import lombok.Data;
  * @author avalon566
  */
 @Data
-@AllArgsConstructor
 public class JdbcDataSourceConfiguration implements DataSourceConfiguration {
 
     private String jdbcUrl;
@@ -34,4 +35,13 @@ public class JdbcDataSourceConfiguration implements DataSourceConfiguration {
     private String username;
 
     private String password;
+    
+    private DatabaseType databaseType;
+    
+    public JdbcDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
+        this.jdbcUrl = jdbcUrl;
+        this.username = username;
+        this.password = password;
+        databaseType = DatabaseTypes.getDatabaseTypeByURL(jdbcUrl);
+    }
 }

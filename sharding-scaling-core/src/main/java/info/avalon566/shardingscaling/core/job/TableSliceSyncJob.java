@@ -23,9 +23,10 @@ import info.avalon566.shardingscaling.core.job.schedule.Event;
 import info.avalon566.shardingscaling.core.job.schedule.EventType;
 import info.avalon566.shardingscaling.core.job.schedule.Reporter;
 import info.avalon566.shardingscaling.core.sync.SyncExecutor;
+import info.avalon566.shardingscaling.core.sync.reader.Reader;
+import info.avalon566.shardingscaling.core.sync.reader.ReaderFactory;
 import info.avalon566.shardingscaling.core.sync.writer.Writer;
-import info.avalon566.shardingscaling.core.sync.mysql.MySQLJdbcReader;
-import info.avalon566.shardingscaling.core.sync.mysql.MySQLWriter;
+import info.avalon566.shardingscaling.core.sync.writer.WriterFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;
@@ -52,8 +53,8 @@ public class TableSliceSyncJob {
      * Run synchronize task.
      */
     public void run() {
-        MySQLJdbcReader reader = new MySQLJdbcReader(syncConfiguration.getReaderConfiguration());
-        MySQLWriter writer = new MySQLWriter(syncConfiguration.getWriterConfiguration());
+        Reader reader = ReaderFactory.newInstanceJdbcReader(syncConfiguration.getReaderConfiguration());
+        Writer writer = WriterFactory.newInstance(syncConfiguration.getWriterConfiguration());
         final SyncExecutor executor = new SyncExecutor(reader, Collections.<Writer>singletonList(writer));
         executor.run();
         new Thread(new Runnable() {

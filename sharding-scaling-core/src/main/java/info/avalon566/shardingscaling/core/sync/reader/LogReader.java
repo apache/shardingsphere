@@ -15,36 +15,17 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.sync.postgresql;
-
-import info.avalon566.shardingscaling.core.sync.AbstractRunner;
-import info.avalon566.shardingscaling.core.sync.channel.Channel;
-import info.avalon566.shardingscaling.core.sync.reader.LogReader;
-import lombok.Setter;
+package info.avalon566.shardingscaling.core.sync.reader;
 
 /**
- * PostgreSQL WAL reader.
+ * Log reader.
  *
- * @author avalon566
+ * @author yangyi
  */
-public final class PostgreSQLWalReader extends AbstractRunner implements LogReader {
-
-    @Setter
-    private Channel channel;
-
-    @Override
-    public void run() {
-        //TODO
-        read(channel);
-    }
-
-    @Override
-    public void read(final Channel channel) {
-        throw new UnsupportedOperationException();
-    }
+public interface LogReader extends Reader {
     
-    @Override
-    public void markPosition() {
-    }
+    /**
+     * mark log position.
+     */
+    void markPosition();
 }
-

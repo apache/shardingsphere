@@ -51,7 +51,7 @@ import java.util.List;
  * @author yangyi
  */
 @Slf4j
-public abstract class AbstractJdbcReader extends AbstractRunner implements Reader {
+public abstract class AbstractJdbcReader extends AbstractRunner implements JdbcReader {
 
     @Getter(AccessLevel.PROTECTED)
     private final RdbmsConfiguration rdbmsConfiguration;
@@ -108,11 +108,11 @@ public abstract class AbstractJdbcReader extends AbstractRunner implements Reade
         DataSource dataSource = DataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
         DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil(dataSource);
         List<String> primaryKeys = dbMetaDataUtil.getPrimaryKeys(rdbmsConfiguration.getTableName());
-        if (primaryKeys == null || primaryKeys.size() == 0) {
+        if (null == primaryKeys || 0 == primaryKeys.size()) {
             log.warn("{} 表主键不存在, 不支持并发执行", rdbmsConfiguration.getTableName());
             return Collections.singletonList(rdbmsConfiguration);
         }
-        if (1 < primaryKeys.size()) {
+        if (primaryKeys.size() > 1) {
             log.warn("{} 表为联合主键, 不支持并发执行", rdbmsConfiguration.getTableName());
             return Collections.singletonList(rdbmsConfiguration);
         }

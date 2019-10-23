@@ -15,36 +15,38 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.sync.postgresql;
+package info.avalon566.shardingscaling.core.spi;
 
-import info.avalon566.shardingscaling.core.sync.AbstractRunner;
-import info.avalon566.shardingscaling.core.sync.channel.Channel;
+import info.avalon566.shardingscaling.core.sync.reader.JdbcReader;
 import info.avalon566.shardingscaling.core.sync.reader.LogReader;
-import lombok.Setter;
+import info.avalon566.shardingscaling.core.sync.writer.Writer;
+import org.apache.shardingsphere.spi.DatabaseTypeAwareSPI;
 
 /**
- * PostgreSQL WAL reader.
+ * Scaling entry.
  *
- * @author avalon566
+ * @author yangyi
  */
-public final class PostgreSQLWalReader extends AbstractRunner implements LogReader {
-
-    @Setter
-    private Channel channel;
-
-    @Override
-    public void run() {
-        //TODO
-        read(channel);
-    }
-
-    @Override
-    public void read(final Channel channel) {
-        throw new UnsupportedOperationException();
-    }
+public interface ScalingEntry extends DatabaseTypeAwareSPI {
     
-    @Override
-    public void markPosition() {
-    }
+    /**
+     * Get JDBC reader type.
+     *
+     * @return JDBC reader type
+     */
+    Class<? extends JdbcReader> getJdbcReaderClass();
+    
+    /**
+     * Get log reader type.
+     *
+     * @return log reader type
+     */
+    Class<? extends LogReader> getLogReaderClass();
+    
+    /**
+     * Get writer type.
+     *
+     * @return writer type
+     */
+    Class<? extends Writer> getWriterClass();
 }
-

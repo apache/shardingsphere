@@ -24,9 +24,9 @@ import info.avalon566.shardingscaling.core.job.schedule.Event;
 import info.avalon566.shardingscaling.core.job.schedule.EventType;
 import info.avalon566.shardingscaling.core.job.schedule.Reporter;
 import info.avalon566.shardingscaling.core.job.schedule.standalone.InProcessScheduler;
+import info.avalon566.shardingscaling.core.sync.reader.ReaderFactory;
 import info.avalon566.shardingscaling.core.sync.util.DataSourceFactory;
 import info.avalon566.shardingscaling.core.sync.util.DbMetaDataUtil;
-import info.avalon566.shardingscaling.core.sync.mysql.MySQLJdbcReader;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
@@ -64,7 +64,7 @@ public class HistoryDataSyncer {
             RdbmsConfiguration readerConfig = RdbmsConfiguration.clone(syncConfiguration.getReaderConfiguration());
             readerConfig.setTableName(tableName);
             // split by primary key range
-            for (RdbmsConfiguration sliceConfig : new MySQLJdbcReader(readerConfig).split(syncConfiguration.getConcurrency())) {
+            for (RdbmsConfiguration sliceConfig : ReaderFactory.newInstanceJdbcReader(readerConfig).split(syncConfiguration.getConcurrency())) {
                 syncConfigurations.add(new SyncConfiguration(SyncType.TableSlice, syncConfiguration.getConcurrency(),
                         sliceConfig, RdbmsConfiguration.clone(syncConfiguration.getWriterConfiguration())));
             }

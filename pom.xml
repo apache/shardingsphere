@@ -28,11 +28,14 @@
     <modules>
         <module>sharding-scaling-core</module>
         <module>sharding-scaling-bootstrap</module>
+        <module>sharding-scaling-mysql</module>
     </modules>
     
     <properties>
         <java.version>1.7</java.version>
         <maven.version.range>[3.0.4,)</maven.version.range>
+        
+        <shardingsphere.version>4.0.0-RC2</shardingsphere.version>
         
         <slf4j.version>1.7.28</slf4j.version>
         <snakeyaml.version>1.16</snakeyaml.version>
@@ -52,6 +55,11 @@
     
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>sharding-core-common</artifactId>
+                <version>${shardingsphere.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>

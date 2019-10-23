@@ -17,9 +17,6 @@
 
 package info.avalon566.shardingscaling.core.sync.reader;
 
-import java.util.List;
-
-import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
 import info.avalon566.shardingscaling.core.sync.channel.Channel;
 import info.avalon566.shardingscaling.core.sync.Runner;
 
@@ -40,11 +37,5 @@ public interface Reader extends Runner {
      * @param channel channel
      */
     void read(Channel channel);
-
-    /**
-     * Split job to job slices.
-     * @param concurrency slices number.
-     * @return rmdbs configuration
-     */
-    List<RdbmsConfiguration> split(int concurrency);
+    
 }

@@ -80,15 +80,16 @@ public class SyncExecutor {
      * Wait all slices finished.
      */
     public void waitFinish() {
-        for (Future<?> writerFuture : writerFutures) {
-            try {
+        try {
+            readerFuture.get();
+            for (Future<?> writerFuture : writerFutures) {
                 writerFuture.get();
-            } catch (InterruptedException ignored) {
-                shutDownReaderAndWriters();
-            } catch (ExecutionException ex) {
-                shutDownReaderAndWriters();
-                handleExecutionException(ex.getCause());
             }
+        } catch (InterruptedException ignored) {
+            shutDownReaderAndWriters();
+        } catch (ExecutionException ex) {
+            shutDownReaderAndWriters();
+            handleExecutionException(ex.getCause());
         }
     }
     

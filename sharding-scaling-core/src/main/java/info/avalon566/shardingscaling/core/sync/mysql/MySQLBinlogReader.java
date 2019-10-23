@@ -20,7 +20,7 @@ package info.avalon566.shardingscaling.core.sync.mysql;
 import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
 import info.avalon566.shardingscaling.core.sync.AbstractRunner;
 import info.avalon566.shardingscaling.core.sync.channel.Channel;
-import info.avalon566.shardingscaling.core.sync.reader.Reader;
+import info.avalon566.shardingscaling.core.sync.reader.LogReader;
 import info.avalon566.shardingscaling.core.sync.record.Column;
 import info.avalon566.shardingscaling.core.sync.record.DataRecord;
 import info.avalon566.shardingscaling.core.sync.metadata.JdbcUri;
@@ -40,8 +40,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * MySQL binlog reader.
@@ -50,7 +48,7 @@ import java.util.List;
  * @author yangyi
  */
 @Slf4j
-public final class MySQLBinlogReader extends AbstractRunner implements Reader {
+public final class MySQLBinlogReader extends AbstractRunner implements LogReader {
 
     private final BinlogPosition binlogPosition = new BinlogPosition();
 
@@ -72,9 +70,7 @@ public final class MySQLBinlogReader extends AbstractRunner implements Reader {
         read(channel);
     }
 
-    /**
-     * mark binlog position.
-     */
+    @Override
     public void markPosition() {
         try {
             DataSource dataSource = DataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
@@ -172,12 +168,7 @@ public final class MySQLBinlogReader extends AbstractRunner implements Reader {
             channel.pushRecord(record);
         }
     }
-
-    @Override
-    public List<RdbmsConfiguration> split(final int concurrency) {
-        return Arrays.asList(rdbmsConfiguration);
-    }
-
+    
     private boolean filter(final String database, final String fullTableName) {
         return !fullTableName.startsWith(database + ".");
     }

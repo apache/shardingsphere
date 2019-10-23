@@ -23,9 +23,10 @@ import info.avalon566.shardingscaling.core.job.schedule.Event;
 import info.avalon566.shardingscaling.core.job.schedule.EventType;
 import info.avalon566.shardingscaling.core.job.schedule.Reporter;
 import info.avalon566.shardingscaling.core.sync.SyncExecutor;
+import info.avalon566.shardingscaling.core.sync.reader.LogReader;
+import info.avalon566.shardingscaling.core.sync.reader.ReaderFactory;
 import info.avalon566.shardingscaling.core.sync.writer.Writer;
-import info.avalon566.shardingscaling.core.sync.mysql.MySQLBinlogReader;
-import info.avalon566.shardingscaling.core.sync.mysql.MySQLWriter;
+import info.avalon566.shardingscaling.core.sync.writer.WriterFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -41,14 +42,14 @@ public class RealtimeDataSyncer {
 
     private final SyncConfiguration syncConfiguration;
 
-    private final MySQLBinlogReader mysqlBinlogReader;
+    private final LogReader mysqlBinlogReader;
 
     private final Reporter reporter;
 
     public RealtimeDataSyncer(final SyncConfiguration syncConfiguration, final Reporter reporter) {
         this.syncConfiguration = syncConfiguration;
         this.reporter = reporter;
-        mysqlBinlogReader = new MySQLBinlogReader(syncConfiguration.getReaderConfiguration());
+        mysqlBinlogReader = ReaderFactory.newInstanceLogReader(syncConfiguration.getReaderConfiguration());
     }
 
     /**
@@ -64,7 +65,7 @@ public class RealtimeDataSyncer {
     public final void run() {
         List<Writer> writers = new ArrayList<>(syncConfiguration.getConcurrency());
         for (int i = 0; i < syncConfiguration.getConcurrency(); i++) {
-            writers.add(new MySQLWriter(syncConfiguration.getWriterConfiguration()));
+            writers.add(WriterFactory.newInstance(syncConfiguration.getWriterConfiguration()));
         }
         final SyncExecutor executor = new SyncExecutor(mysqlBinlogReader, writers);
         executor.run();

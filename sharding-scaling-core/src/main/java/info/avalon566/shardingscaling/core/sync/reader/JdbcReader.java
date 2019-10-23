@@ -15,36 +15,23 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.sync.postgresql;
+package info.avalon566.shardingscaling.core.sync.reader;
 
-import info.avalon566.shardingscaling.core.sync.AbstractRunner;
-import info.avalon566.shardingscaling.core.sync.channel.Channel;
-import info.avalon566.shardingscaling.core.sync.reader.LogReader;
-import lombok.Setter;
+import java.util.List;
+
+import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
 
 /**
- * PostgreSQL WAL reader.
+ * JDBC reader.
  *
- * @author avalon566
+ * @author yangyi
  */
-public final class PostgreSQLWalReader extends AbstractRunner implements LogReader {
-
-    @Setter
-    private Channel channel;
-
-    @Override
-    public void run() {
-        //TODO
-        read(channel);
-    }
-
-    @Override
-    public void read(final Channel channel) {
-        throw new UnsupportedOperationException();
-    }
+public interface JdbcReader extends Reader {
     
-    @Override
-    public void markPosition() {
-    }
+    /**
+     * Split job to job slices.
+     * @param concurrency slices number.
+     * @return rmdbs configuration
+     */
+    List<RdbmsConfiguration> split(int concurrency);
 }
-

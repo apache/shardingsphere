@@ -15,36 +15,37 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.sync.postgresql;
+package info.avalon566.shardingscaling.core.sync.mysql;
 
-import info.avalon566.shardingscaling.core.sync.AbstractRunner;
-import info.avalon566.shardingscaling.core.sync.channel.Channel;
+import info.avalon566.shardingscaling.core.spi.ScalingEntry;
+import info.avalon566.shardingscaling.core.sync.reader.JdbcReader;
 import info.avalon566.shardingscaling.core.sync.reader.LogReader;
-import lombok.Setter;
+import info.avalon566.shardingscaling.core.sync.writer.Writer;
 
 /**
- * PostgreSQL WAL reader.
+ * MySQL scaling entry.
  *
- * @author avalon566
+ * @author yangyi
  */
-public final class PostgreSQLWalReader extends AbstractRunner implements LogReader {
-
-    @Setter
-    private Channel channel;
-
+public final class MySQLScalingEntry implements ScalingEntry {
+    
     @Override
-    public void run() {
-        //TODO
-        read(channel);
-    }
-
-    @Override
-    public void read(final Channel channel) {
-        throw new UnsupportedOperationException();
+    public Class<? extends JdbcReader> getJdbcReaderClass() {
+        return MySQLJdbcReader.class;
     }
     
     @Override
-    public void markPosition() {
+    public Class<? extends LogReader> getLogReaderClass() {
+        return MySQLBinlogReader.class;
+    }
+    
+    @Override
+    public Class<? extends Writer> getWriterClass() {
+        return MySQLWriter.class;
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "MySQL";
     }
 }
-

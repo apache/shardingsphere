@@ -17,10 +17,19 @@
 
 package info.avalon566.shardingscaling.core.config;
 
+import org.apache.shardingsphere.spi.database.DatabaseType;
+
 /**
  * Data source configuration.
  *
  * @author avalon566
  */
 public interface DataSourceConfiguration {
+    
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
+    DatabaseType getDatabaseType();
 }
