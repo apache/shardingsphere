@@ -16,15 +16,15 @@
   -->
 
 <template>
-  <s-regist-config />
+  <s-registry-center />
 </template>
 
 <script>
-import SRegistConfig from './module/registConfig'
+import SRegistryCenter from './module/registryCenter'
 export default {
-  name: 'Index',
+  name: 'RegistryCenter',
   components: {
-    SRegistConfig
+    SRegistryCenter
   }
 }
 </script>

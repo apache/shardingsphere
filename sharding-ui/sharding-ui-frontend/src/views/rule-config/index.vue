@@ -18,9 +18,9 @@
 <template>
   <el-row class="box-card">
     <el-radio-group v-model="radioValue" @change="onChange">
-      <el-radio-button label="schema" />
-      <el-radio-button label="authentication" />
-      <el-radio-button label="props" />
+      <el-radio-button label="Schema" />
+      <el-radio-button label="Authentication" />
+      <el-radio-button label="Props" />
     </el-radio-group>
     <component :is="currentView" />
   </el-row>
@@ -39,17 +39,17 @@ export default {
   },
   data() {
     return {
-      radioValue: 'schema',
+      radioValue: 'Schema',
       currentView: MSchema
     }
   },
   methods: {
     onChange(val) {
-      if (val === 'schema') {
+      if (val === 'Schema') {
         this.currentView = MSchema
-      } else if (val === 'authentication') {
+      } else if (val === 'Authentication') {
         this.currentView = MAuthentication
-      } else if (val === 'props') {
+      } else if (val === 'Props') {
         this.currentView = MProps
       }
     }
