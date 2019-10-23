@@ -29,6 +29,7 @@
         <module>sharding-scaling-core</module>
         <module>sharding-scaling-bootstrap</module>
         <module>sharding-scaling-mysql</module>
+        <module>sharding-scaling-postgresql</module>
     </modules>
     
     <properties>

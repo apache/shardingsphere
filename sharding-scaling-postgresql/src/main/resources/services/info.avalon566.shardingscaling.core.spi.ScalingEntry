@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-info.avalon566.shardingscaling.core.sync.postgresql.PostgreSQLScalingEntry
+info.avalon556.shardingscaling.postgresql.PostgreSQLScalingEntry

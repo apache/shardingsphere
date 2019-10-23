@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.sync.postgresql;
+package info.avalon556.shardingscaling.postgresql;
 
 import info.avalon566.shardingscaling.core.spi.ScalingEntry;
 import info.avalon566.shardingscaling.core.sync.reader.JdbcReader;

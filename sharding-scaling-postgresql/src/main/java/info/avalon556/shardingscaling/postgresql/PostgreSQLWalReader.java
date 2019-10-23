@@ -15,20 +15,36 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.sync.postgresql;
+package info.avalon556.shardingscaling.postgresql;
 
-import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
-import info.avalon566.shardingscaling.core.sync.writer.AbstractJdbcWriter;
+import info.avalon566.shardingscaling.core.sync.AbstractRunner;
+import info.avalon566.shardingscaling.core.sync.channel.Channel;
+import info.avalon566.shardingscaling.core.sync.reader.LogReader;
+import lombok.Setter;
 
 /**
- * postgreSQL writer.
+ * PostgreSQL WAL reader.
  *
  * @author avalon566
  */
-public class PostgreSQLWriter extends AbstractJdbcWriter {
+public final class PostgreSQLWalReader extends AbstractRunner implements LogReader {
 
-    public PostgreSQLWriter(final RdbmsConfiguration rdbmsConfiguration) {
-        super(rdbmsConfiguration);
+    @Setter
+    private Channel channel;
+
+    @Override
+    public void run() {
+        //TODO
+        read(channel);
+    }
+
+    @Override
+    public void read(final Channel channel) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public void markPosition() {
     }
 }
 

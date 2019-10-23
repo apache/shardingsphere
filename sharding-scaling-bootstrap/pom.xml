@@ -39,6 +39,11 @@
             <artifactId>sharding-scaling-mysql</artifactId>
             <version>${parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>info.avalon566</groupId>
+            <artifactId>sharding-scaling-postgresql</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
     
         <dependency>
             <groupId>commons-cli</groupId>
