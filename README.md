@@ -31,7 +31,7 @@ mvn clean package
 
 ## How to Run
 
-1. Copy target\sharding-scaling-1.0.0-SNAPSHOT-bin.zip to work directory and unzip.
+1. Copy sharding-scaling-bootstrap\target\sharding-scaling-bootstrap-1.0.0-SNAPSHOT-bin.zip to work directory and unzip.
 
 1. Download mysql jdbc jar to lib directory.
 
