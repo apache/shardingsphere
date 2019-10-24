@@ -118,5 +118,4 @@ public final class ConfigurationYamlConverter {
     public static EncryptRuleConfiguration loadEncryptRuleConfiguration(final String data) {
         return new EncryptRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(data, YamlEncryptRuleConfiguration.class));
     }
-    
 }
