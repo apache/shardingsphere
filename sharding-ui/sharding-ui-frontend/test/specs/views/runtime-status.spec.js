@@ -18,8 +18,8 @@ import { expect } from 'chai'
 import { shallowMount, createLocalVue, mount } from '@vue/test-utils'
 import VueI18n from 'vue-i18n'
 import Vuex from 'vuex'
-import dataSource from '../../../src/views/orchestration/module/dataSource.vue'
-import instance from '../../../src/views/orchestration/module/instance.vue'
+import dataSource from '../../../src/views/runtime-status/module/dataSource.vue'
+import instance from '../../../src/views/runtime-status/module/instance.vue'
 import Language from '../../../src/lang/index'
 import store from '../../../src/store'
 import router from '../../../src/router'
@@ -48,7 +48,7 @@ const i18n = new VueI18n({
   }
 })
 
-describe('orchestration', () => {
+describe('runtime-status', () => {
   it('dataSource Does the pages exist？', () => {
     const wrapper = shallowMount(dataSource, {
       localVue,

@@ -18,7 +18,7 @@ import { expect } from 'chai'
 import { shallowMount, createLocalVue, mount } from '@vue/test-utils'
 import VueI18n from 'vue-i18n'
 import Vuex from 'vuex'
-import registConfig from '../../../src/views/index/module/registConfig.vue'
+import registryCenter from '../../../src/views/registry-center/module/registryCenter.vue'
 import Language from '../../../src/lang/index'
 import store from '../../../src/store'
 import router from '../../../src/router'
@@ -47,9 +47,9 @@ const i18n = new VueI18n({
   }
 })
 
-describe('index/registConfig.vue', () => {
-  it('registConfig Does the pages exist？', () => {
-    const wrapper = shallowMount(registConfig, {
+describe('registry-center/registryCenter.vue', () => {
+  it('registryCenter Does the pages exist？', () => {
+    const wrapper = shallowMount(registryCenter, {
       localVue,
       i18n,
       store,
@@ -59,7 +59,7 @@ describe('index/registConfig.vue', () => {
   })
 
   it('add()', () => {
-    const wrapper = shallowMount(registConfig, {
+    const wrapper = shallowMount(registryCenter, {
       localVue,
       i18n,
       store,
