@@ -334,7 +334,7 @@ public class RowsEventTest {
         byteBuf.writeIntLE(0);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), "2019-10-16 16:32:13");
+        assertColumnValue(actual.getColumnValues1(), "2019-10-16 08:32:13");
         assertColumnValue(actual.getColumnValues2(), "0000-00-00 00:00:00");
     }
 
@@ -361,7 +361,7 @@ public class RowsEventTest {
         byteBuf.writeInt(0);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), "2019-10-16 16:32:13");
+        assertColumnValue(actual.getColumnValues1(), "2019-10-16 08:32:13");
         assertColumnValue(actual.getColumnValues2(), "0000-00-00 00:00:00");
     }
 
