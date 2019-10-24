@@ -30,6 +30,7 @@ import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfigurati
 import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executor;
@@ -80,7 +81,7 @@ public final class NacosRegistryCenter implements RegistryCenter {
 
     @Override
     public List<String> getChildrenKeys(final String key) {
-        return null;
+        return Collections.singletonList(getDirectly(key));
     }
 
     @Override
@@ -101,7 +102,7 @@ public final class NacosRegistryCenter implements RegistryCenter {
 
     @Override
     public void persistEphemeral(final String key, final String value) {
-
+        update(key, value);
     }
 
     @Override
@@ -137,7 +138,7 @@ public final class NacosRegistryCenter implements RegistryCenter {
 
     @Override
     public boolean tryLock() {
-        return false;
+        return true;
     }
 
     @Override
