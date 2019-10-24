@@ -20,6 +20,7 @@ package info.avalon566.shardingscaling.core.job;
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.config.SyncType;
 import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
+import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.core.job.schedule.Event;
 import info.avalon566.shardingscaling.core.job.schedule.EventType;
 import info.avalon566.shardingscaling.core.job.schedule.Reporter;
@@ -74,10 +75,15 @@ public class HistoryDataSyncer {
 
     private void waitSlicesFinished(final List<SyncConfiguration> syncConfigurations, final Reporter reporter) {
         int counter = 0;
+        boolean hasException = false;
         while (true) {
             Event event = reporter.consumeEvent();
             if (EventType.FINISHED == event.getEventType()) {
                 counter++;
+            }
+            if(EventType.EXCEPTION_EXIT == event.getEventType()) {
+                hasException = true;
+                System.exit(1);
             }
             if (syncConfigurations.size() == counter) {
                 log.info("history data sync finish");

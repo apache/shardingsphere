@@ -29,7 +29,7 @@ public interface Channel {
      * push a {@code DataRecord} to channel.
      * @param dataRecord data
      */
-    void pushRecord(Record dataRecord);
+    void pushRecord(Record dataRecord) throws InterruptedException;
 
     /**
      * pop a {@code DataRecord} from channel.

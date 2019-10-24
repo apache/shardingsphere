@@ -102,8 +102,7 @@ public final class MySQLBinlogReader extends AbstractRunner implements LogReader
             if (null == event) {
                 try {
                     Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    // ignore
+                } catch (InterruptedException ignored) {
                 }
                 continue;
             }

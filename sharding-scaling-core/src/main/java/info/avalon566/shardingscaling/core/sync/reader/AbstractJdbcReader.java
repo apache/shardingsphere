@@ -17,17 +17,18 @@
 
 package info.avalon566.shardingscaling.core.sync.reader;
 
+import info.avalon566.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
+import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.core.sync.AbstractRunner;
 import info.avalon566.shardingscaling.core.sync.channel.Channel;
-import info.avalon566.shardingscaling.core.sync.record.FinishedRecord;
-import info.avalon566.shardingscaling.core.sync.record.Column;
 import info.avalon566.shardingscaling.core.sync.metadata.ColumnMetaData;
+import info.avalon566.shardingscaling.core.sync.record.Column;
 import info.avalon566.shardingscaling.core.sync.record.DataRecord;
-import info.avalon566.shardingscaling.core.sync.util.DbMetaDataUtil;
-import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
+import info.avalon566.shardingscaling.core.sync.record.FinishedRecord;
+import info.avalon566.shardingscaling.core.sync.record.Record;
 import info.avalon566.shardingscaling.core.sync.util.DataSourceFactory;
-import info.avalon566.shardingscaling.core.config.JdbcDataSourceConfiguration;
+import info.avalon566.shardingscaling.core.sync.util.DbMetaDataUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -88,15 +89,26 @@ public abstract class AbstractJdbcReader extends AbstractRunner implements JdbcR
                 record.setType("bootstrap-insert");
                 record.setFullTableName(String.format("%s.%s", conn.getCatalog(), rdbmsConfiguration.getTableName()));
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                    record.addColumn(new Column(rs.getObject(i), true));
+                    if (Types.TIME == rs.getMetaData().getColumnType(i)) {
+                        // fix: jdbc Time objects represent a wall-clock time and not a duration as MySQL treats them
+                        record.addColumn(new Column(rs.getString(i), true));
+                    } else {
+                        record.addColumn(new Column(rs.getObject(i), true));
+                    }
                 }
-                channel.pushRecord(record);
+                pushRecord(record);
             }
-            channel.pushRecord(new FinishedRecord());
         } catch (SQLException e) {
-            // make sure writer thread can exit
-            channel.pushRecord(new FinishedRecord());
             throw new SyncExecuteException(e);
+        } finally {
+            pushRecord(new FinishedRecord());
+        }
+    }
+
+    private void pushRecord(Record record) {
+        try {
+            channel.pushRecord(record);
+        } catch (InterruptedException ignored) {
         }
     }
 

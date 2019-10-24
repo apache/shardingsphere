@@ -51,7 +51,7 @@ public class DispatcherChannel implements Channel {
     }
 
     @Override
-    public final void pushRecord(final Record record) {
+    public final void pushRecord(final Record record) throws InterruptedException {
         if (FinishedRecord.class.equals(record.getClass())) {
             // 广播事件
             for (Map.Entry<String, MemoryChannel> entry : channels.entrySet()) {

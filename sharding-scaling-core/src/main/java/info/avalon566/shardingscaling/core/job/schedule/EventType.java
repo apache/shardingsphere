@@ -23,5 +23,6 @@ package info.avalon566.shardingscaling.core.job.schedule;
  */
 
 public enum EventType {
-    FINISHED
+    FINISHED,
+    EXCEPTION_EXIT
 }

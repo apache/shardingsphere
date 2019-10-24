@@ -95,8 +95,12 @@ public class SyncExecutor {
     
     private void shutDownReaderAndWriters() {
         reader.stop();
+        readerFuture.cancel(true);
         for (Writer each : writers) {
             each.stop();
+        }
+        for (Future<?> writeFuture: writerFutures) {
+            writeFuture.cancel(true);
         }
     }
     

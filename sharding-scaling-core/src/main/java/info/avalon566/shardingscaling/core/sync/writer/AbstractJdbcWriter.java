@@ -100,7 +100,6 @@ public abstract class AbstractJdbcWriter extends AbstractRunner implements Write
                 flush(dataSource, buffer);
             }
         } catch (SQLException ex) {
-            log.error(null, ex);
             throw new SyncExecuteException(ex);
         }
     }

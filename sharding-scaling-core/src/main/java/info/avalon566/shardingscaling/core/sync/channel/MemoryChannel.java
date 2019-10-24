@@ -34,13 +34,9 @@ public class MemoryChannel implements Channel {
     private final BlockingQueue<Record> queue = new ArrayBlockingQueue<>(1000);
 
     @Override
-    public final void pushRecord(final Record dataRecord) {
-        try {
-            if (!queue.offer(dataRecord, PUSH_TIMEOUT, TimeUnit.HOURS)) {
-                throw new RuntimeException();
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    public final void pushRecord(final Record dataRecord) throws InterruptedException {
+        if (!queue.offer(dataRecord, PUSH_TIMEOUT, TimeUnit.HOURS)) {
+            throw new RuntimeException();
         }
     }
 
