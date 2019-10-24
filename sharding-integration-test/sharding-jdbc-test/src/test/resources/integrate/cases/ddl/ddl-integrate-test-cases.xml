@@ -19,6 +19,10 @@
     <ddl-test-case sql-case-id="create_table">
         <assertion table="t_log" expected-data-file="create_table.xml" />
     </ddl-test-case>
+
+    <ddl-test-case sql-case-id="create_table_with_keyword">
+        <assertion table="t_log" expected-data-file="create_table.xml" />
+    </ddl-test-case>
     
     <ddl-test-case sql-case-id="create_table_if_not_exists">
         <assertion table="t_log" expected-data-file="create_table.xml" />

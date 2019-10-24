@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.rewrite.feature.sharding.parameter.impl;
 
 import com.google.common.base.Optional;
 import lombok.Setter;
-import org.apache.shardingsphere.core.optimize.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.core.preprocessor.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.preprocessor.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
@@ -61,10 +61,10 @@ public final class ShardingPaginationParameterRewriter implements ParameterRewri
     }
     
     private void rewriteOffset(final PaginationContext pagination, final int offsetParameterIndex, final StandardParameterBuilder parameterBuilder) {
-        parameterBuilder.getReplacedIndexAndParameters().put(offsetParameterIndex, pagination.getRevisedOffset());
+        parameterBuilder.addReplacedParameters(offsetParameterIndex, pagination.getRevisedOffset());
     }
     
     private void rewriteRowCount(final PaginationContext pagination, final int rowCountParameterIndex, final StandardParameterBuilder parameterBuilder) {
-        parameterBuilder.getReplacedIndexAndParameters().put(rowCountParameterIndex, pagination.getRevisedRowCount((SelectSQLStatementContext) sqlRouteResult.getSqlStatementContext()));
+        parameterBuilder.addReplacedParameters(rowCountParameterIndex, pagination.getRevisedRowCount((SelectSQLStatementContext) sqlRouteResult.getSqlStatementContext()));
     }
 }

@@ -20,9 +20,11 @@ package org.apache.shardingsphere.core.route.router.sharding.condition.generator
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.route.router.sharding.condition.Column;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.core.route.router.sharding.condition.generator.ConditionValue;
 import org.apache.shardingsphere.core.route.router.sharding.condition.generator.ConditionValueGenerator;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
+import org.apache.shardingsphere.core.route.spi.SPITimeService;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
@@ -41,7 +43,13 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
             return Optional.absent();
         }
         Optional<Comparable> routeValue = new ConditionValue(predicateRightValue.getExpression(), parameters).getValue();
-        return routeValue.isPresent() ? Optional.<RouteValue>of(new ListRouteValue<>(column.getName(), column.getTableName(), Lists.newArrayList(routeValue.get()))) : Optional.<RouteValue>absent();
+        if (routeValue.isPresent()) {
+            return Optional.<RouteValue>of(new ListRouteValue<>(column.getName(), column.getTableName(), Lists.newArrayList(routeValue.get())));
+        }
+        if (ExpressionConditionUtils.isNowExpression(predicateRightValue.getExpression())) {
+            return Optional.<RouteValue>of(new ListRouteValue<>(column.getName(), column.getTableName(), Lists.newArrayList(new SPITimeService().getTime())));
+        }
+        return Optional.absent();
     }
     
     private boolean isSupportedOperator(final String operator) {

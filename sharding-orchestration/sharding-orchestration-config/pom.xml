@@ -32,5 +32,6 @@
     <modules>
         <module>sharding-orchestration-config-api</module>
         <module>sharding-orchestration-config-zookeeper-curator</module>
+        <module>sharding-orchestration-config-apollo</module>
     </modules>
 </project>

@@ -107,8 +107,7 @@ unreservedWord_
     | IMPORT | CONCURRENT | XML | POSITION | SHARE | DUMPFILE | CLONE | AGGREGATE | INSTALL | UNINSTALL
     | RESOURCE | FLUSH | RESET | RESTART | HOSTS | RELAY | EXPORT | USER_RESOURCES | SLOW | GENERAL | CACHE
     | SUBJECT | ISSUER | OLD | RANDOM | RETAIN | MAX_USER_CONNECTIONS | MAX_CONNECTIONS_PER_HOUR | MAX_UPDATES_PER_HOUR
-    | MAX_QUERIES_PER_HOUR | REUSE | OPTIONAL | HISTORY | NEVER | EXPIRE
-
+    | MAX_QUERIES_PER_HOUR | REUSE | OPTIONAL | HISTORY | NEVER | EXPIRE | TYPE | UNIX_TIMESTAMP | LOWER
     ;
 
 schemaName
@@ -377,7 +376,7 @@ frameBetween_
 
 specialFunction_
     : groupConcatFunction_ | windowFunction_ | castFunction_ | convertFunction_ | positionFunction_ | substringFunction_ | extractFunction_ 
-    | charFunction_ | trimFunction_ | weightStringFunction_
+    | charFunction_ | trimFunction_ | weightStringFunction_ | valuesFunction_
     ;
 
 groupConcatFunction_
@@ -417,6 +416,10 @@ trimFunction_
     : TRIM LP_ (LEADING | BOTH | TRAILING) STRING_ FROM STRING_ RP_
     ;
 
+valuesFunction_
+    : VALUES LP_ columnName RP_
+    ;
+
 weightStringFunction_
     : WEIGHT_STRING LP_ expr (AS dataType)? levelClause_? RP_
     ;
@@ -434,7 +437,8 @@ regularFunction_
     ;
 
 regularFunctionName_
-    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | INTERVAL | SUBSTRING
+    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | INTERVAL | SUBSTRING | LEFT | RIGHT
+    | LOWER | UNIX_TIMESTAMP
     ;
 
 matchExpression_

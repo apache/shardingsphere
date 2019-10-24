@@ -121,10 +121,8 @@ Architects can adjust the system architecture to the most applicable one to curr
 
 ## How to Build
 
-Install `maven` and run the command:
-
-```shell
-mvn clean install -Prelease
+```bash
+./mvnw clean install -Prelease
 ``` 
 
 Artifact:

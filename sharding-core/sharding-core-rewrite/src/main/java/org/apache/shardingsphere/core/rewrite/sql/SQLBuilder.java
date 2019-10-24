@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.sql;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Alterable;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
@@ -25,7 +24,6 @@ import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,8 +40,7 @@ public final class SQLBuilder {
     
     private final String logicSQL;
     
-    @Getter
-    private final List<SQLToken> sqlTokens = new LinkedList<>();
+    private final List<SQLToken> sqlTokens;
     
     /**
      * Convert to SQL.

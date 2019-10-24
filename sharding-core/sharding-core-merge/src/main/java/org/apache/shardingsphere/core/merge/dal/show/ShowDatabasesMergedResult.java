@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.core.merge.dal.show;
 
-import lombok.RequiredArgsConstructor;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
+import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 
 import java.io.InputStream;
@@ -30,13 +32,14 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
 import java.util.Collections;
 import java.util.List;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
  * Merged result for show databases.
  *
  * @author chenqingyang
+ * @author xiayan
  */
-@RequiredArgsConstructor
 public final class ShowDatabasesMergedResult extends LocalMergedResultAdapter implements MergedResult {
     
     private final List<String> schemas;
@@ -45,6 +48,25 @@ public final class ShowDatabasesMergedResult extends LocalMergedResultAdapter im
     
     public ShowDatabasesMergedResult() {
         this(Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME));
+    }
+
+    public ShowDatabasesMergedResult(final List<String> schemas) {
+        this.schemas = schemas;
+        this.currentIndex = 0;
+    }
+
+    public ShowDatabasesMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults)throws SQLException {
+        this(convertToScheme(queryResults));
+    }
+
+    private static List<String> convertToScheme(final List<QueryResult> queryResults) throws SQLException {
+        List<String> result = new LinkedList<>();
+        for (QueryResult queryResult : queryResults) {
+            while (queryResult.next()) {
+                result.add((String) queryResult.getValue(1, String.class));
+            }
+        }
+        return new ArrayList<>(result);
     }
     
     @Override

@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
@@ -61,21 +61,21 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     }
     
     private Collection<String> getLogicTableNames() {
-        return sqlStatementContext.getSqlStatement() instanceof DropIndexStatement
-                ? getTableNames((DropIndexStatement) sqlStatementContext.getSqlStatement()) : sqlStatementContext.getTablesContext().getTableNames();
+        return sqlStatementContext.getSqlStatement() instanceof DropIndexStatement && !((DropIndexStatement) sqlStatementContext.getSqlStatement()).getIndexes().isEmpty()
+                ? getTableNamesFromMetaData((DropIndexStatement) sqlStatementContext.getSqlStatement()) : sqlStatementContext.getTablesContext().getTableNames();
     }
     
-    private Collection<String> getTableNames(final DropIndexStatement dropIndexStatement) {
+    private Collection<String> getTableNamesFromMetaData(final DropIndexStatement dropIndexStatement) {
         Collection<String> result = new LinkedList<>();
         for (IndexSegment each : dropIndexStatement.getIndexes()) {
-            Optional<String> tableName = findLogicTableName(each.getName());
+            Optional<String> tableName = findLogicTableNameFromMetaData(each.getName());
             Preconditions.checkState(tableName.isPresent(), "Cannot find index name `%s`.", each.getName());
             result.add(tableName.get());
         }
         return result;
     }
     
-    private Optional<String> findLogicTableName(final String logicIndexName) {
+    private Optional<String> findLogicTableNameFromMetaData(final String logicIndexName) {
         for (String each : tableMetas.getAllTableNames()) {
             if (tableMetas.get(each).containsIndex(logicIndexName)) {
                 return Optional.of(each);

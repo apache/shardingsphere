@@ -36,7 +36,7 @@ public final class StandardParameterBuilderTest {
     @Before
     public void setUp() {
         parameterBuilder = new StandardParameterBuilder(parameters);
-        parameterBuilder.getAddedIndexAndParameters().putAll(Collections.singletonMap(4, 7));
+        parameterBuilder.addAddedParameters(4, Collections.<Object>singleton(7));
     }
     
     @Test

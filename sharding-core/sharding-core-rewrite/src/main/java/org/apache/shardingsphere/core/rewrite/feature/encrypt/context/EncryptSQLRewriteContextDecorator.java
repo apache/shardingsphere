@@ -39,8 +39,7 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
     
     @Override
     public void decorate(final SQLRewriteContext sqlRewriteContext) {
-        for (ParameterRewriter each : new EncryptParameterRewriterBuilder(encryptRule, isQueryWithCipherColumn).getParameterRewriters(
-                sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getTableMetas())) {
+        for (ParameterRewriter each : new EncryptParameterRewriterBuilder(encryptRule, isQueryWithCipherColumn).getParameterRewriters(sqlRewriteContext.getTableMetas())) {
             each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());
         }
         sqlRewriteContext.addSQLTokenGenerators(new EncryptTokenGenerateBuilder(encryptRule, isQueryWithCipherColumn).getSQLTokenGenerators());

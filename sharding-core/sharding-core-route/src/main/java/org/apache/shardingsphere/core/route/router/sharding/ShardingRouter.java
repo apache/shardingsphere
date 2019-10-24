@@ -22,10 +22,10 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.optimize.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.core.optimize.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.optimize.SQLStatementContextFactory;
-import org.apache.shardingsphere.core.optimize.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.preprocessor.SQLStatementContextFactory;
+import org.apache.shardingsphere.core.preprocessor.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
@@ -92,7 +92,7 @@ public final class ShardingRouter {
     public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
         Optional<ShardingStatementValidator> shardingStatementValidator = ShardingStatementValidatorFactory.newInstance(sqlStatement);
         if (shardingStatementValidator.isPresent()) {
-            shardingStatementValidator.get().validate(shardingRule, sqlStatement);
+            shardingStatementValidator.get().validate(shardingRule, sqlStatement, parameters);
         }
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getTables(), logicSQL, parameters, sqlStatement);
         Optional<GeneratedKey> generatedKey = sqlStatement instanceof InsertStatement

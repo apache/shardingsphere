@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.route.router.sharding.condition.Column;
-import org.apache.shardingsphere.core.optimize.segment.table.TablesContext;
+import org.apache.shardingsphere.core.preprocessor.segment.table.TablesContext;
 import org.apache.shardingsphere.core.route.router.sharding.condition.AlwaysFalseRouteValue;
 import org.apache.shardingsphere.core.route.router.sharding.condition.AlwaysFalseShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;

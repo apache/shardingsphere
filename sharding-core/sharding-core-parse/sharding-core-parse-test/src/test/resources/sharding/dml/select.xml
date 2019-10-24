@@ -1076,4 +1076,17 @@
             </and-condition>
         </sharding-conditions>
     </parser-result>
+    <parser-result sql-case-id="select_with_left_function">
+        <tables>
+            <table name="t_order_item"/>
+        </tables>
+        <tokens>
+            <table-token start-index="44" table-name="t_order_item" length="12" />
+        </tokens>
+        <select-items start-index="7" stop-index="37">
+            <expression-items>
+                <expression-item start-index="7" stop-index="37" text="CONCAT(LEFT(status,7),'test')"/>
+            </expression-items>
+        </select-items>
+    </parser-result>
 </parser-result-sets>

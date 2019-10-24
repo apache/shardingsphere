@@ -25,7 +25,16 @@
             <table-token start-index="13" table-name="t_log" length="5" />
         </tokens>
     </parser-result>
-    
+
+    <parser-result sql-case-id="create_table_with_keyword">
+        <tables>
+            <table name="t_log" />
+        </tables>
+        <tokens>
+            <table-token start-index="26" table-name="t_log" length="5" />
+        </tokens>
+    </parser-result>
+
     <parser-result sql-case-id="create_table_if_not_exists">
         <tables>
             <table name="t_log" />
@@ -501,7 +510,8 @@
     
     <parser-result sql-case-id="create_table_with_create_index">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="13" stop-index="19" />
+            <table name="t_order" start-index="95" stop-index="101" />
         </tables>
         <tokens>
             <table-token start-index="13" table-name="t_order" length="7" />

@@ -17,24 +17,17 @@
 
 package org.apache.shardingsphere.core.rewrite.parameter.builder.impl;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
-import org.apache.shardingsphere.core.rule.DataNode;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
- * Grouped Parameter builder.
+ * Grouped parameter builder.
  *
  * @author panjuan
  * @author zhangliang
@@ -42,82 +35,43 @@ import java.util.Map.Entry;
 public final class GroupedParameterBuilder implements ParameterBuilder {
     
     @Getter
-    private final List<List<Object>> parameterGroups;
+    private final List<StandardParameterBuilder> parameterBuilders;
     
     @Setter
-    private ShardingConditions shardingConditions;
+    private String derivedColumnName;
     
-    @Getter
-    private final List<Map<Integer, Object>> addedIndexAndParameterGroups;
-    
-    @Getter
-    private final List<Map<Integer, Object>> replacedIndexAndParameterGroups;
-    
-    public GroupedParameterBuilder(final List<List<Object>> parameterGroups) {
-        this.parameterGroups = parameterGroups;
-        addedIndexAndParameterGroups = createAdditionalParameterGroups();
-        replacedIndexAndParameterGroups = createAdditionalParameterGroups();
-    }
-    
-    private List<Map<Integer, Object>> createAdditionalParameterGroups() {
-        List<Map<Integer, Object>> result = new ArrayList<>(parameterGroups.size());
-        for (int i = 0; i < parameterGroups.size(); i++) {
-            result.add(new HashMap<Integer, Object>());
+    public GroupedParameterBuilder(final List<List<Object>> groupedParameters) {
+        parameterBuilders = new ArrayList<>(groupedParameters.size());
+        for (List<Object> each : groupedParameters) {
+            parameterBuilders.add(new StandardParameterBuilder(each));
         }
-        return result;
     }
     
     @Override
     public List<Object> getParameters() {
         List<Object> result = new LinkedList<>();
-        int count = 0;
-        for (List<Object> each : parameterGroups) {
-            result.addAll(getParameters(each, count));
-            count++;
+        for (int i = 0; i < parameterBuilders.size(); i++) {
+            result.addAll(getParameters(i));
         }
         return result;
     }
     
-    @Override
-    public List<Object> getParameters(final RoutingUnit routingUnit) {
-        List<Object> result = new LinkedList<>();
-        Iterator<ShardingCondition> shardingConditionIterator = shardingConditions.getConditions().iterator();
-        int count = 0;
-        for (List<Object> each : parameterGroups) {
-            if (!shardingConditionIterator.hasNext() || isInSameDataNode(shardingConditionIterator.next(), routingUnit)) {
-                result.addAll(getParameters(each, count));
-            }
-            count++;
-        }
-        return result;
+    /**
+     * Get parameters.
+     * 
+     * @param count parameters group count
+     * @return parameters
+     */
+    public List<Object> getParameters(final int count) {
+        return parameterBuilders.get(count).getParameters();
     }
     
-    private List<Object> getParameters(final List<Object> parameterGroup, final int count) {
-        List<Object> result = new LinkedList<>();
-        result.addAll(parameterGroup);
-        for (Entry<Integer, Object> entry : replacedIndexAndParameterGroups.get(count).entrySet()) {
-            result.set(entry.getKey(), entry.getValue());
-        }
-        for (Entry<Integer, Object> entry : addedIndexAndParameterGroups.get(count).entrySet()) {
-            int index = entry.getKey();
-            if (index < result.size()) {
-                result.add(index, entry.getValue());
-            } else {
-                result.add(entry.getValue());
-            }
-        }
-        return result;
-    }
-    
-    private boolean isInSameDataNode(final ShardingCondition shardingCondition, final RoutingUnit routingUnit) {
-        if (shardingCondition.getDataNodes().isEmpty()) {
-            return true;
-        }
-        for (DataNode each : shardingCondition.getDataNodes()) {
-            if (routingUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
-                return true;
-            }
-        }
-        return false;
+    /**
+     * Get derived column name.
+     * 
+     * @return derived column name
+     */
+    public Optional<String> getDerivedColumnName() {
+        return Optional.fromNullable(derivedColumnName);
     }
 }

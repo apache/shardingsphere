@@ -762,10 +762,10 @@
                         <exclude>**/.gitignore</exclude>
                         <exclude>**/.gitmodules</exclude>
                         <exclude>**/.git/**</exclude>
-                        <exclude>**/.gitkeep</exclude>
                         <!-- CI files -->
                         <exclude>**/.travis.yml</exclude>
                         <exclude>**/.mvn/jvm.config</exclude>
+                        <exclude>**/.mvn/wrapper/maven-wrapper.properties</exclude>
                         <!-- GitHub files -->
                         <exclude>**/.github/**</exclude>
                         <!-- document files -->
