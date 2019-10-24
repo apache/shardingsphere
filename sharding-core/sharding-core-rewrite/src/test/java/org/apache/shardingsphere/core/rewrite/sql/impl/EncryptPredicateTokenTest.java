@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.sql.impl;
 
 import org.apache.shardingsphere.core.constant.ShardingOperator;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptPredicateToken;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptPredicateRightValueToken;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -31,31 +31,31 @@ import static org.junit.Assert.assertThat;
 public final class EncryptPredicateTokenTest {
     
     @Test
-    public void assertToStringWithoutPlaceholderWithEqual() {
+    public void assertToStringWithoutPlaceholderWithoutTableOwnerWithEqual() {
         Map<Integer, Object> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "a");
-        EncryptPredicateToken actual = new EncryptPredicateToken(0, 0, "column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.EQUAL);
-        assertThat(actual.toString(), is("column_x = 'a'"));
+        EncryptPredicateRightValueToken actual = new EncryptPredicateRightValueToken(0, 0, indexValues, Collections.<Integer>emptyList(), ShardingOperator.EQUAL);
+        assertThat(actual.toString(), is("'a'"));
     }
-    
+
     @Test
-    public void assertToStringWithPlaceholderWithEqual() {
-        EncryptPredicateToken actual = new EncryptPredicateToken(0, 0, "column_x", Collections.<Integer, Object>emptyMap(), Collections.singletonList(0), ShardingOperator.EQUAL);
-        assertThat(actual.toString(), is("column_x = ?"));
+    public void assertToStringWithPlaceholderWithoutTableOwnerWithEqual() {
+        EncryptPredicateRightValueToken actual = new EncryptPredicateRightValueToken(0, 0, Collections.<Integer, Object>emptyMap(), Collections.singletonList(0), ShardingOperator.EQUAL);
+        assertThat(actual.toString(), is("?"));
     }
-    
+
     @Test
-    public void assertToStringWithoutPlaceholderWithIn() {
+    public void assertToStringWithoutPlaceholderWithoutTableOwnerWithIn() {
         Map<Integer, Object> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "a");
         indexValues.put(1, "b");
-        EncryptPredicateToken actual = new EncryptPredicateToken(0, 0, "column_x", indexValues, Collections.<Integer>emptyList(), ShardingOperator.IN);
-        assertThat(actual.toString(), is("column_x IN ('a', 'b')"));
+        EncryptPredicateRightValueToken actual = new EncryptPredicateRightValueToken(0, 0, indexValues, Collections.<Integer>emptyList(), ShardingOperator.IN);
+        assertThat(actual.toString(), is("('a', 'b')"));
     }
-    
+
     @Test
-    public void assertToStringWithPlaceholderWithIn() {
-        EncryptPredicateToken actual = new EncryptPredicateToken(0, 0, "column_x", Collections.<Integer, Object>emptyMap(), Collections.singletonList(0), ShardingOperator.IN);
-        assertThat(actual.toString(), is("column_x IN (?)"));
+    public void assertToStringWithPlaceholderWithoutTableOwnerWithIn() {
+        EncryptPredicateRightValueToken actual = new EncryptPredicateRightValueToken(0, 0, Collections.<Integer, Object>emptyMap(), Collections.singletonList(0), ShardingOperator.IN);
+        assertThat(actual.toString(), is("(?)"));
     }
 }

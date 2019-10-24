@@ -93,10 +93,10 @@ public final class RoutingEngineFactory {
     }
     
     private static RoutingEngine getDALRoutingEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement, final Collection<String> tableNames) {
-        if (sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof UseStatement) {
+        if (sqlStatement instanceof UseStatement) {
             return new IgnoreRoutingEngine();
         }
-        if (sqlStatement instanceof SetStatement || sqlStatement instanceof ResetParameterStatement) {
+        if (sqlStatement instanceof SetStatement || sqlStatement instanceof ResetParameterStatement || sqlStatement instanceof ShowDatabasesStatement) {
             return new DatabaseBroadcastRoutingEngine(shardingRule);
         }
         if (!tableNames.isEmpty()) {

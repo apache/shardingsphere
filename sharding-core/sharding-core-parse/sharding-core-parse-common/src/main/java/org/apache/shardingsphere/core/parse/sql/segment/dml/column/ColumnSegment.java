@@ -65,7 +65,7 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
     public final String getQualifiedName() {
         return null == owner ? name : owner.getTableName() + "." + name;
     }
-    
+
     @Override
     public final Optional<TableSegment> getOwner() {
         return Optional.fromNullable(owner);

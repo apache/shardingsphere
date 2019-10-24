@@ -15,41 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.fixture;
+package org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
+import org.junit.Test;
 
-import java.util.Properties;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-@Getter
-@Setter
-public final class TestQueryAssistedShardingEncryptor implements ShardingQueryAssistedEncryptor {
+public final class ShorthandProjectionTest {
     
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "assistedTest";
+    @Test
+    public void assertGetExpression() {
+        assertThat(new ShorthandProjection("owner").getExpression(), is("owner.*"));
     }
     
-    @Override
-    public void init() {
+    @Test
+    public void assertGetAliasWhenAbsent() {
+        assertFalse(new ShorthandProjection("owner").getAlias().isPresent());
     }
     
-    @Override
-    public String encrypt(final Object plaintext) {
-        return "encryptValue";
+    @Test
+    public void assertGetColumnLabel() {
+        assertTrue(new ShorthandProjection("owner").getColumnLabel().contains("*"));
     }
     
-    @Override
-    public Object decrypt(final String ciphertext) {
-        return "decryptValue";
-    }
-    
-    @Override
-    public String queryAssistedEncrypt(final String plaintext) {
-        return "assistedEncryptValue";
+    @Test
+    public void assertContains() {
+        assertTrue(new ShorthandProjection("owner").getOwner().isPresent());
     }
 }

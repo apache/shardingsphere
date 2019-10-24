@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-const HOST = ''
+const HOST = '//47.100.190.183:8088'
 
 export default {
   HOST

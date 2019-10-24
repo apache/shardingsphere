@@ -22,32 +22,25 @@ import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
 
 /**
- * Encrypt projection token.
+ * Column name token of encrypt.
  *
  * @author panjuan
  */
-public final class EncryptProjectionToken extends SQLToken implements Substitutable {
+public final class EncryptColumnNameToken extends SQLToken implements Substitutable {
     
     @Getter
     private final int stopIndex;
     
     private final String columnName;
     
-    private final String owner;
-    
-    public EncryptProjectionToken(final int startIndex, final int stopIndex, final String columnName, final String owner) {
+    public EncryptColumnNameToken(final int startIndex, final int stopIndex, final String columnName) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.columnName = columnName;
-        this.owner = owner;
-    }
-    
-    public EncryptProjectionToken(final int startIndex, final int stopIndex, final String columnName) {
-        this(startIndex, stopIndex, columnName, null);
     }
     
     @Override
     public String toString() {
-        return null == owner ? columnName : String.format("%s.%s", owner, columnName);
+        return columnName;
     }
 }
