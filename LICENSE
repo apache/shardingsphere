@@ -199,3 +199,19 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+=======================================================================
+APACHE SHARDINGSPHERE SUBCOMPONENTS:
+
+The Apache ShardingSphere project contains subcomponents with separate copyright
+notices and license terms. Your use of the source code for the these
+subcomponents is subject to the terms and conditions of the following
+licenses.
+
+========================================================================
+Apache 2.0 licenses
+========================================================================
+
+The following class is modified from Maven Wrapper
+
+./.mvn/wrapper/MavenWrapperDownloader.java
