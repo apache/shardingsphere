@@ -95,7 +95,9 @@
         <postgresql.version>42.2.5</postgresql.version>
         <mssql.version>6.1.7.jre7-preview</mssql.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
-        
+
+        <!-- Plugin versions -->
+        <takari-maven-plugin.version>0.6.1</takari-maven-plugin.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
         <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
@@ -485,6 +487,12 @@
         </extensions>
         <pluginManagement>
             <plugins>
+                <!-- mvn -N io.takari:maven:wrapper -Dmaven=3.5.4 -->
+                <plugin>
+                    <groupId>io.takari</groupId>
+                    <artifactId>maven</artifactId>
+                    <version>${takari-maven-plugin.version}</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
