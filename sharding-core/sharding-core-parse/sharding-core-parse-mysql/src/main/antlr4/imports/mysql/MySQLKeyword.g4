@@ -1511,3 +1511,7 @@ UNIX_TIMESTAMP
 LOWER
     : L O W E R
     ;
+
+UPPER
+    : U P P E R
+    ;
