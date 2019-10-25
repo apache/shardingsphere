@@ -23,8 +23,11 @@ import org.junit.Test;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 
+import javax.sql.DataSource;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class HikariDataSourcePropertiesSetterTest {
     
@@ -49,4 +52,11 @@ public final class HikariDataSourcePropertiesSetterTest {
         assertThat(dataSource.getDataSourceProperties().getProperty("cachePrepStmts"), is("true"));
         assertThat(dataSource.getDataSourceProperties().getProperty("prepStmtCacheSize"), is("250"));
     }
+    
+    @Test
+    public void assertSupport() {
+        assertThat(dbcpDataSourcePropertiesSetter.support(dataSource), is(true));
+        assertThat(dbcpDataSourcePropertiesSetter.support(mock(DataSource.class)), is(false));
+    }
+    
 }

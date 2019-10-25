@@ -37,4 +37,11 @@ public interface DataSourcePropertiesSetter {
      * @param dataSource dataSource instance
      */
     void propertiesSet(Environment environment, String prefix, String dataSourceName, DataSource dataSource);
+    
+    /**
+     * support datasource type.
+     * @param type datasource type
+     * @return is supported
+     */
+    boolean support(DataSource type);
 }
