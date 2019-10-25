@@ -43,7 +43,7 @@ public final class SQLBuilder {
     private final List<SQLToken> sqlTokens;
     
     /**
-     * Convert to SQL.
+     * Build SQL.
      *
      * @return SQL
      */
@@ -52,10 +52,10 @@ public final class SQLBuilder {
     }
     
     /**
-     * Convert to SQL.
+     * Build SQL.
      *
      * @param routingUnit routing unit
-     * @param logicAndActualTables logic and actual map
+     * @param logicAndActualTables logic and actual tables map
      * @return SQL
      */
     public String toSQL(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
@@ -63,21 +63,21 @@ public final class SQLBuilder {
             return logicSQL;
         }
         Collections.sort(sqlTokens);
-        return createLogicSQL(routingUnit, logicAndActualTables);
-    }
-    
-    private String createLogicSQL(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
         StringBuilder result = new StringBuilder();
         result.append(logicSQL.substring(0, sqlTokens.get(0).getStartIndex()));
         for (SQLToken each : sqlTokens) {
             result.append(getSQLTokenText(each, routingUnit, logicAndActualTables));
-            result.append(logicSQL.substring(getStartIndex(each), getStopIndex(each)));
+            result.append(getConjunctionText(each));
         }
         return result.toString();
     }
     
     private String getSQLTokenText(final SQLToken sqlToken, final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
         return sqlToken instanceof Alterable ? ((Alterable) sqlToken).toString(routingUnit, logicAndActualTables) : sqlToken.toString();
+    }
+    
+    private String getConjunctionText(final SQLToken sqlToken) {
+        return logicSQL.substring(getStartIndex(sqlToken), getStopIndex(sqlToken));
     }
     
     private int getStartIndex(final SQLToken sqlToken) {
