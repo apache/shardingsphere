@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.spring.boot;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.util.InlineExpressionParser;
@@ -28,6 +29,9 @@ import org.apache.shardingsphere.shardingjdbc.api.EncryptDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.common.SpringBootPropertiesConfigurationProperties;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.datasource.DBCPDataSourcePropertiesSetter;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.datasource.DataSourcePropertiesSetter;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.datasource.HikariDataSourcePropertiesSetter;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.encrypt.EncryptRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.encrypt.SpringBootEncryptRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.masterslave.MasterSlaveRuleCondition;
@@ -83,6 +87,13 @@ public class SpringBootConfiguration implements EnvironmentAware {
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
     private final String jndiName = "jndi-name";
+    
+    private static final Map<String, DataSourcePropertiesSetter> DATA_SOURCE_PROPERTIES_SETTER_MAP =
+            ImmutableMap.<String, DataSourcePropertiesSetter>builder()
+                    .put("com.zaxxer.hikari.HikariDataSource", new HikariDataSourcePropertiesSetter())
+                    .put("org.apache.commons.dbcp.BasicDataSource", new DBCPDataSourcePropertiesSetter())
+                    .put("org.apache.commons.dbcp2.BasicDataSource", new DBCPDataSourcePropertiesSetter())
+                    .build();
     
     /**
      * Get sharding data source bean.
@@ -148,7 +159,13 @@ public class SpringBootConfiguration implements EnvironmentAware {
         if (dataSourceProps.containsKey(jndiName)) {
             return getJndiDataSource(dataSourceProps.get(jndiName).toString());
         }
-        return DataSourceUtil.getDataSource(dataSourceProps.get("type").toString(), dataSourceProps);
+        String type = dataSourceProps.get("type").toString();
+        DataSource datasource = DataSourceUtil.getDataSource(type, dataSourceProps);
+        DataSourcePropertiesSetter dataSourcePropertiesSetter = DATA_SOURCE_PROPERTIES_SETTER_MAP.get(type);
+        if (null != dataSourcePropertiesSetter) {
+            dataSourcePropertiesSetter.propertiesSet(environment, prefix, dataSourceName, datasource);
+        }
+        return datasource;
     }
     
     private DataSource getJndiDataSource(final String jndiName) throws NamingException {
