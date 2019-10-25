@@ -38,12 +38,10 @@ fi
 
 CLASS_PATH=.:${DEPLOY_DIR}/conf:${DEPLOY_DIR}/lib/*
 JAVA_OPTS=" -server -Xmx1g -Xms1g -Xmn512m -Xss256k -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:LargePageSizeInBytes=128m -XX:+UseFastAccessorMethods -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 "
-JAVA_OPTS="${JAVA_OPTS} -jar ${DEPLOY_DIR}/lib/sharding-ui.jar"
-JAVA_OPTS="${JAVA_OPTS} --spring.config.location=${DEPLOY_DIR}/conf/application.properties"
-JAVA_OPTS="${JAVA_OPTS} --logging.config=${DEPLOY_DIR}/conf/logback.xml"
 
+MAIN_CLASS=org.apache.shardingsphere.ui.Bootstrap
 echo "Starting the $SERVER_NAME ..."
 
-nohup java ${JAVA_OPTS} > ${STDOUT_FILE} 2>&1 &
+nohup java ${JAVA_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS} > ${STDOUT_FILE} 2>&1 &
 sleep 1
 echo "Please check the STDOUT file: $STDOUT_FILE"
