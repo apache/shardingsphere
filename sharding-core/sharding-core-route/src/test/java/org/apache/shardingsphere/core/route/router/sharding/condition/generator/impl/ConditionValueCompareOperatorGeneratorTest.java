@@ -80,7 +80,6 @@ public final class ConditionValueCompareOperatorGeneratorTest {
         assertTrue(Range.atMost(1).encloses(rangeRouteValue.getValueRange()));
     }
 
-
     @Test
     public void assertGenerateConditionValueWithAtLeastOperator() {
         PredicateCompareRightValue rightValue = new PredicateCompareRightValue(">=", new LiteralExpressionSegment(0, 0, 1));
