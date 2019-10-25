@@ -128,7 +128,7 @@ public final class MySQLBinlogReader extends AbstractRunner implements LogReader
             for (int i = 0; i < each.length; i++) {
                 record.addColumn(new Column(getColumnValue(record.getTableName(), i, each[i]), true));
             }
-            channel.pushRecord(record);
+            pushRecord(channel, record);
         }
     }
 
@@ -148,7 +148,7 @@ public final class MySQLBinlogReader extends AbstractRunner implements LogReader
                 Object newValue = getColumnValue(record.getTableName(), j, afterValues[j]);
                 record.addColumn(new Column(newValue, !newValue.equals(oldValue)));
             }
-            channel.pushRecord(record);
+            pushRecord(channel, record);
         }
     }
 
@@ -164,7 +164,14 @@ public final class MySQLBinlogReader extends AbstractRunner implements LogReader
             for (int i = 0; i < each.length; i++) {
                 record.addColumn(new Column(getColumnValue(record.getTableName(), i, each[i]), true));
             }
+            pushRecord(channel, record);
+        }
+    }
+
+    private void pushRecord(final Channel channel, final DataRecord record) {
+        try {
             channel.pushRecord(record);
+        } catch (InterruptedException ignored) {
         }
     }
     
