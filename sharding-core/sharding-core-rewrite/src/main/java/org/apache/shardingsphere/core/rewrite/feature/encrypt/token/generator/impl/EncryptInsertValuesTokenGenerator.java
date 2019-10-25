@@ -68,22 +68,21 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
     
     @Override
     public InsertValuesToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        InsertValuesToken insertValuesToken = findPreviousSQLToken(InsertValuesToken.class);
-        if (null == insertValuesToken) {
-            return generateNewSQLToken(sqlStatementContext);
+        Optional<SQLToken> insertValuesToken = findPreviousSQLToken(InsertValuesToken.class);
+        if (insertValuesToken.isPresent()) {
+            processPreviousSQLToken((InsertSQLStatementContext) sqlStatementContext, (InsertValuesToken) insertValuesToken.get());
+            return (InsertValuesToken) insertValuesToken.get();
         }
-        processPreviousSQLToken((InsertSQLStatementContext) sqlStatementContext, insertValuesToken);
-        return insertValuesToken;
+        return generateNewSQLToken(sqlStatementContext);
     }
     
-    @SuppressWarnings("unchecked")
-    private <T extends SQLToken> T findPreviousSQLToken(final Class<T> sqlToken) {
+    private Optional<SQLToken> findPreviousSQLToken(final Class<?> sqlToken) {
         for (SQLToken each : previousSQLTokens) {
             if (each.getClass().equals(sqlToken)) {
-                return (T) each;
+                return Optional.of(each);
             }
         }
-        return null;
+        return Optional.absent();
     }
     
     private void processPreviousSQLToken(final InsertSQLStatementContext sqlStatementContext, final InsertValuesToken insertValuesToken) {
@@ -107,23 +106,24 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
     }
     
     private void encryptInsertValueToken(final InsertValueToken insertValueToken, 
-                                         final String tableName, final InsertSQLStatementContext insertSQLStatementContext, final InsertValueContext insertValueContext) {
+                                         final String tableName, final InsertSQLStatementContext sqlStatementContext, final InsertValueContext insertValueContext) {
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
         Preconditions.checkState(encryptTable.isPresent());
-        InsertColumnsToken insertColumnsToken = findPreviousSQLToken(InsertColumnsToken.class);
-        for (String each : insertSQLStatementContext.getColumnNames()) {
+        Optional<SQLToken> insertColumnsToken = findPreviousSQLToken(InsertColumnsToken.class);
+        for (String each : sqlStatementContext.getColumnNames()) {
             if (!encryptRule.findShardingEncryptor(tableName, each).isPresent()) {
                 continue;
             }
-            int index = getColumnIndex(insertSQLStatementContext, insertColumnsToken, each);
+            int columnIndex = insertColumnsToken.isPresent()
+                    ? ((InsertColumnsToken) insertColumnsToken.get()).getColumns().indexOf(encryptRule.getCipherColumn(tableName, each)) : sqlStatementContext.getColumnNames().indexOf(each);
             Optional<ShardingEncryptor> encryptor = encryptRule.findShardingEncryptor(tableName, each);
             Preconditions.checkState(encryptor.isPresent());
-            ExpressionSegment valueExpression = insertValueContext.getValueExpressions().get(index);
-            Object originalValue = insertValueContext.getValue(index);
+            ExpressionSegment valueExpression = insertValueContext.getValueExpressions().get(columnIndex);
+            Object originalValue = insertValueContext.getValue(columnIndex);
             if (valueExpression instanceof LiteralExpressionSegment) {
                 LiteralExpressionSegment encryptedLiteralExpressionSegment = new LiteralExpressionSegment(
                         valueExpression.getStartIndex(), valueExpression.getStopIndex(), encryptor.get().encrypt(originalValue));
-                insertValueToken.getValues().set(index, encryptedLiteralExpressionSegment);
+                insertValueToken.getValues().set(columnIndex, encryptedLiteralExpressionSegment);
             }
             if (encryptRule.findAssistedQueryColumn(tableName, each).isPresent()) {
                 DerivedSimpleExpressionSegment derivedExpressionSegment = insertValueContext.getParameters().isEmpty()
@@ -137,14 +137,6 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
                 insertValueToken.getValues().add(derivedExpressionSegment);
             }
         }
-    }
-    
-    private int getColumnIndex(final InsertSQLStatementContext sqlStatementContext, final InsertColumnsToken insertColumnsToken, final String logicColumn) {
-        if (null == insertColumnsToken) {
-            return sqlStatementContext.getColumnNames().indexOf(logicColumn);
-        }
-        String cipherColumn = encryptRule.getCipherColumn(sqlStatementContext.getTablesContext().getSingleTableName(), logicColumn);
-        return insertColumnsToken.getColumns().indexOf(cipherColumn);
     }
     
     private int getParameterIndexCount(final InsertValueToken insertValueToken) {
