@@ -70,22 +70,19 @@ public final class SQLBuilder {
         StringBuilder result = new StringBuilder();
         result.append(logicSQL.substring(0, sqlTokens.get(0).getStartIndex()));
         for (SQLToken each : sqlTokens) {
-            result.append(getSQLTokenLiterals(each, routingUnit, logicAndActualTables));
-            result.append(getConjunctionLiterals(each));
+            result.append(getSQLTokenText(each, routingUnit, logicAndActualTables));
+            result.append(logicSQL.substring(getStartIndex(each), getStopIndex(each)));
         }
         return result.toString();
     }
     
-    private String getSQLTokenLiterals(final SQLToken sqlToken, final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
+    private String getSQLTokenText(final SQLToken sqlToken, final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
         return sqlToken instanceof Alterable ? ((Alterable) sqlToken).toString(routingUnit, logicAndActualTables) : sqlToken.toString();
     }
     
-    private String getConjunctionLiterals(final SQLToken sqlToken) {
-        return logicSQL.substring(getStartIndex(sqlToken) > logicSQL.length() ? logicSQL.length() : getStartIndex(sqlToken), getStopIndex(sqlToken));
-    }
-    
     private int getStartIndex(final SQLToken sqlToken) {
-        return sqlToken instanceof Substitutable ? ((Substitutable) sqlToken).getStopIndex() + 1 : sqlToken.getStartIndex();
+        int startIndex = sqlToken instanceof Substitutable ? ((Substitutable) sqlToken).getStopIndex() + 1 : sqlToken.getStartIndex();
+        return startIndex > logicSQL.length() ? logicSQL.length() : startIndex;
     }
     
     private int getStopIndex(final SQLToken sqlToken) {
