@@ -36,19 +36,32 @@
         />
         <el-table-column :label="$t('index.table.operate')" fixed="right" width="140">
           <template slot-scope="scope">
-            <el-button
-              :disabled="scope.row.activated"
-              type="primary"
-              icon="el-icon-link"
-              size="small"
-              @click="handleConnect(scope.row)"
-            />
-            <el-button
-              size="small"
-              type="danger"
-              icon="el-icon-delete"
-              @click="handlerDel(scope.row)"
-            />
+            <el-tooltip
+              :content="!scope.row.activated ? $t('index.table.operateConnect'): $t('index.table.operateConnected')"
+              class="item"
+              effect="dark"
+              placement="top"
+            >
+              <el-button
+                type="primary"
+                icon="el-icon-link"
+                size="small"
+                @click="handleConnect(scope.row)"
+              />
+            </el-tooltip>
+            <el-tooltip
+              :content="$t('index.table.operateDel')"
+              class="item"
+              effect="dark"
+              placement="top"
+            >
+              <el-button
+                size="small"
+                type="danger"
+                icon="el-icon-delete"
+                @click="handlerDel(scope.row)"
+              />
+            </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
@@ -67,9 +80,9 @@
       :visible.sync="regustDialogVisible"
       width="1010px"
     >
-      <el-form ref="form" :model="form" :rules="rules" label-width="150px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="170px">
         <el-form-item :label="$t('index.registDialog.name')" prop="name">
-          <el-input v-model="form.name" autocomplete="off" />
+          <el-input :placeholder="$t('index.rules.name')" v-model="form.name" autocomplete="off" />
         </el-form-item>
         <el-form-item :label="$t('index.registDialog.centerType')" prop="centerType">
           <el-radio-group v-model="form.centerType">
@@ -77,16 +90,32 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item :label="$t('index.registDialog.address')" prop="address">
-          <el-input v-model="form.address" autocomplete="off" />
+          <el-input
+            :placeholder="$t('index.rules.address')"
+            v-model="form.address"
+            autocomplete="off"
+          />
         </el-form-item>
         <el-form-item :label="$t('index.registDialog.orchestrationName')" prop="orchestrationName">
-          <el-input v-model="form.orchestrationName" autocomplete="off" />
+          <el-input
+            :placeholder="$t('index.rules.orchestrationName')"
+            v-model="form.orchestrationName"
+            autocomplete="off"
+          />
         </el-form-item>
         <el-form-item :label="$t('index.registDialog.namespaces')" prop="namespaces">
-          <el-input v-model="form.namespaces" autocomplete="off" />
+          <el-input
+            :placeholder="$t('index.rules.namespaces')"
+            v-model="form.namespaces"
+            autocomplete="off"
+          />
         </el-form-item>
         <el-form-item :label="$t('index.registDialog.digest')">
-          <el-input v-model="form.digest" autocomplete="off" />
+          <el-input
+            :placeholder="$t('index.rules.digest')"
+            v-model="form.digest"
+            autocomplete="off"
+          />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -104,7 +133,7 @@ import { mapActions } from 'vuex'
 import clone from 'lodash/clone'
 import API from '../api'
 export default {
-  name: 'RegistConfig',
+  name: 'RegistryCenter',
   data() {
     return {
       regustDialogVisible: false,
@@ -122,12 +151,12 @@ export default {
           prop: 'serverLists'
         },
         {
-          label: this.$t('index').registDialog.orchestrationName,
-          prop: 'orchestrationName'
-        },
-        {
           label: this.$t('index').registDialog.namespaces,
           prop: 'namespace'
+        },
+        {
+          label: this.$t('index').registDialog.orchestrationName,
+          prop: 'orchestrationName'
         }
       ],
       form: {

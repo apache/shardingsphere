@@ -72,12 +72,17 @@
       </span>
     </el-dialog>
     <el-dialog :visible.sync="addSchemaDialogVisible" title="Add Schema" width="80%" top="3vh">
-      <el-form ref="form" :model="form" :rules="rules" label-width="150px">
-        <el-form-item label="name" prop="name">
-          <el-input v-model="form.name" autocomplete="off" />
-        </el-form-item>
-        <el-form-item label="ruleConfig" prop="ruleConfig">
+      <el-form ref="form" :model="form" :rules="rules" label-width="170px">
+        <el-form-item :label="$t('configManage.schema.name')" prop="name">
           <el-input
+            :placeholder="$t('configManage.schemaRules.name')"
+            v-model="form.name"
+            autocomplete="off"
+          />
+        </el-form-item>
+        <el-form-item :label="$t('configManage.schema.ruleConfig')" prop="ruleConfig">
+          <el-input
+            :placeholder="$t('configManage.schemaRules.ruleConfig')"
             :rows="8"
             v-model="form.ruleConfig"
             autocomplete="off"
@@ -85,8 +90,9 @@
             class="edit-text"
           />
         </el-form-item>
-        <el-form-item label="dataSourceConfig" prop="dataSourceConfig">
+        <el-form-item :label="$t('configManage.schema.dataSourceConfig')" prop="dataSourceConfig">
           <el-input
+            :placeholder="$t('configManage.schemaRules.dataSourceConfig')"
             :rows="8"
             v-model="form.dataSourceConfig"
             autocomplete="off"
