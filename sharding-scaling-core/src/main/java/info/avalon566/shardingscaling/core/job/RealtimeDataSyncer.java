@@ -77,8 +77,8 @@ public class RealtimeDataSyncer {
                     log.info("{} realtime data sync finish", syncConfiguration.getReaderConfiguration().getTableName());
                     reporter.report(new Event(EventType.FINISHED));
                 } catch (SyncExecuteException ex) {
-                    log.info("{} realtime data sync exception exit", syncConfiguration.getReaderConfiguration().getTableName());
-                    reporter.report(new Event(EventType.FINISHED));
+                    log.error("{} realtime data sync exception exit", syncConfiguration.getReaderConfiguration().getTableName(), ex);
+                    reporter.report(new Event(EventType.EXCEPTION_EXIT));
                 }
             }
         }).start();
