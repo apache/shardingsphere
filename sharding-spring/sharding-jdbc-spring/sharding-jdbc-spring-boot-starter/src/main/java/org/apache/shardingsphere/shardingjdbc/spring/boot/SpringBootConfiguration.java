@@ -29,7 +29,6 @@ import org.apache.shardingsphere.shardingjdbc.api.EncryptDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.common.SpringBootPropertiesConfigurationProperties;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.datasource.DBCPDataSourcePropertiesSetter;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.datasource.DataSourcePropertiesSetter;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.datasource.HikariDataSourcePropertiesSetter;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.encrypt.EncryptRuleCondition;
@@ -76,6 +75,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class SpringBootConfiguration implements EnvironmentAware {
     
+    private static final Map<String, DataSourcePropertiesSetter> DATA_SOURCE_PROPERTIES_SETTER_MAP =
+            ImmutableMap.<String, DataSourcePropertiesSetter>builder()
+                    .put("com.zaxxer.hikari.HikariDataSource", new HikariDataSourcePropertiesSetter())
+                    .build();
+    
     private final SpringBootShardingRuleConfigurationProperties shardingRule;
     
     private final SpringBootMasterSlaveRuleConfigurationProperties masterSlaveRule;
@@ -87,13 +91,6 @@ public class SpringBootConfiguration implements EnvironmentAware {
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
     private final String jndiName = "jndi-name";
-    
-    private static final Map<String, DataSourcePropertiesSetter> DATA_SOURCE_PROPERTIES_SETTER_MAP =
-            ImmutableMap.<String, DataSourcePropertiesSetter>builder()
-                    .put("com.zaxxer.hikari.HikariDataSource", new HikariDataSourcePropertiesSetter())
-                    .put("org.apache.commons.dbcp.BasicDataSource", new DBCPDataSourcePropertiesSetter())
-                    .put("org.apache.commons.dbcp2.BasicDataSource", new DBCPDataSourcePropertiesSetter())
-                    .build();
     
     /**
      * Get sharding data source bean.

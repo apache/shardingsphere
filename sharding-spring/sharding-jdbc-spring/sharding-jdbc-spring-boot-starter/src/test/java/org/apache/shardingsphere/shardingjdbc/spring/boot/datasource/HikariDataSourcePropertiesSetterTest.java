@@ -27,7 +27,9 @@ import org.springframework.mock.env.MockEnvironment;
 public class HikariDataSourcePropertiesSetterTest {
     
     private final HikariDataSourcePropertiesSetter dbcpDataSourcePropertiesSetter = new HikariDataSourcePropertiesSetter();
+    
     private final HikariDataSource dataSource = new HikariDataSource();
+    
     private Environment environment;
     
     @Before
@@ -36,6 +38,7 @@ public class HikariDataSourcePropertiesSetterTest {
         mockEnvironment.setProperty("spring.shardingsphere.datasource.ds_master.type", "com.zaxxer.hikari.HikariDataSource");
         mockEnvironment.setProperty("spring.shardingsphere.datasource.ds_master.data-source-properties.cachePrepStmts", "true");
         mockEnvironment.setProperty("spring.shardingsphere.datasource.ds_master.data-source-properties.prepStmtCacheSize", "250");
+        
         environment = mockEnvironment;
     }
     
