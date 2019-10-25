@@ -29,7 +29,7 @@ import javax.sql.DataSource;
 public interface DataSourcePropertiesSetter {
     
     /**
-     * Set datasource properties.
+     * Set datasource custom properties.
      *
      * @param environment environment variable
      * @param prefix properties prefix

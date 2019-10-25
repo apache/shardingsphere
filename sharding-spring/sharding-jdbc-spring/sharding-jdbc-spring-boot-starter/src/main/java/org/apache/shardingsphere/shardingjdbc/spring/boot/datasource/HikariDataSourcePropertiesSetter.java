@@ -31,6 +31,7 @@ import java.util.Properties;
  * @author xiayan
  */
 public final class HikariDataSourcePropertiesSetter implements DataSourcePropertiesSetter {
+    
     @Override
     public void propertiesSet(final Environment environment, final String prefix, final String dataSourceName, final DataSource dataSource) {
         Properties properties = new Properties();

@@ -157,12 +157,12 @@ public class SpringBootConfiguration implements EnvironmentAware {
             return getJndiDataSource(dataSourceProps.get(jndiName).toString());
         }
         String type = dataSourceProps.get("type").toString();
-        DataSource datasource = DataSourceUtil.getDataSource(type, dataSourceProps);
+        DataSource result = DataSourceUtil.getDataSource(type, dataSourceProps);
         DataSourcePropertiesSetter dataSourcePropertiesSetter = DATA_SOURCE_PROPERTIES_SETTER_MAP.get(type);
         if (null != dataSourcePropertiesSetter) {
-            dataSourcePropertiesSetter.propertiesSet(environment, prefix, dataSourceName, datasource);
+            dataSourcePropertiesSetter.propertiesSet(environment, prefix, dataSourceName, result);
         }
-        return datasource;
+        return result;
     }
     
     private DataSource getJndiDataSource(final String jndiName) throws NamingException {
