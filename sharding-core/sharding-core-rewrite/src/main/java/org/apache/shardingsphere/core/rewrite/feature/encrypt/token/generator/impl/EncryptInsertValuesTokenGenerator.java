@@ -111,7 +111,10 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
         Preconditions.checkState(encryptTable.isPresent());
         InsertColumnsToken insertColumnsToken = findPreviousSQLToken(InsertColumnsToken.class);
-        for (String each : encryptTable.get().getLogicColumns()) {
+        for (String each : insertSQLStatementContext.getColumnNames()) {
+            if (!encryptRule.findShardingEncryptor(tableName, each).isPresent()) {
+                continue;
+            }
             int index = getColumnIndex(insertSQLStatementContext, insertColumnsToken, each);
             Optional<ShardingEncryptor> encryptor = encryptRule.findShardingEncryptor(tableName, each);
             Preconditions.checkState(encryptor.isPresent());
