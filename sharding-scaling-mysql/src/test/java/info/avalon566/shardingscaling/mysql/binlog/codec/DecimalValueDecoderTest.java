@@ -53,5 +53,11 @@ public class DecimalValueDecoderTest {
         newDecimalByteBuf.writeBytes(newDecimalBytes);
         BigDecimal actual = (BigDecimal) DecimalValueDecoder.decodeNewDecimal(meta, newDecimalByteBuf);
         assertThat(actual.toString(), is("-1234567890.1234"));
+
+        newDecimalBytes = ByteBufUtil.decodeHexDump("7DFEFDB5CC2741EFDEBE4154FD52E7");
+        newDecimalByteBuf = Unpooled.buffer(newDecimalBytes.length);
+        newDecimalByteBuf.writeBytes(newDecimalBytes);
+        actual = (BigDecimal) DecimalValueDecoder.decodeNewDecimal(32 << 8 | 6, newDecimalByteBuf);
+        assertThat(actual.toString(), is("-33620554869842448557956779.175384"));
     }
 }

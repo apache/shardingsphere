@@ -18,11 +18,10 @@
 package info.avalon566.shardingscaling.mysql.binlog.codec;
 
 import io.netty.buffer.ByteBuf;
+import lombok.Getter;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-
-import lombok.Getter;
 
 /**
  * Decimal Value decoder.
@@ -69,7 +68,7 @@ public class DecimalValueDecoder {
     }
 
     private static BigDecimal decodeIntegerValue(final DecimalMetaData metaData, final byte[] value) {
-        int offset = metaData.getExtraIntegerSize();
+        int offset = DIG_TO_BYTES[metaData.getExtraIntegerSize()];
         BigDecimal result = offset > 0 ? BigDecimal.valueOf(readFixedLengthIntBE(value, 0, offset)) : BigDecimal.ZERO;
         for (; offset < metaData.getIntegerByteLength(); offset += DEC_BYTE_SIZE) {
             int i = readFixedLengthIntBE(value, offset, DEC_BYTE_SIZE);
