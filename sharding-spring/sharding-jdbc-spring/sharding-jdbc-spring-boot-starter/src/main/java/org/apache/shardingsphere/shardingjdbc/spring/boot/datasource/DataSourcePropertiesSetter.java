@@ -40,6 +40,7 @@ public interface DataSourcePropertiesSetter {
     
     /**
      * support datasource type.
+     *
      * @param type datasource type
      * @return is supported
      */
