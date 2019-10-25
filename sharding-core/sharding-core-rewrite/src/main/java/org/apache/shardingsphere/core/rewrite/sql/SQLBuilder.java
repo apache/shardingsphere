@@ -81,12 +81,15 @@ public final class SQLBuilder {
     }
     
     private String getConjunctionLiterals(final SQLToken sqlToken) {
-        int currentSQLTokenIndex = sqlTokens.indexOf(sqlToken);
-        int stopIndex = sqlTokens.size() - 1 == currentSQLTokenIndex ? logicSQL.length() : sqlTokens.get(currentSQLTokenIndex + 1).getStartIndex();
-        return logicSQL.substring(getStartIndex(sqlToken) > logicSQL.length() ? logicSQL.length() : getStartIndex(sqlToken), stopIndex);
+        return logicSQL.substring(getStartIndex(sqlToken) > logicSQL.length() ? logicSQL.length() : getStartIndex(sqlToken), getStopIndex(sqlToken));
     }
     
     private int getStartIndex(final SQLToken sqlToken) {
         return sqlToken instanceof Substitutable ? ((Substitutable) sqlToken).getStopIndex() + 1 : sqlToken.getStartIndex();
+    }
+    
+    private int getStopIndex(final SQLToken sqlToken) {
+        int currentSQLTokenIndex = sqlTokens.indexOf(sqlToken);
+        return sqlTokens.size() - 1 == currentSQLTokenIndex ? logicSQL.length() : sqlTokens.get(currentSQLTokenIndex + 1).getStartIndex();
     }
 }
