@@ -28,7 +28,7 @@ public final class TableMetaDataTest {
     
     @Test
     public void assertContainsIndex() {
-        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("name", "dataType", true)), Collections.singleton("indexName"));
+        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("name", "dataType", true, true, true)), Collections.singleton("indexName"));
         assertTrue(tableMetaData.containsIndex("indexName"));
     }
 }

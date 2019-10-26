@@ -37,9 +37,9 @@ public final class EncryptColumnMetaData extends ColumnMetaData {
     
     private final String assistedQueryColumnName;
     
-    public EncryptColumnMetaData(final String name, final String dataType, final boolean primaryKey, 
+    public EncryptColumnMetaData(final String name, final String dataType, final boolean primaryKey, final boolean nullable, final boolean autoIncrement,
                                  final String cipherColumnName, final String plainColumnName, final String assistedQueryColumnName) {
-        super(name, dataType, primaryKey);
+        super(name, dataType, primaryKey, nullable, autoIncrement);
         this.cipherColumnName = cipherColumnName;
         this.plainColumnName = plainColumnName;
         this.assistedQueryColumnName = assistedQueryColumnName;
