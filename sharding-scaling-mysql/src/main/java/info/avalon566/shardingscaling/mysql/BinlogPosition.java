@@ -17,6 +17,7 @@
 
 package info.avalon566.shardingscaling.mysql;
 
+import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
 import lombok.Data;
 
 /**
@@ -26,7 +27,7 @@ import lombok.Data;
  * @author yangyi
  */
 @Data
-public class BinlogPosition {
+public class BinlogPosition implements LogPosition {
     
     private String serverId;
     

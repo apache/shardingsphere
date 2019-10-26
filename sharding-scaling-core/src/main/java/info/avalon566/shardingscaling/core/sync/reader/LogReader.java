@@ -26,6 +26,7 @@ public interface LogReader extends Reader {
     
     /**
      * mark log position.
+     * @return log position
      */
-    void markPosition();
+    LogPosition markPosition();
 }

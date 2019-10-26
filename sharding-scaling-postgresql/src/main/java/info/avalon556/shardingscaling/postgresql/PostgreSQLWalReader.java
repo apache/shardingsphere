@@ -19,6 +19,7 @@ package info.avalon556.shardingscaling.postgresql;
 
 import info.avalon566.shardingscaling.core.sync.AbstractRunner;
 import info.avalon566.shardingscaling.core.sync.channel.Channel;
+import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
 import info.avalon566.shardingscaling.core.sync.reader.LogReader;
 import lombok.Setter;
 
@@ -44,7 +45,8 @@ public final class PostgreSQLWalReader extends AbstractRunner implements LogRead
     }
     
     @Override
-    public void markPosition() {
+    public LogPosition markPosition() {
+        throw new UnsupportedOperationException();
     }
 }
 

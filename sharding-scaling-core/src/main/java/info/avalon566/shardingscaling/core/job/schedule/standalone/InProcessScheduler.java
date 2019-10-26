@@ -17,6 +17,7 @@
 
 package info.avalon566.shardingscaling.core.job.schedule.standalone;
 
+import info.avalon566.shardingscaling.core.job.RealtimeDataSyncer;
 import info.avalon566.shardingscaling.core.job.TableSliceSyncJob;
 import info.avalon566.shardingscaling.core.job.DatabaseSyncJob;
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
@@ -41,6 +42,8 @@ public class InProcessScheduler implements Scheduler {
                 new DatabaseSyncJob(syncConfiguration, reporter).run();
             } else if (SyncType.TableSlice.equals(syncConfiguration.getSyncType())) {
                 new TableSliceSyncJob(syncConfiguration, reporter).run();
+            } else if (SyncType.Realtime.equals(syncConfiguration.getSyncType())) {
+                new RealtimeDataSyncer(syncConfiguration, reporter).run();
             }
         }
         return reporter;

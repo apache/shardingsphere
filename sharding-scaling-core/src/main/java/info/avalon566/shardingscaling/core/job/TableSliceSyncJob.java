@@ -17,7 +17,6 @@
 
 package info.avalon566.shardingscaling.core.job;
 
-import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.job.schedule.Event;
 import info.avalon566.shardingscaling.core.job.schedule.EventType;

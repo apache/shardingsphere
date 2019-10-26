@@ -17,25 +17,28 @@
 
 package info.avalon566.shardingscaling.core.config;
 
-import lombok.AllArgsConstructor;
+import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Sync configuration.
  * @author avalon566
  */
 @Data
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SyncConfiguration {
 
-    private SyncType syncType;
+    private final SyncType syncType;
 
     /**
      * 单表写入并发度.
      */
-    private int concurrency;
+    private final int concurrency;
 
-    private RdbmsConfiguration readerConfiguration;
+    private LogPosition position;
 
-    private RdbmsConfiguration writerConfiguration;
+    private final RdbmsConfiguration readerConfiguration;
+
+    private final RdbmsConfiguration writerConfiguration;
 }

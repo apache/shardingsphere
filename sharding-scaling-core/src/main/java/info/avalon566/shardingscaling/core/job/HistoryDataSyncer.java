@@ -17,10 +17,9 @@
 
 package info.avalon566.shardingscaling.core.job;
 
+import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.config.SyncType;
-import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
-import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.core.job.schedule.Event;
 import info.avalon566.shardingscaling.core.job.schedule.EventType;
 import info.avalon566.shardingscaling.core.job.schedule.Reporter;
@@ -81,7 +80,7 @@ public class HistoryDataSyncer {
             if (EventType.FINISHED == event.getEventType()) {
                 counter++;
             }
-            if(EventType.EXCEPTION_EXIT == event.getEventType()) {
+            if (EventType.EXCEPTION_EXIT == event.getEventType()) {
                 hasException = true;
                 System.exit(1);
             }

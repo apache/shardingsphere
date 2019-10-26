@@ -15,27 +15,14 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.sync.channel;
+package info.avalon566.shardingscaling.core.sync.reader;
 
-import info.avalon566.shardingscaling.core.sync.record.Record;
+import java.io.Serializable;
 
 /**
- * Channel.
+ * Log position interface.
+ *
  * @author avalon566
  */
-public interface Channel {
-
-    /**
-     * push a {@code DataRecord} to channel.
-     *
-     * @param dataRecord data
-     * @throws InterruptedException if thread interrupted
-     */
-    void pushRecord(Record dataRecord) throws InterruptedException;
-
-    /**
-     * pop a {@code DataRecord} from channel.
-     * @return dataRecord
-     */
-    Record popRecord();
+public interface LogPosition extends Serializable {
 }

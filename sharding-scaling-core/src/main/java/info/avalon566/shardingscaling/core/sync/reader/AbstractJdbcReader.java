@@ -105,7 +105,7 @@ public abstract class AbstractJdbcReader extends AbstractRunner implements JdbcR
         }
     }
 
-    private void pushRecord(Record record) {
+    private void pushRecord(final Record record) {
         try {
             channel.pushRecord(record);
         } catch (InterruptedException ignored) {

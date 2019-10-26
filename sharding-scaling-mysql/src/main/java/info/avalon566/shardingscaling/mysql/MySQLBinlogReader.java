@@ -20,6 +20,7 @@ package info.avalon566.shardingscaling.mysql;
 import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
 import info.avalon566.shardingscaling.core.sync.AbstractRunner;
 import info.avalon566.shardingscaling.core.sync.channel.Channel;
+import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
 import info.avalon566.shardingscaling.core.sync.reader.LogReader;
 import info.avalon566.shardingscaling.core.sync.record.Column;
 import info.avalon566.shardingscaling.core.sync.record.DataRecord;
@@ -50,14 +51,15 @@ import java.sql.SQLException;
 @Slf4j
 public final class MySQLBinlogReader extends AbstractRunner implements LogReader {
 
-    private final BinlogPosition binlogPosition = new BinlogPosition();
+    private final BinlogPosition binlogPosition;
 
     private final RdbmsConfiguration rdbmsConfiguration;
 
     @Setter
     private Channel channel;
 
-    public MySQLBinlogReader(final RdbmsConfiguration rdbmsConfiguration) {
+    public MySQLBinlogReader(final RdbmsConfiguration rdbmsConfiguration, final LogPosition binlogPosition) {
+        this.binlogPosition = (BinlogPosition) binlogPosition;
         if (!JdbcDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
             throw new UnsupportedOperationException("MySQLBinlogReader only support JdbcDataSourceConfiguration");
         }
@@ -71,19 +73,21 @@ public final class MySQLBinlogReader extends AbstractRunner implements LogReader
     }
 
     @Override
-    public void markPosition() {
+    public LogPosition markPosition() {
         try {
             DataSource dataSource = DataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
             try (Connection connection = dataSource.getConnection()) {
                 PreparedStatement ps = connection.prepareStatement("show master status");
                 ResultSet rs = ps.executeQuery();
                 rs.next();
-                binlogPosition.setFilename(rs.getString(1));
-                binlogPosition.setPosition(rs.getLong(2));
+                BinlogPosition currentPosition = new BinlogPosition();
+                currentPosition.setFilename(rs.getString(1));
+                currentPosition.setPosition(rs.getLong(2));
                 ps = connection.prepareStatement("show variables like 'server_id'");
                 rs = ps.executeQuery();
                 rs.next();
-                binlogPosition.setServerId(rs.getString(2));
+                currentPosition.setServerId(rs.getString(2));
+                return currentPosition;
             }
         } catch (SQLException e) {
             throw new RuntimeException("markPosition error", e);

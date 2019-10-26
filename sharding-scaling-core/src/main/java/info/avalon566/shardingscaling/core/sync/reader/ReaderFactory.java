@@ -57,11 +57,12 @@ public final class ReaderFactory {
      * New instance of log reader.
      *
      * @param rdbmsConfiguration rdbms configuration
+     * @param position log position
      * @return log reader
      */
     @SneakyThrows
-    public static LogReader newInstanceLogReader(final RdbmsConfiguration rdbmsConfiguration) {
-        return newInstanceLogReader(rdbmsConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), rdbmsConfiguration);
+    public static LogReader newInstanceLogReader(final RdbmsConfiguration rdbmsConfiguration, final LogPosition position) {
+        return newInstanceLogReader(rdbmsConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), rdbmsConfiguration, position);
     }
     
     /**
@@ -69,11 +70,12 @@ public final class ReaderFactory {
      *
      * @param databaseType database type
      * @param rdbmsConfiguration rdbms configuration
+     * @param position log position
      * @return log reader
      */
     @SneakyThrows
-    public static LogReader newInstanceLogReader(final String databaseType, final RdbmsConfiguration rdbmsConfiguration) {
+    public static LogReader newInstanceLogReader(final String databaseType, final RdbmsConfiguration rdbmsConfiguration, final LogPosition position) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
-        return scalingEntry.getLogReaderClass().getConstructor(RdbmsConfiguration.class).newInstance(rdbmsConfiguration);
+        return scalingEntry.getLogReaderClass().getConstructor(RdbmsConfiguration.class, LogPosition.class).newInstance(rdbmsConfiguration, position);
     }
 }

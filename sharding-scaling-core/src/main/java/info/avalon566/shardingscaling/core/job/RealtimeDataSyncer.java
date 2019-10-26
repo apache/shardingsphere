@@ -23,6 +23,7 @@ import info.avalon566.shardingscaling.core.job.schedule.Event;
 import info.avalon566.shardingscaling.core.job.schedule.EventType;
 import info.avalon566.shardingscaling.core.job.schedule.Reporter;
 import info.avalon566.shardingscaling.core.sync.SyncExecutor;
+import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
 import info.avalon566.shardingscaling.core.sync.reader.LogReader;
 import info.avalon566.shardingscaling.core.sync.reader.ReaderFactory;
 import info.avalon566.shardingscaling.core.sync.writer.Writer;
@@ -49,14 +50,16 @@ public class RealtimeDataSyncer {
     public RealtimeDataSyncer(final SyncConfiguration syncConfiguration, final Reporter reporter) {
         this.syncConfiguration = syncConfiguration;
         this.reporter = reporter;
-        mysqlBinlogReader = ReaderFactory.newInstanceLogReader(syncConfiguration.getReaderConfiguration());
+        mysqlBinlogReader = ReaderFactory.newInstanceLogReader(syncConfiguration.getReaderConfiguration(), syncConfiguration.getPosition());
     }
 
     /**
      * Do something before run,mark binlog position.
+     *
+     * @return log position
      */
-    public final void preRun() {
-        mysqlBinlogReader.markPosition();
+    public final LogPosition preRun() {
+        return mysqlBinlogReader.markPosition();
     }
 
     /**
