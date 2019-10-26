@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job.schedule.standalone;
+package info.avalon566.shardingscaling.core.job.schedule.local;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.config.SyncType;
 import info.avalon566.shardingscaling.core.job.HistoryDataSyncJob;
 import info.avalon566.shardingscaling.core.job.RealtimeDataSyncJob;
 import info.avalon566.shardingscaling.core.job.schedule.Reporter;
-import info.avalon566.shardingscaling.core.job.schedule.Scheduler;
+import info.avalon566.shardingscaling.core.job.schedule.SyncJobExecutor;
 
 import java.util.List;
 
@@ -31,11 +31,11 @@ import java.util.List;
  *
  * @author avalon566
  */
-public class InProcessScheduler implements Scheduler {
+public class LocalSyncJobExecutor implements SyncJobExecutor {
 
     @Override
-    public final Reporter schedule(final List<SyncConfiguration> syncConfigurations) {
-        InProcessReporter reporter = new InProcessReporter();
+    public final Reporter execute(final List<SyncConfiguration> syncConfigurations) {
+        LocalReporter reporter = new LocalReporter();
         for (SyncConfiguration syncConfiguration : syncConfigurations) {
             if (SyncType.TableSlice.equals(syncConfiguration.getSyncType())) {
                 new HistoryDataSyncJob(syncConfiguration, reporter).run();

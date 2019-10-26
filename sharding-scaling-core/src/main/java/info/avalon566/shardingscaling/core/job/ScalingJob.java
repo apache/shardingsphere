@@ -18,10 +18,8 @@
 package info.avalon566.shardingscaling.core.job;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
-import info.avalon566.shardingscaling.core.config.SyncType;
 import info.avalon566.shardingscaling.core.job.schedule.Reporter;
-import info.avalon566.shardingscaling.core.job.schedule.Scheduler;
-import info.avalon566.shardingscaling.core.job.schedule.standalone.InProcessReporter;
+import info.avalon566.shardingscaling.core.job.schedule.local.LocalReporter;
 
 import java.util.List;
 
@@ -42,7 +40,7 @@ public class ScalingJob {
      * Run.
      */
     public void run() {
-        Reporter reporter = new InProcessReporter();
+        Reporter reporter = new LocalReporter();
         for (SyncConfiguration syncConfiguration : syncConfigurations) {
             new DatabaseSyncJob(syncConfiguration, reporter).run();
         }

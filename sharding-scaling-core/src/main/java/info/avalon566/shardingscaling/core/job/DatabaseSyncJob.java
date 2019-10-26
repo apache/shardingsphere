@@ -23,7 +23,7 @@ import info.avalon566.shardingscaling.core.config.SyncType;
 import info.avalon566.shardingscaling.core.job.schedule.Event;
 import info.avalon566.shardingscaling.core.job.schedule.EventType;
 import info.avalon566.shardingscaling.core.job.schedule.Reporter;
-import info.avalon566.shardingscaling.core.job.schedule.standalone.InProcessScheduler;
+import info.avalon566.shardingscaling.core.job.schedule.local.LocalSyncJobExecutor;
 import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
 import info.avalon566.shardingscaling.core.sync.reader.ReaderFactory;
 import info.avalon566.shardingscaling.core.sync.util.DataSourceFactory;
@@ -71,7 +71,7 @@ public class DatabaseSyncJob {
                 syncConfiguration.getReaderConfiguration(),
                 syncConfiguration.getWriterConfiguration());
         realConfiguration.setPosition(position);
-        Reporter realtimeReporter = new InProcessScheduler().schedule(Collections.singletonList(realConfiguration));
+        Reporter realtimeReporter = new LocalSyncJobExecutor().execute(Collections.singletonList(realConfiguration));
         Event event = realtimeReporter.consumeEvent();
         if (EventType.FINISHED == event.getEventType()) {
             return;
@@ -100,7 +100,7 @@ public class DatabaseSyncJob {
          */
         public final void run() {
             List<SyncConfiguration> configs = split(syncConfiguration);
-            Reporter reporter = new InProcessScheduler().schedule(configs);
+            Reporter reporter = new LocalSyncJobExecutor().execute(configs);
             waitSlicesFinished(configs, reporter);
         }
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job.schedule.standalone;
+package info.avalon566.shardingscaling.core.job.schedule.local;
 
 import info.avalon566.shardingscaling.core.job.schedule.Event;
 import info.avalon566.shardingscaling.core.job.schedule.Reporter;
@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  *
  * @author avalon566
  */
-public class InProcessReporter implements Reporter {
+public class LocalReporter implements Reporter {
 
     private ConcurrentLinkedQueue<Event> queue = new ConcurrentLinkedQueue<>();
 
