@@ -20,6 +20,7 @@ package org.apache.shardingsphere.dbtest.fixture;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingValue;
 
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
@@ -28,9 +29,16 @@ public final class RangeModuloAlgorithm implements RangeShardingAlgorithm<Intege
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
-        for (Integer i = shardingValue.getValueRange().lowerEndpoint(); i <= shardingValue.getValueRange().upperEndpoint(); i++) {
+        int minValue = shardingValue.getValueRange().hasLowerBound() ? shardingValue.getValueRange().lowerEndpoint() : Integer.MIN_VALUE;
+        int maxValue = shardingValue.getValueRange().hasUpperBound() ? shardingValue.getValueRange().upperEndpoint() : Integer.MAX_VALUE;
+        long range = BigInteger.valueOf(maxValue).subtract(BigInteger.valueOf(minValue)).longValue();
+        int begin = Math.abs(minValue) % 10;
+        if (range > 9) {
+            return availableTargetNames;
+        }
+        for (int i = begin; i <= range; i += 1) {
             for (String each : availableTargetNames) {
-                if (each.endsWith(i % 10 + "")) {
+                if (each.endsWith(i + "")) {
                     result.add(each);
                 }
             }

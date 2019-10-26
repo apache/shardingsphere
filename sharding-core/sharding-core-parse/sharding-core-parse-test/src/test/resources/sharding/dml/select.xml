@@ -226,6 +226,40 @@
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
+
+    <parser-result sql-case-id="select_comparison_symbol_with_single_table" parameters="1, 10, 2, 5">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="14" table-name="t_order" length="7" />
+        </tokens>
+        <select-items start-index="7" stop-index="7">
+            <shorthand-select-items>
+                <shorthand-select-item start-index="7" stop-index="7" text="*" />
+            </shorthand-select-items>
+        </select-items>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="&gt;=">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="&lt;=">
+                    <value index="1" literal="10" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="&gt;=">
+                    <value index="2" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="&lt;=">
+                    <value index="3" literal="5" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+        <order-by-columns>
+            <order-by-column name="user_id" order-direction="ASC" />
+            <order-by-column name="order_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
     
     <parser-result sql-case-id="select_in_with_single_table" parameters="1, 2, 3, 9, 10">
         <tables>
