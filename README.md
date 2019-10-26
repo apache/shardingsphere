@@ -41,7 +41,7 @@ mvn clean package
 bin/start.sh \
   scaling \
   --input-sharding-config conf/config-sharding.yaml \ # old ss proxy sharding rule config file
-  --output-jdbc-url jdbc:mysql://127.0.0.1/test2?useSSL=false \ # new sharding rule ss proxy jdbc url
+  --output-jdbc-url jdbc:mysql://127.0.0.1:3306/test2?useSSL=false \ # new sharding rule ss proxy jdbc url
   --output-jdbc-username root \ # new sharding rule ss proxy jdbc username
   --output-jdbc-password 123456 # new sharding rule ss proxy jdbc password
 ```

@@ -17,6 +17,6 @@
 
 dataSources:
   ds_0:
-    url: jdbc:mysql://127.0.0.1/test?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC&useSSL=false
     username: root
     password: 123456
