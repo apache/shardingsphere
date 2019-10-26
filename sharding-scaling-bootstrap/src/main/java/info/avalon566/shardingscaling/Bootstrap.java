@@ -105,7 +105,7 @@ public class Bootstrap {
                     commandLine.getOptionValue(OUTPUT_JDBC_USERNAME),
                     commandLine.getOptionValue(OUTPUT_JDBC_PASSWORD));
             writerConfiguration.setDataSourceConfiguration(writerDataSourceConfiguration);
-            syncConfigurations.add(new SyncConfiguration(SyncType.Database, 3, readerConfiguration, writerConfiguration));
+            syncConfigurations.add(new SyncConfiguration(SyncType.NONE, 3, readerConfiguration, writerConfiguration));
         }
         return syncConfigurations;
     }

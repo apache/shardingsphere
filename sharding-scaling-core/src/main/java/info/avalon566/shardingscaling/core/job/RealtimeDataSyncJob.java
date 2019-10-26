@@ -34,12 +34,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Realtime data syncer.
+ * Realtime data sync job.
  *
  * @author avalon566
  */
 @Slf4j
-public class RealtimeDataSyncer {
+public class RealtimeDataSyncJob {
 
     private final SyncConfiguration syncConfiguration;
 
@@ -47,7 +47,7 @@ public class RealtimeDataSyncer {
 
     private final Reporter reporter;
 
-    public RealtimeDataSyncer(final SyncConfiguration syncConfiguration, final Reporter reporter) {
+    public RealtimeDataSyncJob(final SyncConfiguration syncConfiguration, final Reporter reporter) {
         this.syncConfiguration = syncConfiguration;
         this.reporter = reporter;
         mysqlBinlogReader = ReaderFactory.newInstanceLogReader(syncConfiguration.getReaderConfiguration(), syncConfiguration.getPosition());

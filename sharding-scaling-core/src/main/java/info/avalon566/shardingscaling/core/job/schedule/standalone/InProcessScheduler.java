@@ -17,11 +17,10 @@
 
 package info.avalon566.shardingscaling.core.job.schedule.standalone;
 
-import info.avalon566.shardingscaling.core.job.RealtimeDataSyncer;
-import info.avalon566.shardingscaling.core.job.TableSliceSyncJob;
-import info.avalon566.shardingscaling.core.job.DatabaseSyncJob;
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.config.SyncType;
+import info.avalon566.shardingscaling.core.job.HistoryDataSyncJob;
+import info.avalon566.shardingscaling.core.job.RealtimeDataSyncJob;
 import info.avalon566.shardingscaling.core.job.schedule.Reporter;
 import info.avalon566.shardingscaling.core.job.schedule.Scheduler;
 
@@ -38,12 +37,10 @@ public class InProcessScheduler implements Scheduler {
     public final Reporter schedule(final List<SyncConfiguration> syncConfigurations) {
         InProcessReporter reporter = new InProcessReporter();
         for (SyncConfiguration syncConfiguration : syncConfigurations) {
-            if (SyncType.Database.equals(syncConfiguration.getSyncType())) {
-                new DatabaseSyncJob(syncConfiguration, reporter).run();
-            } else if (SyncType.TableSlice.equals(syncConfiguration.getSyncType())) {
-                new TableSliceSyncJob(syncConfiguration, reporter).run();
+            if (SyncType.TableSlice.equals(syncConfiguration.getSyncType())) {
+                new HistoryDataSyncJob(syncConfiguration, reporter).run();
             } else if (SyncType.Realtime.equals(syncConfiguration.getSyncType())) {
-                new RealtimeDataSyncer(syncConfiguration, reporter).run();
+                new RealtimeDataSyncJob(syncConfiguration, reporter).run();
             }
         }
         return reporter;

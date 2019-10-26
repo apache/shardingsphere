@@ -37,13 +37,13 @@ import java.util.Collections;
  * @author yangyi
  */
 @Slf4j
-public class TableSliceSyncJob {
+public class HistoryDataSyncJob {
 
     private final SyncConfiguration syncConfiguration;
 
     private final Reporter reporter;
 
-    public TableSliceSyncJob(final SyncConfiguration syncConfiguration, final Reporter reporter) {
+    public HistoryDataSyncJob(final SyncConfiguration syncConfiguration, final Reporter reporter) {
         this.syncConfiguration = syncConfiguration;
         this.reporter = reporter;
     }

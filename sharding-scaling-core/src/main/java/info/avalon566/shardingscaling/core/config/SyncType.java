@@ -23,6 +23,6 @@ package info.avalon566.shardingscaling.core.config;
  */
 
 public enum SyncType {
-    
-    Database, Table, TableSlice, Realtime
+
+    NONE, TableSlice, Realtime
 }
