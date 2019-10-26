@@ -43,28 +43,21 @@ import java.util.List;
 @Slf4j
 public class DatabaseSyncJob {
 
-    private final HistoryDataSyncer historyDataSyncer;
-
-    private final RealtimeDataSyncJob realtimeDataSyncJob;
+    private final SyncConfiguration syncConfiguration;
 
     private final Reporter reporter;
-
-    private final SyncConfiguration syncConfiguration;
 
     public DatabaseSyncJob(final SyncConfiguration syncConfiguration, final Reporter reporter) {
         this.syncConfiguration = syncConfiguration;
         this.reporter = reporter;
-        this.historyDataSyncer = new HistoryDataSyncer(syncConfiguration);
-        this.realtimeDataSyncJob = new RealtimeDataSyncJob(syncConfiguration, reporter);
-
     }
 
     /**
      * Run.
      */
     public void run() {
-        LogPosition position = realtimeDataSyncJob.preRun();
-        historyDataSyncer.run();
+        LogPosition position = new RealtimeDataSyncJob(syncConfiguration, null).preRun();
+        new HistoryDataSyncer(syncConfiguration).run();
         syncConfiguration.setPosition(position);
         SyncConfiguration realConfiguration = new SyncConfiguration(
                 SyncType.Realtime, syncConfiguration.getConcurrency(),
