@@ -15,19 +15,17 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job.schedule.local;
+package info.avalon566.shardingscaling.core.job.sync.executor.local;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
-import info.avalon566.shardingscaling.core.config.SyncType;
-import info.avalon566.shardingscaling.core.job.HistoryDataSyncJob;
-import info.avalon566.shardingscaling.core.job.RealtimeDataSyncJob;
-import info.avalon566.shardingscaling.core.job.schedule.Reporter;
-import info.avalon566.shardingscaling.core.job.schedule.SyncJobExecutor;
+import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
+import info.avalon566.shardingscaling.core.job.sync.executor.SyncJobExecutor;
+import info.avalon566.shardingscaling.core.job.sync.SyncJobFactory;
 
 import java.util.List;
 
 /**
- * In process scheduler.
+ * Local sync job executor.
  *
  * @author avalon566
  */
@@ -37,11 +35,7 @@ public class LocalSyncJobExecutor implements SyncJobExecutor {
     public final Reporter execute(final List<SyncConfiguration> syncConfigurations) {
         LocalReporter reporter = new LocalReporter();
         for (SyncConfiguration syncConfiguration : syncConfigurations) {
-            if (SyncType.TableSlice.equals(syncConfiguration.getSyncType())) {
-                new HistoryDataSyncJob(syncConfiguration, reporter).run();
-            } else if (SyncType.Realtime.equals(syncConfiguration.getSyncType())) {
-                new RealtimeDataSyncJob(syncConfiguration, reporter).run();
-            }
+            new Thread(SyncJobFactory.createSyncJobInstance(syncConfiguration, reporter)).start();
         }
         return reporter;
     }

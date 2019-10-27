@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job.schedule;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
+package info.avalon566.shardingscaling.core.sync;
 
 /**
- * Event.
+ * sync runner.
  * @author avalon566
  */
-@Data
-@AllArgsConstructor
-public class Event {
+public interface SyncRunner extends Runnable {
 
-    private EventType eventType;
+    /**
+     * Start run sync.
+     */
+    void start();
+
+    /**
+     * Stop running sync.
+     */
+    void stop();
 }

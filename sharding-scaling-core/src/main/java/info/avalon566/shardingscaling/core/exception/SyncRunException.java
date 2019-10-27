@@ -15,35 +15,25 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.sync;
-
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+package info.avalon566.shardingscaling.core.exception;
 
 /**
- * Abstract runner.
- * @author avalon566
+ * Synchronize task run exception.
+ *
+ * @author yangyi
  */
-public abstract class AbstractRunner implements Runner {
-
-    @Setter(AccessLevel.PROTECTED)
-    @Getter(AccessLevel.PROTECTED)
-    private boolean running;
-
-    /**
-     * generic start implement.
-     */
-    @Override
-    public void start() {
-        running = true;
+public final class SyncRunException extends RuntimeException {
+    
+    public SyncRunException(final String message) {
+        super(message);
     }
-
-    /**
-     * generic stop implement.
-     */
-    @Override
-    public void stop() {
-        running = false;
+    
+    public SyncRunException(final Throwable cause) {
+        super(cause);
     }
+    
+    public SyncRunException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+    
 }

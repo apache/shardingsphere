@@ -18,8 +18,8 @@
 package info.avalon566.shardingscaling.core.job;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
-import info.avalon566.shardingscaling.core.job.schedule.Reporter;
-import info.avalon566.shardingscaling.core.job.schedule.local.LocalReporter;
+import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
+import info.avalon566.shardingscaling.core.job.sync.executor.local.LocalReporter;
 
 import java.util.List;
 

@@ -20,10 +20,12 @@ package info.avalon566.shardingscaling.core.job;
 import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.config.SyncType;
-import info.avalon566.shardingscaling.core.job.schedule.Event;
-import info.avalon566.shardingscaling.core.job.schedule.EventType;
-import info.avalon566.shardingscaling.core.job.schedule.Reporter;
-import info.avalon566.shardingscaling.core.job.schedule.local.LocalSyncJobExecutor;
+import info.avalon566.shardingscaling.core.job.sync.executor.Event;
+import info.avalon566.shardingscaling.core.job.sync.executor.EventType;
+import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
+import info.avalon566.shardingscaling.core.job.sync.executor.SyncJobExecutor;
+import info.avalon566.shardingscaling.core.job.sync.executor.local.LocalSyncJobExecutor;
+import info.avalon566.shardingscaling.core.job.sync.RealtimeDataSyncJob;
 import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
 import info.avalon566.shardingscaling.core.sync.reader.ReaderFactory;
 import info.avalon566.shardingscaling.core.sync.util.DataSourceFactory;
@@ -43,6 +45,8 @@ import java.util.List;
 @Slf4j
 public class DatabaseSyncJob {
 
+    private final SyncJobExecutor syncJobExecutor = new LocalSyncJobExecutor();
+
     private final SyncConfiguration syncConfiguration;
 
     private final Reporter reporter;
@@ -57,79 +61,65 @@ public class DatabaseSyncJob {
      */
     public void run() {
         LogPosition position = new RealtimeDataSyncJob(syncConfiguration, null).preRun();
-        new HistoryDataSyncer(syncConfiguration).run();
+        syncHistoryData();
+        syncRealtimeData(position);
+    }
+
+    private void syncHistoryData() {
+        List<SyncConfiguration> configs = split(syncConfiguration);
+        Reporter reporter = syncJobExecutor.execute(configs);
+        waitSlicesFinished(configs, reporter);
+    }
+
+    private List<SyncConfiguration> split(final SyncConfiguration syncConfiguration) {
+        List<SyncConfiguration> syncConfigurations = new ArrayList<>();
+        // split by table
+        DataSource dataSource = DataSourceFactory.getDataSource(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
+        for (String tableName : new DbMetaDataUtil(dataSource).getTableNames()) {
+            RdbmsConfiguration readerConfig = RdbmsConfiguration.clone(syncConfiguration.getReaderConfiguration());
+            readerConfig.setTableName(tableName);
+            // split by primary key range
+            for (RdbmsConfiguration sliceConfig : ReaderFactory.newInstanceJdbcReader(readerConfig).split(syncConfiguration.getConcurrency())) {
+                syncConfigurations.add(new SyncConfiguration(SyncType.TableSlice, syncConfiguration.getConcurrency(),
+                        sliceConfig, RdbmsConfiguration.clone(syncConfiguration.getWriterConfiguration())));
+            }
+        }
+        return syncConfigurations;
+    }
+
+    private void waitSlicesFinished(final List<SyncConfiguration> syncConfigurations, final Reporter reporter) {
+        int counter = 0;
+        boolean hasException = false;
+        while (true) {
+            Event event = reporter.consumeEvent();
+            if (EventType.FINISHED == event.getEventType()) {
+                counter++;
+            }
+            if (EventType.EXCEPTION_EXIT == event.getEventType()) {
+                hasException = true;
+                System.exit(1);
+            }
+            if (syncConfigurations.size() == counter) {
+                log.info("history data sync finish");
+                break;
+            }
+        }
+    }
+
+    private void syncRealtimeData(final LogPosition position) {
         syncConfiguration.setPosition(position);
         SyncConfiguration realConfiguration = new SyncConfiguration(
                 SyncType.Realtime, syncConfiguration.getConcurrency(),
                 syncConfiguration.getReaderConfiguration(),
                 syncConfiguration.getWriterConfiguration());
         realConfiguration.setPosition(position);
-        Reporter realtimeReporter = new LocalSyncJobExecutor().execute(Collections.singletonList(realConfiguration));
+        Reporter realtimeReporter = syncJobExecutor.execute(Collections.singletonList(realConfiguration));
         Event event = realtimeReporter.consumeEvent();
         if (EventType.FINISHED == event.getEventType()) {
             return;
         }
         if (EventType.EXCEPTION_EXIT == event.getEventType()) {
             System.exit(1);
-        }
-    }
-
-    /**
-     * History data syncer.
-     *
-     * @author avalon566
-     */
-    @Slf4j
-    private static class HistoryDataSyncer {
-
-        private final SyncConfiguration syncConfiguration;
-
-        public HistoryDataSyncer(final SyncConfiguration syncConfiguration) {
-            this.syncConfiguration = syncConfiguration;
-        }
-
-        /**
-         * Run.
-         */
-        public final void run() {
-            List<SyncConfiguration> configs = split(syncConfiguration);
-            Reporter reporter = new LocalSyncJobExecutor().execute(configs);
-            waitSlicesFinished(configs, reporter);
-        }
-
-        private List<SyncConfiguration> split(final SyncConfiguration syncConfiguration) {
-            List<SyncConfiguration> syncConfigurations = new ArrayList<>();
-            // split by table
-            DataSource dataSource = DataSourceFactory.getDataSource(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
-            for (String tableName : new DbMetaDataUtil(dataSource).getTableNames()) {
-                RdbmsConfiguration readerConfig = RdbmsConfiguration.clone(syncConfiguration.getReaderConfiguration());
-                readerConfig.setTableName(tableName);
-                // split by primary key range
-                for (RdbmsConfiguration sliceConfig : ReaderFactory.newInstanceJdbcReader(readerConfig).split(syncConfiguration.getConcurrency())) {
-                    syncConfigurations.add(new SyncConfiguration(SyncType.TableSlice, syncConfiguration.getConcurrency(),
-                            sliceConfig, RdbmsConfiguration.clone(syncConfiguration.getWriterConfiguration())));
-                }
-            }
-            return syncConfigurations;
-        }
-
-        private void waitSlicesFinished(final List<SyncConfiguration> syncConfigurations, final Reporter reporter) {
-            int counter = 0;
-            boolean hasException = false;
-            while (true) {
-                Event event = reporter.consumeEvent();
-                if (EventType.FINISHED == event.getEventType()) {
-                    counter++;
-                }
-                if (EventType.EXCEPTION_EXIT == event.getEventType()) {
-                    hasException = true;
-                    System.exit(1);
-                }
-                if (syncConfigurations.size() == counter) {
-                    log.info("history data sync finish");
-                    break;
-                }
-            }
         }
     }
 }

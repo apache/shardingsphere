@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job;
+package info.avalon566.shardingscaling.core.job.sync;
 
-import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
-import info.avalon566.shardingscaling.core.job.schedule.Event;
-import info.avalon566.shardingscaling.core.job.schedule.EventType;
-import info.avalon566.shardingscaling.core.job.schedule.Reporter;
+import info.avalon566.shardingscaling.core.job.sync.executor.Event;
+import info.avalon566.shardingscaling.core.job.sync.executor.EventType;
+import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
+import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.core.sync.SyncExecutor;
 import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
 import info.avalon566.shardingscaling.core.sync.reader.LogReader;
@@ -39,7 +39,7 @@ import java.util.List;
  * @author avalon566
  */
 @Slf4j
-public class RealtimeDataSyncJob {
+public class RealtimeDataSyncJob implements SyncJob {
 
     private final SyncConfiguration syncConfiguration;
 
@@ -65,25 +65,19 @@ public class RealtimeDataSyncJob {
     /**
      * Start to sync realtime data.
      */
+    @Override
     public final void run() {
-        List<Writer> writers = new ArrayList<>(syncConfiguration.getConcurrency());
+        final List<Writer> writers = new ArrayList<>(syncConfiguration.getConcurrency());
         for (int i = 0; i < syncConfiguration.getConcurrency(); i++) {
             writers.add(WriterFactory.newInstance(syncConfiguration.getWriterConfiguration()));
         }
-        final SyncExecutor executor = new SyncExecutor(mysqlBinlogReader, writers);
-        executor.run();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    executor.waitFinish();
-                    log.info("{} realtime data sync finish", syncConfiguration.getReaderConfiguration().getTableName());
-                    reporter.report(new Event(EventType.FINISHED));
-                } catch (SyncExecuteException ex) {
-                    log.error("{} realtime data sync exception exit", syncConfiguration.getReaderConfiguration().getTableName(), ex);
-                    reporter.report(new Event(EventType.EXCEPTION_EXIT));
-                }
-            }
-        }).start();
+        try {
+            new SyncExecutor(mysqlBinlogReader, writers).execute();
+            log.info("realtime data sync finish");
+            reporter.report(new Event(EventType.FINISHED));
+        } catch (SyncExecuteException ex) {
+            log.error("realtime data sync exception exit", ex);
+            reporter.report(new Event(EventType.EXCEPTION_EXIT));
+        }
     }
 }

@@ -19,8 +19,8 @@ package info.avalon566.shardingscaling.core.sync.reader;
 
 import info.avalon566.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
-import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
-import info.avalon566.shardingscaling.core.sync.AbstractRunner;
+import info.avalon566.shardingscaling.core.exception.SyncRunException;
+import info.avalon566.shardingscaling.core.sync.AbstractSyncRunner;
 import info.avalon566.shardingscaling.core.sync.channel.Channel;
 import info.avalon566.shardingscaling.core.sync.metadata.ColumnMetaData;
 import info.avalon566.shardingscaling.core.sync.record.Column;
@@ -52,7 +52,7 @@ import java.util.List;
  * @author yangyi
  */
 @Slf4j
-public abstract class AbstractJdbcReader extends AbstractRunner implements JdbcReader {
+public abstract class AbstractJdbcReader extends AbstractSyncRunner implements JdbcReader {
 
     @Getter(AccessLevel.PROTECTED)
     private final RdbmsConfiguration rdbmsConfiguration;
@@ -100,7 +100,7 @@ public abstract class AbstractJdbcReader extends AbstractRunner implements JdbcR
                 pushRecord(record);
             }
         } catch (SQLException e) {
-            throw new SyncExecuteException(e);
+            throw new SyncRunException(e);
         } finally {
             pushRecord(new FinishedRecord());
         }

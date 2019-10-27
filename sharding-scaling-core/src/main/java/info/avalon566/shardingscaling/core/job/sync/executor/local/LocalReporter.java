@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job.schedule.local;
+package info.avalon566.shardingscaling.core.job.sync.executor.local;
 
-import info.avalon566.shardingscaling.core.job.schedule.Event;
-import info.avalon566.shardingscaling.core.job.schedule.Reporter;
+import info.avalon566.shardingscaling.core.job.sync.executor.Event;
+import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * In process reporter.
+ * local reporter.
  *
  * @author avalon566
  */

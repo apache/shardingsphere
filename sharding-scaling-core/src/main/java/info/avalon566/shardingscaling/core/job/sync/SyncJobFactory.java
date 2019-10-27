@@ -15,22 +15,32 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job.schedule;
+package info.avalon566.shardingscaling.core.job.sync;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
-
-import java.util.List;
+import info.avalon566.shardingscaling.core.config.SyncType;
+import info.avalon566.shardingscaling.core.job.sync.executor.local.LocalReporter;
 
 /**
- * Sync job executor, run in in process, k8s etc.
+ * Sync job factory.
+ *
  * @author avalon566
  */
-public interface SyncJobExecutor {
+public final class SyncJobFactory {
 
     /**
-     * execute sync job.
-     * @param configs job configs
-     * @return reporter
+     * create sync job instance by sync configuration.
+     *
+     * @param syncConfiguration value
+     * @param reporter value
+     * @return sync job
      */
-    Reporter execute(List<SyncConfiguration> configs);
+    public static SyncJob createSyncJobInstance(final SyncConfiguration syncConfiguration, final LocalReporter reporter) {
+        if (SyncType.TableSlice.equals(syncConfiguration.getSyncType())) {
+            return new HistoryDataSyncJob(syncConfiguration, reporter);
+        } else if (SyncType.Realtime.equals(syncConfiguration.getSyncType())) {
+            return new RealtimeDataSyncJob(syncConfiguration, reporter);
+        }
+        throw new UnsupportedOperationException();
+    }
 }

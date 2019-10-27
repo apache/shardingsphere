@@ -17,23 +17,33 @@
 
 package info.avalon566.shardingscaling.core.exception;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Synchronize task execute exception.
+ * Sync execute exception.
  *
- * @author yangyi
+ * @author avalon566
  */
-public final class SyncExecuteException extends RuntimeException {
-    
-    public SyncExecuteException(final String message) {
-        super(message);
+public class SyncExecuteException extends Exception {
+
+    private final List<Throwable> aggregatedExceptions = new ArrayList<>();
+
+    /**
+     * add exception to list.
+     *
+     * @param throwable exception
+     */
+    public void addException(final Throwable throwable) {
+        aggregatedExceptions.add(throwable);
     }
-    
-    public SyncExecuteException(final Throwable cause) {
-        super(cause);
+
+    @Override
+    public String toString() {
+        StringBuilder exceptionString = new StringBuilder();
+        for (Throwable exception : aggregatedExceptions) {
+            exceptionString.append(exception.toString());
+        }
+        return exceptionString.toString();
     }
-    
-    public SyncExecuteException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
-    
 }

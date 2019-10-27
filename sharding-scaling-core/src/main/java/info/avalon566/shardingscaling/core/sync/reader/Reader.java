@@ -18,13 +18,13 @@
 package info.avalon566.shardingscaling.core.sync.reader;
 
 import info.avalon566.shardingscaling.core.sync.channel.Channel;
-import info.avalon566.shardingscaling.core.sync.Runner;
+import info.avalon566.shardingscaling.core.sync.SyncRunner;
 
 /**
  * Reader interface.
  * @author avalon566
  */
-public interface Reader extends Runner {
+public interface Reader extends SyncRunner {
 
     /**
      * Set channel.

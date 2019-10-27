@@ -18,7 +18,7 @@
 package info.avalon566.shardingscaling.mysql;
 
 import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
-import info.avalon566.shardingscaling.core.sync.AbstractRunner;
+import info.avalon566.shardingscaling.core.sync.AbstractSyncRunner;
 import info.avalon566.shardingscaling.core.sync.channel.Channel;
 import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
 import info.avalon566.shardingscaling.core.sync.reader.LogReader;
@@ -49,7 +49,7 @@ import java.sql.SQLException;
  * @author yangyi
  */
 @Slf4j
-public final class MySQLBinlogReader extends AbstractRunner implements LogReader {
+public final class MySQLBinlogReader extends AbstractSyncRunner implements LogReader {
 
     private final BinlogPosition binlogPosition;
 

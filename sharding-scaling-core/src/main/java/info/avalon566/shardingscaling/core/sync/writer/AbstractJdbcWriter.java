@@ -18,14 +18,14 @@
 package info.avalon566.shardingscaling.core.sync.writer;
 
 import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
-import info.avalon566.shardingscaling.core.sync.AbstractRunner;
+import info.avalon566.shardingscaling.core.sync.AbstractSyncRunner;
 import info.avalon566.shardingscaling.core.sync.channel.Channel;
 import info.avalon566.shardingscaling.core.sync.record.FinishedRecord;
 import info.avalon566.shardingscaling.core.sync.record.Column;
 import info.avalon566.shardingscaling.core.sync.metadata.ColumnMetaData;
 import info.avalon566.shardingscaling.core.sync.record.DataRecord;
 import info.avalon566.shardingscaling.core.sync.util.DbMetaDataUtil;
-import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
+import info.avalon566.shardingscaling.core.exception.SyncRunException;
 import info.avalon566.shardingscaling.core.sync.util.DataSourceFactory;
 import info.avalon566.shardingscaling.core.sync.record.Record;
 import lombok.Setter;
@@ -46,7 +46,7 @@ import java.util.List;
  * @author yangyi
  */
 @Slf4j
-public abstract class AbstractJdbcWriter extends AbstractRunner implements Writer {
+public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements Writer {
 
     private final RdbmsConfiguration rdbmsConfiguration;
     
@@ -100,7 +100,7 @@ public abstract class AbstractJdbcWriter extends AbstractRunner implements Write
                 flush(dataSource, buffer);
             }
         } catch (SQLException ex) {
-            throw new SyncExecuteException(ex);
+            throw new SyncRunException(ex);
         }
     }
 

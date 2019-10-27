@@ -15,14 +15,22 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job.schedule;
+package info.avalon566.shardingscaling.core.job.sync.executor;
+
+import info.avalon566.shardingscaling.core.config.SyncConfiguration;
+
+import java.util.List;
 
 /**
- * Event type.
+ * Sync job executor, run in in process, k8s etc.
  * @author avalon566
  */
+public interface SyncJobExecutor {
 
-public enum EventType {
-    FINISHED,
-    EXCEPTION_EXIT
+    /**
+     * execute sync job.
+     * @param configs job configs
+     * @return reporter
+     */
+    Reporter execute(List<SyncConfiguration> configs);
 }

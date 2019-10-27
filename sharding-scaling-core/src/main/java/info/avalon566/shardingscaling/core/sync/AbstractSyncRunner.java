@@ -17,19 +17,33 @@
 
 package info.avalon566.shardingscaling.core.sync;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
- * Job runner.
+ * Abstract runner.
  * @author avalon566
  */
-public interface Runner extends Runnable {
+public abstract class AbstractSyncRunner implements SyncRunner {
+
+    @Setter(AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
+    private boolean running;
 
     /**
-     * Start run job.
+     * generic start implement.
      */
-    void start();
+    @Override
+    public void start() {
+        running = true;
+    }
 
     /**
-     * Stop running job.
+     * generic stop implement.
      */
-    void stop();
+    @Override
+    public void stop() {
+        running = false;
+    }
 }
