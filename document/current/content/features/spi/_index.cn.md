@@ -67,6 +67,6 @@ XA事务管理器的接口主要用于规定如何将XA事务的实现者适配�
 
 注册中心的接口主要用于规定注册中心初始化、存取数据、更新数据、监控等行为。
 
-主要接口为`RegistryCenter`，其内置实现类有Zookeeper, ETCD。
+主要接口为`RegistryCenter`，其内置实现类有Zookeeper。
 
 相关介绍请参考[注册中心](/cn/features/orchestration/supported-registry-repo/)。
