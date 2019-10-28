@@ -19,5 +19,5 @@ package org.apache.shardingsphere.example.type;
 
 public enum RegistryCenterType {
     
-    ZOOKEEPER, ETCD
+    ZOOKEEPER, NACOS
 }

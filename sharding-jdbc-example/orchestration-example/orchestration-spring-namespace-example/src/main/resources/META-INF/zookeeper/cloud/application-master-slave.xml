@@ -13,6 +13,7 @@
                         http://shardingsphere.apache.org/schema/shardingsphere/orchestration
                         http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd">
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
+    <import resource="classpath*:META-INF/zookeeper/registry-center.xml" />
     
     <orchestration:master-slave-data-source id="masterSlaveDataSource" registry-center-ref="regCenter" />
     

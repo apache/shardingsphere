@@ -39,7 +39,7 @@ import java.sql.SQLException;
 /*
  * 1. Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
  * 2. Please make sure sharding-orchestration-reg-zookeeper-curator in your pom if registryCenterType = RegistryCenterType.ZOOKEEPER.
- * 3. Please make sure sharding-orchestration-reg-etcd in your pom if registryCenterType = RegistryCenterType.ETCD.
+ * 3. 3. Please make sure sharding-orchestration-reg-nacos in your pom if registryCenterType = RegistryCenterType.NACOS.
  */
 public class JavaConfigurationExampleMain {
 
@@ -50,9 +50,8 @@ public class JavaConfigurationExampleMain {
     private static boolean loadConfigFromRegCenter = false;
 //    private static boolean loadConfigFromRegCenter = true;
 
-    //    private static RegistryCenterType registryCenterType = RegistryCenterType.ZOOKEEPER;
-    //    private static RegistryCenterType registryCenterType = RegistryCenterType.ETCD;
-    private static RegistryCenterType registryCenterType = RegistryCenterType.NACOS;
+        private static RegistryCenterType registryCenterType = RegistryCenterType.ZOOKEEPER;
+//    private static RegistryCenterType registryCenterType = RegistryCenterType.NACOS;
 
     public static void main(final String[] args) throws Exception {
         DataSource dataSource = getDataSource(shardingType, loadConfigFromRegCenter);
@@ -84,8 +83,7 @@ public class JavaConfigurationExampleMain {
     }
 
     private static RegistryCenterConfiguration getRegistryCenterConfiguration(final RegistryCenterType registryCenterType) {
-        return RegistryCenterType.ZOOKEEPER == registryCenterType ? RegistryCenterConfigurationUtil.getZooKeeperConfiguration()
-                : RegistryCenterType.NACOS == registryCenterType ? RegistryCenterConfigurationUtil.getNacosConfiguration() : RegistryCenterConfigurationUtil.getEtcdConfiguration();
+        return RegistryCenterType.ZOOKEEPER == registryCenterType ? RegistryCenterConfigurationUtil.getZooKeeperConfiguration() : RegistryCenterConfigurationUtil.getNacosConfiguration();
     }
 
     private static ExampleService getExampleService(final DataSource dataSource) {

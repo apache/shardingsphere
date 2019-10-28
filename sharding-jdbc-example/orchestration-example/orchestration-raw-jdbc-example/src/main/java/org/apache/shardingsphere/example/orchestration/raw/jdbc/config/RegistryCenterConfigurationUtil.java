@@ -27,8 +27,6 @@ public class RegistryCenterConfigurationUtil {
     
     private static final String NAMESPACE = "orchestration-java-demo";
     
-    private static final String ETCD_CONNECTION_STRING = "http://localhost:2379";
-
     private static final String NACOS_CONNECTION_STRING = "localhost:8848";
 
     private static final String NACOS_NAMESPACE = "";
@@ -40,12 +38,6 @@ public class RegistryCenterConfigurationUtil {
         return result;
     }
     
-    public static RegistryCenterConfiguration getEtcdConfiguration() {
-        RegistryCenterConfiguration result = new RegistryCenterConfiguration("etcd");
-        result.setServerLists(ETCD_CONNECTION_STRING);
-        return result;
-    }
-
     public static RegistryCenterConfiguration getNacosConfiguration() {
         Properties properties = new Properties();
         properties.setProperty("group", "SHARDING_SPHERE_DEFAULT_GROUP");
