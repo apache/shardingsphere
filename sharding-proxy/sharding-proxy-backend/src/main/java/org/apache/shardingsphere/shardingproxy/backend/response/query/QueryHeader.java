@@ -53,7 +53,7 @@ public final class QueryHeader {
 
     private final boolean primaryKey;
 
-    private final boolean nullable;
+    private final boolean notNull;
 
     private final boolean autoIncrement;
     
@@ -64,12 +64,12 @@ public final class QueryHeader {
             this.table = tableNames.isEmpty() ? "" : tableNames.iterator().next();
             if (resultSetMetaData.getTableName(columnIndex).isEmpty()) {
                 this.primaryKey = false;
-                this.nullable = false;
+                this.notNull = false;
                 this.autoIncrement = false;
             } else {
                 this.primaryKey = logicSchema.getMetaData().getTables().get(resultSetMetaData.getTableName(columnIndex)).getColumns()
                         .get(resultSetMetaData.getColumnName(columnIndex).toLowerCase()).isPrimaryKey();
-                this.nullable = logicSchema.getMetaData().getTables().get(resultSetMetaData.getTableName(columnIndex)).getColumns()
+                this.notNull = logicSchema.getMetaData().getTables().get(resultSetMetaData.getTableName(columnIndex)).getColumns()
                         .get(resultSetMetaData.getColumnName(columnIndex).toLowerCase()).isNotNull();
                 this.autoIncrement = logicSchema.getMetaData().getTables().get(resultSetMetaData.getTableName(columnIndex)).getColumns()
                         .get(resultSetMetaData.getColumnName(columnIndex).toLowerCase()).isAutoIncrement();
@@ -77,7 +77,7 @@ public final class QueryHeader {
         } else {
             this.table = resultSetMetaData.getTableName(columnIndex);
             this.primaryKey = false;
-            this.nullable = false;
+            this.notNull = false;
             this.autoIncrement = false;
         }
         this.columnLabel = resultSetMetaData.getColumnLabel(columnIndex);

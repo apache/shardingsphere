@@ -91,9 +91,9 @@ public final class EncryptRuntimeContext extends AbstractRuntimeContext<EncryptR
                 String columnName = resultSet.getString(COLUMN_NAME);
                 String columnType = resultSet.getString(TYPE_NAME);
                 boolean isPrimaryKey = primaryKeys.contains(columnName);
-                boolean isNullable = isPrimaryKey || resultSet.getBoolean(IS_NULLABLE);
+                boolean isNotNull = isPrimaryKey || !resultSet.getBoolean(IS_NULLABLE);
                 boolean isAutoIncrement = resultSet.getBoolean(IS_AUTOINCREMENT);
-                Optional<ColumnMetaData> columnMetaData = getColumnMetaData(tableName, columnName, columnType, isPrimaryKey, isNullable, isAutoIncrement, encryptRule, derivedColumns);
+                Optional<ColumnMetaData> columnMetaData = getColumnMetaData(tableName, columnName, columnType, isPrimaryKey, isNotNull, isAutoIncrement, encryptRule, derivedColumns);
                 if (columnMetaData.isPresent()) {
                     result.add(columnMetaData.get());
                 }
@@ -103,7 +103,7 @@ public final class EncryptRuntimeContext extends AbstractRuntimeContext<EncryptR
     }
     
     private Optional<ColumnMetaData> getColumnMetaData(final String logicTableName, final String columnName, final String columnType, final boolean isPrimaryKey,
-                                                       final boolean isNullable, final boolean isAutoIncrement, final EncryptRule encryptRule, final Collection<String> derivedColumns) {
+                                                       final boolean isNotNull, final boolean isAutoIncrement, final EncryptRule encryptRule, final Collection<String> derivedColumns) {
         if (derivedColumns.contains(columnName)) {
             return Optional.absent();
         }
@@ -111,9 +111,9 @@ public final class EncryptRuntimeContext extends AbstractRuntimeContext<EncryptR
             String logicColumnName = encryptRule.getLogicColumn(logicTableName, columnName);
             String plainColumnName = encryptRule.findPlainColumn(logicTableName, logicColumnName).orNull();
             String assistedQueryColumnName = encryptRule.findAssistedQueryColumn(logicTableName, logicColumnName).orNull();
-            return Optional.<ColumnMetaData>of(new EncryptColumnMetaData(logicColumnName, columnType, isPrimaryKey, isNullable, isAutoIncrement, columnName, plainColumnName, assistedQueryColumnName));
+            return Optional.<ColumnMetaData>of(new EncryptColumnMetaData(logicColumnName, columnType, isPrimaryKey, isNotNull, isAutoIncrement, columnName, plainColumnName, assistedQueryColumnName));
         }
-        return Optional.of(new ColumnMetaData(columnName, columnType, isPrimaryKey, isNullable, isAutoIncrement));
+        return Optional.of(new ColumnMetaData(columnName, columnType, isPrimaryKey, isNotNull, isAutoIncrement));
     }
     
     private Collection<String> getPrimaryKeys(final Connection connection, final String tableName) throws SQLException {

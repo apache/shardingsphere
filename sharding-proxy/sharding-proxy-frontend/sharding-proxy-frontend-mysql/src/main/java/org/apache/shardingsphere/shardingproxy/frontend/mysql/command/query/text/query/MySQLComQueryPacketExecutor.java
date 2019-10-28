@@ -106,7 +106,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
         if (header.isPrimaryKey()) {
             result += MySQLColumnFieldDetailFlag.PRIMARY_KEY.getValue();
         }
-        if (header.isNullable()) {
+        if (header.isNotNull()) {
             result += MySQLColumnFieldDetailFlag.NOT_NULL.getValue();
         }
         if (!header.isSigned()) {
