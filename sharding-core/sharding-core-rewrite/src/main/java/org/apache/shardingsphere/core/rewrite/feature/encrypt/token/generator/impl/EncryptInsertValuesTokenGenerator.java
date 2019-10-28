@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.impl;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
@@ -40,7 +39,6 @@ import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValue
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValuesToken.InsertValueToken;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
@@ -123,8 +121,6 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
     
     private void encryptInsertValueToken(final InsertValueToken insertValueToken, 
                                          final String tableName, final InsertSQLStatementContext sqlStatementContext, final InsertValueContext insertValueContext) {
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        Preconditions.checkState(encryptTable.isPresent());
         Optional<SQLToken> insertColumnsToken = findPreviousSQLToken(InsertColumnsToken.class);
         for (String each : sqlStatementContext.getColumnNames()) {
             Optional<ShardingEncryptor> encryptor = encryptRule.findShardingEncryptor(tableName, each);
