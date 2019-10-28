@@ -120,8 +120,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         return result;
     }
     
-    private void encryptToken(final InsertValueToken insertValueToken,
-                              final String tableName, final InsertSQLStatementContext sqlStatementContext, final InsertValueContext insertValueContext) {
+    private void encryptToken(final InsertValueToken insertValueToken, final String tableName, final InsertSQLStatementContext sqlStatementContext, final InsertValueContext insertValueContext) {
         Optional<SQLToken> insertColumnsToken = findPreviousSQLToken(InsertColumnsToken.class);
         for (String each : sqlStatementContext.getColumnNames()) {
             Optional<ShardingEncryptor> encryptor = encryptRule.findShardingEncryptor(tableName, each);
