@@ -53,19 +53,6 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
         insertValueTokens = new LinkedList<>();
     }
     
-    /**
-     * Add insert value.
-     * 
-     * @param values values
-     * @param dataNodes data nodes
-     * @return Insert value token
-     */
-    public InsertValueToken addInsertValue(final List<ExpressionSegment> values, final Collection<DataNode> dataNodes) {
-        InsertValueToken result = new InsertValueToken(values, dataNodes);
-        insertValueTokens.add(result);
-        return result;
-    }
-    
     @Override
     public String toString(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
         StringBuilder result = new StringBuilder();
@@ -96,12 +83,12 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
     
     @RequiredArgsConstructor
     @Getter
-    public final class InsertValueToken {
-    
+    public static final class InsertValueToken {
+        
         private final List<ExpressionSegment> values;
         
         private final Collection<DataNode> dataNodes;
-    
+        
         @Override
         public String toString() {
             StringBuilder result = new StringBuilder();
