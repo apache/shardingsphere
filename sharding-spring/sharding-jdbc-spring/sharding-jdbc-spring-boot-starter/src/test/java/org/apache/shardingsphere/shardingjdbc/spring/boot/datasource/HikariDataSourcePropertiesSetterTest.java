@@ -23,11 +23,8 @@ import org.junit.Test;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 
-import javax.sql.DataSource;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
 public final class HikariDataSourcePropertiesSetterTest {
     
@@ -54,9 +51,8 @@ public final class HikariDataSourcePropertiesSetterTest {
     }
     
     @Test
-    public void assertSupport() {
-        assertThat(dbcpDataSourcePropertiesSetter.support(dataSource), is(true));
-        assertThat(dbcpDataSourcePropertiesSetter.support(mock(DataSource.class)), is(false));
+    public void assertGetType() {
+        assertThat(dbcpDataSourcePropertiesSetter.getType(), is("com.zaxxer.hikari.HikariDataSource"));
     }
     
 }

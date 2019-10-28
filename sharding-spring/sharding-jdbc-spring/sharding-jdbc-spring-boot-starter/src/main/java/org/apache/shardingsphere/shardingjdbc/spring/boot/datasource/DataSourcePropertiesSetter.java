@@ -39,10 +39,9 @@ public interface DataSourcePropertiesSetter {
     void propertiesSet(Environment environment, String prefix, String dataSourceName, DataSource dataSource);
     
     /**
-     * support datasource type.
+     * Get type name of data source.
      *
-     * @param type datasource type
-     * @return is supported
+     * @return type name of data source.
      */
-    boolean support(DataSource type);
+    String getType();
 }

@@ -43,7 +43,7 @@ public final class HikariDataSourcePropertiesSetter implements DataSourcePropert
     }
     
     @Override
-    public boolean support(final DataSource type) {
-        return type.getClass().getName().equals("com.zaxxer.hikari.HikariDataSource");
+    public String getType() {
+        return "com.zaxxer.hikari.HikariDataSource";
     }
 }
