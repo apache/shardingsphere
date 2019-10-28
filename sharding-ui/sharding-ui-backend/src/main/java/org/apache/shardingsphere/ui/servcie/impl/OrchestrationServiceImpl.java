@@ -28,6 +28,7 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.orchestration.internal.registry.state.node.StateNodeStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -68,10 +69,12 @@ public final class OrchestrationServiceImpl implements OrchestrationService {
         Collection<SlaveDataSourceDTO> result = new ArrayList<>();
         for (String schemaName : shardingSchemaService.getAllSchemaNames()) {
             String configData = shardingSchemaService.getRuleConfiguration(schemaName);
-            if (configData.contains("tables:\n")) {
-                handleShardingRuleConfiguration(result, configData, schemaName);
-            } else {
-                handleMasterSlaveRuleConfiguration(result, configData, schemaName);
+            if (!configData.contains("encryptors:\n")) {
+                if (configData.contains("tables:\n")) {
+                    handleShardingRuleConfiguration(result, configData, schemaName);
+                } else {
+                    handleMasterSlaveRuleConfiguration(result, configData, schemaName);
+                }
             }
         }
         return result;

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.spring.boot;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.util.InlineExpressionParser;
@@ -28,6 +29,8 @@ import org.apache.shardingsphere.shardingjdbc.api.EncryptDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.common.SpringBootPropertiesConfigurationProperties;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.datasource.DataSourcePropertiesSetter;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.datasource.HikariDataSourcePropertiesSetter;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.encrypt.EncryptRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.encrypt.SpringBootEncryptRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.masterslave.MasterSlaveRuleCondition;
@@ -71,6 +74,9 @@ import java.util.Map;
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
 @RequiredArgsConstructor
 public class SpringBootConfiguration implements EnvironmentAware {
+    
+    private static final List<DataSourcePropertiesSetter> DATA_SOURCE_PROPERTIES_SETTER_LIST =
+            ImmutableList.<DataSourcePropertiesSetter>of(new HikariDataSourcePropertiesSetter());
     
     private final SpringBootShardingRuleConfigurationProperties shardingRule;
     
@@ -148,7 +154,14 @@ public class SpringBootConfiguration implements EnvironmentAware {
         if (dataSourceProps.containsKey(jndiName)) {
             return getJndiDataSource(dataSourceProps.get(jndiName).toString());
         }
-        return DataSourceUtil.getDataSource(dataSourceProps.get("type").toString(), dataSourceProps);
+        DataSource result = DataSourceUtil.getDataSource(dataSourceProps.get("type").toString(), dataSourceProps);
+        for (DataSourcePropertiesSetter dataSourcePropertiesSetter : DATA_SOURCE_PROPERTIES_SETTER_LIST) {
+            if (dataSourcePropertiesSetter.support(result)) {
+                dataSourcePropertiesSetter.propertiesSet(environment, prefix, dataSourceName, result);
+                break;
+            }
+        }
+        return result;
     }
     
     private DataSource getJndiDataSource(final String jndiName) throws NamingException {

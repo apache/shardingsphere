@@ -118,10 +118,8 @@ ShardingSphere是多接入端共同组成的生态圈。
 
 ## 如何构建
 
-安装`maven`至您的开发环境并且执行命令：
-
-```shell
-mvn clean install -Prelease
+```bash
+./mvnw clean install -Prelease
 ``` 
 
 构建产物：
@@ -129,5 +127,6 @@ mvn clean install -Prelease
 ```
 sharding-distribution/sharding-jdbc-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-jdbc-bin.tar.gz: Sharding-JDBC的二进制包
 sharding-distribution/sharding-proxy-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-proxy-bin.tar.gz: Sharding-Proxy的二进制包
+sharding-distribution/sharding-ui-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-ui-bin.tar.gz: Sharding-UI的二进制包
 sharding-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-src.zip: ShardingSphere的源码包
 ```

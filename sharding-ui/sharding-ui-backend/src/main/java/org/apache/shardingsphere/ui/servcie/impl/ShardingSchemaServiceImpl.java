@@ -78,7 +78,8 @@ public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
     
     private void checkRuleConfiguration(final String configData) {
         try {
-            RuleConfiguration ruleConfig = configData.contains("tables:\n")
+            RuleConfiguration ruleConfig = configData.contains("encryptors:\n")
+                    ? ConfigurationYamlConverter.loadEncryptRuleConfiguration(configData) : configData.contains("tables:\n")
                     ? ConfigurationYamlConverter.loadShardingRuleConfiguration(configData) : ConfigurationYamlConverter.loadMasterSlaveRuleConfiguration(configData);
             Preconditions.checkState(ruleConfig != null, "rule configuration is invalid.");
             // CHECKSTYLE:OFF

@@ -23,13 +23,13 @@ Vue.use(Router)
 export const constantRouterMap = [
   {
     path: '*',
-    redirect: '/config-regist'
+    redirect: '/registry-center'
   },
   {
-    path: '/config-regist',
-    component: () => import('@/views/index/index'),
+    path: '/registry-center',
+    component: () => import('@/views/registry-center/index'),
     hidden: true,
-    name: 'Config regist'
+    name: 'Registry center'
   },
   {
     path: '/login',
@@ -37,16 +37,16 @@ export const constantRouterMap = [
     hidden: true
   },
   {
-    path: '/config-manage',
-    component: () => import('@/views/config-manage/index'),
+    path: '/rule-config',
+    component: () => import('@/views/rule-config/index'),
     hidden: true,
-    name: 'Config manage'
+    name: 'Rule config'
   },
   {
-    path: '/orchestration',
-    component: () => import('@/views/orchestration/index'),
+    path: '/runtime-status',
+    component: () => import('@/views/runtime-status/index'),
     hidden: true,
-    name: 'Orchestration'
+    name: 'Runtime status'
   }
 ]
 

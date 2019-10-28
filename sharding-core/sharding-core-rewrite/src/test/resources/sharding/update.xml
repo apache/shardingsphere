@@ -21,7 +21,7 @@
         <input sql="UPDATE t_account SET status = ? WHERE account_id = ?" parameters="'OK', 100" />
         <output sql="UPDATE t_account_0 SET status = ? WHERE account_id = ?" parameters="'OK', 100" />
     </rewrite-assertion>
-
+    
     <rewrite-assertion id="update_with_sharding_value_for_literals">
         <input sql="UPDATE t_account SET status = 'OK' WHERE account_id = 100" />
         <output sql="UPDATE t_account_0 SET status = 'OK' WHERE account_id = 100" />

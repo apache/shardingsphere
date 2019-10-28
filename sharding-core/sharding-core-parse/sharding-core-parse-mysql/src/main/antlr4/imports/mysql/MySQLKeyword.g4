@@ -1503,3 +1503,15 @@ RESET
 RESTART
     : R E S T A R T
     ;
+
+UNIX_TIMESTAMP
+    : U N I X UL_ T I M E S T A M P
+    ;
+
+LOWER
+    : L O W E R
+    ;
+
+UPPER
+    : U P P E R
+    ;
