@@ -31,4 +31,22 @@ public final class TableMetaDataTest {
         TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("name", "dataType", true, true, true)), Collections.singleton("indexName"));
         assertTrue(tableMetaData.containsIndex("indexName"));
     }
+    
+    @Test
+    public void assertColumnPrimaryKey() {
+        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("id", "dataType", true, false, false)), Collections.<String>emptyList());
+        assertTrue(tableMetaData.getColumns().get("id").isPrimaryKey());
+    }
+    
+    @Test
+    public void assertColumnNotNull() {
+        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("id", "dataType", false, true, false)), Collections.<String>emptyList());
+        assertTrue(tableMetaData.getColumns().get("id").isNotNull());
+    }
+    
+    @Test
+    public void assertColumnAutoIncrement() {
+        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("id", "dataType", false, false, true)), Collections.<String>emptyList());
+        assertTrue(tableMetaData.getColumns().get("id").isAutoIncrement());
+    }
 }
