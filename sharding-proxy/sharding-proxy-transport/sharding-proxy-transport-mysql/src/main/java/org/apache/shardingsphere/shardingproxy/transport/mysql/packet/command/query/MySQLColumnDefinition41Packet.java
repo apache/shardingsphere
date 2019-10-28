@@ -31,7 +31,7 @@ import java.sql.SQLException;
  * Column definition above MySQL 4.1 packet protocol.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-Protocol::ColumnDefinition41">ColumnDefinition41</a>
- * @see <a href="https://mariadb.com/kb/en/library/resultset/#column-definition-packet">Column count packet</a>
+ * @see <a href="https://mariadb.com/kb/en/library/resultset/#column-definition-packet">Column definition packet</a>
  *
  * @author zhangliang
  * @author zhangyonglun
@@ -70,7 +70,7 @@ public final class MySQLColumnDefinition41Packet implements MySQLPacket {
                 resultSetMetaData.getColumnLabel(columnIndex), resultSetMetaData.getColumnName(columnIndex), resultSetMetaData.getColumnDisplaySize(columnIndex), 
                 MySQLColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(columnIndex)), resultSetMetaData.getScale(columnIndex));
     }
-
+    
     public MySQLColumnDefinition41Packet(final int sequenceId, final String schema, final String table, final String orgTable,
                                          final String name, final String orgName, final int columnLength, final MySQLColumnType columnType, final int decimals) {
         this(sequenceId, 0, schema, table, orgTable, name, orgName, columnLength, columnType, decimals);

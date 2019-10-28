@@ -20,13 +20,10 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * MySQL Column Field Detail Flag.
  * 
- * @see <a href="https://mariadb.com/kb/en/library/resultset/#column-definition-packet">Column count packet</a>
+ * @see <a href="https://mariadb.com/kb/en/library/resultset/#field-detail-flag">Field detail flag</a>
  * 
  * @author dongzonglei
  */
@@ -63,28 +60,6 @@ public enum MySQLColumnFieldDetailFlag {
     ON_UPDATE_NOW_FLAG(8192),
 
     NUM_FLAG(32768);
-
-    private static final Map<Integer, MySQLColumnFieldDetailFlag> MYSQL_COLUMN_FIELD_DETAIL_FLAG_CACHE = new HashMap<Integer, MySQLColumnFieldDetailFlag>() {
-        {
-            for (MySQLColumnFieldDetailFlag each : MySQLColumnFieldDetailFlag.values()) {
-                this.put(each.value, each);
-            }
-        }
-    };
-
+    
     private final int value;
-
-    /**
-     * Value of integer.
-     *
-     * @param value integer value
-     * @return column field detail flag enum
-     */
-    public static MySQLColumnFieldDetailFlag valueOf(final int value) {
-        MySQLColumnFieldDetailFlag result = MYSQL_COLUMN_FIELD_DETAIL_FLAG_CACHE.get(value);
-        if (null == result) {
-            throw new IllegalArgumentException(String.format("Cannot find '%s' in column field detail flag", value));
-        }
-        return result;
-    }
 }
