@@ -87,7 +87,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         int count = 0;
         for (InsertValueContext each : sqlStatementContext.getInsertValueContexts()) {
-            encryptInsertValueToken(insertValuesToken.getInsertValueTokens().get(count), tableName, sqlStatementContext, each);
+            encryptToken(insertValuesToken.getInsertValueTokens().get(count), tableName, sqlStatementContext, each);
             count++;
         }
     }
@@ -98,7 +98,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         InsertValuesToken result = new InsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
         for (InsertValueContext each : ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts()) {
             InsertValueToken insertValueToken = new InsertValueToken(each.getValueExpressions(), Collections.<DataNode>emptyList());
-            encryptInsertValueToken(insertValueToken, tableName, (InsertSQLStatementContext) sqlStatementContext, each);
+            encryptToken(insertValueToken, tableName, (InsertSQLStatementContext) sqlStatementContext, each);
             result.getInsertValueTokens().add(insertValueToken);
         }
         return result;
@@ -120,8 +120,8 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         return result;
     }
     
-    private void encryptInsertValueToken(final InsertValueToken insertValueToken, 
-                                         final String tableName, final InsertSQLStatementContext sqlStatementContext, final InsertValueContext insertValueContext) {
+    private void encryptToken(final InsertValueToken insertValueToken,
+                              final String tableName, final InsertSQLStatementContext sqlStatementContext, final InsertValueContext insertValueContext) {
         Optional<SQLToken> insertColumnsToken = findPreviousSQLToken(InsertColumnsToken.class);
         for (String each : sqlStatementContext.getColumnNames()) {
             Optional<ShardingEncryptor> encryptor = encryptRule.findShardingEncryptor(tableName, each);
