@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.spring.boot.datasource;
+package org.apache.shardingsphere.spring.boot.datasource;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.util.PropertyUtil;
+import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
 import org.springframework.core.env.Environment;
 
 import javax.sql.DataSource;
@@ -37,9 +37,13 @@ public final class HikariDataSourcePropertiesSetter implements DataSourcePropert
     @SneakyThrows(ReflectiveOperationException.class)
     public void propertiesSet(final Environment environment, final String prefix, final String dataSourceName, final DataSource dataSource) {
         Properties properties = new Properties();
-        properties.putAll(PropertyUtil.handle(environment, prefix + dataSourceName.trim() + ".data-source-properties", Map.class));
-        Method method = dataSource.getClass().getMethod("setDataSourceProperties", Properties.class);
-        method.invoke(dataSource, properties);
+        String datasourcePropertiesKey = prefix + dataSourceName.trim() + ".data-source-properties";
+        if (PropertyUtil.containPropertyPrefix(environment, datasourcePropertiesKey)) {
+            Map datasourceProperties = PropertyUtil.handle(environment, datasourcePropertiesKey, Map.class);
+            properties.putAll(datasourceProperties);
+            Method method = dataSource.getClass().getMethod("setDataSourceProperties", Properties.class);
+            method.invoke(dataSource, properties);
+        }
     }
     
     @Override

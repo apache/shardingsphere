@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.spring.boot.datasource;
+package org.apache.shardingsphere.spring.boot.datasource;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;

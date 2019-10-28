@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.shardingjdbc.spring.boot.datasource.HikariDataSourcePropertiesSetter
+org.apache.shardingsphere.spring.boot.datasource.HikariDataSourcePropertiesSetter

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.spring.boot.util;
+package org.apache.shardingsphere.spring.boot.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
