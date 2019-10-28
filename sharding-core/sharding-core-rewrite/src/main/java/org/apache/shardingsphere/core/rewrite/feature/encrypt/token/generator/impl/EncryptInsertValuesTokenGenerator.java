@@ -125,27 +125,39 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         Optional<SQLToken> insertColumnsToken = findPreviousSQLToken(InsertColumnsToken.class);
         for (String each : sqlStatementContext.getColumnNames()) {
             Optional<ShardingEncryptor> encryptor = encryptRule.findShardingEncryptor(tableName, each);
-            if (!encryptor.isPresent()) {
-                continue;
+            if (encryptor.isPresent()) {
+                int columnIndex = insertColumnsToken.isPresent() 
+                        ? ((InsertColumnsToken) insertColumnsToken.get()).getColumns().indexOf(encryptRule.getCipherColumn(tableName, each)) : sqlStatementContext.getColumnNames().indexOf(each);
+                Object originalValue = insertValueContext.getValue(columnIndex);
+                setCipherColumn(insertValueToken, encryptor.get(), columnIndex, insertValueContext.getValueExpressions().get(columnIndex), originalValue);
+                addAssistedQueryColumn(insertValueToken, encryptor.get(), tableName, each, insertValueContext, originalValue);
+                addPlainColumn(insertValueToken, tableName, each, insertValueContext, originalValue);
             }
-            int columnIndex = insertColumnsToken.isPresent()
-                    ? ((InsertColumnsToken) insertColumnsToken.get()).getColumns().indexOf(encryptRule.getCipherColumn(tableName, each)) : sqlStatementContext.getColumnNames().indexOf(each);
-            ExpressionSegment valueExpression = insertValueContext.getValueExpressions().get(columnIndex);
-            Object originalValue = insertValueContext.getValue(columnIndex);
-            if (valueExpression instanceof LiteralExpressionSegment) {
-                insertValueToken.getValues().set(columnIndex, new LiteralExpressionSegment(valueExpression.getStartIndex(), valueExpression.getStopIndex(), encryptor.get().encrypt(originalValue)));
-            }
-            if (encryptRule.findAssistedQueryColumn(tableName, each).isPresent()) {
-                DerivedSimpleExpressionSegment derivedExpressionSegment = insertValueContext.getParameters().isEmpty()
-                        ? new DerivedLiteralExpressionSegment(((ShardingQueryAssistedEncryptor) encryptor.get()).queryAssistedEncrypt(null == originalValue ? null : originalValue.toString()))
-                        : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
-                insertValueToken.getValues().add(derivedExpressionSegment);
-            }
-            if (encryptRule.findPlainColumn(tableName, each).isPresent()) {
-                DerivedSimpleExpressionSegment derivedExpressionSegment = insertValueContext.getParameters().isEmpty()
-                        ? new DerivedLiteralExpressionSegment(originalValue) : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
-                insertValueToken.getValues().add(derivedExpressionSegment);
-            }
+        }
+    }
+    
+    private void setCipherColumn(final InsertValueToken insertValueToken, final ShardingEncryptor encryptor, 
+                                 final int columnIndex, final ExpressionSegment valueExpression, final Object originalValue) {
+        if (valueExpression instanceof LiteralExpressionSegment) {
+            insertValueToken.getValues().set(columnIndex, new LiteralExpressionSegment(valueExpression.getStartIndex(), valueExpression.getStopIndex(), encryptor.encrypt(originalValue)));
+        }
+    }
+    
+    private void addAssistedQueryColumn(final InsertValueToken insertValueToken, final ShardingEncryptor encryptor, 
+                                        final String tableName, final String columnName, final InsertValueContext insertValueContext, final Object originalValue) {
+        if (encryptRule.findAssistedQueryColumn(tableName, columnName).isPresent()) {
+            DerivedSimpleExpressionSegment derivedExpressionSegment = insertValueContext.getParameters().isEmpty()
+                    ? new DerivedLiteralExpressionSegment(((ShardingQueryAssistedEncryptor) encryptor).queryAssistedEncrypt(null == originalValue ? null : originalValue.toString()))
+                    : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
+            insertValueToken.getValues().add(derivedExpressionSegment);
+        }
+    }
+    
+    private void addPlainColumn(final InsertValueToken insertValueToken, final String tableName, final String columnName, final InsertValueContext insertValueContext, final Object originalValue) {
+        if (encryptRule.findPlainColumn(tableName, columnName).isPresent()) {
+            DerivedSimpleExpressionSegment derivedExpressionSegment = insertValueContext.getParameters().isEmpty()
+                    ? new DerivedLiteralExpressionSegment(originalValue) : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
+            insertValueToken.getValues().add(derivedExpressionSegment);
         }
     }
     
