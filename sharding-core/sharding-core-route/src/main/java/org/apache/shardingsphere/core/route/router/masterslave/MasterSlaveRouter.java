@@ -70,6 +70,12 @@ public final class MasterSlaveRouter {
     }
     
     private boolean isMasterRoute(final SQLStatement sqlStatement) {
-        return !(sqlStatement instanceof SelectStatement) || MasterVisitedManager.isMasterVisited() || HintManager.isMasterRouteOnly();
+        boolean routeToMaster = !(sqlStatement instanceof SelectStatement) || MasterVisitedManager.isMasterVisited() || HintManager.isMasterRouteOnly();
+        if (!routeToMaster) {
+            if (sqlStatement instanceof SelectStatement && ((SelectStatement) sqlStatement).getTables().isEmpty()) {
+                routeToMaster = true;
+            }
+        }
+        return routeToMaster;
     }
 }

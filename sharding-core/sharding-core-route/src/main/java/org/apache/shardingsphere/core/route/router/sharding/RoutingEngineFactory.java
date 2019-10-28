@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.route.router.sharding;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
@@ -87,6 +88,9 @@ public final class RoutingEngineFactory {
             return sqlStatement instanceof SelectStatement ? new UnicastRoutingEngine(shardingRule, tableNames) : new DatabaseBroadcastRoutingEngine(shardingRule);
         }
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty()) {
+            if(!Strings.isNullOrEmpty(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())){
+                return new DefaultDatabaseRoutingEngine(shardingRule, tableNames);
+            }
             return new UnicastRoutingEngine(shardingRule, tableNames);
         }
         return getShardingRoutingEngine(shardingRule, sqlStatementContext, shardingConditions, tableNames);
