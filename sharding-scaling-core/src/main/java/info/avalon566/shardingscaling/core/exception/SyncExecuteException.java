@@ -17,6 +17,9 @@
 
 package info.avalon566.shardingscaling.core.exception;
 
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +28,7 @@ import java.util.List;
  *
  * @author avalon566
  */
+@Slf4j
 public class SyncExecuteException extends Exception {
 
     private final List<Throwable> aggregatedExceptions = new ArrayList<>();
@@ -38,12 +42,9 @@ public class SyncExecuteException extends Exception {
         aggregatedExceptions.add(throwable);
     }
 
-    @Override
-    public String toString() {
-        StringBuilder exceptionString = new StringBuilder();
+    public void logExceptions() {
         for (Throwable exception : aggregatedExceptions) {
-            exceptionString.append(exception.toString());
+            log.error(null, exception);
         }
-        return exceptionString.toString();
     }
 }

@@ -61,7 +61,8 @@ public class HistoryDataSyncJob implements SyncJob {
             log.info("{} table slice sync finish", syncConfiguration.getReaderConfiguration().getTableName());
             reporter.report(new Event(EventType.FINISHED));
         } catch (SyncExecuteException ex) {
-            log.error("{} table slice sync exception exit", syncConfiguration.getReaderConfiguration().getTableName(), ex);
+            log.error("{} table slice sync exception exit", syncConfiguration.getReaderConfiguration().getTableName());
+            ex.logExceptions();
             reporter.report(new Event(EventType.EXCEPTION_EXIT));
         }
     }

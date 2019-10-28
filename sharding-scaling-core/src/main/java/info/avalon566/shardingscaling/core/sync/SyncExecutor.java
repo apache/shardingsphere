@@ -97,7 +97,6 @@ public class SyncExecutor {
             future.get();
         } catch (InterruptedException ignored) {
         } catch (ExecutionException e) {
-            System.out.println(e);
             if (null == syncExecuteException) {
                 syncExecuteException = new SyncExecuteException();
             }

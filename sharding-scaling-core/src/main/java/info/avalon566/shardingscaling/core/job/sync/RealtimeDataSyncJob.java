@@ -76,7 +76,8 @@ public class RealtimeDataSyncJob implements SyncJob {
             log.info("realtime data sync finish");
             reporter.report(new Event(EventType.FINISHED));
         } catch (SyncExecuteException ex) {
-            log.error("realtime data sync exception exit", ex);
+            log.error("realtime data sync exception exit");
+            ex.logExceptions();
             reporter.report(new Event(EventType.EXCEPTION_EXIT));
         }
     }
