@@ -132,9 +132,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
             ExpressionSegment valueExpression = insertValueContext.getValueExpressions().get(columnIndex);
             Object originalValue = insertValueContext.getValue(columnIndex);
             if (valueExpression instanceof LiteralExpressionSegment) {
-                LiteralExpressionSegment encryptedLiteralExpressionSegment = new LiteralExpressionSegment(
-                        valueExpression.getStartIndex(), valueExpression.getStopIndex(), encryptor.get().encrypt(originalValue));
-                insertValueToken.getValues().set(columnIndex, encryptedLiteralExpressionSegment);
+                insertValueToken.getValues().set(columnIndex, new LiteralExpressionSegment(valueExpression.getStartIndex(), valueExpression.getStopIndex(), encryptor.get().encrypt(originalValue)));
             }
             if (encryptRule.findAssistedQueryColumn(tableName, each).isPresent()) {
                 DerivedSimpleExpressionSegment derivedExpressionSegment = insertValueContext.getParameters().isEmpty()
