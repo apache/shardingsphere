@@ -30,12 +30,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Generated key for use default columns token generator.
+ * Generated key for use default insert columns token generator.
  *
  * @author panjuan
  * @author zhangliang
  */
-public final class GeneratedKeyForUseDefaultColumnsTokenGenerator extends BaseGeneratedKeyTokenGenerator {
+public final class GeneratedKeyForUseDefaultInsertColumnsTokenGenerator extends BaseGeneratedKeyTokenGenerator {
     
     @Override
     protected boolean isGenerateSQLToken(final InsertStatement insertStatement) {
