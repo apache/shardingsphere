@@ -38,13 +38,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Insert columns token generator for encrypt.
+ * Use default insert columns token generator for encrypt.
  *
  * @author panjuan
  * @author zhangliang
  */
 @Setter
-public final class EncryptInsertColumnsTokenGenerator implements OptionalSQLTokenGenerator, EncryptRuleAware, PreviousSQLTokensAware {
+public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements OptionalSQLTokenGenerator, EncryptRuleAware, PreviousSQLTokensAware {
     
     private EncryptRule encryptRule;
     
