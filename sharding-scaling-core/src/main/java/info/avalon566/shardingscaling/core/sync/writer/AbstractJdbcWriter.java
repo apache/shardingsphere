@@ -94,6 +94,7 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
                 }
                 if (100 <= buffer.size() || 5 * 1000 < (System.currentTimeMillis() - lastFlushTime)) {
                     flush(dataSource, buffer);
+                    lastFlushTime = System.currentTimeMillis();
                 }
             }
             if (0 < buffer.size()) {
