@@ -31,7 +31,7 @@ import static org.junit.Assert.assertThat;
 
 public class Dbcp2DataSourcePropertiesSetterTest {
     
-    private final CommonDbcp2DataSourcePropertiesSetter abstractDbcp2DataSourcePropertiesSetter = new CommonDbcp2DataSourcePropertiesSetter();
+    private final CommonDbcp2DataSourcePropertiesSetter dbcp2DataSourcePropertiesSetter = new CommonDbcp2DataSourcePropertiesSetter();
     
     private final BasicDataSource dataSource = new BasicDataSource();
     
@@ -48,7 +48,7 @@ public class Dbcp2DataSourcePropertiesSetterTest {
     
     @Test
     public void assertPropertiesSet() {
-        abstractDbcp2DataSourcePropertiesSetter.propertiesSet(environment, "spring.shardingsphere.datasource.", "ds_master", dataSource);
+        dbcp2DataSourcePropertiesSetter.propertiesSet(environment, "spring.shardingsphere.datasource.", "ds_master", dataSource);
         Properties connectionProperties = (Properties) ReflectionTestUtils.getField(dataSource, "connectionProperties");
         assertThat(connectionProperties.getProperty("test"), is("test"));
         assertThat(connectionProperties.getProperty("xxx"), is("yyy"));
@@ -56,6 +56,6 @@ public class Dbcp2DataSourcePropertiesSetterTest {
     
     @Test
     public void assertGetType() {
-        assertThat(abstractDbcp2DataSourcePropertiesSetter.getType(), is("org.apache.commons.dbcp2.BasicDataSource"));
+        assertThat(dbcp2DataSourcePropertiesSetter.getType(), is("org.apache.commons.dbcp2.BasicDataSource"));
     }
 }
