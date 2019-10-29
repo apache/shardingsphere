@@ -167,4 +167,5 @@ chapter = true
 * [东奥教育集团](http://edu.dongao.com/)
 * [食蚁兽网络](http://www.41soo.com)
 * [北京环球网校](http://www.hqwx.com/)
+* [魔力耳朵](https://magicears.com.cn/)
 

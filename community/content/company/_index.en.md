@@ -166,3 +166,4 @@ The list here will be shown in the registered order.
 * [edu.dongao](http://edu.dongao.com/)
 * [41soo](http://www.41soo.com)
 * [hqwx](http://www.hqwx.com/)
+* [MagicEares](https://magicears.com.cn/)
