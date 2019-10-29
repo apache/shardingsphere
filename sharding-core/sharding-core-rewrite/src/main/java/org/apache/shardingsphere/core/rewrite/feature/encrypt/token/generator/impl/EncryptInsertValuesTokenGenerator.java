@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertVal
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.expression.DerivedLiteralExpressionSegment;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.expression.DerivedParameterMarkerExpressionSegment;
@@ -34,9 +33,9 @@ import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.En
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.UseDefaultInsertColumnsToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValuesToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValuesToken.InsertValueToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.UseDefaultInsertColumnsToken;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
@@ -61,7 +60,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext.getSqlStatement() instanceof InsertStatement && !sqlStatementContext.getSqlStatement().findSQLSegments(InsertValuesSegment.class).isEmpty()
+        return sqlStatementContext instanceof InsertSQLStatementContext && !sqlStatementContext.getSqlStatement().findSQLSegments(InsertValuesSegment.class).isEmpty()
                 && encryptRule.findEncryptTable(sqlStatementContext.getTablesContext().getSingleTableName()).isPresent();
     }
     
@@ -122,14 +121,14 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
     }
     
     private void encryptToken(final InsertValueToken insertValueToken, final String tableName, final InsertSQLStatementContext sqlStatementContext, final InsertValueContext insertValueContext) {
-        Optional<SQLToken> insertColumnsToken = findPreviousSQLToken(UseDefaultInsertColumnsToken.class);
+        Optional<SQLToken> useDefaultInsertColumnsToken = findPreviousSQLToken(UseDefaultInsertColumnsToken.class);
         Iterator<String> descendingColumnNames = sqlStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
             Optional<ShardingEncryptor> encryptor = encryptRule.findShardingEncryptor(tableName, columnName);
             if (encryptor.isPresent()) {
-                int columnIndex = insertColumnsToken.isPresent()
-                        ? ((UseDefaultInsertColumnsToken) insertColumnsToken.get()).getColumns().indexOf(columnName) : sqlStatementContext.getColumnNames().indexOf(columnName);
+                int columnIndex = useDefaultInsertColumnsToken.isPresent()
+                        ? ((UseDefaultInsertColumnsToken) useDefaultInsertColumnsToken.get()).getColumns().indexOf(columnName) : sqlStatementContext.getColumnNames().indexOf(columnName);
                 Object originalValue = insertValueContext.getValue(columnIndex);
                 addPlainColumn(insertValueToken, columnIndex, tableName, columnName, insertValueContext, originalValue);
                 addAssistedQueryColumn(insertValueToken, encryptor.get(), columnIndex, tableName, columnName, insertValueContext, originalValue);
