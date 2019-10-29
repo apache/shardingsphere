@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.spring.boot.datasource;
+package org.apache.shardingsphere.spring.boot.datasource;
 
 import org.springframework.core.env.Environment;
 
@@ -39,10 +39,9 @@ public interface DataSourcePropertiesSetter {
     void propertiesSet(Environment environment, String prefix, String dataSourceName, DataSource dataSource);
     
     /**
-     * support datasource type.
+     * Get type name of data source.
      *
-     * @param type datasource type
-     * @return is supported
+     * @return type name of data source.
      */
-    boolean support(DataSource type);
+    String getType();
 }
