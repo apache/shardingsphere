@@ -87,6 +87,9 @@ public final class ParserResult {
     @XmlAttribute(name = "auto-commit")
     private boolean autoCommit;
 
+    @XmlAttribute(name = "lock-clause")
+    private boolean lockClause;
+
     @XmlElement(name = "select-items")
     private ExpectedSelectItems selectItems = new ExpectedSelectItems();
 
