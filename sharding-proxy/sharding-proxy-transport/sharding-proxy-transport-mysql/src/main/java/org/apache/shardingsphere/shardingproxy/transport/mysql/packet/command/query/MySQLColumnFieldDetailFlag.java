@@ -15,31 +15,51 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.metadata.column;
+package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 /**
- * Column meta data.
- *
- * @author panjuan
+ * MySQL Column Field Detail Flag.
+ * 
+ * @see <a href="https://mariadb.com/kb/en/library/resultset/#field-detail-flag">Field detail flag</a>
+ * 
+ * @author dongzonglei
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-@ToString
-public class ColumnMetaData {
-    
-    private final String name;
-    
-    private final String dataType;
-    
-    private final boolean primaryKey;
+public enum MySQLColumnFieldDetailFlag {
 
-    private final boolean notNull;
+    NOT_NULL(1),
 
-    private final boolean autoIncrement;
+    PRIMARY_KEY(2),
+
+    UNIQUE_KEY(4),
+
+    MULTIPLE_KEY(8),
+
+    BLOB(16),
+
+    UNSIGNED(32),
+
+    ZEROFILL_FLAG(64),
+
+    BINARY_COLLATION(128),
+
+    ENUM(256),
+
+    AUTO_INCREMENT(512),
+
+    TIMESTAMP(1024),
+
+    SET(2048),
+
+    NO_DEFAULT_VALUE_FLAG(4096),
+
+    ON_UPDATE_NOW_FLAG(8192),
+
+    NUM_FLAG(32768);
+    
+    private final int value;
 }
