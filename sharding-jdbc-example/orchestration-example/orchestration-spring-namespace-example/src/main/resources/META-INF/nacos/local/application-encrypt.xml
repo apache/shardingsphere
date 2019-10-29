@@ -24,18 +24,18 @@
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xmlns:orchestraion="http://shardingsphere.apache.org/schema/shardingsphere/orchestration"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-                        http://www.springframework.org/schema/beans/spring-beans.xsd 
-                        http://www.springframework.org/schema/context 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd
-                        http://www.springframework.org/schema/tx 
+                        http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd
                         http://www.springframework.org/schema/util
                         http://www.springframework.org/schema/util/spring-util.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/encrypt
-                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd 
+                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/orchestration
                         http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd">
-    <import resource="classpath*:META-INF/zookeeper/registry-center.xml" />
+    <import resource="classpath*:META-INF/nacos/registry-center.xml" />
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
 
     <bean id="demo_ds_encrypt" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
@@ -44,11 +44,11 @@
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
-    
+
     <bean:properties id="props">
         <prop key="aes.key.value">123456</prop>
     </bean:properties>
-    
+
     <encrypt:data-source id="realEncryptDataSource" data-source-name="demo_ds_encrypt" >
         <encrypt:encrypt-rule>
             <encrypt:tables>
@@ -66,19 +66,19 @@
             <prop key="query.with.cipher.column">true</prop>
         </encrypt:props>
     </encrypt:data-source>
-    
+
     <orchestraion:encrypt-data-source id="encryptDataSource" data-source-ref="realEncryptDataSource" registry-center-ref="regCenter" overwrite="true" />
-    
+
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="encryptDataSource" />
     </bean>
     <tx:annotation-driven />
-    
+
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="encryptDataSource"/>
         <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml"/>
     </bean>
-    
+
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="org.apache.shardingsphere.example.core.mybatis.repository"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>

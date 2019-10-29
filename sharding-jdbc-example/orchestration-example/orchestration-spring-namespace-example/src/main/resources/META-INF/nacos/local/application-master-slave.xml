@@ -15,7 +15,7 @@
                         http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/orchestration
                         http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd">
-    <import resource="classpath*:META-INF/zookeeper/registry-center.xml" />
+    <import resource="classpath*:META-INF/nacos/registry-center.xml" />
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
 
     <bean id="demo_ds_master" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
@@ -24,7 +24,7 @@
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
-    
+
     <bean id="demo_ds_slave_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds_slave_0"/>
@@ -47,12 +47,12 @@
         <property name="dataSource" ref="masterSlaveDataSource" />
     </bean>
     <tx:annotation-driven />
-    
+
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="masterSlaveDataSource"/>
         <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml"/>
     </bean>
-    
+
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="org.apache.shardingsphere.example.core.mybatis.repository"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
