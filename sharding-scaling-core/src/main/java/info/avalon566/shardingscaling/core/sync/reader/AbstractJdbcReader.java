@@ -90,7 +90,8 @@ public abstract class AbstractJdbcReader extends AbstractSyncRunner implements J
                 record.setFullTableName(String.format("%s.%s", conn.getCatalog(), rdbmsConfiguration.getTableName()));
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
                     if (Types.TIME == rs.getMetaData().getColumnType(i)
-                            || Types.DATE == rs.getMetaData().getColumnType(i)) {
+                            || Types.DATE == rs.getMetaData().getColumnType(i)
+                            || Types.TIMESTAMP == rs.getMetaData().getColumnType(i)) {
                         // fix: jdbc Time objects represent a wall-clock time and not a duration as MySQL treats them
                         record.addColumn(new Column(rs.getString(i), true));
                     } else {
