@@ -229,7 +229,7 @@ The text of each license is the standard Apache 2.0 license.
     curator-client 2.10.0:  https://github.com/apache/curator,  Apache 2.0
     curator-framework 2.10.0:  https://github.com/apache/curator,  Apache 2.0
     curator-recipes 2.10.0:  https://github.com/apache/curator,  Apache 2.0
-    guava 18.0: https://github.com/google/guava , Apache 2.0
+    guava 18.0: https://github.com/google/guava, Apache 2.0
     log4j 1.2.16: http://logging.apache.org/log4j/1.2/, Apache 2.0
     SnakeYAML 1.16: http://www.snakeyaml.org , Apache 2.0
     zookeeper 3.4.6: https://github.com/apache/zookeeper, Apache 2.0
@@ -239,6 +239,7 @@ The text of each license is the standard Apache 2.0 license.
     spring-boot 1.5.21.RELEASE: https://raw.githubusercontent.com/spring-projects/spring-boot, Apache 2.0
     spring-framework 4.3.24.RELEASE: https://raw.githubusercontent.com/spring-projects/spring-framework, Apache 2.0
     tomcat 8.5.40: http://svn.apache.org/repos/asf/tomcat, Apache 2.0
+    gson 2.8.5: https://github.com/google/gson, Apache 2.0
 
 ========================================================================
 BSD licenses
@@ -267,7 +268,8 @@ The following components are provided under the MIT License. See project link fo
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
    jcl-over-slf4j 1.7.7: https://www.slf4j.org, MIT
-   slf4j 1.7.7: https://www.slf4j.org , MIT
+   slf4j 1.7.7: https://www.slf4j.org, MIT
+   jul-to-slf4j 1.7.26: https://www.slf4j.org, MIT
 
    axios 0.18.0: https://github.com/axios/axios, MIT
    element-ui 2.4.9: https://github.com/ElemeFE/element, MIT
