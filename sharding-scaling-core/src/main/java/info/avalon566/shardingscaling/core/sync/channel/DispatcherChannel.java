@@ -22,6 +22,7 @@ import info.avalon566.shardingscaling.core.sync.record.Record;
 import info.avalon566.shardingscaling.core.sync.record.DataRecord;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -68,10 +69,14 @@ public class DispatcherChannel implements Channel {
     }
 
     @Override
-    public final Record popRecord() {
+    public List<Record> fetchRecords(int batchSize, int timeout) {
+        return findChannel().fetchRecords(batchSize, timeout);
+    }
+
+    private Channel findChannel() {
         String threadId = Long.toString(Thread.currentThread().getId());
         checkAssignment(threadId);
-        return channels.get(channelAssignment.get(threadId)).popRecord();
+        return channels.get(channelAssignment.get(threadId));
     }
 
     private void checkAssignment(final String threadId) {

@@ -19,6 +19,8 @@ package info.avalon566.shardingscaling.core.sync.channel;
 
 import info.avalon566.shardingscaling.core.sync.record.Record;
 
+import java.util.List;
+
 /**
  * Channel.
  * @author avalon566
@@ -34,8 +36,11 @@ public interface Channel {
     void pushRecord(Record dataRecord) throws InterruptedException;
 
     /**
-     * pop a {@code DataRecord} from channel.
-     * @return dataRecord
+     * fetch {@code Record} from channel, if the timeout also returns the record.
+     *
+     * @param batchSize record batch size
+     * @param timeout value
+     * @return record
      */
-    Record popRecord();
+    List<Record> fetchRecords(int batchSize, int timeout);
 }
