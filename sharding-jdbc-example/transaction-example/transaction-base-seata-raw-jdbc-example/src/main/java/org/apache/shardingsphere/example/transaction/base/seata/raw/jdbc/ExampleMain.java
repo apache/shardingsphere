@@ -44,7 +44,6 @@ import java.util.concurrent.locks.LockSupport;
 public class ExampleMain {
     
     private static String configFile = "/META-INF/sharding-databases-tables.yaml";
-//    private static String configFile = "/META-INF/master-slave.yaml";
     
     public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(getFile(configFile));
