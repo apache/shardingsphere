@@ -10,7 +10,7 @@ The database field used in sharding refers to the key field in horizontal shardi
 
 ## Sharding Algorithm
 
-Data sharding can be achieved by sharding algorithms through `=`, `BETWEEN` and `IN`. They need to be implemented by developers themselves and can be highly flexible.
+Data sharding can be achieved by sharding algorithms through `=`, `>=`, `<=`, `>`, `<`, `BETWEEN` and `IN`. They need to be implemented by developers themselves and can be highly flexible.
 
 Currently, 4 kinds of sharding algorithms are available. Since the sharding algorithm and business achievement are closely related, it extracts all kinds of scenarios by sharding strategies, instead of providing built-in sharding algorithms. Therefore, it can provide higher abstraction and the interface for developers to implement sharding algorithm by themselves.
 
@@ -20,7 +20,7 @@ Currently, 4 kinds of sharding algorithms are available. Since the sharding algo
 
 - Range Sharding Algorithm
 
-`RangeShardingAlgorithm` is to process the sharding case in which single sharding key `BETWEEN AND` is used; `StandardShardingStrategy` needs to be used together.
+`RangeShardingAlgorithm` is to process the sharding case in which single sharding key `BETWEEN AND`、`>`、`<`、`>=`、`<=` is used; `StandardShardingStrategy` needs to be used together.
 
 - Complex Keys Sharding Algorithm
 
@@ -37,15 +37,15 @@ It includes the sharding key and the sharding algorithm, and the latter one is e
 
 - Standard Sharding Strategy
 
-`StandardShardingStrategy` provides support for the sharding operation of `=`, `IN` and `BETWEEN AND` in SQL. 
+`StandardShardingStrategy` provides support for the sharding operation of `=`, `>`, `<`, `>=`, `<=`, `IN` and `BETWEEN AND` in SQL. 
 `StandardShardingStrategy` only supports single sharding keys and provides two sharding algorithms of `PreciseShardingAlgorithm` and `RangeShardingAlgorithm`. 
 `PreciseShardingAlgorithm` is compulsory and used to operate the sharding of `=` and `IN`. 
-`RangeShardingAlgorithm` is optional and used to operate the sharding of `BETWEEN AND`. 
+`RangeShardingAlgorithm` is optional and used to operate the sharding of `BETWEEN AND`, `>`, `<`, `>=`, `<=`. 
 `BETWEEN AND` in SQL will operate by way of all data node route without the configuration of `RangeShardingAlgorithm`.
 
 - Complex Sharding Strategy
 
-`ComplexShardingStrategy` provides support for the sharding operation of `=`, `IN` and `BETWEEN AND` in SQL. `ComplexShardingStrategy` supports multiple sharding keys, but since their relationships are so complex that there is not too much encapsulation, the combination of sharding keys and sharding operators are in the algorithm interface and achieved by developers with the most flexibility.
+`ComplexShardingStrategy` provides support for the sharding operation of `=`, `>`, `<`, `>=`, `<=`, `IN` and `BETWEEN AND` in SQL. `ComplexShardingStrategy` supports multiple sharding keys, but since their relationships are so complex that there is not too much encapsulation, the combination of sharding keys and sharding operators are in the algorithm interface and achieved by developers with the most flexibility.
 
 - Inline Sharding Strategy
 
