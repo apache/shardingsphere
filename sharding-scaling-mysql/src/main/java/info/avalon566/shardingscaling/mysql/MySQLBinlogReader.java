@@ -25,6 +25,8 @@ import info.avalon566.shardingscaling.core.sync.reader.LogReader;
 import info.avalon566.shardingscaling.core.sync.record.Column;
 import info.avalon566.shardingscaling.core.sync.record.DataRecord;
 import info.avalon566.shardingscaling.core.sync.metadata.JdbcUri;
+import info.avalon566.shardingscaling.core.sync.record.FinishedRecord;
+import info.avalon566.shardingscaling.core.sync.record.Record;
 import info.avalon566.shardingscaling.mysql.binlog.event.AbstractBinlogEvent;
 import info.avalon566.shardingscaling.mysql.binlog.event.DeleteRowsEvent;
 import info.avalon566.shardingscaling.mysql.binlog.event.UpdateRowsEvent;
@@ -101,7 +103,7 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
         MySQLConnector client = new MySQLConnector(123456, uri.getHostname(), uri.getPort(), jdbcDataSourceConfiguration.getUsername(), jdbcDataSourceConfiguration.getPassword());
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
-        while (true) {
+        while (isRunning()) {
             AbstractBinlogEvent event = client.poll();
             if (null == event) {
                 try {
@@ -118,6 +120,7 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
                 handleDeleteRowsEvent(channel, uri, (DeleteRowsEvent) event);
             }
         }
+        pushRecord(channel, new FinishedRecord());
     }
 
     private void handleWriteRowsEvent(final Channel channel, final JdbcUri uri, final WriteRowsEvent event) {
@@ -172,7 +175,7 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
         }
     }
 
-    private void pushRecord(final Channel channel, final DataRecord record) {
+    private void pushRecord(final Channel channel, final Record record) {
         try {
             channel.pushRecord(record);
         } catch (InterruptedException ignored) {
