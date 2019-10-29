@@ -15,35 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo;
+package org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic;
 
+import com.google.common.base.Joiner;
 import lombok.Getter;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
+
+import java.util.List;
 
 /**
- * Insert cipher assignment token.
+ * Default insert columns token.
  *
  * @author panjuan
  * @author zhangliang
  */
-public abstract class InsertCipherAssignmentToken extends SQLToken implements Substitutable {
+@Getter
+public final class UseDefaultInsertColumnsToken extends SQLToken implements Attachable {
     
-    @Getter
-    private final int stopIndex;
+    private final List<String> columns;
     
-    private final String cipherColumnName;
-    
-    public InsertCipherAssignmentToken(final int startIndex, final int stopIndex, final String cipherColumnName) {
+    public UseDefaultInsertColumnsToken(final int startIndex, final List<String> columns) {
         super(startIndex);
-        this.stopIndex = stopIndex;
-        this.cipherColumnName = cipherColumnName;
+        this.columns = columns;
     }
     
     @Override
-    public final String toString() {
-        return String.format("%s = %s", cipherColumnName, getAssignmentValue());
+    public String toString() {
+        return columns.isEmpty() ? "" : String.format("(%s)", Joiner.on(", ").join(columns));
     }
-    
-    protected abstract String getAssignmentValue();
 }

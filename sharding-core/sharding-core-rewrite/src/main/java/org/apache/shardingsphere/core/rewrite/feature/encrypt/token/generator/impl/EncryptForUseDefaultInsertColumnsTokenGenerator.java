@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.En
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertColumnsToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.UseDefaultInsertColumnsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 
@@ -56,9 +56,9 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements Op
     }
     
     @Override
-    public InsertColumnsToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public UseDefaultInsertColumnsToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        Optional<InsertColumnsToken> previousSQLToken = findInsertColumnsToken();
+        Optional<UseDefaultInsertColumnsToken> previousSQLToken = findInsertColumnsToken();
         if (previousSQLToken.isPresent()) {
             processPreviousSQLToken(previousSQLToken.get(), (InsertSQLStatementContext) sqlStatementContext, tableName);
             return previousSQLToken.get();
@@ -66,16 +66,16 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements Op
         return generateNewSQLToken((InsertSQLStatementContext) sqlStatementContext, tableName);
     }
     
-    private Optional<InsertColumnsToken> findInsertColumnsToken() {
+    private Optional<UseDefaultInsertColumnsToken> findInsertColumnsToken() {
         for (SQLToken each : previousSQLTokens) {
-            if (each instanceof InsertColumnsToken) {
-                return Optional.of((InsertColumnsToken) each);
+            if (each instanceof UseDefaultInsertColumnsToken) {
+                return Optional.of((UseDefaultInsertColumnsToken) each);
             }
         }
         return Optional.absent();
     }
     
-    private void processPreviousSQLToken(final InsertColumnsToken previousSQLToken, final InsertSQLStatementContext sqlStatementContext, final String tableName) {
+    private void processPreviousSQLToken(final UseDefaultInsertColumnsToken previousSQLToken, final InsertSQLStatementContext sqlStatementContext, final String tableName) {
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
         Preconditions.checkState(encryptTable.isPresent());
         List<String> columnNames = getColumnNames(sqlStatementContext, encryptTable.get(), previousSQLToken.getColumns());
@@ -83,12 +83,12 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements Op
         previousSQLToken.getColumns().addAll(columnNames);
     }
     
-    private InsertColumnsToken generateNewSQLToken(final InsertSQLStatementContext sqlStatementContext, final String tableName) {
+    private UseDefaultInsertColumnsToken generateNewSQLToken(final InsertSQLStatementContext sqlStatementContext, final String tableName) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         Preconditions.checkState(insertColumnsSegment.isPresent());
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
         Preconditions.checkState(encryptTable.isPresent());
-        return new InsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames(sqlStatementContext, encryptTable.get(), sqlStatementContext.getColumnNames()));
+        return new UseDefaultInsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames(sqlStatementContext, encryptTable.get(), sqlStatementContext.getColumnNames()));
     }
     
     private List<String> getColumnNames(final InsertSQLStatementContext sqlStatementContext, final EncryptTable encryptTable, final List<String> currentColumnNames) {

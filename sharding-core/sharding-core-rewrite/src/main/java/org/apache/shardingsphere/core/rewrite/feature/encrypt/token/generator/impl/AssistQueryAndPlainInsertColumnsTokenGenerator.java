@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.EncryptRuleAware;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.AssistQueryAndPlainInsertColumnsToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertColumnsToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
@@ -54,8 +54,8 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator implements Col
     }
     
     @Override
-    public Collection<AssistQueryAndPlainInsertColumnsToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        Collection<AssistQueryAndPlainInsertColumnsToken> result = new LinkedList<>();
+    public Collection<InsertColumnsToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+        Collection<InsertColumnsToken> result = new LinkedList<>();
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(sqlStatementContext.getTablesContext().getSingleTableName());
         Preconditions.checkState(encryptTable.isPresent());
         for (ColumnSegment each : ((InsertStatement) sqlStatementContext.getSqlStatement()).getColumns()) {
@@ -69,7 +69,7 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator implements Col
                 columns.add(plainColumn.get());
             }
             if (!columns.isEmpty()) {
-                result.add(new AssistQueryAndPlainInsertColumnsToken(each.getStopIndex() + 1, columns));
+                result.add(new InsertColumnsToken(each.getStopIndex() + 1, columns));
             }
         }
         return result;
