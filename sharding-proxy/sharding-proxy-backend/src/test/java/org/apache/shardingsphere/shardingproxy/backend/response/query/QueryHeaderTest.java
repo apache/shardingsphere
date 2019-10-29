@@ -112,6 +112,7 @@ public final class QueryHeaderTest {
         ColumnMetaData columnMetaData = new ColumnMetaData("order_id", "int", true, true, true);
         TableMetas tableMetas = mock(TableMetas.class);
         when(tableMetas.get("t_order")).thenReturn(new TableMetaData(Arrays.asList(columnMetaData), Arrays.asList("order_id")));
+        when(tableMetas.containsTable("t_order")).thenReturn(true);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.getTables()).thenReturn(tableMetas);
         DataSourceMetas dataSourceMetas = mock(DataSourceMetas.class);
