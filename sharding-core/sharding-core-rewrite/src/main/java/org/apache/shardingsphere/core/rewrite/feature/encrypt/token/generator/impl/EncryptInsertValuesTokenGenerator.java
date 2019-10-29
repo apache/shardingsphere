@@ -71,7 +71,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
             processPreviousSQLToken((InsertSQLStatementContext) sqlStatementContext, (InsertValuesToken) insertValuesToken.get());
             return (InsertValuesToken) insertValuesToken.get();
         }
-        return generateNewSQLToken(sqlStatementContext);
+        return generateNewSQLToken((InsertSQLStatementContext) sqlStatementContext);
     }
     
     private Optional<SQLToken> findPreviousSQLToken(final Class<?> sqlToken) {
@@ -92,13 +92,13 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         }
     }
     
-    private InsertValuesToken generateNewSQLToken(final SQLStatementContext sqlStatementContext) {
+    private InsertValuesToken generateNewSQLToken(final InsertSQLStatementContext sqlStatementContext) {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         Collection<InsertValuesSegment> insertValuesSegments = sqlStatementContext.getSqlStatement().findSQLSegments(InsertValuesSegment.class);
         InsertValuesToken result = new InsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
-        for (InsertValueContext each : ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts()) {
+        for (InsertValueContext each : sqlStatementContext.getInsertValueContexts()) {
             InsertValueToken insertValueToken = new InsertValueToken(each.getValueExpressions(), Collections.<DataNode>emptyList());
-            encryptToken(insertValueToken, tableName, (InsertSQLStatementContext) sqlStatementContext, each);
+            encryptToken(insertValueToken, tableName, sqlStatementContext, each);
             result.getInsertValueTokens().add(insertValueToken);
         }
         return result;
