@@ -20,22 +20,21 @@ package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.i
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.EncryptRuleAware;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertColumnsToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Use default insert columns token generator for encrypt.
@@ -61,7 +60,7 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements Op
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         Optional<InsertColumnsToken> previousSQLToken = findInsertColumnsToken();
         if (previousSQLToken.isPresent()) {
-            processPreviousSQLToken(previousSQLToken.get(), tableName);
+            processPreviousSQLToken(previousSQLToken.get(), (InsertSQLStatementContext) sqlStatementContext, tableName);
             return previousSQLToken.get();
         }
         return generateNewSQLToken((InsertSQLStatementContext) sqlStatementContext, tableName);
@@ -76,46 +75,52 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements Op
         return Optional.absent();
     }
     
-    private void processPreviousSQLToken(final InsertColumnsToken previousSQLToken, final String tableName) {
-        for (Entry<String, String> entry : encryptRule.getLogicAndCipherColumns(tableName).entrySet()) {
-            int encryptLogicColumnIndex = previousSQLToken.getColumns().indexOf(entry.getKey());
-            if (-1 != encryptLogicColumnIndex) {
-                previousSQLToken.getColumns().set(encryptLogicColumnIndex, entry.getValue());
-            }
-        }
+    private void processPreviousSQLToken(final InsertColumnsToken previousSQLToken, final InsertSQLStatementContext sqlStatementContext, final String tableName) {
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        if (encryptTable.isPresent()) {
-            previousSQLToken.getColumns().addAll(getEncryptDerivedColumnNames(encryptTable.get(), tableName));
-        }
+        Preconditions.checkState(encryptTable.isPresent());
+        List<String> columnNames = getColumnNames(sqlStatementContext, encryptTable.get(), previousSQLToken.getColumns());
+        previousSQLToken.getColumns().clear();
+        previousSQLToken.getColumns().addAll(columnNames);
     }
     
     private InsertColumnsToken generateNewSQLToken(final InsertSQLStatementContext sqlStatementContext, final String tableName) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         Preconditions.checkState(insertColumnsSegment.isPresent());
-        List<String> columnNames = new LinkedList<>();
-        Map<String, String> logicAndCipherColumns = encryptRule.getLogicAndCipherColumns(tableName);
-        for (String each : sqlStatementContext.getColumnNames()) {
-            columnNames.add(logicAndCipherColumns.containsKey(each) ? logicAndCipherColumns.get(each) : each);
-        }
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        if (encryptTable.isPresent()) {
-            columnNames.addAll(getEncryptDerivedColumnNames(encryptTable.get(), tableName));
-        }
-        return new InsertColumnsToken(insertColumnsSegment.get().getStopIndex(), columnNames);
+        Preconditions.checkState(encryptTable.isPresent());
+        return new InsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames(sqlStatementContext, encryptTable.get(), sqlStatementContext.getColumnNames()));
     }
     
-    private List<String> getEncryptDerivedColumnNames(final EncryptTable encryptTable, final String tableName) {
-        List<String> result = new LinkedList<>();
-        for (String each : encryptTable.getLogicColumns()) {
-            Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, each);
-            if (assistedQueryColumn.isPresent()) {
-                result.add(assistedQueryColumn.get());
-            }
-            Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, each);
-            if (plainColumn.isPresent()) {
-                result.add(plainColumn.get());
+    private List<String> getColumnNames(final InsertSQLStatementContext sqlStatementContext, final EncryptTable encryptTable, final List<String> currentColumnNames) {
+        List<String> result = new LinkedList<>(currentColumnNames);
+        Iterator<String> descendingColumnNames = sqlStatementContext.getDescendingColumnNames();
+        while (descendingColumnNames.hasNext()) {
+            String columnName = descendingColumnNames.next();
+            if (encryptTable.findShardingEncryptor(columnName).isPresent()) {
+                int columnIndex = result.indexOf(columnName);
+                addPlainColumn(result, encryptTable, columnName, columnIndex);
+                addAssistedQueryColumn(result, encryptTable, columnName, columnIndex);
+                setCipherColumn(result, encryptTable, columnName, columnIndex);
             }
         }
         return result;
+    }
+    
+    private void addPlainColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {
+        Optional<String> plainColumn = encryptTable.findPlainColumn(columnName);
+        if (plainColumn.isPresent()) {
+            columnNames.add(columnIndex + 1, plainColumn.get());
+        }
+    }
+    
+    private void addAssistedQueryColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {
+        Optional<String> assistedQueryColumn = encryptTable.findAssistedQueryColumn(columnName);
+        if (assistedQueryColumn.isPresent()) {
+            columnNames.add(columnIndex + 1, assistedQueryColumn.get());
+        }
+    }
+    
+    private void setCipherColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {
+        columnNames.set(columnIndex, encryptTable.getCipherColumn(columnName));
     }
 }
