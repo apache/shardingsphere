@@ -59,18 +59,23 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator implements Col
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(sqlStatementContext.getTablesContext().getSingleTableName());
         Preconditions.checkState(encryptTable.isPresent());
         for (ColumnSegment each : ((InsertStatement) sqlStatementContext.getSqlStatement()).getColumns()) {
-            List<String> columns = new LinkedList<>();
-            Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(each.getName());
-            if (assistedQueryColumn.isPresent()) {
-                columns.add(assistedQueryColumn.get());
-            }
-            Optional<String> plainColumn = encryptTable.get().findPlainColumn(each.getName());
-            if (plainColumn.isPresent()) {
-                columns.add(plainColumn.get());
-            }
+            List<String> columns = getColumns(encryptTable.get(), each);
             if (!columns.isEmpty()) {
                 result.add(new InsertColumnsToken(each.getStopIndex() + 1, columns));
             }
+        }
+        return result;
+    }
+    
+    private List<String> getColumns(final EncryptTable encryptTable, final ColumnSegment columnSegment) {
+        List<String> result = new LinkedList<>();
+        Optional<String> assistedQueryColumn = encryptTable.findAssistedQueryColumn(columnSegment.getName());
+        if (assistedQueryColumn.isPresent()) {
+            result.add(assistedQueryColumn.get());
+        }
+        Optional<String> plainColumn = encryptTable.findPlainColumn(columnSegment.getName());
+        if (plainColumn.isPresent()) {
+            result.add(plainColumn.get());
         }
         return result;
     }
