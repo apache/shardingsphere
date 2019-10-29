@@ -145,7 +145,47 @@ oracle.password=jdbc
 
 # SQL解析引擎测试
 
-## 测试环境
+## 数据准备
 
-SQL解析引擎测试是基于SQL本身的解析，因此无需连接数据库，直接运行`AllParsingTests`即可。
+不同于集成测试，SQL 解析不需要真实的测试环境，只需要我们定义好要测试的 SQL，以及解析后的断言数据即可：
 
+### SQL 数据
+
+在集成测试的部分，我们提到过 sql-case-id，这个 id 对应的 SQL，是可以在不同模块共享的，我们只需要在 `/incubator-shardingsphere/sharding-sql-test/src/main/resources/sql/sharding/SQL-TYPE/*.xml` 添加要测试的 SQL 就可以了
+
+### 断言解析数据
+
+断言的解析数据保存在 `/incubator-shardingsphere/sharding-core/sharding-core-parse/sharding-core-parse-test/src/test/resources/sharding/SQL-TYPE/*.xml`
+在 xml 文件中，我们可以针对表名，token，SQL 条件等去进行断言，例如如下的配置：
+
+```.xml
+<parser-result-sets>
+<parser-result sql-case-id="insert_with_multiple_values">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="12" table-name="t_order" length="7" />
+        </tokens>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value literal="1" type="int" />
+                </condition>
+            </and-condition>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value literal="2" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value literal="2" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+    </parser-result>
+</parser-result-sets>
+```
+设置好上面两类数据，我们就可以通过 sharding-core-parse-test 下对应的 engine 启动 SQL 解析的测试了。
