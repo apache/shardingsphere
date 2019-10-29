@@ -68,6 +68,11 @@
         <assertion parameters="10:int, 12:int, 1009:int, 1108:int" expected-data-file="select_between_with_single_table.xml" />
         <assertion parameters="10:int, 12:int, 1309:int, 1408:int" expected-data-file="empty_order.xml" />
     </dql-test-case>
+
+    <dql-test-case sql-case-id="select_comparison_symbol_with_single_table">
+        <assertion parameters="10:int, 12:int, 1009:int, 1108:int" expected-data-file="select_comparison_symbol_with_single_table.xml" />
+        <assertion parameters="10:int, 12:int, 1309:int, 1408:int" expected-data-file="empty_order.xml" />
+    </dql-test-case>
     
     <dql-test-case sql-case-id="select_count_like_concat">
         <assertion parameters="init:String, 10:int, 11:int, 1000:int, 2901:int" expected-data-file="select_count_like_concat.xml" />

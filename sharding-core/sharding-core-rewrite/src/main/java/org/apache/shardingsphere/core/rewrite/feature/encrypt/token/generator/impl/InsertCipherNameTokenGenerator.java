@@ -34,7 +34,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Insert logic column names token generator.
+ * Insert cipher column name token generator.
  *
  * @author panjuan
  */

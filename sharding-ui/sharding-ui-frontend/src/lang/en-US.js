@@ -17,32 +17,38 @@
 
 export default {
   common: {
-    menuData: [{
-      title: 'Data governance',
-      child: [{
-        title: 'Config regist',
-        href: '/config-regist'
-      }, {
-        title: 'Config manage',
-        href: '/config-manage'
-      }, {
-        title: 'Orchestration',
-        href: '/orchestration'
-      }]
-    }],
+    menuData: [
+      {
+        title: 'Data governance',
+        child: [
+          {
+            title: 'Registry Center',
+            href: '/registry-center'
+          },
+          {
+            title: 'Rule Config',
+            href: '/rule-config'
+          },
+          {
+            title: 'Runtime Status',
+            href: '/runtime-status'
+          }
+        ]
+      }
+    ],
     connected: 'Connected',
     connection: 'Connection',
     del: 'Delete',
     notify: {
       title: 'Prompt',
-      conSucMessage: 'Connection succeeded',
-      conFailMessage: 'Connection failed',
-      delSucMessage: 'Delete succeeded',
-      delFailMessage: 'Delete failed',
-      updateCompletedMessage: 'Update completed',
-      updateFaildMessage: 'Update faild'
+      conSucMessage: 'Connection Succeeded',
+      conFailMessage: 'Connection Failed',
+      delSucMessage: 'Delete Succeeded',
+      delFailMessage: 'Delete Failed',
+      updateCompletedMessage: 'Update Completed',
+      updateFaildMessage: 'Update Faild'
     },
-    loginOut: 'Sign out'
+    loginOut: 'Sign Out'
   },
   login: {
     btnTxt: 'Login',
@@ -62,29 +68,32 @@ export default {
     btnTxt: 'ADD',
     registDialog: {
       title: 'Add a registry',
-      name: 'name',
-      centerType: 'centerType',
-      address: 'address',
-      orchestrationName: 'orchestrationName',
-      namespaces: 'Namespaces',
+      name: 'Name',
+      centerType: 'Center Type',
+      address: 'Address',
+      orchestrationName: 'Orchestration Name',
+      namespaces: 'Namespace',
       digest: 'Digest',
       btnConfirmTxt: 'Confirm',
       btnCancelTxt: 'Cancel'
     },
     table: {
-      operate: 'operate'
+      operate: 'Operate',
+      operateConnect: 'Connect',
+      operateConnected: 'Connected',
+      operateDel: 'Del'
     },
     rules: {
       name: 'Please enter the name of the registration center',
-      address: 'Please enter the registration center address',
-      namespaces: 'Please enter a namespace',
-      centerType: 'Please select a centerType',
-      orchestrationName: 'Please enter a orchestrationName',
+      address: 'Please enter the registration center Address',
+      namespaces: 'Please enter a Namespace',
+      centerType: 'Please select a Center Type',
+      orchestrationName: 'Please enter a Orchestration Name',
       digest: 'Please enter a digest'
     }
   },
   orchestration: {
-    serviceNode: 'Service node',
+    serviceNode: 'Service Node',
     slaveDataSourceName: 'Slave DataSource Info',
     dataSource: {
       schema: 'Schema',
@@ -97,6 +106,11 @@ export default {
     }
   },
   configManage: {
+    schema: {
+      name: 'Name',
+      ruleConfig: 'Rule Config',
+      dataSourceConfig: 'Data Source Config'
+    },
     schemaRules: {
       name: 'Please enter the name of the schema',
       ruleConfig: 'Please enter the rule config of the schema',

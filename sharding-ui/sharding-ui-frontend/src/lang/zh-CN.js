@@ -17,19 +17,25 @@
 
 export default {
   common: {
-    menuData: [{
-      title: '数据治理',
-      child: [{
-        title: '注册配置中心',
-        href: '/config-regist'
-      }, {
-        title: '配置管理',
-        href: '/config-manage'
-      }, {
-        title: 'Orchestration',
-        href: '/orchestration'
-      }]
-    }],
+    menuData: [
+      {
+        title: '数据治理',
+        child: [
+          {
+            title: '注册配置中心',
+            href: '/config-regist'
+          },
+          {
+            title: '配置管理',
+            href: '/config-manage'
+          },
+          {
+            title: 'Orchestration',
+            href: '/orchestration'
+          }
+        ]
+      }
+    ],
     connect: '已连接',
     connection: '连接',
     del: '删除',
@@ -72,7 +78,10 @@ export default {
       btnCancelTxt: '取消'
     },
     table: {
-      operate: '操作'
+      operate: '操作',
+      operateConnect: '连接',
+      operateConnected: '已激活',
+      operateDel: '删除'
     },
     rules: {
       name: '请输入注册中心名称',
@@ -97,6 +106,11 @@ export default {
     }
   },
   configManage: {
+    schema: {
+      name: '名称',
+      ruleConfig: '分片配置规则',
+      dataSourceConfig: '据源配置规则'
+    },
     schemaRules: {
       name: '请输入名称',
       ruleConfig: '请输入数据分片配置规则',
