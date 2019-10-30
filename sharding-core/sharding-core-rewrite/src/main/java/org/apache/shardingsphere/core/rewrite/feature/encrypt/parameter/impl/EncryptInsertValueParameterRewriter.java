@@ -19,17 +19,13 @@ package org.apache.shardingsphere.core.rewrite.feature.encrypt.parameter.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import lombok.Setter;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.aware.EncryptRuleAware;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.parameter.EncryptParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.StandardParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
@@ -44,25 +40,20 @@ import java.util.List;
  *
  * @author zhangliang
  */
-@Setter
-public final class EncryptInsertValueParameterRewriter implements ParameterRewriter, EncryptRuleAware {
+public final class EncryptInsertValueParameterRewriter extends EncryptParameterRewriter {
     
-    private EncryptRule encryptRule;
+    @Override
+    protected boolean isNeedRewriteForEncrypt(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext instanceof InsertSQLStatementContext && !((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent();
+    }
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        if (!(sqlStatementContext instanceof InsertSQLStatementContext) || ((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent() || parameters.isEmpty()) {
-            return;
-        }
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        if (!encryptTable.isPresent()) {
-            return;
-        }
         Iterator<String> descendingColumnNames = ((InsertSQLStatementContext) sqlStatementContext).getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
-            Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(tableName, columnName);
+            Optional<ShardingEncryptor> shardingEncryptor = getEncryptRule().findShardingEncryptor(tableName, columnName);
             if (shardingEncryptor.isPresent()) {
                 encryptInsertValues((GroupedParameterBuilder) parameterBuilder, (InsertSQLStatementContext) sqlStatementContext, shardingEncryptor.get(), tableName, columnName);
             }
@@ -102,11 +93,11 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         parameterBuilder.addReplacedParameters(columnIndex, shardingEncryptor.encrypt(originalValue));
         Collection<Object> addedParameters = new LinkedList<>();
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
-            Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, encryptLogicColumnName);
+            Optional<String> assistedColumnName = getEncryptRule().findAssistedQueryColumn(tableName, encryptLogicColumnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
             addedParameters.add(((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()));
         }
-        if (encryptRule.findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
+        if (getEncryptRule().findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
             addedParameters.add(originalValue);
         }
         if (!addedParameters.isEmpty()) {

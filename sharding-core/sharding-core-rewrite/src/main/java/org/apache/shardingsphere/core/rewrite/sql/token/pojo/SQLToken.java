@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.rewrite.sql.token.pojo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 /**
  * SQL Token.
@@ -29,7 +28,6 @@ import lombok.ToString;
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
 public abstract class SQLToken implements Comparable<SQLToken> {
     
     private final int startIndex;

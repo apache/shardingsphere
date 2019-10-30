@@ -22,10 +22,10 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.preprocessor.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.aware.SQLRouteResultAware;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.core.rewrite.feature.sharding.aware.SQLRouteResultAware;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 
 import java.util.List;
@@ -41,23 +41,22 @@ public final class ShardingPaginationParameterRewriter implements ParameterRewri
     private SQLRouteResult sqlRouteResult;
     
     @Override
-    public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        if (isNeedRewritePagination(sqlRouteResult)) {
-            PaginationContext pagination = ((SelectSQLStatementContext) sqlRouteResult.getSqlStatementContext()).getPaginationContext();
-            Optional<Integer> offsetParameterIndex = pagination.getOffsetParameterIndex();
-            if (offsetParameterIndex.isPresent()) {
-                rewriteOffset(pagination, offsetParameterIndex.get(), (StandardParameterBuilder) parameterBuilder);
-            }
-            Optional<Integer> rowCountParameterIndex = pagination.getRowCountParameterIndex();
-            if (rowCountParameterIndex.isPresent()) {
-                rewriteRowCount(pagination, rowCountParameterIndex.get(), (StandardParameterBuilder) parameterBuilder);
-            }
-        }
-    }
-    
-    private boolean isNeedRewritePagination(final SQLRouteResult sqlRouteResult) {
+    public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
         return sqlRouteResult.getSqlStatementContext() instanceof SelectSQLStatementContext
                 && ((SelectSQLStatementContext) sqlRouteResult.getSqlStatementContext()).getPaginationContext().isHasPagination() && !sqlRouteResult.getRoutingResult().isSingleRouting();
+    }
+    
+    @Override
+    public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
+        PaginationContext pagination = ((SelectSQLStatementContext) sqlRouteResult.getSqlStatementContext()).getPaginationContext();
+        Optional<Integer> offsetParameterIndex = pagination.getOffsetParameterIndex();
+        if (offsetParameterIndex.isPresent()) {
+            rewriteOffset(pagination, offsetParameterIndex.get(), (StandardParameterBuilder) parameterBuilder);
+        }
+        Optional<Integer> rowCountParameterIndex = pagination.getRowCountParameterIndex();
+        if (rowCountParameterIndex.isPresent()) {
+            rewriteRowCount(pagination, rowCountParameterIndex.get(), (StandardParameterBuilder) parameterBuilder);
+        }
     }
     
     private void rewriteOffset(final PaginationContext pagination, final int offsetParameterIndex, final StandardParameterBuilder parameterBuilder) {

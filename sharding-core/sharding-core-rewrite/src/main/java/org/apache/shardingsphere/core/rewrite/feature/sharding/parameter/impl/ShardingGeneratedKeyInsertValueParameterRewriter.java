@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.feature.sharding.parameter.impl;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import lombok.Setter;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
@@ -41,20 +42,24 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriter implements P
     private SQLRouteResult sqlRouteResult;
     
     @Override
+    public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext instanceof InsertSQLStatementContext && sqlRouteResult.getGeneratedKey().isPresent() && sqlRouteResult.getGeneratedKey().get().isGenerated();
+    }
+    
+    @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        if (sqlStatementContext instanceof InsertSQLStatementContext && sqlRouteResult.getGeneratedKey().isPresent() && sqlRouteResult.getGeneratedKey().get().isGenerated()) {
-            ((GroupedParameterBuilder) parameterBuilder).setDerivedColumnName(sqlRouteResult.getGeneratedKey().get().getColumnName());
-            Iterator<Comparable<?>> generatedValues = sqlRouteResult.getGeneratedKey().get().getGeneratedValues().descendingIterator();
-            int count = 0;
-            int parametersCount = 0;
-            for (List<Object> each : ((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) {
-                parametersCount += ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts().get(count).getParametersCount();
-                Comparable<?> generatedValue = generatedValues.next();
-                if (!each.isEmpty()) {
-                    ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(count).addAddedParameters(parametersCount, Lists.<Object>newArrayList(generatedValue));
-                }
-                count++;
+        Preconditions.checkState(sqlRouteResult.getGeneratedKey().isPresent());
+        ((GroupedParameterBuilder) parameterBuilder).setDerivedColumnName(sqlRouteResult.getGeneratedKey().get().getColumnName());
+        Iterator<Comparable<?>> generatedValues = sqlRouteResult.getGeneratedKey().get().getGeneratedValues().descendingIterator();
+        int count = 0;
+        int parametersCount = 0;
+        for (List<Object> each : ((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) {
+            parametersCount += ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts().get(count).getParametersCount();
+            Comparable<?> generatedValue = generatedValues.next();
+            if (!each.isEmpty()) {
+                ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(count).addAddedParameters(parametersCount, Lists.<Object>newArrayList(generatedValue));
             }
+            count++;
         }
     }
 }

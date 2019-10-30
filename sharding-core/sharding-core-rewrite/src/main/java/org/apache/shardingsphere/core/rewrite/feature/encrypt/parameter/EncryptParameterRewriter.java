@@ -15,32 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator;
+package org.apache.shardingsphere.core.rewrite.feature.encrypt.parameter;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.aware.EncryptRuleAware;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
 /**
- * Base SQL token generator for encrypt.
+ * Parameter rewriter for encrypt.
  *
  * @author zhangliang
  */
 @Getter
 @Setter
-public abstract class BaseEncryptSQLTokenGenerator implements SQLTokenGenerator, EncryptRuleAware {
+public abstract class EncryptParameterRewriter implements ParameterRewriter, EncryptRuleAware {
     
     private EncryptRule encryptRule;
     
     @Override
-    public final boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return isGenerateSQLTokenForEncrypt(sqlStatementContext) && isNeedEncrypt(sqlStatementContext);
+    public final boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
+        return isNeedRewriteForEncrypt(sqlStatementContext) && isNeedEncrypt(sqlStatementContext);
     }
     
-    protected abstract boolean isGenerateSQLTokenForEncrypt(SQLStatementContext sqlStatementContext);
+    protected abstract boolean isNeedRewriteForEncrypt(SQLStatementContext sqlStatementContext);
     
     private boolean isNeedEncrypt(final SQLStatementContext sqlStatementContext) {
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
