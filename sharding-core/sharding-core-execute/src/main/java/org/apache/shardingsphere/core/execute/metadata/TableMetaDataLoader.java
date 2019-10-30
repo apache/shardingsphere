@@ -199,7 +199,7 @@ public final class TableMetaDataLoader {
     
     private Collection<String> getLogicIndexes(final Connection connection, final String catalog, final String actualTableName) throws SQLException {
         Collection<String> result = new HashSet<>();
-        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(catalog, catalog, actualTableName, false, false)) {
+        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(catalog, null, actualTableName, false, false)) {
             while (resultSet.next()) {
                 Optional<String> logicIndex = getLogicIndex(resultSet.getString(INDEX_NAME), actualTableName);
                 if (logicIndex.isPresent()) {
@@ -211,6 +211,9 @@ public final class TableMetaDataLoader {
     }
     
     private Optional<String> getLogicIndex(final String actualIndexName, final String actualTableName) {
+    	if(null == actualIndexName) {
+    		return Optional.absent();
+    	}
         String indexNameSuffix = "_" + actualTableName;
         return actualIndexName.contains(indexNameSuffix) ? Optional.of(actualIndexName.replace(indexNameSuffix, "")) : Optional.<String>absent();
     }
