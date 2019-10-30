@@ -51,22 +51,21 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
     private EncryptRule encryptRule;
     
     @Override
-    public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        if (isSetAssignmentStatement(sqlStatementContext)) {
-            String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-            for (AssignmentSegment each : getSetAssignmentsSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
-                if (each.getValue() instanceof ParameterMarkerExpressionSegment && encryptRule.findShardingEncryptor(tableName, each.getColumn().getName()).isPresent()) {
-                    StandardParameterBuilder standardParameterBuilder = parameterBuilder instanceof StandardParameterBuilder
-                            ? (StandardParameterBuilder) parameterBuilder : ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(0);  
-                    encryptParameters(standardParameterBuilder, tableName, each, parameters);
-                }
-            }
-        }
-    }
-    
-    private boolean isSetAssignmentStatement(final SQLStatementContext sqlStatementContext) {
+    public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
         return sqlStatementContext.getSqlStatement() instanceof UpdateStatement
                 || sqlStatementContext instanceof InsertSQLStatementContext && sqlStatementContext.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class).isPresent();
+    }
+    
+    @Override
+    public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
+        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
+        for (AssignmentSegment each : getSetAssignmentsSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
+            if (each.getValue() instanceof ParameterMarkerExpressionSegment && encryptRule.findShardingEncryptor(tableName, each.getColumn().getName()).isPresent()) {
+                StandardParameterBuilder standardParameterBuilder = parameterBuilder instanceof StandardParameterBuilder
+                        ? (StandardParameterBuilder) parameterBuilder : ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(0);
+                encryptParameters(standardParameterBuilder, tableName, each, parameters);
+            }
+        }
     }
     
     private SetAssignmentsSegment getSetAssignmentsSegment(final SQLStatement sqlStatement) {

@@ -22,11 +22,11 @@ import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.EncryptCondition;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.EncryptConditionEngine;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.aware.EncryptRuleAware;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.aware.EncryptRuleAware;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.TableMetasAware;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
@@ -47,6 +47,11 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     private EncryptRule encryptRule;
     
     private boolean queryWithCipherColumn;
+    
+    @Override
+    public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
+        return true;
+    }
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {

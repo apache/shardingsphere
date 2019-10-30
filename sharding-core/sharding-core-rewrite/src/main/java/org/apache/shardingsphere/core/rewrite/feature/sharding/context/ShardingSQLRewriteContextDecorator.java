@@ -41,7 +41,9 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
     @Override
     public void decorate(final SQLRewriteContext sqlRewriteContext) {
         for (ParameterRewriter each : new ShardingParameterRewriterBuilder(shardingRule, sqlRouteResult).getParameterRewriters(sqlRewriteContext.getTableMetas())) {
-            each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());
+            if (each.isNeedRewrite(sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters())) {
+                each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());
+            }
         }
         sqlRewriteContext.addSQLTokenGenerators(new ShardingTokenGenerateBuilder(shardingRule, sqlRouteResult).getSQLTokenGenerators());
     }

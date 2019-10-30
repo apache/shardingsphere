@@ -50,10 +50,12 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
     private EncryptRule encryptRule;
     
     @Override
+    public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
+        return sqlStatementContext instanceof InsertSQLStatementContext && !((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent() && !parameters.isEmpty();
+    }
+    
+    @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        if (!(sqlStatementContext instanceof InsertSQLStatementContext) || ((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent() || parameters.isEmpty()) {
-            return;
-        }
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
         if (!encryptTable.isPresent()) {
