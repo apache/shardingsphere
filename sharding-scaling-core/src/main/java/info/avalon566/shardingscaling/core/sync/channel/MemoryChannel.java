@@ -44,7 +44,7 @@ public class MemoryChannel implements Channel {
     }
 
     @Override
-    public List<Record> fetchRecords(int batchSize, int timeout) {
+    public final List<Record> fetchRecords(final int batchSize, final int timeout) {
         List<Record> records = new ArrayList<>(batchSize);
         long start = System.currentTimeMillis();
         while (batchSize > queue.size()) {
@@ -59,5 +59,10 @@ public class MemoryChannel implements Channel {
         }
         queue.drainTo(records, batchSize);
         return records;
+    }
+
+    @Override
+    public void ack() {
+
     }
 }

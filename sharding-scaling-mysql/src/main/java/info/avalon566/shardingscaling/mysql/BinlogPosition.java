@@ -18,6 +18,7 @@
 package info.avalon566.shardingscaling.mysql;
 
 import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
@@ -27,11 +28,32 @@ import lombok.Data;
  * @author yangyi
  */
 @Data
-public class BinlogPosition implements LogPosition {
-    
+@AllArgsConstructor
+public class BinlogPosition implements LogPosition<BinlogPosition> {
+
     private String serverId;
-    
+
     private String filename;
-    
+
     private long position;
+
+    @Override
+    public final int compareTo(final BinlogPosition binlogPosition) {
+        if (null == binlogPosition) {
+            return 1;
+        }
+        long o1 = toLong();
+        long o2 = binlogPosition.toLong();
+        if (o1 == o2) {
+            return 0;
+        } else if (o1 > o2) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
+
+    private long toLong() {
+        return Long.valueOf(filename.substring(filename.lastIndexOf(".") + 1)) << 32 | position;
+    }
 }

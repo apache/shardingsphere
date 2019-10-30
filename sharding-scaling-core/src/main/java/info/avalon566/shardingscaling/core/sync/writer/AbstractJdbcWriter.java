@@ -82,6 +82,7 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
                         break;
                     }
                 }
+                channel.ack();
             }
         } catch (SQLException ex) {
             throw new SyncRunException(ex);

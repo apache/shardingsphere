@@ -43,4 +43,9 @@ public interface Channel {
      * @return record
      */
     List<Record> fetchRecords(int batchSize, int timeout);
+
+    /**
+     * Ack the last batch.
+     */
+    void ack();
 }

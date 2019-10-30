@@ -15,35 +15,17 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.exception;
-
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.ArrayList;
-import java.util.List;
+package info.avalon566.shardingscaling.core.sync.reader;
 
 /**
- * Sync execute exception.
+ * Nop log position.
  *
  * @author avalon566
  */
-@Slf4j
-public class SyncExecuteException extends Exception {
+public class NopLogPosition implements LogPosition<NopLogPosition> {
 
-    private final List<Throwable> aggregatedExceptions = new ArrayList<>();
-
-    /**
-     * add exception to list.
-     *
-     * @param throwable exception
-     */
-    public void addException(final Throwable throwable) {
-        aggregatedExceptions.add(throwable);
-    }
-
-    public void logExceptions() {
-        for (Throwable exception : aggregatedExceptions) {
-            log.error(null, exception);
-        }
+    @Override
+    public final int compareTo(final NopLogPosition nopLogPosition) {
+        return 0;
     }
 }

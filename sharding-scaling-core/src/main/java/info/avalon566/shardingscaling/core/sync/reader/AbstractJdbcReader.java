@@ -85,7 +85,7 @@ public abstract class AbstractJdbcReader extends AbstractSyncRunner implements J
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData metaData = rs.getMetaData();
             while (isRunning() && rs.next()) {
-                DataRecord record = new DataRecord(metaData.getColumnCount());
+                DataRecord record = new DataRecord(new NopLogPosition(), metaData.getColumnCount());
                 record.setType("bootstrap-insert");
                 record.setFullTableName(String.format("%s.%s", conn.getCatalog(), rdbmsConfiguration.getTableName()));
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
@@ -103,7 +103,7 @@ public abstract class AbstractJdbcReader extends AbstractSyncRunner implements J
         } catch (SQLException e) {
             throw new SyncRunException(e);
         } finally {
-            pushRecord(new FinishedRecord());
+            pushRecord(new FinishedRecord(new NopLogPosition()));
         }
     }
 

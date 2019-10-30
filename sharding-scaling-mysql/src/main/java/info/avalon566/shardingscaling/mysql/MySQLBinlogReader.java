@@ -22,6 +22,7 @@ import info.avalon566.shardingscaling.core.sync.AbstractSyncRunner;
 import info.avalon566.shardingscaling.core.sync.channel.Channel;
 import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
 import info.avalon566.shardingscaling.core.sync.reader.LogReader;
+import info.avalon566.shardingscaling.core.sync.reader.NopLogPosition;
 import info.avalon566.shardingscaling.core.sync.record.Column;
 import info.avalon566.shardingscaling.core.sync.record.DataRecord;
 import info.avalon566.shardingscaling.core.sync.metadata.JdbcUri;
@@ -82,9 +83,7 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
                 PreparedStatement ps = connection.prepareStatement("show master status");
                 ResultSet rs = ps.executeQuery();
                 rs.next();
-                BinlogPosition currentPosition = new BinlogPosition();
-                currentPosition.setFilename(rs.getString(1));
-                currentPosition.setPosition(rs.getLong(2));
+                final BinlogPosition currentPosition = new BinlogPosition(null, rs.getString(1), rs.getLong(2));
                 ps = connection.prepareStatement("show variables like 'server_id'");
                 rs = ps.executeQuery();
                 rs.next();
@@ -120,7 +119,7 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
                 handleDeleteRowsEvent(channel, uri, (DeleteRowsEvent) event);
             }
         }
-        pushRecord(channel, new FinishedRecord());
+        pushRecord(channel, new FinishedRecord(new NopLogPosition()));
     }
 
     private void handleWriteRowsEvent(final Channel channel, final JdbcUri uri, final WriteRowsEvent event) {
@@ -129,7 +128,7 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
             if (filter(uri.getDatabase(), wred.getTableName())) {
                 continue;
             }
-            DataRecord record = new DataRecord(each.length);
+            DataRecord record = new DataRecord(new BinlogPosition("1", wred.getFileName(), wred.getPosition()), each.length);
             record.setFullTableName(wred.getTableName());
             record.setType("insert");
             for (int i = 0; i < each.length; i++) {
@@ -147,7 +146,7 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
             }
             Serializable[] beforeValues = ured.getBeforeColumns().get(i);
             Serializable[] afterValues = ured.getAfterColumns().get(i);
-            DataRecord record = new DataRecord(beforeValues.length);
+            DataRecord record = new DataRecord(new BinlogPosition("1", ured.getFileName(), ured.getPosition()), beforeValues.length);
             record.setFullTableName(event.getTableName());
             record.setType("update");
             for (int j = 0; j < beforeValues.length; j++) {
@@ -165,7 +164,7 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
             if (filter(uri.getDatabase(), dred.getTableName())) {
                 continue;
             }
-            DataRecord record = new DataRecord(each.length);
+            DataRecord record = new DataRecord(new BinlogPosition("1", dred.getFileName(), dred.getPosition()), each.length);
             record.setFullTableName(dred.getTableName());
             record.setType("delete");
             for (int i = 0; i < each.length; i++) {
@@ -181,7 +180,7 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
         } catch (InterruptedException ignored) {
         }
     }
-    
+
     private boolean filter(final String database, final String fullTableName) {
         return !fullTableName.startsWith(database + ".");
     }

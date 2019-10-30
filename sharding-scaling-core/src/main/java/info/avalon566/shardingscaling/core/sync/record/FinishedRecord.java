@@ -17,9 +17,16 @@
 
 package info.avalon566.shardingscaling.core.sync.record;
 
+import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
+
 /**
  * Finished record.
+ *
  * @author avalon566
  */
-public class FinishedRecord implements Record {
+public class FinishedRecord extends Record {
+
+    public FinishedRecord(final LogPosition logPosition) {
+        super(logPosition);
+    }
 }
