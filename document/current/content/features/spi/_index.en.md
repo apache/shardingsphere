@@ -63,6 +63,6 @@ Please refer to [XA Transaction Manager](/en/features/concept/2pc-xa-transaction
 
 The registry center interface is used to regulate its initialization, data storage, data upgrade, monitoring and others.
 
-Its main interface is `RegistryCenter` and built-in implementation types are Zookeeper and ETCD.
+Its main interface is `RegistryCenter` and built-in implementation types are Zookeeper.
 
 Please refer to [Available Registry Center](/en/features/orchestration/supported-registry-repo/) for the introduction.

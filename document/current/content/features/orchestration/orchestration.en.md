@@ -57,12 +57,6 @@ Zookeeper command is as follow:
 [zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/your_app_name/state/instances/your_instance_ip_a@-@your_instance_pid_x DISABLED
 ```
 
-Etcd command is as follow:
-
-```
-etcdctl set /your_app_name/state/instances/your_instance_ip_a@-@your_instance_pid_x DISABLED
-```
-
 ### Disable Slave Database
 
 Under read-write split (or shardinng + read-write split) scenarios, users can write `DISABLED` (case insensitive) to sub-nodes of data source name to disable slave database sources. Delete `DISABLED` or the node to enable it.
@@ -73,8 +67,3 @@ Zookeeper command is as follow:
 [zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/your_app_name/state/datasources/your_slave_datasource_name DISABLED
 ```
 
-Etcd command is as follow:
-
-```
-etcdctl set /your_app_name/state/datasources/your_slave_datasource_name DISABLED
-```
