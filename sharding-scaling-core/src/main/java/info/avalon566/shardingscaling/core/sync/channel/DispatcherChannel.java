@@ -22,6 +22,7 @@ import info.avalon566.shardingscaling.core.sync.record.DataRecord;
 import info.avalon566.shardingscaling.core.sync.record.FinishedRecord;
 import info.avalon566.shardingscaling.core.sync.record.Record;
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ public class DispatcherChannel implements Channel {
 
     private final Map<String, List<Record>> consumePendingLogPosition = new HashMap<>();
 
+    @Getter
     private LogPosition currentLogPosition;
 
     public DispatcherChannel(final int channelNumber) {

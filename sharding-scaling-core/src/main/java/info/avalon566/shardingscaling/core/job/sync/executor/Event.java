@@ -17,16 +17,18 @@
 
 package info.avalon566.shardingscaling.core.job.sync.executor;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Event.
  * @author avalon566
  */
 @Data
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class Event {
 
-    private EventType eventType;
+    private final EventType eventType;
+
+    private Object payload;
 }

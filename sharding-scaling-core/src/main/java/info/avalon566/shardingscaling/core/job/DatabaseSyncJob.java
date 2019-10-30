@@ -51,6 +51,8 @@ public class DatabaseSyncJob {
 
     private final Reporter reporter;
 
+    private LogPosition currentLogPosition;
+
     public DatabaseSyncJob(final SyncConfiguration syncConfiguration, final Reporter reporter) {
         this.syncConfiguration = syncConfiguration;
         this.reporter = reporter;
@@ -114,12 +116,17 @@ public class DatabaseSyncJob {
                 syncConfiguration.getWriterConfiguration());
         realConfiguration.setPosition(position);
         Reporter realtimeReporter = syncJobExecutor.execute(Collections.singletonList(realConfiguration));
-        Event event = realtimeReporter.consumeEvent();
-        if (EventType.FINISHED == event.getEventType()) {
-            return;
-        }
-        if (EventType.EXCEPTION_EXIT == event.getEventType()) {
-            System.exit(1);
+        while (true) {
+            Event event = realtimeReporter.consumeEvent();
+            if (EventType.FINISHED == event.getEventType()) {
+                return;
+            }
+            if (EventType.EXCEPTION_EXIT == event.getEventType()) {
+                System.exit(1);
+            }
+            if (EventType.REALTIME_SYNC_POSITION == event.getEventType()) {
+                currentLogPosition = (LogPosition) event.getPayload();
+            }
         }
     }
 }

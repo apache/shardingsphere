@@ -23,6 +23,7 @@ package info.avalon566.shardingscaling.core.job.sync.executor;
  */
 
 public enum EventType {
+    REALTIME_SYNC_POSITION,
     FINISHED,
     EXCEPTION_EXIT
 }

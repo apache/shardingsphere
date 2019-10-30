@@ -18,10 +18,10 @@
 package info.avalon566.shardingscaling.core.job.sync;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
+import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.core.job.sync.executor.Event;
 import info.avalon566.shardingscaling.core.job.sync.executor.EventType;
 import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
-import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.core.sync.SyncExecutor;
 import info.avalon566.shardingscaling.core.sync.channel.DispatcherChannel;
 import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
@@ -76,6 +76,7 @@ public class RealtimeDataSyncJob implements SyncJob {
         }
         try {
             channel = new DispatcherChannel(writers.size());
+            startReportRealtimeSyncPosition();
             new SyncExecutor(channel, mysqlBinlogReader, writers).execute();
             log.info("realtime data sync finish");
             reporter.report(new Event(EventType.FINISHED));
@@ -84,5 +85,29 @@ public class RealtimeDataSyncJob implements SyncJob {
             ex.logExceptions();
             reporter.report(new Event(EventType.EXCEPTION_EXIT));
         }
+    }
+
+    private void startReportRealtimeSyncPosition() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                LogPosition lastLogPosition = null;
+                while (true) {
+                    try {
+                        Thread.sleep(1 * 1000);
+                    } catch (InterruptedException ignored) {
+                        break;
+                    }
+                    if (null != channel) {
+                        if (null == lastLogPosition || -1 == lastLogPosition.compareTo(channel.getCurrentLogPosition())) {
+                            lastLogPosition = channel.getCurrentLogPosition();
+                            Event event = new Event(EventType.REALTIME_SYNC_POSITION);
+                            event.setPayload(lastLogPosition);
+                            reporter.report(event);
+                        }
+                    }
+                }
+            }
+        }).start();
     }
 }
