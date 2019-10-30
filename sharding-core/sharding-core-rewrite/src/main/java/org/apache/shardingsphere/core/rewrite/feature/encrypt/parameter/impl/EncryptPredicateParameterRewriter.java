@@ -22,13 +22,11 @@ import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.EncryptCondition;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.EncryptConditionEngine;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.aware.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.aware.QueryWithCipherColumnAware;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.parameter.EncryptParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.StandardParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.TableMetasAware;
-import org.apache.shardingsphere.core.rule.EncryptRule;
 
 import java.util.List;
 import java.util.Map;
@@ -40,22 +38,20 @@ import java.util.Map.Entry;
  * @author zhangliang
  */
 @Setter
-public final class EncryptPredicateParameterRewriter implements ParameterRewriter, TableMetasAware, EncryptRuleAware, QueryWithCipherColumnAware {
+public final class EncryptPredicateParameterRewriter extends EncryptParameterRewriter implements TableMetasAware, QueryWithCipherColumnAware {
     
     private TableMetas tableMetas;
-    
-    private EncryptRule encryptRule;
     
     private boolean queryWithCipherColumn;
     
     @Override
-    public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
+    protected boolean isNeedRewriteForEncrypt(final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
         return true;
     }
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        List<EncryptCondition> encryptConditions = new EncryptConditionEngine(encryptRule, tableMetas).createEncryptConditions(sqlStatementContext);
+        List<EncryptCondition> encryptConditions = new EncryptConditionEngine(getEncryptRule(), tableMetas).createEncryptConditions(sqlStatementContext);
         if (encryptConditions.isEmpty()) {
             return;
         }
@@ -69,8 +65,8 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     private List<Object> getEncryptedValues(final EncryptCondition encryptCondition, final List<Object> originalValues) {
         String tableName = encryptCondition.getTableName();
         String columnName = encryptCondition.getColumnName();
-        return encryptRule.findAssistedQueryColumn(tableName, columnName).isPresent()
-                ? encryptRule.getEncryptAssistedQueryValues(tableName, columnName, originalValues) : encryptRule.getEncryptValues(tableName, columnName, originalValues);
+        return getEncryptRule().findAssistedQueryColumn(tableName, columnName).isPresent()
+                ? getEncryptRule().getEncryptAssistedQueryValues(tableName, columnName, originalValues) : getEncryptRule().getEncryptValues(tableName, columnName, originalValues);
     }
     
     private void encryptParameters(final ParameterBuilder parameterBuilder, final Map<Integer, Integer> positionIndexes, final List<Object> encryptValues) {
