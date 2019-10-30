@@ -44,7 +44,7 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
     
     @Override
     protected boolean isNeedRewriteForEncrypt(final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        return sqlStatementContext instanceof InsertSQLStatementContext && !((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent() && !parameters.isEmpty();
+        return sqlStatementContext instanceof InsertSQLStatementContext && !((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent();
     }
     
     @Override
