@@ -62,17 +62,17 @@ public final class QueryHeader {
         if (logicSchema instanceof ShardingSchema) {
             Collection<String> tableNames = logicSchema.getShardingRule().getLogicTableNames(resultSetMetaData.getTableName(columnIndex));
             this.table = tableNames.isEmpty() ? "" : tableNames.iterator().next();
-            if (resultSetMetaData.getTableName(columnIndex).isEmpty()) {
-                this.primaryKey = false;
-                this.notNull = false;
-                this.autoIncrement = false;
-            } else {
+            if (logicSchema.getMetaData().getTables().containsTable(resultSetMetaData.getTableName(columnIndex))) {
                 this.primaryKey = logicSchema.getMetaData().getTables().get(resultSetMetaData.getTableName(columnIndex)).getColumns()
                         .get(resultSetMetaData.getColumnName(columnIndex).toLowerCase()).isPrimaryKey();
                 this.notNull = logicSchema.getMetaData().getTables().get(resultSetMetaData.getTableName(columnIndex)).getColumns()
                         .get(resultSetMetaData.getColumnName(columnIndex).toLowerCase()).isNotNull();
                 this.autoIncrement = logicSchema.getMetaData().getTables().get(resultSetMetaData.getTableName(columnIndex)).getColumns()
                         .get(resultSetMetaData.getColumnName(columnIndex).toLowerCase()).isAutoIncrement();
+            } else {
+                this.primaryKey = false;
+                this.notNull = false;
+                this.autoIncrement = false;
             }
         } else {
             this.table = resultSetMetaData.getTableName(columnIndex);
