@@ -4,7 +4,7 @@ weight = 1
 chapter = true
 +++
 
-During the process of using ShardingSphere, if there is any problem, suggestion or new idea, you can use **Apache mail-list** or **submit GitHub issue** to participate in the community construction.
+During the process of using ShardingSphere, if there is any problem, suggestion or new idea, you can use Apache mailing-list to participate in the community construction.
 
 1. Send e-mail to subscribe. 
 Use your mailbox to send an e-mail to [dev-subscribe@shardingsphere.apache.org](mailto:dev-subscribe@shardingsphere.apache.org) with any subject or content.

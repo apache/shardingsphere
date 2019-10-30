@@ -4,7 +4,7 @@ weight = 1
 chapter = true
 +++
 
-在使用ShardingSphere的过程中，如果您发现任何问题，有新的想法、建议都可以通过**Apache邮件列表、GitHub提交issue的方式**参与到ShardingSphere的社区建设中。
+在使用ShardingSphere的过程中，如果您发现任何问题，有新的想法、建议都可以通过Apache邮件列表参与到ShardingSphere的社区建设中。
 
 1. 发送订阅邮件。
 用自己的邮箱向[dev-subscribe@shardingsphere.apache.org](mailto:dev-subscribe@shardingsphere.apache.org)发送一封邮件，主题和内容任意。
