@@ -149,9 +149,8 @@ Create `${RELEASE.VERSION}-release` branch, where all the following operations a
 ```shell
 cd ~/incubator-shardingsphere/
 git pull
-git branch ${RELEASE.VERSION}-release
+git checkout -b ${RELEASE.VERSION}-release
 git push origin ${RELEASE.VERSION}-release
-git checkout ${RELEASE.VERSION}-release
 ```
 
 ### Pre-Release Check
