@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.route.time.exception;
+package org.apache.shardingsphere.route.time.spi;
 
 /**
- * TimeService init exception.
+ * MySQL entry.
  *
  * @author chenchuangliu
  */
-public final class TimeServiceInitException extends RuntimeException {
+public final class MySQLDatabaseSQLEntry implements DatabaseSQLEntry {
 
-    private static final long serialVersionUID = -834638295454826244L;
+    @Override
+    public String getSQL() {
+        return "SELECT NOW()";
+    }
 
-    public TimeServiceInitException(final String message, final Throwable cause) {
-        super(message, cause);
+    @Override
+    public boolean isSupport(final String driverClassName) {
+        return driverClassName.contains("mysql") || driverClassName.contains("mariadb");
     }
 }

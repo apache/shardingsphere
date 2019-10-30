@@ -15,18 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.route.time.exception;
+package org.apache.shardingsphere.route.time.impl;
+
+import org.apache.shardingsphere.core.route.spi.TimeService;
+import org.apache.shardingsphere.route.time.TimeServiceConfig;
+import org.apache.shardingsphere.route.time.spi.SPIDataBaseSQLEntry;
 
 /**
- * TimeService init exception.
+ * A Factory of creating TimeService.
  *
  * @author chenchuangliu
  */
-public final class TimeServiceInitException extends RuntimeException {
+public final class TimeServiceFactory {
 
-    private static final long serialVersionUID = -834638295454826244L;
-
-    public TimeServiceInitException(final String message, final Throwable cause) {
-        super(message, cause);
+    /**
+     * create a TimeService by {@link TimeServiceConfig}.
+     *
+     * @return TimeService
+     */
+    public static TimeService createTimeService() {
+        TimeServiceConfig config = TimeServiceConfig.getInstance();
+        return new DatabaseTimeService(config.getDataSource(), new SPIDataBaseSQLEntry(config.getDriverClassName()).getSQL());
     }
 }

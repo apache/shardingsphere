@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.route.time.exception;
+package org.apache.shardingsphere.route.time;
 
-/**
- * TimeService init exception.
- *
- * @author chenchuangliu
- */
-public final class TimeServiceInitException extends RuntimeException {
+import org.junit.Assert;
+import org.junit.Test;
 
-    private static final long serialVersionUID = -834638295454826244L;
+public final class TimeServiceConfigTest {
 
-    public TimeServiceInitException(final String message, final Throwable cause) {
-        super(message, cause);
+    @Test
+    public void assertInitDataSource() {
+        PropertiesUtils.createProperties("com.mysql.jdbc.Driver", null);
+        TimeServiceConfig config = TimeServiceConfig.getInstance();
+        Assert.assertNotNull(config.getDataSource());
+        Assert.assertTrue(PropertiesUtils.remove());
     }
 }

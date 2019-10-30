@@ -15,4 +15,7 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.route.time.DatabaseTimeServiceDelegate
+org.apache.shardingsphere.route.time.spi.MySQLDatabaseSQLEntry
+org.apache.shardingsphere.route.time.spi.OracleDatabaseSQLEntry
+org.apache.shardingsphere.route.time.spi.PostgreSQLDatabaseSQLEntry
+org.apache.shardingsphere.route.time.spi.SQLServerDatabaseSQLEntry
