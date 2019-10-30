@@ -1,7 +1,8 @@
 +++
-toc = true
+pre = "<b>3.6. </b>"
 title = "Test Engine"
-weight = 9
+weight = 6
+chapter = true
 +++
 
 ShardingSphere provided a full functionality test engine. it defines SQLs in xml files, every single SQL is drove by SQL parse unit test engine and integration test engine,
