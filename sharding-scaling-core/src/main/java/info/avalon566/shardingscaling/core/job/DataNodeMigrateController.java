@@ -38,12 +38,12 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Database sync job.
+ * Data node migrate controller, synchronize history data and realtime data.
  *
  * @author avalon566
  */
 @Slf4j
-public class DatabaseSyncJob {
+public class DataNodeMigrateController {
 
     private final SyncJobExecutor syncJobExecutor = new LocalSyncJobExecutor();
 
@@ -53,18 +53,32 @@ public class DatabaseSyncJob {
 
     private LogPosition currentLogPosition;
 
-    public DatabaseSyncJob(final SyncConfiguration syncConfiguration, final Reporter reporter) {
+    public DataNodeMigrateController(final SyncConfiguration syncConfiguration, final Reporter reporter) {
         this.syncConfiguration = syncConfiguration;
         this.reporter = reporter;
     }
 
     /**
-     * Run.
+     * Start synchronize data.
      */
-    public void run() {
+    public void start() {
         LogPosition position = new RealtimeDataSyncJob(syncConfiguration, null).preRun();
         syncHistoryData();
         syncRealtimeData(position);
+    }
+
+    /**
+     * Stop synchronize data.
+     */
+    public void stop() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Get synchronize progress.
+     */
+    public void getProgress() {
+        throw new UnsupportedOperationException();
     }
 
     private void syncHistoryData() {

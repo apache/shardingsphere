@@ -42,7 +42,7 @@ public class ScalingJob {
     public void run() {
         Reporter reporter = new LocalReporter();
         for (SyncConfiguration syncConfiguration : syncConfigurations) {
-            new DatabaseSyncJob(syncConfiguration, reporter).run();
+            new DataNodeMigrateController(syncConfiguration, reporter).start();
         }
     }
 }
