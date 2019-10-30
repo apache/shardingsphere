@@ -1,6 +1,6 @@
 +++
 title = "开发规范"
-weight = 7
+weight = 4
 chapter = true
 +++
 

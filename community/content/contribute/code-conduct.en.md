@@ -1,6 +1,6 @@
 +++
 title = "Code of Conduct" 
-weight = 7
+weight = 4
 chapter = true
 +++
 
