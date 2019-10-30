@@ -19,8 +19,6 @@ package info.avalon566.shardingscaling.core.sync;
 
 import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.core.sync.channel.Channel;
-import info.avalon566.shardingscaling.core.sync.channel.DispatcherChannel;
-import info.avalon566.shardingscaling.core.sync.channel.MemoryChannel;
 import info.avalon566.shardingscaling.core.sync.reader.Reader;
 import info.avalon566.shardingscaling.core.sync.writer.Writer;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +49,7 @@ public class SyncExecutor {
     private SyncExecuteException syncExecuteException;
 
     public SyncExecutor(final Channel channel, final Reader reader, final List<Writer> writers) {
-        this.channel =  channel;
+        this.channel = channel;
         int runnerNumber = 1 + writers.size();
         this.syncRunners = new ArrayList<>(runnerNumber);
         reader.setChannel(channel);
