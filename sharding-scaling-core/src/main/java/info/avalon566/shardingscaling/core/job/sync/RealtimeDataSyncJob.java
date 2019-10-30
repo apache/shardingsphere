@@ -23,6 +23,7 @@ import info.avalon566.shardingscaling.core.job.sync.executor.EventType;
 import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
 import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.core.sync.SyncExecutor;
+import info.avalon566.shardingscaling.core.sync.channel.DispatcherChannel;
 import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
 import info.avalon566.shardingscaling.core.sync.reader.LogReader;
 import info.avalon566.shardingscaling.core.sync.reader.ReaderFactory;
@@ -46,6 +47,8 @@ public class RealtimeDataSyncJob implements SyncJob {
     private final LogReader mysqlBinlogReader;
 
     private final Reporter reporter;
+
+    private DispatcherChannel channel;
 
     public RealtimeDataSyncJob(final SyncConfiguration syncConfiguration, final Reporter reporter) {
         this.syncConfiguration = syncConfiguration;
@@ -72,7 +75,8 @@ public class RealtimeDataSyncJob implements SyncJob {
             writers.add(WriterFactory.newInstance(syncConfiguration.getWriterConfiguration()));
         }
         try {
-            new SyncExecutor(mysqlBinlogReader, writers).execute();
+            channel = new DispatcherChannel(writers.size());
+            new SyncExecutor(channel, mysqlBinlogReader, writers).execute();
             log.info("realtime data sync finish");
             reporter.report(new Event(EventType.FINISHED));
         } catch (SyncExecuteException ex) {

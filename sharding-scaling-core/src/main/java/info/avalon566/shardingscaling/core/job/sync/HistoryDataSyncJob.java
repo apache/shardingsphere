@@ -23,6 +23,7 @@ import info.avalon566.shardingscaling.core.job.sync.executor.EventType;
 import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
 import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.core.sync.SyncExecutor;
+import info.avalon566.shardingscaling.core.sync.channel.MemoryChannel;
 import info.avalon566.shardingscaling.core.sync.reader.Reader;
 import info.avalon566.shardingscaling.core.sync.reader.ReaderFactory;
 import info.avalon566.shardingscaling.core.sync.writer.Writer;
@@ -57,7 +58,7 @@ public class HistoryDataSyncJob implements SyncJob {
         final Reader reader = ReaderFactory.newInstanceJdbcReader(syncConfiguration.getReaderConfiguration());
         final Writer writer = WriterFactory.newInstance(syncConfiguration.getWriterConfiguration());
         try {
-            new SyncExecutor(reader, Collections.singletonList(writer)).execute();
+            new SyncExecutor(new MemoryChannel(), reader, Collections.singletonList(writer)).execute();
             log.info("{} table slice sync finish", syncConfiguration.getReaderConfiguration().getTableName());
             reporter.report(new Event(EventType.FINISHED));
         } catch (SyncExecuteException ex) {

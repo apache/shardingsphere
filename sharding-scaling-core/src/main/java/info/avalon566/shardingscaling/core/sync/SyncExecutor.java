@@ -44,14 +44,14 @@ public class SyncExecutor {
 
     private boolean running = true;
 
+    private final Channel channel;
+
     private final List<SyncRunner> syncRunners;
 
     private SyncExecuteException syncExecuteException;
 
-    public SyncExecutor(final Reader reader, final List<Writer> writers) {
-        Channel channel = 1 == writers.size()
-                ? new MemoryChannel()
-                : new DispatcherChannel(writers.size());
+    public SyncExecutor(final Channel channel, final Reader reader, final List<Writer> writers) {
+        this.channel =  channel;
         int runnerNumber = 1 + writers.size();
         this.syncRunners = new ArrayList<>(runnerNumber);
         reader.setChannel(channel);
