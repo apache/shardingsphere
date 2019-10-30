@@ -19,19 +19,17 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.api.ConfigMapContext;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Sharding data source.
@@ -41,22 +39,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author panjuan
  */
 @Getter
-@Slf4j
 public class ShardingDataSource extends AbstractDataSourceAdapter {
     
-    private final ShardingContext shardingContext;
+    private final ShardingRuntimeContext runtimeContext;
     
-    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
-        this(dataSourceMap, shardingRule, new ConcurrentHashMap<String, Object>(), new Properties());
-    }
-    
-    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Map<String, Object> configMap, final Properties props) throws SQLException {
+    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Properties props) throws SQLException {
         super(dataSourceMap);
         checkDataSourceType(dataSourceMap);
-        if (!configMap.isEmpty()) {
-            ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
-        }
-        shardingContext = new ShardingContext(getDataSourceMap(), shardingRule, getDatabaseType(), props);
+        runtimeContext = new ShardingRuntimeContext(dataSourceMap, shardingRule, props, getDatabaseType());
     }
     
     private void checkDataSourceType(final Map<String, DataSource> dataSourceMap) {
@@ -67,12 +57,18 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     
     @Override
     public final ShardingConnection getConnection() {
-        return new ShardingConnection(getDataSourceMap(), shardingContext, TransactionTypeHolder.get());
+        return new ShardingConnection(getDataSourceMap(), runtimeContext, TransactionTypeHolder.get());
     }
     
     @Override
     public final void close() throws Exception {
         super.close();
-        shardingContext.close();
+        runtimeContext.close();
+    }
+    
+    @Override
+    public final void close(final Collection<String> dataSourceNames) throws Exception {
+        super.close(dataSourceNames);
+        runtimeContext.close();
     }
 }

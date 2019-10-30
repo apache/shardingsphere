@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases>
-    <sql-case id="select_inner_join_related_with_alias" value="SELECT i.* FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.order_id = ?" />
-    <sql-case id="select_inner_join_related_with_name" value="SELECT t_order_item.* FROM t_order JOIN t_order_item ON t_order.order_id = t_order_item.order_id WHERE t_order.order_id = ?" />
-    <sql-case id="select_join_using" value="SELECT i.* FROM t_order o JOIN t_order_item i USING(order_id) WHERE o.order_id = ?" db-types="MySQL,PostgreSQL" />
-</sql-cases>

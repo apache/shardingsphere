@@ -27,6 +27,7 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -43,7 +44,7 @@ public class YamlOrchestrationMasterSlaveIntegrateTest extends AbstractYamlDataS
     
     private final boolean hasDataSource;
     
-    @Parameterized.Parameters(name = "{index}:{0}-{1}")
+    @Parameters(name = "{index}:{0}-{1}")
     public static Collection init() {
         return Arrays.asList(new Object[][]{
                 {"/yaml/integrate/ms/configWithMasterSlaveDataSourceWithoutProps.yaml", true},

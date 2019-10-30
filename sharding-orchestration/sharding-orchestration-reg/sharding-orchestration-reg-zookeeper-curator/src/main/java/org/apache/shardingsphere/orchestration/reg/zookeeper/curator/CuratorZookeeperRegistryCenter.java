@@ -19,6 +19,9 @@ package org.apache.shardingsphere.orchestration.reg.zookeeper.curator;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.SneakyThrows;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
@@ -26,6 +29,7 @@ import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -45,6 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -57,6 +62,12 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
     private final Map<String, TreeCache> caches = new HashMap<>();
     
     private CuratorFramework client;
+
+    private InterProcessMutex leafLock;
+    
+    @Getter
+    @Setter
+    private Properties properties = new Properties();
     
     @Override
     public void init(final RegistryCenterConfiguration config) {
@@ -277,5 +288,27 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
+    }
+    
+    @Override
+    public String getType() {
+        return "zookeeper";
+    }
+
+    @Override
+    public void initLock(final String key) {
+        leafLock = new InterProcessMutex(client, key);
+    }
+
+    @Override
+    @SneakyThrows
+    public boolean tryLock() {
+        return leafLock.acquire(5, TimeUnit.SECONDS);
+    }
+
+    @Override
+    @SneakyThrows
+    public void tryRelease() {
+        leafLock.release();
     }
 }

@@ -21,7 +21,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.xa.DruidXADataSource;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import javax.sql.DataSource;
 
@@ -124,19 +124,21 @@ public final class DataSourceUtils {
     }
     
     private static String getURL(final DatabaseType databaseType, final String databaseName) {
-        switch (databaseType) {
-            case H2:
-                return String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", databaseName);
-            case MySQL:
+        switch (databaseType.getName()) {
+            case "MySQL":
                 return String.format("jdbc:mysql://localhost:3306/%s", databaseName);
-            case PostgreSQL:
-                return String.format("jdbc:postgresql://localhost:3306/%s", databaseName);
-            case Oracle:
-                return String.format("jdbc:oracle:thin:@//localhost:3306/%s", databaseName);
-            case SQLServer:
+            case "MariaDB":
+                return String.format("jdbc:mariadb://localhost:3306/%s", databaseName);
+            case "PostgreSQL":
+                return String.format("jdbc:postgresql://localhost:5432/%s", databaseName);
+            case "Oracle":
+                return String.format("jdbc:oracle:thin:@//localhost:1521/%s", databaseName);
+            case "SQLServer":
                 return String.format("jdbc:sqlserver://localhost:1433;DatabaseName=%s", databaseName);
+            case "H2":
+                return String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", databaseName);
             default:
-                throw new UnsupportedOperationException(databaseType.name());
+                throw new UnsupportedOperationException(databaseType.getName());
         }
     }
 }

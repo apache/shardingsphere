@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="Oracle" namespace="oracle.tcl.commit">
-    <sql-case id="commit" value="COMMIT" />
-    <sql-case id="commit_with_comment" value="COMMIT COMMENT 'comment1'" />
-    <sql-case id="commit_force" value="COMMIT FORCE 'transaction1'" />
-</sql-cases>

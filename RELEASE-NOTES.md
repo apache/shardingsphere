@@ -1,21 +1,73 @@
-## 3.1.0
+## 4.0.0.RC3
+
+### New Features
+
+1. Sharding-UI, an orchestration management platform for ShardingSphere comes online.
+1. Not only SQLs from MySQL, PostgreSQL, SQLServer, Oracle, but any SQL92 Syntax can be parsed correctly and used in ShardingSphere.
+
+### Enhancement
+
+1. Through Bugfix, the feature of encryption becomes much stable and applicable.
+1. Support using less-than character(<) and greater-than character(>) for sharding data.
+1. When master and slave dataSources exist, support executing `SELECT FOR UPDATE` on master dataSource.
+
+## 4.0.0.RC2
+
+### API Changes
+
+1. Optimize and delete API and configuration item of sharding logic index.
+1. Update the API of encryption to support the encrypted and plain data coexistence.
+
+### New Features
+
+1. Integration of Seata for distributed transaction.
+1. User can do data encryption by using ShardingProxy.
+1. User can use Leaf-segment generator to get distributed ID.
+1. Support Skywalking plugin for application performance management.
+
+### Enhancement
+
+1. Renew modified dataSources, not all the datasources to improve performance for configuration orchestration.
+1. Improve the compatibility of SQL parsing.
+
+### Refactor
+
+1. Remove DatabaseType enum, use dynamic SPI to load data source type.
+1. The parse engine upgrade from the 2nd generation to 3rd.
+1. The Refactoring of SQL rewriting module.
+
+### Change Logs
+
+1. [MILESTONE](https://github.com/apache/incubator-shardingsphere/milestone/7)
+
+
+## 4.0.0.RC1
+
+Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First apache release.
 
 ### API Changes
 
 1. Adjust persist structure for orchestration's registry center.
 1. Adjust Sharding-JDBC configuration API.
+1. Change package and maven groupId form `io.shardingsphere` to `org.apache.shardingsphere`.
+1. Adjust spring-boot-starter.
 
 ### New Features
 
 1. XA Transaction available.
-1. All SQL 100% compatible if route to single data node (MySQL Only).
+1. Data encrypt available.
+1. Use PostgreSQL protocol access Sharding-Proxy available.
 1. DISTINCT SQL syntax available.
-1. Broadcast table available.
-1. Solve data lean problem when using DefaultKeyGenerator with low TPS.
+1. Broadcast table.
+1. All SQL 100% compatible if route to single data node (MySQL Only).
 
 ###  Change Logs
+
 1. [MILESTONE #3](https://github.com/sharding-sphere/sharding-sphere/milestone/3)
 1. [MILESTONE #4](https://github.com/sharding-sphere/sharding-sphere/milestone/4)
+1. [MILESTONE #5](https://github.com/sharding-sphere/sharding-sphere/milestone/5)
+1. [MILESTONE #6](https://github.com/sharding-sphere/sharding-sphere/milestone/6)
+
 
 ## 3.0.0
 

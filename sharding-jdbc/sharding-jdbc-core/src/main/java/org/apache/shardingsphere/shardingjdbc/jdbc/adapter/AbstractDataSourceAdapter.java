@@ -20,17 +20,17 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.bootstrap.ShardingBootstrap;
-import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.util.ReflectiveUtil;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -45,38 +45,39 @@ import java.util.logging.Logger;
 @Setter
 public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
-    static {
-        ShardingBootstrap.init();
-    }
+    private final Map<String, DataSource> dataSourceMap;
     
     private final DatabaseType databaseType;
-    
-    private final Map<String, DataSource> dataSourceMap;
     
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        databaseType = getDatabaseType(dataSourceMap.values());
-        ShardingTransactionManagerEngine.init(databaseType, dataSourceMap);
         this.dataSourceMap = dataSourceMap;
+        databaseType = createDatabaseType();
     }
     
-    protected final DatabaseType getDatabaseType(final Collection<DataSource> dataSources) throws SQLException {
+    public AbstractDataSourceAdapter(final DataSource dataSource) throws SQLException {
+        dataSourceMap = new HashMap<>(1, 1);
+        dataSourceMap.put("unique", dataSource);
+        databaseType = createDatabaseType();
+    }
+    
+    private DatabaseType createDatabaseType() throws SQLException {
         DatabaseType result = null;
-        for (DataSource each : dataSources) {
-            DatabaseType databaseType = getDatabaseType(each);
-            Preconditions.checkState(null == result || result.equals(databaseType), String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
+        for (DataSource each : dataSourceMap.values()) {
+            DatabaseType databaseType = createDatabaseType(each);
+            Preconditions.checkState(null == result || result == databaseType, String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
             result = databaseType;
         }
         return result;
     }
     
-    private DatabaseType getDatabaseType(final DataSource dataSource) throws SQLException {
+    private DatabaseType createDatabaseType(final DataSource dataSource) throws SQLException {
         if (dataSource instanceof AbstractDataSourceAdapter) {
             return ((AbstractDataSourceAdapter) dataSource).databaseType;
         }
         try (Connection connection = dataSource.getConnection()) {
-            return DatabaseType.valueFrom(connection.getMetaData().getDatabaseProductName());
+            return DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL());
         }
     }
     
@@ -92,12 +93,27 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     @Override
     public void close() throws Exception {
-        for (DataSource each : dataSourceMap.values()) {
-            try {
-                ReflectiveUtil.findMethod(each, "close").invoke(each);
-            } catch (final ReflectiveOperationException ignored) {
-            }
+        close(dataSourceMap.keySet());
+    }
+    
+    /**
+     * Close dataSources.
+     * 
+     * @param dataSourceNames data source names
+     * @throws Exception exception
+     */
+    public void close(final Collection<String> dataSourceNames) throws Exception {
+        for (String each : dataSourceNames) {
+            close(dataSourceMap.get(each));
         }
-        ShardingTransactionManagerEngine.close();
+    }
+    
+    private void close(final DataSource dataSource) {
+        try {
+            Method method = dataSource.getClass().getDeclaredMethod("close");
+            method.setAccessible(true);
+            method.invoke(dataSource);
+        } catch (final ReflectiveOperationException ignored) {
+        }
     }
 }

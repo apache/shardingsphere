@@ -17,12 +17,20 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import org.apache.shardingsphere.core.merger.MergedResult;
+import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.core.merge.MergedResult;
+import org.apache.shardingsphere.core.preprocessor.segment.table.TablesContext;
+import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -33,35 +41,71 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLXML;
-import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class ShardingResultSetTest {
     
-    @Mock
     private MergedResult mergeResultSet;
-    
-    @Mock
-    private Statement statement;
     
     private ShardingResultSet shardingResultSet;
     
     @Before
-    public void setUp() {
-        shardingResultSet = new ShardingResultSet(Collections.singletonList(mock(ResultSet.class)), mergeResultSet, statement);
+    public void setUp() throws SQLException {
+        mergeResultSet = mock(MergedResult.class);
+        shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement(), createSQLRouteResult());
+    }
+    
+    private SQLRouteResult createSQLRouteResult() {
+        SQLRouteResult result = mock(SQLRouteResult.class);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        TablesContext tablesContext = mock(TablesContext.class);
+        when(tablesContext.getTableNames()).thenReturn(Collections.<String>emptyList());
+        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
+        when(result.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        return result;
+    }
+    
+    private List<ResultSet> getResultSets() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getTableName(anyInt())).thenReturn("test");
+        when(resultSetMetaData.getColumnName(anyInt())).thenReturn("test");
+        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
+        return Collections.singletonList(resultSet);
+    }
+    
+    private ShardingStatement getShardingStatement() {
+        ShardingConnection shardingConnection = mock(ShardingConnection.class);
+        ShardingRuntimeContext runtimeContext = mock(ShardingRuntimeContext.class);
+        ShardingRule shardingRule = mock(ShardingRule.class);
+        when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.singletonList("test"));
+        EncryptRule encryptRule = mock(EncryptRule.class);
+        when(encryptRule.findShardingEncryptor(anyString(), anyString())).thenReturn(Optional.<ShardingEncryptor>absent());
+        when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
+        when(runtimeContext.getRule()).thenReturn(shardingRule);
+        when(runtimeContext.getProps()).thenReturn(new ShardingProperties(new Properties()));
+        when(shardingConnection.getRuntimeContext()).thenReturn(runtimeContext);
+        ShardingStatement statement = mock(ShardingStatement.class);
+        when(statement.getConnection()).thenReturn(shardingConnection);
+        return statement;
     }
     
     @Test
@@ -163,6 +207,12 @@ public final class ShardingResultSetTest {
     public void assertGetStringWithColumnIndex() throws SQLException {
         when(mergeResultSet.getValue(1, String.class)).thenReturn("value");
         assertThat(shardingResultSet.getString(1), is("value"));
+    }
+    
+    @Test
+    public void assertGetDoubleWithColumnLabelWithColumnLabelIndexMap() throws SQLException {
+        when(mergeResultSet.getValue("label", double.class)).thenReturn(1D);
+        assertThat(shardingResultSet.getDouble("label"), is(1D));
     }
     
     @Test
@@ -289,42 +339,42 @@ public final class ShardingResultSetTest {
     public void assertGetAsciiStreamWithColumnIndex() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
         when(mergeResultSet.getInputStream(1, "Ascii")).thenReturn(inputStream);
-        assertThat(shardingResultSet.getAsciiStream(1), is(inputStream));
+        assertThat(shardingResultSet.getAsciiStream(1), instanceOf(InputStream.class));
     }
     
     @Test
     public void assertGetAsciiStreamWithColumnLabel() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
         when(mergeResultSet.getInputStream("label", "Ascii")).thenReturn(inputStream);
-        assertThat(shardingResultSet.getAsciiStream("label"), is(inputStream));
+        assertThat(shardingResultSet.getAsciiStream("label"), instanceOf(InputStream.class));
     }
     
     @Test
     public void assertGetUnicodeStreamWithColumnIndex() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
         when(mergeResultSet.getInputStream(1, "Unicode")).thenReturn(inputStream);
-        assertThat(shardingResultSet.getUnicodeStream(1), is(inputStream));
+        assertThat(shardingResultSet.getUnicodeStream(1), instanceOf(InputStream.class));
     }
     
     @Test
     public void assertGetUnicodeStreamWithColumnLabel() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
         when(mergeResultSet.getInputStream("label", "Unicode")).thenReturn(inputStream);
-        assertThat(shardingResultSet.getUnicodeStream("label"), is(inputStream));
+        assertThat(shardingResultSet.getUnicodeStream("label"), instanceOf(InputStream.class));
     }
     
     @Test
     public void assertGetBinaryStreamWithColumnIndex() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
         when(mergeResultSet.getInputStream(1, "Binary")).thenReturn(inputStream);
-        assertThat(shardingResultSet.getBinaryStream(1), is(inputStream));
+        assertThat(shardingResultSet.getBinaryStream(1), instanceOf(InputStream.class));
     }
     
     @Test
     public void assertGetBinaryStreamWithColumnLabel() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
         when(mergeResultSet.getInputStream("label", "Binary")).thenReturn(inputStream);
-        assertThat(shardingResultSet.getBinaryStream("label"), is(inputStream));
+        assertThat(shardingResultSet.getBinaryStream("label"), instanceOf(InputStream.class));
     }
     
     @Test

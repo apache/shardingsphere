@@ -30,8 +30,8 @@ import org.apache.zookeeper.KeeperException.NodeExistsException;
  * 
  * @author zhangliang
  */
-@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class CuratorZookeeperExceptionHandler {
     
     /**

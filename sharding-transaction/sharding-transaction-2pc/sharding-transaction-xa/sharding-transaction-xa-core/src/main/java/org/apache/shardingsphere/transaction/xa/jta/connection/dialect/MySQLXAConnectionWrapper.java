@@ -19,7 +19,6 @@ package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.util.ReflectiveUtil;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
 
 import javax.sql.XAConnection;
@@ -35,11 +34,28 @@ import java.sql.Connection;
 @RequiredArgsConstructor
 public final class MySQLXAConnectionWrapper implements XAConnectionWrapper {
     
+    private static final String MYSQL_XA_DATASOURCE_5 = "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource";
+    
+    private static final String MYSQL_XA_DATASOURCE_8 = "com.mysql.cj.jdbc.MysqlXADataSource";
+    
     @SneakyThrows
     @Override
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) {
-        Connection physicalConnection = (Connection) connection.unwrap(Class.forName("com.mysql.jdbc.Connection"));
-        Method wrapConnectionMethod = ReflectiveUtil.findMethod(xaDataSource, "wrapConnection", Connection.class);
-        return (XAConnection) wrapConnectionMethod.invoke(xaDataSource, physicalConnection);
+        Connection physicalConnection = unwrapPhysicalConnection(xaDataSource.getClass().getName(), connection);
+        Method method = xaDataSource.getClass().getDeclaredMethod("wrapConnection", Connection.class);
+        method.setAccessible(true);
+        return (XAConnection) method.invoke(xaDataSource, physicalConnection);
+    }
+    
+    @SneakyThrows
+    private Connection unwrapPhysicalConnection(final String xaDataSourceClassName, final Connection connection) {
+        switch (xaDataSourceClassName) {
+            case MYSQL_XA_DATASOURCE_5:
+                return (Connection) connection.unwrap(Class.forName("com.mysql.jdbc.Connection"));
+            case MYSQL_XA_DATASOURCE_8:
+                return (Connection) connection.unwrap(Class.forName("com.mysql.cj.jdbc.JdbcConnection"));
+            default:
+                throw new UnsupportedOperationException(String.format("Cannot support xa datasource: `%s`", xaDataSourceClassName));
+        }
     }
 }

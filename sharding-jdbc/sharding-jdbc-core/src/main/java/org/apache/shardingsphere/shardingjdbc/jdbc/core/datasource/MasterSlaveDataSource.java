@@ -18,19 +18,12 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.api.ConfigMapContext;
-import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
-import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.MasterSlaveRuntimeContext;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
@@ -43,44 +36,17 @@ import java.util.Properties;
  * @author zhaojun
  */
 @Getter
-@Slf4j
 public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
-    private final DatabaseMetaData cachedDatabaseMetaData;
+    private final MasterSlaveRuntimeContext runtimeContext;
     
-    private final MasterSlaveRule masterSlaveRule;
-    
-    private final ShardingProperties shardingProperties;
-    
-    public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
-                                 final Map<String, Object> configMap, final Properties props) throws SQLException {
+    public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule, final Properties props) throws SQLException {
         super(dataSourceMap);
-        cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
-        if (!configMap.isEmpty()) {
-            ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
-        }
-        this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
-        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-    }
-    
-    public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule, final Map<String, Object> configMap, final Properties props) throws SQLException {
-        super(dataSourceMap);
-        cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
-        if (!configMap.isEmpty()) {
-            ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
-        }
-        this.masterSlaveRule = masterSlaveRule;
-        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
-    }
-    
-    private DatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        try (Connection connection = dataSourceMap.values().iterator().next().getConnection()) {
-            return new CachedDatabaseMetaData(connection.getMetaData());
-        }
+        runtimeContext = new MasterSlaveRuntimeContext(dataSourceMap, masterSlaveRule, props, getDatabaseType());
     }
     
     @Override
     public final MasterSlaveConnection getConnection() {
-        return new MasterSlaveConnection(this, getDataSourceMap(), TransactionTypeHolder.get());
+        return new MasterSlaveConnection(getDataSourceMap(), runtimeContext);
     }
 }

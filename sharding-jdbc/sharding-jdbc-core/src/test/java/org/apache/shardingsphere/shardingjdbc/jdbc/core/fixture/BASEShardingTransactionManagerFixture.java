@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.fixture;
 
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
-public final class BASEShardingTransactionManagerFixture extends org.apache.shardingsphere.shardingjdbc.jdbc.core.fixture.AbstractShardingTransactionManagerFixture {
+public final class BASEShardingTransactionManagerFixture extends AbstractShardingTransactionManagerFixture {
     
     @Override
     public TransactionType getTransactionType() {

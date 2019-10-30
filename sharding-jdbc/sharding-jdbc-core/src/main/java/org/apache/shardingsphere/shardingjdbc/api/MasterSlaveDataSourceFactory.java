@@ -19,7 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.api;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 
 import javax.sql.DataSource;
@@ -41,13 +42,11 @@ public final class MasterSlaveDataSourceFactory {
      *
      * @param dataSourceMap data source map
      * @param masterSlaveRuleConfig master-slave rule configuration
-     * @param configMap configuration map
      * @param props props
      * @return master-slave data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(
-            final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap, final Properties props) throws SQLException {
-        return new MasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, props);
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Properties props) throws SQLException {
+        return new MasterSlaveDataSource(dataSourceMap, new MasterSlaveRule(masterSlaveRuleConfig), props);
     }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.sql;
 
+import org.apache.shardingsphere.test.sql.loader.sharding.ShardingSQLCasesRegistry;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -32,61 +33,40 @@ import static org.junit.Assert.assertTrue;
 public final class SQLCasesLoaderTest {
     
     @Test
-    public void assertGetSupportedSQLForLiteralWithoutParameter() {
-        assertThat(SQLCasesLoader.getInstance().getSupportedSQL("select_constant_without_table", SQLCaseType.Literal, Collections.emptyList()), is("SELECT 1 as a"));
+    public void assertGetSQLForLiteralWithoutParameter() {
+        assertThat(ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL("select_constant_without_table", SQLCaseType.Literal, Collections.emptyList()), is("SELECT 1 as a"));
     }
     
     @Test
-    public void assertGetSupportedSQLForLiteralWithParameters() {
-        assertThat(SQLCasesLoader.getInstance().getSupportedSQL("select_with_same_table_name_and_alias", SQLCaseType.Literal, Arrays.asList(10, 1000)), 
+    public void assertGetSQLForLiteralWithParameters() {
+        assertThat(ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL("select_with_same_table_name_and_alias", SQLCaseType.Literal, Arrays.asList(10, 1000)), 
                 is("SELECT t_order.* FROM t_order t_order WHERE user_id = 10 AND order_id = 1000"));
     }
     
     @Test
-    public void assertGetSupportedSQLForPlaceholder() {
-        assertThat(SQLCasesLoader.getInstance().getSupportedSQL("select_with_same_table_name_and_alias", SQLCaseType.Placeholder, Arrays.asList(10, 1000)),
+    public void assertGetSQLForPlaceholder() {
+        assertThat(ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL("select_with_same_table_name_and_alias", SQLCaseType.Placeholder, Arrays.asList(10, 1000)),
                 is("SELECT t_order.* FROM t_order t_order WHERE user_id = ? AND order_id = ?"));
     }
     
     @Test(expected = IllegalStateException.class)
-    public void assertGetSupportedSQLWithoutSQLCaseId() {
-        SQLCasesLoader.getInstance().getSupportedSQL("no_sql_case_id", SQLCaseType.Literal, Collections.emptyList());
-    }
-    
-//    @Test
-//    public void assertGetUnsupportedSQLForLiteral() {
-//        assertThat(SQLCasesLoader.getInstance().getUnsupportedSQL("assertSelectIntoSQL", SQLCaseType.Literal, Collections.emptyList()), is("SELECT * INTO t_order_new FROM t_order"));
-//    }
-    
-    @Test(expected = IllegalStateException.class)
-    public void assertGetUnsupportedSQLWithoutSQLCaseId() {
-        SQLCasesLoader.getInstance().getUnsupportedSQL("no_sql_case_id", SQLCaseType.Literal, Collections.emptyList());
+    public void assertGetSQLWithoutSQLCaseId() {
+        ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL("no_sql_case_id", SQLCaseType.Literal, Collections.emptyList());
     }
     
     @Test
-    public void assertGetSupportedSQLTestParameters() {
-        Collection<Object[]> actual = SQLCasesLoader.getInstance().getSupportedSQLTestParameters(Collections.singletonList(DatabaseTypeEnum.H2), DatabaseTypeEnum.class);
+    public void assertGetTestParameters() {
+        Collection<Object[]> actual = ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader().getSQLTestParameters();
         assertFalse(actual.isEmpty());
         Object[] actualRow = actual.iterator().next();
         assertThat(actualRow.length, is(3));
         assertThat(actualRow[0], instanceOf(String.class));
-        assertThat(actualRow[1], instanceOf(DatabaseTypeEnum.class));
+        assertThat(actualRow[1], instanceOf(String.class));
         assertThat(actualRow[2], instanceOf(SQLCaseType.class));
     }
     
     @Test
-    public void assertGetUnsupportedSQLTestParameters() {
-        Collection<Object[]> actual = SQLCasesLoader.getInstance().getUnsupportedSQLTestParameters(Collections.singletonList(DatabaseTypeEnum.H2), DatabaseTypeEnum.class);
-        assertFalse(actual.isEmpty());
-        Object[] actualRow = actual.iterator().next();
-        assertThat(actualRow.length, is(3));
-        assertThat(actualRow[0], instanceOf(String.class));
-        assertThat(actualRow[1], instanceOf(DatabaseTypeEnum.class));
-        assertThat(actualRow[2], instanceOf(SQLCaseType.class));
-    }
-    
-    @Test
-    public void assertCountAllSupportedSQLCases() {
-        assertTrue(SQLCasesLoader.getInstance().countAllSupportedSQLCases() > 1);
+    public void assertCountAllSQLCases() {
+        assertTrue(ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader().countAllSQLCases() > 0);
     }
 }

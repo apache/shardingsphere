@@ -42,8 +42,6 @@ public final class ConfigurationNode {
     
     private static final String AUTHENTICATION_NODE = "authentication";
     
-    private static final String CONFIG_MAP_NODE = "configmap";
-    
     private static final String PROPS_NODE = "props";
     
     private final String name;
@@ -84,15 +82,6 @@ public final class ConfigurationNode {
      */
     public String getAuthenticationPath() {
         return getFullPath(AUTHENTICATION_NODE);
-    }
-    
-    /**
-     * Get config map path.
-     *
-     * @return config map path
-     */
-    public String getConfigMapPath() {
-        return getFullPath(CONFIG_MAP_NODE);
     }
     
     /**

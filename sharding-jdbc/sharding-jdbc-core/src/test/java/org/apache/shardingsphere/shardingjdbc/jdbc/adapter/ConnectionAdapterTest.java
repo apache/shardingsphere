@@ -52,11 +52,11 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     }
     
     @Test
-    public void assertSetAutoCommit() throws SQLException {
+    public void assertLocalTransactionAutoCommit() throws SQLException {
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
             assertTrue(actual.getAutoCommit());
-            actual.setAutoCommit(false);
             actual.createStatement().executeQuery(sql);
+            actual.setAutoCommit(false);
             assertFalse(actual.getAutoCommit());
             Multimap<String, Connection> cachedConnections = getCachedConnections(actual);
             assertThat(cachedConnections.size(), is(1));
@@ -67,25 +67,40 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     }
     
     @Test
-    public void assertIgnoreAutoCommitForXA() throws SQLException {
+    public void assertShardingTransactionAutoCommit() throws SQLException {
+        TransactionTypeHolder.set(TransactionType.XA);
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            actual.createStatement().executeQuery(sql);
+            actual.setAutoCommit(false);
+            actual.createStatement().executeQuery(sql);
+            assertTrue(actual.getShardingTransactionManager().isInTransaction());
+            Multimap<String, Connection> cachedConnections = getCachedConnections(actual);
+            assertThat(cachedConnections.size(), is(1));
+            for (Connection each : cachedConnections.values()) {
+                assertTrue(each.getAutoCommit());
+            }
+        }
+    }
+    
+    @Test
+    public void assertShardingTransactionSkipAutoCommit() throws SQLException {
         TransactionTypeHolder.set(TransactionType.XA);
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
             actual.setAutoCommit(true);
-            assertFalse(XAShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.BEGIN));
+            assertFalse(actual.getShardingTransactionManager().isInTransaction());
         }
-    }
-    
-    @Test
-    public void assertIgnoreAutoCommitForBASE() throws SQLException {
-        TransactionTypeHolder.set(TransactionType.BASE);
+        TransactionTypeHolder.set(TransactionType.XA);
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
-            actual.setAutoCommit(true);
-            assertFalse(BASEShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.BEGIN));
+            actual.setAutoCommit(false);
+            assertTrue(actual.getShardingTransactionManager().isInTransaction());
+            assertThat(XAShardingTransactionManagerFixture.getInvocations().size(), is(1));
+            actual.setAutoCommit(false);
+            assertThat(XAShardingTransactionManagerFixture.getInvocations().size(), is(1));
         }
     }
     
     @Test
-    public void assertCommit() throws SQLException {
+    public void assertLocalTransactionCommit() throws SQLException {
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
             actual.setAutoCommit(false);
             actual.createStatement().executeQuery(sql);
@@ -94,7 +109,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     }
     
     @Test
-    public void assertXACommit() throws SQLException {
+    public void assertShardingTransactionCommit() throws SQLException {
         TransactionTypeHolder.set(TransactionType.XA);
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
             actual.commit();
@@ -103,7 +118,17 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     }
     
     @Test
-    public void assertRollback() throws SQLException {
+    public void assertShardingTransactionForceCommit() throws SQLException {
+        TransactionTypeHolder.set(TransactionType.XA);
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            actual.setAutoCommit(false);
+            actual.setAutoCommit(true);
+            assertTrue(XAShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.COMMIT));
+        }
+    }
+    
+    @Test
+    public void assertLocalTransactionRollback() throws SQLException {
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
             actual.setAutoCommit(false);
             actual.createStatement().executeQuery(sql);
@@ -112,7 +137,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     }
     
     @Test
-    public void assertXARollback() throws SQLException {
+    public void assertShardingTransactionRollback() throws SQLException {
         TransactionTypeHolder.set(TransactionType.XA);
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
             actual.rollback();

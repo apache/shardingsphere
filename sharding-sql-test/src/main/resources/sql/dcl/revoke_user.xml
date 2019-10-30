@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases>
-    <sql-case id="revoke_user_without_hostname" value="REVOKE select, update on t_order from user_dev" db-types="Oracle,PostgreSQL,SQLServer,H2" />
-    <sql-case id="revoke_role" value="REVOKE role_dev from user_dev" db-types="Oracle,PostgreSQL,SQLServer,H2" />
-    <sql-case id="revoke_user_from" value="REVOKE connect, resource from user_dev" db-types="Oracle" />
-    <sql-case id="revoke_user_with_hostname_on_db" value="REVOKE select, insert ON * FROM 'user_dev'@'localhost'" db-types="MySQL" />
-    <sql-case id="revoke_user_with_hostname" value="REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'user_dev'@'localhost'" db-types="MySQL" />
-</sql-cases>

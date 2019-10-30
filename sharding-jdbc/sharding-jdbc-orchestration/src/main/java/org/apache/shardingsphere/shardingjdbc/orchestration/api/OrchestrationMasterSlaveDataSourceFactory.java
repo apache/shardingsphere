@@ -19,7 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.api;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
@@ -42,18 +43,17 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
      *
      * @param dataSourceMap data source map
      * @param masterSlaveRuleConfig master-slave rule configuration
-     * @param configMap config map
      * @param props properties
      * @param orchestrationConfig orchestration configuration
      * @return master-slave data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Map<String, Object> configMap, 
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, 
                                               final Properties props, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         if (null == masterSlaveRuleConfig || null == masterSlaveRuleConfig.getMasterDataSourceName()) {
             return createDataSource(orchestrationConfig);
         }
-        MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, masterSlaveRuleConfig, configMap, props);
+        MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, new MasterSlaveRule(masterSlaveRuleConfig), props);
         return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, orchestrationConfig);
     }
     

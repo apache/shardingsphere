@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="MySQL" namespace="mysql.tcl.setAutoCommit">
-    <sql-case id="set_auto_commit_on" value="SET autocommit = 1" />
-    <sql-case id="set_auto_commit_off" value="SET autocommit = 0" />
-</sql-cases>

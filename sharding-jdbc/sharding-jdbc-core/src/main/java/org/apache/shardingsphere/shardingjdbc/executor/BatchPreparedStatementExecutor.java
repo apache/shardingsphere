@@ -20,18 +20,19 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.executor.ShardingExecuteGroup;
-import org.apache.shardingsphere.core.executor.StatementExecuteUnit;
-import org.apache.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
-import org.apache.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
-import org.apache.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareCallback;
-import org.apache.shardingsphere.core.routing.BatchRouteUnit;
-import org.apache.shardingsphere.core.routing.RouteUnit;
-import org.apache.shardingsphere.core.routing.SQLRouteResult;
+import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
+import org.apache.shardingsphere.core.execute.StatementExecuteUnit;
+import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback;
+import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
+import org.apache.shardingsphere.core.execute.sql.prepare.SQLExecutePrepareCallback;
+import org.apache.shardingsphere.core.route.BatchRouteUnit;
+import org.apache.shardingsphere.core.route.RouteUnit;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 
 import java.sql.Connection;
@@ -42,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -73,7 +75,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      * @throws SQLException SQL exception
      */
     public void init(final SQLRouteResult routeResult) throws SQLException {
-        setSqlStatement(routeResult.getSqlStatement());
+        setSqlStatementContext(routeResult.getSqlStatementContext());
         getExecuteGroups().addAll(obtainExecuteGroups(routeUnits));
     }
     
@@ -126,6 +128,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     private void handleOldRouteUnits(final Collection<BatchRouteUnit> newRouteUnits) {
         for (final BatchRouteUnit each : newRouteUnits) {
             Optional<BatchRouteUnit> batchRouteUnitOptional = Iterators.tryFind(routeUnits.iterator(), new Predicate<BatchRouteUnit>() {
+                
                 @Override
                 public boolean apply(final BatchRouteUnit input) {
                     return input.equals(each);
@@ -138,7 +141,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     }
     
     private void reviseBatchRouteUnit(final BatchRouteUnit oldBatchRouteUnit, final BatchRouteUnit newBatchRouteUnit) {
-        oldBatchRouteUnit.getRouteUnit().getSqlUnit().getParameterSets().add(newBatchRouteUnit.getRouteUnit().getSqlUnit().getParameterSets().get(0));
+        oldBatchRouteUnit.getRouteUnit().getSqlUnit().getParameters().addAll(newBatchRouteUnit.getRouteUnit().getSqlUnit().getParameters());
         oldBatchRouteUnit.mapAddBatchCount(batchCount);
     }
     
@@ -161,8 +164,8 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
         SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(getDatabaseType(), isExceptionThrown) {
             
             @Override
-            protected int[] executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
-                return statementExecuteUnit.getStatement().executeBatch();
+            protected int[] executeSQL(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+                return statement.executeBatch();
             }
         };
         List<int[]> results = executeCallback(callback);
@@ -176,12 +179,21 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     private int[] accumulate(final List<int[]> results) {
         int[] result = new int[batchCount];
         int count = 0;
-        for (BatchRouteUnit each : routeUnits) {
-            for (Entry<Integer, Integer> entry : each.getJdbcAndActualAddBatchCallTimesMap().entrySet()) {
-                int value = null == results.get(count) ? 0 : results.get(count)[entry.getValue()];
-                result[entry.getKey()] += value;
+        for (ShardingExecuteGroup<StatementExecuteUnit> each : getExecuteGroups()) {
+            for (StatementExecuteUnit eachUnit : each.getInputs()) {
+                Map<Integer, Integer> jdbcAndActualAddBatchCallTimesMap = null;
+                for (BatchRouteUnit eachRouteUnit : routeUnits) {
+                    if (eachRouteUnit.getRouteUnit().equals(eachUnit.getRouteUnit())) {
+                        jdbcAndActualAddBatchCallTimesMap = eachRouteUnit.getJdbcAndActualAddBatchCallTimesMap();
+                        break;
+                    }
+                }
+                for (Entry<Integer, Integer> entry : jdbcAndActualAddBatchCallTimesMap.entrySet()) {
+                    int value = null == results.get(count) ? 0 : results.get(count)[entry.getValue()];
+                    result[entry.getKey()] += value;
+                }
+                count++;
             }
-            count++;
         }
         return result;
     }
@@ -213,20 +225,36 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      * @return parameter sets
      */
     public List<List<Object>> getParameterSet(final Statement statement) {
-        Optional<StatementExecuteUnit> target;
         List<List<Object>> result = new LinkedList<>();
         for (ShardingExecuteGroup<StatementExecuteUnit> each : getExecuteGroups()) {
-            target = Iterators.tryFind(each.getInputs().iterator(), new Predicate<StatementExecuteUnit>() {
-                @Override
-                public boolean apply(final StatementExecuteUnit input) {
-                    return input.getStatement().equals(statement);
-                }
-            });
+            Optional<StatementExecuteUnit> target = getStatementExecuteUnit(statement, each);
             if (target.isPresent()) {
-                result.addAll(target.get().getRouteUnit().getSqlUnit().getParameterSets());
+                result = getParameterSets(target.get());
                 break;
             }
         }
+        return result;
+    }
+    
+    private Optional<StatementExecuteUnit> getStatementExecuteUnit(final Statement statement, final ShardingExecuteGroup<StatementExecuteUnit> executeGroup) {
+        return Iterators.tryFind(executeGroup.getInputs().iterator(), new Predicate<StatementExecuteUnit>() {
+            
+            @Override
+            public boolean apply(final StatementExecuteUnit input) {
+                return input.getStatement().equals(statement);
+                }
+        });
+    }
+    
+    private List<List<Object>> getParameterSets(final StatementExecuteUnit executeUnit) {
+        List<List<Object>> result;
+        result = Collections2.filter(routeUnits, new Predicate<BatchRouteUnit>() {
+
+            @Override
+            public boolean apply(final BatchRouteUnit input) {
+                return input.getRouteUnit().equals(executeUnit.getRouteUnit());
+            }
+        }).iterator().next().getParameterSets();
         return result;
     }
     

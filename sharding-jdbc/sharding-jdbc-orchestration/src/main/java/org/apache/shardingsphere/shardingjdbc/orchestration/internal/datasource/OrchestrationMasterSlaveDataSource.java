@@ -23,14 +23,14 @@ import com.google.common.eventbus.Subscribe;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.api.ConfigMapContext;
-import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.api.config.RuleConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
-import org.apache.shardingsphere.orchestration.internal.registry.config.event.ConfigMapChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
@@ -60,26 +60,27 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
         ConfigurationService configService = getShardingOrchestrationFacade().getConfigService();
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration(ShardingConstant.LOGIC_SCHEMA_NAME);
-        Preconditions.checkState(null != masterSlaveRuleConfig && !Strings.isNullOrEmpty(masterSlaveRuleConfig.getMasterDataSourceName()), "No available master slave rule configuration to load.");
+        Preconditions.checkState(!Strings.isNullOrEmpty(masterSlaveRuleConfig.getMasterDataSourceName()), "No available master slave rule configuration to load.");
         dataSource = new MasterSlaveDataSource(DataSourceConverter.getDataSourceMap(configService.loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME)),
-                new OrchestrationMasterSlaveRule(masterSlaveRuleConfig), configService.loadConfigMap(), configService.loadProperties());
-        getShardingOrchestrationFacade().init();
+                new OrchestrationMasterSlaveRule(masterSlaveRuleConfig), configService.loadProperties());
+        initShardingOrchestrationFacade();
     }
     
     public OrchestrationMasterSlaveDataSource(final MasterSlaveDataSource masterSlaveDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
         dataSource = new MasterSlaveDataSource(masterSlaveDataSource.getDataSourceMap(),
-                new OrchestrationMasterSlaveRule(masterSlaveDataSource.getMasterSlaveRule().getMasterSlaveRuleConfiguration()),
-                ConfigMapContext.getInstance().getConfigMap(), masterSlaveDataSource.getShardingProperties().getProps());
-        getShardingOrchestrationFacade().init(Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
-                getRuleConfigurationMap(), null, ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
+                new OrchestrationMasterSlaveRule(masterSlaveDataSource.getRuntimeContext().getRule().getRuleConfiguration()), 
+                masterSlaveDataSource.getRuntimeContext().getProps().getProps());
+        initShardingOrchestrationFacade(Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
+                getRuleConfigurationMap(), dataSource.getRuntimeContext().getProps().getProps());
     }
     
     private Map<String, RuleConfiguration> getRuleConfigurationMap() {
-        MasterSlaveRule masterSlaveRule = dataSource.getMasterSlaveRule();
+        MasterSlaveRule masterSlaveRule = dataSource.getRuntimeContext().getRule();
         Map<String, RuleConfiguration> result = new HashMap<>();
         result.put(ShardingConstant.LOGIC_SCHEMA_NAME, new MasterSlaveRuleConfiguration(
-                masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm()));
+                masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), 
+                new LoadBalanceStrategyConfiguration(masterSlaveRule.getLoadBalanceAlgorithm().getType(), masterSlaveRule.getLoadBalanceAlgorithm().getProperties())));
         return result;
     }
     
@@ -91,8 +92,8 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     @Subscribe
     @SneakyThrows
     public final synchronized void renew(final MasterSlaveRuleChangedEvent masterSlaveRuleChangedEvent) {
-        dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(),
-                masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration(), ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
+        dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(), 
+                new OrchestrationMasterSlaveRule(masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration()), dataSource.getRuntimeContext().getProps().getProps());
     }
     
     /**
@@ -103,9 +104,13 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     @Subscribe
     @SneakyThrows
     public final synchronized void renew(final DataSourceChangedEvent dataSourceChangedEvent) {
-        dataSource.close();
-        dataSource = new MasterSlaveDataSource(DataSourceConverter.getDataSourceMap(dataSourceChangedEvent.getDataSourceConfigurations()),
-                dataSource.getMasterSlaveRule(), ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
+        Map<String, DataSourceConfiguration> dataSourceConfigurations = dataSourceChangedEvent.getDataSourceConfigurations();
+        dataSource.close(getDeletedDataSources(dataSourceConfigurations));
+        dataSource.close(getModifiedDataSources(dataSourceConfigurations).keySet());
+        dataSource = new MasterSlaveDataSource(getChangedDataSources(
+                dataSource.getDataSourceMap(), dataSourceConfigurations), dataSource.getRuntimeContext().getRule(), dataSource.getRuntimeContext().getProps().getProps());
+        getDataSourceConfigurations().clear();
+        getDataSourceConfigurations().putAll(dataSourceConfigurations);
     }
     
     /**
@@ -116,18 +121,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     @SneakyThrows
     @Subscribe
     public final synchronized void renew(final PropertiesChangedEvent propertiesChangedEvent) {
-        dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(), dataSource.getMasterSlaveRule(), ConfigMapContext.getInstance().getConfigMap(), propertiesChangedEvent.getProps());
-    }
-    
-    /**
-     * Renew config map.
-     *
-     * @param configMapChangedEvent config map changed event
-     */
-    @Subscribe
-    public final synchronized void renew(final ConfigMapChangedEvent configMapChangedEvent) {
-        ConfigMapContext.getInstance().getConfigMap().clear();
-        ConfigMapContext.getInstance().getConfigMap().putAll(configMapChangedEvent.getConfigMap());
+        dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(), dataSource.getRuntimeContext().getRule(), propertiesChangedEvent.getProps());
     }
     
     /**
@@ -139,7 +133,8 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
         OrchestrationShardingSchema shardingSchema = disabledStateChangedEvent.getShardingSchema();
         if (ShardingConstant.LOGIC_SCHEMA_NAME.equals(shardingSchema.getSchemaName())) {
-            ((OrchestrationMasterSlaveRule) dataSource.getMasterSlaveRule()).updateDisabledDataSourceNames(shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
+            ((OrchestrationMasterSlaveRule) dataSource.getRuntimeContext().getRule()).updateDisabledDataSourceNames(
+                    shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
         }
     }
 }

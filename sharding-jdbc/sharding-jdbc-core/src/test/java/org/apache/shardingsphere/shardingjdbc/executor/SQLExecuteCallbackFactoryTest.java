@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.executor.StatementExecuteUnit;
-import org.apache.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
-import org.apache.shardingsphere.core.routing.RouteUnit;
-import org.apache.shardingsphere.core.routing.SQLUnit;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.core.execute.StatementExecuteUnit;
+import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback;
+import org.apache.shardingsphere.core.route.RouteUnit;
+import org.apache.shardingsphere.core.route.SQLUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,8 +34,8 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,27 +52,29 @@ public class SQLExecuteCallbackFactoryTest {
     @Mock
     private DatabaseMetaData metaData;
     
-    private StatementExecuteUnit unit;
+    private Collection<StatementExecuteUnit> units;
     
     @Before
     public void setUp() throws SQLException {
         when(preparedStatement.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(metaData);
         when(metaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
-        unit = new StatementExecuteUnit(new RouteUnit("ds", new SQLUnit("SELECT now()", Collections.<List<Object>>emptyList())), preparedStatement, ConnectionMode.CONNECTION_STRICTLY);
+        units = Lists.newArrayList(
+            new StatementExecuteUnit(new RouteUnit("ds", new SQLUnit("SELECT now()", Collections.emptyList())), preparedStatement, ConnectionMode.CONNECTION_STRICTLY)
+        );
     }
     
     @Test
     public void assertGetPreparedUpdateSQLExecuteCallback() throws SQLException {
-        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(DatabaseType.MySQL, true);
-        sqlExecuteCallback.execute(unit, true, null);
+        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(DatabaseTypes.getActualDatabaseType("MySQL"), true);
+        sqlExecuteCallback.execute(units, true, null);
         verify(preparedStatement).executeUpdate();
     }
     
     @Test
     public void assertGetPreparedSQLExecuteCallback() throws SQLException {
-        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(DatabaseType.MySQL, true);
-        sqlExecuteCallback.execute(unit, true, null);
+        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(DatabaseTypes.getActualDatabaseType("MySQL"), true);
+        sqlExecuteCallback.execute(units, true, null);
         verify(preparedStatement).execute();
     }
 }

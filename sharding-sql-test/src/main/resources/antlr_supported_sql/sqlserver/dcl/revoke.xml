@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="SQLServer" namespace="sqlserver.dcl.revoke">
-    <sql-case id="revoke_select" value="REVOKE SELECT ON database1 FROM user1" />
-    <sql-case id="revoke_select_column" value="REVOKE SELECT (order_id) ON database1 FROM user1" />
-    <sql-case id="revoke_select_to_users" value="REVOKE SELECT (order_id) ON database1 FROM user1, user2" />
-    <sql-case id="revoke_crud" value="REVOKE INSERT, SELECT, UPDATE, DELETE ON database1 FROM user1" />
-    <sql-case id="revoke_all" value="REVOKE ALL PRIVILEGES ON database1 FROM user1" />
-</sql-cases>

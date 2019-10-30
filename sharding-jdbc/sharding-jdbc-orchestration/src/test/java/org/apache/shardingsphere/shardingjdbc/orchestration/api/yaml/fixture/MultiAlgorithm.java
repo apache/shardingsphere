@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture;
 
-import org.apache.shardingsphere.api.algorithm.sharding.ShardingValue;
-import org.apache.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
+import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingAlgorithm;
+import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingValue;
 
 import java.util.Collection;
 
-public final class MultiAlgorithm implements ComplexKeysShardingAlgorithm {
+public final class MultiAlgorithm implements ComplexKeysShardingAlgorithm<String> {
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<String> shardingValue) {
         return null;
     }
 }

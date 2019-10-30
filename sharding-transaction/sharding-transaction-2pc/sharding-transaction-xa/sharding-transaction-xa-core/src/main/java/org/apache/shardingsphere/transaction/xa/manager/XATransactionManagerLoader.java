@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.xa.manager;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.transaction.xa.manager.atomikos.AtomikosTransactionManager;
+import org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManager;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
 
 import java.util.Iterator;

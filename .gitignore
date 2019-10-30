@@ -1,10 +1,16 @@
 # maven ignore
 target/
+*.class
 *.jar
 *.war
 *.zip
 *.tar
 *.tar.gz
+
+# maven plugin ignore
+release.properties
+cobertura.ser
+*.gpg
 
 # eclipse ignore
 .settings/
@@ -19,8 +25,8 @@ target/
 
 # temp ignore
 logs/
-*.doc
 *.log
+*.doc
 *.cache
 *.diff
 *.patch
@@ -29,5 +35,3 @@ logs/
 # system ignore
 .DS_Store
 Thumbs.db
-
-*.class

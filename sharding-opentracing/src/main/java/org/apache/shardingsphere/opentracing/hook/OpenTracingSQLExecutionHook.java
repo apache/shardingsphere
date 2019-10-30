@@ -21,13 +21,12 @@ import com.google.common.base.Joiner;
 import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaData;
-import org.apache.shardingsphere.core.routing.RouteUnit;
+import org.apache.shardingsphere.core.execute.hook.SQLExecutionHook;
+import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.opentracing.constant.ShardingTags;
-import org.apache.shardingsphere.spi.executor.SQLExecutionHook;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -57,20 +56,15 @@ public final class OpenTracingSQLExecutionHook implements SQLExecutionHook {
                 .withTag(Tags.DB_TYPE.getKey(), "sql")
                 .withTag(Tags.DB_INSTANCE.getKey(), routeUnit.getDataSourceName())
                 .withTag(Tags.DB_STATEMENT.getKey(), routeUnit.getSqlUnit().getSql())
-                .withTag(ShardingTags.DB_BIND_VARIABLES.getKey(), toString(routeUnit.getSqlUnit().getParameterSets())).startManual();
+                .withTag(ShardingTags.DB_BIND_VARIABLES.getKey(), toString(routeUnit.getSqlUnit().getParameters())).startManual();
         
     }
     
-    private String toString(final List<List<Object>> parameterSets) {
-        return parameterSets.isEmpty() ? "" : Joiner.on(", ").join(toStringList(parameterSets));
-    }
-    
-    private List<String> toStringList(final List<List<Object>> parameterSets) {
-        List<String> result = new LinkedList<>();
-        for (List<Object> each : parameterSets) {
-            result.add(String.format("[%s]", Joiner.on(", ").join(each)));
+    private String toString(final List<Object> parameterSets) {
+        if (null == parameterSets || parameterSets.isEmpty()) {
+            return "";
         }
-        return result;
+        return String.format("[%s]", Joiner.on(", ").useForNull("Null").join(parameterSets));
     }
     
     @Override
