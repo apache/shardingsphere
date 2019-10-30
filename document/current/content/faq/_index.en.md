@@ -152,8 +152,6 @@ The followings are core codes from ProxoolDataSource getConnection method in `Pr
 
 For more alias usages, please refer to [Proxool](http://proxool.sourceforge.net/configure.html) official website.
 
-PS: sourceforge can only be visited without the firewall.
-
 #### 12. Why are the default distributed auto-augment key strategy provided by ShardingSphere not continuous and most of them end with even numbers?
 
 Answer:
