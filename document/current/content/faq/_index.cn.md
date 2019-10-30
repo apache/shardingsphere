@@ -156,7 +156,7 @@ com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValue#getOrderValues()�
 
 更多关于alias使用方法请参考[Proxool官网](http://proxool.sourceforge.net/configure.html)。
 
-PS:sourceforge网站需要翻墙访问。
+PS：sourceforge网站需要翻墙访问。
 
 #### 12. ShardingSphere提供的默认分布式自增主键策略为什么是不连续的，且尾数大多为偶数？
 

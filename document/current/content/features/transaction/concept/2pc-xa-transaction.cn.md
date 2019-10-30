@@ -12,7 +12,7 @@ weight = 1
 
 ![两阶段提交模型](https://shardingsphere.apache.org/document/current/img/transaction/2pc-tansaction-modle_cn.png)
 
-Java通定义JTA接口实现了XA的模型，JTA接口里的`ResourceManager`需要数据库厂商提供XA的驱动实现，而`TransactionManager`则需要事务管理器的厂商实现，传统的事务管理器需要同应用服务器绑定，因此使用的成本很高。
-而嵌入式的事务管器可以已jar包的形式提供服务，同ShardingSphere集成后，可保证分片后跨库事务强一致性。
+Java通过定义JTA接口实现了XA的模型，JTA接口里的`ResourceManager`需要数据库厂商提供XA的驱动实现，而`TransactionManager`则需要事务管理器的厂商实现，传统的事务管理器需要同应用服务器绑定，因此使用的成本很高。
+而嵌入式的事务管器可以以jar包的形式提供服务，同ShardingSphere集成后，可保证分片后跨库事务强一致性。
 
 通常，只有使用了事务管理器厂商所提供的XA事务连接池，才能支持XA的事务。ShardingSphere整合XA事务时，分离了XA事务管理和连接池管理，这样接入XA时，可以做到对业务的零侵入。

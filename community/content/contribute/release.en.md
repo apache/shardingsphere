@@ -1,6 +1,6 @@
 +++
 title = "Release Guide"
-weight = 4
+weight = 6
 chapter = true
 +++
 
@@ -135,6 +135,12 @@ Be sure to remove \<distributionManagement\> section from your POM so they inher
 </parent>
 ```
 
+### Update Release Notes
+
+```
+https://github.com/apache/incubator-shardingsphere/blob/dev/RELEASE-NOTES.md
+```
+
 ### Create Release Branch
 
 Suppose ShardingSphere source codes downloaded from github is under `~/incubator-shardingsphere/` directory and the version to be released is `4.0.0-RC`. 
@@ -143,9 +149,8 @@ Create `${RELEASE.VERSION}-release` branch, where all the following operations a
 ```shell
 cd ~/incubator-shardingsphere/
 git pull
-git branch ${RELEASE.VERSION}-release
+git checkout -b ${RELEASE.VERSION}-release
 git push origin ${RELEASE.VERSION}-release
-git checkout ${RELEASE.VERSION}-release
 ```
 
 ### Pre-Release Check

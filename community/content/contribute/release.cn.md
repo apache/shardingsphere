@@ -1,6 +1,6 @@
 +++
 title = "发布指南"
-weight = 4
+weight = 6
 chapter = true
 +++
 
@@ -133,6 +133,12 @@ Apache的父POM会为\<distributionManagement\>设置默认值，如果项目的
 </parent>
 ```
 
+### 更新版本说明
+
+```
+https://github.com/apache/incubator-shardingsphere/blob/dev/RELEASE-NOTES.md
+```
+
 ### 创建发布分支
 
 假设从github下载的ShardingSphere源代码在`~/incubator-shardingsphere/`目录；假设即将发布的版本为`${RELEASE.VERSION}`。
@@ -141,9 +147,8 @@ Apache的父POM会为\<distributionManagement\>设置默认值，如果项目的
 ```shell
 cd ~/incubator-shardingsphere/
 git pull
-git branch ${RELEASE.VERSION}-release
+git checkout -b ${RELEASE.VERSION}-release
 git push origin ${RELEASE.VERSION}-release
-git checkout ${RELEASE.VERSION}-release
 ```
 
 ### 发布预校验
