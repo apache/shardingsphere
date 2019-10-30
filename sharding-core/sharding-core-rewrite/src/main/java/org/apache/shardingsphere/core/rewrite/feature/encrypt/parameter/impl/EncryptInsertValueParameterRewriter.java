@@ -35,6 +35,7 @@ import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -58,10 +59,12 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         if (!encryptTable.isPresent()) {
             return;
         }
-        for (String each : ((InsertSQLStatementContext) sqlStatementContext).getColumnNames()) {
-            Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(tableName, each);
+        Iterator<String> descendingColumnNames = ((InsertSQLStatementContext) sqlStatementContext).getDescendingColumnNames();
+        while (descendingColumnNames.hasNext()) {
+            String columnName = descendingColumnNames.next();
+            Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor(tableName, columnName);
             if (shardingEncryptor.isPresent()) {
-                encryptInsertValues((GroupedParameterBuilder) parameterBuilder, (InsertSQLStatementContext) sqlStatementContext, shardingEncryptor.get(), tableName, each);
+                encryptInsertValues((GroupedParameterBuilder) parameterBuilder, (InsertSQLStatementContext) sqlStatementContext, shardingEncryptor.get(), tableName, columnName);
             }
         }
     }
@@ -73,9 +76,8 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         for (List<Object> each : sqlStatementContext.getGroupedParameters()) {
             if (!each.isEmpty()) {
                 StandardParameterBuilder standardParameterBuilder = parameterBuilder.getParameterBuilders().get(count);
-                int parameterOffset = standardParameterBuilder.getAddedIndexAndParameters().isEmpty() ? each.size() : standardParameterBuilder.getAddedIndexAndParameters().keySet().iterator().next();
-                encryptInsertValue(shardingEncryptor, tableName, columnIndex, 
-                        parameterOffset, sqlStatementContext.getInsertValueContexts().get(count).getValue(columnIndex), standardParameterBuilder, encryptLogicColumnName);
+                encryptInsertValue(
+                        shardingEncryptor, tableName, columnIndex, sqlStatementContext.getInsertValueContexts().get(count).getValue(columnIndex), standardParameterBuilder, encryptLogicColumnName);
             }
             count++;
         }
@@ -92,7 +94,7 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         return columnNames.indexOf(encryptLogicColumnName);
     } 
     
-    private void encryptInsertValue(final ShardingEncryptor shardingEncryptor, final String tableName, final int columnIndex, final int parameterOffset,
+    private void encryptInsertValue(final ShardingEncryptor shardingEncryptor, final String tableName, final int columnIndex, 
                                     final Object originalValue, final StandardParameterBuilder parameterBuilder, final String encryptLogicColumnName) {
         // FIXME: can process all part of insert value is ? or literal, can not process mix ? and literal
         // For example: values (?, ?), (1, 1) can process
@@ -108,10 +110,10 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
             addedParameters.add(originalValue);
         }
         if (!addedParameters.isEmpty()) {
-            if (!parameterBuilder.getAddedIndexAndParameters().containsKey(parameterOffset)) {
-                parameterBuilder.getAddedIndexAndParameters().put(parameterOffset, new LinkedList<>());
+            if (!parameterBuilder.getAddedIndexAndParameters().containsKey(columnIndex + 1)) {
+                parameterBuilder.getAddedIndexAndParameters().put(columnIndex + 1, new LinkedList<>());
             }
-            parameterBuilder.getAddedIndexAndParameters().get(parameterOffset).addAll(addedParameters);
+            parameterBuilder.getAddedIndexAndParameters().get(columnIndex + 1).addAll(addedParameters);
         }
     }
 }

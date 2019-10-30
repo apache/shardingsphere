@@ -23,19 +23,19 @@ import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext
 import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertColumnsToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.UseDefaultInsertColumnsToken;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Generated key for use default columns token generator.
+ * Generated key for use default insert columns token generator.
  *
  * @author panjuan
  * @author zhangliang
  */
-public final class GeneratedKeyForUseDefaultColumnsTokenGenerator extends BaseGeneratedKeyTokenGenerator {
+public final class GeneratedKeyForUseDefaultInsertColumnsTokenGenerator extends BaseGeneratedKeyTokenGenerator {
     
     @Override
     protected boolean isGenerateSQLToken(final InsertStatement insertStatement) {
@@ -43,10 +43,10 @@ public final class GeneratedKeyForUseDefaultColumnsTokenGenerator extends BaseGe
     }
     
     @Override
-    protected InsertColumnsToken generateSQLToken(final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
+    protected UseDefaultInsertColumnsToken generateSQLToken(final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         Preconditions.checkState(insertColumnsSegment.isPresent());
-        return new InsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames((InsertSQLStatementContext) sqlStatementContext, generatedKey));
+        return new UseDefaultInsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames((InsertSQLStatementContext) sqlStatementContext, generatedKey));
     }
     
     private List<String> getColumnNames(final InsertSQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {

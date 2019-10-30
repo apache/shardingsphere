@@ -27,9 +27,9 @@ import org.apache.shardingsphere.core.parse.sql.statement.generic.WhereSegmentAv
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.QueryWithCipherColumnAware;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptColumnNameToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.TableMetasAware;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 
@@ -57,17 +57,17 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     }
     
     @Override
-    public Collection<EncryptColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+    public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Preconditions.checkState(((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().isPresent());
-        Collection<EncryptColumnNameToken> result = new LinkedList<>();
+        Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (AndPredicate each : ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().get().getAndPredicates()) {
-            result.addAll(sss(sqlStatementContext, each));
+            result.addAll(generateSQLTokens(sqlStatementContext, each));
         }
         return result;
     }
     
-    private Collection<EncryptColumnNameToken> sss(final SQLStatementContext sqlStatementContext, final AndPredicate andPredicate) {
-        Collection<EncryptColumnNameToken> result = new LinkedList<>();
+    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final AndPredicate andPredicate) {
+        Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (PredicateSegment each : andPredicate.getPredicates()) {
             Optional<EncryptTable> encryptTable = findEncryptTable(sqlStatementContext, each);
             if (!encryptTable.isPresent() || !encryptTable.get().findShardingEncryptor(each.getColumn().getName()).isPresent()) {
@@ -78,13 +78,13 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
             if (!queryWithCipherColumn) { 
                 Optional<String> plainColumn = encryptTable.get().findPlainColumn(each.getColumn().getName());
                 if (plainColumn.isPresent()) {
-                    result.add(new EncryptColumnNameToken(startIndex, stopIndex, plainColumn.get()));
+                    result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, plainColumn.get()));
                     continue;
                 }
             }
             Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(each.getColumn().getName());
-            EncryptColumnNameToken encryptColumnNameToken = assistedQueryColumn.isPresent() ? new EncryptColumnNameToken(startIndex, stopIndex, assistedQueryColumn.get())
-                    : new EncryptColumnNameToken(startIndex, stopIndex, encryptTable.get().getCipherColumn(each.getColumn().getName()));
+            SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.isPresent() ? new SubstitutableColumnNameToken(startIndex, stopIndex, assistedQueryColumn.get())
+                    : new SubstitutableColumnNameToken(startIndex, stopIndex, encryptTable.get().getCipherColumn(each.getColumn().getName()));
             result.add(encryptColumnNameToken);
         }
         return result;
