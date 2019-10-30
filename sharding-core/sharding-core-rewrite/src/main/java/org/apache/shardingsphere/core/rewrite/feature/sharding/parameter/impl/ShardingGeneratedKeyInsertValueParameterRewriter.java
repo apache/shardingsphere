@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 import lombok.Setter;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.SQLRouteResultAware;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.aware.SQLRouteResultAware;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;

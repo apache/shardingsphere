@@ -484,4 +484,8 @@
     <dql-test-case sql-case-id="select_with_interval_function">
         <assertion parameters="12:int, 1000:int" expected-data-file="select_with_interval_function.xml" />
     </dql-test-case>
+
+    <dql-test-case sql-case-id="select_for_update">
+        <assertion parameters="10:int" expected-data-file="select_for_update.xml" />
+    </dql-test-case>
 </integrate-test-cases>

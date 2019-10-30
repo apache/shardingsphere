@@ -61,7 +61,7 @@
         <groovy.version>2.4.5</groovy.version>
         <snakeyaml.version>1.16</snakeyaml.version>
         
-        <netty.version>4.1.16.Final</netty.version>
+        <netty.version>4.1.42.Final</netty.version>
         <commons-codec.version>1.10</commons-codec.version>
         <commons-collections4.version>4.2</commons-collections4.version>
         
@@ -508,6 +508,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>${maven-resources-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

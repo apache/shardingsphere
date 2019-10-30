@@ -25,8 +25,8 @@ import org.apache.shardingsphere.core.rewrite.feature.encrypt.EncryptConditionEn
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.EncryptRuleAware;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.QueryWithCipherColumnAware;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.aware.EncryptRuleAware;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.TableMetasAware;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 

@@ -190,7 +190,8 @@ public final class ProjectionsContextTest {
     
     private TableMetas createTableMetas() {
         Map<String, TableMetaData> tables = new HashMap<>(1, 1);
-        tables.put("table", new TableMetaData(Arrays.asList(new ColumnMetaData("id", "number", true), new ColumnMetaData("name", "varchar", false)), Collections.<String>emptyList()));
+        tables.put("table", new TableMetaData(Arrays.asList(new ColumnMetaData("id", "number", true, true, true), 
+                new ColumnMetaData("name", "varchar", false, false, false)), Collections.<String>emptyList()));
         return new TableMetas(tables);
     }
     
