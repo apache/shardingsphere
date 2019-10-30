@@ -19,16 +19,14 @@ package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.i
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import lombok.Setter;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.EncryptRuleAware;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertColumnsToken;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertColumnsToken;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 
 import java.util.Collection;
@@ -41,22 +39,18 @@ import java.util.List;
  * @author panjuan
  * @author zhangliang
  */
-@Setter
-public final class AssistQueryAndPlainInsertColumnsTokenGenerator implements CollectionSQLTokenGenerator, EncryptRuleAware {
-    
-    private EncryptRule encryptRule;
+public final class AssistQueryAndPlainInsertColumnsTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator {
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+    protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof InsertSQLStatementContext && sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class).isPresent()
-                && !((InsertStatement) sqlStatementContext.getSqlStatement()).useDefaultColumns()
-                && encryptRule.findEncryptTable(sqlStatementContext.getTablesContext().getSingleTableName()).isPresent();
+                && !((InsertStatement) sqlStatementContext.getSqlStatement()).useDefaultColumns();
     }
     
     @Override
     public Collection<InsertColumnsToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<InsertColumnsToken> result = new LinkedList<>();
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(sqlStatementContext.getTablesContext().getSingleTableName());
+        Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(sqlStatementContext.getTablesContext().getSingleTableName());
         Preconditions.checkState(encryptTable.isPresent());
         for (ColumnSegment each : ((InsertStatement) sqlStatementContext.getSqlStatement()).getColumns()) {
             List<String> columns = getColumns(encryptTable.get(), each);

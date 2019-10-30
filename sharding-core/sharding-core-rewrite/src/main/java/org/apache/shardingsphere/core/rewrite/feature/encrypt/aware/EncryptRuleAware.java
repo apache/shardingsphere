@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator;
+package org.apache.shardingsphere.core.rewrite.feature.encrypt.aware;
+
+import org.apache.shardingsphere.core.rule.EncryptRule;
 
 /**
- * Query with cipher column aware.
+ * Encrypt rule aware.
  *
  * @author zhangliang
  */
-public interface QueryWithCipherColumnAware {
+public interface EncryptRuleAware {
     
     /**
-     * Set is query with cipher column or not.
+     * Set encrypt rule.
      * 
-     * @param queryWithCipherColumn is query with cipher column or not
+     * @param encryptRule encrypt rule
      */
-    void setQueryWithCipherColumn(boolean queryWithCipherColumn);
+    void setEncryptRule(EncryptRule encryptRule);
 }
