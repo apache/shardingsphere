@@ -24,8 +24,6 @@ import org.apache.shardingsphere.core.rewrite.feature.encrypt.aware.EncryptRuleA
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 
-import java.util.List;
-
 /**
  * Parameter rewriter for encrypt.
  *
@@ -38,11 +36,11 @@ public abstract class EncryptParameterRewriter implements ParameterRewriter, Enc
     private EncryptRule encryptRule;
     
     @Override
-    public final boolean isNeedRewrite(final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        return isNeedRewriteForEncrypt(sqlStatementContext, parameters) && isNeedEncrypt(sqlStatementContext);
+    public final boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
+        return isNeedRewriteForEncrypt(sqlStatementContext) && isNeedEncrypt(sqlStatementContext);
     }
     
-    protected abstract boolean isNeedRewriteForEncrypt(SQLStatementContext sqlStatementContext, List<Object> parameters);
+    protected abstract boolean isNeedRewriteForEncrypt(SQLStatementContext sqlStatementContext);
     
     private boolean isNeedEncrypt(final SQLStatementContext sqlStatementContext) {
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {

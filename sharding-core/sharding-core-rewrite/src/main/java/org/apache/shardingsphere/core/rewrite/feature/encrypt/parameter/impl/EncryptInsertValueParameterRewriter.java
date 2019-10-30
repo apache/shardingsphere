@@ -43,7 +43,7 @@ import java.util.List;
 public final class EncryptInsertValueParameterRewriter extends EncryptParameterRewriter {
     
     @Override
-    protected boolean isNeedRewriteForEncrypt(final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
+    protected boolean isNeedRewriteForEncrypt(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof InsertSQLStatementContext && !((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent();
     }
     

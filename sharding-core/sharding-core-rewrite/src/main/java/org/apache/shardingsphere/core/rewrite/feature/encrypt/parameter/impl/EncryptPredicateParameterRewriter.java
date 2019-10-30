@@ -45,7 +45,7 @@ public final class EncryptPredicateParameterRewriter extends EncryptParameterRew
     private boolean queryWithCipherColumn;
     
     @Override
-    protected boolean isNeedRewriteForEncrypt(final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
+    protected boolean isNeedRewriteForEncrypt(final SQLStatementContext sqlStatementContext) {
         return true;
     }
     

@@ -42,7 +42,7 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriter implements P
     private SQLRouteResult sqlRouteResult;
     
     @Override
-    public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
+    public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof InsertSQLStatementContext && sqlRouteResult.getGeneratedKey().isPresent() && sqlRouteResult.getGeneratedKey().get().isGenerated();
     }
     
