@@ -8,7 +8,7 @@ It provides maximum compatibility for applications through Sharding-JDBC (a driv
 ## Proposal
 
 With a large number of end users, Sharding-Sphere has a fairly huge community in China. 
-It is also widely adopted by many [companies and organizations](http://shardingsphere.io/community/en/company/) as a solution to process their massive amounts of data. 
+It is also widely adopted by many [companies and organizations](http://shardingsphere.io/community/en/poweredby/) as a solution to process their massive amounts of data. 
 
 We believe that bringing Sharding-Sphere into Apache Software Foundation could advance development of a stronger and more diverse open source community.
 
@@ -86,7 +86,7 @@ The core developers, including experienced open source developers and team leade
 ### Orphaned products
 
 Three development teams from JingDong, Dangdang and CHINA TELECOM Bestpay will spare no pains to work on Sharding-Sphere in the future with contributors from the growing community. 
-Also, Sharding-Sphere is widely adopted in China by many [companies and organizations](http://shardingsphere.io/community/en/company/). 
+Also, Sharding-Sphere is widely adopted in China by many [companies and organizations](http://shardingsphere.io/community/en/poweredby/). 
 Thus, it is very unlikely that Sharding-Sphere becomes orphaned.
 
 ### Inexperience with Open Source
