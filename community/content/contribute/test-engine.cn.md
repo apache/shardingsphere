@@ -10,64 +10,65 @@ SQL解析单元测试全面覆盖SQL占位符和字面量维度。整合测试�
 
 因此，1条SQL会驱动5种数据库的解析 * 2种参数传递类型 + 5种数据库 * 5种分片策略 * 2种JDBC运行方式 = 60个测试用例，以达到ShardingSphere对于高质量的追求。
 
-# 整合测试
+## 整合测试引擎
 
-## 配置
+### 配置文件
 
-为了能让测试变得更容易上手，integration-test 引擎无需修改任何 Java 代码，只需要配置好以下几种配置文件，就可以运行所有的断言了：
+为了让测试更加容易上手，整合测试引擎无需修改任何`Java`代码，通过配置以下几种类型的配置文件即可运行断言：
+
   - 环境类文件
     - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env.properties
-    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/SQL-TYPE/dataset.xml
-    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/SQL-TYPE/schema.xml
+    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/`SQL-TYPE`/dataset.xml
+    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/`SQL-TYPE`/schema.xml
   - 测试用例类文件
-    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/SQL-TYPE-integrate-test-cases.xml
-    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/dataset/SHARDING-TYPE/*.xml
+    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/`SQL-TYPE`/`SQL-TYPE`-integrate-test-cases.xml
+    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/`SQL-TYPE`/dataset/`SHARDING-TYPE`/*.xml
   - sql-case 文件
-  - /incubator-shardingsphere/sharding-sql-test/src/main/resources/sql/sharding/SQL-TYPE/*.xml
+    - /incubator-shardingsphere/sharding-sql-test/src/main/resources/sql/sharding/`SQL-TYPE`/*.xml
 
-### 环境配置 
+#### 环境配置 
 
-整合测试需要真实的数据库环境，需要根据要测试的数据库创建相关环境并修改相应的配置文件：  
+整合测试需要真实的数据库环境，需要根据要测试的数据库创建相关环境并修改相应的配置文件：
 
-首先修改 `/incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env.properties` 文件，例如 ： 
+首先，修改 `/incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env.properties` 文件，例如：
 
-```.env
-# 测试主键，并发，column index 等的开关
+```properties
+# 测试主键，并发，column index等的开关
 run.additional.cases=false
 
-# 分片策略，可以指定多种策略
+# 分片策略，可指定多种策略
 sharding.rule.type=db,tbl,dbtbl_with_masterslave,masterslave
 
 # 要测试的数据库，可以指定多种数据库(H2,MySQL,Oracle,SQLServer,PostgreSQL)
 databases=MySQL,PostgreSQL
 
-# mysql 的配置
+# MySQL配置
 mysql.host=127.0.0.1
 mysql.port=13306
 mysql.username=root
 mysql.password=root
 
-## postgresql 的配置
+## PostgreSQL配置
 postgresql.host=db.psql
 postgresql.port=5432
 postgresql.username=postgres
 postgresql.password=
 
-## sqlserver 的配置
+## SQLServer配置
 sqlserver.host=db.mssql
 sqlserver.port=1433
 sqlserver.username=sa
 sqlserver.password=Jdbc1234
 
-## oracle 的配置
+## Oracle配置
 oracle.host=db.oracle
 oracle.port=1521
 oracle.username=jdbc
 oracle.password=jdbc
 ```
 
-其次我们要修改 `/incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/SQL-TYPE/dataset.xml` 文件。
-在 dataset.xml 文件中，定义好 metadata（sharding 规则）以及 row（测试数据）就可以完成数据的初始化工作。例如如下配置，定义了 table sharding 规则以及每个表的测试数据：
+其次，修改`/incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/SQL-TYPE/dataset.xml` 文件。
+在`dataset.xml`文件中定义元数据和测试数据。例如：
 
 ```xml
 <dataset>
@@ -89,12 +90,12 @@ oracle.password=jdbc
 </dataset>
 ```
 
-当然了，如果目前的库表结构满足不了你的需求，我们还可以在 schema.xml 中添加修改建表建库语句。
+开发者可以在`schema.xml`中定制化建库与建表语句。
 
-### SQL 配置
+#### SQL配置
 
-前面我们已经设置好了集成测试的相关环境以及初始化的数据，接下来我们要定义一下要测试的 SQL，换句话说，基于上面的环境，我们要断言什么 SQL。
-要断言的 SQL 存放在 `/incubator-shardingsphere/sharding-sql-test/src/main/resources/sql/sharding/SQL-TYPE/*.xml`，就像如下配置：
+设置好集成测试的相关环境以及初始化的数据之后，接下来开发者需要定义待测试的SQL。
+待测试的SQL存放在 `/incubator-shardingsphere/sharding-sql-test/src/main/resources/sql/sharding/SQL-TYPE/*.xml`文件中。例如：
 
 ```xml
 <sql-cases>
@@ -103,13 +104,13 @@ oracle.password=jdbc
   </sql-cases>
 ```
 
-通过这个配置，我们指定了要断言的 SQL 以及数据库类型。这个 SQL 可以在不同模块下的测试用例中共享，这也是为什么我们把 sharding-sql-test 提取为单独的模块
+开发者通过该文件指定待断言的SQL以及该SQL所适配的数据库类型。`sharding-sql-test`提取为单独的模块，以保证每个SQL用例可以在不同模块的测试引擎中共享。 
 
-### 断言配置
+#### 断言配置
 
-通过前面的配置，我们确定了什么 SQL 在什么环境执行的问题，这里我们定义下需要断言的数据。
+通过前面的配置，我们确定了什么SQL在什么环境执行的问题，这里我们定义下需要断言的数据。
 断言的配置，需要两种文件，第一类文件位于 `/incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/SQL-TYPE-integrate-test-cases.xml`
-这个文件类似于一个索引，定义了要执行的 SQL，参数以及期待的数据的位置。这里的 SQL，引用的就是 sql-test 中 SQL 对应的 sql-case-id，例子如下：
+这个文件类似于一个索引，定义了要执行的SQL，参数以及期待的数据的位置。这里的SQL，引用的就是`sharding-sql-test`中SQL对应的`sql-case-id`，例子如下：
 
 ```xml
 <integrate-test-cases>
@@ -120,7 +121,7 @@ oracle.password=jdbc
 </integrate-test-cases>
 ```
 还有一类文件，就是具体的断言数据，也就是上面配置中的 expected-data-file 对应的文件，文件在 `/incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/dataset/SHARDING-TYPE/*.xml`
-这个文件内容根前面提及的 dataset.xml 的内容特别相似，只不过 expected-data-file 文件中不仅定义了断言的数据，还有相应 SQL 执行后的返回值等，例子如下：
+这个文件内容根前面提及的 dataset.xml 的内容特别相似，只不过`expected-data-file`文件中不仅定义了断言的数据，还有相应SQL执行后的返回值等。例如：
 
 ```xml
 <dataset update-count="1">
@@ -135,30 +136,30 @@ oracle.password=jdbc
     <row data-node="db_0.t_order" values="2001, 20, init" />
 </dataset>
 ```
-至此，所有需要配置的数据，都已经配置完毕，接了来我们启动相应的集成测试类即可，全程不需要修改任何 Java 代码，只需要在 xml 中做数据初始化以及断言，极大的降低了ShardingSphere 数据测试的门槛以及复杂度。
 
-## 注意事项
+至此，所有需要配置的数据，都已经配置完毕，接了来我们启动相应的集成测试类即可，全程不需要修改任何`Java`代码，只需要在`xml`中做数据初始化以及断言，极大的降低了ShardingSphere数据测试的门槛以及复杂度。
+
+### 注意事项
 
 1. 如需测试Oracle，请在pom.xml中增加Oracle驱动依赖。
-
 1. 为了保证测试数据的完整性，整合测试中的分库分表采用了10库10表的方式，因此运行测试用例的时间会比较长。
 
-# SQL解析引擎测试
+## SQL解析测试引擎
 
-## 数据准备
+### 数据准备
 
-不同于集成测试，SQL 解析不需要真实的测试环境，只需要我们定义好要测试的 SQL，以及解析后的断言数据即可：
+SQL解析不需要真实的测试环境，开发者只需定义好待测试的SQL，以及解析后的断言数据即可：
 
-### SQL 数据
+#### SQL数据
 
-在集成测试的部分，我们提到过 sql-case-id，这个 id 对应的 SQL，是可以在不同模块共享的，我们只需要在 `/incubator-shardingsphere/sharding-sql-test/src/main/resources/sql/sharding/SQL-TYPE/*.xml` 添加要测试的 SQL 就可以了
+在集成测试的部分，我们提到过`sql-case-id`，其对应的SQL，可以在不同模块共享。开发者只需要在`/incubator-shardingsphere/sharding-sql-test/src/main/resources/sql/sharding/SQL-TYPE/*.xml` 添加待测试的SQL即可。
 
-### 断言解析数据
+#### 断言解析数据
 
 断言的解析数据保存在 `/incubator-shardingsphere/sharding-core/sharding-core-parse/sharding-core-parse-test/src/test/resources/sharding/SQL-TYPE/*.xml`
-在 xml 文件中，我们可以针对表名，token，SQL 条件等去进行断言，例如如下的配置：
+在`xml`文件中，我们可以针对表名，token，SQL条件等去进行断言，例如如下的配置：
 
-```.xml
+```xml
 <parser-result-sets>
 <parser-result sql-case-id="insert_with_multiple_values">
         <tables>
@@ -188,4 +189,5 @@ oracle.password=jdbc
     </parser-result>
 </parser-result-sets>
 ```
-设置好上面两类数据，我们就可以通过 sharding-core-parse-test 下对应的 engine 启动 SQL 解析的测试了。
+
+设置好上面两类数据，开发者就可以通过`sharding-core-parse-test`下对应的engine启动SQL解析的测试了。

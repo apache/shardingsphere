@@ -12,64 +12,66 @@ Integration test can be further divided into two dimensions of strategy and JDBC
 
 Therefore, one SQL can drive 5 kinds of database parsing * 2 kinds of parameter transmission modes + 5 kinds of databases * 5 kinds of Sharding strategies * 2 kinds of JDBC operation modes = 60 test cases, to enable ShardingSphere to achieve the pursuit of high quality.
 
-# Integration Test
+## Integration Test Engine
 
-## Configuration
+### Configuration Files
 
-in order to make test easier to start, integration-test is designed to modify the following configuration files to execute all asserts without any Java code modification
+In order to make test engine easier to setup, integration-test is designed to modify the following configuration files to execute all assertions without any `Java` code modification:
+
   - environment type
     - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env.properties
-    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/SQL-TYPE/dataset.xml
-    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/SQL-TYPE/schema.xml
+    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/`SQL-TYPE`/dataset.xml
+    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/`SQL-TYPE`/schema.xml
   - test case type
-    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/SQL-TYPE-integrate-test-cases.xml
-    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/dataset/SHARDING-TYPE/*.xml
+    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/`SQL-TYPE`/`SQL-TYPE`-integrate-test-cases.xml
+    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/`SQL-TYPE`/dataset/`SHARDING-TYPE`/*.xml
   - sql-case 
-  - /incubator-shardingsphere/sharding-sql-test/src/main/resources/sql/sharding/SQL-TYPE/*.xml
+    - /incubator-shardingsphere/sharding-sql-test/src/main/resources/sql/sharding/`SQL-TYPE`/*.xml
 
-### Environment Configuration
+#### Environment Configuration
 
-Integration test depends on existed database environment, we need to modify the config file for corresponding database to test
+Integration test depends on existed database environment, developer need to setup the configuration file for corresponding database to test: 
 
-first, modify config file `/incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env.properties` ，for example ： 
+Firstly, setup configuration file `/incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env.properties`, for example: 
 
-```.env
+```properties
 # the switch for PK, concurrent, column index testing and so on
 run.additional.cases=false
 
 # sharding rule, could define multiple rules
 sharding.rule.type=db,tbl,dbtbl_with_masterslave,masterslave
 
-# databse type, could define multiple databses(H2,MySQL,Oracle,SQLServer,PostgreSQL)
+# database type, could define multiple databases(H2,MySQL,Oracle,SQLServer,PostgreSQL)
 databases=MySQL,PostgreSQL
 
-# mysql config
+# MySQL configuration
 mysql.host=127.0.0.1
 mysql.port=13306
 mysql.username=root
 mysql.password=root
 
-## postgresql config
+## PostgreSQL configuration
 postgresql.host=db.psql
 postgresql.port=5432
 postgresql.username=postgres
 postgresql.password=
 
-## sqlserver config
+## SQLServer configuration
 sqlserver.host=db.mssql
 sqlserver.port=1433
 sqlserver.username=sa
 sqlserver.password=Jdbc1234
 
-## oracle config
+## Oracle configuration
 oracle.host=db.oracle
 oracle.port=1521
 oracle.username=jdbc
 oracle.password=jdbc
 ```
 
-after that we need to modify config file `/incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/SQL-TYPE/dataset.xml` 。
-in dataset.xml, set up metadata(sharding rule) and row(test data) to start the data initialization. for example, define table sharding rule and test data as following:
+Secondly, setup configuration file `/incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/SQL-TYPE/dataset.xml`. 
+Developer can set up metadata and expected data to start the data initialization in `dataset.xml`. For example: 
+
 ```xml
 <dataset>
     <metadata data-nodes="tbl.t_order_${0..9}">
@@ -90,12 +92,12 @@ in dataset.xml, set up metadata(sharding rule) and row(test data) to start the d
 </dataset>
 ```
 
-you could add more "create table" / "create schema" clause if you want some other test data
+Developer can customize DDL to create databases and tables in `schema.xml`.
 
-### SQL Configuration
+#### SQL Configuration
 
-so far we already set up the environment config and the initialization data, we need to add the SQL we want to test, in another word, we set up the SQL for assert base on that environment
-the sql for assert in define in `/incubator-shardingsphere/sharding-sql-test/src/main/resources/sql/sharding/SQL-TYPE/*.xml`，like following configuration :
+After setup environment and initial data, developer need to define SQL test cases.
+the SQL to be asserted in file `/incubator-shardingsphere/sharding-sql-test/src/main/resources/sql/sharding/SQL-TYPE/*.xml`. For example: 
 
 ```xml
 <sql-cases>
@@ -104,13 +106,13 @@ the sql for assert in define in `/incubator-shardingsphere/sharding-sql-test/src
   </sql-cases>
 ```
 
-base on that config, we set up the sql for assert and database type. and these sqls could share in different module, that's why we extract the sharding-sql-test as a stand alone module
+Developer setup the SQL for assertion and database type during on the configuration file. And these SQLs could share in different test engine, that's why we extract the `sharding-sql-test` as a stand alone module.
 
-### Assert Configuration
+#### Assertion Configuration
 
-we have confirmed what kind of sql execute in which environment in upon config, hereby let's define the data for assert
-there are two kinds of config for assert, one is at `/incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/SQL-TYPE-integrate-test-cases.xml`
-this file just like an index, defined the sql, parameters and expected index position for execution . the sql is the value for sql-case-id, example as following : 
+We have confirmed what kind of sql execute in which environment in upon config, hereby let's define the data for assert.
+There are two kinds of config for assert, one is at `/incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/SQL-TYPE-integrate-test-cases.xml`.
+This file just like an index, defined the sql, parameters and expected index position for execution. the SQL is the value for `sql-case-id`. For example: 
 
 ```xml
 <integrate-test-cases>
@@ -120,8 +122,9 @@ this file just like an index, defined the sql, parameters and expected index pos
     </dml-test-case>
 </integrate-test-cases>
 ```
-another kind of config for assert is the data, as known as the corresponding expected-data-file in SQL-TYPE-integrate-test-cases.xml, which is at `/incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/dataset/SHARDING-TYPE/*.xml`  
-this file is very like the dataset.xml we mentioned before, and the difference is that expected-data-file contains some other assert data, such as the return value after a sql execution, the examples as following : 
+
+Another kind of config for assert is the data, as known as the corresponding expected-data-file in SQL-TYPE-integrate-test-cases.xml, which is at `/incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/dataset/SHARDING-TYPE/*.xml`.  
+This file is very like the dataset.xml we mentioned before, and the difference is that expected-data-file contains some other assert data, such as the return value after a sql execution. For examples:  
 
 ```xml
 <dataset update-count="1">
@@ -139,27 +142,27 @@ this file is very like the dataset.xml we mentioned before, and the difference i
 so far, all config files are ready, we just need to launch the corresponding test case. we don't need to modify any Java code, just set up some config files.
 this will reduce the difficulty for ShardingSphere testing
 
-## Notice
+### Notice
 
 1. If Oracle needs to be tested, please add Oracle driver dependencies to the pom.xml.
 1. 10 splitting-databases and 10 splitting-tables are used in the integrated test to ensure the test data is full, so it will take a relatively long time to run the test cases.
 
-# SQL Parsing Engine Test
+## SQL Parsing Engine Test
 
-## Prepare Data
+### Prepare Data
 
-not like Integration test, SQL parse test doesn't need a specific database environment, we just need to define the sql we want to parse, and the assert data :
+Not like Integration test, SQL parse test doesn't need a specific database environment, we just need to define the sql we want to parse, and the assert data:
 
-### SQL Data
+#### SQL Data
 
-we mentioned sql-case-id in Integration test，test-case-id could be shared in different module to test, and the file is at `/incubator-shardingsphere/sharding-sql-test/src/main/resources/sql/sharding/SQL-TYPE/*.xml` 
+We mentioned `sql-case-id` in Integration test，test-case-id could be shared in different module to test, and the file is at `/incubator-shardingsphere/sharding-sql-test/src/main/resources/sql/sharding/SQL-TYPE/*.xml` 
 
-### Parser Assert Data
+#### Parser Assert Data
 
-the assert data is at `/incubator-shardingsphere/sharding-core/sharding-core-parse/sharding-core-parse-test/src/test/resources/sharding/SQL-TYPE/*.xml`
-in that xml file, we could assert against the table name, token or sql condition and so on. for example :  
+The assert data is at `/incubator-shardingsphere/sharding-core/sharding-core-parse/sharding-core-parse-test/src/test/resources/sharding/SQL-TYPE/*.xml`
+n that xml file, we could assert against the table name, token or sql condition and so on. For example:
 
-```.xml
+```xml
 <parser-result-sets>
 <parser-result sql-case-id="insert_with_multiple_values">
         <tables>
@@ -189,4 +192,5 @@ in that xml file, we could assert against the table name, token or sql condition
     </parser-result>
 </parser-result-sets>
 ```
-when these configs are ready, we could launch the test engine in sharding-core-parse-test to test SQL parse 
+
+When these configs are ready, we could launch the test engine in sharding-core-parse-test to test SQL parse. 
