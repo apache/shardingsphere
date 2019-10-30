@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.preprocessor.segment.insert.expression.Der
 import org.apache.shardingsphere.core.preprocessor.segment.insert.expression.DerivedSimpleExpressionSegment;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.EncryptRuleAware;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
@@ -37,7 +37,6 @@ import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValue
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValuesToken.InsertValueToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.UseDefaultInsertColumnsToken;
 import org.apache.shardingsphere.core.rule.DataNode;
-import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
@@ -52,16 +51,13 @@ import java.util.List;
  * @author panjuan
  */
 @Setter
-public final class EncryptInsertValuesTokenGenerator implements OptionalSQLTokenGenerator, EncryptRuleAware, PreviousSQLTokensAware {
-    
-    private EncryptRule encryptRule;
+public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLTokenGenerator implements OptionalSQLTokenGenerator, PreviousSQLTokensAware {
     
     private List<SQLToken> previousSQLTokens;
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertSQLStatementContext && !sqlStatementContext.getSqlStatement().findSQLSegments(InsertValuesSegment.class).isEmpty()
-                && encryptRule.findEncryptTable(sqlStatementContext.getTablesContext().getSingleTableName()).isPresent();
+    protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext instanceof InsertSQLStatementContext && !sqlStatementContext.getSqlStatement().findSQLSegments(InsertValuesSegment.class).isEmpty();
     }
     
     @Override
@@ -125,7 +121,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         Iterator<String> descendingColumnNames = sqlStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
-            Optional<ShardingEncryptor> encryptor = encryptRule.findShardingEncryptor(tableName, columnName);
+            Optional<ShardingEncryptor> encryptor = getEncryptRule().findShardingEncryptor(tableName, columnName);
             if (encryptor.isPresent()) {
                 int columnIndex = useDefaultInsertColumnsToken.isPresent()
                         ? ((UseDefaultInsertColumnsToken) useDefaultInsertColumnsToken.get()).getColumns().indexOf(columnName) : sqlStatementContext.getColumnNames().indexOf(columnName);
@@ -139,7 +135,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
     
     private void addPlainColumn(final InsertValueToken insertValueToken, final int columnIndex,
                                 final String tableName, final String columnName, final InsertValueContext insertValueContext, final Object originalValue) {
-        if (encryptRule.findPlainColumn(tableName, columnName).isPresent()) {
+        if (getEncryptRule().findPlainColumn(tableName, columnName).isPresent()) {
             DerivedSimpleExpressionSegment derivedExpressionSegment = insertValueContext.getParameters().isEmpty()
                     ? new DerivedLiteralExpressionSegment(originalValue) : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
             insertValueToken.getValues().add(columnIndex + 1, derivedExpressionSegment);
@@ -148,7 +144,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
     
     private void addAssistedQueryColumn(final InsertValueToken insertValueToken, final ShardingEncryptor encryptor, final int columnIndex, 
                                         final String tableName, final String columnName, final InsertValueContext insertValueContext, final Object originalValue) {
-        if (encryptRule.findAssistedQueryColumn(tableName, columnName).isPresent()) {
+        if (getEncryptRule().findAssistedQueryColumn(tableName, columnName).isPresent()) {
             DerivedSimpleExpressionSegment derivedExpressionSegment = insertValueContext.getParameters().isEmpty()
                     ? new DerivedLiteralExpressionSegment(((ShardingQueryAssistedEncryptor) encryptor).queryAssistedEncrypt(null == originalValue ? null : originalValue.toString()))
                     : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));

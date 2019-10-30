@@ -24,12 +24,11 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumns
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.EncryptRuleAware;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.UseDefaultInsertColumnsToken;
-import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 
 import java.util.Iterator;
@@ -43,16 +42,13 @@ import java.util.List;
  * @author zhangliang
  */
 @Setter
-public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements OptionalSQLTokenGenerator, EncryptRuleAware, PreviousSQLTokensAware {
-    
-    private EncryptRule encryptRule;
+public final class EncryptForUseDefaultInsertColumnsTokenGenerator extends BaseEncryptSQLTokenGenerator implements OptionalSQLTokenGenerator, PreviousSQLTokensAware {
     
     private List<SQLToken> previousSQLTokens;
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertSQLStatementContext && ((InsertStatement) sqlStatementContext.getSqlStatement()).useDefaultColumns()
-                && encryptRule.findEncryptTable(sqlStatementContext.getTablesContext().getSingleTableName()).isPresent();
+    protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext instanceof InsertSQLStatementContext && ((InsertStatement) sqlStatementContext.getSqlStatement()).useDefaultColumns();
     }
     
     @Override
@@ -76,7 +72,7 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements Op
     }
     
     private void processPreviousSQLToken(final UseDefaultInsertColumnsToken previousSQLToken, final InsertSQLStatementContext sqlStatementContext, final String tableName) {
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
         Preconditions.checkState(encryptTable.isPresent());
         List<String> columnNames = getColumnNames(sqlStatementContext, encryptTable.get(), previousSQLToken.getColumns());
         previousSQLToken.getColumns().clear();
@@ -86,7 +82,7 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements Op
     private UseDefaultInsertColumnsToken generateNewSQLToken(final InsertSQLStatementContext sqlStatementContext, final String tableName) {
         Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
         Preconditions.checkState(insertColumnsSegment.isPresent());
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
         Preconditions.checkState(encryptTable.isPresent());
         return new UseDefaultInsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames(sqlStatementContext, encryptTable.get(), sqlStatementContext.getColumnNames()));
     }
