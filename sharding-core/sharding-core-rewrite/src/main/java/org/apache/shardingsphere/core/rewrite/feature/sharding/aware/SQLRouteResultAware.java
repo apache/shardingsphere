@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.aware;
 
-import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 
 /**
- * Encrypt rule aware.
+ * SQL route result aware.
  *
  * @author zhangliang
  */
-public interface EncryptRuleAware {
+public interface SQLRouteResultAware {
     
     /**
-     * Set encrypt rule.
+     * Set SQL route result.
      * 
-     * @param encryptRule encrypt rule
+     * @param sqlRouteResult SQL route result
      */
-    void setEncryptRule(EncryptRule encryptRule);
+    void setSqlRouteResult(SQLRouteResult sqlRouteResult);
 }

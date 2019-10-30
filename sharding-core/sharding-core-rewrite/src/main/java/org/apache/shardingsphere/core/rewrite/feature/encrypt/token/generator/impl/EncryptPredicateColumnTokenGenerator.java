@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.PredicateS
 import org.apache.shardingsphere.core.parse.sql.statement.generic.WhereSegmentAvailable;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.BaseEncryptSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.QueryWithCipherColumnAware;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.TableMetasAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;

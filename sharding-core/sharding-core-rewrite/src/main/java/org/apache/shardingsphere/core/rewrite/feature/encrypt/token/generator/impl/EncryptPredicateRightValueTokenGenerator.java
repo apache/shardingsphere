@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.EncryptCondition;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.EncryptConditionEngine;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.BaseEncryptSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.QueryWithCipherColumnAware;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptPredicateRightValueToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.ParametersAware;

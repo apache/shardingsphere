@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.feature.encrypt.token;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.EncryptRuleAware;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.QueryWithCipherColumnAware;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.aware.EncryptRuleAware;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.impl.AssistQueryAndPlainInsertColumnsTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.impl.EncryptAssignmentTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.impl.EncryptForUseDefaultInsertColumnsTokenGenerator;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.aware;
 
 import org.apache.shardingsphere.core.rule.ShardingRule;
 

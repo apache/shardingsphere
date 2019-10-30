@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.aware.EncryptRuleAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 

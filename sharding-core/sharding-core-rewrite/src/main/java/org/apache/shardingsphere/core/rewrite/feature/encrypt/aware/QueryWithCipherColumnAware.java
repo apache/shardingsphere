@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator;
-
-import org.apache.shardingsphere.core.route.SQLRouteResult;
+package org.apache.shardingsphere.core.rewrite.feature.encrypt.aware;
 
 /**
- * SQL route result aware.
+ * Query with cipher column aware.
  *
  * @author zhangliang
  */
-public interface SQLRouteResultAware {
+public interface QueryWithCipherColumnAware {
     
     /**
-     * Set SQL route result.
+     * Set is query with cipher column or not.
      * 
-     * @param sqlRouteResult SQL route result
+     * @param queryWithCipherColumn is query with cipher column or not
      */
-    void setSqlRouteResult(SQLRouteResult sqlRouteResult);
+    void setQueryWithCipherColumn(boolean queryWithCipherColumn);
 }
