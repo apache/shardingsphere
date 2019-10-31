@@ -43,6 +43,8 @@ public final class AuthenticationFilter implements Filter {
     
     private static final String LOGIN_URI = "/api/login";
     
+    private final Gson gson = new Gson();
+    
     @Setter
     private UserAuthenticationService userAuthenticationService;
     
@@ -72,14 +74,14 @@ public final class AuthenticationFilter implements Filter {
     
     private void handleLogin(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse) {
         try {
-            UserAccount user = new Gson().fromJson(httpRequest.getReader(), UserAccount.class);
+            UserAccount user = gson.fromJson(httpRequest.getReader(), UserAccount.class);
             if (userAuthenticationService.checkUser(user)) {
                 httpResponse.setContentType("application/json");
                 httpResponse.setCharacterEncoding("UTF-8");
                 Map<String, Object> result = new HashMap<>();
                 result.put("username", userAuthenticationService.getUsername());
                 result.put("accessToken", userAuthenticationService.getToken());
-                httpResponse.getWriter().write(new Gson().toJson(ResponseResultUtil.build(result)));
+                httpResponse.getWriter().write(gson.toJson(ResponseResultUtil.build(result)));
             } else {
                 respondWithUnauthorized(httpResponse);
             }
