@@ -51,6 +51,12 @@
                 <exclude>**/cobertura.ser</exclude>
                 <exclude>*.gpg</exclude>
                 
+                <!-- node ignore -->
+                <exclude>**/dist/**</exclude>
+                <exclude>**/node/**</exclude>
+                <exclude>**/node_modules/**</exclude>
+                <exclude>**/etc/**</exclude>
+                
                 <!-- eclipse ignore -->
                 <exclude>**/.settings/**</exclude>
                 <exclude>**/.project</exclude>
