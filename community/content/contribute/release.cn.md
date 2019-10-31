@@ -551,7 +551,14 @@ git push
 git push --delete origin ${RELEASE.VERSION}-release
 ```
 
-4. 发送邮件到`general@incubator.apache.org`和`dev@shardingsphere.apache.org`通知完成版本发布。
+4. 更新下载页面
+
+```
+https://shardingsphere.apache.org/document/current/en/downloads/
+https://shardingsphere.apache.org/document/current/cn/downloads/
+```
+
+5. 发送邮件到`general@incubator.apache.org`和`dev@shardingsphere.apache.org`通知完成版本发布。
 
 通知邮件模板：
 
