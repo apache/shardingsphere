@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.route.router.masterslave;
 
 import com.google.common.collect.Lists;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
@@ -60,9 +61,15 @@ public class ShardingMasterSlaveRouterTest {
     
     @Mock
     private InsertStatement insertStatement;
-    
+
     @Mock
-    private SelectStatement selectStatement;
+    private SelectStatement selectStatementWithTable;
+
+    @Mock
+    private SelectStatement selectStatementWithoutTable;
+
+    @Mock
+    private TableSegment tableSegment;
     
     private ShardingMasterSlaveRouter shardingMasterSlaveRouter;
     
@@ -73,6 +80,7 @@ public class ShardingMasterSlaveRouterTest {
         when(masterSlaveRule.getMasterDataSourceName()).thenReturn(MASTER_DATASOURCE);
         when(masterSlaveRule.getSlaveDataSourceNames()).thenReturn(Lists.newArrayList(SLAVE_DATASOURCE));
         when(masterSlaveRule.getLoadBalanceAlgorithm()).thenReturn(new RandomMasterSlaveLoadBalanceAlgorithm());
+        when(selectStatementWithTable.getTables()).thenReturn(Lists.newArrayList(tableSegment));
     }
     
     @After
@@ -88,10 +96,19 @@ public class ShardingMasterSlaveRouterTest {
         assertThat(routedDataSourceNames.next(), is(NON_MASTER_SLAVE_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(MASTER_DATASOURCE));
     }
+
+    @Test
+    public void assertRouteToMasterWithoutTable() {
+        SQLRouteResult sqlRouteResult = mockSQLRouteResult(selectStatementWithoutTable);
+        SQLRouteResult actual = shardingMasterSlaveRouter.route(sqlRouteResult);
+        Iterator<String> routedDataSourceNames = actual.getRoutingResult().getDataSourceNames().iterator();
+        assertThat(routedDataSourceNames.next(), is(NON_MASTER_SLAVE_DATASOURCE_NAME));
+        assertThat(routedDataSourceNames.next(), is(MASTER_DATASOURCE));
+    }
     
     @Test
     public void assertRouteToSlave() {
-        SQLRouteResult sqlRouteResult = mockSQLRouteResult(selectStatement);
+        SQLRouteResult sqlRouteResult = mockSQLRouteResult(selectStatementWithTable);
         SQLRouteResult actual = shardingMasterSlaveRouter.route(sqlRouteResult);
         Iterator<String> routedDataSourceNames = actual.getRoutingResult().getDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_MASTER_SLAVE_DATASOURCE_NAME));

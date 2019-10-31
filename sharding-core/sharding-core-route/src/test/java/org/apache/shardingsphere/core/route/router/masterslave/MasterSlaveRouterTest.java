@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 import java.util.Collection;
 
 import org.apache.shardingsphere.core.parse.SQLParseEngine;
+import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
@@ -40,10 +41,12 @@ import com.google.common.collect.Lists;
 @RunWith(MockitoJUnitRunner.class)
 public class MasterSlaveRouterTest {
     
-    private static final String QUERY_SQL = "select * from table";
+    private static final String QUERY_SQL_WITH_TABLE = "select * from table";
+
+    private static final String QUERY_SQL_WITHOUT_TABLE = "select now()";
     
     private static final String INSERT_SQL = "insert into table (id) values (1)";
-    
+
     private static final String MASTER_DATASOURCE = "master";
     
     private static final String SLAVE_DATASOURCE = "query";
@@ -53,23 +56,31 @@ public class MasterSlaveRouterTest {
     
     @Mock
     private MasterSlaveRule masterSlaveRule;
-    
+
     @Mock
-    private SelectStatement selectStatement;
+    private SelectStatement selectStatementWithTable;
+
+    @Mock
+    private SelectStatement selectStatementWithoutTable;
     
     @Mock
     private InsertStatement insertStatement;
+
+    @Mock
+    private TableSegment tableSegment;
     
     private MasterSlaveRouter masterSlaveRouter;
     
     @Before
     public void setUp() throws Exception {
         masterSlaveRouter = new MasterSlaveRouter(masterSlaveRule, sqlParseEngine, true);
-        when(sqlParseEngine.parse(QUERY_SQL, false)).thenReturn(selectStatement);
+        when(sqlParseEngine.parse(QUERY_SQL_WITH_TABLE, false)).thenReturn(selectStatementWithTable);
+        when(sqlParseEngine.parse(QUERY_SQL_WITHOUT_TABLE, false)).thenReturn(selectStatementWithoutTable);
         when(sqlParseEngine.parse(INSERT_SQL, false)).thenReturn(insertStatement);
         when(masterSlaveRule.getMasterDataSourceName()).thenReturn(MASTER_DATASOURCE);
         when(masterSlaveRule.getLoadBalanceAlgorithm()).thenReturn(new RandomMasterSlaveLoadBalanceAlgorithm());
         when(masterSlaveRule.getSlaveDataSourceNames()).thenReturn(Lists.newArrayList(SLAVE_DATASOURCE));
+        when(selectStatementWithTable.getTables()).thenReturn(Lists.newArrayList(tableSegment));
     }
     
     @After
@@ -86,8 +97,15 @@ public class MasterSlaveRouterTest {
     
     @Test
     public void assertRouteToSlave() {
-        Collection<String> actual = masterSlaveRouter.route(QUERY_SQL, false);
+        Collection<String> actual = masterSlaveRouter.route(QUERY_SQL_WITH_TABLE, false);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(SLAVE_DATASOURCE));
+    }
+
+    @Test
+    public void assertRouteToMasterWithoutTable() {
+        Collection<String> actual = masterSlaveRouter.route(QUERY_SQL_WITHOUT_TABLE, false);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is(MASTER_DATASOURCE));
     }
 }

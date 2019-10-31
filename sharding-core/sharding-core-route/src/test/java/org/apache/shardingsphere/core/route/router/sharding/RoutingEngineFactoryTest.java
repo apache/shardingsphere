@@ -39,6 +39,7 @@ import org.apache.shardingsphere.core.route.type.complex.ComplexRoutingEngine;
 import org.apache.shardingsphere.core.route.type.defaultdb.DefaultDatabaseRoutingEngine;
 import org.apache.shardingsphere.core.route.type.standard.StandardRoutingEngine;
 import org.apache.shardingsphere.core.route.type.unicast.UnicastRoutingEngine;
+import org.apache.shardingsphere.core.rule.ShardingDataSourceNames;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +57,9 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RoutingEngineFactoryTest {
-    
+
+    private static final String DEFAULT_DATASOURCE_NAME = "dataSource";
+
     @Mock
     private ShardingRule shardingRule;
     
@@ -71,6 +74,9 @@ public class RoutingEngineFactoryTest {
     
     @Mock
     private ShardingConditions shardingConditions;
+
+    @Mock
+    private ShardingDataSourceNames shardingDataSourceNames;
     
     private Collection<String> tableNames;
     
@@ -79,6 +85,7 @@ public class RoutingEngineFactoryTest {
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         tableNames = new ArrayList<>();
         when(tablesContext.getTableNames()).thenReturn(tableNames);
+        when(shardingRule.getShardingDataSourceNames()).thenReturn(shardingDataSourceNames);
     }
     
     @Test
@@ -153,6 +160,15 @@ public class RoutingEngineFactoryTest {
     public void assertNewInstanceForDefaultDataSource() {
         when(shardingRule.isAllInDefaultDataSource(tableNames)).thenReturn(true);
         SQLStatement sqlStatement = mock(SQLStatement.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        RoutingEngine actual = RoutingEngineFactory.newInstance(shardingRule, shardingSphereMetaData, sqlStatementContext, shardingConditions);
+        assertThat(actual, instanceOf(DefaultDatabaseRoutingEngine.class));
+    }
+
+    @Test
+    public void assertNewInstanceForSelectDefaultDataSource() {
+        when(shardingDataSourceNames.getDefaultDataSourceName()).thenReturn(DEFAULT_DATASOURCE_NAME);
+        SQLStatement sqlStatement = mock(SelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         RoutingEngine actual = RoutingEngineFactory.newInstance(shardingRule, shardingSphereMetaData, sqlStatementContext, shardingConditions);
         assertThat(actual, instanceOf(DefaultDatabaseRoutingEngine.class));
