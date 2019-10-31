@@ -56,7 +56,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RoutingEngineFactoryTest {
-    
+
     @Mock
     private ShardingRule shardingRule;
     
@@ -71,7 +71,7 @@ public class RoutingEngineFactoryTest {
     
     @Mock
     private ShardingConditions shardingConditions;
-    
+
     private Collection<String> tableNames;
     
     @Before
@@ -157,7 +157,16 @@ public class RoutingEngineFactoryTest {
         RoutingEngine actual = RoutingEngineFactory.newInstance(shardingRule, shardingSphereMetaData, sqlStatementContext, shardingConditions);
         assertThat(actual, instanceOf(DefaultDatabaseRoutingEngine.class));
     }
-    
+
+    @Test
+    public void assertNewInstanceForSelectDefaultDataSource() {
+        when(shardingRule.hasDefaultDataSourceName()).thenReturn(true);
+        SQLStatement sqlStatement = mock(SelectStatement.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        RoutingEngine actual = RoutingEngineFactory.newInstance(shardingRule, shardingSphereMetaData, sqlStatementContext, shardingConditions);
+        assertThat(actual, instanceOf(DefaultDatabaseRoutingEngine.class));
+    }
+
     @Test
     public void assertNewInstanceForInsertBroadcastTable() {
         when(shardingRule.isAllBroadcastTables(tableNames)).thenReturn(true);

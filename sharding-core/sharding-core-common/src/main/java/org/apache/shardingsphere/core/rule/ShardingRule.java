@@ -405,7 +405,17 @@ public class ShardingRule implements BaseRule {
         }
         throw new ShardingConfigurationException("Cannot find actual data node for data source name: '%s' and logic table name: '%s'", dataSourceName, logicTableName);
     }
-    
+
+    /**
+     * Judge if defaultDataSourceName exists.
+     *
+     * @return if defaultDataSourceName exists
+     */
+    public boolean hasDefaultDataSourceName() {
+        String defaultDataSourceName = shardingDataSourceNames.getDefaultDataSourceName();
+        return !Strings.isNullOrEmpty(defaultDataSourceName);
+    }
+
     /**
      * Find actual default data source name.
      *

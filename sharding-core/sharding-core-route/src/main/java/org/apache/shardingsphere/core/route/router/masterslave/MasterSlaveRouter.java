@@ -70,10 +70,15 @@ public final class MasterSlaveRouter {
     }
     
     private boolean isMasterRoute(final SQLStatement sqlStatement) {
-        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || MasterVisitedManager.isMasterVisited() || HintManager.isMasterRouteOnly();
+        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || MasterVisitedManager.isMasterVisited()
+                || HintManager.isMasterRouteOnly() || isSelectWithoutTable(sqlStatement);
     }
 
     private boolean containsLockSegment(final SQLStatement sqlStatement) {
         return sqlStatement instanceof SelectStatement && ((SelectStatement) sqlStatement).getLock().isPresent();
+    }
+
+    private boolean isSelectWithoutTable(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof SelectStatement && ((SelectStatement) sqlStatement).getTables().isEmpty();
     }
 }
