@@ -60,7 +60,7 @@ public final class ConfigurationYamlConverter {
     @SuppressWarnings("unchecked")
     public static Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String data) {
         Map<String, YamlDataSourceConfiguration> result = (Map) YamlEngine.unmarshal(data);
-        Preconditions.checkState(StringUtils.isEmpty(result), "No available data sources to load for orchestration.");
+        Preconditions.checkState(!StringUtils.isEmpty(result), "No available data sources to load for orchestration.");
         return Maps.transformValues(result, new Function<YamlDataSourceConfiguration, DataSourceConfiguration>() {
 
             @Override
