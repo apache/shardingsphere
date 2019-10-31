@@ -41,6 +41,10 @@ public final class UserAuthenticationService {
     @Getter
     @Setter
     private String password;
+
+    final Base64 base64 = new Base64();
+
+    private Gson gson = new Gson();
     
     /**
      * Check user.
@@ -61,6 +65,6 @@ public final class UserAuthenticationService {
      * @return authentication token
      */
     public String getToken() {
-        return new Base64().encodeToString(new Gson().toJson(this).getBytes());
+        return base64.encodeToString(gson.toJson(this).getBytes());
     }
 }
