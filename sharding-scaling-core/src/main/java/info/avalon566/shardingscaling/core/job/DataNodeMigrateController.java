@@ -49,13 +49,10 @@ public class DataNodeMigrateController {
 
     private final SyncConfiguration syncConfiguration;
 
-    private final Reporter reporter;
-
     private LogPosition currentLogPosition;
 
-    public DataNodeMigrateController(final SyncConfiguration syncConfiguration, final Reporter reporter) {
+    public DataNodeMigrateController(final SyncConfiguration syncConfiguration) {
         this.syncConfiguration = syncConfiguration;
-        this.reporter = reporter;
     }
 
     /**
@@ -77,7 +74,7 @@ public class DataNodeMigrateController {
     /**
      * Get synchronize progress.
      */
-    public void getProgress() {
+    public MigrateProgress getProgress() {
         throw new UnsupportedOperationException();
     }
 

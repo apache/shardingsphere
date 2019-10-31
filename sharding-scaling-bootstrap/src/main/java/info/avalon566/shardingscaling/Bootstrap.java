@@ -17,7 +17,7 @@
 
 package info.avalon566.shardingscaling;
 
-import info.avalon566.shardingscaling.core.job.ScalingJob;
+import info.avalon566.shardingscaling.core.job.ScalingController;
 import info.avalon566.shardingscaling.config.RuleConfiguration;
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.config.SyncType;
@@ -71,7 +71,7 @@ public class Bootstrap {
             try {
                 CommandLine commandLine = parseCommand(args);
                 List<SyncConfiguration> syncConfigurations = toSyncConfigurations(commandLine);
-                new ScalingJob(syncConfigurations).run();
+                new ScalingController(syncConfigurations).start();
             } catch (FileNotFoundException | ParseException e) {
                 throw new RuntimeException(e);
             }
