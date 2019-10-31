@@ -30,14 +30,14 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>sharding-core-parse-spi</module>
-        <module>sharding-core-parse-common</module>
-        <module>sharding-core-parse-sql92</module>
-        <module>sharding-core-parse-mysql</module>
-        <module>sharding-core-parse-postgresql</module>
-        <module>sharding-core-parse-oracle</module>
-        <module>sharding-core-parse-sqlserver</module>
-        <module>sharding-core-parse-test</module>
+        <module>sql-parser-spi</module>
+        <module>sql-parser-common</module>
+        <module>sql-parser-sql92</module>
+        <module>sql-parser-mysql</module>
+        <module>sql-parser-postgresql</module>
+        <module>sql-parser-oracle</module>
+        <module>sql-parser-sqlserver</module>
+        <module>sql-parser-test</module>
     </modules>
     
     <dependencies>
