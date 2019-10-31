@@ -38,6 +38,7 @@ import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.swapper.DataSourceConfigurationYamlSwapper;
+import org.springframework.util.StringUtils;
 
 import java.util.Map;
 import java.util.Properties;
@@ -59,7 +60,7 @@ public final class ConfigurationYamlConverter {
     @SuppressWarnings("unchecked")
     public static Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String data) {
         Map<String, YamlDataSourceConfiguration> result = (Map) YamlEngine.unmarshal(data);
-        Preconditions.checkState(null != result && !result.isEmpty(), "No available data sources to load for orchestration.");
+        Preconditions.checkState(StringUtils.isEmpty(result), "No available data sources to load for orchestration.");
         return Maps.transformValues(result, new Function<YamlDataSourceConfiguration, DataSourceConfiguration>() {
 
             @Override
