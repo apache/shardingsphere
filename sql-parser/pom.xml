@@ -16,26 +16,34 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere</artifactId>
         <version>4.0.0-RC3-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-core</artifactId>
+    <artifactId>sql-parser</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     
     <modules>
-        <module>sharding-core-api</module>
-        <module>sharding-core-common</module>
-        <module>sharding-core-preprocessor</module>
-        <module>sharding-core-route</module>
-        <module>database-time-service</module>
-        <module>sharding-core-rewrite</module>
-        <module>sharding-core-execute</module>
-        <module>sharding-core-merge</module>
-        <module>sharding-core-entry</module>
+        <module>sharding-core-parse-spi</module>
+        <module>sharding-core-parse-common</module>
+        <module>sharding-core-parse-sql92</module>
+        <module>sharding-core-parse-mysql</module>
+        <module>sharding-core-parse-postgresql</module>
+        <module>sharding-core-parse-oracle</module>
+        <module>sharding-core-parse-sqlserver</module>
+        <module>sharding-core-parse-test</module>
     </modules>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+        </dependency>
+    </dependencies>
 </project>

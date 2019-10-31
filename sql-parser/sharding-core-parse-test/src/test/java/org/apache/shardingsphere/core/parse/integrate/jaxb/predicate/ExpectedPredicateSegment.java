@@ -52,6 +52,7 @@ public final class ExpectedPredicateSegment extends ExpectedBaseSegment {
      * @param <T> type of expected predicate right value
      * @return right value
      */
+    @SuppressWarnings("unchecked")
     public <T extends ExpectedPredicateRightValue> T findExpectedRightValue(final Class<T> expectedPredicateRightValue) {
         if (expectedPredicateRightValue.isAssignableFrom(ExpectedPredicateCompareRightValue.class)) {
             return (T) compareRightValue;
