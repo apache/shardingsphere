@@ -42,7 +42,7 @@ public final class UserAuthenticationService {
     @Setter
     private String password;
 
-    final Base64 base64 = new Base64();
+    private Base64 base64 = new Base64();
 
     private Gson gson = new Gson();
     
