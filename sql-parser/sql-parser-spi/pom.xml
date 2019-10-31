@@ -23,7 +23,7 @@
         <artifactId>sql-parser</artifactId>
         <version>4.0.0-RC3-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-core-parse-spi</artifactId>
+    <artifactId>sql-parser-spi</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>

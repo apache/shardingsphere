@@ -35,31 +35,31 @@
     
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-parse-sql92</artifactId>
+            <artifactId>sql-parser-sql92</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-parse-mysql</artifactId>
+            <artifactId>sql-parser-mysql</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-parse-postgresql</artifactId>
+            <artifactId>sql-parser-postgresql</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-parse-oracle</artifactId>
+            <artifactId>sql-parser-oracle</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-parse-sqlserver</artifactId>
+            <artifactId>sql-parser-sqlserver</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

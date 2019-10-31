@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-parse-common</artifactId>
+            <artifactId>sql-parser-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         

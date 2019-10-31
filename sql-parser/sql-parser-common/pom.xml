@@ -23,7 +23,7 @@
         <artifactId>sql-parser</artifactId>
         <version>4.0.0-RC3-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-core-parse-common</artifactId>
+    <artifactId>sql-parser-common</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-parse-spi</artifactId>
+            <artifactId>sql-parser-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
         
