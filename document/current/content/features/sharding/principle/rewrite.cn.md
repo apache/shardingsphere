@@ -74,8 +74,8 @@ SELECT t_order.order_id FROM t_order_1 AS t_order WHERE t_order.order_id=1 AND r
 ```
 
 索引名称是另一个有可能改写的标识符。
-在某些数据库中（如MySQL），索引是以表为维度创建的，在不同的表中的索引是可以重名的；
-而在另外的一些数据库中（如PostgreSQL），索引是以数据库为维度创建的，即使是作用在不同表上的索引，它们也要求其名称的唯一性。
+在某些数据库中（如MySQL、SQLServer），索引是以表为维度创建的，在不同的表中的索引是可以重名的；
+而在另外的一些数据库中（如PostgreSQL、Oracle），索引是以数据库为维度创建的，即使是作用在不同表上的索引，它们也要求其名称的唯一性。
 
 在ShardingSphere中，管理Schema的方式与管理表如出一辙，它采用逻辑Schema去管理一组数据源。
 因此，ShardingSphere需要将用户在SQL中书写的逻辑Schema替换为真实的数据库Schema。
