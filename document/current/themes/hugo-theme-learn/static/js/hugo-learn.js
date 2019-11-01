@@ -86,3 +86,22 @@ jQuery(document).ready(function() {
   });
 
 });
+
+
+// append the content to https://github.com/apache/incubator-shardingsphere-doc/blob/master/document/current/themes/hugo-theme-learn/static/js/learn.js
+// Let menu of document collapsible
+jQuery(document).ready(function(){
+    $("#sidebar .topics ul").hide();
+    $("#sidebar .topics .active").show().parentsUntil(".topics").show();
+    $("#sidebar .topics li" ).each(function(){
+          var that=$(this);
+          if(that.children("ul").size()){
+    	      that.children("a").prop("href","javascript:void(0)")
+          }
+    });
+    $("#sidebar .topics li").click(function(event){   
+        event.stopPropagation();
+        var that=$(this);
+        that.children("ul").toggle();
+    });
+});
