@@ -41,9 +41,9 @@ public final class UserAuthenticationService {
     @Getter
     @Setter
     private String password;
-
-    final Base64 base64 = new Base64();
-
+    
+    private final Base64 base64 = new Base64();
+    
     private Gson gson = new Gson();
     
     /**
@@ -53,7 +53,7 @@ public final class UserAuthenticationService {
      * @return check success or failure
      */
     public boolean checkUser(final UserAccount userAccount) {
-        if (userAccount == null || Strings.isNullOrEmpty(userAccount.getUsername()) || Strings.isNullOrEmpty(userAccount.getPassword())) {
+        if (null == userAccount || Strings.isNullOrEmpty(userAccount.getUsername()) || Strings.isNullOrEmpty(userAccount.getPassword())) {
             return false;
         }
         return username.equals(userAccount.getUsername()) && password.equals(userAccount.getPassword());
