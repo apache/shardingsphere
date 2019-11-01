@@ -80,7 +80,7 @@ public class DataNodeMigrateController {
 
     private void syncHistoryData() {
         List<SyncConfiguration> configs = split(syncConfiguration);
-        Reporter reporter = syncJobExecutor.execute(configs);
+        Reporter reporter = syncJobExecutor.start(configs);
         waitSlicesFinished(configs, reporter);
     }
 
@@ -126,7 +126,7 @@ public class DataNodeMigrateController {
                 syncConfiguration.getReaderConfiguration(),
                 syncConfiguration.getWriterConfiguration());
         realConfiguration.setPosition(position);
-        Reporter realtimeReporter = syncJobExecutor.execute(Collections.singletonList(realConfiguration));
+        Reporter realtimeReporter = syncJobExecutor.start(Collections.singletonList(realConfiguration));
         while (true) {
             Event event = realtimeReporter.consumeEvent();
             if (EventType.FINISHED == event.getEventType()) {

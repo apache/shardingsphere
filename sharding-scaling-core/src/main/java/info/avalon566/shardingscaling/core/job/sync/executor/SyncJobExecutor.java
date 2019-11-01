@@ -18,6 +18,7 @@
 package info.avalon566.shardingscaling.core.job.sync.executor;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
+import info.avalon566.shardingscaling.core.job.MigrateProgress;
 
 import java.util.List;
 
@@ -28,9 +29,22 @@ import java.util.List;
 public interface SyncJobExecutor {
 
     /**
-     * execute sync job.
+     * start sync jobs.
+     *
      * @param configs job configs
      * @return reporter
      */
-    Reporter execute(List<SyncConfiguration> configs);
+    Reporter start(List<SyncConfiguration> configs);
+
+    /**
+     * stop all sync jobs.
+     */
+    void stop();
+
+    /**
+     * get all sync job migrate progresses.
+     *
+     * @return list of migrate progresses
+     */
+    List<MigrateProgress> getProgresses();
 }
