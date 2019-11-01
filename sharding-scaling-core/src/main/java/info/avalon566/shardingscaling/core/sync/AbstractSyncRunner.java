@@ -15,22 +15,35 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job.schedule;
+package info.avalon566.shardingscaling.core.sync;
 
-import info.avalon566.shardingscaling.core.config.SyncConfiguration;
-
-import java.util.List;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Sync job executor, run in in process, k8s etc.
+ * Abstract runner.
  * @author avalon566
  */
-public interface SyncJobExecutor {
+public abstract class AbstractSyncRunner implements SyncRunner {
+
+    @Setter(AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
+    private boolean running;
 
     /**
-     * execute sync job.
-     * @param configs job configs
-     * @return reporter
+     * generic start implement.
      */
-    Reporter execute(List<SyncConfiguration> configs);
+    @Override
+    public void start() {
+        running = true;
+    }
+
+    /**
+     * generic stop implement.
+     */
+    @Override
+    public void stop() {
+        running = false;
+    }
 }

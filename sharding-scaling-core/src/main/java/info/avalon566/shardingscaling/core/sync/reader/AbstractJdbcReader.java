@@ -19,8 +19,8 @@ package info.avalon566.shardingscaling.core.sync.reader;
 
 import info.avalon566.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
-import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
-import info.avalon566.shardingscaling.core.sync.AbstractRunner;
+import info.avalon566.shardingscaling.core.exception.SyncRunException;
+import info.avalon566.shardingscaling.core.sync.AbstractSyncRunner;
 import info.avalon566.shardingscaling.core.sync.channel.Channel;
 import info.avalon566.shardingscaling.core.sync.metadata.ColumnMetaData;
 import info.avalon566.shardingscaling.core.sync.record.Column;
@@ -52,7 +52,7 @@ import java.util.List;
  * @author yangyi
  */
 @Slf4j
-public abstract class AbstractJdbcReader extends AbstractRunner implements JdbcReader {
+public abstract class AbstractJdbcReader extends AbstractSyncRunner implements JdbcReader {
 
     @Getter(AccessLevel.PROTECTED)
     private final RdbmsConfiguration rdbmsConfiguration;
@@ -85,11 +85,13 @@ public abstract class AbstractJdbcReader extends AbstractRunner implements JdbcR
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData metaData = rs.getMetaData();
             while (isRunning() && rs.next()) {
-                DataRecord record = new DataRecord(metaData.getColumnCount());
+                DataRecord record = new DataRecord(new NopLogPosition(), metaData.getColumnCount());
                 record.setType("bootstrap-insert");
                 record.setFullTableName(String.format("%s.%s", conn.getCatalog(), rdbmsConfiguration.getTableName()));
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                    if (Types.TIME == rs.getMetaData().getColumnType(i)) {
+                    if (Types.TIME == rs.getMetaData().getColumnType(i)
+                            || Types.DATE == rs.getMetaData().getColumnType(i)
+                            || Types.TIMESTAMP == rs.getMetaData().getColumnType(i)) {
                         // fix: jdbc Time objects represent a wall-clock time and not a duration as MySQL treats them
                         record.addColumn(new Column(rs.getString(i), true));
                     } else {
@@ -99,9 +101,9 @@ public abstract class AbstractJdbcReader extends AbstractRunner implements JdbcR
                 pushRecord(record);
             }
         } catch (SQLException e) {
-            throw new SyncExecuteException(e);
+            throw new SyncRunException(e);
         } finally {
-            pushRecord(new FinishedRecord());
+            pushRecord(new FinishedRecord(new NopLogPosition()));
         }
     }
 

@@ -17,11 +17,10 @@
 
 package info.avalon566.shardingscaling;
 
-import info.avalon566.shardingscaling.core.job.ScalingJob;
+import info.avalon566.shardingscaling.core.job.ScalingController;
 import info.avalon566.shardingscaling.config.RuleConfiguration;
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.config.SyncType;
-import info.avalon566.shardingscaling.core.job.schedule.local.LocalSyncJobExecutor;
 import info.avalon566.shardingscaling.core.config.DataSourceConfiguration;
 import info.avalon566.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
@@ -68,12 +67,11 @@ public class Bootstrap {
      */
     public static void main(final String[] args) {
         log.info("ShardingScaling Startup");
-        LocalSyncJobExecutor scheduler = new LocalSyncJobExecutor();
         if ("scaling".equals(args[0])) {
             try {
                 CommandLine commandLine = parseCommand(args);
                 List<SyncConfiguration> syncConfigurations = toSyncConfigurations(commandLine);
-                new ScalingJob(syncConfigurations).run();
+                new ScalingController(syncConfigurations).start();
             } catch (FileNotFoundException | ParseException e) {
                 throw new RuntimeException(e);
             }

@@ -18,16 +18,16 @@
 package info.avalon566.shardingscaling.core.sync.writer;
 
 import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
-import info.avalon566.shardingscaling.core.sync.AbstractRunner;
+import info.avalon566.shardingscaling.core.exception.SyncRunException;
+import info.avalon566.shardingscaling.core.sync.AbstractSyncRunner;
 import info.avalon566.shardingscaling.core.sync.channel.Channel;
-import info.avalon566.shardingscaling.core.sync.record.FinishedRecord;
-import info.avalon566.shardingscaling.core.sync.record.Column;
 import info.avalon566.shardingscaling.core.sync.metadata.ColumnMetaData;
+import info.avalon566.shardingscaling.core.sync.record.Column;
 import info.avalon566.shardingscaling.core.sync.record.DataRecord;
-import info.avalon566.shardingscaling.core.sync.util.DbMetaDataUtil;
-import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
-import info.avalon566.shardingscaling.core.sync.util.DataSourceFactory;
+import info.avalon566.shardingscaling.core.sync.record.FinishedRecord;
 import info.avalon566.shardingscaling.core.sync.record.Record;
+import info.avalon566.shardingscaling.core.sync.util.DataSourceFactory;
+import info.avalon566.shardingscaling.core.sync.util.DbMetaDataUtil;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,10 +46,10 @@ import java.util.List;
  * @author yangyi
  */
 @Slf4j
-public abstract class AbstractJdbcWriter extends AbstractRunner implements Writer {
+public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements Writer {
 
     private final RdbmsConfiguration rdbmsConfiguration;
-    
+
     private final SqlBuilder sqlBuilder;
 
     private DbMetaDataUtil dbMetaDataUtil;
@@ -73,53 +73,40 @@ public abstract class AbstractJdbcWriter extends AbstractRunner implements Write
     @Override
     public final void write(final Channel channel) {
         DataSource dataSource = DataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
-        List<DataRecord> buffer = new ArrayList<>(2000);
-        long lastFlushTime = System.currentTimeMillis();
         try {
             while (isRunning()) {
-                Record record = channel.popRecord();
-                if (null == record) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                List<Record> records = channel.fetchRecords(100, 3);
+                if (null != records && 0 < records.size()) {
+                    flush(dataSource, records);
+                    if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
+                        break;
                     }
-                    continue;
                 }
-                if (FinishedRecord.class.equals(record.getClass())) {
-                    break;
-                }
-                if (DataRecord.class.equals(record.getClass())) {
-                    buffer.add((DataRecord) record);
-                }
-                if (100 <= buffer.size() || 5 * 1000 < (System.currentTimeMillis() - lastFlushTime)) {
-                    flush(dataSource, buffer);
-                }
-            }
-            if (0 < buffer.size()) {
-                flush(dataSource, buffer);
+                channel.ack();
             }
         } catch (SQLException ex) {
-            throw new SyncExecuteException(ex);
+            throw new SyncRunException(ex);
         }
     }
 
-    private void flush(final DataSource dataSource, final List<DataRecord> buffer) throws SQLException {
+    private void flush(final DataSource dataSource, final List<Record> buffer) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
-            for (DataRecord record : buffer) {
-                if ("bootstrap-insert".equals(record.getType())
-                    || "insert".equals(record.getType())) {
-                    executeInsert(connection, record);
-                } else if ("update".equals(record.getType())) {
-                    executeUpdate(connection, record);
-                } else if ("delete".equals(record.getType())) {
-                    executeDelete(connection, record);
+            for (Record record : buffer) {
+                if (DataRecord.class.equals(record.getClass())) {
+                    DataRecord dataRecord = (DataRecord) record;
+                    if ("bootstrap-insert".equals(dataRecord.getType())
+                            || "insert".equals(dataRecord.getType())) {
+                        executeInsert(connection, dataRecord);
+                    } else if ("update".equals(dataRecord.getType())) {
+                        executeUpdate(connection, dataRecord);
+                    } else if ("delete".equals(dataRecord.getType())) {
+                        executeDelete(connection, dataRecord);
+                    }
                 }
             }
             connection.commit();
         }
-        buffer.clear();
     }
 
     private void executeInsert(final Connection connection, final DataRecord record) throws SQLException {

@@ -17,6 +17,7 @@
 
 package info.avalon566.shardingscaling.core.sync.record;
 
+import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ import java.util.List;
  * @author avalon566
  */
 @Data
-public class DataRecord implements Record {
+public class DataRecord extends Record {
 
     private String type;
 
@@ -37,7 +38,8 @@ public class DataRecord implements Record {
 
     private final List<Column> columns;
 
-    public DataRecord(final int columnCount) {
+    public DataRecord(final LogPosition logPosition, final int columnCount) {
+        super(logPosition);
         columns = new ArrayList<>(columnCount);
     }
 

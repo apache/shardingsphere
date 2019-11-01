@@ -15,39 +15,17 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job.schedule.local;
-
-import info.avalon566.shardingscaling.core.job.schedule.Event;
-import info.avalon566.shardingscaling.core.job.schedule.Reporter;
-
-import java.util.concurrent.ConcurrentLinkedQueue;
+package info.avalon566.shardingscaling.core.sync.reader;
 
 /**
- * In process reporter.
+ * Nop log position.
  *
  * @author avalon566
  */
-public class LocalReporter implements Reporter {
-
-    private ConcurrentLinkedQueue<Event> queue = new ConcurrentLinkedQueue<>();
+public class NopLogPosition implements LogPosition<NopLogPosition> {
 
     @Override
-    public final void report(final Event event) {
-        queue.offer(event);
-    }
-
-    @Override
-    public final Event consumeEvent() {
-        while (true) {
-            Event event = queue.poll();
-            if (null != event) {
-                return event;
-            }
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                // ignore
-            }
-        }
+    public final int compareTo(final NopLogPosition nopLogPosition) {
+        return 0;
     }
 }

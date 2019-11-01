@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job;
+package info.avalon566.shardingscaling.core.job.sync;
 
-import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
-import info.avalon566.shardingscaling.core.job.schedule.Event;
-import info.avalon566.shardingscaling.core.job.schedule.EventType;
-import info.avalon566.shardingscaling.core.job.schedule.Reporter;
+import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
+import info.avalon566.shardingscaling.core.job.sync.executor.Event;
+import info.avalon566.shardingscaling.core.job.sync.executor.EventType;
+import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
 import info.avalon566.shardingscaling.core.sync.SyncExecutor;
+import info.avalon566.shardingscaling.core.sync.channel.DispatcherChannel;
 import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
 import info.avalon566.shardingscaling.core.sync.reader.LogReader;
 import info.avalon566.shardingscaling.core.sync.reader.ReaderFactory;
@@ -39,13 +40,15 @@ import java.util.List;
  * @author avalon566
  */
 @Slf4j
-public class RealtimeDataSyncJob {
+public class RealtimeDataSyncJob implements SyncJob {
 
     private final SyncConfiguration syncConfiguration;
 
     private final LogReader mysqlBinlogReader;
 
     private final Reporter reporter;
+
+    private DispatcherChannel channel;
 
     public RealtimeDataSyncJob(final SyncConfiguration syncConfiguration, final Reporter reporter) {
         this.syncConfiguration = syncConfiguration;
@@ -65,23 +68,44 @@ public class RealtimeDataSyncJob {
     /**
      * Start to sync realtime data.
      */
+    @Override
     public final void run() {
-        List<Writer> writers = new ArrayList<>(syncConfiguration.getConcurrency());
+        final List<Writer> writers = new ArrayList<>(syncConfiguration.getConcurrency());
         for (int i = 0; i < syncConfiguration.getConcurrency(); i++) {
             writers.add(WriterFactory.newInstance(syncConfiguration.getWriterConfiguration()));
         }
-        final SyncExecutor executor = new SyncExecutor(mysqlBinlogReader, writers);
-        executor.run();
+        try {
+            channel = new DispatcherChannel(writers.size());
+            startReportRealtimeSyncPosition();
+            new SyncExecutor(channel, mysqlBinlogReader, writers).execute();
+            log.info("realtime data sync finish");
+            reporter.report(new Event(EventType.FINISHED));
+        } catch (SyncExecuteException ex) {
+            log.error("realtime data sync exception exit");
+            ex.logExceptions();
+            reporter.report(new Event(EventType.EXCEPTION_EXIT));
+        }
+    }
+
+    private void startReportRealtimeSyncPosition() {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    executor.waitFinish();
-                    log.info("{} realtime data sync finish", syncConfiguration.getReaderConfiguration().getTableName());
-                    reporter.report(new Event(EventType.FINISHED));
-                } catch (SyncExecuteException ex) {
-                    log.error("{} realtime data sync exception exit", syncConfiguration.getReaderConfiguration().getTableName(), ex);
-                    reporter.report(new Event(EventType.EXCEPTION_EXIT));
+                LogPosition lastLogPosition = null;
+                while (true) {
+                    try {
+                        Thread.sleep(1 * 1000);
+                    } catch (InterruptedException ignored) {
+                        break;
+                    }
+                    if (null != channel) {
+                        if (null == lastLogPosition || -1 == lastLogPosition.compareTo(channel.getCurrentLogPosition())) {
+                            lastLogPosition = channel.getCurrentLogPosition();
+                            Event event = new Event(EventType.REALTIME_SYNC_POSITION);
+                            event.setPayload(lastLogPosition);
+                            reporter.report(event);
+                        }
+                    }
                 }
             }
         }).start();

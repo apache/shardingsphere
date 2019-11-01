@@ -15,34 +15,39 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job;
+package info.avalon566.shardingscaling.core.job.sync.executor.local;
 
-import info.avalon566.shardingscaling.core.config.SyncConfiguration;
-import info.avalon566.shardingscaling.core.job.schedule.Reporter;
-import info.avalon566.shardingscaling.core.job.schedule.local.LocalReporter;
+import info.avalon566.shardingscaling.core.job.sync.executor.Event;
+import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
 
-import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * Scaling job.
+ * local reporter.
  *
  * @author avalon566
  */
-public class ScalingJob {
+public class LocalReporter implements Reporter {
 
-    private final List<SyncConfiguration> syncConfigurations;
+    private ConcurrentLinkedQueue<Event> queue = new ConcurrentLinkedQueue<>();
 
-    public ScalingJob(final List<SyncConfiguration> syncConfigurations) {
-        this.syncConfigurations = syncConfigurations;
+    @Override
+    public final void report(final Event event) {
+        queue.offer(event);
     }
 
-    /**
-     * Run.
-     */
-    public void run() {
-        Reporter reporter = new LocalReporter();
-        for (SyncConfiguration syncConfiguration : syncConfigurations) {
-            new DatabaseSyncJob(syncConfiguration, reporter).run();
+    @Override
+    public final Event consumeEvent() {
+        while (true) {
+            Event event = queue.poll();
+            if (null != event) {
+                return event;
+            }
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                // ignore
+            }
         }
     }
 }

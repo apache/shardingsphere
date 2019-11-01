@@ -17,11 +17,19 @@
 
 package info.avalon566.shardingscaling.core.sync.channel;
 
+import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
+import info.avalon566.shardingscaling.core.sync.record.DataRecord;
 import info.avalon566.shardingscaling.core.sync.record.FinishedRecord;
 import info.avalon566.shardingscaling.core.sync.record.Record;
-import info.avalon566.shardingscaling.core.sync.record.DataRecord;
+import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,6 +51,13 @@ public class DispatcherChannel implements Channel {
      */
     private final Map<String, String> channelAssignment = new HashMap<>();
 
+    private final List<LogPositionWrapper> pendingLogPosition = new ArrayList<>();
+
+    private final Map<String, List<Record>> consumePendingLogPosition = new HashMap<>();
+
+    @Getter
+    private LogPosition currentLogPosition;
+
     public DispatcherChannel(final int channelNumber) {
         this.channelNumber = channelNumber;
         for (int i = 0; i < channelNumber; i++) {
@@ -51,7 +66,8 @@ public class DispatcherChannel implements Channel {
     }
 
     @Override
-    public final void pushRecord(final Record record) throws InterruptedException {
+    public final synchronized void pushRecord(final Record record) throws InterruptedException {
+        pendingLogPosition.add(new LogPositionWrapper(record.getLogPosition()));
         if (FinishedRecord.class.equals(record.getClass())) {
             // 广播事件
             for (Map.Entry<String, MemoryChannel> entry : channels.entrySet()) {
@@ -68,10 +84,39 @@ public class DispatcherChannel implements Channel {
     }
 
     @Override
-    public final Record popRecord() {
+    public final List<Record> fetchRecords(final int batchSize, final int timeout) {
+        List<Record> records = findChannel().fetchRecords(batchSize, timeout);
+        consumePendingLogPosition.put(Long.toString(Thread.currentThread().getId()), records);
+        return records;
+    }
+
+    @Override
+    public final synchronized void ack() {
+        String threadId = Long.toString(Thread.currentThread().getId());
+        List<Record> records = consumePendingLogPosition.get(threadId);
+        if (null == records || 0 == records.size()) {
+            return;
+        }
+        for (Record record : records) {
+            int index = Collections.binarySearch(pendingLogPosition, new LogPositionWrapper(record.getLogPosition()));
+            pendingLogPosition.get(index).setAck(true);
+        }
+        Iterator<LogPositionWrapper> it = pendingLogPosition.iterator();
+        while (it.hasNext()) {
+            LogPositionWrapper entry = it.next();
+            if (entry.isAck()) {
+                it.remove();
+                currentLogPosition = entry.getLogPosition();
+            } else {
+                break;
+            }
+        }
+    }
+
+    private Channel findChannel() {
         String threadId = Long.toString(Thread.currentThread().getId());
         checkAssignment(threadId);
-        return channels.get(channelAssignment.get(threadId)).popRecord();
+        return channels.get(channelAssignment.get(threadId));
     }
 
     private void checkAssignment(final String threadId) {
@@ -83,6 +128,23 @@ public class DispatcherChannel implements Channel {
                     }
                 }
             }
+        }
+    }
+
+    @Data
+    @RequiredArgsConstructor
+    class LogPositionWrapper implements Comparable<LogPositionWrapper> {
+
+        private final LogPosition logPosition;
+
+        private boolean ack;
+
+        @Override
+        public int compareTo(final LogPositionWrapper logPositionWrapper) {
+            if (logPositionWrapper == null) {
+                return 1;
+            }
+            return logPosition.compareTo(logPositionWrapper.getLogPosition());
         }
     }
 }

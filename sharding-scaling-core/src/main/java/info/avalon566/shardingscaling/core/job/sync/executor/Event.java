@@ -15,35 +15,20 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.sync;
+package info.avalon566.shardingscaling.core.job.sync.executor;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Abstract runner.
+ * Event.
  * @author avalon566
  */
-public abstract class AbstractRunner implements Runner {
+@Data
+@RequiredArgsConstructor
+public class Event {
 
-    @Setter(AccessLevel.PROTECTED)
-    @Getter(AccessLevel.PROTECTED)
-    private boolean running;
+    private final EventType eventType;
 
-    /**
-     * generic start implement.
-     */
-    @Override
-    public void start() {
-        running = true;
-    }
-
-    /**
-     * generic stop implement.
-     */
-    @Override
-    public void stop() {
-        running = false;
-    }
+    private Object payload;
 }

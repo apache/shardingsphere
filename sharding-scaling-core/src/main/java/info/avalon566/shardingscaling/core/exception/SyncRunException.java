@@ -15,21 +15,25 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.sync;
+package info.avalon566.shardingscaling.core.exception;
 
 /**
- * Job runner.
- * @author avalon566
+ * Synchronize task run exception.
+ *
+ * @author yangyi
  */
-public interface Runner extends Runnable {
-
-    /**
-     * Start run job.
-     */
-    void start();
-
-    /**
-     * Stop running job.
-     */
-    void stop();
+public final class SyncRunException extends RuntimeException {
+    
+    public SyncRunException(final String message) {
+        super(message);
+    }
+    
+    public SyncRunException(final Throwable cause) {
+        super(cause);
+    }
+    
+    public SyncRunException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+    
 }

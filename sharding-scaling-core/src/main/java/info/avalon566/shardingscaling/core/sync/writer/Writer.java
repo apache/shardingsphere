@@ -18,13 +18,13 @@
 package info.avalon566.shardingscaling.core.sync.writer;
 
 import info.avalon566.shardingscaling.core.sync.channel.Channel;
-import info.avalon566.shardingscaling.core.sync.Runner;
+import info.avalon566.shardingscaling.core.sync.SyncRunner;
 
 /**
  * Writer.
  * @author avalon566
  */
-public interface Writer extends Runner {
+public interface Writer extends SyncRunner {
 
     /**
      * Set channel.

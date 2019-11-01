@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job;
+package info.avalon566.shardingscaling.core.job.sync;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
-import info.avalon566.shardingscaling.core.job.schedule.Event;
-import info.avalon566.shardingscaling.core.job.schedule.EventType;
-import info.avalon566.shardingscaling.core.job.schedule.Reporter;
+import info.avalon566.shardingscaling.core.job.sync.executor.Event;
+import info.avalon566.shardingscaling.core.job.sync.executor.EventType;
+import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
+import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.core.sync.SyncExecutor;
+import info.avalon566.shardingscaling.core.sync.channel.MemoryChannel;
 import info.avalon566.shardingscaling.core.sync.reader.Reader;
 import info.avalon566.shardingscaling.core.sync.reader.ReaderFactory;
 import info.avalon566.shardingscaling.core.sync.writer.Writer;
@@ -37,7 +39,7 @@ import java.util.Collections;
  * @author yangyi
  */
 @Slf4j
-public class HistoryDataSyncJob {
+public class HistoryDataSyncJob implements SyncJob {
 
     private final SyncConfiguration syncConfiguration;
 
@@ -51,23 +53,18 @@ public class HistoryDataSyncJob {
     /**
      * Run synchronize task.
      */
+    @Override
     public void run() {
-        Reader reader = ReaderFactory.newInstanceJdbcReader(syncConfiguration.getReaderConfiguration());
-        Writer writer = WriterFactory.newInstance(syncConfiguration.getWriterConfiguration());
-        final SyncExecutor executor = new SyncExecutor(reader, Collections.<Writer>singletonList(writer));
-        executor.run();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    executor.waitFinish();
-                    log.info("{} table slice sync finish", syncConfiguration.getReaderConfiguration().getTableName());
-                    reporter.report(new Event(EventType.FINISHED));
-                } catch (Exception ex) {
-                    log.error("{} table slice sync exception exit", syncConfiguration.getReaderConfiguration().getTableName(), ex);
-                    reporter.report(new Event(EventType.EXCEPTION_EXIT));
-                }
-            }
-        }).start();
+        final Reader reader = ReaderFactory.newInstanceJdbcReader(syncConfiguration.getReaderConfiguration());
+        final Writer writer = WriterFactory.newInstance(syncConfiguration.getWriterConfiguration());
+        try {
+            new SyncExecutor(new MemoryChannel(), reader, Collections.singletonList(writer)).execute();
+            log.info("{} table slice sync finish", syncConfiguration.getReaderConfiguration().getTableName());
+            reporter.report(new Event(EventType.FINISHED));
+        } catch (SyncExecuteException ex) {
+            log.error("{} table slice sync exception exit", syncConfiguration.getReaderConfiguration().getTableName());
+            ex.logExceptions();
+            reporter.report(new Event(EventType.EXCEPTION_EXIT));
+        }
     }
 }

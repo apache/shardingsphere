@@ -17,9 +17,18 @@
 
 package info.avalon566.shardingscaling.core.sync.record;
 
+import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * Record interface.
+ *
  * @author avalon566
  */
-public interface Record {
+@Getter
+@RequiredArgsConstructor
+public abstract class Record {
+
+    private final LogPosition logPosition;
 }

@@ -17,21 +17,24 @@
 
 package info.avalon566.shardingscaling.core.sync.channel;
 
+import info.avalon566.shardingscaling.core.sync.record.Record;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import info.avalon566.shardingscaling.core.sync.record.Record;
-
 /**
  * Memory channel.
+ *
  * @author avalon566
  */
 public class MemoryChannel implements Channel {
 
-    public static final int PUSH_TIMEOUT = 1000;
+    private static final int PUSH_TIMEOUT = 1000;
 
-    private final BlockingQueue<Record> queue = new ArrayBlockingQueue<>(1000);
+    private final BlockingQueue<Record> queue = new ArrayBlockingQueue<>(10000);
 
     @Override
     public final void pushRecord(final Record dataRecord) throws InterruptedException {
@@ -41,11 +44,25 @@ public class MemoryChannel implements Channel {
     }
 
     @Override
-    public final Record popRecord() {
-        try {
-            return queue.poll(1000, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            return null;
+    public final List<Record> fetchRecords(final int batchSize, final int timeout) {
+        List<Record> records = new ArrayList<>(batchSize);
+        long start = System.currentTimeMillis();
+        while (batchSize > queue.size()) {
+            if (timeout * 1000 <= System.currentTimeMillis() - start) {
+                break;
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ignored) {
+                break;
+            }
         }
+        queue.drainTo(records, batchSize);
+        return records;
+    }
+
+    @Override
+    public void ack() {
+
     }
 }
