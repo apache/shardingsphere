@@ -1,3 +1,16 @@
+## 4.0.0.RC3
+
+### New Features
+
+1. Sharding-UI, an orchestration management platform for ShardingSphere comes online.
+1. Not only SQLs from MySQL, PostgreSQL, SQLServer, Oracle, but any SQL92 Syntax can be parsed correctly and used in ShardingSphere.
+
+### Enhancement
+
+1. Through Bugfix, the feature of encryption becomes much stable and applicable.
+1. Support using less-than character(<) and greater-than character(>) for sharding data.
+1. When master and slave dataSources exist, support executing `SELECT FOR UPDATE` on master dataSource.
+
 ## 4.0.0.RC2
 
 ### API Changes

@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.aware;
 
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 
 /**
- * Sharding rule aware.
+ * SQL route result aware.
  *
  * @author zhangliang
  */
-public interface ShardingRuleAware {
+public interface SQLRouteResultAware {
     
     /**
-     * Set sharding rule.
+     * Set SQL route result.
      * 
-     * @param shardingRule sharding rule
+     * @param sqlRouteResult SQL route result
      */
-    void setShardingRule(ShardingRule shardingRule);
+    void setSqlRouteResult(SQLRouteResult sqlRouteResult);
 }

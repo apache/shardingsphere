@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo;
+package org.apache.shardingsphere.core.parse.sql.segment.dml.predicate;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
 
 /**
- * Insert cipher assignment token for literal.
+ * Lock segment.
  *
- * @author panjuan
- * @author zhangliang
+ * @author zhyee
  */
-public final class LiteralInsertCipherAssignmentToken extends InsertCipherAssignmentToken {
-    
-    private final String cipherValue;
-    
-    public LiteralInsertCipherAssignmentToken(final int startIndex, final int stopIndex, final String cipherColumnName, final String cipherValue) {
-        super(startIndex, stopIndex, cipherColumnName);
-        this.cipherValue = cipherValue;
-    }
-    
-    @Override
-    protected String getAssignmentValue() {
-        return String.format("'%s'", cipherValue);
-    }
+
+@RequiredArgsConstructor
+@Getter
+public final class LockSegment implements SQLSegment {
+
+    private final int startIndex;
+
+    private final int stopIndex;
 }

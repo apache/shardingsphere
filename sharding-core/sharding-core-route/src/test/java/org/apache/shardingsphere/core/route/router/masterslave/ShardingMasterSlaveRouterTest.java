@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.core.route.router.masterslave;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
@@ -39,6 +41,7 @@ import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -92,10 +95,21 @@ public class ShardingMasterSlaveRouterTest {
     @Test
     public void assertRouteToSlave() {
         SQLRouteResult sqlRouteResult = mockSQLRouteResult(selectStatement);
+        when(selectStatement.getLock()).thenReturn(Optional.<LockSegment>absent());
         SQLRouteResult actual = shardingMasterSlaveRouter.route(sqlRouteResult);
         Iterator<String> routedDataSourceNames = actual.getRoutingResult().getDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_MASTER_SLAVE_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(SLAVE_DATASOURCE));
+    }
+
+    @Test
+    public void assertLockRouteToMaster() {
+        SQLRouteResult sqlRouteResult = mockSQLRouteResult(selectStatement);
+        when(selectStatement.getLock()).thenReturn(Optional.of(mock(LockSegment.class)));
+        SQLRouteResult actual = shardingMasterSlaveRouter.route(sqlRouteResult);
+        Iterator<String> routedDataSourceNames = actual.getRoutingResult().getDataSourceNames().iterator();
+        assertThat(routedDataSourceNames.next(), is(NON_MASTER_SLAVE_DATASOURCE_NAME));
+        assertThat(routedDataSourceNames.next(), is(MASTER_DATASOURCE));
     }
     
     private SQLRouteResult mockSQLRouteResult(final SQLStatement sqlStatement) {

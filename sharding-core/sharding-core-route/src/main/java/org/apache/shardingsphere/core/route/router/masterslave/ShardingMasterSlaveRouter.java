@@ -75,7 +75,11 @@ public final class ShardingMasterSlaveRouter {
     }
     
     private boolean isMasterRoute(final SQLStatement sqlStatement) {
-        return !(sqlStatement instanceof SelectStatement) || MasterVisitedManager.isMasterVisited() || HintManager.isMasterRouteOnly();
+        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || MasterVisitedManager.isMasterVisited() || HintManager.isMasterRouteOnly();
+    }
+
+    private boolean containsLockSegment(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof SelectStatement && ((SelectStatement) sqlStatement).getLock().isPresent();
     }
     
     private RoutingUnit createNewRoutingUnit(final String actualDataSourceName, final RoutingUnit originalTableUnit) {

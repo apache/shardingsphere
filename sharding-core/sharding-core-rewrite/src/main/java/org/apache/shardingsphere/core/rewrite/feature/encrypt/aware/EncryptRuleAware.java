@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo;
+package org.apache.shardingsphere.core.rewrite.feature.encrypt.aware;
+
+import org.apache.shardingsphere.core.rule.EncryptRule;
 
 /**
- * Insert cipher assignment token for parameter marker.
+ * Encrypt rule aware.
  *
- * @author panjuan
  * @author zhangliang
  */
-public final class ParameterMarkerInsertCipherAssignmentToken extends InsertCipherAssignmentToken {
+public interface EncryptRuleAware {
     
-    public ParameterMarkerInsertCipherAssignmentToken(final int startIndex, final int stopIndex, final String cipherColumnName) {
-        super(startIndex, stopIndex, cipherColumnName);
-    }
-    
-    @Override
-    protected String getAssignmentValue() {
-        return "?";
-    }
+    /**
+     * Set encrypt rule.
+     * 
+     * @param encryptRule encrypt rule
+     */
+    void setEncryptRule(EncryptRule encryptRule);
 }

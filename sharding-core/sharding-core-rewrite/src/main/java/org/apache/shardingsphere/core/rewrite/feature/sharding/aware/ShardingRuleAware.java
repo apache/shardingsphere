@@ -15,32 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.aware;
 
-import lombok.Getter;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Insert cipher name token.
+ * Sharding rule aware.
  *
- * @author panjuan
+ * @author zhangliang
  */
-public final class InsertCipherNameToken extends SQLToken implements Substitutable {
+public interface ShardingRuleAware {
     
-    @Getter
-    private final int stopIndex;
-    
-    private final String columnName;
-    
-    public InsertCipherNameToken(final int startIndex, final int stopIndex, final String columnName) {
-        super(startIndex);
-        this.stopIndex = stopIndex;
-        this.columnName = columnName;
-    }
-    
-    @Override
-    public String toString() {
-        return columnName;
-    }
+    /**
+     * Set sharding rule.
+     * 
+     * @param shardingRule sharding rule
+     */
+    void setShardingRule(ShardingRule shardingRule);
 }

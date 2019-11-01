@@ -38,7 +38,6 @@ import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.swapper.DataSourceConfigurationYamlSwapper;
-
 import java.util.Map;
 import java.util.Properties;
 

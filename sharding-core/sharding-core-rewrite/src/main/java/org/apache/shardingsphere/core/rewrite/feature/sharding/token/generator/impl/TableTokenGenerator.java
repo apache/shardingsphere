@@ -32,7 +32,7 @@ import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.ShardingRuleAware;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.aware.ShardingRuleAware;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.TableToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 

@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator;
+package org.apache.shardingsphere.core.parse.core.filler.impl.dml;
+
+import org.apache.shardingsphere.core.parse.core.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.LockSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
 
 /**
- * Query with cipher column aware.
+ * lock filler.
  *
- * @author zhangliang
+ * @author zhyee
  */
-public interface QueryWithCipherColumnAware {
-    
-    /**
-     * Set is query with cipher column or not.
-     * 
-     * @param queryWithCipherColumn is query with cipher column or not
-     */
-    void setQueryWithCipherColumn(boolean queryWithCipherColumn);
+public final class LockFiller implements SQLSegmentFiller<LockSegment> {
+
+    @Override
+    public void fill(final LockSegment sqlSegment, final SQLStatement sqlStatement) {
+        ((SelectStatement) sqlStatement).setLockSegment(sqlSegment);
+    }
 }

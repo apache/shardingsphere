@@ -15,32 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo;
-
-import lombok.Getter;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
+package org.apache.shardingsphere.spring.boot.datasource;
 
 /**
- * Column name token of encrypt.
+ * Tomcat DBCP2 datasource properties setter.
  *
- * @author panjuan
+ * @author xiayan
  */
-public final class EncryptColumnNameToken extends SQLToken implements Substitutable {
-    
-    @Getter
-    private final int stopIndex;
-    
-    private final String columnName;
-    
-    public EncryptColumnNameToken(final int startIndex, final int stopIndex, final String columnName) {
-        super(startIndex);
-        this.stopIndex = stopIndex;
-        this.columnName = columnName;
-    }
+public final class TomcatDbcp2DataSourcePropertiesSetter extends AbstractDbcp2DataSourcePropertiesSetter {
     
     @Override
-    public String toString() {
-        return columnName;
+    public String getType() {
+        return "org.apache.tomcat.dbcp.dbcp2.BasicDataSource";
     }
 }

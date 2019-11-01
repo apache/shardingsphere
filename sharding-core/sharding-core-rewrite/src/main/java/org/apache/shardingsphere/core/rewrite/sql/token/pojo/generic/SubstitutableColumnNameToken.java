@@ -15,35 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo;
+package org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
 
 /**
- * Insert cipher assignment token.
+ * Substitutable column name token.
  *
- * @author panjuan
  * @author zhangliang
  */
-public abstract class InsertCipherAssignmentToken extends SQLToken implements Substitutable {
+public final class SubstitutableColumnNameToken extends SQLToken implements Substitutable {
     
     @Getter
     private final int stopIndex;
     
-    private final String cipherColumnName;
+    private final String columnName;
     
-    public InsertCipherAssignmentToken(final int startIndex, final int stopIndex, final String cipherColumnName) {
+    public SubstitutableColumnNameToken(final int startIndex, final int stopIndex, final String columnName) {
         super(startIndex);
         this.stopIndex = stopIndex;
-        this.cipherColumnName = cipherColumnName;
+        this.columnName = columnName;
     }
     
     @Override
-    public final String toString() {
-        return String.format("%s = %s", cipherColumnName, getAssignmentValue());
+    public String toString() {
+        return columnName;
     }
-    
-    protected abstract String getAssignmentValue();
 }

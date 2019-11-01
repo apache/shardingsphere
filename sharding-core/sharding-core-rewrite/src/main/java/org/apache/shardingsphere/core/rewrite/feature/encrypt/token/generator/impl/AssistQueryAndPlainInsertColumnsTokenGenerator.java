@@ -19,16 +19,17 @@ package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.i
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import lombok.Setter;
+import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.EncryptRuleAware;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.AssistQueryAndPlainInsertColumnsToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.BaseEncryptSQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertColumnsToken;
+import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,38 +39,37 @@ import java.util.List;
  * @author panjuan
  * @author zhangliang
  */
-@Setter
-public final class AssistQueryAndPlainInsertColumnsTokenGenerator implements OptionalSQLTokenGenerator, EncryptRuleAware {
-    
-    private EncryptRule encryptRule;
+public final class AssistQueryAndPlainInsertColumnsTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator {
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+    protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof InsertSQLStatementContext && sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class).isPresent()
-                && !((InsertStatement) sqlStatementContext.getSqlStatement()).useDefaultColumns()
-                && !encryptRule.getAssistedQueryAndPlainColumns(sqlStatementContext.getTablesContext().getSingleTableName()).isEmpty();
+                && !((InsertStatement) sqlStatementContext.getSqlStatement()).useDefaultColumns();
     }
     
     @Override
-    public AssistQueryAndPlainInsertColumnsToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        Optional<InsertColumnsSegment> sqlSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
-        Preconditions.checkState(sqlSegment.isPresent());
-        return new AssistQueryAndPlainInsertColumnsToken(
-                sqlSegment.get().getStopIndex(), getDerivedColumnNames((InsertSQLStatementContext) sqlStatementContext));
+    public Collection<InsertColumnsToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+        Collection<InsertColumnsToken> result = new LinkedList<>();
+        Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(sqlStatementContext.getTablesContext().getSingleTableName());
+        Preconditions.checkState(encryptTable.isPresent());
+        for (ColumnSegment each : ((InsertStatement) sqlStatementContext.getSqlStatement()).getColumns()) {
+            List<String> columns = getColumns(encryptTable.get(), each);
+            if (!columns.isEmpty()) {
+                result.add(new InsertColumnsToken(each.getStopIndex() + 1, columns));
+            }
+        }
+        return result;
     }
     
-    private List<String> getDerivedColumnNames(final InsertSQLStatementContext sqlStatementContext) {
+    private List<String> getColumns(final EncryptTable encryptTable, final ColumnSegment columnSegment) {
         List<String> result = new LinkedList<>();
-        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        for (String each : sqlStatementContext.getColumnNames()) {
-            Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, each);
-            if (assistedQueryColumn.isPresent()) {
-                result.add(assistedQueryColumn.get());
-            }
-            Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, each);
-            if (plainColumn.isPresent()) {
-                result.add(plainColumn.get());
-            }
+        Optional<String> assistedQueryColumn = encryptTable.findAssistedQueryColumn(columnSegment.getName());
+        if (assistedQueryColumn.isPresent()) {
+            result.add(assistedQueryColumn.get());
+        }
+        Optional<String> plainColumn = encryptTable.findPlainColumn(columnSegment.getName());
+        if (plainColumn.isPresent()) {
+            result.add(plainColumn.get());
         }
         return result;
     }

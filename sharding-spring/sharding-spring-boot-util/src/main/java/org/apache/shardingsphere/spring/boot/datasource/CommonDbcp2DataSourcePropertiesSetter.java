@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator;
-
-import org.apache.shardingsphere.core.route.SQLRouteResult;
+package org.apache.shardingsphere.spring.boot.datasource;
 
 /**
- * SQL route result aware.
+ * DBCP2 datasource properties setter.
  *
- * @author zhangliang
+ * @author xiayan
  */
-public interface SQLRouteResultAware {
+public final class CommonDbcp2DataSourcePropertiesSetter extends AbstractDbcp2DataSourcePropertiesSetter {
     
-    /**
-     * Set SQL route result.
-     * 
-     * @param sqlRouteResult SQL route result
-     */
-    void setSqlRouteResult(SQLRouteResult sqlRouteResult);
+    @Override
+    public String getType() {
+        return "org.apache.commons.dbcp2.BasicDataSource";
+    }
 }
