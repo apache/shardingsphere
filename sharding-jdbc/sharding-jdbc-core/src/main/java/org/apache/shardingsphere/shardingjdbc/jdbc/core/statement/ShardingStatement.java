@@ -61,6 +61,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private final StatementExecutor statementExecutor;
     
+    private final SimpleQueryShardingEngine shardingEngine;
+    
     private boolean returnGeneratedKeys;
     
     private SQLRouteResult sqlRouteResult;
@@ -78,6 +80,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     public ShardingStatement(final ShardingConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(Statement.class);
         this.connection = connection;
+        ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
+        shardingEngine = new SimpleQueryShardingEngine(runtimeContext.getRule(), runtimeContext.getProps(), runtimeContext.getMetaData(), runtimeContext.getParseEngine());
         statementExecutor = new StatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, connection);
     }
     
@@ -244,8 +248,6 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private void shard(final String sql) {
-        ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
-        SimpleQueryShardingEngine shardingEngine = new SimpleQueryShardingEngine(runtimeContext.getRule(), runtimeContext.getProps(), runtimeContext.getMetaData(), runtimeContext.getParseEngine());
         sqlRouteResult = shardingEngine.shard(sql, Collections.emptyList());
     }
     
