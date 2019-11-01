@@ -35,7 +35,7 @@ public class LocalSyncJobExecutor implements SyncJobExecutor {
     public final Reporter execute(final List<SyncConfiguration> syncConfigurations) {
         LocalReporter reporter = new LocalReporter();
         for (SyncConfiguration syncConfiguration : syncConfigurations) {
-            new Thread(SyncJobFactory.createSyncJobInstance(syncConfiguration, reporter)).start();
+            SyncJobFactory.createSyncJobInstance(syncConfiguration, reporter).start();
         }
         return reporter;
     }
