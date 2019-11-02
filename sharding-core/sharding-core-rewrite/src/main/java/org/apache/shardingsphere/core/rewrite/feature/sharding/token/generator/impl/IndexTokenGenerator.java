@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.impl;
 
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.parse.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.IndexToken;
 

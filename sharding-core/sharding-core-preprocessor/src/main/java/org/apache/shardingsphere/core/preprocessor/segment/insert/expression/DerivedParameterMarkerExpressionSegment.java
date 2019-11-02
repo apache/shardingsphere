@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.preprocessor.segment.insert.expression;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 /**
  * Derived parameter marker expression segment.

@@ -17,5 +17,5 @@
   -->
 
 <filler-rule-definition>
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment" filler-class="org.apache.shardingsphere.core.parse.core.filler.impl.ddl.index.IndexFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.ddl.index.IndexFiller" />
 </filler-rule-definition>

@@ -20,11 +20,11 @@ package org.apache.shardingsphere.core.preprocessor.segment.select.pagination.en
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.core.preprocessor.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.top.TopSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.top.TopSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
 import java.util.Collections;
 import java.util.List;

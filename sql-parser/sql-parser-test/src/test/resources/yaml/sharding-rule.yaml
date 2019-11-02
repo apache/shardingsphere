@@ -34,13 +34,13 @@ shardingRule:
       tableStrategy: 
         complex:
           shardingColumns: user_id, order_id
-          algorithmClassName: org.apache.shardingsphere.core.parse.fixture.ComplexKeysShardingAlgorithmFixture
+          algorithmClassName: org.apache.shardingsphere.sql.parser.fixture.ComplexKeysShardingAlgorithmFixture
     t_order_item:
       actualDataNodes: db${0..1}.t_order_item
       tableStrategy: 
         complex:
           shardingColumns: user_id, order_id, item_id
-          algorithmClassName: org.apache.shardingsphere.core.parse.fixture.ComplexKeysShardingAlgorithmFixture 
+          algorithmClassName: org.apache.shardingsphere.sql.parser.fixture.ComplexKeysShardingAlgorithmFixture 
       keyGenerator:
         type: SNOWFLAKE
         column: item_id

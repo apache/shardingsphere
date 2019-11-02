@@ -17,20 +17,20 @@
   -->
 
 <filler-rule-definition>
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment" filler-class="org.apache.shardingsphere.core.parse.core.filler.impl.TableFiller" />
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.generic.SchemaSegment" filler-class="org.apache.shardingsphere.core.parse.core.filler.impl.dal.SchemaFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.TableFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.dal.SchemaFiller" />
     
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.ddl.column.ColumnDefinitionSegment" filler-class="org.apache.shardingsphere.core.parse.core.filler.impl.ddl.column.ColumnDefinitionFiller" />
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.ddl.column.alter.AddColumnDefinitionSegment" filler-class="org.apache.shardingsphere.core.parse.core.filler.impl.ddl.column.AddColumnDefinitionFiller" />
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment" filler-class="org.apache.shardingsphere.core.parse.core.filler.impl.ddl.column.ModifyColumnDefinitionFiller" />
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.ddl.column.alter.DropColumnDefinitionSegment" filler-class="org.apache.shardingsphere.core.parse.core.filler.impl.ddl.column.DropColumnDefinitionFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.ddl.column.ColumnDefinitionFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.ddl.column.AddColumnDefinitionFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.ddl.column.ModifyColumnDefinitionFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.DropColumnDefinitionSegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.ddl.column.DropColumnDefinitionFiller" />
     
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegment" filler-class="org.apache.shardingsphere.core.parse.core.filler.impl.dml.SelectItemsFiller" />
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.WhereSegment" filler-class="org.apache.shardingsphere.core.parse.core.filler.impl.dml.WhereFiller" />
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.order.GroupBySegment" filler-class="org.apache.shardingsphere.core.parse.core.filler.impl.dml.GroupByFiller" />
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment" filler-class="org.apache.shardingsphere.core.parse.core.filler.impl.dml.OrderByFiller" />
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.LockSegment" filler-class="org.apache.shardingsphere.core.parse.core.filler.impl.dml.LockFiller" />
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment" filler-class="org.apache.shardingsphere.core.parse.core.filler.impl.dml.InsertColumnsFiller" />
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment" filler-class="org.apache.shardingsphere.core.parse.core.filler.impl.dml.InsertValuesFiller" />
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.SetAssignmentsSegment" filler-class="org.apache.shardingsphere.core.parse.core.filler.impl.dml.SetAssignmentsFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemsSegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.dml.SelectItemsFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.dml.WhereFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.dml.GroupByFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.dml.OrderByFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.dml.LockFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.dml.InsertColumnsFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.dml.InsertValuesFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentsSegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.dml.SetAssignmentsFiller" />
 </filler-rule-definition>

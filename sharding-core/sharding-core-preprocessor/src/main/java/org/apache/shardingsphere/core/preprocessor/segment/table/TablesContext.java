@@ -22,11 +22,11 @@ import com.google.common.base.Preconditions;
 import lombok.ToString;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.AliasAvailable;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.TableAvailable;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;

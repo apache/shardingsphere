@@ -17,15 +17,15 @@
   -->
 
 <extractor-rule-definition>
-    <extractor-rule id="addColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.core.extractor.ddl.MySQLAddColumnDefinitionExtractor" />
-    <extractor-rule id="modifyColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.core.extractor.ddl.MySQLModifyColumnDefinitionExtractor" />
-    <extractor-rule id="changeColumnDefinition" extractor-class="org.apache.shardingsphere.core.parse.core.extractor.ddl.MySQLChangeColumnDefinitionExtractor" />
-    <extractor-rule id="dropPrimaryKey" extractor-class="org.apache.shardingsphere.core.parse.core.extractor.ddl.MySQLDropPrimaryKeyExtractor" />
+    <extractor-rule id="addColumnDefinition" extractor-class="org.apache.shardingsphere.sql.parser.core.extractor.ddl.MySQLAddColumnDefinitionExtractor" />
+    <extractor-rule id="modifyColumnDefinition" extractor-class="org.apache.shardingsphere.sql.parser.core.extractor.ddl.MySQLModifyColumnDefinitionExtractor" />
+    <extractor-rule id="changeColumnDefinition" extractor-class="org.apache.shardingsphere.sql.parser.core.extractor.ddl.MySQLChangeColumnDefinitionExtractor" />
+    <extractor-rule id="dropPrimaryKey" extractor-class="org.apache.shardingsphere.sql.parser.core.extractor.ddl.MySQLDropPrimaryKeyExtractor" />
     
-    <extractor-rule id="groupBy" extractor-class="org.apache.shardingsphere.core.parse.core.extractor.impl.dml.select.groupby.AscNullOrderDirectionGroupByExtractor" />
-    <extractor-rule id="orderBy" extractor-class="org.apache.shardingsphere.core.parse.core.extractor.impl.dml.select.orderby.AscNullOrderDirectionOrderByExtractor" />
+    <extractor-rule id="groupBy" extractor-class="org.apache.shardingsphere.sql.parser.core.extractor.impl.dml.select.groupby.AscNullOrderDirectionGroupByExtractor" />
+    <extractor-rule id="orderBy" extractor-class="org.apache.shardingsphere.sql.parser.core.extractor.impl.dml.select.orderby.AscNullOrderDirectionOrderByExtractor" />
     
-    <extractor-rule id="setAutoCommit" extractor-class="org.apache.shardingsphere.core.parse.core.extractor.tcl.MySQLSetAutoCommitExtractor" />
-    <extractor-rule id="fromSchema" extractor-class="org.apache.shardingsphere.core.parse.core.extractor.dal.MySQLFromSchemaExtractor" />
-    <extractor-rule id="showLike" extractor-class="org.apache.shardingsphere.core.parse.core.extractor.dal.MySQLShowLikeExtractor" />
+    <extractor-rule id="setAutoCommit" extractor-class="org.apache.shardingsphere.sql.parser.core.extractor.tcl.MySQLSetAutoCommitExtractor" />
+    <extractor-rule id="fromSchema" extractor-class="org.apache.shardingsphere.sql.parser.core.extractor.dal.MySQLFromSchemaExtractor" />
+    <extractor-rule id="showLike" extractor-class="org.apache.shardingsphere.sql.parser.core.extractor.dal.MySQLShowLikeExtractor" />
 </extractor-rule-definition>

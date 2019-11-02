@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.merge.dql.orderby;
 
-import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
