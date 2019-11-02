@@ -4,7 +4,16 @@ weight = 5
 chapter = true
 +++
 
-在贡献者指南里，已经提到如何提交issue与pull request,  这里我们将要介绍如何给官方文档提交pull request, 并更新至在线页面。
+如果您想帮助贡献ShardingSphere文档或网站，我们很乐意为您提供帮助！任何人都可以贡献，无论您是刚接触项目还是已经使用ShardingSphere很长时间，无论是自我认同的开发人员、最终用户，还是那些无法忍受错别字的人，都可以对文档或者网站进行贡献。
+
+在贡献者指南里，已经提到如何提交Issues与pull request，这里我们将要介绍如何给官方文档提交pull request。
+
+## 前置条件
+
+- 熟悉[官方网站](https://shardingsphere.apache.org)
+- 熟悉[GitHub 协同开发流程](https://help.github.com/categories/collaborating-with-issues-and-pull-requests/)
+- 熟练掌握[Markdown](http://www.markdown.cn/)
+- 熟悉[Hugo](https://gohugo.io/)
 
 ## Fork文档项目
 
@@ -74,30 +83,45 @@ incubator-shardingsphere-doc
     └─schema
 ```
 
+## 文档基础知识
+
+ShardingSphere文档使用Markdown编写，并使用Hugo进行处理生成html，部署于[asf-site](https://github.com/apache/incubator-shardingsphere-doc/tree/asf-site)分支，源代码位于[Github](https://github.com/apache/incubator-shardingsphere-doc/tree/master) 。
+
+- [官方主页](https://shardingsphere.apache.org/index_zh.html)文档源存储在`/homepage/`
+- [官方教程](https://shardingsphere.apache.org/document/current/cn/overview/)源存储在`/document/`，其中官方教程的[最新版本](https://shardingsphere.apache.org/document/current/cn/overview/)文档源存储在`/document/current/`，历史版本文档源存储在`/document/legacy/`
+- [社区介绍及贡献](https://shardingsphere.apache.org/community/cn/contribute/)相关文档源都储存在`/community/content/`
+
+您可以从[Github](https://github.com/apache/incubator-shardingsphere-doc/issues)网站上提交问题，编辑内容和查看其他人的更改
+
+## 页面模板
+
+页面模板位于themes中的 `layouts/partials/` 目录中
+
+## 提出具体可查找的问题
+
+任何拥有Github帐户的人都可以针对ShardingSphere文档提出问题（错误报告）。如果您发现错误，即使您不知道如何修复它，也应提出问题。
+
+### 如何提出问题
+
+1. 附加出现问题的文档链接
+
+1. 详细描述问题
+
+1. 描述问题对用户造成的困扰
+
+1. 提出建议修复的方式
+
+1. 在[Issues](https://github.com/apache/incubator-shardingsphere-doc/issues)中`New issue` 提出您的问题
+
+## 提交更改
+
 ### 操作步骤
 
-1. 首先，你需要在master分支目录结构中定位出你要操作的文件。如果你要进行修改，并且你使用的是idea工具，你可以依赖前后内容使用快捷键 Ctrl + Shift + F进行快速搜索 。
-1. 文件操作完成后，并提pr到master分支。
-1. 在更新完master分支之后，就要修改对应的asf-site分支，即website。你需要执行build.sh脚本, 将会自动生成target文件夹，即为website所需文件。build.sh为已创建的脚本，直接执行即可。
-1. 在切换分支前你需要将target目录里面的文件全部复制下来，并删除master分支下的target目录
-1. 你需要使用命令 `git checkout asf-site` 切换分支，将asf-site分支中的文件全部替换为**第4步**所复制的文件(target目录中的文件)。
-1. 最后，你可以针对asf-site分支提交pr了。
+1. 首先，你需要在master分支目录结构中定位出你要操作的文件
+1. 文件操作完成后，提pull request到master分支
 
-### 注意点
+## 约定
 
-1. 为了兼容性，请使用Hugo的`0.37.1`版本。
-1. 不要提交多余的目录，请参考下列你需要替换与提交的asf-site分支根目录下的文件夹及文件。
+- 非特别说明，请使用Hugo的`0.37.1`版本
 
-   ```
-   │  check.html
-   │  index.html
-   │  index_m.html
-   │  index_m_zh.html
-   │  index_zh.html
-   │
-   ├─community
-   ├─css
-   ├─document
-   ├─images
-   └─schema
-   ```
+- asf-site分支由官方定期更新，您无需向asf-site提交pull request
