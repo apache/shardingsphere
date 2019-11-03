@@ -20,21 +20,21 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>sql-parser</artifactId>
+        <artifactId>shardingsphere-sql-parser</artifactId>
         <version>4.0.0-RC3-SNAPSHOT</version>
     </parent>
-    <artifactId>sql-parser-mysql</artifactId>
+    <artifactId>shardingsphere-sql-parser-mysql</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sql-parser-spi</artifactId>
+            <artifactId>shardingsphere-sql-parser-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sql-parser-common</artifactId>
+            <artifactId>shardingsphere-sql-parser-common</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

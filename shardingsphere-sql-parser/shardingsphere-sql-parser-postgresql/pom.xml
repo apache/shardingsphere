@@ -20,17 +20,44 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>sql-parser</artifactId>
+        <artifactId>shardingsphere-sql-parser</artifactId>
         <version>4.0.0-RC3-SNAPSHOT</version>
     </parent>
-    <artifactId>sql-parser-spi</artifactId>
+    <artifactId>shardingsphere-sql-parser-postgresql</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-api</artifactId>
+            <artifactId>shardingsphere-sql-parser-spi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-parser-common</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>antlr</id>
+                        <configuration>
+                            <libDirectory>src/main/antlr4/imports/postgresql/</libDirectory>
+                            <listener>false</listener>
+                            <visitor>false</visitor>
+                        </configuration>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
