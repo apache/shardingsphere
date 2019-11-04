@@ -25,7 +25,7 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Sharding data source names.
@@ -97,6 +97,6 @@ public final class ShardingDataSourceNames {
      * @return random data source name
      */
     public String getRandomDataSourceName(final Collection<String> dataSourceNames) {
-        return Lists.newArrayList(dataSourceNames).get(new Random().nextInt(dataSourceNames.size()));
+        return Lists.newArrayList(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
     }
 }
