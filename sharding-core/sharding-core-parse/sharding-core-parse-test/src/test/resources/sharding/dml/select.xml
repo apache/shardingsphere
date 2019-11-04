@@ -346,6 +346,32 @@
             </aggregation-select-items>
         </select-items>
     </parser-result>
+
+    <parser-result sql-case-id="select_count_tilde_concat" parameters="'init', 1, 2, 9, 10">
+        <tables>
+            <table name="t_order" alias="o"/>
+        </tables>
+        <tokens>
+            <table-token start-index="37" table-name="t_order" length="7" />
+        </tokens>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="1" literal="1" type="int" />
+                    <value index="2" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="3" literal="9" type="int" />
+                    <value index="4" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+        <select-items start-index="7" stop-index="30">
+            <aggregation-select-items>
+                <aggregation-select-item start-index="7" stop-index="14" type="COUNT" text="count(0)" inner-expression="(0)" alias="orders_count"/>
+            </aggregation-select-items>
+        </select-items>
+    </parser-result>
     
     <parser-result sql-case-id="select_sharding_route_with_binding_tables" parameters="1, 2, 9, 10">
         <tables>
