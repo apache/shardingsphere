@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.core.rule.jaxb.loader;
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.database.DatabaseType;
 
 /**
  * Rule definition file constant.
@@ -50,11 +49,11 @@ public final class RuleDefinitionFileConstant {
     /**
      * Get extractor rule definition file name.
      *
-     * @param databaseType database type
+     * @param databaseTypeName name of database type
      * @return extractor rule definition file name
      */
-    public static String getExtractorRuleDefinitionFile(final DatabaseType databaseType) {
-        return Joiner.on('/').join(ROOT_PATH, databaseType.getName().toLowerCase(), EXTRACTOR_RULE_DEFINITION_FILE_NAME);
+    public static String getExtractorRuleDefinitionFile(final String databaseTypeName) {
+        return Joiner.on('/').join(ROOT_PATH, databaseTypeName.toLowerCase(), EXTRACTOR_RULE_DEFINITION_FILE_NAME);
     }
     
     /**
@@ -69,20 +68,20 @@ public final class RuleDefinitionFileConstant {
     /**
      * Get filler rule definition file name.
      *
-     * @param databaseType database type
+     * @param databaseTypeName name of database type
      * @return filler rule definition file name
      */
-    public static String getFillerRuleDefinitionFile(final DatabaseType databaseType) {
-        return Joiner.on('/').join(ROOT_PATH, databaseType.getName().toLowerCase(), FILLER_RULE_DEFINITION_FILE_NAME);
+    public static String getFillerRuleDefinitionFile(final String databaseTypeName) {
+        return Joiner.on('/').join(ROOT_PATH, databaseTypeName.toLowerCase(), FILLER_RULE_DEFINITION_FILE_NAME);
     }
     
     /**
      * Get SQL statement rule definition file name.
      *
-     * @param databaseType database type
+     * @param databaseTypeName name of database type
      * @return SQL statement rule definition file name
      */
-    public static String getSQLStatementRuleDefinitionFile(final DatabaseType databaseType) {
-        return Joiner.on('/').join(ROOT_PATH, databaseType.getName().toLowerCase(), SQL_STATEMENT_RULE_DEFINITION_FILE_NAME);
+    public static String getSQLStatementRuleDefinitionFile(final String databaseTypeName) {
+        return Joiner.on('/').join(ROOT_PATH, databaseTypeName.toLowerCase(), SQL_STATEMENT_RULE_DEFINITION_FILE_NAME);
     }
 }
