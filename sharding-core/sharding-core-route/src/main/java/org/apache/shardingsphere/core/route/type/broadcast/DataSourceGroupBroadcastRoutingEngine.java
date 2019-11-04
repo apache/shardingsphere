@@ -28,8 +28,8 @@ import org.apache.shardingsphere.core.rule.TableRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Data source group broadcast routing engine.
@@ -94,6 +94,6 @@ public final class DataSourceGroupBroadcastRoutingEngine implements RoutingEngin
     }
     
     private String getRandomDataSourceName(final Collection<String> dataSourceNames) {
-        return Lists.newArrayList(dataSourceNames).get(new Random().nextInt(dataSourceNames.size()));
+        return Lists.newArrayList(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
     }
 }
