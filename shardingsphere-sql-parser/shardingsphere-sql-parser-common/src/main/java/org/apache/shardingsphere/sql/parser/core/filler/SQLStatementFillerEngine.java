@@ -60,7 +60,7 @@ public final class SQLStatementFillerEngine {
         ((AbstractSQLStatement) result).setParametersCount(parameterMarkerCount);
         result.getAllSQLSegments().addAll(sqlSegments);
         for (SQLSegment each : sqlSegments) {
-            Optional<SQLSegmentFiller> filler = parseRuleRegistry.findSQLSegmentFiller(databaseType, each.getClass());
+            Optional<SQLSegmentFiller> filler = parseRuleRegistry.findSQLSegmentFiller(databaseType.getName(), each.getClass());
             if (filler.isPresent()) {
                 filler.get().fill(each, result);
             }

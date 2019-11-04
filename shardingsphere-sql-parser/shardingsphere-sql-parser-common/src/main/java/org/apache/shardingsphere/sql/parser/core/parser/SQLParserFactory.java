@@ -25,7 +25,6 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.spi.database.BranchDatabaseType;
 import org.apache.shardingsphere.spi.database.DatabaseType;
@@ -44,22 +43,22 @@ import java.util.HashSet;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLParserFactory {
     
-    private static final Collection<DatabaseType> DATABASE_TYPES = new HashSet<>();
+    private static final Collection<String> DATABASE_TYPE_NAMES = new HashSet<>();
     
     static {
         NewInstanceServiceLoader.register(SQLParserEntry.class);
         for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
-            DATABASE_TYPES.add(DatabaseTypes.getActualDatabaseType(each.getDatabaseTypeName()));
+            DATABASE_TYPE_NAMES.add(each.getDatabaseTypeName());
         }
     }
     
     /**
-     * Get add on database types.
+     * Get add on name of database types.
      * 
-     * @return add on database types
+     * @return add on name of database types
      */
-    public static Collection<DatabaseType> getAddOnDatabaseTypes() {
-        return DATABASE_TYPES;
+    public static Collection<String> getAddOnDatabaseTypeNames() {
+        return DATABASE_TYPE_NAMES;
     }
     
     /** 

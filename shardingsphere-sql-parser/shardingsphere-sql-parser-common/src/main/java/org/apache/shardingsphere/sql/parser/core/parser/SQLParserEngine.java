@@ -56,7 +56,7 @@ public final class SQLParserEngine {
         if (parseTree instanceof ErrorNode) {
             throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }
-        SQLStatementRule rule = parseRuleRegistry.getSQLStatementRule(databaseType, parseTree.getClass().getSimpleName());
+        SQLStatementRule rule = parseRuleRegistry.getSQLStatementRule(databaseType.getName(), parseTree.getClass().getSimpleName());
         if (null == rule) {
             throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }

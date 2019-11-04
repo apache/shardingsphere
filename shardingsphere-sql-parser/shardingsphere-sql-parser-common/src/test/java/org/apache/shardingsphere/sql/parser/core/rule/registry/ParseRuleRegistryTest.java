@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.core.rule.registry;
 
-import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.junit.Test;
 
@@ -30,7 +29,7 @@ public final class ParseRuleRegistryTest {
     
     @Test
     public void assertShardingParseRuleRegistry() {
-        assertNotNull(parseRuleRegistry.getSQLStatementRule(DatabaseTypes.getActualDatabaseType("MySQL"), "SelectContext"));
-        assertTrue(parseRuleRegistry.findSQLSegmentFiller(DatabaseTypes.getActualDatabaseType("MySQL"), ColumnDefinitionSegment.class).isPresent());
+        assertNotNull(parseRuleRegistry.getSQLStatementRule("MySQL", "SelectContext"));
+        assertTrue(parseRuleRegistry.findSQLSegmentFiller("MySQL", ColumnDefinitionSegment.class).isPresent());
     }
 }
