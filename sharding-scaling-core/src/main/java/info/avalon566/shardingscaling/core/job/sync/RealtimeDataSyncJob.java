@@ -116,6 +116,7 @@ public class RealtimeDataSyncJob implements SyncJob {
 
     private void startReportRealtimeSyncPosition() {
         new Thread(new Runnable() {
+            
             @Override
             public void run() {
                 LogPosition lastLogPosition = null;
