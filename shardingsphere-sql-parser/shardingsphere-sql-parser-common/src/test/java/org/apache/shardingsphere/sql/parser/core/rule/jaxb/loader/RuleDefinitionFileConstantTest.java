@@ -42,11 +42,6 @@ public final class RuleDefinitionFileConstantTest {
     }
     
     @Test
-    public void assertGetFeatureGeneralFillerRuleDefinitionFile() {
-        assertThat(RuleDefinitionFileConstant.getFillerRuleDefinitionFile("sharding"), is("META-INF/parsing-rule-definition/sharding/filler-rule-definition.xml"));
-    }
-    
-    @Test
     public void assertGetFillerRuleDefinitionFile() {
         assertThat(RuleDefinitionFileConstant.getFillerRuleDefinitionFile(DatabaseTypes.getActualDatabaseType("MySQL")), is("META-INF/parsing-rule-definition/mysql/filler-rule-definition.xml"));
     }

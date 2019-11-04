@@ -67,16 +67,6 @@ public final class RuleDefinitionFileConstant {
     }
     
     /**
-     * Get general filler rule definition file name.
-     *
-     * @param featureType feature type
-     * @return filler rule definition file name
-     */
-    public static String getFillerRuleDefinitionFile(final String featureType) {
-        return Joiner.on('/').join(ROOT_PATH, featureType, FILLER_RULE_DEFINITION_FILE_NAME);
-    }
-    
-    /**
      * Get filler rule definition file name.
      *
      * @param databaseType database type
