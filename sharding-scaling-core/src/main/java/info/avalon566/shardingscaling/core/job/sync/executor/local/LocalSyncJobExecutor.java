@@ -18,10 +18,13 @@
 package info.avalon566.shardingscaling.core.job.sync.executor.local;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
+import info.avalon566.shardingscaling.core.job.MigrateProgress;
+import info.avalon566.shardingscaling.core.job.sync.SyncJob;
 import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
 import info.avalon566.shardingscaling.core.job.sync.executor.SyncJobExecutor;
 import info.avalon566.shardingscaling.core.job.sync.SyncJobFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,12 +34,33 @@ import java.util.List;
  */
 public class LocalSyncJobExecutor implements SyncJobExecutor {
 
+    private List<SyncJob> syncJobs;
+
     @Override
-    public final Reporter execute(final List<SyncConfiguration> syncConfigurations) {
+    public final Reporter start(final List<SyncConfiguration> syncConfigurations) {
         LocalReporter reporter = new LocalReporter();
+        syncJobs = new ArrayList<>(syncConfigurations.size());
         for (SyncConfiguration syncConfiguration : syncConfigurations) {
-            new Thread(SyncJobFactory.createSyncJobInstance(syncConfiguration, reporter)).start();
+            SyncJob syncJob = SyncJobFactory.createSyncJobInstance(syncConfiguration, reporter);
+            syncJob.start();
+            syncJobs.add(syncJob);
         }
         return reporter;
+    }
+
+    @Override
+    public final void stop() {
+        for (SyncJob syncJob : syncJobs) {
+            syncJob.stop();
+        }
+    }
+
+    @Override
+    public final List<MigrateProgress> getProgresses() {
+        List<MigrateProgress> result = new ArrayList<>();
+        for (SyncJob syncJob : syncJobs) {
+            result.add(syncJob.getProgress());
+        }
+        return result;
     }
 }

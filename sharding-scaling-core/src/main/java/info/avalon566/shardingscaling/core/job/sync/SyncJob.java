@@ -17,10 +17,29 @@
 
 package info.avalon566.shardingscaling.core.job.sync;
 
+import info.avalon566.shardingscaling.core.job.MigrateProgress;
+
 /**
  * Sync job interface.
  *
  * @author avalon566
  */
 public interface SyncJob extends Runnable {
+
+    /**
+     * Start synchronize data.
+     */
+    void start();
+
+    /**
+     * Stop synchronize data.
+     */
+    void stop();
+
+    /**
+     * Get synchronize progress.
+     *
+     * @return migrate progress
+     */
+    MigrateProgress getProgress();
 }

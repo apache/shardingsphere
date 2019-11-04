@@ -43,13 +43,11 @@ import java.util.List;
  * @author avalon566
  */
 @Slf4j
-public class DataNodeMigrateController {
+public class DataNodeMigrateController implements Runnable {
 
     private final SyncJobExecutor syncJobExecutor = new LocalSyncJobExecutor();
 
     private final SyncConfiguration syncConfiguration;
-
-    private LogPosition currentLogPosition;
 
     public DataNodeMigrateController(final SyncConfiguration syncConfiguration) {
         this.syncConfiguration = syncConfiguration;
@@ -59,28 +57,39 @@ public class DataNodeMigrateController {
      * Start synchronize data.
      */
     public void start() {
-        LogPosition position = new RealtimeDataSyncJob(syncConfiguration, null).preRun();
-        syncHistoryData();
-        syncRealtimeData(position);
+        new Thread(this).start();
     }
 
     /**
      * Stop synchronize data.
      */
     public void stop() {
-        throw new UnsupportedOperationException();
+        syncJobExecutor.stop();
+        //TODO skip remain job
     }
 
     /**
      * Get synchronize progress.
+     *
+     * @return migrate progress
      */
     public MigrateProgress getProgress() {
-        throw new UnsupportedOperationException();
+        List<MigrateProgress> result = syncJobExecutor.getProgresses();
+        // if history data sync job, only return first migrate progress.
+        // if realtime data sync job, there only one migrate progress.
+        return result.get(0);
+    }
+
+    @Override
+    public void run() {
+        LogPosition position = new RealtimeDataSyncJob(syncConfiguration, null).preRun();
+        syncHistoryData();
+        syncRealtimeData(position);
     }
 
     private void syncHistoryData() {
         List<SyncConfiguration> configs = split(syncConfiguration);
-        Reporter reporter = syncJobExecutor.execute(configs);
+        Reporter reporter = syncJobExecutor.start(configs);
         waitSlicesFinished(configs, reporter);
     }
 
@@ -126,7 +135,7 @@ public class DataNodeMigrateController {
                 syncConfiguration.getReaderConfiguration(),
                 syncConfiguration.getWriterConfiguration());
         realConfiguration.setPosition(position);
-        Reporter realtimeReporter = syncJobExecutor.execute(Collections.singletonList(realConfiguration));
+        Reporter realtimeReporter = syncJobExecutor.start(Collections.singletonList(realConfiguration));
         while (true) {
             Event event = realtimeReporter.consumeEvent();
             if (EventType.FINISHED == event.getEventType()) {
@@ -136,7 +145,7 @@ public class DataNodeMigrateController {
                 System.exit(1);
             }
             if (EventType.REALTIME_SYNC_POSITION == event.getEventType()) {
-                currentLogPosition = (LogPosition) event.getPayload();
+
             }
         }
     }

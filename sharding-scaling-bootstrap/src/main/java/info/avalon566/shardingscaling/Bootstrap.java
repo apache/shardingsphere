@@ -17,6 +17,7 @@
 
 package info.avalon566.shardingscaling;
 
+import info.avalon566.shardingscaling.core.job.MigrateProgress;
 import info.avalon566.shardingscaling.core.job.ScalingController;
 import info.avalon566.shardingscaling.config.RuleConfiguration;
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
@@ -71,7 +72,23 @@ public class Bootstrap {
             try {
                 CommandLine commandLine = parseCommand(args);
                 List<SyncConfiguration> syncConfigurations = toSyncConfigurations(commandLine);
-                new ScalingController(syncConfigurations).start();
+                final ScalingController scalingController = new ScalingController(syncConfigurations);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (true) {
+                            try {
+                                Thread.sleep(10 * 1000);
+                            } catch (InterruptedException ex) {
+                                break;
+                            }
+                            for (MigrateProgress progress : scalingController.getProgresses()) {
+                                log.info(progress.getLogPosition().toString());
+                            }
+                        }
+                    }
+                }).start();
+                scalingController.start();
             } catch (FileNotFoundException | ParseException e) {
                 throw new RuntimeException(e);
             }

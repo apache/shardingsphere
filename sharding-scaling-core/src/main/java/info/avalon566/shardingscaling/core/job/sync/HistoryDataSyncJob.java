@@ -18,12 +18,14 @@
 package info.avalon566.shardingscaling.core.job.sync;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
+import info.avalon566.shardingscaling.core.job.MigrateProgress;
 import info.avalon566.shardingscaling.core.job.sync.executor.Event;
 import info.avalon566.shardingscaling.core.job.sync.executor.EventType;
 import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
 import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.core.sync.SyncExecutor;
 import info.avalon566.shardingscaling.core.sync.channel.MemoryChannel;
+import info.avalon566.shardingscaling.core.sync.reader.NopLogPosition;
 import info.avalon566.shardingscaling.core.sync.reader.Reader;
 import info.avalon566.shardingscaling.core.sync.reader.ReaderFactory;
 import info.avalon566.shardingscaling.core.sync.writer.Writer;
@@ -48,6 +50,21 @@ public class HistoryDataSyncJob implements SyncJob {
     public HistoryDataSyncJob(final SyncConfiguration syncConfiguration, final Reporter reporter) {
         this.syncConfiguration = syncConfiguration;
         this.reporter = reporter;
+    }
+
+    @Override
+    public final void start() {
+        new Thread(this).start();
+    }
+
+    @Override
+    public final void stop() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final MigrateProgress getProgress() {
+        return new MigrateProgress("HISTORY_DATA_SYNC", new NopLogPosition());
     }
 
     /**
