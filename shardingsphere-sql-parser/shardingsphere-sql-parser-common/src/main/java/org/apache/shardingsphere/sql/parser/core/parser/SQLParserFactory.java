@@ -49,7 +49,7 @@ public final class SQLParserFactory {
     static {
         NewInstanceServiceLoader.register(SQLParserEntry.class);
         for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
-            DATABASE_TYPES.add(DatabaseTypes.getActualDatabaseType(each.getDatabaseType().getName()));
+            DATABASE_TYPES.add(DatabaseTypes.getActualDatabaseType(each.getDatabaseTypeName()));
         }
     }
     
@@ -71,7 +71,7 @@ public final class SQLParserFactory {
      */
     public static SQLParser newInstance(final DatabaseType databaseType, final String sql) {
         for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
-            if (each.getDatabaseType().getName().equals(getDatabaseTypeName(databaseType))) {
+            if (each.getDatabaseTypeName().equals(getDatabaseTypeName(databaseType))) {
                 return createSQLParser(sql, each);
             }
         }

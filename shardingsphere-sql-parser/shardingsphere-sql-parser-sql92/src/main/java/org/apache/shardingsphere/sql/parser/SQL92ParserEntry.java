@@ -19,9 +19,7 @@ package org.apache.shardingsphere.sql.parser;
 
 import org.antlr.v4.runtime.Lexer;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.DatabaseType;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementLexer;
-import org.apache.shardingsphere.sql.parser.database.SQL92DatabaseType;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 
 /**
@@ -32,8 +30,8 @@ import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 public final class SQL92ParserEntry implements SQLParserEntry {
     
     @Override
-    public DatabaseType getDatabaseType() {
-        return new SQL92DatabaseType();
+    public String getDatabaseTypeName() {
+        return "SQL92";
     }
     
     @Override
