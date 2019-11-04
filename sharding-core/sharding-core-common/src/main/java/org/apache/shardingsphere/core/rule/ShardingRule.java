@@ -407,6 +407,16 @@ public class ShardingRule implements BaseRule {
     }
     
     /**
+     * Judge if default data source mame exists.
+     *
+     * @return if default data source name exists
+     */
+    public boolean hasDefaultDataSourceName() {
+        String defaultDataSourceName = shardingDataSourceNames.getDefaultDataSourceName();
+        return !Strings.isNullOrEmpty(defaultDataSourceName);
+    }
+    
+    /**
      * Find actual default data source name.
      *
      * <p>If use master-slave rule, return master data source name.</p>
