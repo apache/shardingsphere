@@ -7,23 +7,23 @@ weight = 2
 
 ## 配置
 
-为了让测试更加容易上手，整合测试引擎无需修改任何`Java`代码，通过配置以下几种类型的配置文件即可运行断言：
+为了使测试更容易上手，集成测试引擎无需修改任何 **Java** 代码，只需要配置以下几类文件即可运行断言：
 
   - 环境类文件
-    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env.properties
-    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/`SQL-TYPE`/dataset.xml
-    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/`SQL-TYPE`/schema.xml
+    - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env.properties
+    - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/`SQL-TYPE`/dataset.xml
+    - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/`SQL-TYPE`/schema.xml
   - 测试用例类文件
-    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/`SQL-TYPE`/`SQL-TYPE`-integrate-test-cases.xml
-    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/`SQL-TYPE`/dataset/`SHARDING-TYPE`/*.xml
+    - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/`SQL-TYPE`/`SQL-TYPE`-integrate-test-cases.xml
+    - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/`SQL-TYPE`/dataset/`SHARDING-TYPE`/*.xml
   - sql-case 文件
-    - /incubator-shardingsphere/sharding-sql-test/src/main/resources/sql/sharding/`SQL-TYPE`/*.xml
+    - /sharding-sql-test/src/main/resources/sql/sharding/`SQL-TYPE`/*.xml
 
 ### 环境配置 
 
-整合测试需要真实的数据库环境，需要根据要测试的数据库创建相关环境并修改相应的配置文件：
+集成测试需要真实的数据库环境，根据相应的配置文件创建测试环境：
 
-首先，修改 `/incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env.properties` 文件，例如：
+首先，修改配置文件 `/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env.properties` ，例子如下：
 
 ```properties
 # 测试主键，并发，column index等的开关
@@ -60,7 +60,7 @@ oracle.username=jdbc
 oracle.password=jdbc
 ```
 
-其次，修改`/incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/SQL-TYPE/dataset.xml` 文件。
+其次，修改文件 `/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/SQL-TYPE/dataset.xml` 
 在`dataset.xml`文件中定义元数据和测试数据。例如：
 
 ```xml
@@ -83,13 +83,13 @@ oracle.password=jdbc
 </dataset>
 ```
 
-开发者可以在`schema.xml`中定制化建库与建表语句。 
+开发者可以在 `schema.xml` 中自定义建库与建表语句。 
 
 ### 断言配置
 
-通过前面的配置，我们确定了什么SQL在什么环境执行的问题，这里我们定义下需要断言的数据。
-断言的配置，需要两种文件，第一类文件位于 `/incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/SQL-TYPE-integrate-test-cases.xml`
-这个文件类似于一个索引，定义了要执行的SQL，参数以及期待的数据的位置。这里的SQL，引用的就是`sharding-sql-test`中SQL对应的`sql-case-id`，例子如下：
+`env.properties` 与 `dataset.xml ` 确定了什么SQL在什么环境执行，下面是断言数据的配置
+断言的配置，需要两种文件，第一类文件位于 `/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/SQL-TYPE-integrate-test-cases.xml`
+这个文件类似于一个索引，定义了要执行的SQL，参数以及期待的数据的文件位置。这里的 test-case 引用的就是`sharding-sql-test`中 SQL 对应的`sql-case-id`，例子如下：
 
 ```xml
 <integrate-test-cases>
@@ -99,8 +99,8 @@ oracle.password=jdbc
     </dml-test-case>
 </integrate-test-cases>
 ```
-还有一类文件，就是具体的断言数据，也就是上面配置中的 expected-data-file 对应的文件，文件在 `/incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/dataset/SHARDING-TYPE/*.xml`
-这个文件内容根前面提及的 dataset.xml 的内容特别相似，只不过`expected-data-file`文件中不仅定义了断言的数据，还有相应SQL执行后的返回值等。例如：
+还有一类文件 -- 断言数据，也就是上面配置中的 expected-data-file 对应的文件，文件在 `/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/dataset/SHARDING-TYPE/*.xml`
+这个文件内容跟 dataset.xml 很相似，只不过`expected-data-file`文件中不仅定义了断言的数据，还有相应SQL执行后的返回值等。例如：
 
 ```xml
 <dataset update-count="1">
@@ -116,7 +116,7 @@ oracle.password=jdbc
 </dataset>
 ```
 
-至此，所有需要配置的数据，都已经配置完毕，接了来我们启动相应的集成测试类即可，全程不需要修改任何`Java`代码，只需要在`xml`中做数据初始化以及断言，极大的降低了ShardingSphere数据测试的门槛以及复杂度。
+所有需要配置的数据，都已经配置完毕，启动相应的集成测试类即可，全程不需要修改任何 `Java` 代码，只需要在 `xml` 中做数据初始化以及断言，极大的降低了ShardingSphere数据测试的门槛以及复杂度。
 
 ## 注意事项
 

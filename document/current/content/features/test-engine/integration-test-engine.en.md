@@ -7,23 +7,23 @@ weight = 2
 
 ## Configuration
 
-In order to make test engine easier to setup, integration-test is designed to modify the following configuration files to execute all assertions without any `Java` code modification:
+In order to make test engine easier to setup, integration-test is designed to modify the following configuration files to execute all assertions without any **Java** code modification:
 
   - environment type
-    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env.properties
-    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/`SQL-TYPE`/dataset.xml
-    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/`SQL-TYPE`/schema.xml
+    - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env.properties
+    - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/`SQL-TYPE`/dataset.xml
+    - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/`SQL-TYPE`/schema.xml
   - test case type
-    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/`SQL-TYPE`/`SQL-TYPE`-integrate-test-cases.xml
-    - /incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/`SQL-TYPE`/dataset/`SHARDING-TYPE`/*.xml
+    - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/`SQL-TYPE`/`SQL-TYPE`-integrate-test-cases.xml
+    - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/`SQL-TYPE`/dataset/`SHARDING-TYPE`/*.xml
   - sql-case 
-    - /incubator-shardingsphere/sharding-sql-test/src/main/resources/sql/sharding/`SQL-TYPE`/*.xml
+    - /sharding-sql-test/src/main/resources/sql/sharding/`SQL-TYPE`/*.xml
 
 ### Environment Configuration
 
 Integration test depends on existed database environment, developer need to setup the configuration file for corresponding database to test: 
 
-Firstly, setup configuration file `/incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env.properties`, for example: 
+Firstly, setup configuration file `/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env.properties`, for example: 
 
 ```properties
 # the switch for PK, concurrent, column index testing and so on
@@ -60,7 +60,7 @@ oracle.username=jdbc
 oracle.password=jdbc
 ```
 
-Secondly, setup configuration file `/incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/SQL-TYPE/dataset.xml`. 
+Secondly, setup configuration file `/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/SQL-TYPE/dataset.xml`. 
 Developer can set up metadata and expected data to start the data initialization in `dataset.xml`. For example: 
 
 ```xml
@@ -87,8 +87,8 @@ Developer can customize DDL to create databases and tables in `schema.xml`.
 
 ### Assertion Configuration
 
-We have confirmed what kind of sql execute in which environment in upon config, hereby let's define the data for assert.
-There are two kinds of config for assert, one is at `/incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/SQL-TYPE-integrate-test-cases.xml`.
+So far have confirmed what kind of sql execute in which environment in upon config, here define the data for assert.
+There are two kinds of config for assert, one is at `/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/SQL-TYPE-integrate-test-cases.xml`.
 This file just like an index, defined the sql, parameters and expected index position for execution. the SQL is the value for `sql-case-id`. For example: 
 
 ```xml
@@ -100,8 +100,8 @@ This file just like an index, defined the sql, parameters and expected index pos
 </integrate-test-cases>
 ```
 
-Another kind of config for assert is the data, as known as the corresponding expected-data-file in SQL-TYPE-integrate-test-cases.xml, which is at `/incubator-shardingsphere/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/dataset/SHARDING-TYPE/*.xml`.  
-This file is very like the dataset.xml we mentioned before, and the difference is that expected-data-file contains some other assert data, such as the return value after a sql execution. For examples:  
+Another kind of config for assert is the data, as known as the corresponding expected-data-file in SQL-TYPE-integrate-test-cases.xml, which is at `/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/dataset/SHARDING-TYPE/*.xml`.  
+This file is very like the dataset.xml mentioned before, and the difference is that expected-data-file contains some other assert data, such as the return value after a sql execution. For examples:  
 
 ```xml
 <dataset update-count="1">
@@ -116,7 +116,7 @@ This file is very like the dataset.xml we mentioned before, and the difference i
     <row data-node="db_0.t_order" values="2001, 20, init" />
 </dataset>
 ```
-so far, all config files are ready, we just need to launch the corresponding test case. we don't need to modify any Java code, just set up some config files.
+Util now, all config files are ready, just need to launch the corresponding test case. With no need for modify any Java code, just set up some config files.
 this will reduce the difficulty for ShardingSphere testing
 
 ## Notice
