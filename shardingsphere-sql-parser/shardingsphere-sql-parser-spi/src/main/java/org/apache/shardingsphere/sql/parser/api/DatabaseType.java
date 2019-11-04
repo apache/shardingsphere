@@ -15,37 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.spi;
-
-import org.antlr.v4.runtime.Lexer;
-import org.apache.shardingsphere.sql.parser.api.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.DatabaseType;
+package org.apache.shardingsphere.sql.parser.api;
 
 /**
- * SQL parser entry.
+ * Database type.
  *
  * @author zhangliang
  */
-public interface SQLParserEntry {
+public interface DatabaseType {
     
     /**
-     * Get database type of SQL parser.
+     * Get database type name.
      *
-     * @return database type of SQL parser
+     * @return database type name
      */
-    DatabaseType getDatabaseType();
-    
-    /**
-     * Get SQL lexer class type.
-     *
-     * @return SQL lexer class type
-     */
-    Class<? extends Lexer> getLexerClass();
-    
-    /**
-     * Get SQL parser class type.
-     * 
-     * @return SQL parser class type
-     */
-    Class<? extends SQLParser> getParserClass();
+    String getName();
 }

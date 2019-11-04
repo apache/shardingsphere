@@ -19,13 +19,19 @@ package org.apache.shardingsphere.sql.parser.core.rule.fixture;
 
 import org.antlr.v4.runtime.Lexer;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.DatabaseType;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class TestParserEntry implements SQLParserEntry {
     
     @Override
-    public String getDatabaseType() {
-        return "MySQL";
+    public DatabaseType getDatabaseType() {
+        DatabaseType result = mock(DatabaseType.class);
+        when(result.getName()).thenReturn("MySQL");
+        return result;
     }
     
     @Override

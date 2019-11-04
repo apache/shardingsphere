@@ -26,11 +26,11 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.sql.parser.api.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.spi.database.BranchDatabaseType;
 import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.sql.parser.api.SQLParser;
+import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -49,9 +49,7 @@ public final class SQLParserFactory {
     static {
         NewInstanceServiceLoader.register(SQLParserEntry.class);
         for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
-            if (!(each instanceof BranchDatabaseType)) {
-                DATABASE_TYPES.add(DatabaseTypes.getActualDatabaseType(each.getDatabaseType()));
-            }
+            DATABASE_TYPES.add(DatabaseTypes.getActualDatabaseType(each.getDatabaseType().getName()));
         }
     }
     
@@ -73,11 +71,18 @@ public final class SQLParserFactory {
      */
     public static SQLParser newInstance(final DatabaseType databaseType, final String sql) {
         for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
-            if (DatabaseTypes.getActualDatabaseType(each.getDatabaseType()) == databaseType) {
+            if (each.getDatabaseType().getName().equals(getDatabaseTypeName(databaseType))) {
                 return createSQLParser(sql, each);
             }
         }
         throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
+    }
+    
+    private static String getDatabaseTypeName(final DatabaseType databaseType) {
+        if (databaseType instanceof BranchDatabaseType) {
+            return ((BranchDatabaseType) databaseType).getTrunkDatabaseType().getName();
+        }
+        return databaseType.getName();
     }
     
     @SneakyThrows

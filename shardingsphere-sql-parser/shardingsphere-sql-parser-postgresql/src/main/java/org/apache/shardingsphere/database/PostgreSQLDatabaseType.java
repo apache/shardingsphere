@@ -15,34 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser;
+package org.apache.shardingsphere.database;
 
-import org.antlr.v4.runtime.Lexer;
 import org.apache.shardingsphere.sql.parser.api.DatabaseType;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementLexer;
-import org.apache.shardingsphere.sql.parser.api.SQLParser;
-import org.apache.shardingsphere.sql.parser.database.SQLServerDatabaseType;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 
 /**
- * SQL parser entry for SQLServer.
+ * Database type of PostgreSQL.
  *
  * @author zhangliang
  */
-public final class SQLServerParserEntry implements SQLParserEntry {
+public final class PostgreSQLDatabaseType implements DatabaseType {
     
     @Override
-    public DatabaseType getDatabaseType() {
-        return new SQLServerDatabaseType();
-    }
-    
-    @Override
-    public Class<? extends Lexer> getLexerClass() {
-        return SQLServerStatementLexer.class;
-    }
-    
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return SQLServerParser.class;
+    public String getName() {
+        return "PostgreSQL";
     }
 }
