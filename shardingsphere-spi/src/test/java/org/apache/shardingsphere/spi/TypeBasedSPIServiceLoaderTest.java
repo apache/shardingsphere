@@ -29,7 +29,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class BaseAlgorithmFactoryTest {
+public final class TypeBasedSPIServiceLoaderTest {
     
     private BaseAlgorithmFixtureServiceLoader serviceLoader = new BaseAlgorithmFixtureServiceLoader();
     
