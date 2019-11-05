@@ -1,0 +1,23 @@
+{
+  "ruleConfiguration": {
+    "dataSources": [
+      {
+        "name": "ds_0",
+        "password": "123456",
+        "url": "jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC",
+        "username": "root"
+      }
+    ],
+    "destinationDataSources": {
+        "name": "dt_0",
+        "password": "123456",
+        "url": "jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC",
+        "username": "root"
+      }
+  },
+  "serverConfiguration": {
+    "blockQueueSize": 10000,
+    "pushTimeout": 1000,
+    "concurrency": 3
+  }
+}
