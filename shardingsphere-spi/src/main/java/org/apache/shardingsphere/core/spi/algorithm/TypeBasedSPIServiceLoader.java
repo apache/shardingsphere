@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.spi.algorithm;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.config.ShardingConfigurationException;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.spi.TypeBasedSPI;
 
@@ -50,7 +49,7 @@ public abstract class TypeBasedSPIServiceLoader<T extends TypeBasedSPI> {
     public final T newService(final String type, final Properties props) {
         Collection<T> typeBasedServices = loadTypeBasedServices(type);
         if (typeBasedServices.isEmpty()) {
-            throw new ShardingConfigurationException("Invalid `%s` SPI type `%s`.", classType.getName(), type);
+            throw new RuntimeException(String.format("Invalid `%s` SPI type `%s`.", classType.getName(), type));
         }
         T result = typeBasedServices.iterator().next();
         result.setProperties(props);
@@ -81,7 +80,7 @@ public abstract class TypeBasedSPIServiceLoader<T extends TypeBasedSPI> {
     private T loadFirstTypeBasedService() {
         Collection<T> instances = NewInstanceServiceLoader.newServiceInstances(classType);
         if (instances.isEmpty()) {
-            throw new ShardingConfigurationException("Invalid `%s` SPI, no implementation class load from SPI.", classType.getName());
+            throw new RuntimeException(String.format("Invalid `%s` SPI, no implementation class load from SPI.", classType.getName()));
         }
         return instances.iterator().next();
     }

@@ -30,6 +30,8 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>shardingsphere-spi</module>
+        
         <module>shardingsphere-sql-parser</module>
         
         <module>sharding-core</module>

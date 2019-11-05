@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.spi.algorithm;
 
-import org.apache.shardingsphere.core.config.ShardingConfigurationException;
 import org.apache.shardingsphere.core.spi.algorithm.fixture.BaseAlgorithmFixture;
 import org.apache.shardingsphere.core.spi.algorithm.fixture.BaseAlgorithmFixtureImpl;
 import org.apache.shardingsphere.core.spi.algorithm.fixture.BaseAlgorithmFixtureServiceLoader;
@@ -50,7 +49,7 @@ public final class BaseAlgorithmFactoryTest {
         assertTrue(actual.getProperties().isEmpty());
     }
     
-    @Test(expected = ShardingConfigurationException.class)
+    @Test(expected = RuntimeException.class)
     public void assertNewAlgorithmFailure() {
         serviceLoader.newService("INVALID", new Properties());
     }
