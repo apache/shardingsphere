@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.algorithm;
+package org.apache.shardingsphere.spi;
 
-import org.apache.shardingsphere.core.spi.algorithm.fixture.BaseAlgorithmFixture;
-import org.apache.shardingsphere.core.spi.algorithm.fixture.BaseAlgorithmFixtureImpl;
-import org.apache.shardingsphere.core.spi.algorithm.fixture.BaseAlgorithmFixtureServiceLoader;
+import org.apache.shardingsphere.spi.fixture.BaseAlgorithmFixture;
+import org.apache.shardingsphere.spi.fixture.BaseAlgorithmFixtureImpl;
+import org.apache.shardingsphere.spi.fixture.BaseAlgorithmFixtureServiceLoader;
 import org.junit.Test;
 
 import java.util.Properties;

@@ -15,25 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.database;
+package org.apache.shardingsphere.spi.database;
 
-import org.apache.shardingsphere.core.metadata.datasource.dialect.SQL92DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.core.metadata.datasource.dialect.H2DataSourceMetaData;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Database type of SQL92.
+ * Database type of H2.
  *
- * @author zhangyonglun
+ * @author zhangliang
  */
-public final class SQL92DatabaseType implements DatabaseType {
+public final class H2DatabaseType implements BranchDatabaseType {
     
     @Override
     public String getName() {
-        return "SQL92";
+        return "H2";
     }
     
     @Override
@@ -43,6 +42,11 @@ public final class SQL92DatabaseType implements DatabaseType {
     
     @Override
     public DataSourceMetaData getDataSourceMetaData(final String url) {
-        return new SQL92DataSourceMetaData(url);
+        return new H2DataSourceMetaData(url);
+    }
+    
+    @Override
+    public DatabaseType getTrunkDatabaseType() {
+        return DatabaseTypes.getActualDatabaseType("MySQL");
     }
 }

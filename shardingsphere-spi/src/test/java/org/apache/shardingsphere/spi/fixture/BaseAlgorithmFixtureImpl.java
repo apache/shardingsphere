@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.algorithm.encrypt;
+package org.apache.shardingsphere.spi.fixture;
 
-import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.core.spi.algorithm.TypeBasedSPIServiceLoader;
-import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+import lombok.Getter;
+import lombok.Setter;
 
-/**
- * Sharding encryptor service loader.
- * 
- * @author panjuan
- */
-public final class ShardingEncryptorServiceLoader extends TypeBasedSPIServiceLoader<ShardingEncryptor> {
+import java.util.Properties;
+
+@Getter
+@Setter
+public final class BaseAlgorithmFixtureImpl implements BaseAlgorithmFixture {
     
-    static {
-        NewInstanceServiceLoader.register(ShardingEncryptor.class);
-    }
+    private Properties properties;
     
-    public ShardingEncryptorServiceLoader() {
-        super(ShardingEncryptor.class);
+    @Override
+    public String getType() {
+        return "FIXTURE";
     }
 }
-

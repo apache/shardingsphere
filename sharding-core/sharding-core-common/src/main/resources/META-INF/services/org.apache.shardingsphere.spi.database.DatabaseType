@@ -15,10 +15,10 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.core.spi.database.SQL92DatabaseType
-org.apache.shardingsphere.core.spi.database.MySQLDatabaseType
-org.apache.shardingsphere.core.spi.database.MariaDBDatabaseType
-org.apache.shardingsphere.core.spi.database.PostgreSQLDatabaseType
-org.apache.shardingsphere.core.spi.database.OracleDatabaseType
-org.apache.shardingsphere.core.spi.database.SQLServerDatabaseType
-org.apache.shardingsphere.core.spi.database.H2DatabaseType
+org.apache.shardingsphere.spi.database.SQL92DatabaseType
+org.apache.shardingsphere.spi.database.MySQLDatabaseType
+org.apache.shardingsphere.spi.database.MariaDBDatabaseType
+org.apache.shardingsphere.spi.database.PostgreSQLDatabaseType
+org.apache.shardingsphere.spi.database.OracleDatabaseType
+org.apache.shardingsphere.spi.database.SQLServerDatabaseType
+org.apache.shardingsphere.spi.database.H2DatabaseType

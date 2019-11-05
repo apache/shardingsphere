@@ -15,9 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.algorithm.fixture;
+package org.apache.shardingsphere.spi.algorithm.keygen;
 
-import org.apache.shardingsphere.spi.TypeBasedSPI;
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.TypeBasedSPIServiceLoader;
+import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 
-public interface BaseAlgorithmFixture extends TypeBasedSPI {
+/**
+ * Key generator service loader.
+ * 
+ * @author zhangliang
+ * @author panjuan
+ */
+public final class ShardingKeyGeneratorServiceLoader extends TypeBasedSPIServiceLoader<ShardingKeyGenerator> {
+    
+    static {
+        NewInstanceServiceLoader.register(ShardingKeyGenerator.class);
+    }
+    
+    public ShardingKeyGeneratorServiceLoader() {
+        super(ShardingKeyGenerator.class);
+    }
 }

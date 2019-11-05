@@ -15,21 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.algorithm.fixture;
+package org.apache.shardingsphere.spi.algorithm.masterslave;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.TypeBasedSPIServiceLoader;
+import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
 
-import java.util.Properties;
-
-@Getter
-@Setter
-public final class BaseAlgorithmFixtureImpl implements BaseAlgorithmFixture {
+/**
+ * Master-slave database load-balance algorithm service loader.
+ * 
+ * @author zhangliang
+ */
+public final class MasterSlaveLoadBalanceAlgorithmServiceLoader extends TypeBasedSPIServiceLoader<MasterSlaveLoadBalanceAlgorithm> {
     
-    private Properties properties;
+    static {
+        NewInstanceServiceLoader.register(MasterSlaveLoadBalanceAlgorithm.class);
+    }
     
-    @Override
-    public String getType() {
-        return "FIXTURE";
+    public MasterSlaveLoadBalanceAlgorithmServiceLoader() {
+        super(MasterSlaveLoadBalanceAlgorithm.class);
     }
 }
+

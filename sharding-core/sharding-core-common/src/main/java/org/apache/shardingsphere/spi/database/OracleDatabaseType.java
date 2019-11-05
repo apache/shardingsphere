@@ -15,34 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.database;
+package org.apache.shardingsphere.spi.database;
 
-import org.apache.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaData;
-import org.apache.shardingsphere.spi.database.DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaData;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Database type of SQLServer.
+ * Database type of Oracle.
  *
  * @author zhangliang
  */
-public final class SQLServerDatabaseType implements DatabaseType {
+public final class OracleDatabaseType implements DatabaseType {
     
     @Override
     public String getName() {
-        return "SQLServer";
+        return "Oracle";
     }
     
     @Override
     public Collection<String> getJdbcUrlPrefixAlias() {
-        return Collections.singletonList("jdbc:microsoft:sqlserver:");
+        return Collections.emptyList();
     }
     
     @Override
     public DataSourceMetaData getDataSourceMetaData(final String url) {
-        return new SQLServerDataSourceMetaData(url);
+        return new OracleDataSourceMetaData(url);
     }
 }

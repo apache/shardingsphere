@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.strategy.encrypt;
 
-import org.apache.shardingsphere.core.spi.algorithm.encrypt.ShardingEncryptorServiceLoader;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptorServiceLoader;
 import org.apache.shardingsphere.core.strategy.encrypt.fixture.TestShardingEncryptor;
 import org.apache.shardingsphere.core.strategy.encrypt.impl.AESShardingEncryptor;
 import org.apache.shardingsphere.core.strategy.encrypt.impl.MD5ShardingEncryptor;

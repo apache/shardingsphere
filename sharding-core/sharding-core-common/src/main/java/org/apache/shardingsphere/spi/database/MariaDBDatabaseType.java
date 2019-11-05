@@ -15,37 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.database;
+package org.apache.shardingsphere.spi.database;
 
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.metadata.datasource.dialect.H2DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.BranchDatabaseType;
-import org.apache.shardingsphere.spi.database.DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.core.metadata.datasource.dialect.MariaDBDataSourceMetaData;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Database type of H2.
+ * Database type of Mariadb.
  *
- * @author zhangliang
+ * @author yanqiufang
  */
-public final class H2DatabaseType implements BranchDatabaseType {
+public final class MariaDBDatabaseType implements BranchDatabaseType {
     
     @Override
     public String getName() {
-        return "H2";
+        return "MariaDB";
     }
     
     @Override
     public Collection<String> getJdbcUrlPrefixAlias() {
-        return Collections.emptyList();
+        return Collections.singletonList("jdbc:mariadb:");
     }
     
     @Override
     public DataSourceMetaData getDataSourceMetaData(final String url) {
-        return new H2DataSourceMetaData(url);
+        return new MariaDBDataSourceMetaData(url);
     }
     
     @Override

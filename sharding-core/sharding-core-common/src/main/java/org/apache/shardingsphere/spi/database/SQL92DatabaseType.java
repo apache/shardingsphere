@@ -15,42 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.spi.database;
+package org.apache.shardingsphere.spi.database;
 
-import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.metadata.datasource.dialect.MariaDBDataSourceMetaData;
-import org.apache.shardingsphere.spi.database.BranchDatabaseType;
-import org.apache.shardingsphere.spi.database.DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.core.metadata.datasource.dialect.SQL92DataSourceMetaData;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Database type of Mariadb.
+ * Database type of SQL92.
  *
- * @author yanqiufang
+ * @author zhangyonglun
  */
-public final class MariaDBDatabaseType implements BranchDatabaseType {
+public final class SQL92DatabaseType implements DatabaseType {
     
     @Override
     public String getName() {
-        return "MariaDB";
+        return "SQL92";
     }
-
+    
     @Override
     public Collection<String> getJdbcUrlPrefixAlias() {
-        return Collections.singletonList("jdbc:mariadb:");
+        return Collections.emptyList();
     }
     
     @Override
     public DataSourceMetaData getDataSourceMetaData(final String url) {
-        return new MariaDBDataSourceMetaData(url);
+        return new SQL92DataSourceMetaData(url);
     }
-
-    @Override
-    public DatabaseType getTrunkDatabaseType() {
-        return DatabaseTypes.getActualDatabaseType("MySQL");
-    }
-
 }
