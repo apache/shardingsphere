@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.rewrite.parameterized.engine;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.preprocessor.SQLStatementContextFactory;
@@ -142,7 +141,7 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
     }
     
     private SQLRewriteContext getSQLRewriteContext() {
-        SQLStatement sqlStatement = SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getActualDatabaseType(null == databaseType ? "SQL92" : databaseType)).parse(inputSQL, false);
+        SQLStatement sqlStatement = SQLParseEngineFactory.getSQLParseEngine(null == databaseType ? "SQL92" : databaseType).parse(inputSQL, false);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(createTableMetas(), inputSQL, inputParameters, sqlStatement);
         return new SQLRewriteContext(mock(TableMetas.class), sqlStatementContext, inputSQL, inputParameters);
     }

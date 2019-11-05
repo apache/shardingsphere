@@ -60,7 +60,7 @@ public final class ShardingParameterizedParsingTest {
     @Test
     public void assertSupportedSQL() {
         String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());
-        SQLStatement sqlStatement = SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getTrunkDatabaseType(databaseType)).parse(sql, false);
+        SQLStatement sqlStatement = SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getTrunkDatabaseType(databaseType).getName()).parse(sql, false);
         new ShardingSQLStatementAssert(sqlStatement, sqlCaseId, sqlCaseType).assertSQLStatement();
     }
 }

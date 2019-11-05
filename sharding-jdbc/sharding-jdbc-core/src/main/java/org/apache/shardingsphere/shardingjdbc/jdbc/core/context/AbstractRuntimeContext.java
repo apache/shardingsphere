@@ -20,12 +20,13 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
-import org.apache.shardingsphere.sql.parser.SQLParseEngine;
-import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
 import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.util.ConfigurationLogger;
 import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.sql.parser.SQLParseEngine;
+import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
 
 import java.util.Properties;
 
@@ -54,7 +55,7 @@ public abstract class AbstractRuntimeContext<T extends BaseRule> implements Runt
         this.props = new ShardingProperties(null == props ? new Properties() : props);
         this.databaseType = databaseType;
         executeEngine = new ShardingExecuteEngine(this.props.<Integer>getValue(ShardingPropertiesConstant.EXECUTOR_SIZE));
-        parseEngine = SQLParseEngineFactory.getSQLParseEngine(databaseType);
+        parseEngine = SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getDatabaseTypeName(databaseType));
         ConfigurationLogger.log(rule.getRuleConfiguration());
         ConfigurationLogger.log(props);
     }

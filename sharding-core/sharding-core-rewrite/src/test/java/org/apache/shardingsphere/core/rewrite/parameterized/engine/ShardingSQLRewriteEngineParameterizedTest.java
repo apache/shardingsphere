@@ -23,7 +23,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
@@ -176,7 +175,7 @@ public final class ShardingSQLRewriteEngineParameterizedTest {
     private Collection<SQLRewriteResult> getSQLRewriteResults() throws IOException {
         YamlRootShardingConfiguration ruleConfiguration = createRuleConfiguration();
         ShardingRule shardingRule = new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(ruleConfiguration.getShardingRule()), ruleConfiguration.getDataSources().keySet());
-        SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getActualDatabaseType(null == databaseType ? "SQL92" : databaseType));
+        SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine(null == databaseType ? "SQL92" : databaseType);
         ShardingRouter shardingRouter = new ShardingRouter(shardingRule, createShardingSphereMetaData(), parseEngine);
         SQLStatement sqlStatement = shardingRouter.parse(inputSQL, false);
         SQLRouteResult sqlRouteResult = shardingRouter.route(inputSQL, inputParameters, sqlStatement);

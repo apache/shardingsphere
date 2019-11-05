@@ -52,6 +52,6 @@ public final class ShardingParameterizedUnsupportedParsingTest {
     @Test(expected = SQLParsingException.class)
     public void assertUnsupportedSQL() {
         String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
-        SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getTrunkDatabaseType(databaseType)).parse(sql, false);
+        SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getTrunkDatabaseType(databaseType).getName()).parse(sql, false);
     }
 }

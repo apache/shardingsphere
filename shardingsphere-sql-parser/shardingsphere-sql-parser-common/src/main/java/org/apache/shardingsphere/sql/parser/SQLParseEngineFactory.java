@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.database.BranchDatabaseType;
-import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,11 +36,10 @@ public final class SQLParseEngineFactory {
     /**
      * Get SQL parse engine.
      *
-     * @param databaseType database type
+     * @param databaseTypeName name of database type
      * @return SQL parse engine
      */
-    public static SQLParseEngine getSQLParseEngine(final DatabaseType databaseType) {
-        String databaseTypeName = getDatabaseTypeName(databaseType);
+    public static SQLParseEngine getSQLParseEngine(final String databaseTypeName) {
         if (ENGINES.containsKey(databaseTypeName)) {
             return ENGINES.get(databaseTypeName);
         }
@@ -54,12 +51,5 @@ public final class SQLParseEngineFactory {
             ENGINES.put(databaseTypeName, result);
             return result;
         }
-    }
-    
-    private static String getDatabaseTypeName(final DatabaseType databaseType) {
-        if (databaseType instanceof BranchDatabaseType) {
-            return ((BranchDatabaseType) databaseType).getTrunkDatabaseType().getName();
-        }
-        return databaseType.getName();
     }
 }

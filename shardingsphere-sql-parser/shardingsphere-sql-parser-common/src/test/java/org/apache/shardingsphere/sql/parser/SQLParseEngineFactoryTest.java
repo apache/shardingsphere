@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser;
 
-import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,6 +39,6 @@ public final class SQLParseEngineFactoryTest {
     
     @Test
     public void assertGetSQLParseEngine() {
-        assertThat(SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getTrunkDatabaseType("MySQL")), is(SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getTrunkDatabaseType("MySQL"))));
+        assertThat(SQLParseEngineFactory.getSQLParseEngine("MySQL"), is(SQLParseEngineFactory.getSQLParseEngine("MySQL")));
     }
 }

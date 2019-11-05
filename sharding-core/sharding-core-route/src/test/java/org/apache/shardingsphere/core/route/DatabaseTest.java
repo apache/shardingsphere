@@ -22,7 +22,6 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
@@ -67,7 +66,7 @@ public final class DatabaseTest {
     @Test
     public void assertDatabaseAllRoutingSQL() {
         String originSQL = "select * from tesT";
-        SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
+        SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine("MySQL");
         SQLRouteResult actual = new StatementRoutingEngine(shardingRule, getMetaDataForAllRoutingSQL(), parseEngine).route(originSQL);
         assertThat(actual.getRoutingResult().getRoutingUnits().size(), is(1));
         Collection<String> actualDataSources = actual.getRoutingResult().getDataSourceNames();
@@ -91,7 +90,7 @@ public final class DatabaseTest {
     @Test
     public void assertDatabaseSelectSQLPagination() {
         String originSQL = "select user_id from tbl_pagination limit 0,5";
-        SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
+        SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine("MySQL");
         SQLRouteResult actual = new StatementRoutingEngine(shardingRule, getMetaDataForPagination(), parseEngine).route(originSQL);
         assertThat(((SelectSQLStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualOffset(), is(0L));
         assertThat(((SelectSQLStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualRowCount().orNull(), is(5L));
@@ -130,7 +129,7 @@ public final class DatabaseTest {
         String originSQL = "select city_id from t_user where city_id in (?,?) limit 5,10";
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.getTables()).thenReturn(mock(TableMetas.class));
-        SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
+        SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine("MySQL");
         SQLRouteResult actual = new PreparedStatementRoutingEngine(originSQL, rule, metaData, parseEngine).route(Lists.<Object>newArrayList(13, 173));
         assertThat(((SelectSQLStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualOffset(), is(5L));
         assertThat(((SelectSQLStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualRowCount().orNull(), is(10L));

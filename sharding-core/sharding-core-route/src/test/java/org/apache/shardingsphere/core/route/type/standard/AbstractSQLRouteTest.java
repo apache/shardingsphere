@@ -45,7 +45,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     protected final SQLRouteResult assertRoute(final String sql, final List<Object> parameters) {
         ShardingRule shardingRule = createAllShardingRule();
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildTableMetas());
-        SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
+        SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine("MySQL");
         PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(sql, shardingRule, metaData, parseEngine);
         SQLRouteResult result = engine.route(parameters);
         assertThat(result.getRoutingResult().getRoutingUnits().size(), is(1));

@@ -56,7 +56,7 @@ public final class EncryptParameterizedParsingTest {
     @Test
     public void assertSupportedSQL() {
         String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());
-        SQLStatement sqlStatement = SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getActualDatabaseType(databaseType)).parse(sql, false);
+        SQLStatement sqlStatement = SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getActualDatabaseType(databaseType).getName()).parse(sql, false);
         new EncryptSQLStatementAssert(sqlStatement, sqlCaseId, sqlCaseType).assertSQLStatement();
     }
 }
