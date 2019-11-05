@@ -21,8 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.spi.database.BranchDatabaseType;
-import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
 import org.apache.shardingsphere.sql.parser.core.rule.registry.ParseRuleRegistry;
@@ -43,7 +41,7 @@ public final class SQLParserEngine {
     
     private final ParseRuleRegistry parseRuleRegistry;
     
-    private final DatabaseType databaseType;
+    private final String databaseTypeName;
     
     private final String sql;
     
@@ -53,22 +51,15 @@ public final class SQLParserEngine {
      * @return abstract syntax tree of SQL
      */
     public SQLAST parse() {
-        ParseTree parseTree = SQLParserFactory.newInstance(getDatabaseTypeName(databaseType), sql).execute().getChild(0);
+        ParseTree parseTree = SQLParserFactory.newInstance(databaseTypeName, sql).execute().getChild(0);
         if (parseTree instanceof ErrorNode) {
             throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }
-        SQLStatementRule rule = parseRuleRegistry.getSQLStatementRule(databaseType.getName(), parseTree.getClass().getSimpleName());
+        SQLStatementRule rule = parseRuleRegistry.getSQLStatementRule(databaseTypeName, parseTree.getClass().getSimpleName());
         if (null == rule) {
             throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }
         return new SQLAST((ParserRuleContext) parseTree, getParameterMarkerIndexes((ParserRuleContext) parseTree), rule);
-    }
-    
-    private static String getDatabaseTypeName(final DatabaseType databaseType) {
-        if (databaseType instanceof BranchDatabaseType) {
-            return ((BranchDatabaseType) databaseType).getTrunkDatabaseType().getName();
-        }
-        return databaseType.getName();
     }
     
     private Map<ParserRuleContext, Integer> getParameterMarkerIndexes(final ParserRuleContext rootNode) {

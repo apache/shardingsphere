@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.sql.parser.core.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.sql.parser.core.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
@@ -42,7 +41,7 @@ public final class SQLStatementFillerEngine {
     
     private final ParseRuleRegistry parseRuleRegistry;
     
-    private final DatabaseType databaseType;
+    private final String databaseTypeName;
     
     /**
      * Fill SQL statement.
@@ -60,7 +59,7 @@ public final class SQLStatementFillerEngine {
         ((AbstractSQLStatement) result).setParametersCount(parameterMarkerCount);
         result.getAllSQLSegments().addAll(sqlSegments);
         for (SQLSegment each : sqlSegments) {
-            Optional<SQLSegmentFiller> filler = parseRuleRegistry.findSQLSegmentFiller(databaseType.getName(), each.getClass());
+            Optional<SQLSegmentFiller> filler = parseRuleRegistry.findSQLSegmentFiller(databaseTypeName, each.getClass());
             if (filler.isPresent()) {
                 filler.get().fill(each, result);
             }

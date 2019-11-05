@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.sql.parser.core;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.spi.database.BranchDatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.sql.parser.core.extractor.SQLSegmentsExtractorEngine;
 import org.apache.shardingsphere.sql.parser.core.filler.SQLStatementFillerEngine;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLAST;
@@ -26,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.core.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.core.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.util.Collection;
 import java.util.Map;
@@ -46,10 +46,17 @@ public final class SQLParseKernel {
     private final SQLStatementFillerEngine fillerEngine;
     
     public SQLParseKernel(final ParseRuleRegistry parseRuleRegistry, final DatabaseType databaseType, final String sql) {
-        DatabaseType trunkDatabaseType = DatabaseTypes.getTrunkDatabaseType(databaseType.getName());
-        parserEngine = new SQLParserEngine(parseRuleRegistry, trunkDatabaseType, sql);
+        String databaseTypeName = getDatabaseTypeName(databaseType);
+        parserEngine = new SQLParserEngine(parseRuleRegistry, databaseTypeName, sql);
         extractorEngine = new SQLSegmentsExtractorEngine();
-        fillerEngine = new SQLStatementFillerEngine(parseRuleRegistry, trunkDatabaseType);
+        fillerEngine = new SQLStatementFillerEngine(parseRuleRegistry, databaseTypeName);
+    }
+    
+    private static String getDatabaseTypeName(final DatabaseType databaseType) {
+        if (databaseType instanceof BranchDatabaseType) {
+            return ((BranchDatabaseType) databaseType).getTrunkDatabaseType().getName();
+        }
+        return databaseType.getName();
     }
     
     /**
