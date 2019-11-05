@@ -17,6 +17,7 @@
 
 package info.avalon566.shardingscaling.core.sync.channel;
 
+import info.avalon566.shardingscaling.core.config.ScalingContext;
 import info.avalon566.shardingscaling.core.sync.record.Record;
 
 import java.util.ArrayList;
@@ -32,9 +33,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class MemoryChannel implements Channel {
 
-    private static final int PUSH_TIMEOUT = 1000;
+    private static final int PUSH_TIMEOUT = ScalingContext.getInstance().getServerConfiguration().getPushTimeout();
 
-    private final BlockingQueue<Record> queue = new ArrayBlockingQueue<>(10000);
+    private final BlockingQueue<Record> queue = new ArrayBlockingQueue<>(ScalingContext.getInstance().getServerConfiguration().getBlockQueueSize());
 
     @Override
     public final void pushRecord(final Record dataRecord) throws InterruptedException {
