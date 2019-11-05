@@ -45,7 +45,7 @@ public class ApolloConfigCenterTest {
     @BeforeClass
     public static void init() {
         ConfigCenterConfiguration configuration = new ConfigCenterConfiguration(configCenter.getType(), new Properties());
-        configuration.setServerLists("127.0.0.1:8080");
+        configuration.setServerLists("http://config-service-url");
         configuration.setNamespace("orchestration");
         configCenter.init(configuration);
     }
