@@ -32,6 +32,11 @@ import static org.junit.Assert.assertThat;
 
 public class ApolloConfigCenterTest {
 
+    static {
+        System.setProperty("env", "DEV");
+        System.setProperty("idc", ConfigConsts.CLUSTER_NAME_DEFAULT);
+    }
+
     @ClassRule
     public static EmbeddedApollo embeddedApollo = new EmbeddedApollo();
 
@@ -39,12 +44,8 @@ public class ApolloConfigCenterTest {
 
     @BeforeClass
     public static void init() {
-        Properties properties = new Properties();
-        properties.setProperty("appId", "APOLLO_SHARDING_SPHERE");
-        properties.setProperty("env", "DEV");
-        properties.setProperty("clusterName", ConfigConsts.CLUSTER_NAME_DEFAULT);
-        ConfigCenterConfiguration configuration = new ConfigCenterConfiguration(configCenter.getType(), properties);
-        configuration.setServerLists("127.0.0.1:8080");
+        ConfigCenterConfiguration configuration = new ConfigCenterConfiguration(configCenter.getType(), new Properties());
+        configuration.setServerLists("http://config-service-url");
         configuration.setNamespace("orchestration");
         configCenter.init(configuration);
     }
