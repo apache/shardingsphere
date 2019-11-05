@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.spi.database.BranchDatabaseType;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.util.Map;
@@ -41,16 +42,24 @@ public final class SQLParseEngineFactory {
      * @return SQL parse engine
      */
     public static SQLParseEngine getSQLParseEngine(final DatabaseType databaseType) {
-        if (ENGINES.containsKey(databaseType.getName())) {
-            return ENGINES.get(databaseType.getName());
+        String databaseTypeName = getDatabaseTypeName(databaseType);
+        if (ENGINES.containsKey(databaseTypeName)) {
+            return ENGINES.get(databaseTypeName);
         }
         synchronized (ENGINES) {
-            if (ENGINES.containsKey(databaseType.getName())) {
-                return ENGINES.get(databaseType.getName());
+            if (ENGINES.containsKey(databaseTypeName)) {
+                return ENGINES.get(databaseTypeName);
             }
-            SQLParseEngine result = new SQLParseEngine(databaseType);
-            ENGINES.put(databaseType.getName(), result);
+            SQLParseEngine result = new SQLParseEngine(databaseTypeName);
+            ENGINES.put(databaseTypeName, result);
             return result;
         }
+    }
+    
+    private static String getDatabaseTypeName(final DatabaseType databaseType) {
+        if (databaseType instanceof BranchDatabaseType) {
+            return ((BranchDatabaseType) databaseType).getTrunkDatabaseType().getName();
+        }
+        return databaseType.getName();
     }
 }

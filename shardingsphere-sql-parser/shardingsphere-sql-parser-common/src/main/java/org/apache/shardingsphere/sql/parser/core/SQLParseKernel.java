@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.sql.parser.core;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.spi.database.BranchDatabaseType;
-import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.sql.parser.core.extractor.SQLSegmentsExtractorEngine;
 import org.apache.shardingsphere.sql.parser.core.filler.SQLStatementFillerEngine;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLAST;
@@ -45,18 +43,10 @@ public final class SQLParseKernel {
     
     private final SQLStatementFillerEngine fillerEngine;
     
-    public SQLParseKernel(final ParseRuleRegistry parseRuleRegistry, final DatabaseType databaseType, final String sql) {
-        String databaseTypeName = getDatabaseTypeName(databaseType);
+    public SQLParseKernel(final ParseRuleRegistry parseRuleRegistry, final String databaseTypeName, final String sql) {
         parserEngine = new SQLParserEngine(parseRuleRegistry, databaseTypeName, sql);
         extractorEngine = new SQLSegmentsExtractorEngine();
         fillerEngine = new SQLStatementFillerEngine(parseRuleRegistry, databaseTypeName);
-    }
-    
-    private static String getDatabaseTypeName(final DatabaseType databaseType) {
-        if (databaseType instanceof BranchDatabaseType) {
-            return ((BranchDatabaseType) databaseType).getTrunkDatabaseType().getName();
-        }
-        return databaseType.getName();
     }
     
     /**

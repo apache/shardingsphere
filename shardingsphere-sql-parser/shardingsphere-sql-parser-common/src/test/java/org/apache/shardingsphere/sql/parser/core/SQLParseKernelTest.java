@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.core;
 
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.sql.parser.core.extractor.SQLSegmentsExtractorEngine;
 import org.apache.shardingsphere.sql.parser.core.filler.SQLStatementFillerEngine;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLAST;
@@ -53,7 +52,7 @@ public final class SQLParseKernelTest {
     
     @Before
     public void setUp() {
-        parseKernel = new SQLParseKernel(ParseRuleRegistry.getInstance(), DatabaseTypes.getTrunkDatabaseType("MySQL"), "SELECT 1");
+        parseKernel = new SQLParseKernel(ParseRuleRegistry.getInstance(), "MySQL", "SELECT 1");
         SQLAST ast = mock(SQLAST.class);
         when(ast.getParameterMarkerIndexes()).thenReturn(Collections.<ParserRuleContext, Integer>emptyMap());
         when(ast.getSqlStatementRule()).thenReturn(sqlStatementRule);

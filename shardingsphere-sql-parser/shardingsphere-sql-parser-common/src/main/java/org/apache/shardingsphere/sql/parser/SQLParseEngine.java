@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.core.rule.registry.ParseRuleRegistry
 import org.apache.shardingsphere.sql.parser.hook.ParsingHook;
 import org.apache.shardingsphere.sql.parser.hook.SPIParsingHook;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.spi.database.DatabaseType;
 
 /**
  * SQL parse engine.
@@ -35,7 +34,7 @@ import org.apache.shardingsphere.spi.database.DatabaseType;
 @RequiredArgsConstructor
 public final class SQLParseEngine {
     
-    private final DatabaseType databaseType;
+    private final String databaseTypeName;
     
     private final SQLParseResultCache cache = new SQLParseResultCache();
     
@@ -68,7 +67,7 @@ public final class SQLParseEngine {
                 return cachedSQLStatement.get();
             }
         }
-        SQLStatement result = new SQLParseKernel(ParseRuleRegistry.getInstance(), databaseType, sql).parse();
+        SQLStatement result = new SQLParseKernel(ParseRuleRegistry.getInstance(), databaseTypeName, sql).parse();
         if (useCache) {
             cache.put(sql, result);
         }
