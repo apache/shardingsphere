@@ -81,7 +81,7 @@ public class Bootstrap {
     private static void initConfig(String configFile) throws IOException {
         InputStream fileInputStream = Bootstrap.class.getResourceAsStream(configFile);
         ScalingConfiguration scalingConfiguration = JSON.parseObject(fileInputStream, ScalingConfiguration.class);
-        System.out.println(JSON.toJSONString(scalingConfiguration));
+        log.info(JSON.toJSONString(scalingConfiguration));
         ScalingContext.getInstance().init(scalingConfiguration.getRuleConfiguration(), scalingConfiguration.getServerConfiguration());
     }
 
