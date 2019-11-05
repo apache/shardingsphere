@@ -33,15 +33,11 @@ mvn clean package
 
 1. Copy sharding-scaling-bootstrap\target\sharding-scaling-bootstrap-1.0.0-SNAPSHOT-bin.zip to work directory and unzip.
 
-1. Download mysql jdbc jar to lib directory.
+2. Download mysql jdbc jar to lib directory.
 
-1. Run below command.
+3. Config the `config.json` file in conf directory.
 
-```shell
-bin/start.sh \
-  scaling \
-  --input-sharding-config conf/config-sharding.yaml \ # old ss proxy sharding rule config file
-  --output-jdbc-url jdbc:mysql://127.0.0.1:3306/test2?useSSL=false \ # new sharding rule ss proxy jdbc url
-  --output-jdbc-username root \ # new sharding rule ss proxy jdbc username
-  --output-jdbc-password 123456 # new sharding rule ss proxy jdbc password
+4. Start the program.
+```
+bin/start.sh
 ```
