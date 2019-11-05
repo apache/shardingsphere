@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Sync configuration.
+ *
  * @author avalon566
  */
 @Data
