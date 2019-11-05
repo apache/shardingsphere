@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sql.parser.core.rule.registry;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.sql.parser.core.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.sql.parser.core.parser.SQLParserFactory;
 import org.apache.shardingsphere.sql.parser.core.rule.jaxb.entity.extractor.ExtractorRuleDefinitionEntity;
 import org.apache.shardingsphere.sql.parser.core.rule.jaxb.entity.filler.FillerRuleDefinitionEntity;
 import org.apache.shardingsphere.sql.parser.core.rule.jaxb.loader.RuleDefinitionFileConstant;
@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.core.rule.registry.extractor.Extract
 import org.apache.shardingsphere.sql.parser.core.rule.registry.filler.FillerRuleDefinition;
 import org.apache.shardingsphere.sql.parser.core.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.sql.parser.core.rule.registry.statement.SQLStatementRuleDefinition;
+import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 import java.util.HashMap;
@@ -43,7 +44,7 @@ import java.util.Map;
  */
 public final class ParseRuleRegistry {
     
-    private static volatile ParseRuleRegistry instance = new ParseRuleRegistry();
+    private static volatile ParseRuleRegistry instance;
     
     private final ExtractorRuleDefinitionEntityLoader extractorRuleLoader = new ExtractorRuleDefinitionEntityLoader();
     
@@ -55,6 +56,11 @@ public final class ParseRuleRegistry {
     
     private final Map<String, SQLStatementRuleDefinition> sqlStatementRuleDefinitions = new HashMap<>();
     
+    static {
+        NewInstanceServiceLoader.register(SQLParserEntry.class);
+        instance = new ParseRuleRegistry();
+    }
+    
     private ParseRuleRegistry() {
         initParseRuleDefinition();
     }
@@ -62,9 +68,10 @@ public final class ParseRuleRegistry {
     private void initParseRuleDefinition() {
         ExtractorRuleDefinitionEntity generalExtractorRuleEntity = extractorRuleLoader.load(RuleDefinitionFileConstant.getExtractorRuleDefinitionFile());
         FillerRuleDefinitionEntity generalFillerRuleEntity = fillerRuleLoader.load(RuleDefinitionFileConstant.getFillerRuleDefinitionFile());
-        for (String each : SQLParserFactory.getAddOnDatabaseTypeNames()) {
-            fillerRuleDefinitions.put(each, createFillerRuleDefinition(generalFillerRuleEntity, each));
-            sqlStatementRuleDefinitions.put(each, createSQLStatementRuleDefinition(generalExtractorRuleEntity, each));
+        for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
+            String databaseTypeName = each.getDatabaseTypeName();
+            fillerRuleDefinitions.put(databaseTypeName, createFillerRuleDefinition(generalFillerRuleEntity, databaseTypeName));
+            sqlStatementRuleDefinitions.put(databaseTypeName, createSQLStatementRuleDefinition(generalExtractorRuleEntity, databaseTypeName));
         }
     }
     

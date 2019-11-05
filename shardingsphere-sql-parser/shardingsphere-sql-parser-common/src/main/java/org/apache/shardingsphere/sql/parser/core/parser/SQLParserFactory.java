@@ -31,9 +31,6 @@ import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 /**
  * SQL parser factory.
  * 
@@ -42,24 +39,6 @@ import java.util.HashSet;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLParserFactory {
-    
-    private static final Collection<String> DATABASE_TYPE_NAMES = new HashSet<>();
-    
-    static {
-        NewInstanceServiceLoader.register(SQLParserEntry.class);
-        for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
-            DATABASE_TYPE_NAMES.add(each.getDatabaseTypeName());
-        }
-    }
-    
-    /**
-     * Get add on name of database types.
-     * 
-     * @return add on name of database types
-     */
-    public static Collection<String> getAddOnDatabaseTypeNames() {
-        return DATABASE_TYPE_NAMES;
-    }
     
     /** 
      * New instance of SQL parser.
@@ -74,7 +53,7 @@ public final class SQLParserFactory {
                 return createSQLParser(sql, each);
             }
         }
-        throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
+        throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType.getName()));
     }
     
     private static String getDatabaseTypeName(final DatabaseType databaseType) {
