@@ -32,6 +32,13 @@ import static org.junit.Assert.assertThat;
 
 public class ApolloConfigCenterTest {
 
+    static {
+        System.setProperty("app.id", "APOLLO_SHARDING_SPHERE");
+        System.setProperty("env", "DEV");
+        System.setProperty("idc", ConfigConsts.CLUSTER_NAME_DEFAULT);
+        System.setProperty("apollo.meta", "127.0.0.1:8080");
+    }
+
     @ClassRule
     public static EmbeddedApollo embeddedApollo = new EmbeddedApollo();
 
@@ -40,9 +47,9 @@ public class ApolloConfigCenterTest {
     @BeforeClass
     public static void init() {
         Properties properties = new Properties();
-        properties.setProperty("appId", "APOLLO_SHARDING_SPHERE");
-        properties.setProperty("env", "DEV");
-        properties.setProperty("clusterName", ConfigConsts.CLUSTER_NAME_DEFAULT);
+        properties.setProperty("appId", System.getProperty("app.id"));
+        properties.setProperty("env", System.getProperty("env"));
+        properties.setProperty("clusterName", System.getProperty("idc"));
         ConfigCenterConfiguration configuration = new ConfigCenterConfiguration(configCenter.getType(), properties);
         configuration.setServerLists("127.0.0.1:8080");
         configuration.setNamespace("orchestration");
