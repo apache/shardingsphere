@@ -187,11 +187,4 @@ public final class TextProtocolBackendHandlerFactoryTest {
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(SkipBackendHandler.class));
     }
-    
-    @Test
-    public void assertNewInstanceWithNull() {
-        String sql = null;
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
-        assertThat(actual, instanceOf(SkipBackendHandler.class));
-    }
 }
