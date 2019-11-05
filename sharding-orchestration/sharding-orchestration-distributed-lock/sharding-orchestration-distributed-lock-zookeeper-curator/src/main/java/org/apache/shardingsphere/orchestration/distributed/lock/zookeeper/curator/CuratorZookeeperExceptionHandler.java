@@ -33,6 +33,7 @@ import org.apache.zookeeper.KeeperException.NodeExistsException;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class CuratorZookeeperExceptionHandler {
+    
     /**
      * Handle exception.
      * 

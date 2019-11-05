@@ -22,7 +22,7 @@ package org.apache.shardingsphere.orchestration.distributed.lock.exception;
  *
  * @author wangguangyuan
  */
-public class DistributedLockException extends RuntimeException {
+public final class DistributedLockException extends RuntimeException {
     
     private static final long serialVersionUID = -6417179023552012152L;
     

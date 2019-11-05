@@ -29,7 +29,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class CuratorZookeeperDistributedLockCenterTest {
+public final class CuratorZookeeperDistributedLockCenterTest {
     
     private static DistributedLockCenter curatorZookeeperRegistryCenter = new CuratorZookeeperDistributedLockCenter();
     

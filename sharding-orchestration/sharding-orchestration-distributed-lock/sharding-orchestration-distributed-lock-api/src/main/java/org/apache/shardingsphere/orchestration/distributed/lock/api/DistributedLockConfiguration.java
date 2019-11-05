@@ -30,7 +30,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public class DistributedLockConfiguration extends TypeBasedSPIConfiguration {
+public final class DistributedLockConfiguration extends TypeBasedSPIConfiguration {
 
     /**
      * Server list of distributed lock center.

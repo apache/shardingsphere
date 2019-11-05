@@ -186,10 +186,11 @@ public final class CuratorZookeeperDistributedLockCenter implements DistributedL
         CloseableUtils.closeQuietly(client);
     }
     
-    /* TODO 等待500ms, cache先关闭再关闭client, 否则会抛异常
-     * 因为异步处理, 可能会导致client先关闭而cache还未关闭结束.
-     * 等待Curator新版本解决这个bug.
-     * BUG地址：https://issues.apache.org/jira/browse/CURATOR-157
+    /* TODO wait 500ms,  close cache before close client, or will throw exception
+     * Because of asynchronous processing, may cause client to close 
+     * first and cache has not yet closed the end.
+     * Wait for new version of Curator to fix this.
+     * BUG address：https://issues.apache.org/jira/browse/CURATOR-157
      */
     private void waitForCacheClose() {
         try {

@@ -32,6 +32,4 @@
         <module>sharding-orchestration-distributed-lock-api</module>
         <module>sharding-orchestration-distributed-lock-zookeeper-curator</module>
     </modules>
-
-
 </project>
