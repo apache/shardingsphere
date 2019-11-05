@@ -24,7 +24,7 @@ import java.util.Properties;
 
 @Getter
 @Setter
-public final class BaseAlgorithmFixtureImpl implements BaseAlgorithmFixture {
+public final class TypeBasedSPIFixtureImpl implements TypeBasedSPIFixture {
     
     private Properties properties;
     

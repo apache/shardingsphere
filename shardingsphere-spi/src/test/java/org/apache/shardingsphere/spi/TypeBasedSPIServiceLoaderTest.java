@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.spi;
 
-import org.apache.shardingsphere.spi.fixture.BaseAlgorithmFixture;
-import org.apache.shardingsphere.spi.fixture.BaseAlgorithmFixtureImpl;
-import org.apache.shardingsphere.spi.fixture.BaseAlgorithmFixtureServiceLoader;
+import org.apache.shardingsphere.spi.fixture.TypeBasedSPIFixture;
+import org.apache.shardingsphere.spi.fixture.TypeBasedSPIFixtureImpl;
+import org.apache.shardingsphere.spi.fixture.TypeBasedSPIFixtureServiceLoader;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -31,26 +31,26 @@ import static org.junit.Assert.assertTrue;
 
 public final class TypeBasedSPIServiceLoaderTest {
     
-    private BaseAlgorithmFixtureServiceLoader serviceLoader = new BaseAlgorithmFixtureServiceLoader();
+    private TypeBasedSPIFixtureServiceLoader serviceLoader = new TypeBasedSPIFixtureServiceLoader();
     
     @Test
-    public void assertNewAlgorithmByType() {
+    public void assertNewServiceSuccess() {
         Properties properties = new Properties();
         properties.setProperty("key", "value");
-        BaseAlgorithmFixture actual = serviceLoader.newService("FIXTURE", properties);
-        assertThat(actual, instanceOf(BaseAlgorithmFixtureImpl.class));
+        TypeBasedSPIFixture actual = serviceLoader.newService("FIXTURE", properties);
+        assertThat(actual, instanceOf(TypeBasedSPIFixtureImpl.class));
         assertThat(actual.getProperties().getProperty("key"), is("value"));
     }
     
     @Test
-    public void assertNewAlgorithmByDefault() {
-        BaseAlgorithmFixture actual = serviceLoader.newService();
-        assertThat(actual, instanceOf(BaseAlgorithmFixtureImpl.class));
+    public void assertNewServiceByDefault() {
+        TypeBasedSPIFixture actual = serviceLoader.newService();
+        assertThat(actual, instanceOf(TypeBasedSPIFixtureImpl.class));
         assertTrue(actual.getProperties().isEmpty());
     }
     
     @Test(expected = RuntimeException.class)
-    public void assertNewAlgorithmFailure() {
+    public void assertNewServiceFailure() {
         serviceLoader.newService("INVALID", new Properties());
     }
 }

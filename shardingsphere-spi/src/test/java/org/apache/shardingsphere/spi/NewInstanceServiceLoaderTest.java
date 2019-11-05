@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spi;
 
-import org.apache.shardingsphere.spi.fixture.BaseAlgorithmFixture;
+import org.apache.shardingsphere.spi.fixture.TypeBasedSPIFixture;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -37,8 +37,8 @@ public final class NewInstanceServiceLoaderTest {
     
     @Test
     public void assertNewServiceInstanceWhenIsExist() {
-        NewInstanceServiceLoader.register(BaseAlgorithmFixture.class);
-        Collection collection = NewInstanceServiceLoader.newServiceInstances(BaseAlgorithmFixture.class);
+        NewInstanceServiceLoader.register(TypeBasedSPIFixture.class);
+        Collection collection = NewInstanceServiceLoader.newServiceInstances(TypeBasedSPIFixture.class);
         assertThat(collection.size(), is(1));
     }
 }
