@@ -26,8 +26,6 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.spi.database.BranchDatabaseType;
-import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 
@@ -43,24 +41,17 @@ public final class SQLParserFactory {
     /** 
      * New instance of SQL parser.
      * 
-     * @param databaseType database type
+     * @param databaseTypeName name of database type
      * @param sql SQL
      * @return SQL parser
      */
-    public static SQLParser newInstance(final DatabaseType databaseType, final String sql) {
+    public static SQLParser newInstance(final String databaseTypeName, final String sql) {
         for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
-            if (each.getDatabaseTypeName().equals(getDatabaseTypeName(databaseType))) {
+            if (each.getDatabaseTypeName().equals(databaseTypeName)) {
                 return createSQLParser(sql, each);
             }
         }
-        throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType.getName()));
-    }
-    
-    private static String getDatabaseTypeName(final DatabaseType databaseType) {
-        if (databaseType instanceof BranchDatabaseType) {
-            return ((BranchDatabaseType) databaseType).getTrunkDatabaseType().getName();
-        }
-        return databaseType.getName();
+        throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseTypeName));
     }
     
     @SneakyThrows
