@@ -52,6 +52,7 @@
                 <exclude>*.gpg</exclude>
                 
                 <!-- node ignore -->
+                <exclude>**/sharding-ui-frontend/test/coverage/**</exclude>
                 <exclude>**/sharding-ui-frontend/dist/**</exclude>
                 <exclude>**/sharding-ui-frontend/node/**</exclude>
                 <exclude>**/sharding-ui-frontend/node_modules/**</exclude>
