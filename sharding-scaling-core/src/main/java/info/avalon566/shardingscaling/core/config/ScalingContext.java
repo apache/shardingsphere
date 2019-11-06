@@ -1,7 +1,10 @@
 package info.avalon566.shardingscaling.core.config;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class ScalingContext {
 
@@ -22,6 +25,7 @@ public final class ScalingContext {
 
     /**
      * Initialize  Scaling context.
+     *
      * @param ruleConfiguration ruleConfiguration
      * @param serverConfiguration serverConfiguration
      */

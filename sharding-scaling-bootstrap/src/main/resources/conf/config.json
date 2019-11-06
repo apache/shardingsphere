@@ -4,14 +4,14 @@
       {
         "name": "ds_0",
         "password": "123456",
-        "url": "jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC",
+        "url": "jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC&useSSL=false",
         "username": "root"
       }
     ],
     "destinationDataSources": {
         "name": "dt_0",
         "password": "123456",
-        "url": "jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC",
+        "url": "jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false",
         "username": "root"
       }
   },
