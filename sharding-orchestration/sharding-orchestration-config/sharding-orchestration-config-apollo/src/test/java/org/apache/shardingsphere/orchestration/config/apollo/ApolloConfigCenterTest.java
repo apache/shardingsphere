@@ -53,14 +53,4 @@ public class ApolloConfigCenterTest {
     public void assertGet() {
         assertThat(configCenter.get("key1"), is("value1"));
     }
-
-    @Test
-    public void assertGetDirectly() {
-        assertThat(configCenter.getDirectly("key2"), is("value2"));
-    }
-
-    @Test
-    public void assertIsExisted() {
-        assertThat(configCenter.isExisted("key1"), is(true));
-    }
 }

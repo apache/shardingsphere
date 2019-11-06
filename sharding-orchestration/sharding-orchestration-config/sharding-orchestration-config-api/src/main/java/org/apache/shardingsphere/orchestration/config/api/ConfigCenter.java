@@ -26,6 +26,7 @@ import java.util.List;
  * Config center.
  * 
  * @author wangguangyuan
+ * @author dongzonglei 
  */
 public interface ConfigCenter extends TypeBasedSPI {
     
@@ -47,24 +48,6 @@ public interface ConfigCenter extends TypeBasedSPI {
     String get(String key);
     
     /**
-     * Get data from config center directly.
-     * 
-     * <p>Cannot use cache.</p>
-     *
-     * @param key key of data
-     * @return value of data
-     */
-    String getDirectly(String key);
-    
-    /**
-     * Judge data is existed or not.
-     * 
-     * @param key key of data
-     * @return data is existed or not
-     */
-    boolean isExisted(String key);
-    
-    /**
      * Get node's sub-nodes list.
      *
      * @param key key of data
@@ -79,22 +62,6 @@ public interface ConfigCenter extends TypeBasedSPI {
      * @param value value of data
      */
     void persist(String key, String value);
-    
-    /**
-     * Update data.
-     *
-     * @param key key of data
-     * @param value value of data
-     */
-    void update(String key, String value);
-    
-    /**
-     * Persist ephemeral data.
-     *
-     * @param key key of data
-     * @param value value of data
-     */
-    void persistEphemeral(String key, String value);
     
     /**
      * Watch key or path of the config server.

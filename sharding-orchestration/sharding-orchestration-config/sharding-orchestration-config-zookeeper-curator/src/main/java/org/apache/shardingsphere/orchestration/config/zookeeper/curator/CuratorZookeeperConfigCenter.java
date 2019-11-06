@@ -53,6 +53,7 @@ import java.util.concurrent.TimeUnit;
  * Config center for zookeeper with curator.
  * 
  * @author wangguangyuan
+ * @author dongzonglei 
  */
 public final class CuratorZookeeperConfigCenter implements ConfigCenter {
     
@@ -133,8 +134,7 @@ public final class CuratorZookeeperConfigCenter implements ConfigCenter {
         return null;
     }
     
-    @Override
-    public String getDirectly(final String key) {
+    private String getDirectly(final String key) {
         try {
             return new String(client.getData().forPath(key), Charsets.UTF_8);
             // CHECKSTYLE:OFF
@@ -142,18 +142,6 @@ public final class CuratorZookeeperConfigCenter implements ConfigCenter {
             // CHECKSTYLE:ON
             CuratorZookeeperExceptionHandler.handleException(ex);
             return null;
-        }
-    }
-    
-    @Override
-    public boolean isExisted(final String key) {
-        try {
-            return null != client.checkExists().forPath(key);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
-            return false;
         }
     }
     
@@ -191,25 +179,21 @@ public final class CuratorZookeeperConfigCenter implements ConfigCenter {
             CuratorZookeeperExceptionHandler.handleException(ex);
         }
     }
-    
-    @Override
-    public void update(final String key, final String value) {
+
+    private boolean isExisted(final String key) {
         try {
-            client.inTransaction().check().forPath(key).and().setData().forPath(key, value.getBytes(Charsets.UTF_8)).and().commit();
+            return null != client.checkExists().forPath(key);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             CuratorZookeeperExceptionHandler.handleException(ex);
+            return false;
         }
     }
     
-    @Override
-    public void persistEphemeral(final String key, final String value) {
+    private void update(final String key, final String value) {
         try {
-            if (isExisted(key)) {
-                client.delete().deletingChildrenIfNeeded().forPath(key);
-            }
-            client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(key, value.getBytes(Charsets.UTF_8));
+            client.inTransaction().check().forPath(key).and().setData().forPath(key, value.getBytes(Charsets.UTF_8)).and().commit();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

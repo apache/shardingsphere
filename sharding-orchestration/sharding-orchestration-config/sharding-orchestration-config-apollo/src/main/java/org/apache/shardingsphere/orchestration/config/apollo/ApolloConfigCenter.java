@@ -24,7 +24,6 @@ import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.enums.PropertyChangeType;
 import com.ctrip.framework.apollo.model.ConfigChange;
 import com.ctrip.framework.apollo.model.ConfigChangeEvent;
-import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
@@ -66,32 +65,12 @@ public final class ApolloConfigCenter implements ConfigCenter {
     }
 
     @Override
-    public String getDirectly(final String key) {
-        return get(key);
-    }
-
-    @Override
-    public boolean isExisted(final String key) {
-        return !Strings.isNullOrEmpty(get(key));
-    }
-
-    @Override
     public List<String> getChildrenKeys(final String key) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public void persist(final String key, final String value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void update(final String key, final String value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void persistEphemeral(final String key, final String value) {
         throw new UnsupportedOperationException();
     }
 
