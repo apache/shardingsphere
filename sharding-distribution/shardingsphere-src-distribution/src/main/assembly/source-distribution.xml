@@ -52,10 +52,10 @@
                 <exclude>*.gpg</exclude>
                 
                 <!-- node ignore -->
-                <exclude>**/sharding-ui-front/dist/**</exclude>
-                <exclude>**/sharding-ui-front/node/**</exclude>
-                <exclude>**/sharding-ui-front/node_modules/**</exclude>
-                <exclude>**/sharding-ui-front/etc/**</exclude>
+                <exclude>**/sharding-ui-frontend/dist/**</exclude>
+                <exclude>**/sharding-ui-frontend/node/**</exclude>
+                <exclude>**/sharding-ui-frontend/node_modules/**</exclude>
+                <exclude>**/sharding-ui-frontend/etc/**</exclude>
                 
                 <!-- eclipse ignore -->
                 <exclude>**/.settings/**</exclude>
