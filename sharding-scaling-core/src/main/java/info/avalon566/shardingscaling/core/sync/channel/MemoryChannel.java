@@ -20,6 +20,7 @@ package info.avalon566.shardingscaling.core.sync.channel;
 import info.avalon566.shardingscaling.core.sync.record.Record;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -35,6 +36,18 @@ public class MemoryChannel implements Channel {
     private static final int PUSH_TIMEOUT = 1000;
 
     private final BlockingQueue<Record> queue = new ArrayBlockingQueue<>(10000);
+
+    private final List<AckCallback> ackCallbacks;
+
+    private List<Record> toBeAcknowledgeRecords = new LinkedList<>();
+
+    public MemoryChannel() {
+        this(new LinkedList<AckCallback>());
+    }
+
+    public MemoryChannel(final List<AckCallback> ackCallbacks) {
+        this.ackCallbacks = ackCallbacks;
+    }
 
     @Override
     public final void pushRecord(final Record dataRecord) throws InterruptedException {
@@ -58,11 +71,19 @@ public class MemoryChannel implements Channel {
             }
         }
         queue.drainTo(records, batchSize);
+        if (0 < ackCallbacks.size()) {
+            toBeAcknowledgeRecords.addAll(records);
+        }
         return records;
     }
 
     @Override
-    public void ack() {
-
+    public final void ack() {
+        if (0 < ackCallbacks.size() && 0 < toBeAcknowledgeRecords.size()) {
+            for (AckCallback each : ackCallbacks) {
+                each.onAck(toBeAcknowledgeRecords);
+            }
+            toBeAcknowledgeRecords.clear();
+        }
     }
 }

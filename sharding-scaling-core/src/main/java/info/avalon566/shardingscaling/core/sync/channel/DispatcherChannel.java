@@ -21,16 +21,14 @@ import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
 import info.avalon566.shardingscaling.core.sync.record.DataRecord;
 import info.avalon566.shardingscaling.core.sync.record.FinishedRecord;
 import info.avalon566.shardingscaling.core.sync.record.Record;
-import lombok.Data;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * One provider to multi consumer channel model.
@@ -51,30 +49,36 @@ public class DispatcherChannel implements Channel {
      */
     private final Map<String, String> channelAssignment = new HashMap<>();
 
-    private final List<LogPositionWrapper> pendingLogPosition = new ArrayList<>();
+    private final List<AckCallback> ackCallbacks;
 
-    private final Map<String, List<Record>> consumePendingLogPosition = new HashMap<>();
+    private List<Record> toBeAcknowledgeRecords = new LinkedList<>();
 
-    @Getter
-    private LogPosition currentLogPosition;
+    private Map<LogPosition, Record> pendingAcknowledgeRecords = new ConcurrentHashMap<>();
 
     public DispatcherChannel(final int channelNumber) {
+        this(channelNumber, new LinkedList<AckCallback>());
+    }
+
+    public DispatcherChannel(final int channelNumber, final List<AckCallback> ackCallbacks) {
         this.channelNumber = channelNumber;
+        this.ackCallbacks = ackCallbacks;
         for (int i = 0; i < channelNumber; i++) {
-            channels.put(Integer.toString(i), new MemoryChannel());
+            channels.put(Integer.toString(i), new MemoryChannel(Collections.singletonList((AckCallback) new SingleChannelAckCallback())));
         }
     }
 
     @Override
     public final synchronized void pushRecord(final Record record) throws InterruptedException {
-        pendingLogPosition.add(new LogPositionWrapper(record.getLogPosition()));
         if (FinishedRecord.class.equals(record.getClass())) {
-            // 广播事件
+            // broadcast
             for (Map.Entry<String, MemoryChannel> entry : channels.entrySet()) {
                 entry.getValue().pushRecord(record);
             }
         } else if (DataRecord.class.equals(record.getClass())) {
-            // 表名哈希
+            if (0 < ackCallbacks.size()) {
+                toBeAcknowledgeRecords.add(record);
+            }
+            // hash by table name
             DataRecord dataRecord = (DataRecord) record;
             String index = Integer.toString(dataRecord.getTableName().hashCode() % channelNumber);
             channels.get(index).pushRecord(dataRecord);
@@ -85,32 +89,12 @@ public class DispatcherChannel implements Channel {
 
     @Override
     public final List<Record> fetchRecords(final int batchSize, final int timeout) {
-        List<Record> records = findChannel().fetchRecords(batchSize, timeout);
-        consumePendingLogPosition.put(Long.toString(Thread.currentThread().getId()), records);
-        return records;
+        return findChannel().fetchRecords(batchSize, timeout);
     }
 
     @Override
     public final synchronized void ack() {
-        String threadId = Long.toString(Thread.currentThread().getId());
-        List<Record> records = consumePendingLogPosition.get(threadId);
-        if (null == records || 0 == records.size()) {
-            return;
-        }
-        for (Record record : records) {
-            int index = Collections.binarySearch(pendingLogPosition, new LogPositionWrapper(record.getLogPosition()));
-            pendingLogPosition.get(index).setAck(true);
-        }
-        Iterator<LogPositionWrapper> it = pendingLogPosition.iterator();
-        while (it.hasNext()) {
-            LogPositionWrapper entry = it.next();
-            if (entry.isAck()) {
-                it.remove();
-                currentLogPosition = entry.getLogPosition();
-            } else {
-                break;
-            }
-        }
+        findChannel().ack();
     }
 
     private Channel findChannel() {
@@ -131,20 +115,32 @@ public class DispatcherChannel implements Channel {
         }
     }
 
-    @Data
-    @RequiredArgsConstructor
-    class LogPositionWrapper implements Comparable<LogPositionWrapper> {
-
-        private final LogPosition logPosition;
-
-        private boolean ack;
+    class SingleChannelAckCallback implements AckCallback {
 
         @Override
-        public int compareTo(final LogPositionWrapper logPositionWrapper) {
-            if (logPositionWrapper == null) {
-                return 1;
+        public void onAck(final List<Record> records) {
+            synchronized (DispatcherChannel.this) {
+                for (Record record : records) {
+                    pendingAcknowledgeRecords.put(record.getLogPosition(), record);
+                }
+                Iterator<Record> iterator = toBeAcknowledgeRecords.iterator();
+                List<Record> result = new LinkedList<>();
+                while (iterator.hasNext()) {
+                    Record record = iterator.next();
+                    if (pendingAcknowledgeRecords.containsKey(record.getLogPosition())) {
+                        result.add(record);
+                        iterator.remove();
+                        pendingAcknowledgeRecords.remove(record.getLogPosition());
+                    } else {
+                        break;
+                    }
+                }
+                if (0 < ackCallbacks.size() && 0 < result.size()) {
+                    for (AckCallback each : ackCallbacks) {
+                        each.onAck(result);
+                    }
+                }
             }
-            return logPosition.compareTo(logPositionWrapper.getLogPosition());
         }
     }
 }

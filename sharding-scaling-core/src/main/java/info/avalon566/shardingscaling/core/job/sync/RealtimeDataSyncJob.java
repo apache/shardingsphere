@@ -24,15 +24,18 @@ import info.avalon566.shardingscaling.core.job.sync.executor.Event;
 import info.avalon566.shardingscaling.core.job.sync.executor.EventType;
 import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
 import info.avalon566.shardingscaling.core.sync.SyncExecutor;
+import info.avalon566.shardingscaling.core.sync.channel.AckCallback;
 import info.avalon566.shardingscaling.core.sync.channel.DispatcherChannel;
 import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
 import info.avalon566.shardingscaling.core.sync.reader.LogReader;
 import info.avalon566.shardingscaling.core.sync.reader.ReaderFactory;
+import info.avalon566.shardingscaling.core.sync.record.Record;
 import info.avalon566.shardingscaling.core.sync.writer.Writer;
 import info.avalon566.shardingscaling.core.sync.writer.WriterFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -50,6 +53,8 @@ public class RealtimeDataSyncJob implements SyncJob {
     private final Reporter reporter;
 
     private DispatcherChannel channel;
+
+    private LogPosition currentLogPosition;
 
     public RealtimeDataSyncJob(final SyncConfiguration syncConfiguration, final Reporter reporter) {
         this.syncConfiguration = syncConfiguration;
@@ -69,7 +74,7 @@ public class RealtimeDataSyncJob implements SyncJob {
 
     @Override
     public final MigrateProgress getProgress() {
-        return new MigrateProgress("REALTIME_DATA_SYNC", channel.getCurrentLogPosition());
+        return new MigrateProgress("REALTIME_DATA_SYNC", currentLogPosition);
     }
 
     /**
@@ -91,7 +96,13 @@ public class RealtimeDataSyncJob implements SyncJob {
             writers.add(WriterFactory.newInstance(syncConfiguration.getWriterConfiguration()));
         }
         try {
-            channel = new DispatcherChannel(writers.size());
+            channel = new DispatcherChannel(writers.size(), Collections.singletonList((AckCallback) new AckCallback() {
+                @Override
+                public void onAck(final List<Record> records) {
+                    Record record = records.get(records.size() - 1);
+                    currentLogPosition = record.getLogPosition();
+                }
+            }));
             startReportRealtimeSyncPosition();
             new SyncExecutor(channel, mysqlBinlogReader, writers).execute();
             log.info("realtime data sync finish");
@@ -114,13 +125,11 @@ public class RealtimeDataSyncJob implements SyncJob {
                     } catch (InterruptedException ignored) {
                         break;
                     }
-                    if (null != channel) {
-                        if (null == lastLogPosition || -1 == lastLogPosition.compareTo(channel.getCurrentLogPosition())) {
-                            lastLogPosition = channel.getCurrentLogPosition();
-                            Event event = new Event(EventType.REALTIME_SYNC_POSITION);
-                            event.setPayload(lastLogPosition);
-                            reporter.report(event);
-                        }
+                    if (null == lastLogPosition || -1 == lastLogPosition.compareTo(currentLogPosition)) {
+                        lastLogPosition = currentLogPosition;
+                        Event event = new Event(EventType.REALTIME_SYNC_POSITION);
+                        event.setPayload(lastLogPosition);
+                        reporter.report(event);
                     }
                 }
             }
