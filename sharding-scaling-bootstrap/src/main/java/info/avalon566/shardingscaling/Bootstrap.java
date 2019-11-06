@@ -17,7 +17,7 @@
 
 package info.avalon566.shardingscaling;
 
-import com.alibaba.fastjson.JSON;
+import com.google.gson.Gson;
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.config.ScalingConfiguration;
 import info.avalon566.shardingscaling.core.config.ScalingContext;
@@ -32,10 +32,7 @@ import info.avalon566.shardingscaling.utils.RuntimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.log4j.PropertyConfigurator;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,9 +83,11 @@ public class Bootstrap {
     }
 
     private static void initConfig(final String configFile) throws IOException {
+        Gson gson = new Gson();
         InputStream fileInputStream = Bootstrap.class.getResourceAsStream(configFile);
-        ScalingConfiguration scalingConfiguration = JSON.parseObject(fileInputStream, ScalingConfiguration.class);
-        log.info(JSON.toJSONString(scalingConfiguration));
+        InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+        ScalingConfiguration scalingConfiguration = gson.fromJson(inputStreamReader, ScalingConfiguration.class);
+        log.info(gson.toJson(scalingConfiguration));
         ScalingContext.getInstance().init(scalingConfiguration.getRuleConfiguration(), scalingConfiguration.getServerConfiguration());
     }
 

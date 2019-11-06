@@ -41,6 +41,7 @@
         <slf4j.version>1.7.28</slf4j.version>
         <snakeyaml.version>1.16</snakeyaml.version>
         <guava.version>18.0</guava.version>
+        <gson.version>2.8.6</gson.version>
         <netty.version>4.1.16.Final</netty.version>
         <dbcp2.version>2.7.0</dbcp2.version>
         
@@ -80,6 +81,11 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
