@@ -3,7 +3,7 @@ package info.avalon566.shardingscaling.core.config;
 import lombok.Getter;
 
 @Getter
-public class ScalingContext {
+public final class ScalingContext {
 
     private static final ScalingContext INSTANCE = new ScalingContext();
 
@@ -11,11 +11,21 @@ public class ScalingContext {
 
     private ServerConfiguration serverConfiguration;
 
+    /**
+     * Get instance of Sharding-Scaling's context.
+     *
+     * @return instance of Sharding-Scaling's context.
+     */
     public static ScalingContext getInstance() {
         return INSTANCE;
     }
 
-    public void init(RuleConfiguration ruleConfiguration, ServerConfiguration serverConfiguration) {
+    /**
+     * Initialize  Scaling context.
+     * @param ruleConfiguration ruleConfiguration
+     * @param serverConfiguration serverConfiguration
+     */
+    public void init(final RuleConfiguration ruleConfiguration, final ServerConfiguration serverConfiguration) {
         this.ruleConfiguration = ruleConfiguration;
         this.serverConfiguration = serverConfiguration;
     }

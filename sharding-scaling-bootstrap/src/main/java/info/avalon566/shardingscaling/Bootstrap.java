@@ -18,7 +18,14 @@
 package info.avalon566.shardingscaling;
 
 import com.alibaba.fastjson.JSON;
-import info.avalon566.shardingscaling.core.config.*;
+import info.avalon566.shardingscaling.core.config.SyncConfiguration;
+import info.avalon566.shardingscaling.core.config.ScalingConfiguration;
+import info.avalon566.shardingscaling.core.config.ScalingContext;
+import info.avalon566.shardingscaling.core.config.RuleConfiguration;
+import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
+import info.avalon566.shardingscaling.core.config.DataSourceConfiguration;
+import info.avalon566.shardingscaling.core.config.JdbcDataSourceConfiguration;
+import info.avalon566.shardingscaling.core.config.SyncType;
 import info.avalon566.shardingscaling.core.job.MigrateProgress;
 import info.avalon566.shardingscaling.core.job.ScalingController;
 import info.avalon566.shardingscaling.utils.RuntimeUtil;
@@ -78,7 +85,7 @@ public class Bootstrap {
         }
     }
 
-    private static void initConfig(String configFile) throws IOException {
+    private static void initConfig(final String configFile) throws IOException {
         InputStream fileInputStream = Bootstrap.class.getResourceAsStream(configFile);
         ScalingConfiguration scalingConfiguration = JSON.parseObject(fileInputStream, ScalingConfiguration.class);
         log.info(JSON.toJSONString(scalingConfiguration));

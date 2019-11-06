@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 public class ServerConfiguration {
 
     private Integer blockQueueSize;
+
     private Integer pushTimeout;
+
     private Integer concurrency;
 
 }
