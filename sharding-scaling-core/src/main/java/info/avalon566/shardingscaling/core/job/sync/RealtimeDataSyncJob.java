@@ -25,7 +25,7 @@ import info.avalon566.shardingscaling.core.job.sync.executor.EventType;
 import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
 import info.avalon566.shardingscaling.core.sync.SyncExecutor;
 import info.avalon566.shardingscaling.core.sync.channel.AckCallback;
-import info.avalon566.shardingscaling.core.sync.channel.DispatcherChannel;
+import info.avalon566.shardingscaling.core.sync.channel.RealtimeSyncChannel;
 import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
 import info.avalon566.shardingscaling.core.sync.reader.LogReader;
 import info.avalon566.shardingscaling.core.sync.reader.ReaderFactory;
@@ -52,7 +52,7 @@ public class RealtimeDataSyncJob implements SyncJob {
 
     private final Reporter reporter;
 
-    private DispatcherChannel channel;
+    private RealtimeSyncChannel channel;
 
     private LogPosition currentLogPosition;
 
@@ -96,7 +96,7 @@ public class RealtimeDataSyncJob implements SyncJob {
             writers.add(WriterFactory.newInstance(syncConfiguration.getWriterConfiguration()));
         }
         try {
-            channel = new DispatcherChannel(writers.size(), Collections.singletonList((AckCallback) new AckCallback() {
+            channel = new RealtimeSyncChannel(writers.size(), Collections.singletonList((AckCallback) new AckCallback() {
                 @Override
                 public void onAck(final List<Record> records) {
                     Record record = records.get(records.size() - 1);

@@ -31,11 +31,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * One provider to multi consumer channel model.
+ * Realtime data sync channel.
  *
  * @author avalon566
  */
-public class DispatcherChannel implements Channel {
+public class RealtimeSyncChannel implements Channel {
 
     private final int channelNumber;
 
@@ -55,11 +55,11 @@ public class DispatcherChannel implements Channel {
 
     private Map<LogPosition, Record> pendingAcknowledgeRecords = new ConcurrentHashMap<>();
 
-    public DispatcherChannel(final int channelNumber) {
+    public RealtimeSyncChannel(final int channelNumber) {
         this(channelNumber, new LinkedList<AckCallback>());
     }
 
-    public DispatcherChannel(final int channelNumber, final List<AckCallback> ackCallbacks) {
+    public RealtimeSyncChannel(final int channelNumber, final List<AckCallback> ackCallbacks) {
         this.channelNumber = channelNumber;
         this.ackCallbacks = ackCallbacks;
         for (int i = 0; i < channelNumber; i++) {
@@ -119,7 +119,7 @@ public class DispatcherChannel implements Channel {
 
         @Override
         public void onAck(final List<Record> records) {
-            synchronized (DispatcherChannel.this) {
+            synchronized (RealtimeSyncChannel.this) {
                 for (Record record : records) {
                     pendingAcknowledgeRecords.put(record.getLogPosition(), record);
                 }
