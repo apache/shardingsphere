@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.config;
+package info.avalon566.shardingscaling.core.config;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 /**
  * Rule configuration.
@@ -29,10 +29,16 @@ import java.util.Map;
 @Data
 public class RuleConfiguration {
 
-    private Map<String, YamlDataSourceParameter> dataSources = new HashMap<>();
+    private List<YamlDataSourceParameter> dataSources;
 
+    private YamlDataSourceParameter destinationDataSources;
+
+    @AllArgsConstructor
     @Data
     public static final class YamlDataSourceParameter {
+
+        private String name;
+
         private String url;
 
         private String username;

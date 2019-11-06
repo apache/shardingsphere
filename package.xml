@@ -21,6 +21,7 @@
         <fileSet>
             <directory>src/main/resources/bin</directory>
             <outputDirectory>bin</outputDirectory>
+            <fileMode>0755</fileMode>
             <includes>
                 <include>*</include>
             </includes>

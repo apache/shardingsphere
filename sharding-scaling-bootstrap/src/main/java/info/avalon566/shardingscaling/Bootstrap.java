@@ -17,29 +17,28 @@
 
 package info.avalon566.shardingscaling;
 
-import info.avalon566.shardingscaling.core.job.MigrateProgress;
-import info.avalon566.shardingscaling.core.job.ScalingController;
-import info.avalon566.shardingscaling.config.RuleConfiguration;
+import com.google.gson.Gson;
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
-import info.avalon566.shardingscaling.core.config.SyncType;
+import info.avalon566.shardingscaling.core.config.ScalingConfiguration;
+import info.avalon566.shardingscaling.core.config.ScalingContext;
+import info.avalon566.shardingscaling.core.config.RuleConfiguration;
+import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
 import info.avalon566.shardingscaling.core.config.DataSourceConfiguration;
 import info.avalon566.shardingscaling.core.config.JdbcDataSourceConfiguration;
-import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
+import info.avalon566.shardingscaling.core.config.SyncType;
+import info.avalon566.shardingscaling.core.job.MigrateProgress;
+import info.avalon566.shardingscaling.core.job.ScalingController;
 import info.avalon566.shardingscaling.utils.RuntimeUtil;
-import info.avalon566.shardingscaling.utils.YamlUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.apache.log4j.PropertyConfigurator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Bootstrap of ShardingScaling.
@@ -53,14 +52,8 @@ public class Bootstrap {
         PropertyConfigurator.configure(RuntimeUtil.getBasePath() + "conf" + File.separator + "log4j.properties");
     }
 
-    private static final String INPUT_SHARDING_CONFIG = "input-sharding-config";
+    private static final String CONFIG_FILE = "/conf/config.json";
 
-    private static final String OUTPUT_JDBC_URL = "output-jdbc-url";
-
-    private static final String OUTPUT_JDBC_USERNAME = "output-jdbc-username";
-
-    private static final String OUTPUT_JDBC_PASSWORD = "output-jdbc-password";
-    
     /**
      * Main entry.
      *
@@ -68,69 +61,58 @@ public class Bootstrap {
      */
     public static void main(final String[] args) {
         log.info("ShardingScaling Startup");
-        if ("scaling".equals(args[0])) {
-            try {
-                CommandLine commandLine = parseCommand(args);
-                List<SyncConfiguration> syncConfigurations = toSyncConfigurations(commandLine);
-                final ScalingController scalingController = new ScalingController(syncConfigurations);
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (true) {
-                            try {
-                                Thread.sleep(10 * 1000);
-                            } catch (InterruptedException ex) {
-                                break;
-                            }
-                            for (MigrateProgress progress : scalingController.getProgresses()) {
-                                log.info(progress.getLogPosition().toString());
-                            }
+        try {
+            initConfig(CONFIG_FILE);
+            List<SyncConfiguration> syncConfigurations = toSyncConfigurations();
+            final ScalingController scalingController = new ScalingController(syncConfigurations);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (true) {
+                        try {
+                            Thread.sleep(10 * 1000);
+                        } catch (InterruptedException ex) {
+                            break;
+                        }
+                        for (MigrateProgress progress : scalingController.getProgresses()) {
+                            log.info(progress.getLogPosition().toString());
                         }
                     }
-                }).start();
-                scalingController.start();
-            } catch (FileNotFoundException | ParseException e) {
-                throw new RuntimeException(e);
-            }
+                }
+            }).start();
+            scalingController.start();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private static CommandLine parseCommand(final String[] args) throws ParseException {
-        Options options = new Options();
-        options.addOption(Option.builder().required(true).hasArg(true).longOpt(INPUT_SHARDING_CONFIG).desc("shardingsphere 路由配置文件").build());
-        options.addOption(Option.builder().required(true).hasArg(true).longOpt(OUTPUT_JDBC_URL).desc("输出 jdbc url").build());
-        options.addOption(Option.builder().required(true).hasArg(true).longOpt(OUTPUT_JDBC_USERNAME).desc("输出 jdbc 用户名").build());
-        options.addOption(Option.builder().required(true).hasArg(true).longOpt(OUTPUT_JDBC_PASSWORD).desc("输出 jdbc 密码").build());
-        return new DefaultParser().parse(options, args);
+    private static void initConfig(final String configFile) throws IOException {
+        Gson gson = new Gson();
+        InputStream fileInputStream = Bootstrap.class.getResourceAsStream(configFile);
+        InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+        ScalingConfiguration scalingConfiguration = gson.fromJson(inputStreamReader, ScalingConfiguration.class);
+        log.info(gson.toJson(scalingConfiguration));
+        ScalingContext.getInstance().init(scalingConfiguration.getRuleConfiguration(), scalingConfiguration.getServerConfiguration());
     }
 
-    private static List<SyncConfiguration> toSyncConfigurations(final CommandLine commandLine) throws FileNotFoundException {
-        RuleConfiguration ruleConfig = loadRuleConfiguration(commandLine.getOptionValue(INPUT_SHARDING_CONFIG));
+    private static List<SyncConfiguration> toSyncConfigurations() throws FileNotFoundException {
+        RuleConfiguration ruleConfig = ScalingContext.getInstance().getRuleConfiguration();
         List<SyncConfiguration> syncConfigurations = new ArrayList<SyncConfiguration>(ruleConfig.getDataSources().size());
-        for (Map.Entry<String, RuleConfiguration.YamlDataSourceParameter> entry : ruleConfig.getDataSources().entrySet()) {
+        for (RuleConfiguration.YamlDataSourceParameter entry : ruleConfig.getDataSources()) {
             RdbmsConfiguration readerConfiguration = new RdbmsConfiguration();
             DataSourceConfiguration readerDataSourceConfiguration = new JdbcDataSourceConfiguration(
-                    entry.getValue().getUrl(),
-                    entry.getValue().getUsername(),
-                    entry.getValue().getPassword());
+                    entry.getUrl(),
+                    entry.getUsername(),
+                    entry.getPassword());
             readerConfiguration.setDataSourceConfiguration(readerDataSourceConfiguration);
             RdbmsConfiguration writerConfiguration = new RdbmsConfiguration();
             DataSourceConfiguration writerDataSourceConfiguration = new JdbcDataSourceConfiguration(
-                    commandLine.getOptionValue(OUTPUT_JDBC_URL),
-                    commandLine.getOptionValue(OUTPUT_JDBC_USERNAME),
-                    commandLine.getOptionValue(OUTPUT_JDBC_PASSWORD));
+                    ruleConfig.getDestinationDataSources().getUrl(),
+                    ruleConfig.getDestinationDataSources().getUsername(),
+                    ruleConfig.getDestinationDataSources().getPassword());
             writerConfiguration.setDataSourceConfiguration(writerDataSourceConfiguration);
-            syncConfigurations.add(new SyncConfiguration(SyncType.NONE, 3, readerConfiguration, writerConfiguration));
+            syncConfigurations.add(new SyncConfiguration(SyncType.NONE, ScalingContext.getInstance().getServerConfiguration().getConcurrency(), readerConfiguration, writerConfiguration));
         }
         return syncConfigurations;
-    }
-
-    private static RuleConfiguration loadRuleConfiguration(final String fileName) throws FileNotFoundException {
-        if (fileName.startsWith("/")) {
-            return YamlUtil.parse(fileName, RuleConfiguration.class);
-        } else {
-            String fullFileName = RuntimeUtil.getBasePath() + File.separator + fileName;
-            return YamlUtil.parse(fullFileName, RuleConfiguration.class);
-        }
     }
 }
