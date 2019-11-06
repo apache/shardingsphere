@@ -61,18 +61,6 @@ public class CuratorZookeeperConfigCenterTest {
     }
     
     @Test
-    public void assertGetDirectly() {
-        curatorZookeeperConfigCenter.persist("/test", "value4");
-        assertThat(curatorZookeeperConfigCenter.getDirectly("/test"), is("value4"));
-    }
-    
-    @Test
-    public void assertIsExisted() {
-        curatorZookeeperConfigCenter.persist("/test/existed", "value5");
-        assertThat(curatorZookeeperConfigCenter.isExisted("/test/existed"), is(true));
-    }
-    
-    @Test
     public void assertGetChildrenKeys() {
         curatorZookeeperConfigCenter.persist("/test/children/1", "value11");
         curatorZookeeperConfigCenter.persist("/test/children/2", "value12");
