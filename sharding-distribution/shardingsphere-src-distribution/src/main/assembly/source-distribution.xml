@@ -53,6 +53,7 @@
                 
                 <!-- node ignore -->
                 <exclude>**/sharding-ui-front/dist/**</exclude>
+                <exclude>**/sharding-ui-front/test/coverage/**</exclude>
                 <exclude>**/sharding-ui-front/node/**</exclude>
                 <exclude>**/sharding-ui-front/node_modules/**</exclude>
                 <exclude>**/sharding-ui-front/etc/**</exclude>
