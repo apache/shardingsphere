@@ -164,4 +164,18 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
             assertThat(count - 1, is(resultSetCount));
         }
     }
+    
+    @Test(expected = SQLException.class)
+    public void assertQueryWithNull() throws SQLException {
+        try (PreparedStatement statement = getEncryptConnection().prepareStatement(null)) {
+            statement.executeQuery();
+        }
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertQueryWithEmptyString() throws SQLException {
+        try (PreparedStatement statement = getEncryptConnection().prepareStatement("")) {
+            statement.executeQuery();
+        }
+    }
 }
