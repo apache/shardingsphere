@@ -175,7 +175,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
         doReturn(true).when(shardingStatement1).isAccumulate();
         doReturn(Lists.newArrayList(statement1, statement2)).when(shardingStatement1).getRoutedStatements();
         assertThat(shardingStatement1.getUpdateCount(), is(Integer.MAX_VALUE));
-        ShardingPreparedStatement shardingStatement2 = spy(new ShardingPreparedStatement(getShardingDataSource().getConnection(), null));
+        ShardingPreparedStatement shardingStatement2 = spy(new ShardingPreparedStatement(getShardingDataSource().getConnection(), sql));
         doReturn(true).when(shardingStatement2).isAccumulate();
         doReturn(Lists.newArrayList(statement1, statement2)).when(shardingStatement2).getRoutedStatements();
         assertThat(shardingStatement2.getUpdateCount(), is(Integer.MAX_VALUE));
@@ -191,7 +191,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
         doReturn(false).when(shardingStatement1).isAccumulate();
         doReturn(Lists.newArrayList(statement1, statement2)).when(shardingStatement1).getRoutedStatements();
         assertThat(shardingStatement1.getUpdateCount(), is(10));
-        ShardingPreparedStatement shardingStatement2 = spy(new ShardingPreparedStatement(getShardingDataSource().getConnection(), null));
+        ShardingPreparedStatement shardingStatement2 = spy(new ShardingPreparedStatement(getShardingDataSource().getConnection(), sql));
         doReturn(false).when(shardingStatement2).isAccumulate();
         doReturn(Lists.newArrayList(statement1, statement2)).when(shardingStatement2).getRoutedStatements();
         assertThat(shardingStatement2.getUpdateCount(), is(10));
