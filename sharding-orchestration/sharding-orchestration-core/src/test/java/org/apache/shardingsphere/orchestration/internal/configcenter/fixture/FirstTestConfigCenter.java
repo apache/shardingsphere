@@ -43,30 +43,12 @@ public final class FirstTestConfigCenter implements ConfigCenter {
     }
     
     @Override
-    public String getDirectly(final String key) {
-        return "";
-    }
-    
-    @Override
-    public boolean isExisted(final String key) {
-        return true;
-    }
-    
-    @Override
     public List<String> getChildrenKeys(final String key) {
         return Collections.emptyList();
     }
     
     @Override
     public void persist(final String key, final String value) {
-    }
-    
-    @Override
-    public void update(final String key, final String value) {
-    }
-    
-    @Override
-    public void persistEphemeral(final String key, final String value) {
     }
     
     @Override
