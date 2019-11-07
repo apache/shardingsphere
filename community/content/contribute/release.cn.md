@@ -252,7 +252,7 @@ cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-u
 ### 生成文件签名
 
 ```shell
-shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip >> apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip.sha512
+shasum -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip >> apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip.sha512
 shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.sha512
 shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.sha512
 shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz.sha512
@@ -285,6 +285,19 @@ curl https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/KEYS >> KEY
 gpg --import KEYS
 gpg --edit-key "${发布人的gpg用户名}"
   > trust
+
+Please decide how far you trust this user to correctly verify other users' keys
+(by looking at passports, checking fingerprints from different sources, etc.)
+
+  1 = I don't know or won't say
+  2 = I do NOT trust
+  3 = I trust marginally
+  4 = I trust fully
+  5 = I trust ultimately
+  m = back to the main menu
+
+Your decision? 5
+
   > save
 ```
 
@@ -303,7 +316,7 @@ gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin
 
 解压缩`apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip`，进行如下检查:
 
-- 测试是否可以成功Install
+- 检查源码包是否包含由于包含不必要文件，致使tarball过于庞大
 - 文件夹包含单词`incubating`
 - 存在`DISCLAIMER`文件
 - 存在`LICENSE`和`NOTICE`文件
@@ -329,6 +342,17 @@ gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin
   - 如果依赖的是Apache许可证并且存在`NOTICE`文件，那么这些`NOTICE`文件也需要加入到版本的`NOTICE`文件中
 
 全部的检查列表参见[这里](https://wiki.apache.org/incubator/IncubatorReleaseChecklist)。
+
+### 检查依赖影响
+
+#### SkyWalking
+
+如果此版本存在以下接口的变更，则需要到SkyWalking项目提交最新版本的插件：
+
+- org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback.execute0
+- org.apache.shardingsphere.shardingjdbc.executor.AbstractStatementExecutor.executeCallback
+- org.apache.shardingsphere.core.route.router.sharding.ParsingSQLRouter.parse
+- org.apache.shardingsphere.shardingproxy.frontend.command.CommandExecutorTask.run
 
 ## 发起投票
 

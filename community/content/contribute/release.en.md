@@ -255,7 +255,7 @@ cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-u
 ### Generate sign files
 
 ```shell
-shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip >> apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip.sha512
+shasum -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip >> apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip.sha512
 shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.sha512
 shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.sha512
 shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz.sha512
@@ -289,6 +289,19 @@ curl https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/KEYS >> KEY
 gpg --import KEYS
 gpg --edit-key "${GPG username of releaser}"
   > trust
+
+Please decide how far you trust this user to correctly verify other users' keys
+(by looking at passports, checking fingerprints from different sources, etc.)
+
+  1 = I don't know or won't say
+  2 = I do NOT trust
+  3 = I trust marginally
+  4 = I trust fully
+  5 = I trust ultimately
+  m = back to the main menu
+
+Your decision? 5
+
   > save
 ```
 
@@ -307,7 +320,7 @@ gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin
 
 Decompress `apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip` and check the following items:
 
-*   Check whether it can install successfully
+*   Check whether source tarball is oversized for including nonessential files
 *   The release files have the word `incubating` in their name
 *   `DISCLAIMER` file exists
 *   `LICENSE` and `NOTICE` files exist
@@ -333,6 +346,17 @@ to check the following items:
     *   If it depends on Apache license and has a `NOTICE` file, that `NOTICE` file need to be added to `NOTICE` file of the release
 
 For the whole check list, please see [here](https://wiki.apache.org/incubator/IncubatorReleaseChecklist).
+
+### Check dependency impact
+
+#### SkyWalking
+
+If there are changes to the following interfaces in this version, you need to submit the latest version of the plugin to the SkyWalking project:
+
+- org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback.execute0
+- org.apache.shardingsphere.shardingjdbc.executor.AbstractStatementExecutor.executeCallback
+- org.apache.shardingsphere.core.route.router.sharding.ParsingSQLRouter.parse
+- org.apache.shardingsphere.shardingproxy.frontend.command.CommandExecutorTask.run
 
 ## Call for a Vote
 
