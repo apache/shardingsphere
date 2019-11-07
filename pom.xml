@@ -796,6 +796,12 @@
                         <exclude>**/.eslintignore</exclude>
                         <exclude>**/package.json</exclude>
                         <exclude>**/assets/**</exclude>
+                        <exclude>/dist/**</exclude>
+                        <exclude>/etc/**</exclude>
+                        <exclude>/node/**</exclude>
+                        <exclude>/node_modules/**</exclude>
+                        <exclude>/test/coverage/**</exclude>
+                        <exclude>**/package-lock.json</exclude>
                     </excludes>
                 </configuration>
                 <executions>

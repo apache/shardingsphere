@@ -57,3 +57,5 @@ BQ_:                 '`';
 QUESTION_:           '?';
 AT_:                 '@';
 SEMI_:               ';';
+TILDE_TILDE_:        '~~';
+NOT_TILDE_TILDE_:    '!~~';

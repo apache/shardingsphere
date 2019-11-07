@@ -22,6 +22,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.google.common.primitives.Ints;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
@@ -126,11 +127,8 @@ public final class MixSQLRewriteEngineParameterizedTest {
                 
                 @Override
                 public Object apply(final String input) {
-                    try {
-                        return Integer.parseInt(input);
-                    } catch (final NumberFormatException ignore) {
-                        return input;
-                    }
+                    Object result = Ints.tryParse(input);
+                    return result == null ? input : result;
                 }
             });
         }

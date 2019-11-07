@@ -302,6 +302,30 @@ public final class ShardingRuleTest {
     }
     
     @Test
+    public void assertHasDefaultDataSourceName() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.setDefaultDataSourceName("ds_3");
+        ShardingRule actual = new ShardingRule(shardingRuleConfig, createDataSourceNames());
+        assertThat(actual.hasDefaultDataSourceName(), is(true));
+    }
+    
+    @Test
+    public void assertHasDefaultDataSourceNameWithNull() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.setDefaultDataSourceName(null);
+        ShardingRule actual = new ShardingRule(shardingRuleConfig, createDataSourceNames());
+        assertThat(actual.hasDefaultDataSourceName(), is(false));
+    }
+    
+    @Test
+    public void assertHasDefaultDataSourceNameWithEmptyString() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.setDefaultDataSourceName("");
+        ShardingRule actual = new ShardingRule(shardingRuleConfig, createDataSourceNames());
+        assertThat(actual.hasDefaultDataSourceName(), is(false));
+    }
+    
+    @Test
     public void assertDataSourceNameFromDataSourceNames() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.setDefaultDataSourceName("ds_3");

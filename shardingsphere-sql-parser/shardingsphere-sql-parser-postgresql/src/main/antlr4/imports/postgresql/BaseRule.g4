@@ -173,6 +173,7 @@ predicate
     | bitExpr NOT? IN LP_ expr (COMMA_ expr)* RP_
     | bitExpr NOT? BETWEEN bitExpr AND predicate
     | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)?
+    | bitExpr (TILDE_TILDE_ | NOT_TILDE_TILDE_) simpleExpr (ESCAPE simpleExpr)?
     | bitExpr
     ;
 

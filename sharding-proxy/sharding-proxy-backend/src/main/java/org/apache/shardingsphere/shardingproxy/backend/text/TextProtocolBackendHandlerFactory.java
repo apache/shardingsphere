@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.core.SQLParseKernel;
@@ -61,6 +62,9 @@ public final class TextProtocolBackendHandlerFactory {
      * @return instance of text protocol backend handler
      */
     public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final BackendConnection backendConnection) {
+        if (Strings.isNullOrEmpty(sql)) {
+            return new SkipBackendHandler();
+        }
         final String trimSql = SCTLUtils.trimComment(sql);
         if (trimSql.toUpperCase().startsWith(ShardingCTLBackendHandlerFactory.SCTL)) {
             return ShardingCTLBackendHandlerFactory.newInstance(trimSql, backendConnection);
