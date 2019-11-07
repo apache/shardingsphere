@@ -35,6 +35,8 @@ gpg --gen-key
 
 根据提示完成key：
 
+**注意：请使用Apache mail生成GPG的Key。**
+
 ```shell
 gpg (GnuPG) 2.0.12; Copyright (C) 2009 Free Software Foundation, Inc.
 This is free software: you are free to change and redistribute it.
@@ -250,7 +252,7 @@ cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-u
 ### 生成文件签名
 
 ```shell
-shasum -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip >> apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip.sha512
+shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip >> apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip.sha512
 shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.sha512
 shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.sha512
 shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz.sha512
@@ -301,6 +303,7 @@ gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin
 
 解压缩`apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip`，进行如下检查:
 
+- 测试是否可以成功Install
 - 文件夹包含单词`incubating`
 - 存在`DISCLAIMER`文件
 - 存在`LICENSE`和`NOTICE`文件
