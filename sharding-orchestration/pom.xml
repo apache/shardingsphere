@@ -33,5 +33,6 @@
         <module>sharding-orchestration-zookeeper-curator-integration-test</module>
         <module>sharding-orchestration-config</module>
         <module>sharding-orchestration-distributed-lock</module>
+        <module>sharding-orchestration-center</module>
     </modules>
 </project>
