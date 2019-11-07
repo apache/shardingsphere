@@ -231,4 +231,18 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
             assertThat(preparedStatement.getQueryTimeout(), is(1));
         }
     }
+    
+    @Test(expected = SQLException.class)
+    public void assertQueryWithNull() throws SQLException {
+        try (PreparedStatement preparedStatement = getShardingDataSource().getConnection().prepareStatement(null)) {
+            preparedStatement.executeQuery();
+        }
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertQueryWithEmptyString() throws SQLException {
+        try (PreparedStatement preparedStatement = getShardingDataSource().getConnection().prepareStatement("")) {
+            preparedStatement.executeQuery();
+        }
+    }
 }
