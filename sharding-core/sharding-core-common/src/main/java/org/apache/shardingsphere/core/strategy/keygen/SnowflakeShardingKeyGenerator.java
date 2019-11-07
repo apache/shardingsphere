@@ -68,6 +68,8 @@ public final class SnowflakeShardingKeyGenerator implements ShardingKeyGenerator
     private static final long WORKER_ID_MAX_VALUE = 1L << WORKER_ID_BITS;
     
     private static final long WORKER_ID = 0;
+
+    private static final long VIBRATION_VALUE = 1;
     
     private static final int MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS = 10;
     
@@ -78,7 +80,7 @@ public final class SnowflakeShardingKeyGenerator implements ShardingKeyGenerator
     @Setter
     private Properties properties = new Properties();
     
-    private byte sequenceOffset;
+    private long sequenceOffset;
     
     private long sequence;
     
@@ -134,7 +136,13 @@ public final class SnowflakeShardingKeyGenerator implements ShardingKeyGenerator
         Preconditions.checkArgument(result >= 0L && result < WORKER_ID_MAX_VALUE);
         return result;
     }
-    
+
+    private long getCustomVibrationValue() {
+        long result = Long.valueOf(properties.getProperty("custom.vibration.value", String.valueOf(VIBRATION_VALUE)));
+        Preconditions.checkArgument(result > 0L && result <= SEQUENCE_MASK,"Illegal custom vibration value");
+        return optimizationCustomVibrationValue(result);
+    }
+
     private int getMaxTolerateTimeDifferenceMilliseconds() {
         return Integer.valueOf(properties.getProperty("max.tolerate.time.difference.milliseconds", String.valueOf(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS)));
     }
@@ -148,6 +156,15 @@ public final class SnowflakeShardingKeyGenerator implements ShardingKeyGenerator
     }
     
     private void vibrateSequenceOffset() {
-        sequenceOffset = (byte) (~sequenceOffset & 1);
+        sequenceOffset = (sequenceOffset + 1) & getCustomVibrationValue();
+    }
+
+    private long optimizationCustomVibrationValue(long vibrationValue) {
+        vibrationValue |= vibrationValue >>> 1;
+        vibrationValue |= vibrationValue >>> 2;
+        vibrationValue |= vibrationValue >>> 4;
+        vibrationValue |= vibrationValue >>> 8;
+        vibrationValue |= vibrationValue >>> 16;
+        return (vibrationValue == 1) ? 1 : (vibrationValue + 1 >> 1) - 1;
     }
 }
