@@ -74,7 +74,7 @@ public final class StringUtil {
      * @param str source string.
      * @return is empty.
      */
-    public static boolean isEmpty(String str) {
+    public static boolean isEmpty(final String str) {
         return str == null || str.isEmpty();
     }
 
