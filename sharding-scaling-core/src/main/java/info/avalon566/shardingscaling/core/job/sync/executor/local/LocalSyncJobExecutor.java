@@ -18,7 +18,7 @@
 package info.avalon566.shardingscaling.core.job.sync.executor.local;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
-import info.avalon566.shardingscaling.core.job.MigrateProgress;
+import info.avalon566.shardingscaling.core.job.SyncTaskProgress;
 import info.avalon566.shardingscaling.core.job.sync.SyncTask;
 import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
 import info.avalon566.shardingscaling.core.job.sync.executor.SyncJobExecutor;
@@ -56,8 +56,8 @@ public class LocalSyncJobExecutor implements SyncJobExecutor {
     }
 
     @Override
-    public final List<MigrateProgress> getProgresses() {
-        List<MigrateProgress> result = new ArrayList<>();
+    public final List<SyncTaskProgress> getProgresses() {
+        List<SyncTaskProgress> result = new ArrayList<>();
         for (SyncTask syncTask : syncTasks) {
             result.add(syncTask.getProgress());
         }

@@ -73,8 +73,8 @@ public final class SyncTaskController implements Runnable {
      *
      * @return migrate progress
      */
-    public MigrateProgress getProgress() {
-        List<MigrateProgress> result = syncJobExecutor.getProgresses();
+    public SyncTaskProgress getProgress() {
+        List<SyncTaskProgress> result = syncJobExecutor.getProgresses();
         // if history data sync job, only return first migrate progress.
         // if realtime data sync job, there only one migrate progress.
         return result.get(0);

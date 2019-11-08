@@ -19,7 +19,7 @@ package info.avalon566.shardingscaling.core.job.sync;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
-import info.avalon566.shardingscaling.core.job.MigrateProgress;
+import info.avalon566.shardingscaling.core.job.SyncTaskProgress;
 import info.avalon566.shardingscaling.core.job.sync.executor.Event;
 import info.avalon566.shardingscaling.core.job.sync.executor.EventType;
 import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
@@ -73,8 +73,8 @@ public class RealtimeDataSyncTask implements SyncTask {
     }
 
     @Override
-    public final MigrateProgress getProgress() {
-        return new MigrateProgress("REALTIME_DATA_SYNC", currentLogPosition);
+    public final SyncTaskProgress getProgress() {
+        return new SyncTaskProgress("REALTIME_DATA_SYNC", currentLogPosition);
     }
 
     /**

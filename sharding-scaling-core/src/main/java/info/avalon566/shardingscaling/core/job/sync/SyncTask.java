@@ -17,7 +17,7 @@
 
 package info.avalon566.shardingscaling.core.job.sync;
 
-import info.avalon566.shardingscaling.core.job.MigrateProgress;
+import info.avalon566.shardingscaling.core.job.SyncTaskProgress;
 
 /**
  * Sync task interface.
@@ -41,5 +41,5 @@ public interface SyncTask extends Runnable {
      *
      * @return migrate progress
      */
-    MigrateProgress getProgress();
+    SyncTaskProgress getProgress();
 }

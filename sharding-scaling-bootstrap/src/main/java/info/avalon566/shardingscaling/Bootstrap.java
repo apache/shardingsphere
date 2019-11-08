@@ -26,7 +26,7 @@ import info.avalon566.shardingscaling.core.config.ScalingConfiguration;
 import info.avalon566.shardingscaling.core.config.ScalingContext;
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.config.SyncType;
-import info.avalon566.shardingscaling.core.job.MigrateProgress;
+import info.avalon566.shardingscaling.core.job.SyncTaskProgress;
 import info.avalon566.shardingscaling.core.job.ScalingJobController;
 import info.avalon566.shardingscaling.utils.RuntimeUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -74,7 +74,7 @@ public class Bootstrap {
                         } catch (InterruptedException ex) {
                             break;
                         }
-                        for (MigrateProgress progress : scalingJobController.getProgresses()) {
+                        for (SyncTaskProgress progress : scalingJobController.getProgresses()) {
                             if (null != progress.getLogPosition()) {
                                 log.info(progress.getLogPosition().toString());
                             }

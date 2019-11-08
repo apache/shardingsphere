@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public class MigrateProgress {
+public class SyncTaskProgress {
 
     private final String stage;
 
