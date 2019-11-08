@@ -21,7 +21,7 @@
     <parent>
         <artifactId>sharding-orchestration</artifactId>
         <groupId>org.apache.shardingsphere</groupId>
-        <version>4.0.0-RC4-SNAPSHOT</version>
+        <version>4.0.0-RC3-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-orchestration-config</artifactId>
     <name>${project.artifactId}</name>
