@@ -20,12 +20,12 @@ package org.apache.shardingsphere.core.preprocessor.segment.table;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.SchemaSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.TableAvailable;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 

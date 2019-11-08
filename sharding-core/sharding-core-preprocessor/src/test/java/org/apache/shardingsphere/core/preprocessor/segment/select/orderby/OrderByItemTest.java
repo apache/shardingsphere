@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.preprocessor.segment.select.orderby;
 
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;

@@ -27,8 +27,8 @@ import org.apache.shardingsphere.core.preprocessor.segment.select.projection.imp
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.ShorthandProjection;
-import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.junit.Test;
 
 import java.util.Arrays;

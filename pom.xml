@@ -30,6 +30,10 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>shardingsphere-spi</module>
+        
+        <module>shardingsphere-sql-parser</module>
+        
         <module>sharding-core</module>
         
         <module>sharding-jdbc</module>
@@ -723,7 +727,7 @@
                             <ignoreMethodAnnotation>lombok.Generated</ignoreMethodAnnotation>
                         </ignoreMethodAnnotations>
                         <excludes>
-                            <exclude>org/apache/shardingsphere/core/parse/autogen/*.class</exclude>
+                            <exclude>org/apache/shardingsphere/sql/parser/autogen/*.class</exclude>
                             <exclude>org/apache/shardingsphere/orchestration/reg/zookeeper/*.class</exclude>
                             <exclude>org/apache/shardingsphere/**/*Test.class</exclude>
                             <exclude>org/apache/shardingsphere/**/Test*.class</exclude>
