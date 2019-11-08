@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -48,9 +49,9 @@ public final class MySQLTimeService implements TimeService {
     }
 
     private static void init() {
-        try {
+        try (InputStream inputStream = MySQLTimeService.class.getResourceAsStream("/mysql-time-service.properties")) {
             Properties properties = new Properties();
-            properties.load(MySQLTimeService.class.getResourceAsStream("/mysql-time-service.properties"));
+            properties.load(inputStream);
             if (properties.isEmpty()) {
                 return;
             }
