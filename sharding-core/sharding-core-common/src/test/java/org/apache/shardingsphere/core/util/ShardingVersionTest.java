@@ -25,4 +25,15 @@ public class ShardingVersionTest {
     public void assertCheckDuplicate() {
         ShardingVersion.checkDuplicateClass(ShardingVersion.class);
     }
+
+    @Test
+    public void checkDuplicateClass() {
+        ShardingVersion.checkDuplicateClass(ShardingVersion.class);
+    }
+
+    @Test
+    public void checkDuplicateClass1() {
+        ShardingVersion.checkDuplicateClass(ShardingVersion.class, false);
+    }
+
 }
