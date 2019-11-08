@@ -56,7 +56,7 @@ import static org.mockito.Mockito.when;
 public final class MemoryQueryResultTest {
     
     private final ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
-
+    
     @Test
     public void assertConstructorWithShardingRule() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet(), getShardingRule(), new ShardingProperties(new Properties()), getSqlStatementContext());
@@ -92,7 +92,7 @@ public final class MemoryQueryResultTest {
         when(encryptTable.getCipherColumns()).thenReturn(Collections.singleton("order_id"));
         return result;
     }
-
+    
     private SQLStatementContext getSqlStatementContext() {
         SQLStatementContext result = mock(SQLStatementContext.class);
         TablesContext tablesContext = mock(TablesContext.class);
@@ -112,14 +112,14 @@ public final class MemoryQueryResultTest {
     public void assertGetValueWithColumnIndex() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
-        assertThat(queryResult.getValue(1, Integer.class), Is.<Object>is(1));
+        assertThat(queryResult.getValue(1, Integer.class), Is.<Object>is(Long.valueOf(1)));
     }
     
     @Test
     public void assertGetValueWithColumnLabel() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
-        assertThat(queryResult.getValue("order_id", Integer.class), Is.<Object>is(1));
+        assertThat(queryResult.getValue("order_id", Integer.class), Is.<Object>is(Long.valueOf(1)));
     }
     
     @Test
@@ -155,6 +155,7 @@ public final class MemoryQueryResultTest {
         when(metaData.getColumnLabel(1)).thenReturn("order_id");
         when(metaData.getColumnName(1)).thenThrow(new SQLException());
         when(metaData.getColumnType(1)).thenReturn(Types.INTEGER);
+        when(metaData.isSigned(1)).thenReturn(true);
         return metaData;
     }
     
@@ -162,14 +163,14 @@ public final class MemoryQueryResultTest {
     public void assertGetCalendarValueWithColumnIndex() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
-        assertThat(queryResult.getCalendarValue(1, Integer.class, Calendar.getInstance()), Is.<Object>is(1));
+        assertThat(queryResult.getCalendarValue(1, Integer.class, Calendar.getInstance()), Is.<Object>is(Long.valueOf(1)));
     }
     
     @Test
     public void assertGetCalendarValueWithColumnLabel() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
-        assertThat(queryResult.getCalendarValue("order_id", Integer.class, Calendar.getInstance()), Is.<Object>is(1));
+        assertThat(queryResult.getCalendarValue("order_id", Integer.class, Calendar.getInstance()), Is.<Object>is(Long.valueOf(1)));
     }
     
     @Test
@@ -242,6 +243,7 @@ public final class MemoryQueryResultTest {
         when(result.getColumnLabel(1)).thenReturn("order_id");
         when(result.getColumnName(1)).thenReturn("order_id");
         when(result.getColumnType(1)).thenReturn(Types.INTEGER);
+        when(result.isSigned(1)).thenReturn(true);
         when(result.isCaseSensitive(1)).thenReturn(false);
         return result;
     }

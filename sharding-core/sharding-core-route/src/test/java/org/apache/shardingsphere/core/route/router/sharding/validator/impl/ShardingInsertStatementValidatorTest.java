@@ -22,10 +22,10 @@ import static org.mockito.Mockito.when;
 import java.util.Collections;
 
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;

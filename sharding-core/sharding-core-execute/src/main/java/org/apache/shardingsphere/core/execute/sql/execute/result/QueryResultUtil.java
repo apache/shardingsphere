@@ -104,10 +104,11 @@ public final class QueryResultUtil {
                 return resultSet.getBoolean(columnIndex);
             case Types.TINYINT:
             case Types.SMALLINT:
-            case Types.INTEGER:
                 return resultSet.getInt(columnIndex);
+            case Types.INTEGER:
+                return metaData.isSigned(columnIndex) ? resultSet.getInt(columnIndex) : resultSet.getLong(columnIndex);
             case Types.BIGINT:
-                return resultSet.getLong(columnIndex);
+                return metaData.isSigned(columnIndex) ? resultSet.getLong(columnIndex) : resultSet.getBigDecimal(columnIndex).toBigInteger();
             case Types.NUMERIC:
             case Types.DECIMAL:
                 return resultSet.getBigDecimal(columnIndex);

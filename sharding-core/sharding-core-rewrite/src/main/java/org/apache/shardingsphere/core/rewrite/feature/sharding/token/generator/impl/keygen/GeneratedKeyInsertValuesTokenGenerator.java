@@ -20,17 +20,16 @@ package org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.expression.DerivedLiteralExpressionSegment;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.expression.DerivedParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.expression.DerivedSimpleExpressionSegment;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.ParametersAware;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValuesToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValuesToken.InsertValueToken;
@@ -45,9 +44,7 @@ import java.util.List;
  * @author panjuan
  */
 @Setter
-public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedKeyTokenGenerator implements OptionalSQLTokenGenerator, ParametersAware, PreviousSQLTokensAware {
-    
-    private List<Object> parameters;
+public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedKeyTokenGenerator implements OptionalSQLTokenGenerator, PreviousSQLTokensAware {
     
     private List<SQLToken> previousSQLTokens;
     
@@ -64,7 +61,7 @@ public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedK
         int count = 0;
         for (InsertValueContext each : ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts()) {
             InsertValueToken insertValueToken = result.get().getInsertValueTokens().get(count);
-            DerivedSimpleExpressionSegment expressionSegment = parameters.isEmpty()
+            DerivedSimpleExpressionSegment expressionSegment = isToAddDerivedLiteralExpression((InsertSQLStatementContext) sqlStatementContext, count)
                     ? new DerivedLiteralExpressionSegment(generatedValues.next()) : new DerivedParameterMarkerExpressionSegment(each.getParametersCount());
             insertValueToken.getValues().add(expressionSegment);
             count++;
@@ -79,5 +76,9 @@ public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedK
             }
         }
         return Optional.absent();
+    }
+    
+    private boolean isToAddDerivedLiteralExpression(final InsertSQLStatementContext insertSQLStatementContext, final int insertValueCount) {
+        return insertSQLStatementContext.getGroupedParameters().get(insertValueCount).isEmpty();
     }
 }

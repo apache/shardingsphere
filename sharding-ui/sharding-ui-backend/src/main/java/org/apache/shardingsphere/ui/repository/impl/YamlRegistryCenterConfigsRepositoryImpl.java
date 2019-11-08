@@ -30,6 +30,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Implementation of Registry center configs repository.
@@ -52,7 +53,7 @@ public final class YamlRegistryCenterConfigsRepositoryImpl implements RegistryCe
         }
         
         try (FileInputStream fileInputStream = new FileInputStream(file);
-             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")) {
+             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8)) {
             return new Yaml(new Constructor(RegistryCenterConfigs.class)).loadAs(inputStreamReader, RegistryCenterConfigs.class);
         } catch (IOException e) {
             throw new ShardingUIException(ShardingUIException.SERVER_ERROR, "load config error");

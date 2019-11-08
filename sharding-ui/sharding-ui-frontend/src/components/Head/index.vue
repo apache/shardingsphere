@@ -33,9 +33,9 @@
             </el-dropdown-menu>
           </el-dropdown>
         </div>
-        <div class="lang-more">
+        <!-- <div class="lang-more">
           <el-tag>English</el-tag>
-        </div>
+        </div> -->
       </div>
       <el-breadcrumb separator="/" class="bread-nav">
         <el-breadcrumb-item>

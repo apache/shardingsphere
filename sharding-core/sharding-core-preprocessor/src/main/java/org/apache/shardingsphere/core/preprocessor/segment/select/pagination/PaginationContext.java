@@ -20,10 +20,10 @@ package org.apache.shardingsphere.core.preprocessor.segment.select.pagination;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.PaginationValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitValueSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.PaginationValueSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitValueSegment;
 
 import java.util.List;
 

@@ -20,18 +20,22 @@ package org.apache.shardingsphere.core.preprocessor.segment.table;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -179,6 +183,24 @@ public final class TablesContextTest {
         TableMetas tableMetas = mock(TableMetas.class);
         when(tableMetas.containsColumn(anyString(), anyString())).thenReturn(true);
         assertTrue(new TablesContext(selectStatement).findTableName(columnSegment, tableMetas).isPresent());
+    }
+    
+    @Test
+    public void assertGetSchema() {
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
+        assertFalse(new TablesContext(selectStatement).getSchema().isPresent());
+    }
+    
+    @Test
+    public void assertInstanceCreatedWhenNoExceptionThrown() {
+        SQLStatement sqlStatement = mock(SQLStatement.class);
+        TableSegment tableSegment = new TableSegment(0, 10, "TableSegmentName");
+        SchemaSegment schemaSegment = mock(SchemaSegment.class);
+        when(schemaSegment.getName()).thenReturn("SchemaSegmentName");
+        tableSegment.setOwner(schemaSegment);
+        when(sqlStatement.findSQLSegments(TableAvailable.class)).thenReturn(Collections.singletonList((TableAvailable) tableSegment));
+        new TablesContext(sqlStatement);
     }
     
     private TableSegment createTableSegment(final String tableName, final String alias) {

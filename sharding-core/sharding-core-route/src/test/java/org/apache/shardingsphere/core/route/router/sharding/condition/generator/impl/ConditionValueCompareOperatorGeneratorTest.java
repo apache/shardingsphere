@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.core.route.router.sharding.condition.generator.impl;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.CommonExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateCompareRightValue;
+import com.google.common.collect.Range;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.core.route.router.sharding.condition.Column;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
+import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 import org.junit.Test;
 
@@ -49,8 +51,48 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     }
 
     @Test
-    public void assertGenerateConditionValueWithErrorOperator() {
+    public void assertGenerateConditionValueWithLessThanOperator() {
         PredicateCompareRightValue rightValue = new PredicateCompareRightValue("<", new LiteralExpressionSegment(0, 0, 1));
+        Optional<RouteValue> routeValueOptional = generator.generate(rightValue, column, new LinkedList<>());
+        assertTrue(routeValueOptional.isPresent());
+        assertTrue(routeValueOptional.get() instanceof RangeRouteValue);
+        RangeRouteValue<Integer> rangeRouteValue = (RangeRouteValue<Integer>) routeValueOptional.get();
+        assertTrue(Range.lessThan(1).encloses(rangeRouteValue.getValueRange()));
+    }
+
+    @Test
+    public void assertGenerateConditionValueWithGreaterThanOperator() {
+        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(">", new LiteralExpressionSegment(0, 0, 1));
+        Optional<RouteValue> routeValueOptional = generator.generate(rightValue, column, new LinkedList<>());
+        assertTrue(routeValueOptional.isPresent());
+        assertTrue(routeValueOptional.get() instanceof RangeRouteValue);
+        RangeRouteValue<Integer> rangeRouteValue = (RangeRouteValue<Integer>) routeValueOptional.get();
+        assertTrue(Range.greaterThan(1).encloses(rangeRouteValue.getValueRange()));
+    }
+
+    @Test
+    public void assertGenerateConditionValueWithAtMostOperator() {
+        PredicateCompareRightValue rightValue = new PredicateCompareRightValue("<=", new LiteralExpressionSegment(0, 0, 1));
+        Optional<RouteValue> routeValueOptional = generator.generate(rightValue, column, new LinkedList<>());
+        assertTrue(routeValueOptional.isPresent());
+        assertTrue(routeValueOptional.get() instanceof RangeRouteValue);
+        RangeRouteValue<Integer> rangeRouteValue = (RangeRouteValue<Integer>) routeValueOptional.get();
+        assertTrue(Range.atMost(1).encloses(rangeRouteValue.getValueRange()));
+    }
+
+    @Test
+    public void assertGenerateConditionValueWithAtLeastOperator() {
+        PredicateCompareRightValue rightValue = new PredicateCompareRightValue(">=", new LiteralExpressionSegment(0, 0, 1));
+        Optional<RouteValue> routeValueOptional = generator.generate(rightValue, column, new LinkedList<>());
+        assertTrue(routeValueOptional.isPresent());
+        assertTrue(routeValueOptional.get() instanceof RangeRouteValue);
+        RangeRouteValue<Integer> rangeRouteValue = (RangeRouteValue<Integer>) routeValueOptional.get();
+        assertTrue(Range.atLeast(1).encloses(rangeRouteValue.getValueRange()));
+    }
+
+    @Test
+    public void assertGenerateConditionValueWithErrorOperator() {
+        PredicateCompareRightValue rightValue = new PredicateCompareRightValue("!=", new LiteralExpressionSegment(0, 0, 1));
         Optional<RouteValue> routeValueOptional = generator.generate(rightValue, column, new LinkedList<>());
         assertFalse(routeValueOptional.isPresent());
     }

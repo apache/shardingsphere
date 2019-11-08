@@ -22,7 +22,7 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.execute.sql.execute.row.QueryRow;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.AggregationDistinctProjection;
-import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 
 import java.io.InputStream;
 import java.sql.SQLException;

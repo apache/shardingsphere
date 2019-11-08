@@ -25,6 +25,10 @@ encryptRule:
   tables:
     t_account:
       columns:
+        certificate_number:
+          cipherColumn: cipher_certificate_number
+          assistedQueryColumn: assisted_query_certificate_number
+          encryptor: assisted_query
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
@@ -34,6 +38,11 @@ encryptRule:
           encryptor: normal
     t_account_bak:
       columns:
+        certificate_number:
+          cipherColumn: cipher_certificate_number
+          assistedQueryColumn: assisted_query_certificate_number
+          plainColumn: plain_certificate_number
+          encryptor: assisted_query
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password

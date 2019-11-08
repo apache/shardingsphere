@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.core.SimpleQueryShardingEngine;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
@@ -27,12 +28,13 @@ import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergeEngineFactory;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.shardingjdbc.executor.StatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractStatementAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSet;
@@ -83,6 +85,9 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     @Override
     public ResultSet executeQuery(final String sql) throws SQLException {
+        if (Strings.isNullOrEmpty(sql)) {
+            throw new SQLException(SQLExceptionConstant.SQL_STRING_NULL_OR_EMPTY);
+        }
         ResultSet result;
         try {
             clearPrevious();

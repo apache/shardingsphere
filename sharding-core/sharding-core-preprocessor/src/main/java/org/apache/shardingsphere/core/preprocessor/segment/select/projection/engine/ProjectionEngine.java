@@ -25,14 +25,14 @@ import org.apache.shardingsphere.core.preprocessor.segment.select.projection.Der
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.Projection;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.ShorthandProjection;
-import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.AggregationSelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ColumnSelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ExpressionSelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ShorthandSelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationSelectItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnSelectItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionSelectItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandSelectItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 
 /**
  * Projection engine.

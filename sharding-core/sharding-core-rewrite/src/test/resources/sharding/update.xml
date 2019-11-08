@@ -18,24 +18,24 @@
 
 <rewrite-assertions yaml-rule="yaml/sharding/sharding-rule.yaml">
     <rewrite-assertion id="update_with_sharding_value_for_parameters">
-        <input sql="UPDATE t_order SET status = ? WHERE order_id = ?" parameters="'OK', 100" />
-        <output sql="UPDATE t_order_0 SET status = ? WHERE order_id = ?" parameters="'OK', 100" />
+        <input sql="UPDATE t_account SET status = ? WHERE account_id = ?" parameters="'OK', 100" />
+        <output sql="UPDATE t_account_0 SET status = ? WHERE account_id = ?" parameters="'OK', 100" />
     </rewrite-assertion>
-
+    
     <rewrite-assertion id="update_with_sharding_value_for_literals">
-        <input sql="UPDATE t_order SET status = 'OK' WHERE order_id = 100" />
-        <output sql="UPDATE t_order_0 SET status = 'OK' WHERE order_id = 100" />
+        <input sql="UPDATE t_account SET status = 'OK' WHERE account_id = 100" />
+        <output sql="UPDATE t_account_0 SET status = 'OK' WHERE account_id = 100" />
     </rewrite-assertion>
     
     <rewrite-assertion id="update_without_sharding_value_for_parameters">
-        <input sql="UPDATE t_order SET status = ? WHERE user_id = ?" parameters="'OK', 10" />
-        <output sql="UPDATE t_order_0 SET status = ? WHERE user_id = ?" parameters="'OK', 10" />
-        <output sql="UPDATE t_order_1 SET status = ? WHERE user_id = ?" parameters="'OK', 10" />
+        <input sql="UPDATE t_account SET status = ? WHERE amount = ?" parameters="'OK', 1000" />
+        <output sql="UPDATE t_account_0 SET status = ? WHERE amount = ?" parameters="'OK', 1000" />
+        <output sql="UPDATE t_account_1 SET status = ? WHERE amount = ?" parameters="'OK', 1000" />
     </rewrite-assertion>
     
     <rewrite-assertion id="update_without_sharding_value_for_literals">
-        <input sql="UPDATE t_order SET status = 'OK' WHERE user_id = 10" parameters="'OK', 10" />
-        <output sql="UPDATE t_order_0 SET status = 'OK' WHERE user_id = 10" parameters="'OK', 10" />
-        <output sql="UPDATE t_order_1 SET status = 'OK' WHERE user_id = 10" parameters="'OK', 10" />
+        <input sql="UPDATE t_account SET status = 'OK' WHERE amount = 10" parameters="'OK', 1000" />
+        <output sql="UPDATE t_account_0 SET status = 'OK' WHERE amount = 10" parameters="'OK', 1000" />
+        <output sql="UPDATE t_account_1 SET status = 'OK' WHERE amount = 10" parameters="'OK', 1000" />
     </rewrite-assertion>
 </rewrite-assertions>

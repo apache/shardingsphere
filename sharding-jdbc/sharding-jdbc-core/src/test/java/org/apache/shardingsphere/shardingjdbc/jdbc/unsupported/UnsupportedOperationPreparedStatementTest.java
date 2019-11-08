@@ -39,7 +39,7 @@ public final class UnsupportedOperationPreparedStatementTest extends AbstractSha
     private final List<PreparedStatement> statements = new ArrayList<>();
     
     @Before
-    public void init() {
+    public void init() throws SQLException {
         ShardingConnection shardingConnection = getShardingDataSource().getConnection();
         shardingConnections.add(shardingConnection);
         PreparedStatement preparedStatement = shardingConnection.prepareStatement(JDBCTestSQL.SELECT_WITH_ALIAS_SQL);

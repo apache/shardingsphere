@@ -39,8 +39,8 @@ public final class HintShowStatusExecutor extends AbstractHintQueryExecutor<Hint
     @Override
     protected List<QueryHeader> createQueryHeaders() {
         List<QueryHeader> queryHeaders = new ArrayList<>(2);
-        queryHeaders.add(new QueryHeader("", "", "master_only", "", 5, Types.CHAR, 0));
-        queryHeaders.add(new QueryHeader("", "", "sharding_type", "", 255, Types.CHAR, 0));
+        queryHeaders.add(new QueryHeader("", "", "master_only", "", 5, Types.CHAR, 0, false, false, false, false));
+        queryHeaders.add(new QueryHeader("", "", "sharding_type", "", 255, Types.CHAR, 0, false, false, false, false));
         return queryHeaders;
     }
     

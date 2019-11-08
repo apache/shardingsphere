@@ -18,15 +18,16 @@
 package org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.impl;
 
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.SQLRouteResultAware;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.aware.SQLRouteResultAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValuesToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValuesToken.InsertValueToken;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.rule.DataNode;
@@ -61,7 +62,7 @@ public final class InsertValuesTokenGenerator implements OptionalSQLTokenGenerat
         for (InsertValueContext each : ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts()) {
             List<ExpressionSegment> expressionSegments = each.getValueExpressions();
             Collection<DataNode> dataNodes = null == shardingConditionIterator ? Collections.<DataNode>emptyList() : shardingConditionIterator.next().getDataNodes();
-            result.addInsertValue(expressionSegments, dataNodes);
+            result.getInsertValueTokens().add(new InsertValueToken(expressionSegments, dataNodes));
         }
         return result;
     }

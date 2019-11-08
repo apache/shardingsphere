@@ -51,6 +51,13 @@
                 <exclude>**/cobertura.ser</exclude>
                 <exclude>*.gpg</exclude>
                 
+                <!-- node ignore -->
+                <exclude>**/sharding-ui-frontend/test/coverage/**</exclude>
+                <exclude>**/sharding-ui-frontend/dist/**</exclude>
+                <exclude>**/sharding-ui-frontend/node/**</exclude>
+                <exclude>**/sharding-ui-frontend/node_modules/**</exclude>
+                <exclude>**/sharding-ui-frontend/etc/**</exclude>
+                
                 <!-- eclipse ignore -->
                 <exclude>**/.settings/**</exclude>
                 <exclude>**/.project</exclude>

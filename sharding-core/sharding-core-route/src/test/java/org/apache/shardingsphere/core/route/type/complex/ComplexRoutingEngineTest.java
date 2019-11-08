@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderB
 import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.preprocessor.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;

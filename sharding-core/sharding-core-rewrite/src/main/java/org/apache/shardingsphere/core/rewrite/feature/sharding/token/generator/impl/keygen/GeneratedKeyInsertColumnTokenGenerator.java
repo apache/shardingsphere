@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.GeneratedKeyInsertColumnToken;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 

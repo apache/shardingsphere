@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.route.router.masterslave.MasterSlaveRouter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractStatementAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -73,6 +75,9 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
     
     @Override
     public ResultSet executeQuery(final String sql) throws SQLException {
+        if (Strings.isNullOrEmpty(sql)) {
+            throw new SQLException(SQLExceptionConstant.SQL_STRING_NULL_OR_EMPTY);
+        }
         clearPrevious();
         Collection<String> dataSourceNames = masterSlaveRouter.route(sql, false);
         Preconditions.checkState(1 == dataSourceNames.size(), "Cannot support executeQuery for DML or DDL");

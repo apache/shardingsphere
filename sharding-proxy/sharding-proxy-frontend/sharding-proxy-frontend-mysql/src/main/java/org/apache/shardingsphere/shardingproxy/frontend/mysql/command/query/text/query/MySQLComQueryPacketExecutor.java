@@ -33,6 +33,7 @@ import org.apache.shardingsphere.shardingproxy.frontend.mysql.MySQLErrPacketFact
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnFieldDetailFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLFieldCountPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.MySQLComQueryPacket;
@@ -93,10 +94,27 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
         List<QueryHeader> queryHeader = backendResponse.getQueryHeaders();
         result.add(new MySQLFieldCountPacket(++currentSequenceId, queryHeader.size()));
         for (QueryHeader each : queryHeader) {
-            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, each.getSchema(), each.getTable(), each.getTable(), 
+            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, getColumnFieldDetailFlag(each), each.getSchema(), each.getTable(), each.getTable(), 
                     each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), MySQLColumnType.valueOfJDBCType(each.getColumnType()), each.getDecimals()));
         }
         result.add(new MySQLEofPacket(++currentSequenceId));
+        return result;
+    }
+
+    private int getColumnFieldDetailFlag(final QueryHeader header) {
+        int result = 0;
+        if (header.isPrimaryKey()) {
+            result += MySQLColumnFieldDetailFlag.PRIMARY_KEY.getValue();
+        }
+        if (header.isNotNull()) {
+            result += MySQLColumnFieldDetailFlag.NOT_NULL.getValue();
+        }
+        if (!header.isSigned()) {
+            result += MySQLColumnFieldDetailFlag.UNSIGNED.getValue();
+        }
+        if (header.isAutoIncrement()) {
+            result += MySQLColumnFieldDetailFlag.AUTO_INCREMENT.getValue();
+        }
         return result;
     }
     

@@ -30,6 +30,10 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>shardingsphere-spi</module>
+        
+        <module>shardingsphere-sql-parser</module>
+        
         <module>sharding-core</module>
         
         <module>sharding-jdbc</module>
@@ -61,7 +65,7 @@
         <groovy.version>2.4.5</groovy.version>
         <snakeyaml.version>1.16</snakeyaml.version>
         
-        <netty.version>4.1.16.Final</netty.version>
+        <netty.version>4.1.42.Final</netty.version>
         <commons-codec.version>1.10</commons-codec.version>
         <commons-collections4.version>4.2</commons-collections4.version>
         
@@ -95,7 +99,9 @@
         <postgresql.version>42.2.5</postgresql.version>
         <mssql.version>6.1.7.jre7-preview</mssql.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
-        
+
+        <!-- Plugin versions -->
+        <takari-maven-plugin.version>0.6.1</takari-maven-plugin.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
         <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
@@ -485,6 +491,12 @@
         </extensions>
         <pluginManagement>
             <plugins>
+                <!-- mvn -N io.takari:maven:wrapper -Dmaven=3.5.4 -->
+                <plugin>
+                    <groupId>io.takari</groupId>
+                    <artifactId>maven</artifactId>
+                    <version>${takari-maven-plugin.version}</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -500,6 +512,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>${maven-resources-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -710,7 +727,7 @@
                             <ignoreMethodAnnotation>lombok.Generated</ignoreMethodAnnotation>
                         </ignoreMethodAnnotations>
                         <excludes>
-                            <exclude>org/apache/shardingsphere/core/parse/autogen/*.class</exclude>
+                            <exclude>org/apache/shardingsphere/sql/parser/autogen/*.class</exclude>
                             <exclude>org/apache/shardingsphere/orchestration/reg/zookeeper/*.class</exclude>
                             <exclude>org/apache/shardingsphere/**/*Test.class</exclude>
                             <exclude>org/apache/shardingsphere/**/Test*.class</exclude>
@@ -765,6 +782,7 @@
                         <!-- CI files -->
                         <exclude>**/.travis.yml</exclude>
                         <exclude>**/.mvn/jvm.config</exclude>
+                        <exclude>**/.mvn/wrapper/maven-wrapper.properties</exclude>
                         <!-- GitHub files -->
                         <exclude>**/.github/**</exclude>
                         <!-- document files -->
@@ -778,6 +796,12 @@
                         <exclude>**/.eslintignore</exclude>
                         <exclude>**/package.json</exclude>
                         <exclude>**/assets/**</exclude>
+                        <exclude>/dist/**</exclude>
+                        <exclude>/etc/**</exclude>
+                        <exclude>/node/**</exclude>
+                        <exclude>/node_modules/**</exclude>
+                        <exclude>/test/coverage/**</exclude>
+                        <exclude>**/package-lock.json</exclude>
                     </excludes>
                 </configuration>
                 <executions>

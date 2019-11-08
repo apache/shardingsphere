@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.core.rewrite.feature.encrypt.token;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.EncryptRuleAware;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.QueryWithCipherColumnAware;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.aware.EncryptRuleAware;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.impl.AssistQueryAndPlainInsertColumnsTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.impl.EncryptAssignmentTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.impl.EncryptForInsertColumnsTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.impl.EncryptForUseDefaultInsertColumnsTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.impl.EncryptInsertValuesTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.impl.EncryptPredicateTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.impl.EncryptPredicateColumnTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.impl.EncryptPredicateRightValueTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.impl.EncryptProjectionTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.impl.InsertCipherNameTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerator;
@@ -63,15 +64,14 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
     
     private Collection<SQLTokenGenerator> buildSQLTokenGenerators() {
         Collection<SQLTokenGenerator> result = new LinkedList<>();
-        result.add(new EncryptForInsertColumnsTokenGenerator());
         result.add(new EncryptProjectionTokenGenerator());
         result.add(new EncryptAssignmentTokenGenerator());
-        result.add(new EncryptPredicateTokenGenerator());
+        result.add(new EncryptPredicateColumnTokenGenerator());
+        result.add(new EncryptPredicateRightValueTokenGenerator());
+        result.add(new EncryptInsertValuesTokenGenerator());
+        result.add(new EncryptForUseDefaultInsertColumnsTokenGenerator());
         result.add(new InsertCipherNameTokenGenerator());
         result.add(new AssistQueryAndPlainInsertColumnsTokenGenerator());
-//        result.add(new InsertCipherAssignmentTokenGenerator());
-//        result.add(new InsertAssistedQueryAndPlainAssignmentsTokenGenerator());
-        result.add(new EncryptInsertValuesTokenGenerator());
         return result;
     }
 }

@@ -53,10 +53,11 @@
             <outputDirectory>/</outputDirectory>
         </fileSet>
     </fileSets>
-    <files>
-        <file>
-            <source>../../sharding-ui/sharding-ui-backend/target/sharding-ui.jar</source>
+
+    <dependencySets>
+        <dependencySet>
             <outputDirectory>lib</outputDirectory>
-        </file>
-    </files>
+            <fileMode>0644</fileMode>
+        </dependencySet>
+    </dependencySets>
 </assembly>

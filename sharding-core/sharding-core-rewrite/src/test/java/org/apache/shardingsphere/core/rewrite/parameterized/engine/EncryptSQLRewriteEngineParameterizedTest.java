@@ -20,10 +20,8 @@ package org.apache.shardingsphere.core.rewrite.parameterized.engine;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.parse.SQLParseEngine;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.preprocessor.SQLStatementContextFactory;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
@@ -37,6 +35,8 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlRootEncryptRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -45,6 +45,7 @@ import org.junit.runners.Parameterized.Parameters;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -57,6 +58,7 @@ import java.util.Objects;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
@@ -80,7 +82,7 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
     
     private final String databaseType;
     
-    @Parameters(name = "{2} -> {0}")
+    @Parameters(name = "ENCRYPT: {2} -> {0}")
     public static Collection<Object[]> getTestParameters() {
         Collection<Object[]> result = new LinkedList<>();
         for (Entry<String, RewriteAssertionsRootEntity> entry : getAllRewriteAssertionsRootEntities().entrySet()) {
@@ -134,13 +136,24 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
         EncryptRule encryptRule = new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(ruleConfiguration.getEncryptRule()));
         boolean isQueryWithCipherColumn = (boolean) ruleConfiguration.getProps().get("query.with.cipher.column");
         new EncryptSQLRewriteContextDecorator(encryptRule, isQueryWithCipherColumn).decorate(sqlRewriteContext);
+        sqlRewriteContext.generateSQLTokens();
         return new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
     }
     
     private SQLRewriteContext getSQLRewriteContext() {
-        SQLStatement sqlStatement = new SQLParseEngine(DatabaseTypes.getActualDatabaseType(null == databaseType ? "SQL92" : databaseType)).parse(inputSQL, false);
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(mock(TableMetas.class), inputSQL, inputParameters, sqlStatement);
+        SQLStatement sqlStatement = SQLParseEngineFactory.getSQLParseEngine(null == databaseType ? "SQL92" : databaseType).parse(inputSQL, false);
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(createTableMetas(), inputSQL, inputParameters, sqlStatement);
         return new SQLRewriteContext(mock(TableMetas.class), sqlStatementContext, inputSQL, inputParameters);
+    }
+    
+    private TableMetas createTableMetas() {
+        TableMetas result = mock(TableMetas.class);
+        when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_bak"));
+        when(result.get("t_account")).thenReturn(mock(TableMetaData.class));
+        when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
+        when(result.get("t_account_bak")).thenReturn(mock(TableMetaData.class));
+        when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
+        return result;
     }
     
     private YamlRootEncryptRuleConfiguration createRuleConfiguration() throws IOException {

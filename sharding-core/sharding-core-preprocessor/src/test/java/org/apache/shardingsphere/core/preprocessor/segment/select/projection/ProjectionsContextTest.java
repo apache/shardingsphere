@@ -27,8 +27,8 @@ import org.apache.shardingsphere.core.preprocessor.segment.select.projection.imp
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.ShorthandProjection;
-import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -190,7 +190,8 @@ public final class ProjectionsContextTest {
     
     private TableMetas createTableMetas() {
         Map<String, TableMetaData> tables = new HashMap<>(1, 1);
-        tables.put("table", new TableMetaData(Arrays.asList(new ColumnMetaData("id", "number", true), new ColumnMetaData("name", "varchar", false)), Collections.<String>emptyList()));
+        tables.put("table", new TableMetaData(Arrays.asList(new ColumnMetaData("id", "number", true, true, true), 
+                new ColumnMetaData("name", "varchar", false, false, false)), Collections.<String>emptyList()));
         return new TableMetas(tables);
     }
     

@@ -22,20 +22,22 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.swapper.DataSourceConfigurationYamlSwapper;
-
 import java.util.Map;
 import java.util.Properties;
 
@@ -106,4 +108,13 @@ public final class ConfigurationYamlConverter {
         return YamlEngine.unmarshalProperties(data);
     }
     
+    /**
+     * Load encrypt rule configuration.
+     *
+     * @param data data
+     * @return encrypt rule configuration
+     */
+    public static EncryptRuleConfiguration loadEncryptRuleConfiguration(final String data) {
+        return new EncryptRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(data, YamlEncryptRuleConfiguration.class));
+    }
 }

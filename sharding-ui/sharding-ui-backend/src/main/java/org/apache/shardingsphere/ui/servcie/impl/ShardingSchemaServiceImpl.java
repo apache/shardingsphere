@@ -19,11 +19,10 @@ package org.apache.shardingsphere.ui.servcie.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.ui.servcie.RegistryCenterService;
 import org.apache.shardingsphere.ui.servcie.ShardingSchemaService;
 import org.apache.shardingsphere.ui.util.ConfigurationYamlConverter;
-import org.apache.shardingsphere.api.config.RuleConfiguration;
-import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Collection;
@@ -78,9 +77,13 @@ public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
     
     private void checkRuleConfiguration(final String configData) {
         try {
-            RuleConfiguration ruleConfig = configData.contains("tables:\n")
-                    ? ConfigurationYamlConverter.loadShardingRuleConfiguration(configData) : ConfigurationYamlConverter.loadMasterSlaveRuleConfiguration(configData);
-            Preconditions.checkState(ruleConfig != null, "rule configuration is invalid.");
+            if (configData.contains("encryptors:\n")) {
+                ConfigurationYamlConverter.loadEncryptRuleConfiguration(configData);
+            } else if (configData.contains("tables:\n")) {
+                ConfigurationYamlConverter.loadShardingRuleConfiguration(configData);
+            } else {
+                ConfigurationYamlConverter.loadMasterSlaveRuleConfiguration(configData);
+            }
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

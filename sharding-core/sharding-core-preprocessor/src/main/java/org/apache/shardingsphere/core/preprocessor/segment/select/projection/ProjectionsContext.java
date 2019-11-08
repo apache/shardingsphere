@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.ShorthandProjection;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;

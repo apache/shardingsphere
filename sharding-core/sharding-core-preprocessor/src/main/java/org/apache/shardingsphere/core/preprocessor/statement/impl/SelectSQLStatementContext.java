@@ -33,13 +33,13 @@ import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderB
 import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.engine.OrderByContextEngine;
 import org.apache.shardingsphere.core.preprocessor.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.core.preprocessor.segment.select.pagination.engine.PaginationContextEngine;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.SubqueryPredicateSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.parse.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.TextOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.SubqueryPredicateSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 import java.util.Collection;
 import java.util.List;

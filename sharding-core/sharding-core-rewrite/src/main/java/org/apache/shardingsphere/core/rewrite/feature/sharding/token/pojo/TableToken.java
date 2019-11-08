@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
 
 import com.google.common.base.Joiner;
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
+import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Alterable;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
