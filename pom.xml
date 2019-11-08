@@ -25,7 +25,7 @@
     </parent>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere</artifactId>
-    <version>4.0.0-RC3-SNAPSHOT</version>
+    <version>4.0.0-RC4-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
@@ -792,6 +792,12 @@
                         <exclude>**/.eslintignore</exclude>
                         <exclude>**/package.json</exclude>
                         <exclude>**/assets/**</exclude>
+                        <exclude>/dist/**</exclude>
+                        <exclude>/etc/**</exclude>
+                        <exclude>/node/**</exclude>
+                        <exclude>/node_modules/**</exclude>
+                        <exclude>/test/coverage/**</exclude>
+                        <exclude>**/package-lock.json</exclude>
                     </excludes>
                 </configuration>
                 <executions>
