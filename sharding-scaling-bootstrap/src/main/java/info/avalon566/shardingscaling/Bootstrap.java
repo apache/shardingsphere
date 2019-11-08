@@ -18,13 +18,13 @@
 package info.avalon566.shardingscaling;
 
 import com.google.gson.Gson;
-import info.avalon566.shardingscaling.core.config.SyncConfiguration;
-import info.avalon566.shardingscaling.core.config.ScalingConfiguration;
-import info.avalon566.shardingscaling.core.config.ScalingContext;
-import info.avalon566.shardingscaling.core.config.RuleConfiguration;
-import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
 import info.avalon566.shardingscaling.core.config.DataSourceConfiguration;
 import info.avalon566.shardingscaling.core.config.JdbcDataSourceConfiguration;
+import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
+import info.avalon566.shardingscaling.core.config.RuleConfiguration;
+import info.avalon566.shardingscaling.core.config.ScalingConfiguration;
+import info.avalon566.shardingscaling.core.config.ScalingContext;
+import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.config.SyncType;
 import info.avalon566.shardingscaling.core.job.MigrateProgress;
 import info.avalon566.shardingscaling.core.job.ScalingController;
@@ -75,7 +75,9 @@ public class Bootstrap {
                             break;
                         }
                         for (MigrateProgress progress : scalingController.getProgresses()) {
-                            log.info(progress.getLogPosition().toString());
+                            if (null != progress.getLogPosition()) {
+                                log.info(progress.getLogPosition().toString());
+                            }
                         }
                     }
                 }

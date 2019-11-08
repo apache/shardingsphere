@@ -27,9 +27,11 @@ import info.avalon566.shardingscaling.core.sync.record.Column;
 import info.avalon566.shardingscaling.core.sync.record.DataRecord;
 import info.avalon566.shardingscaling.core.sync.metadata.JdbcUri;
 import info.avalon566.shardingscaling.core.sync.record.FinishedRecord;
+import info.avalon566.shardingscaling.core.sync.record.PlaceholderRecord;
 import info.avalon566.shardingscaling.core.sync.record.Record;
 import info.avalon566.shardingscaling.mysql.binlog.event.AbstractBinlogEvent;
 import info.avalon566.shardingscaling.mysql.binlog.event.DeleteRowsEvent;
+import info.avalon566.shardingscaling.mysql.binlog.event.PlaceholderEvent;
 import info.avalon566.shardingscaling.mysql.binlog.event.UpdateRowsEvent;
 import info.avalon566.shardingscaling.mysql.binlog.event.WriteRowsEvent;
 import info.avalon566.shardingscaling.core.sync.util.DataSourceFactory;
@@ -117,6 +119,8 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
                 handleUpdateRowsEvent(channel, uri, (UpdateRowsEvent) event);
             } else if (event instanceof DeleteRowsEvent) {
                 handleDeleteRowsEvent(channel, uri, (DeleteRowsEvent) event);
+            } else if (event instanceof PlaceholderEvent) {
+                handlePlaceholderEvent(channel, (PlaceholderEvent) event);
             }
         }
         pushRecord(channel, new FinishedRecord(new NopLogPosition()));
@@ -172,6 +176,11 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
             }
             pushRecord(channel, record);
         }
+    }
+
+    private void handlePlaceholderEvent(final Channel channel, final PlaceholderEvent event) {
+        PlaceholderRecord record = new PlaceholderRecord(new BinlogPosition("1", event.getFileName(), event.getPosition()));
+        pushRecord(channel, record);
     }
 
     private void pushRecord(final Channel channel, final Record record) {

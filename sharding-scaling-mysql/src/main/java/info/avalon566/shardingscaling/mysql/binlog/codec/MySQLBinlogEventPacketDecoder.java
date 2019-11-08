@@ -19,6 +19,7 @@ package info.avalon566.shardingscaling.mysql.binlog.codec;
 
 import info.avalon566.shardingscaling.mysql.binlog.BinlogContext;
 import info.avalon566.shardingscaling.mysql.binlog.event.DeleteRowsEvent;
+import info.avalon566.shardingscaling.mysql.binlog.event.PlaceholderEvent;
 import info.avalon566.shardingscaling.mysql.binlog.event.UpdateRowsEvent;
 import info.avalon566.shardingscaling.mysql.binlog.event.WriteRowsEvent;
 import info.avalon566.shardingscaling.mysql.binlog.packet.binlog.EventTypes;
@@ -78,6 +79,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
                 out.add(decodeDeleteRowsEventV2(binlogEventHeader, in));
                 break;
             default:
+                out.add(createPlaceholderEvent(binlogEventHeader));
                 DataTypesCodec.skipBytes(in.readableBytes(), in);
         }
         if (in.isReadable()) {
@@ -144,6 +146,13 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         WriteRowsEvent result = new WriteRowsEvent();
         result.setTableName(binlogContext.getFullTableName(rowsEvent.getTableId()));
         result.setAfterColumns(rowsEvent.getColumnValues1());
+        result.setFileName(binlogContext.getFileName());
+        result.setPosition(binlogEventHeader.getEndLogPos());
+        return result;
+    }
+
+    private PlaceholderEvent createPlaceholderEvent(final BinlogEventHeader binlogEventHeader) {
+        PlaceholderEvent result = new PlaceholderEvent();
         result.setFileName(binlogContext.getFileName());
         result.setPosition(binlogEventHeader.getEndLogPos());
         return result;

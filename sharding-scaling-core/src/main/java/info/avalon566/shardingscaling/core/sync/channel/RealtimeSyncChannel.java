@@ -20,6 +20,7 @@ package info.avalon566.shardingscaling.core.sync.channel;
 import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
 import info.avalon566.shardingscaling.core.sync.record.DataRecord;
 import info.avalon566.shardingscaling.core.sync.record.FinishedRecord;
+import info.avalon566.shardingscaling.core.sync.record.PlaceholderRecord;
 import info.avalon566.shardingscaling.core.sync.record.Record;
 
 import java.util.Collections;
@@ -28,6 +29,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -55,6 +58,8 @@ public class RealtimeSyncChannel implements Channel {
 
     private Map<LogPosition, Record> pendingAcknowledgeRecords = new ConcurrentHashMap<>();
 
+    private final Timer timer = new Timer();
+
     public RealtimeSyncChannel(final int channelNumber) {
         this(channelNumber, new LinkedList<AckCallback>());
     }
@@ -63,8 +68,13 @@ public class RealtimeSyncChannel implements Channel {
         this.channelNumber = channelNumber;
         this.ackCallbacks = ackCallbacks;
         for (int i = 0; i < channelNumber; i++) {
-            channels.put(Integer.toString(i), new MemoryChannel(Collections.singletonList((AckCallback) new SingleChannelAckCallback())));
+            if (0 < ackCallbacks.size()) {
+                channels.put(Integer.toString(i), new MemoryChannel(Collections.singletonList((AckCallback) new SingleChannelAckCallback())));
+            } else {
+                channels.put(Integer.toString(i), new MemoryChannel());
+            }
         }
+        scheduleAckRecords();
     }
 
     @Override
@@ -82,6 +92,11 @@ public class RealtimeSyncChannel implements Channel {
             DataRecord dataRecord = (DataRecord) record;
             String index = Integer.toString(dataRecord.getTableName().hashCode() % channelNumber);
             channels.get(index).pushRecord(dataRecord);
+        } else if (PlaceholderRecord.class.equals(record.getClass())) {
+            if (0 < ackCallbacks.size()) {
+                toBeAcknowledgeRecords.add(record);
+                pendingAcknowledgeRecords.put(record.getLogPosition(), record);
+            }
         } else {
             throw new RuntimeException("Not Support Record Type");
         }
@@ -115,31 +130,39 @@ public class RealtimeSyncChannel implements Channel {
         }
     }
 
+    private void scheduleAckRecords() {
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                synchronized (RealtimeSyncChannel.this) {
+                    Iterator<Record> iterator = toBeAcknowledgeRecords.iterator();
+                    List<Record> result = new LinkedList<>();
+                    while (iterator.hasNext()) {
+                        Record record = iterator.next();
+                        if (pendingAcknowledgeRecords.containsKey(record.getLogPosition())) {
+                            result.add(record);
+                            iterator.remove();
+                            pendingAcknowledgeRecords.remove(record.getLogPosition());
+                        } else {
+                            break;
+                        }
+                    }
+                    if (0 < ackCallbacks.size() && 0 < result.size()) {
+                        for (AckCallback each : ackCallbacks) {
+                            each.onAck(result);
+                        }
+                    }
+                }
+            }
+        }, 5000, 1000);
+    }
+
     class SingleChannelAckCallback implements AckCallback {
 
         @Override
         public void onAck(final List<Record> records) {
-            synchronized (RealtimeSyncChannel.this) {
-                for (Record record : records) {
-                    pendingAcknowledgeRecords.put(record.getLogPosition(), record);
-                }
-                Iterator<Record> iterator = toBeAcknowledgeRecords.iterator();
-                List<Record> result = new LinkedList<>();
-                while (iterator.hasNext()) {
-                    Record record = iterator.next();
-                    if (pendingAcknowledgeRecords.containsKey(record.getLogPosition())) {
-                        result.add(record);
-                        iterator.remove();
-                        pendingAcknowledgeRecords.remove(record.getLogPosition());
-                    } else {
-                        break;
-                    }
-                }
-                if (0 < ackCallbacks.size() && 0 < result.size()) {
-                    for (AckCallback each : ackCallbacks) {
-                        each.onAck(result);
-                    }
-                }
+            for (Record record : records) {
+                pendingAcknowledgeRecords.put(record.getLogPosition(), record);
             }
         }
     }
