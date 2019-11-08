@@ -121,6 +121,7 @@ public final class DataSourceUtils {
         druidDataSource.setMaxWait(15 * 1000);
         druidDataSource.setMinEvictableIdleTimeMillis(40 * 1000);
         druidDataSource.setTimeBetweenEvictionRunsMillis(20 * 1000);
+        druidDataSource.setValidationQuery("SELECT 1");
     }
     
     private static String getURL(final DatabaseType databaseType, final String databaseName) {
