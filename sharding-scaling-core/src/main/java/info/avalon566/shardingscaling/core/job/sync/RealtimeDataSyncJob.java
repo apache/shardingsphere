@@ -48,7 +48,7 @@ public class RealtimeDataSyncJob implements SyncJob {
 
     private final SyncConfiguration syncConfiguration;
 
-    private final LogReader mysqlBinlogReader;
+    private final LogReader logReader;
 
     private final Reporter reporter;
 
@@ -59,7 +59,7 @@ public class RealtimeDataSyncJob implements SyncJob {
     public RealtimeDataSyncJob(final SyncConfiguration syncConfiguration, final Reporter reporter) {
         this.syncConfiguration = syncConfiguration;
         this.reporter = reporter;
-        mysqlBinlogReader = ReaderFactory.newInstanceLogReader(syncConfiguration.getReaderConfiguration(), syncConfiguration.getPosition());
+        logReader = ReaderFactory.newInstanceLogReader(syncConfiguration.getReaderConfiguration(), syncConfiguration.getPosition());
     }
 
     @Override
@@ -69,7 +69,7 @@ public class RealtimeDataSyncJob implements SyncJob {
 
     @Override
     public final void stop() {
-        mysqlBinlogReader.stop();
+        logReader.stop();
     }
 
     @Override
@@ -83,7 +83,7 @@ public class RealtimeDataSyncJob implements SyncJob {
      * @return log position
      */
     public final LogPosition preRun() {
-        return mysqlBinlogReader.markPosition();
+        return logReader.markPosition();
     }
 
     /**
@@ -104,7 +104,7 @@ public class RealtimeDataSyncJob implements SyncJob {
                 }
             }));
             startReportRealtimeSyncPosition();
-            new SyncExecutor(channel, mysqlBinlogReader, writers).execute();
+            new SyncExecutor(channel, logReader, writers).execute();
             log.info("realtime data sync finish");
             reporter.report(new Event(EventType.FINISHED));
         } catch (SyncExecuteException ex) {
@@ -116,6 +116,7 @@ public class RealtimeDataSyncJob implements SyncJob {
 
     private void startReportRealtimeSyncPosition() {
         new Thread(new Runnable() {
+            
             @Override
             public void run() {
                 LogPosition lastLogPosition = null;

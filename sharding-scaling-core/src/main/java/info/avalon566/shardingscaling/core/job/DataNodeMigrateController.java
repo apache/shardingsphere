@@ -43,7 +43,7 @@ import java.util.List;
  * @author avalon566
  */
 @Slf4j
-public class DataNodeMigrateController implements Runnable {
+public final class DataNodeMigrateController implements Runnable {
 
     private final SyncJobExecutor syncJobExecutor = new LocalSyncJobExecutor();
 

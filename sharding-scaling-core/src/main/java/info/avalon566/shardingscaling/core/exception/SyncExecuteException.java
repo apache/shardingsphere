@@ -28,7 +28,7 @@ import java.util.List;
  * @author avalon566
  */
 @Slf4j
-public class SyncExecuteException extends Exception {
+public final class SyncExecuteException extends Exception {
 
     private final List<Throwable> aggregatedExceptions = new ArrayList<>();
 
@@ -40,7 +40,10 @@ public class SyncExecuteException extends Exception {
     public void addException(final Throwable throwable) {
         aggregatedExceptions.add(throwable);
     }
-
+    
+    /**
+     * Log all exceptions.
+     */
     public void logExceptions() {
         for (Throwable exception : aggregatedExceptions) {
             log.error(null, exception);
