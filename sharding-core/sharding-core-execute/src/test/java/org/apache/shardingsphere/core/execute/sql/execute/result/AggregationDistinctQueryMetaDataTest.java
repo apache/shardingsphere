@@ -22,7 +22,7 @@ import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.AggregationProjection;
-import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 import org.junit.Before;
 import org.junit.Test;
 

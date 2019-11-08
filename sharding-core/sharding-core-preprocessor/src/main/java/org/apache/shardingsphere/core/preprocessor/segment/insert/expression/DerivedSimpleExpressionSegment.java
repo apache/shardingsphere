@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.preprocessor.segment.insert.expression;
 
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.SimpleExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 
 /**
  * Derived simple expression segment.

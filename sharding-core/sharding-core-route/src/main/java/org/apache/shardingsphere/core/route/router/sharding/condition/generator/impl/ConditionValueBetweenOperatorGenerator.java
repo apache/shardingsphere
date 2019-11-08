@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.route.router.sharding.condition.Column;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.core.route.router.sharding.condition.generator.ConditionValue;
 import org.apache.shardingsphere.core.route.router.sharding.condition.generator.ConditionValueGenerator;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.core.route.spi.SPITimeService;
 import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;

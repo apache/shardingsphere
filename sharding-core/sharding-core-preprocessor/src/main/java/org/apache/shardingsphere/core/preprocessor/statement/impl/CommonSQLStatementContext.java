@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.preprocessor.segment.table.TablesContext;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 /**
  * Common SQL statement context.
