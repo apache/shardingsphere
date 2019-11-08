@@ -67,4 +67,15 @@ public final class StringUtil {
             return false;
         }
     }
+
+    /**
+     * is empty string.
+     *
+     * @param str source string.
+     * @return is empty.
+     */
+    public static boolean isEmpty(String str) {
+        return str == null || str.isEmpty();
+    }
+
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.util.ShardingVersion;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
@@ -40,6 +41,10 @@ import java.util.Properties;
  */
 @Getter
 public class ShardingDataSource extends AbstractDataSourceAdapter {
+
+    static {
+        ShardingVersion.checkDuplicateClass(ShardingDataSource.class);
+    }
     
     private final ShardingRuntimeContext runtimeContext;
     
