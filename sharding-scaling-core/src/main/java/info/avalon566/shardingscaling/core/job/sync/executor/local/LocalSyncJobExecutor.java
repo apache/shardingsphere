@@ -19,10 +19,10 @@ package info.avalon566.shardingscaling.core.job.sync.executor.local;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.job.MigrateProgress;
-import info.avalon566.shardingscaling.core.job.sync.SyncJob;
+import info.avalon566.shardingscaling.core.job.sync.SyncTask;
 import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
 import info.avalon566.shardingscaling.core.job.sync.executor.SyncJobExecutor;
-import info.avalon566.shardingscaling.core.job.sync.SyncJobFactory;
+import info.avalon566.shardingscaling.core.job.sync.SyncTaskFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,32 +34,32 @@ import java.util.List;
  */
 public class LocalSyncJobExecutor implements SyncJobExecutor {
 
-    private List<SyncJob> syncJobs;
+    private List<SyncTask> syncTasks;
 
     @Override
     public final Reporter start(final List<SyncConfiguration> syncConfigurations) {
         LocalReporter reporter = new LocalReporter();
-        syncJobs = new ArrayList<>(syncConfigurations.size());
+        syncTasks = new ArrayList<>(syncConfigurations.size());
         for (SyncConfiguration syncConfiguration : syncConfigurations) {
-            SyncJob syncJob = SyncJobFactory.createSyncJobInstance(syncConfiguration, reporter);
-            syncJob.start();
-            syncJobs.add(syncJob);
+            SyncTask syncTask = SyncTaskFactory.createSyncJobInstance(syncConfiguration, reporter);
+            syncTask.start();
+            syncTasks.add(syncTask);
         }
         return reporter;
     }
 
     @Override
     public final void stop() {
-        for (SyncJob syncJob : syncJobs) {
-            syncJob.stop();
+        for (SyncTask syncTask : syncTasks) {
+            syncTask.stop();
         }
     }
 
     @Override
     public final List<MigrateProgress> getProgresses() {
         List<MigrateProgress> result = new ArrayList<>();
-        for (SyncJob syncJob : syncJobs) {
-            result.add(syncJob.getProgress());
+        for (SyncTask syncTask : syncTasks) {
+            result.add(syncTask.getProgress());
         }
         return result;
     }

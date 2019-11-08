@@ -23,19 +23,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Scaling controller.
+ * Scaling job controller.
  *
  * @author avalon566
  */
-public class ScalingController {
+public class ScalingJobController {
 
     private final List<SyncConfiguration> syncConfigurations;
 
-    private final List<DataNodeMigrateController> dataNodeMigrateControllers;
+    private final List<SyncTaskController> syncTaskControllers;
 
-    public ScalingController(final List<SyncConfiguration> syncConfigurations) {
+    public ScalingJobController(final List<SyncConfiguration> syncConfigurations) {
         this.syncConfigurations = syncConfigurations;
-        this.dataNodeMigrateControllers = new ArrayList<>(this.syncConfigurations.size());
+        this.syncTaskControllers = new ArrayList<>(this.syncConfigurations.size());
     }
 
     /**
@@ -43,9 +43,9 @@ public class ScalingController {
      */
     public void start() {
         for (SyncConfiguration syncConfiguration : syncConfigurations) {
-            DataNodeMigrateController dataNodeMigrateController = new DataNodeMigrateController(syncConfiguration);
-            dataNodeMigrateController.start();
-            dataNodeMigrateControllers.add(dataNodeMigrateController);
+            SyncTaskController syncTaskController = new SyncTaskController(syncConfiguration);
+            syncTaskController.start();
+            syncTaskControllers.add(syncTaskController);
         }
     }
 
@@ -53,8 +53,8 @@ public class ScalingController {
      * Stop data nodes migrate.
      */
     public void stop() {
-        for (DataNodeMigrateController dataNodeMigrateController : dataNodeMigrateControllers) {
-            dataNodeMigrateController.stop();
+        for (SyncTaskController syncTaskController : syncTaskControllers) {
+            syncTaskController.stop();
         }
     }
 
@@ -65,8 +65,8 @@ public class ScalingController {
      */
     public List<MigrateProgress> getProgresses() {
         List<MigrateProgress> result = new ArrayList<>(this.syncConfigurations.size());
-        for (DataNodeMigrateController dataNodeMigrateController : dataNodeMigrateControllers) {
-            result.add(dataNodeMigrateController.getProgress());
+        for (SyncTaskController syncTaskController : syncTaskControllers) {
+            result.add(syncTaskController.getProgress());
         }
         return result;
     }

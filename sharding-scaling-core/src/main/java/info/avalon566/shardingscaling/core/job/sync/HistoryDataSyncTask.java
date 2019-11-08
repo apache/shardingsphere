@@ -35,19 +35,19 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Collections;
 
 /**
- * Table slice sync job.
+ * Table slice sync task.
  *
  * @author avalon566
  * @author yangyi
  */
 @Slf4j
-public class HistoryDataSyncJob implements SyncJob {
+public class HistoryDataSyncTask implements SyncTask {
 
     private final SyncConfiguration syncConfiguration;
 
     private final Reporter reporter;
 
-    public HistoryDataSyncJob(final SyncConfiguration syncConfiguration, final Reporter reporter) {
+    public HistoryDataSyncTask(final SyncConfiguration syncConfiguration, final Reporter reporter) {
         this.syncConfiguration = syncConfiguration;
         this.reporter = reporter;
     }

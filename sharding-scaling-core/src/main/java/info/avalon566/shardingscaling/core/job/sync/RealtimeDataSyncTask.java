@@ -39,12 +39,12 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Realtime data sync job.
+ * Realtime data sync task.
  *
  * @author avalon566
  */
 @Slf4j
-public class RealtimeDataSyncJob implements SyncJob {
+public class RealtimeDataSyncTask implements SyncTask {
 
     private final SyncConfiguration syncConfiguration;
 
@@ -56,7 +56,7 @@ public class RealtimeDataSyncJob implements SyncJob {
 
     private LogPosition currentLogPosition;
 
-    public RealtimeDataSyncJob(final SyncConfiguration syncConfiguration, final Reporter reporter) {
+    public RealtimeDataSyncTask(final SyncConfiguration syncConfiguration, final Reporter reporter) {
         this.syncConfiguration = syncConfiguration;
         this.reporter = reporter;
         logReader = ReaderFactory.newInstanceLogReader(syncConfiguration.getReaderConfiguration(), syncConfiguration.getPosition());

@@ -27,7 +27,7 @@ import info.avalon566.shardingscaling.core.config.ScalingContext;
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.config.SyncType;
 import info.avalon566.shardingscaling.core.job.MigrateProgress;
-import info.avalon566.shardingscaling.core.job.ScalingController;
+import info.avalon566.shardingscaling.core.job.ScalingJobController;
 import info.avalon566.shardingscaling.utils.RuntimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.log4j.PropertyConfigurator;
@@ -64,7 +64,7 @@ public class Bootstrap {
         try {
             initConfig(CONFIG_FILE);
             List<SyncConfiguration> syncConfigurations = toSyncConfigurations();
-            final ScalingController scalingController = new ScalingController(syncConfigurations);
+            final ScalingJobController scalingJobController = new ScalingJobController(syncConfigurations);
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -74,7 +74,7 @@ public class Bootstrap {
                         } catch (InterruptedException ex) {
                             break;
                         }
-                        for (MigrateProgress progress : scalingController.getProgresses()) {
+                        for (MigrateProgress progress : scalingJobController.getProgresses()) {
                             if (null != progress.getLogPosition()) {
                                 log.info(progress.getLogPosition().toString());
                             }
@@ -82,7 +82,7 @@ public class Bootstrap {
                     }
                 }
             }).start();
-            scalingController.start();
+            scalingJobController.start();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

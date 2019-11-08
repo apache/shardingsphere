@@ -17,30 +17,29 @@
 
 package info.avalon566.shardingscaling.core.job.sync;
 
-import info.avalon566.shardingscaling.core.config.SyncConfiguration;
-import info.avalon566.shardingscaling.core.config.SyncType;
-import info.avalon566.shardingscaling.core.job.sync.executor.local.LocalReporter;
+import info.avalon566.shardingscaling.core.job.MigrateProgress;
 
 /**
- * Sync job factory.
+ * Sync task interface.
  *
  * @author avalon566
  */
-public final class SyncJobFactory {
+public interface SyncTask extends Runnable {
 
     /**
-     * create sync job instance by sync configuration.
-     *
-     * @param syncConfiguration value
-     * @param reporter value
-     * @return sync job
+     * Start synchronize data.
      */
-    public static SyncJob createSyncJobInstance(final SyncConfiguration syncConfiguration, final LocalReporter reporter) {
-        if (SyncType.TableSlice.equals(syncConfiguration.getSyncType())) {
-            return new HistoryDataSyncJob(syncConfiguration, reporter);
-        } else if (SyncType.Realtime.equals(syncConfiguration.getSyncType())) {
-            return new RealtimeDataSyncJob(syncConfiguration, reporter);
-        }
-        throw new UnsupportedOperationException();
-    }
+    void start();
+
+    /**
+     * Stop synchronize data.
+     */
+    void stop();
+
+    /**
+     * Get synchronize progress.
+     *
+     * @return migrate progress
+     */
+    MigrateProgress getProgress();
 }

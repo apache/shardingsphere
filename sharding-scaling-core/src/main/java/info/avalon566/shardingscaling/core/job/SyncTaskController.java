@@ -25,7 +25,7 @@ import info.avalon566.shardingscaling.core.job.sync.executor.EventType;
 import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
 import info.avalon566.shardingscaling.core.job.sync.executor.SyncJobExecutor;
 import info.avalon566.shardingscaling.core.job.sync.executor.local.LocalSyncJobExecutor;
-import info.avalon566.shardingscaling.core.job.sync.RealtimeDataSyncJob;
+import info.avalon566.shardingscaling.core.job.sync.RealtimeDataSyncTask;
 import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
 import info.avalon566.shardingscaling.core.sync.reader.ReaderFactory;
 import info.avalon566.shardingscaling.core.sync.util.DataSourceFactory;
@@ -38,18 +38,18 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Data node migrate controller, synchronize history data and realtime data.
+ * Sync task controller, synchronize history data and realtime data.
  *
  * @author avalon566
  */
 @Slf4j
-public final class DataNodeMigrateController implements Runnable {
+public final class SyncTaskController implements Runnable {
 
     private final SyncJobExecutor syncJobExecutor = new LocalSyncJobExecutor();
 
     private final SyncConfiguration syncConfiguration;
 
-    public DataNodeMigrateController(final SyncConfiguration syncConfiguration) {
+    public SyncTaskController(final SyncConfiguration syncConfiguration) {
         this.syncConfiguration = syncConfiguration;
     }
 
@@ -82,7 +82,7 @@ public final class DataNodeMigrateController implements Runnable {
 
     @Override
     public void run() {
-        LogPosition position = new RealtimeDataSyncJob(syncConfiguration, null).preRun();
+        LogPosition position = new RealtimeDataSyncTask(syncConfiguration, null).preRun();
         syncHistoryData();
         syncRealtimeData(position);
     }
