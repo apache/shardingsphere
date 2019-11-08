@@ -17,24 +17,43 @@
 
 package org.apache.shardingsphere.orchestration.center.configuration;
 
-import java.util.Map;
+import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.api.config.TypeBasedSPIConfiguration;
 
 /**
- * Config center configuration.
+ * Orchestration Instance Configuration.
  *
  * @author zhangliang
- * @author sunbufu
  * @author dongzonglei
  * @author wangguangyuan
+ * @author sunbufu
  */
 @Getter
 @Setter
-public final class OrchestrationConfiguration {
+public class InstanceConfiguration extends TypeBasedSPIConfiguration {
     
     /**
-     * Instance configuration map.
+     * Type of center.
      */
-    private Map<String, InstanceConfiguration> instanceConfigurationMap;
+    private String centerType;
+    
+    /**
+     * Server list of center.
+     */
+    private String serverLists;
+    
+    /**
+     * Namespace of center.
+     */
+    private String namespace;
+    
+    public InstanceConfiguration(final String type) {
+        super(type);
+    }
+    
+    public InstanceConfiguration(final String type, final Properties properties) {
+        super(type, properties);
+    }
 }

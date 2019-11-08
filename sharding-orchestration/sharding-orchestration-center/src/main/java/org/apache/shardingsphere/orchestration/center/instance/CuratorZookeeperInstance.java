@@ -35,7 +35,7 @@ import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
 import org.apache.shardingsphere.orchestration.center.api.DistributedLockManagement;
 import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
-import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.instance.handler.CuratorZookeeperExceptionHandler;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
@@ -75,24 +75,29 @@ public final class CuratorZookeeperInstance implements ConfigCenter, Distributed
     private Properties properties = new Properties();
     
     @Override
-    public void init(final OrchestrationConfiguration config) {
+    public void init(final InstanceConfiguration config) {
         client = buildCuratorClient(config);
         initCuratorClient(config);
     }
     
-    private CuratorFramework buildCuratorClient(final OrchestrationConfiguration config) {
+    private CuratorFramework buildCuratorClient(final InstanceConfiguration config) {
+        int retryIntervalMilliseconds = Integer.parseInt(config.getProperties().getProperty("retryIntervalMilliseconds", "500"));
+        int maxRetries = Integer.parseInt(config.getProperties().getProperty("maxRetries", "3"));
+        int timeToLiveSeconds = Integer.parseInt(config.getProperties().getProperty("timeToLiveSeconds", "60"));
+        int operationTimeoutMilliseconds = Integer.parseInt(config.getProperties().getProperty("operationTimeoutMilliseconds", "500"));
+        String digest = config.getProperties().getProperty("digest");
         CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
                 .connectString(config.getServerLists())
-                .retryPolicy(new ExponentialBackoffRetry(config.getRetryIntervalMilliseconds(), config.getMaxRetries(), config.getRetryIntervalMilliseconds() * config.getMaxRetries()))
+                .retryPolicy(new ExponentialBackoffRetry(retryIntervalMilliseconds, maxRetries, retryIntervalMilliseconds * maxRetries))
                 .namespace(config.getNamespace());
-        if (0 != config.getTimeToLiveSeconds()) {
-            builder.sessionTimeoutMs(config.getTimeToLiveSeconds() * 1000);
+        if (0 != timeToLiveSeconds) {
+            builder.sessionTimeoutMs(timeToLiveSeconds * 1000);
         }
-        if (0 != config.getOperationTimeoutMilliseconds()) {
-            builder.connectionTimeoutMs(config.getOperationTimeoutMilliseconds());
+        if (0 != operationTimeoutMilliseconds) {
+            builder.connectionTimeoutMs(operationTimeoutMilliseconds);
         }
-        if (!Strings.isNullOrEmpty(config.getDigest())) {
-            builder.authorization("digest", config.getDigest().getBytes(Charsets.UTF_8))
+        if (!Strings.isNullOrEmpty(digest)) {
+            builder.authorization("digest", digest.getBytes(Charsets.UTF_8))
                     .aclProvider(new ACLProvider() {
                         
                         @Override
@@ -109,10 +114,12 @@ public final class CuratorZookeeperInstance implements ConfigCenter, Distributed
         return builder.build();
     }
     
-    private void initCuratorClient(final OrchestrationConfiguration config) {
+    private void initCuratorClient(final InstanceConfiguration config) {
         client.start();
         try {
-            if (!client.blockUntilConnected(config.getRetryIntervalMilliseconds() * config.getMaxRetries(), TimeUnit.MILLISECONDS)) {
+            int retryIntervalMilliseconds = Integer.parseInt(config.getProperties().getProperty("retryIntervalMilliseconds", "500"));
+            int maxRetries = Integer.parseInt(config.getProperties().getProperty("maxRetries", "3"));
+            if (!client.blockUntilConnected(retryIntervalMilliseconds * maxRetries, TimeUnit.MILLISECONDS)) {
                 client.close();
                 throw new OperationTimeoutException();
             }
