@@ -8,7 +8,7 @@
 [![Stargazers over time](https://starchart.cc/apache/incubator-shardingsphere.svg)](https://starchart.cc/apache/incubator-shardingsphere)
 
 [![Total Lines](https://tokei.rs/b1/github/apache/incubator-shardingsphere?category=lines)](https://github.com/apache/incubator-shardingsphere)
-[![Build Status](https://travis-ci.org/apache/incubator-shardingsphere.svg?branch=dev)](https://travis-ci.org/apache/incubator-shardingsphere)
+[![Build Status](https://builds.apache.org/job/shardingsphere-ci-dev/badge/icon)](https://builds.apache.org/job/shardingsphere-ci-dev/)
 [![Coverage Status](https://coveralls.io/repos/github/apache/incubator-shardingsphere/badge.svg?branch=dev)](https://coveralls.io/github/apache/incubator-shardingsphere?branch=dev)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/278600ed40ad48e988ab485b439abbcd)](https://www.codacy.com/app/terrymanu/sharding-sphere?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sharding-sphere/sharding-sphere&amp;utm_campaign=Badge_Grade)
 [![snyk](https://snyk.io/test/github/apache/incubator-shardingsphere/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/apache/incubator-shardingsphere?targetFile=pom.xml)
@@ -25,11 +25,11 @@
 ShardingSphere is an open-source ecosystem consisted of a set of distributed database middleware solutions, including 2 independent products, Sharding-JDBC & Sharding-Proxy & Sharding-Sidecar (todo). 
 They all provide functions of data sharding, distributed transaction and database orchestration, applicable in a variety of situations such as Java isomorphism, heterogeneous language and cloud native. 
 
-Aiming at reasonably making full use of the computation and storage capacity of database in distributed system, ShardingSphere defines itself as a middleware, rather than a totally new type of database. 
+Aiming at reasonably making full use of the computation and storage capacity of the database in a distributed system, ShardingSphere defines itself as a middleware, rather than a totally new type of database. 
 As the cornerstone of many enterprises, relational database still takes a huge market share. 
-Therefore, at current stage, we prefer to focus on its increment instead of a total overturn.
+Therefore, at the current stage, we prefer to focus on its increment instead of a total overturn.
 
-__Apache releases is beginning from version 4.0.0__
+__Apache releases are beginning from version 4.0.0__
 
 ![ShardingSphere Scope](https://shardingsphere.apache.org//document/current/img/shardingsphere-scope_en.png)
 
@@ -38,37 +38,37 @@ __Apache releases is beginning from version 4.0.0__
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/org.apache.shardingsphere/sharding-jdbc/badge.svg)](https://mvnrepository.com/artifact/org.apache.shardingsphere/sharding-jdbc)
 
 Sharding-JDBC defines itself as a lightweight Java framework that provides extra service at Java JDBC layer. 
-With client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence. 
+With the client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence. 
 It can be considered as an enhanced JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
 
-* Applicable in any ORM framework based on Java, such as JPA, Hibernate, Mybatis, Spring JDBC Template or direct use of JDBC.
-* Based on any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
-* Support any kind of database that conforms to JDBC standard: MySQL, Oracle, SQLServer and PostgreSQL for now.
+* Applicable in any ORM framework based on JDBC, such as JPA, Hibernate, Mybatis, Spring JDBC Template or direct use of JDBC.
+* Support any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
+* Support any kind of JDBC standard database: MySQL, Oracle, SQLServer, PostgreSQL and any SQL92 followed databases.
 
 ![Sharding-JDBC Architecture](https://shardingsphere.apache.org//document/current/img/sharding-jdbc-brief.png)
 
 ### Sharding-Proxy
 
-[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://www.apache.org/dyn/closer.cgi?path=incubator/shardingsphere/4.0.0-RC1/apache-shardingsphere-incubating-4.0.0-RC1-sharding-proxy-bin.tar.gz)
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://www.apache.org/dyn/closer.cgi?path=incubator/shardingsphere/4.0.0-RC2/apache-shardingsphere-incubating-4.0.0-RC2-sharding-proxy-bin.tar.gz)
 [![Docker Pulls](https://img.shields.io/docker/pulls/shardingsphere/sharding-proxy.svg)](https://store.docker.com/community/images/shardingsphere/sharding-proxy)
 
 Sharding-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
 Friendlier to DBA, the MySQL/PostgreSQL version provided now can use any kind of client access (such as MySQL Command Client, MySQL Workbench, Navicat etc.) that is compatible of MySQL/PostgreSQL protocol to operate data.
 
 * Totally transparent to applications, it can be used directly as MySQL and PostgreSQL.
-* Applicable to any kind of compatible of client end that is compatible of MySQL and PostgreSQL protocol.
+* Applicable to any kind of compatible client end that is compatible with MySQL and PostgreSQL protocol.
 
 ![Sharding-Proxy Architecture](https://shardingsphere.apache.org//document/current/img/sharding-proxy-brief_v2.png)
 
 ### Sharding-Sidecar(TODO)
 
-Sharding-Sidecar (TODO) defines itself as a cloud native database agent of Kubernetes environment, in charge of all the access to database in the form of sidecar. 
-It provides a mesh layer interacting with database, we call this as `Database Mesh`.
+Sharding-Sidecar (TODO) defines itself as a cloud native database agent of the Kubernetes environment, in charge of all the access to the database in the form of sidecar. 
+It provides a mesh layer interacting with the database, we call this as `Database Mesh`.
 
 Database Mesh emphasizes on how to connect distributed database access application with the database. 
-Focusing on interaction, it effectively organizes the interaction between messy applications and database. 
+Focusing on interaction, it effectively organizes the interaction between messy applications and the database. 
 The application and database that use Database Mesh to visit database will form a large grid system, where they just need to be put into the right position accordingly. 
-They are all governed by mesh layer.
+They are all governed by the mesh layer.
 
 ![Sharding-Sidecar Architecture](https://shardingsphere.apache.org//document/current/img/sharding-sidecar-brief_v2.png)
 
@@ -87,7 +87,7 @@ Sharding-JDBC adopts decentralized architecture, applicable to high-performance 
 Sharding-Proxy provides static entry and all languages support, applicable for OLAP application and the sharding databases management and operation situation.
 
 ShardingSphere is an ecosphere consists of multiple endpoints together.
-Through mixed use of Sharding-JDBC and Sharding-Proxy and unified sharding strategy by same registry center, ShardingSphere can build application system applicable to all kinds of scenarios. 
+Through a mixed use of Sharding-JDBC and Sharding-Proxy and unified sharding strategy by the same registry center, ShardingSphere can build an application system applicable to all kinds of scenarios. 
 Architects can adjust the system architecture to the most applicable one to current business more freely.
 
 ![ShardingSphere Hybrid Architecture](https://shardingsphere.apache.org//document/current/img/shardingsphere-hybrid.png)
@@ -113,7 +113,7 @@ Architects can adjust the system architecture to the most applicable one to curr
 * Orchestration & Governance
 * Data Encryption
 * Tracing & Observability
-* Elastic scaling out (Planing)
+* Elastic scaling out (Planning)
 
 ## Project Status
 
@@ -121,10 +121,8 @@ Architects can adjust the system architecture to the most applicable one to curr
 
 ## How to Build
 
-Install `maven` and run command:
-
-```shell
-mvn clean install -Prelease
+```bash
+./mvnw clean install -Prelease
 ``` 
 
 Artifact:
@@ -132,5 +130,6 @@ Artifact:
 ```
 sharding-distribution/sharding-jdbc-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-jdbc-bin.tar.gz: Binary package of Sharding-JDBC
 sharding-distribution/sharding-proxy-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-proxy-bin.tar.gz: Binary package of Sharding-Proxy
+sharding-distribution/sharding-ui-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-ui-bin.tar.gz: Binary package of Sharding-UI
 sharding-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-src.zip: Source code package of ShardingSphere
 ```

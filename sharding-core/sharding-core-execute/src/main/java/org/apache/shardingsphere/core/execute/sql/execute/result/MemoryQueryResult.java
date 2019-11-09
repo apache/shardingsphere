@@ -20,7 +20,9 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.execute.sql.execute.row.QueryRow;
+import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
@@ -54,14 +56,14 @@ public final class MemoryQueryResult implements QueryResult {
     @Getter
     private final QueryResultMetaData queryResultMetaData;
     
-    public MemoryQueryResult(final ResultSet resultSet, final ShardingRule shardingRule) throws SQLException {
+    public MemoryQueryResult(final ResultSet resultSet, final ShardingRule shardingRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext) throws SQLException {
         resultData = getResultData(resultSet);
-        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule);
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule, properties, sqlStatementContext);
     }
     
-    public MemoryQueryResult(final ResultSet resultSet, final EncryptRule encryptRule) throws SQLException {
+    public MemoryQueryResult(final ResultSet resultSet, final EncryptRule encryptRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext) throws SQLException {
         resultData = getResultData(resultSet);
-        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule);
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule, properties, sqlStatementContext);
     }
     
     public MemoryQueryResult(final ResultSet resultSet) throws SQLException {
@@ -93,32 +95,32 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        return decrypt(columnIndex, currentRow.getColumnValue(columnIndex));
+        return decrypt(columnIndex, currentRow.getValue(columnIndex));
     }
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
-        return decrypt(columnLabel, currentRow.getColumnValue(queryResultMetaData.getColumnIndex(columnLabel)));
+        return decrypt(columnLabel, currentRow.getValue(queryResultMetaData.getColumnIndex(columnLabel)));
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
-        return currentRow.getColumnValue(columnIndex);
+        return currentRow.getValue(columnIndex);
     }
     
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
-        return currentRow.getColumnValue(queryResultMetaData.getColumnIndex(columnLabel));
+        return currentRow.getValue(queryResultMetaData.getColumnIndex(columnLabel));
     }
     
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) {
-        return getInputStream(currentRow.getColumnValue(columnIndex));
+        return getInputStream(currentRow.getValue(columnIndex));
     }
     
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) {
-        return getInputStream(currentRow.getColumnValue(queryResultMetaData.getColumnIndex(columnLabel)));
+        return getInputStream(currentRow.getValue(queryResultMetaData.getColumnIndex(columnLabel)));
     }
     
     @SneakyThrows
@@ -157,7 +159,7 @@ public final class MemoryQueryResult implements QueryResult {
     
     private Object decrypt(final int columnIndex, final Object value) throws SQLException {
         Optional<ShardingEncryptor> shardingEncryptor = queryResultMetaData.getShardingEncryptor(columnIndex);
-        return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(getCiphertext(value)) : value;
+        return queryResultMetaData.isQueryWithCipherColumn() && shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(getCiphertext(value)) : value;
     }
     
     private String getCiphertext(final Object value) {

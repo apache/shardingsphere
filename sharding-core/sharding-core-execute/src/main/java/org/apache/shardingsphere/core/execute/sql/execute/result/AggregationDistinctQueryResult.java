@@ -21,8 +21,8 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.execute.sql.execute.row.QueryRow;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationDistinctSelectItem;
-import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
+import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.AggregationDistinctProjection;
+import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -47,15 +47,15 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         metaData = distinctQueryMetaData;
     }
     
-    public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final List<AggregationDistinctSelectItem> aggregationDistinctSelectItems) throws SQLException {
-        super(queryResults, Lists.transform(aggregationDistinctSelectItems, new Function<AggregationDistinctSelectItem, String>() {
+    public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final List<AggregationDistinctProjection> aggregationDistinctProjections) throws SQLException {
+        super(queryResults, Lists.transform(aggregationDistinctProjections, new Function<AggregationDistinctProjection, String>() {
     
             @Override
-            public String apply(final AggregationDistinctSelectItem input) {
+            public String apply(final AggregationDistinctProjection input) {
                 return input.getDistinctColumnLabel();
             }
         }));
-        metaData = new AggregationDistinctQueryMetaData(aggregationDistinctSelectItems, getQueryResultMetaData());
+        metaData = new AggregationDistinctQueryMetaData(aggregationDistinctProjections, getQueryResultMetaData());
     }
     
     /**

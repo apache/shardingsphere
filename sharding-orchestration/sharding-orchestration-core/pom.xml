@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>sharding-orchestration</artifactId>
-        <version>4.0.0-RC2-SNAPSHOT</version>
+        <version>4.0.0-RC3-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-orchestration-core</artifactId>
     <name>${project.artifactId}</name>
@@ -37,10 +37,14 @@
             <artifactId>sharding-orchestration-reg-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-orchestration-config-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

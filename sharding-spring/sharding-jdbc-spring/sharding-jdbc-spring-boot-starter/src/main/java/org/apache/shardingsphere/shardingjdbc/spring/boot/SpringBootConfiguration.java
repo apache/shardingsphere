@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.boot;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
@@ -28,14 +29,16 @@ import org.apache.shardingsphere.shardingjdbc.api.EncryptDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.common.SpringBootPropertiesConfigurationProperties;
+import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetter;
+import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetterHolder;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.encrypt.EncryptRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.encrypt.SpringBootEncryptRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.masterslave.MasterSlaveRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.ShardingRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.util.DataSourceUtil;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.util.PropertyUtil;
+import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
+import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -148,7 +151,12 @@ public class SpringBootConfiguration implements EnvironmentAware {
         if (dataSourceProps.containsKey(jndiName)) {
             return getJndiDataSource(dataSourceProps.get(jndiName).toString());
         }
-        return DataSourceUtil.getDataSource(dataSourceProps.get("type").toString(), dataSourceProps);
+        DataSource result = DataSourceUtil.getDataSource(dataSourceProps.get("type").toString(), dataSourceProps);
+        Optional<DataSourcePropertiesSetter> dataSourcePropertiesSetter = DataSourcePropertiesSetterHolder.getDataSourcePropertiesSetterByType(dataSourceProps.get("type").toString());
+        if (dataSourcePropertiesSetter.isPresent()) {
+            dataSourcePropertiesSetter.get().propertiesSet(environment, prefix, dataSourceName, result);
+        }
+        return result;
     }
     
     private DataSource getJndiDataSource(final String jndiName) throws NamingException {

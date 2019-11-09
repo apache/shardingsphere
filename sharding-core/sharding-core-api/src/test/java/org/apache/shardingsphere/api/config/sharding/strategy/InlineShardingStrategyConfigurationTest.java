@@ -40,4 +40,9 @@ public final class InlineShardingStrategyConfigurationTest {
         assertThat(actual.getShardingColumn(), is("id"));
         assertThat(actual.getAlgorithmExpression(), is("ds_$->{id%16}"));
     }
+    
+    @Test
+    public void assertToString() {
+        assertThat(new InlineShardingStrategyConfiguration("id", "ds_$->{id%2}").toString(), is("Inline{shardingColumn='id', algorithmExpression='ds_$->{id%2}'}"));
+    }
 }

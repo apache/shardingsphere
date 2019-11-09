@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere</artifactId>
-        <version>4.0.0-RC2-SNAPSHOT</version>
+        <version>4.0.0-RC3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>sharding-distribution</artifactId>
@@ -35,5 +35,6 @@
         <module>shardingsphere-src-distribution</module>
         <module>sharding-jdbc-distribution</module>
         <module>sharding-proxy-distribution</module>
+        <module>sharding-ui-distribution</module>
     </modules>
 </project>

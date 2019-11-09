@@ -21,11 +21,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.merge.MergeEngineFactory;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowTablesMergedResult;
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.DerivedColumn;
-import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.preprocessor.segment.select.projection.DerivedColumn;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
@@ -43,7 +42,6 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.EncryptSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
-import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.SQLException;
@@ -63,8 +61,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicationEngine {
     
-    private final DatabaseType databaseType = LogicSchemas.getInstance().getDatabaseType();
-    
     private final LogicSchema logicSchema;
     
     private final String sql;
@@ -78,7 +74,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     @Override
     public BackendResponse execute() {
         try {
-            SQLRouteResult routeResult = executeEngine.getJdbcExecutorWrapper().route(sql, databaseType);
+            SQLRouteResult routeResult = executeEngine.getJdbcExecutorWrapper().route(sql);
             return execute(routeResult);
         } catch (final SQLException ex) {
             return new ErrorResponse(ex);
@@ -89,13 +85,14 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (routeResult.getRouteUnits().isEmpty()) {
             return new UpdateResponse();
         }
-        ShardingOptimizedStatement shardingStatement = routeResult.getShardingStatement();
-        if (isExecuteDDLInXATransaction(shardingStatement.getSQLStatement())) {
-            return new ErrorResponse(new TableModifyInTransactionException(shardingStatement.getTables().isSingleTable() ? shardingStatement.getTables().getSingleTableName() : "unknown_table"));
+        SQLStatementContext sqlStatementContext = routeResult.getSqlStatementContext();
+        if (isExecuteDDLInXATransaction(sqlStatementContext.getSqlStatement())) {
+            return new ErrorResponse(new TableModifyInTransactionException(
+                    sqlStatementContext.getTablesContext().isSingleTable() ? sqlStatementContext.getTablesContext().getSingleTableName() : "unknown_table"));
         }
         response = executeEngine.execute(routeResult);
         if (logicSchema instanceof ShardingSchema) {
-            logicSchema.refreshTableMetaData(routeResult.getShardingStatement());
+            logicSchema.refreshTableMetaData(routeResult.getSqlStatementContext());
         }
         return merge(routeResult);
     }
@@ -117,17 +114,17 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private void mergeUpdateCount(final SQLRouteResult routeResult) {
-        if (!isAllBroadcastTables(routeResult.getShardingStatement())) {
+        if (!isAllBroadcastTables(routeResult.getSqlStatementContext())) {
             ((UpdateResponse) response).mergeUpdateCount();
         }
     }
     
-    private boolean isAllBroadcastTables(final OptimizedStatement optimizedStatement) {
-        return logicSchema instanceof ShardingSchema && logicSchema.getShardingRule().isAllBroadcastTables(optimizedStatement.getTables().getTableNames());
+    private boolean isAllBroadcastTables(final SQLStatementContext sqlStatementContext) {
+        return logicSchema instanceof ShardingSchema && logicSchema.getShardingRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames());
     }
     
     private void setMergedResult(final SQLRouteResult routeResult) throws SQLException {
-        mergedResult = MergeEngineFactory.newInstance(databaseType,
+        mergedResult = MergeEngineFactory.newInstance(LogicSchemas.getInstance().getDatabaseType(),
                 logicSchema.getShardingRule(), routeResult, logicSchema.getMetaData().getTables(), ((QueryResponse) response).getQueryResults()).merge();
     }
     
@@ -169,7 +166,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     private Collection<String> getAssistedQueryColumns(final SQLRouteResult routeResult) {
         Collection<String> result = new LinkedList<>();
         EncryptRule encryptRule = getEncryptRule();
-        for (String each : routeResult.getShardingStatement().getTables().getTableNames()) {
+        for (String each : routeResult.getSqlStatementContext().getTablesContext().getTableNames()) {
             result.addAll(encryptRule.getAssistedQueryColumns(each));
         }
         return result;

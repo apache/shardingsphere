@@ -46,6 +46,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author zhaojun
  * @author zhangliang
+ * @author liya
  */
 @Getter
 @Slf4j
@@ -58,6 +59,8 @@ public final class BackendConnection implements AutoCloseable {
     private LogicSchema logicSchema;
     
     private TransactionType transactionType;
+    
+    private boolean supportHint;
     
     @Setter
     private int connectionId;
@@ -80,6 +83,12 @@ public final class BackendConnection implements AutoCloseable {
     
     public BackendConnection(final TransactionType transactionType) {
         this.transactionType = transactionType;
+        this.supportHint = false;
+    }
+    
+    public BackendConnection(final TransactionType transactionType, final boolean supportHint) {
+        this.transactionType = transactionType;
+        this.supportHint = supportHint;
     }
     
     /**

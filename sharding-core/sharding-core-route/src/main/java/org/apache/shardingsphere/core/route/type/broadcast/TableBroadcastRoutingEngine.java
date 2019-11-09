@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.core.route.type.broadcast;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.optimize.api.statement.OptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.ddl.ShardingDropIndexOptimizedStatement;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -43,7 +47,9 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     
     private final ShardingRule shardingRule;
     
-    private final OptimizedStatement optimizedStatement;
+    private final TableMetas tableMetas;
+    
+    private final SQLStatementContext sqlStatementContext;
     
     @Override
     public RoutingResult route() {
@@ -55,8 +61,27 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     }
     
     private Collection<String> getLogicTableNames() {
-        return optimizedStatement instanceof ShardingDropIndexOptimizedStatement
-                ? ((ShardingDropIndexOptimizedStatement) optimizedStatement).getTableNames() : optimizedStatement.getTables().getTableNames();
+        return sqlStatementContext.getSqlStatement() instanceof DropIndexStatement && !((DropIndexStatement) sqlStatementContext.getSqlStatement()).getIndexes().isEmpty()
+                ? getTableNamesFromMetaData((DropIndexStatement) sqlStatementContext.getSqlStatement()) : sqlStatementContext.getTablesContext().getTableNames();
+    }
+    
+    private Collection<String> getTableNamesFromMetaData(final DropIndexStatement dropIndexStatement) {
+        Collection<String> result = new LinkedList<>();
+        for (IndexSegment each : dropIndexStatement.getIndexes()) {
+            Optional<String> tableName = findLogicTableNameFromMetaData(each.getName());
+            Preconditions.checkState(tableName.isPresent(), "Cannot find index name `%s`.", each.getName());
+            result.add(tableName.get());
+        }
+        return result;
+    }
+    
+    private Optional<String> findLogicTableNameFromMetaData(final String logicIndexName) {
+        for (String each : tableMetas.getAllTableNames()) {
+            if (tableMetas.get(each).containsIndex(logicIndexName)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.absent();
     }
     
     private Collection<RoutingUnit> getAllRoutingUnits(final String logicTableName) {

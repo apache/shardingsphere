@@ -110,10 +110,10 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         ShardingRule shardingRule = getShardingRule("simpleShardingDataSource");
         assertThat(shardingRule.getTableRules().size(), is(1));
         assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
-        assertThat(shardingRule.getEncryptRule().getTables().size(), is(1));
-        assertThat(shardingRule.getEncryptRule().getTables().get("t_order").getCipherColumn("user_id"), is("user_encrypt"));
-        assertTrue(shardingRule.getEncryptRule().getShardingEncryptor("t_order", "order_id").isPresent());
-        assertThat(shardingRule.getEncryptRule().getShardingEncryptor("t_order", "order_id").get(), CoreMatchers.<ShardingEncryptor>instanceOf(MD5ShardingEncryptor.class));
+        assertTrue(shardingRule.getEncryptRule().findEncryptTable("t_order").isPresent());
+        assertThat(shardingRule.getEncryptRule().findEncryptTable("t_order").get().getCipherColumn("user_id"), is("user_encrypt"));
+        assertTrue(shardingRule.getEncryptRule().findShardingEncryptor("t_order", "order_id").isPresent());
+        assertThat(shardingRule.getEncryptRule().findShardingEncryptor("t_order", "order_id").get(), CoreMatchers.<ShardingEncryptor>instanceOf(MD5ShardingEncryptor.class));
         shardingRule.getTableRule("t_order");
     }
     

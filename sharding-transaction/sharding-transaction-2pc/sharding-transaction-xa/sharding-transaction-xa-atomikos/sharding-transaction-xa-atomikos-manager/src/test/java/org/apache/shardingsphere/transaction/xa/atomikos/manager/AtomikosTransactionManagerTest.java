@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class AtomikosTransactionManagerTest {
     
-    private AtomikosTransactionManager atomikosTransactionManager = new AtomikosTransactionManager();
+    private final AtomikosTransactionManager atomikosTransactionManager = new AtomikosTransactionManager();
     
     @Mock
     private UserTransactionManager userTransactionManager;

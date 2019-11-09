@@ -112,7 +112,7 @@ public final class ResultSetUtil {
             case "java.lang.String":
                 return value.toString();
             default:
-                throw new ShardingException("Unsupported data type:%s", convertType);
+                throw new ShardingException("Unsupported data type: %s", convertType);
         }
     }
     
@@ -128,7 +128,7 @@ public final class ResultSetUtil {
             case "java.lang.String":
                 return date.toString();
             default:
-                throw new ShardingException("Unsupported Date type:%s", convertType);
+                throw new ShardingException("Unsupported Date type: %s", convertType);
         }
     }
     

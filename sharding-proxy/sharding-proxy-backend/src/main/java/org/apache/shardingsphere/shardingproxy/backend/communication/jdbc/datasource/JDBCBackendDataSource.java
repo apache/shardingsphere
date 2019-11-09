@@ -57,7 +57,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     @Getter
     private final Map<String, YamlDataSourceParameter> dataSourceParameters; 
     
-    private JDBCBackendDataSourceFactory dataSourceFactory = JDBCRawBackendDataSourceFactory.getInstance();
+    private final JDBCBackendDataSourceFactory dataSourceFactory = JDBCRawBackendDataSourceFactory.getInstance();
     
     @Getter
     private ShardingTransactionManagerEngine shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();

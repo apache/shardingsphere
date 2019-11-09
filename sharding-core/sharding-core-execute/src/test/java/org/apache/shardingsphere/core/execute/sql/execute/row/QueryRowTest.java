@@ -38,8 +38,8 @@ public final class QueryRowTest {
     }
     
     @Test
-    public void assertGetColumnValue() {
-        assertThat(queryRow.getColumnValue(1), is((Object) 10));
+    public void assertGetValue() {
+        assertThat(queryRow.getValue(1), is((Object) 10));
     }
     
     @Test
@@ -54,6 +54,15 @@ public final class QueryRowTest {
         QueryRow queryRow2 = new QueryRow(Collections.singletonList((Object) 8), Collections.singletonList(1));
         assertTrue(queryRow.equals(queryRow1));
         assertFalse(queryRow.equals(queryRow2));
+    }
+
+    @Test
+    public void assertEqualPartlyWithNull() {
+        QueryRow queryRowWithNull = new QueryRow(Collections.singletonList(null), Collections.singletonList(1));
+        QueryRow queryRowWithNull2 = new QueryRow(Collections.singletonList(null), Collections.singletonList(1));
+        QueryRow queryRowWithNonNull = new QueryRow(Collections.singletonList((Object) 8), Collections.singletonList(1));
+        assertTrue(queryRowWithNull.equals(queryRowWithNull2));
+        assertFalse(queryRowWithNull.equals(queryRowWithNonNull));
     }
     
     @Test

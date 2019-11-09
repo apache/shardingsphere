@@ -23,24 +23,23 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dal.DALMergeEngine;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.optimize.encrypt.condition.EncryptCondition;
-import org.apache.shardingsphere.core.optimize.encrypt.statement.EncryptTransparentOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.segment.condition.ShardingCondition;
-import org.apache.shardingsphere.core.optimize.sharding.segment.insert.ShardingInsertColumns;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.groupby.GroupBy;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.SelectItems;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderBy;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.pagination.Pagination;
-import org.apache.shardingsphere.core.optimize.sharding.statement.ShardingTransparentOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingInsertOptimizedStatement;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.core.preprocessor.statement.impl.CommonSQLStatementContext;
+import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.core.preprocessor.segment.select.groupby.GroupByContext;
+import org.apache.shardingsphere.core.preprocessor.segment.select.projection.Projection;
+import org.apache.shardingsphere.core.preprocessor.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderByContext;
+import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.core.preprocessor.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.core.preprocessor.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -75,25 +74,26 @@ public final class MergeEngineFactoryTest {
     @Test
     public void assertNewInstanceWithSelectStatement() throws SQLException {
         SQLRouteResult routeResult = new SQLRouteResult(
-                new ShardingSelectOptimizedStatement(new SelectStatement(), Collections.<ShardingCondition>emptyList(), Collections.<EncryptCondition>emptyList(), 
-                        new GroupBy(Collections.<OrderByItem>emptyList(), 0), new OrderBy(Collections.<OrderByItem>emptyList(), false),
-                        new SelectItems(0, 0, false, Collections.<SelectItem>emptyList(), Collections.<TableSegment>emptyList(), null), new Pagination(null, null, Collections.emptyList())), 
-                new EncryptTransparentOptimizedStatement(new SelectStatement()));
+                new SelectSQLStatementContext(new SelectStatement(), 
+                        new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
+                        new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), new PaginationContext(null, null, Collections.emptyList())), 
+                new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults), instanceOf(DQLMergeEngine.class));
     }
     
     @Test
     public void assertNewInstanceWithDALStatement() throws SQLException {
-        SQLRouteResult routeResult = new SQLRouteResult(new ShardingTransparentOptimizedStatement(new DALStatement()), new EncryptTransparentOptimizedStatement(new DALStatement()));
+        SQLRouteResult routeResult = new SQLRouteResult(new CommonSQLStatementContext(new DALStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults), instanceOf(DALMergeEngine.class));
     }
     
     @Test
     public void assertNewInstanceWithOtherStatement() throws SQLException {
-        ShardingInsertColumns insertColumns = mock(ShardingInsertColumns.class);
-        when(insertColumns.getRegularColumnNames()).thenReturn(Collections.<String>emptySet());
-        SQLRouteResult routeResult = new SQLRouteResult(new ShardingInsertOptimizedStatement(new InsertStatement(), Collections.<ShardingCondition>emptyList(), insertColumns, null), 
-                new EncryptTransparentOptimizedStatement(new InsertStatement()));
+        InsertStatement insertStatement = new InsertStatement();
+        insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
+        insertStatement.getColumns().add(new ColumnSegment(0, 0, "col"));
+        SQLRouteResult routeResult = new SQLRouteResult(
+                new InsertSQLStatementContext(null, Collections.emptyList(), insertStatement), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, null, queryResults), instanceOf(TransparentMergeEngine.class));
     }
 }

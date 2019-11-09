@@ -29,7 +29,7 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.config.ShardingConfigurationException;
-import org.apache.shardingsphere.core.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
+import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategyFactory;
 import org.apache.shardingsphere.core.strategy.route.hint.HintShardingStrategy;
@@ -78,8 +78,8 @@ public class ShardingRule implements BaseRule {
         this.ruleConfiguration = shardingRuleConfig;
         shardingDataSourceNames = new ShardingDataSourceNames(shardingRuleConfig, dataSourceNames);
         tableRules = createTableRules(shardingRuleConfig);
-        bindingTableRules = createBindingTableRules(shardingRuleConfig.getBindingTableGroups());
         broadcastTables = shardingRuleConfig.getBroadcastTables();
+        bindingTableRules = createBindingTableRules(shardingRuleConfig.getBindingTableGroups());
         defaultDatabaseShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultDatabaseShardingStrategyConfig());
         defaultTableShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultTableShardingStrategyConfig());
         defaultShardingKeyGenerator = createDefaultKeyGenerator(shardingRuleConfig.getDefaultKeyGeneratorConfig());
@@ -404,6 +404,16 @@ public class ShardingRule implements BaseRule {
             }
         }
         throw new ShardingConfigurationException("Cannot find actual data node for data source name: '%s' and logic table name: '%s'", dataSourceName, logicTableName);
+    }
+    
+    /**
+     * Judge if default data source mame exists.
+     *
+     * @return if default data source name exists
+     */
+    public boolean hasDefaultDataSourceName() {
+        String defaultDataSourceName = shardingDataSourceNames.getDefaultDataSourceName();
+        return !Strings.isNullOrEmpty(defaultDataSourceName);
     }
     
     /**

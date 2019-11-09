@@ -125,7 +125,7 @@ public interface QueryResult {
     boolean wasNull() throws SQLException;
     
     /**
-     * Whether the column value is case sensitive.
+     * Whether value is case sensitive or not.
      *
      * @param columnIndex column index
      * @return true if column is case sensitive, otherwise false

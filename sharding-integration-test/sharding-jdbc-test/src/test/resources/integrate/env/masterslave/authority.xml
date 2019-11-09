@@ -41,6 +41,7 @@
         <user-create>
             <sql>CREATE USER user_dev@localhost</sql>
             <sql>GRANT select,update,insert,delete on master.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on master.t_order to user_dev@localhost</sql>
         </user-create>
         <user-drop>
             <sql>DROP USER user_dev@localhost</sql>

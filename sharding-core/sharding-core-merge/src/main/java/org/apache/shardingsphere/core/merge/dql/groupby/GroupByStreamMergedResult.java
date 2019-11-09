@@ -24,8 +24,8 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnit;
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnitFactory;
 import org.apache.shardingsphere.core.merge.dql.orderby.OrderByStreamMergedResult;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationSelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.core.preprocessor.statement.impl.SelectSQLStatementContext;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -44,20 +44,20 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
     private final Map<String, Integer> labelAndIndexMap;
     
-    private final ShardingSelectOptimizedStatement optimizedStatement;
+    private final SelectSQLStatementContext selectSQLStatementContext;
     
     private final List<Object> currentRow;
     
     private List<?> currentGroupByValues;
     
     public GroupByStreamMergedResult(
-            final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final ShardingSelectOptimizedStatement optimizedStatement) throws SQLException {
-        super(queryResults, optimizedStatement.getOrderBy().getItems());
+            final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final SelectSQLStatementContext selectSQLStatementContext) throws SQLException {
+        super(queryResults, selectSQLStatementContext.getOrderByContext().getItems());
         this.labelAndIndexMap = labelAndIndexMap;
-        this.optimizedStatement = optimizedStatement;
+        this.selectSQLStatementContext = selectSQLStatementContext;
         currentRow = new ArrayList<>(labelAndIndexMap.size());
         currentGroupByValues = getOrderByValuesQueue().isEmpty()
-                ? Collections.emptyList() : new GroupByValue(getCurrentQueryResult(), optimizedStatement.getGroupBy().getItems()).getGroupValues();
+                ? Collections.emptyList() : new GroupByValue(getCurrentQueryResult(), selectSQLStatementContext.getGroupByContext().getItems()).getGroupValues();
     }
     
     @Override
@@ -70,22 +70,22 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
             super.next();
         }
         if (aggregateCurrentGroupByRowAndNext()) {
-            currentGroupByValues = new GroupByValue(getCurrentQueryResult(), optimizedStatement.getGroupBy().getItems()).getGroupValues();
+            currentGroupByValues = new GroupByValue(getCurrentQueryResult(), selectSQLStatementContext.getGroupByContext().getItems()).getGroupValues();
         }
         return true;
     }
     
     private boolean aggregateCurrentGroupByRowAndNext() throws SQLException {
         boolean result = false;
-        Map<AggregationSelectItem, AggregationUnit> aggregationUnitMap = Maps.toMap(
-                optimizedStatement.getSelectItems().getAggregationSelectItems(), new Function<AggregationSelectItem, AggregationUnit>() {
+        Map<AggregationProjection, AggregationUnit> aggregationUnitMap = Maps.toMap(
+                selectSQLStatementContext.getProjectionsContext().getAggregationProjections(), new Function<AggregationProjection, AggregationUnit>() {
                     
                     @Override
-                    public AggregationUnit apply(final AggregationSelectItem input) {
+                    public AggregationUnit apply(final AggregationProjection input) {
                         return AggregationUnitFactory.create(input.getType());
                     }
                 });
-        while (currentGroupByValues.equals(new GroupByValue(getCurrentQueryResult(), optimizedStatement.getGroupBy().getItems()).getGroupValues())) {
+        while (currentGroupByValues.equals(new GroupByValue(getCurrentQueryResult(), selectSQLStatementContext.getGroupByContext().getItems()).getGroupValues())) {
             aggregate(aggregationUnitMap);
             cacheCurrentRow();
             result = super.next();
@@ -97,13 +97,13 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
         return result;
     }
     
-    private void aggregate(final Map<AggregationSelectItem, AggregationUnit> aggregationUnitMap) throws SQLException {
-        for (Entry<AggregationSelectItem, AggregationUnit> entry : aggregationUnitMap.entrySet()) {
+    private void aggregate(final Map<AggregationProjection, AggregationUnit> aggregationUnitMap) throws SQLException {
+        for (Entry<AggregationProjection, AggregationUnit> entry : aggregationUnitMap.entrySet()) {
             List<Comparable<?>> values = new ArrayList<>(2);
-            if (entry.getKey().getDerivedAggregationItems().isEmpty()) {
+            if (entry.getKey().getDerivedAggregationProjections().isEmpty()) {
                 values.add(getAggregationValue(entry.getKey()));
             } else {
-                for (AggregationSelectItem each : entry.getKey().getDerivedAggregationItems()) {
+                for (AggregationProjection each : entry.getKey().getDerivedAggregationProjections()) {
                     values.add(getAggregationValue(each));
                 }
             }
@@ -117,14 +117,14 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
         }
     }
     
-    private Comparable<?> getAggregationValue(final AggregationSelectItem aggregationSelectItem) throws SQLException {
+    private Comparable<?> getAggregationValue(final AggregationProjection aggregationSelectItem) throws SQLException {
         Object result = getCurrentQueryResult().getValue(aggregationSelectItem.getIndex(), Object.class);
         Preconditions.checkState(null == result || result instanceof Comparable, "Aggregation value must implements Comparable");
         return (Comparable<?>) result;
     }
     
-    private void setAggregationValueToCurrentRow(final Map<AggregationSelectItem, AggregationUnit> aggregationUnitMap) {
-        for (Entry<AggregationSelectItem, AggregationUnit> entry : aggregationUnitMap.entrySet()) {
+    private void setAggregationValueToCurrentRow(final Map<AggregationProjection, AggregationUnit> aggregationUnitMap) {
+        for (Entry<AggregationProjection, AggregationUnit> entry : aggregationUnitMap.entrySet()) {
             currentRow.set(entry.getKey().getIndex() - 1, entry.getValue().getResult());
         }
     }

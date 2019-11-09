@@ -27,7 +27,6 @@ import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorRespo
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 
@@ -59,10 +58,10 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
             return new ErrorResponse(new InvalidShardingCTLFormatException(sql));
         }
         StatementExecutorWrapper statementExecutorWrapper = new StatementExecutorWrapper(backendConnection.getLogicSchema());
-        routeUnits = statementExecutorWrapper.route(explainStatement.get().getSql(), LogicSchemas.getInstance().getDatabaseType()).getRouteUnits().iterator();
+        routeUnits = statementExecutorWrapper.route(explainStatement.get().getSql()).getRouteUnits().iterator();
         queryHeaders = new ArrayList<>(2);
-        queryHeaders.add(new QueryHeader("", "", "datasource_name", "", 255, Types.CHAR, 0));
-        queryHeaders.add(new QueryHeader("", "", "sql", "", 255, Types.CHAR, 0));
+        queryHeaders.add(new QueryHeader("", "", "datasource_name", "", 255, Types.CHAR, 0, false, false, false, false));
+        queryHeaders.add(new QueryHeader("", "", "sql", "", 255, Types.CHAR, 0, false, false, false, false));
         return new QueryResponse(queryHeaders);
     }
     

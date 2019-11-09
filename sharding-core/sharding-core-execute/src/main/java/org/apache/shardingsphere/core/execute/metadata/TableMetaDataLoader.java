@@ -62,6 +62,10 @@ public final class TableMetaDataLoader {
 
     private static final String INDEX_NAME = "INDEX_NAME";
 
+    private static final String IS_NULLABLE = "IS_NULLABLE";
+
+    private static final String IS_AUTOINCREMENT = "IS_AUTOINCREMENT";
+    
     private final DataSourceMetas dataSourceMetas;
 
     private final ShardingExecuteEngine executeEngine;
@@ -162,7 +166,10 @@ public final class TableMetaDataLoader {
                 String columnName = resultSet.getString(COLUMN_NAME);
                 String columnType = resultSet.getString(TYPE_NAME);
                 boolean isPrimaryKey = primaryKeys.contains(columnName);
-                Optional<ColumnMetaData> columnMetaData = getColumnMetaData(logicTableName, columnName, columnType, isPrimaryKey, generateKeyColumnName, encryptRule, derivedColumns);
+                boolean isNotNull = isPrimaryKey || !resultSet.getBoolean(IS_NULLABLE);
+                boolean isAutoIncrement = resultSet.getBoolean(IS_AUTOINCREMENT);
+                Optional<ColumnMetaData> columnMetaData = getColumnMetaData(logicTableName, columnName, columnType, isPrimaryKey,
+                        isNotNull, isAutoIncrement, generateKeyColumnName, encryptRule, derivedColumns);
                 if (columnMetaData.isPresent()) {
                     result.add(columnMetaData.get());
                 }
@@ -182,20 +189,21 @@ public final class TableMetaDataLoader {
     }
 
     private Optional<ColumnMetaData> getColumnMetaData(final String logicTableName, final String columnName, final String columnType, final boolean isPrimaryKey,
-                                                       final String generateKeyColumnName, final EncryptRule encryptRule, final Collection<String> derivedColumns) {
+                                                       final boolean isNotNull, final boolean isAutoIncrement, final String generateKeyColumnName, 
+                                                       final EncryptRule encryptRule, final Collection<String> derivedColumns) {
         if (derivedColumns.contains(columnName)) {
             return Optional.absent();
         }
         if (encryptRule.isCipherColumn(logicTableName, columnName)) {
             String logicColumnName = encryptRule.getLogicColumn(logicTableName, columnName);
-            String plainColumnName = encryptRule.getPlainColumn(logicTableName, logicColumnName).orNull();
-            String assistedQueryColumnName = encryptRule.getAssistedQueryColumn(logicTableName, logicColumnName).orNull();
-            return Optional.<ColumnMetaData>of(new EncryptColumnMetaData(logicColumnName, columnType, isPrimaryKey, columnName, plainColumnName, assistedQueryColumnName));
+            String plainColumnName = encryptRule.findPlainColumn(logicTableName, logicColumnName).orNull();
+            String assistedQueryColumnName = encryptRule.findAssistedQueryColumn(logicTableName, logicColumnName).orNull();
+            return Optional.<ColumnMetaData>of(new EncryptColumnMetaData(logicColumnName, columnType, isPrimaryKey, isNotNull, isAutoIncrement, columnName, plainColumnName, assistedQueryColumnName));
         }
         if (columnName.equalsIgnoreCase(generateKeyColumnName)) {
-            return Optional.<ColumnMetaData>of(new ShardingGeneratedKeyColumnMetaData(columnName, columnType, isPrimaryKey));
+            return Optional.<ColumnMetaData>of(new ShardingGeneratedKeyColumnMetaData(columnName, columnType, isPrimaryKey, isNotNull, isAutoIncrement));
         }
-        return Optional.of(new ColumnMetaData(columnName, columnType, isPrimaryKey));
+        return Optional.of(new ColumnMetaData(columnName, columnType, isPrimaryKey, isNotNull, isAutoIncrement));
     }
 
     private Collection<String> getLogicIndexes(final Connection connection, final String catalog, final String actualTableName) throws SQLException {

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractEncryptJDBCDatabaseAndTableTest;
 import org.junit.Test;
@@ -166,7 +167,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     }
     
     private void assertResultSet(final int resultSetCount, final int id, final Object pwd, final Object plain) throws SQLException {
-        try (Connection conn = getDatabaseTypeMap().values().iterator().next().values().iterator().next().getConnection();
+        try (Connection conn = getDatabaseTypeMap().get(DatabaseTypes.getActualDatabaseType("H2")).get("encrypt").getConnection();
              Statement stmt = conn.createStatement()) {
             ResultSet resultSet = stmt.executeQuery(SELECT_SQL_TO_ASSERT);
             int count = 1;
@@ -178,6 +179,20 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
                 count += 1;
             }
             assertThat(count - 1, is(resultSetCount));
+        }
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertQueryWithNull() throws SQLException {
+        try (Statement statement = getEncryptConnection().createStatement()) {
+            statement.executeQuery(null);
+        }
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertQueryWithEmptyString() throws SQLException {
+        try (Statement statement = getEncryptConnection().createStatement()) {
+            statement.executeQuery("");
         }
     }
 }

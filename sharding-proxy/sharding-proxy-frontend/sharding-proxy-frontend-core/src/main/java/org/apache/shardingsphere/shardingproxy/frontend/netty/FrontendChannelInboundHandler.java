@@ -36,7 +36,8 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 /**
  * Frontend channel inbound handler.
  * 
- * @author zhangliang 
+ * @author zhangliang
+ * @author liya
  */
 @RequiredArgsConstructor
 @Slf4j
@@ -47,7 +48,8 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     private volatile boolean authorized;
     
     private final BackendConnection backendConnection = new BackendConnection(
-            TransactionType.valueOf(ShardingProxyContext.getInstance().getShardingProperties().<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_TYPE)));
+            TransactionType.valueOf(ShardingProxyContext.getInstance().getShardingProperties().<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_TYPE)),
+            ShardingProxyContext.getInstance().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_HINT_ENABLED));
     
     @Override
     public void channelActive(final ChannelHandlerContext context) {
@@ -61,8 +63,8 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             authorized = auth(context, (ByteBuf) message);
             return;
         }
-        CommandExecutorSelector.getExecutor(databaseProtocolFrontendEngine.getFrontendContext().isOccupyThreadForPerConnection(), backendConnection.getTransactionType(), context.channel().id())
-                .execute(new CommandExecutorTask(databaseProtocolFrontendEngine, backendConnection, context, message));
+        CommandExecutorSelector.getExecutor(databaseProtocolFrontendEngine.getFrontendContext().isOccupyThreadForPerConnection(), backendConnection.isSupportHint(),
+                backendConnection.getTransactionType(), context.channel().id()).execute(new CommandExecutorTask(databaseProtocolFrontendEngine, backendConnection, context, message));
     }
     
     private boolean auth(final ChannelHandlerContext context, final ByteBuf message) {

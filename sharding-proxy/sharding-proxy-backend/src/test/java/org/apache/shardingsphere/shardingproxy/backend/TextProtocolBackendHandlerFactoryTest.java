@@ -30,6 +30,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.admin.UnicastBackend
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.UseDatabaseBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.query.QueryBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.set.ShardingCTLSetBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.sctl.show.ShardingCTLShowBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.transaction.SkipBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.spi.database.DatabaseType;
@@ -69,6 +70,13 @@ public final class TextProtocolBackendHandlerFactoryTest {
         String sql = "sctl:set transaction_type=XA";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(ShardingCTLSetBackendHandler.class));
+    }
+
+    @Test
+    public void assertNewInstanceSCTLWithComment() {
+        String sql = "/*ApplicationName=DataGrip 2018.1.4*/ sctl:show cached_connections;";
+        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
+        assertThat(actual, instanceOf(ShardingCTLShowBackendHandler.class));
     }
     
     @Test
@@ -171,5 +179,12 @@ public final class TextProtocolBackendHandlerFactoryTest {
         String sql = "select * from t_order limit 1";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(QueryBackendHandler.class));
+    }
+    
+    @Test
+    public void assertNewInstanceWithEmptyString() {
+        String sql = "";
+        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
+        assertThat(actual, instanceOf(SkipBackendHandler.class));
     }
 }

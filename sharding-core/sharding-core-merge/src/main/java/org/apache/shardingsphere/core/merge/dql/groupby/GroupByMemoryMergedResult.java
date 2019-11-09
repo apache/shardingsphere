@@ -26,8 +26,8 @@ import org.apache.shardingsphere.core.merge.dql.common.MemoryMergedResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnit;
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnitFactory;
-import org.apache.shardingsphere.core.optimize.sharding.segment.select.item.AggregationSelectItem;
-import org.apache.shardingsphere.core.optimize.sharding.statement.dml.ShardingSelectOptimizedStatement;
+import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.core.preprocessor.statement.impl.SelectSQLStatementContext;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -46,23 +46,23 @@ import java.util.Map.Entry;
  */
 public final class GroupByMemoryMergedResult extends MemoryMergedResult {
     
-    private final ShardingSelectOptimizedStatement optimizedStatement;
+    private final SelectSQLStatementContext selectSQLStatementContext;
     
     private final Iterator<MemoryQueryResultRow> memoryResultSetRows;
     
     public GroupByMemoryMergedResult(
-            final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final ShardingSelectOptimizedStatement optimizedStatement) throws SQLException {
+            final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final SelectSQLStatementContext selectSQLStatementContext) throws SQLException {
         super(labelAndIndexMap);
-        this.optimizedStatement = optimizedStatement;
+        this.selectSQLStatementContext = selectSQLStatementContext;
         memoryResultSetRows = init(queryResults);
     }
     
     private Iterator<MemoryQueryResultRow> init(final List<QueryResult> queryResults) throws SQLException {
         Map<GroupByValue, MemoryQueryResultRow> dataMap = new HashMap<>(1024);
-        Map<GroupByValue, Map<AggregationSelectItem, AggregationUnit>> aggregationMap = new HashMap<>(1024);
+        Map<GroupByValue, Map<AggregationProjection, AggregationUnit>> aggregationMap = new HashMap<>(1024);
         for (QueryResult each : queryResults) {
             while (each.next()) {
-                GroupByValue groupByValue = new GroupByValue(each, optimizedStatement.getGroupBy().getItems());
+                GroupByValue groupByValue = new GroupByValue(each, selectSQLStatementContext.getGroupByContext().getItems());
                 initForFirstGroupByValue(each, groupByValue, dataMap, aggregationMap);
                 aggregate(each, groupByValue, aggregationMap);
             }
@@ -77,29 +77,30 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
     }
     
     private void initForFirstGroupByValue(final QueryResult queryResult, final GroupByValue groupByValue, final Map<GroupByValue, MemoryQueryResultRow> dataMap,
-                                          final Map<GroupByValue, Map<AggregationSelectItem, AggregationUnit>> aggregationMap) throws SQLException {
+                                          final Map<GroupByValue, Map<AggregationProjection, AggregationUnit>> aggregationMap) throws SQLException {
         if (!dataMap.containsKey(groupByValue)) {
             dataMap.put(groupByValue, new MemoryQueryResultRow(queryResult));
         }
         if (!aggregationMap.containsKey(groupByValue)) {
-            Map<AggregationSelectItem, AggregationUnit> map = Maps.toMap(optimizedStatement.getSelectItems().getAggregationSelectItems(), new Function<AggregationSelectItem, AggregationUnit>() {
-                
-                @Override
-                public AggregationUnit apply(final AggregationSelectItem input) {
-                    return AggregationUnitFactory.create(input.getType());
-                }
-            });
+            Map<AggregationProjection, AggregationUnit> map = Maps.toMap(
+                    selectSQLStatementContext.getProjectionsContext().getAggregationProjections(), new Function<AggregationProjection, AggregationUnit>() {
+                        
+                        @Override
+                        public AggregationUnit apply(final AggregationProjection input) {
+                            return AggregationUnitFactory.create(input.getType());
+                        }
+                    });
             aggregationMap.put(groupByValue, map);
         }
     }
     
-    private void aggregate(final QueryResult queryResult, final GroupByValue groupByValue, final Map<GroupByValue, Map<AggregationSelectItem, AggregationUnit>> aggregationMap) throws SQLException {
-        for (AggregationSelectItem each : optimizedStatement.getSelectItems().getAggregationSelectItems()) {
+    private void aggregate(final QueryResult queryResult, final GroupByValue groupByValue, final Map<GroupByValue, Map<AggregationProjection, AggregationUnit>> aggregationMap) throws SQLException {
+        for (AggregationProjection each : selectSQLStatementContext.getProjectionsContext().getAggregationProjections()) {
             List<Comparable<?>> values = new ArrayList<>(2);
-            if (each.getDerivedAggregationItems().isEmpty()) {
+            if (each.getDerivedAggregationProjections().isEmpty()) {
                 values.add(getAggregationValue(queryResult, each));
             } else {
-                for (AggregationSelectItem derived : each.getDerivedAggregationItems()) {
+                for (AggregationProjection derived : each.getDerivedAggregationProjections()) {
                     values.add(getAggregationValue(queryResult, derived));
                 }
             }
@@ -107,15 +108,15 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
         }
     }
     
-    private Comparable<?> getAggregationValue(final QueryResult queryResult, final AggregationSelectItem aggregationSelectItem) throws SQLException {
+    private Comparable<?> getAggregationValue(final QueryResult queryResult, final AggregationProjection aggregationSelectItem) throws SQLException {
         Object result = queryResult.getValue(aggregationSelectItem.getIndex(), Object.class);
         Preconditions.checkState(null == result || result instanceof Comparable, "Aggregation value must implements Comparable");
         return (Comparable<?>) result;
     }
     
-    private void setAggregationValueToMemoryRow(final Map<GroupByValue, MemoryQueryResultRow> dataMap, final Map<GroupByValue, Map<AggregationSelectItem, AggregationUnit>> aggregationMap) {
+    private void setAggregationValueToMemoryRow(final Map<GroupByValue, MemoryQueryResultRow> dataMap, final Map<GroupByValue, Map<AggregationProjection, AggregationUnit>> aggregationMap) {
         for (Entry<GroupByValue, MemoryQueryResultRow> entry : dataMap.entrySet()) {
-            for (AggregationSelectItem each : optimizedStatement.getSelectItems().getAggregationSelectItems()) {
+            for (AggregationProjection each : selectSQLStatementContext.getProjectionsContext().getAggregationProjections()) {
                 entry.getValue().setCell(each.getIndex(), aggregationMap.get(entry.getKey()).get(each).getResult());
             }
         }
@@ -131,7 +132,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
     
     private List<MemoryQueryResultRow> getMemoryResultSetRows(final Map<GroupByValue, MemoryQueryResultRow> dataMap, final List<Boolean> valueCaseSensitive) {
         List<MemoryQueryResultRow> result = new ArrayList<>(dataMap.values());
-        Collections.sort(result, new GroupByRowComparator(optimizedStatement, valueCaseSensitive));
+        Collections.sort(result, new GroupByRowComparator(selectSQLStatementContext, valueCaseSensitive));
         return result;
     }
     

@@ -25,15 +25,20 @@
     </parent>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere</artifactId>
-    <version>4.0.0-RC2-SNAPSHOT</version>
+    <version>4.0.0-RC3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>shardingsphere-spi</module>
+        
+        <module>shardingsphere-sql-parser</module>
+        
         <module>sharding-core</module>
         
         <module>sharding-jdbc</module>
         <module>sharding-proxy</module>
+        <module>sharding-ui</module>
         
         <module>sharding-transaction</module>
         <module>sharding-orchestration</module> 
@@ -60,7 +65,7 @@
         <groovy.version>2.4.5</groovy.version>
         <snakeyaml.version>1.16</snakeyaml.version>
         
-        <netty.version>4.1.16.Final</netty.version>
+        <netty.version>4.1.42.Final</netty.version>
         <commons-codec.version>1.10</commons-codec.version>
         <commons-collections4.version>4.2</commons-collections4.version>
         
@@ -95,6 +100,8 @@
         <mssql.version>6.1.7.jre7-preview</mssql.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
 
+        <!-- Plugin versions -->
+        <takari-maven-plugin.version>0.6.1</takari-maven-plugin.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
         <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
@@ -114,17 +121,18 @@
         <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
         <jacoco.version>0.7.9</jacoco.version>
         <findbugs-maven-plugin.version>3.0.2</findbugs-maven-plugin.version>
-        <maven-checkstyle-plugin.version>2.16</maven-checkstyle-plugin.version>
+        <maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
         <maven-pmd-plugin.version>3.5</maven-pmd-plugin.version>
+        <frontend-maven-plugin.version>1.6</frontend-maven-plugin.version>
         <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
         <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
-        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
         <docker-maven-plugin.version>0.4.14</docker-maven-plugin.version>
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
         
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
         <maven.deploy.skip>false</maven.deploy.skip>
+        <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
     </properties>
     
     <dependencyManagement>
@@ -199,7 +207,7 @@
                 <artifactId>transactions-jdbc</artifactId>
                 <version>${atomikos.version}</version>
             </dependency>
-    
+            
             <dependency>
                 <groupId>org.jboss.narayana.jta</groupId>
                 <artifactId>jta</artifactId>
@@ -218,14 +226,14 @@
                 <version>${jboss-transaction-spi.version}</version>
                 <scope>provided</scope>
             </dependency>
-    
+            
             <dependency>
                 <groupId>org.codehaus.btm</groupId>
                 <artifactId>btm</artifactId>
                 <version>${btm.version}</version>
                 <scope>provided</scope>
             </dependency>
-    
+            
             <dependency>
                 <groupId>io.seata</groupId>
                 <artifactId>seata-rm-datasource</artifactId>
@@ -238,7 +246,7 @@
                 <version>${seata.version}</version>
                 <scope>provided</scope>
             </dependency>
-
+            
             <dependency>
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-framework</artifactId>
@@ -266,7 +274,7 @@
                 <artifactId>opentracing-util</artifactId>
                 <version>${opentracing.version}</version>
             </dependency>
-
+            
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context-support</artifactId>
@@ -483,6 +491,12 @@
         </extensions>
         <pluginManagement>
             <plugins>
+                <!-- mvn -N io.takari:maven:wrapper -Dmaven=3.5.4 -->
+                <plugin>
+                    <groupId>io.takari</groupId>
+                    <artifactId>maven</artifactId>
+                    <version>${takari-maven-plugin.version}</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -500,6 +514,11 @@
                     <version>${maven-resources-plugin.version}</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.version}</version>
+                </plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>${maven-jar-plugin.version}</version>
@@ -507,9 +526,6 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <configuration>
-                        <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -664,6 +680,25 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${maven-checkstyle-plugin.version}</version>
+                <configuration>
+                    <configLocation>src/resources/checkstyle_ci.xml</configLocation>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <excludes>**/autogen/**/*</excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>${coveralls-maven-plugin.version}</version>
@@ -692,7 +727,7 @@
                             <ignoreMethodAnnotation>lombok.Generated</ignoreMethodAnnotation>
                         </ignoreMethodAnnotations>
                         <excludes>
-                            <exclude>org/apache/shardingsphere/core/parse/autogen/*.class</exclude>
+                            <exclude>org/apache/shardingsphere/sql/parser/autogen/*.class</exclude>
                             <exclude>org/apache/shardingsphere/orchestration/reg/zookeeper/*.class</exclude>
                             <exclude>org/apache/shardingsphere/**/*Test.class</exclude>
                             <exclude>org/apache/shardingsphere/**/Test*.class</exclude>
@@ -747,6 +782,7 @@
                         <!-- CI files -->
                         <exclude>**/.travis.yml</exclude>
                         <exclude>**/.mvn/jvm.config</exclude>
+                        <exclude>**/.mvn/wrapper/maven-wrapper.properties</exclude>
                         <!-- GitHub files -->
                         <exclude>**/.github/**</exclude>
                         <!-- document files -->
@@ -754,6 +790,18 @@
                         <excldue>**/*.MD</excldue>
                         <exclude>**/*.txt</exclude>
                         <exclude>**/docs/**</exclude>
+                        <!-- UI files -->
+                        <exclude>**/.babelrc</exclude>
+                        <exclude>**/.editorconfig</exclude>
+                        <exclude>**/.eslintignore</exclude>
+                        <exclude>**/package.json</exclude>
+                        <exclude>**/assets/**</exclude>
+                        <exclude>/dist/**</exclude>
+                        <exclude>/etc/**</exclude>
+                        <exclude>/node/**</exclude>
+                        <exclude>/node_modules/**</exclude>
+                        <exclude>/test/coverage/**</exclude>
+                        <exclude>**/package-lock.json</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -765,22 +813,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>${maven-gpg-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-             -->
         </plugins>
     </build>
     
@@ -833,7 +865,9 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${maven-checkstyle-plugin.version}</version>
                 <configuration>
-                    <configLocation>src/resources/dd_checks.xml</configLocation>
+                    <configLocation>src/resources/checkstyle.xml</configLocation>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <excludes>**/autogen/**/*</excludes>
                 </configuration>
             </plugin>
             <plugin>

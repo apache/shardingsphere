@@ -50,6 +50,16 @@ public final class DatabaseTypes {
     }
     
     /**
+     * Get name of database type.
+     * 
+     * @param databaseType database type
+     * @return name of database type
+     */
+    public static String getDatabaseTypeName(final DatabaseType databaseType) {
+        return databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) databaseType).getTrunkDatabaseType().getName() : databaseType.getName();
+    }
+    
+    /**
      * Get actual database type.
      *
      * @param name database name 
@@ -84,7 +94,7 @@ public final class DatabaseTypes {
                 return each;
             }
         }
-        throw new UnsupportedOperationException(String.format("Unsupported database from url: '%s'", url));
+        return DATABASE_TYPES.get("SQL92");
     }
     
     private static boolean matchStandardURL(final String url, final DatabaseType databaseType) {

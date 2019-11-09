@@ -32,7 +32,7 @@ public final class ShardingCTLErrorCodeTest {
     public void assertInvalidFormat() {
         assertThat(ShardingCTLErrorCode.INVALID_FORMAT.getErrorCode(), is(11000));
         assertThat(ShardingCTLErrorCode.INVALID_FORMAT.getSqlState(), is("S11000"));
-        assertThat(ShardingCTLErrorCode.INVALID_FORMAT.getErrorMessage(), is("Invalid format for sharding ctl [%s], should be [sctl:set key=value]."));
+        assertThat(ShardingCTLErrorCode.INVALID_FORMAT.getErrorMessage(), is("Invalid format for sharding ctl [%s]."));
     }
     
     @Test

@@ -17,9 +17,14 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.h2.tools.RunScript;
 import org.junit.Before;
 import org.springframework.test.context.TestExecutionListeners;
@@ -31,9 +36,12 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @TestExecutionListeners(inheritListeners = false, listeners =
     {DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class})
@@ -50,6 +58,7 @@ public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContex
         for (String each : getSchemaFiles()) {
             RunScript.execute(createDataSource(each).getConnection(), new InputStreamReader(classLoader.getResourceAsStream(each)));
         }
+        reInitMetaData();
     }
     
     private DataSource createDataSource(final String dataSetFile) {
@@ -72,5 +81,53 @@ public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContex
     
     protected List<String> getSchemaFiles() {
         return Arrays.asList("schema/dbtbl_0.sql", "schema/dbtbl_1.sql");
+    }
+    
+    @SuppressWarnings("unchecked")
+    @SneakyThrows
+    private void reInitMetaData() {
+        Map<String, DataSource> dataSourceMap = (Map<String, DataSource>) getFieldValue(shardingDataSource.getRuntimeContext().getCachedDatabaseMetaData(), "dataSourceMap");
+        ShardingSphereMetaData newMetaData = (ShardingSphereMetaData) getCreateMetaDataMethod().invoke(shardingDataSource.getRuntimeContext(), dataSourceMap,
+            shardingDataSource.getRuntimeContext().getRule(), shardingDataSource.getRuntimeContext().getDatabaseType());
+        setFieldValue(shardingDataSource.getRuntimeContext(), "metaData", newMetaData);
+    }
+    
+    @SneakyThrows
+    private Method getCreateMetaDataMethod() {
+        Method method = shardingDataSource.getRuntimeContext().getClass().getDeclaredMethod("createMetaData", Map.class, ShardingRule.class, DatabaseType.class);
+        method.setAccessible(true);
+        return method;
+    }
+    
+    @SneakyThrows
+    private Object getFieldValue(final Object object, final String name) {
+        Optional<Field> field = getField(object, name);
+        if (field.isPresent()) {
+            field.get().setAccessible(true);
+            return field.get().get(object);
+        }
+        return null;
+    }
+    
+    @SneakyThrows
+    private void setFieldValue(final Object object, final String name, final Object value) {
+        Optional<Field> field = getField(object, name);
+        if (field.isPresent()) {
+            field.get().setAccessible(true);
+            field.get().set(object, value);
+        }
+    }
+    
+    private Optional<Field> getField(final Object object, final String name) {
+        Class clazz = object.getClass();
+        Optional<Field> result = Optional.absent();
+        while (!result.isPresent() && null != clazz) {
+            try {
+                result = Optional.of(clazz.getDeclaredField(name));
+            } catch (NoSuchFieldException ignored) {
+            }
+            clazz = clazz.getSuperclass();
+        }
+        return result;
     }
 }

@@ -73,6 +73,7 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
         config.addDataSourceProperty("elideSetAutoCommits", Boolean.TRUE.toString());
         config.addDataSourceProperty("maintainTimeStats", Boolean.FALSE.toString());
         config.addDataSourceProperty("netTimeoutForStreamingResults", 0);
+        config.addDataSourceProperty("tinyInt1isBit", Boolean.FALSE.toString());
         return new HikariDataSource(config);
     }
     

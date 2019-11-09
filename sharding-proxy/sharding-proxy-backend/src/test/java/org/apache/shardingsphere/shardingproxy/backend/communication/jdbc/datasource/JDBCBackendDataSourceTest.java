@@ -47,7 +47,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class JDBCBackendDataSourceTest {
     
-    private JDBCBackendDataSource jdbcBackendDataSource = new JDBCBackendDataSource(Collections.<String, YamlDataSourceParameter>emptyMap());
+    private final JDBCBackendDataSource jdbcBackendDataSource = new JDBCBackendDataSource(Collections.<String, YamlDataSourceParameter>emptyMap());
     
     @Before
     public void setUp() {

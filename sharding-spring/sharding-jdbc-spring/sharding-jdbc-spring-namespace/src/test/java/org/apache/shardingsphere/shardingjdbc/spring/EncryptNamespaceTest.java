@@ -37,10 +37,10 @@ public class EncryptNamespaceTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void assertEncryptDataSource() {
         EncryptRule encryptRule = getEncryptRuleRule();
-        assertTrue(encryptRule.getShardingEncryptor("t_order", "user_id").isPresent());
+        assertTrue(encryptRule.findShardingEncryptor("t_order", "user_id").isPresent());
         assertThat(encryptRule.getCipherColumn("t_order", "user_id"), is("user_encrypt"));
-        assertTrue(encryptRule.getShardingEncryptor("t_order", "user_id").get() instanceof AESShardingEncryptor);
-        assertThat(encryptRule.getPlainColumn("t_order", "order_id"), is(Optional.of("order_decrypt")));
+        assertTrue(encryptRule.findShardingEncryptor("t_order", "user_id").get() instanceof AESShardingEncryptor);
+        assertThat(encryptRule.findPlainColumn("t_order", "order_id"), is(Optional.of("order_decrypt")));
         assertTrue(getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
         assertTrue(getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
     }

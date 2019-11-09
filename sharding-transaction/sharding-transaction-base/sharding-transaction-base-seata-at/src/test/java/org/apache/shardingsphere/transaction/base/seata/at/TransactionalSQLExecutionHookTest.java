@@ -36,15 +36,15 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public class TransactionalSQLExecutionHookTest {
     
+    private final Map<String, Object> shardingExecuteDataMap = new HashMap<>();
+    
+    private final TransactionalSQLExecutionHook executionHook = new TransactionalSQLExecutionHook();
+    
     @Mock
     private RouteUnit routeUnit;
     
     @Mock
     private DataSourceMetaData dataSourceMetaData;
-    
-    private Map<String, Object> shardingExecuteDataMap = new HashMap<>();
-    
-    private TransactionalSQLExecutionHook executionHook = new TransactionalSQLExecutionHook();
     
     @Before
     public void setUp() {

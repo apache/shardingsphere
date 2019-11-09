@@ -29,7 +29,7 @@ import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConf
  */
 public final class OrchestrationConfigurationYamlSwapper implements YamlSwapper<YamlOrchestrationConfiguration, OrchestrationConfiguration> {
     
-    private RegistryCenterConfigurationYamlSwapper registryCenterConfigurationYamlSwapper = new RegistryCenterConfigurationYamlSwapper();
+    private final RegistryCenterConfigurationYamlSwapper registryCenterConfigurationYamlSwapper = new RegistryCenterConfigurationYamlSwapper();
     
     @Override
     public YamlOrchestrationConfiguration swap(final OrchestrationConfiguration data) {

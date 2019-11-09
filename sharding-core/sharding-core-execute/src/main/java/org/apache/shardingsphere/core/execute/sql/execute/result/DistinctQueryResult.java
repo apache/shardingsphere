@@ -118,32 +118,32 @@ public class DistinctQueryResult implements QueryResult {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) {
-        return currentRow.getColumnValue(columnIndex);
+        return currentRow.getValue(columnIndex);
     }
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) {
-        return currentRow.getColumnValue(getColumnIndex(columnLabel));
+        return currentRow.getValue(getColumnIndex(columnLabel));
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
-        return currentRow.getColumnValue(columnIndex);
+        return currentRow.getValue(columnIndex);
     }
     
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
-        return currentRow.getColumnValue(getColumnIndex(columnLabel));
+        return currentRow.getValue(getColumnIndex(columnLabel));
     }
     
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) {
-        return getInputStream(currentRow.getColumnValue(columnIndex));
+        return getInputStream(currentRow.getValue(columnIndex));
     }
     
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) {
-        return getInputStream(currentRow.getColumnValue(getColumnIndex(columnLabel)));
+        return getInputStream(currentRow.getValue(getColumnIndex(columnLabel)));
     }
     
     @SneakyThrows

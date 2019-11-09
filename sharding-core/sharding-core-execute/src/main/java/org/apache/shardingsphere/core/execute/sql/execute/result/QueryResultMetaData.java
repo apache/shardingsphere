@@ -17,14 +17,21 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import lombok.Getter;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -38,31 +45,39 @@ public final class QueryResultMetaData {
     
     private final ResultSetMetaData resultSetMetaData;
     
-    private final ShardingRule shardingRule;
-    
     private final EncryptRule encryptRule;
 
     private final Map<String, Integer> columnLabelAndIndexes;
+
+    private final SQLStatementContext sqlStatementContext;
     
-    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule) throws SQLException {
+    @Getter
+    private final boolean queryWithCipherColumn;
+    
+    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext)
+            throws SQLException {
         this.resultSetMetaData = resultSetMetaData;
-        this.shardingRule = shardingRule;
         this.encryptRule = shardingRule.getEncryptRule();
         columnLabelAndIndexes = getColumnLabelAndIndexMap();
+        this.sqlStatementContext = sqlStatementContext;
+        queryWithCipherColumn = properties.getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
     }
     
-    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final EncryptRule encryptRule) throws SQLException {
+    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final EncryptRule encryptRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext)
+            throws SQLException {
         this.resultSetMetaData = resultSetMetaData;
-        this.shardingRule = null;
         this.encryptRule = encryptRule;
         columnLabelAndIndexes = getColumnLabelAndIndexMap();
+        this.sqlStatementContext = sqlStatementContext;
+        queryWithCipherColumn = properties.getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
     }
     
     public QueryResultMetaData(final ResultSetMetaData resultSetMetaData) throws SQLException {
         this.resultSetMetaData = resultSetMetaData;
-        this.shardingRule = null;
         this.encryptRule = new EncryptRule();
         columnLabelAndIndexes = getColumnLabelAndIndexMap();
+        this.sqlStatementContext = null;
+        queryWithCipherColumn = false;
     }
     
     private Map<String, Integer> getColumnLabelAndIndexMap() throws SQLException {
@@ -116,7 +131,7 @@ public final class QueryResultMetaData {
     }
     
     /**
-     * Whether the column value is case sensitive.
+     * Whether value is case sensitive or not.
      *
      * @param columnIndex column index
      * @return true if column is case sensitive, otherwise false
@@ -134,21 +149,36 @@ public final class QueryResultMetaData {
      * @throws SQLException SQL exception
      */
     public Optional<ShardingEncryptor> getShardingEncryptor(final int columnIndex) throws SQLException {
-        String logicTable = getTableName(columnIndex);
-        return encryptRule.getShardingEncryptor(logicTable, getLogicColumn(logicTable, columnIndex));
-    }
-    
-    private String getTableName(final int columnIndex) throws SQLException {
-        String actualTableName = resultSetMetaData.getTableName(columnIndex);
-        if (null == shardingRule) {
-            return actualTableName;
+        final String actualColumn = resultSetMetaData.getColumnName(columnIndex);
+        if (null == sqlStatementContext) {
+            return Optional.absent();
         }
-        Optional<TableRule> tableRule = shardingRule.findTableRuleByActualTable(actualTableName);
-        return tableRule.isPresent() ? tableRule.get().getLogicTable() : actualTableName;
+        final Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        for (String each : tableNames) {
+            Optional<ShardingEncryptor> result = findShardingEncryptorWithTable(actualColumn, each);
+            if (result.isPresent()) {
+                return result;
+            }
+        }
+        return Optional.absent();
     }
-    
-    private String getLogicColumn(final String tableName, final int columnIndex) throws SQLException {
-        String columnLabel = resultSetMetaData.getColumnName(columnIndex);
-        return encryptRule.isCipherColumn(tableName, columnLabel) ? encryptRule.getLogicColumn(tableName, columnLabel) : columnLabel;
+
+    private Optional<ShardingEncryptor> findShardingEncryptorWithTable(final String actualColumn, final String logicTableName) {
+        if (null == encryptRule) {
+            return Optional.absent();
+        }
+        final Collection<String> actualColumns = encryptRule.findEncryptTable(logicTableName)
+                .transform(new Function<EncryptTable, Collection<String>>() {
+
+                    @Override
+                    public Collection<String> apply(final EncryptTable encryptTable) {
+                        return encryptTable.getCipherColumns();
+                    }
+                })
+                .or(Collections.<String>emptyList());
+        if (actualColumns.contains(actualColumn)) {
+            return encryptRule.findShardingEncryptor(logicTableName, encryptRule.getLogicColumn(logicTableName, actualColumn));
+        }
+        return Optional.absent();
     }
 }
