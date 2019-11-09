@@ -35,9 +35,9 @@ import org.apache.shardingsphere.api.config.TypeBasedSPIConfiguration;
 public class InstanceConfiguration extends TypeBasedSPIConfiguration {
     
     /**
-     * Type of center.
+     * Type of orchestration.
      */
-    private String centerType;
+    private String orchestrationType;
     
     /**
      * Server list of center.
@@ -49,10 +49,19 @@ public class InstanceConfiguration extends TypeBasedSPIConfiguration {
      */
     private String namespace;
     
+    /**
+     * Constructor for InstanceConfiguration.
+     * @param type  instance type
+     */
     public InstanceConfiguration(final String type) {
         super(type);
     }
     
+    /**
+     * Constructor for InstanceConfiguration.
+     * @param type instance type
+     * @param properties extra properties
+     */
     public InstanceConfiguration(final String type, final Properties properties) {
         super(type, properties);
     }

@@ -43,10 +43,10 @@ public class InstanceConfigurationTest {
     @Test
     public void assertCenterType() {
         String type = "zookeeper";
-        String centerType = "config_center";
+        String orchestrationType = "config_center";
         InstanceConfiguration instanceConfiguration = new InstanceConfiguration(type);
-        instanceConfiguration.setCenterType(centerType);
-        assertThat(instanceConfiguration.getCenterType(), is(centerType));
+        instanceConfiguration.setOrchestrationType(orchestrationType);
+        assertThat(instanceConfiguration.getOrchestrationType(), is(orchestrationType));
     }
     
     @Test

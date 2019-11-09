@@ -21,13 +21,16 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Center type.
+ * Orchestration type.
  *
+ * @author zhangliang
+ * @author dongzonglei
+ * @author wangguangyuan
  * @author sunbufu
  */
 @Getter
 @RequiredArgsConstructor
-public enum CenterType {
+public enum OrchestrationType {
     
     REGISTRY_CENTER("registry_center"),
     CONFIG_CENTER("config_center"),
@@ -36,13 +39,13 @@ public enum CenterType {
     private final String value;
     
     /**
-     * Find CenterType via property value.
+     * Find OrchestrationType via property value.
      *
      * @param value property value
-     * @return CenterType enum, return {@code null} if not found
+     * @return OrchestrationType enum, return {@code null} if not found
      */
-    public static CenterType findByValue(final String value) {
-        for (CenterType each : CenterType.values()) {
+    public static OrchestrationType findByValue(final String value) {
+        for (OrchestrationType each : OrchestrationType.values()) {
             if (each.getValue().equals(value)) {
                 return each;
             }

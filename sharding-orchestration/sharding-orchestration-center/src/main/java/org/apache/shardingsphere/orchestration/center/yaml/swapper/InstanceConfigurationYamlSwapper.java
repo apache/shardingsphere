@@ -31,10 +31,16 @@ import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceCo
  */
 public final class InstanceConfigurationYamlSwapper implements YamlSwapper<YamlInstanceConfiguration, InstanceConfiguration> {
     
+    /**
+     * Swap from InstanceConfiguration to YamlInstanceConfiguration.
+     *
+     * @param data data to be swapped
+     * @return YAML instance configuration
+     */
     @Override
     public YamlInstanceConfiguration swap(final InstanceConfiguration data) {
         YamlInstanceConfiguration result = new YamlInstanceConfiguration();
-        result.setCenterType(data.getCenterType());
+        result.setOrchestrationType(data.getOrchestrationType());
         result.setInstanceType(data.getType());
         result.setServerLists(data.getServerLists());
         result.setNamespace(data.getNamespace());
@@ -42,10 +48,16 @@ public final class InstanceConfigurationYamlSwapper implements YamlSwapper<YamlI
         return result;
     }
     
+    /**
+     * Swap from YamlInstanceConfiguration to InstanceConfiguration.
+     *
+     * @param yamlConfiguration YAML instance configuration
+     * @return swapped object
+     */
     @Override
     public InstanceConfiguration swap(final YamlInstanceConfiguration yamlConfiguration) {
         InstanceConfiguration result = new InstanceConfiguration(yamlConfiguration.getInstanceType(), yamlConfiguration.getProps());
-        result.setCenterType(yamlConfiguration.getCenterType());
+        result.setOrchestrationType(yamlConfiguration.getOrchestrationType());
         result.setServerLists(yamlConfiguration.getServerLists());
         result.setNamespace(yamlConfiguration.getNamespace());
         return result;

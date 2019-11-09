@@ -27,10 +27,10 @@ public class YamlInstanceConfigurationTest {
     
     @Test
     public void assertCenterType() {
-        String centerType = "config_center";
+        String orchestrationType = "config_center";
         YamlInstanceConfiguration yamlInstanceConfiguration = new YamlInstanceConfiguration();
-        yamlInstanceConfiguration.setCenterType(centerType);
-        assertThat(yamlInstanceConfiguration.getCenterType(), is(centerType));
+        yamlInstanceConfiguration.setOrchestrationType(orchestrationType);
+        assertThat(yamlInstanceConfiguration.getOrchestrationType(), is(orchestrationType));
     }
     
     @Test

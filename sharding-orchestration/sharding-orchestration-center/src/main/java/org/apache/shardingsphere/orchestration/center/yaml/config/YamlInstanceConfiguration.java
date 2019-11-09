@@ -34,7 +34,7 @@ import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 @Setter
 public class YamlInstanceConfiguration implements YamlConfiguration {
     
-    private String centerType;
+    private String orchestrationType;
     
     private String instanceType;
     
