@@ -15,26 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.center.configuration;
+package org.apache.shardingsphere.orchestration.constant;
 
-import java.util.Map;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Config center configuration.
+ * Orchestration type.
  *
  * @author zhangliang
- * @author sunbufu
  * @author dongzonglei
  * @author wangguangyuan
+ * @author sunbufu
  */
 @Getter
-@Setter
-public final class OrchestrationConfiguration {
+@RequiredArgsConstructor
+public enum OrchestrationType {
+    
+    REGISTRY_CENTER("registry_center"),
+    CONFIG_CENTER("config_center"),
+    DISTRIBUTED_LOCK_MANAGER("distributed_lock_manager");
+    
+    private final String value;
     
     /**
-     * Instance configuration map.
+     * Find OrchestrationType via property value.
+     *
+     * @param value property value
+     * @return OrchestrationType enum, return {@code null} if not found
      */
-    private Map<String, InstanceConfiguration> instanceConfigurationMap;
+    public static OrchestrationType findByValue(final String value) {
+        for (OrchestrationType each : OrchestrationType.values()) {
+            if (each.getValue().equals(value)) {
+                return each;
+            }
+        }
+        return null;
+    }
 }

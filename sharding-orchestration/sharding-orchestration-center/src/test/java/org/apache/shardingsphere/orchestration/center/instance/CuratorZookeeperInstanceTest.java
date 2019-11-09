@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.center.instance;
 
-import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.util.EmbedTestingServer;
 
 import org.junit.BeforeClass;
@@ -36,7 +36,7 @@ public class CuratorZookeeperInstanceTest {
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
-        OrchestrationConfiguration configuration = new OrchestrationConfiguration(curatorZookeeperInstance.getType(), new Properties());
+        InstanceConfiguration configuration = new InstanceConfiguration(curatorZookeeperInstance.getType(), new Properties());
         configuration.setServerLists("127.0.0.1:3181");
         curatorZookeeperInstance.init(configuration);
     }

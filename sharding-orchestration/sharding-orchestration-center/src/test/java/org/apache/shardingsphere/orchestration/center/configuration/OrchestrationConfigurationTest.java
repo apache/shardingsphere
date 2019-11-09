@@ -17,24 +17,20 @@
 
 package org.apache.shardingsphere.orchestration.center.configuration;
 
+import java.util.HashMap;
 import java.util.Map;
-import lombok.Getter;
-import lombok.Setter;
+import org.junit.Test;
 
-/**
- * Config center configuration.
- *
- * @author zhangliang
- * @author sunbufu
- * @author dongzonglei
- * @author wangguangyuan
- */
-@Getter
-@Setter
-public final class OrchestrationConfiguration {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public class OrchestrationConfigurationTest {
     
-    /**
-     * Instance configuration map.
-     */
-    private Map<String, InstanceConfiguration> instanceConfigurationMap;
+    @Test
+    public void assertInstanceConfigurationMap() {
+        OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration();
+        Map<String, InstanceConfiguration> instanceConfigurationMap = new HashMap<>();
+        orchestrationConfiguration.setInstanceConfigurationMap(instanceConfigurationMap);
+        assertThat(orchestrationConfiguration.getInstanceConfigurationMap(), is(instanceConfigurationMap));
+    }
 }
