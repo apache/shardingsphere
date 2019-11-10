@@ -9,6 +9,12 @@ import org.apache.shardingsphere.core.exception.UnrecognizeDatasourceInfoExcepti
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceInfo;
 
 public class DataSourceUtil {
+    /**
+     * get DataSourceInfo
+     * 
+     * @param dataSource is user configuration
+     * @return DataSourceInfo
+     */
     public static DataSourceInfo getDataSourceInfo(final DataSource dataSource) {
         try {
             DataSourceInfo sourceInfo = new DataSourceInfo();
@@ -28,8 +34,9 @@ public class DataSourceUtil {
                     }
                 }
             }
+
             return sourceInfo;
-        }catch (Exception e) {
+        } catch (IllegalArgumentException | IllegalAccessException e) {
             throw new UnrecognizeDatasourceInfoException(e);
         }
     }

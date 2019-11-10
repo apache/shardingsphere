@@ -6,6 +6,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class DataSourceInfo {
+    
     private String url;
+    
     private String username;
 }
