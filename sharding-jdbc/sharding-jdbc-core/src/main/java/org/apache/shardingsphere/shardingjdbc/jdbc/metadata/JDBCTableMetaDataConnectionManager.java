@@ -39,4 +39,8 @@ public final class JDBCTableMetaDataConnectionManager implements TableMetaDataCo
     public Connection getConnection(final String dataSourceName) throws SQLException {
         return dataSourceMap.get(dataSourceName).getConnection();
     }
+    
+    public DataSource getDataSource(final String dataSourceName) throws SQLException {
+        return dataSourceMap.get(dataSourceName);
+    }
 }
