@@ -40,6 +40,7 @@ public final class JDBCTableMetaDataConnectionManager implements TableMetaDataCo
         return dataSourceMap.get(dataSourceName).getConnection();
     }
     
+    @Override
     public DataSource getDataSource(final String dataSourceName) throws SQLException {
         return dataSourceMap.get(dataSourceName);
     }
