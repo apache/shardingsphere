@@ -118,7 +118,7 @@ public final class TableMetaDataLoader {
         Collection<TableMetaData> result = new LinkedList<>();
         try (Connection connection = connectionManager.getConnection(dataSourceName)) {
             for (DataNode each : dataNodes) {
-                result.add(createTableMetaData(connection, catalog,schema, logicTableName, each.getTableName(), generateKeyColumnName, encryptRule));
+                result.add(createTableMetaData(connection, catalog, schema, logicTableName, each.getTableName(), generateKeyColumnName, encryptRule));
             }
         }
         return result;
