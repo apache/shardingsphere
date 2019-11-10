@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.preprocessor.segment.select.pagination.engine;
 
 import org.apache.shardingsphere.core.preprocessor.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 
 import java.util.List;
 

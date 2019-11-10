@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic;
 
 import com.google.common.base.Joiner;
-import lombok.Getter;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 
@@ -30,7 +29,6 @@ import java.util.List;
  * @author panjuan
  * @author zhangliang
  */
-@Getter
 public final class InsertColumnsToken extends SQLToken implements Attachable {
     
     private final List<String> columns;
@@ -42,9 +40,6 @@ public final class InsertColumnsToken extends SQLToken implements Attachable {
     
     @Override
     public String toString() {
-        if (columns.isEmpty()) {
-            return "";
-        }
-        return String.format("(%s)", Joiner.on(", ").join(columns));
+        return columns.isEmpty() ? "" : String.format(", %s", Joiner.on(", ").join(columns));
     }
 }

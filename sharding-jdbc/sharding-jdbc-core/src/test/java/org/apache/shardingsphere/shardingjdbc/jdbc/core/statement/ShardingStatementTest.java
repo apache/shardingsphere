@@ -63,4 +63,18 @@ public final class ShardingStatementTest extends AbstractShardingJDBCDatabaseAnd
             assertThat(generatedKeysResultSet.getLong(1), is(7L));
         }
     }
+    
+    @Test(expected = SQLException.class)
+    public void assertQueryWithNull() throws SQLException {
+        try (Statement statement = getShardingDataSource().getConnection().createStatement()) {
+            statement.executeQuery(null);
+        }
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertQueryWithEmptyString() throws SQLException {
+        try (Statement statement = getShardingDataSource().getConnection().createStatement()) {
+            statement.executeQuery("");
+        }
+    }
 }

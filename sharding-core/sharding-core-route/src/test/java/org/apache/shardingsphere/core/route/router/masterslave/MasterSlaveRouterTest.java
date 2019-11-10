@@ -23,9 +23,11 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collection;
 
-import org.apache.shardingsphere.core.parse.SQLParseEngine;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import com.google.common.base.Optional;
+import org.apache.shardingsphere.sql.parser.SQLParseEngine;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.junit.After;
@@ -41,6 +43,8 @@ import com.google.common.collect.Lists;
 public class MasterSlaveRouterTest {
     
     private static final String QUERY_SQL = "select * from table";
+
+    private static final String QUERY_SQL_LOCK = "select * from table for update";
     
     private static final String INSERT_SQL = "insert into table (id) values (1)";
     
@@ -67,6 +71,7 @@ public class MasterSlaveRouterTest {
         masterSlaveRouter = new MasterSlaveRouter(masterSlaveRule, sqlParseEngine, true);
         when(sqlParseEngine.parse(QUERY_SQL, false)).thenReturn(selectStatement);
         when(sqlParseEngine.parse(INSERT_SQL, false)).thenReturn(insertStatement);
+        when(selectStatement.getLock()).thenReturn(Optional.<LockSegment>absent());
         when(masterSlaveRule.getMasterDataSourceName()).thenReturn(MASTER_DATASOURCE);
         when(masterSlaveRule.getLoadBalanceAlgorithm()).thenReturn(new RandomMasterSlaveLoadBalanceAlgorithm());
         when(masterSlaveRule.getSlaveDataSourceNames()).thenReturn(Lists.newArrayList(SLAVE_DATASOURCE));
@@ -89,5 +94,12 @@ public class MasterSlaveRouterTest {
         Collection<String> actual = masterSlaveRouter.route(QUERY_SQL, false);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(SLAVE_DATASOURCE));
+    }
+
+    @Test
+    public void assertLockRouteToMaster() {
+        Collection<String> actual = masterSlaveRouter.route(QUERY_SQL_LOCK, false);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is(MASTER_DATASOURCE));
     }
 }

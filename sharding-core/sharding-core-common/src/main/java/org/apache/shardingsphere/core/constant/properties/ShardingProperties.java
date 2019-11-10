@@ -62,8 +62,6 @@ public final class ShardingProperties {
                 errorMessages.add(getErrorMessage(shardingPropertiesConstant, value));
             } else if (type == int.class && !StringUtil.isIntValue(value)) {
                 errorMessages.add(getErrorMessage(shardingPropertiesConstant, value));
-            } else if (type == long.class && !StringUtil.isLongValue(value)) {
-                errorMessages.add(getErrorMessage(shardingPropertiesConstant, value));
             }
         }
         if (!errorMessages.isEmpty()) {

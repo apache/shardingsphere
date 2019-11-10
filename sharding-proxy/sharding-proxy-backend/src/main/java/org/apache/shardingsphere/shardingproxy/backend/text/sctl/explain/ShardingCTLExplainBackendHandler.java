@@ -60,8 +60,8 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
         StatementExecutorWrapper statementExecutorWrapper = new StatementExecutorWrapper(backendConnection.getLogicSchema());
         routeUnits = statementExecutorWrapper.route(explainStatement.get().getSql()).getRouteUnits().iterator();
         queryHeaders = new ArrayList<>(2);
-        queryHeaders.add(new QueryHeader("", "", "datasource_name", "", 255, Types.CHAR, 0));
-        queryHeaders.add(new QueryHeader("", "", "sql", "", 255, Types.CHAR, 0));
+        queryHeaders.add(new QueryHeader("", "", "datasource_name", "", 255, Types.CHAR, 0, false, false, false, false));
+        queryHeaders.add(new QueryHeader("", "", "sql", "", 255, Types.CHAR, 0, false, false, false, false));
         return new QueryResponse(queryHeaders);
     }
     

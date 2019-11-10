@@ -181,4 +181,18 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
             assertThat(count - 1, is(resultSetCount));
         }
     }
+    
+    @Test(expected = SQLException.class)
+    public void assertQueryWithNull() throws SQLException {
+        try (Statement statement = getEncryptConnection().createStatement()) {
+            statement.executeQuery(null);
+        }
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertQueryWithEmptyString() throws SQLException {
+        try (Statement statement = getEncryptConnection().createStatement()) {
+            statement.executeQuery("");
+        }
+    }
 }

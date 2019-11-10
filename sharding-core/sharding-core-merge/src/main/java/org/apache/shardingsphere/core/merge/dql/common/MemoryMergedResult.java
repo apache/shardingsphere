@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.merge.dql.common;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.merge.MergedResult;
-import org.apache.shardingsphere.core.parse.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 import java.io.InputStream;
 import java.io.Reader;

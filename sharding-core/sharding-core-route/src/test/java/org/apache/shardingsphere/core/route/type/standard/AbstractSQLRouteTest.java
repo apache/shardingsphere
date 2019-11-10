@@ -23,11 +23,12 @@ import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.SQLParseEngine;
+import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,7 +45,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     protected final SQLRouteResult assertRoute(final String sql, final List<Object> parameters) {
         ShardingRule shardingRule = createAllShardingRule();
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildTableMetas());
-        SQLParseEngine parseEngine = new SQLParseEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
+        SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine("MySQL");
         PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(sql, shardingRule, metaData, parseEngine);
         SQLRouteResult result = engine.route(parameters);
         assertThat(result.getRoutingResult().getRoutingUnits().size(), is(1));
@@ -61,13 +62,16 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     
     private TableMetas buildTableMetas() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
-        tableMetaDataMap.put("t_order", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true), new ColumnMetaData("user_id", "int", false), 
-                        new ColumnMetaData("status", "int", false)), Collections.<String>emptySet()));
-        tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true), new ColumnMetaData("order_id", "int", false),
-                new ColumnMetaData("user_id", "int", false), new ColumnMetaData("status", "varchar", false), 
-                new ColumnMetaData("c_date", "timestamp", false)), Collections.<String>emptySet()));
-        tableMetaDataMap.put("t_other", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true)), Collections.<String>emptySet()));
-        tableMetaDataMap.put("t_category", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true)), Collections.<String>emptySet()));
+        tableMetaDataMap.put("t_order", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true, true, true), 
+                new ColumnMetaData("user_id", "int", false, false, false), 
+                new ColumnMetaData("status", "int", false, false, false)), Collections.<String>emptySet()));
+        tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true, true, true), 
+                new ColumnMetaData("order_id", "int", false, false, false),
+                new ColumnMetaData("user_id", "int", false, false, false), 
+                new ColumnMetaData("status", "varchar", false, false, false), 
+                new ColumnMetaData("c_date", "timestamp", false, false, false)), Collections.<String>emptySet()));
+        tableMetaDataMap.put("t_other", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true, true, true)), Collections.<String>emptySet()));
+        tableMetaDataMap.put("t_category", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true, true, true)), Collections.<String>emptySet()));
         return new TableMetas(tableMetaDataMap);
     }
 }

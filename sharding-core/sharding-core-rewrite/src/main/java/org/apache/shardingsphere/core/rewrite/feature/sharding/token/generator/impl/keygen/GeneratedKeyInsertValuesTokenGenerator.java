@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.expression.DerivedLiteralExpressionSegment;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.expression.DerivedParameterMarkerExpressionSegment;

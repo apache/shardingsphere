@@ -20,11 +20,12 @@ package org.apache.shardingsphere.core.preprocessor.statement.impl;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.InsertValueContext;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -56,6 +57,15 @@ public final class InsertSQLStatementContext extends CommonSQLStatementContext {
             parametersOffset += insertValueContext.getParametersCount();
         }
         return result;
+    }
+    
+    /**
+     * Get column names for descending order.
+     * 
+     * @return column names for descending order
+     */
+    public Iterator<String> getDescendingColumnNames() {
+        return new LinkedList<>(columnNames).descendingIterator();
     }
     
     /**

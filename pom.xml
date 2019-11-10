@@ -30,6 +30,10 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>shardingsphere-spi</module>
+        
+        <module>shardingsphere-sql-parser</module>
+        
         <module>sharding-core</module>
         
         <module>sharding-jdbc</module>
@@ -510,6 +514,11 @@
                     <version>${maven-resources-plugin.version}</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.version}</version>
+                </plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>${maven-jar-plugin.version}</version>
@@ -718,7 +727,7 @@
                             <ignoreMethodAnnotation>lombok.Generated</ignoreMethodAnnotation>
                         </ignoreMethodAnnotations>
                         <excludes>
-                            <exclude>org/apache/shardingsphere/core/parse/autogen/*.class</exclude>
+                            <exclude>org/apache/shardingsphere/sql/parser/autogen/*.class</exclude>
                             <exclude>org/apache/shardingsphere/orchestration/reg/zookeeper/*.class</exclude>
                             <exclude>org/apache/shardingsphere/**/*Test.class</exclude>
                             <exclude>org/apache/shardingsphere/**/Test*.class</exclude>
@@ -787,6 +796,12 @@
                         <exclude>**/.eslintignore</exclude>
                         <exclude>**/package.json</exclude>
                         <exclude>**/assets/**</exclude>
+                        <exclude>/dist/**</exclude>
+                        <exclude>/etc/**</exclude>
+                        <exclude>/node/**</exclude>
+                        <exclude>/node_modules/**</exclude>
+                        <exclude>/test/coverage/**</exclude>
+                        <exclude>**/package-lock.json</exclude>
                     </excludes>
                 </configuration>
                 <executions>

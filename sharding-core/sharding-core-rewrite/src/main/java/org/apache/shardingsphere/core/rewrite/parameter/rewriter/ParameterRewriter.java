@@ -30,6 +30,14 @@ import java.util.List;
 public interface ParameterRewriter {
     
     /**
+     * Judge whether need rewrite.
+     *
+     * @param sqlStatementContext SQL statement context
+     * @return is need rewrite or not
+     */
+    boolean isNeedRewrite(SQLStatementContext sqlStatementContext);
+    
+    /**
      * Rewrite SQL parameters.
      * 
      * @param parameterBuilder parameter builder

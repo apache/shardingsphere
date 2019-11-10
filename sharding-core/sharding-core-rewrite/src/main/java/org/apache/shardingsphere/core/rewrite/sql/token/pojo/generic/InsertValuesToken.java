@@ -19,10 +19,10 @@ package org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.ComplexExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.ComplexExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Alterable;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
@@ -51,19 +51,6 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
         super(startIndex);
         this.stopIndex = stopIndex;
         insertValueTokens = new LinkedList<>();
-    }
-    
-    /**
-     * Add insert value.
-     * 
-     * @param values values
-     * @param dataNodes data nodes
-     * @return Insert value token
-     */
-    public InsertValueToken addInsertValue(final List<ExpressionSegment> values, final Collection<DataNode> dataNodes) {
-        InsertValueToken result = new InsertValueToken(values, dataNodes);
-        insertValueTokens.add(result);
-        return result;
     }
     
     @Override
@@ -96,12 +83,12 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
     
     @RequiredArgsConstructor
     @Getter
-    public final class InsertValueToken {
-    
+    public static final class InsertValueToken {
+        
         private final List<ExpressionSegment> values;
         
         private final Collection<DataNode> dataNodes;
-    
+        
         @Override
         public String toString() {
             StringBuilder result = new StringBuilder();

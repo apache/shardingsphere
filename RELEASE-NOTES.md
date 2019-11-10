@@ -1,3 +1,34 @@
+## 4.0.0.RC3
+
+### New Features
+
+1. Sharding-UI, an orchestration management platform for ShardingSphere comes online.
+1. Not only SQLs from MySQL, PostgreSQL, SQLServer, Oracle, but any SQL92 Syntax can be parsed correctly and used in ShardingSphere.
+
+### Enhancement
+
+1. Support using less-than character(<) and greater-than character(>) for sharding data.
+1. When master and slave dataSources exist, support executing `SELECT FOR UPDATE` on master dataSource.
+1. Support hint in Sharding-Proxy.
+1. Finish parsing DAL syntax for MySQL.
+1. Make configuration of orchestration compatible between Sharding-JDBC and Sharding-Proxy.
+
+### Bug Fixes
+
+1. Through Bug fix, the feature of encryption becomes much stable and applicable.
+1. Support delete statement with alias.
+1. Check and disable updating sharding column.
+1. Fix wrong type of TINYINT and SMALLINT as INTEGER.
+
+### Refactor
+
+1. Rename optimized module to preprocessor module.
+1. Decouple rewrite core module and sharding/encrypt features.
+
+### Change Logs
+
+1. [MILESTONE](https://github.com/apache/incubator-shardingsphere/milestone/8)
+
 ## 4.0.0.RC2
 
 ### API Changes
