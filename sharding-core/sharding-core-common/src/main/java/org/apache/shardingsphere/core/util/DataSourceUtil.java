@@ -9,8 +9,9 @@ import org.apache.shardingsphere.core.exception.UnrecognizeDatasourceInfoExcepti
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceInfo;
 
 public class DataSourceUtil {
+    
     /**
-     * get DataSourceInfo
+     * get DataSourceInfo.
      * 
      * @param dataSource is user configuration
      * @return DataSourceInfo
