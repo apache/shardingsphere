@@ -15,26 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.center.configuration;
+package org.apache.shardingsphere.orchestration.center.yaml.config;
 
-import java.util.Map;
+import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
 /**
- * Config center configuration.
+ * Orchestration instance configuration for YAML.
  *
  * @author zhangliang
- * @author sunbufu
  * @author dongzonglei
  * @author wangguangyuan
+ * @author sunbufu
  */
 @Getter
 @Setter
-public final class OrchestrationConfiguration {
+public class YamlInstanceConfiguration implements YamlConfiguration {
     
-    /**
-     * Instance configuration map.
-     */
-    private Map<String, InstanceConfiguration> instanceConfigurationMap;
+    private String orchestrationType;
+    
+    private String instanceType;
+    
+    private String serverLists;
+    
+    private String namespace;
+    
+    private Properties props = new Properties();
 }

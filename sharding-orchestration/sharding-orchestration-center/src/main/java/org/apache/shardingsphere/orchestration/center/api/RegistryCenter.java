@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.center.api;
 
-import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 import org.apache.shardingsphere.spi.TypeBasedSPI;
 
@@ -39,7 +39,7 @@ public interface RegistryCenter extends TypeBasedSPI {
      * 
      * @param config registry center configuration
      */
-    void init(OrchestrationConfiguration config);
+    void init(InstanceConfiguration config);
     
     /**
      * Get data from registry center.
