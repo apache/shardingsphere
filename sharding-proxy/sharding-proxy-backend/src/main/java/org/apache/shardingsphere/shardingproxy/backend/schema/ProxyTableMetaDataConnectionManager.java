@@ -42,7 +42,7 @@ public final class ProxyTableMetaDataConnectionManager implements TableMetaDataC
     }
 
     @Override
-    public DataSource getDataSource(String dataSourceName) throws SQLException {
+    public DataSource getDataSource(final String dataSourceName) throws SQLException {
         return null;
     }
 }
