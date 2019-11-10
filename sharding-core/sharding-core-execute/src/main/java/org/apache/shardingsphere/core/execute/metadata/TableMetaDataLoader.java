@@ -103,12 +103,12 @@ public final class TableMetaDataLoader {
                 DataSourceMetaData dataSourceMetaData = TableMetaDataLoader.this.dataSourceMetas.getDataSourceMetaData(dataSourceName);
                 String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemaName();
                 String schema = null;
-                if(dataSourceMetaData!=null && dataSourceMetaData.getClass().isAssignableFrom(OracleDataSourceMetaData.class)) {
+                if (dataSourceMetaData != null && dataSourceMetaData.getClass().isAssignableFrom(OracleDataSourceMetaData.class)) {
                     DataSourceInfo sourceInfo = DataSourceUtil.getDataSourceInfo(connectionManager.getDataSource(dataSourceName));
                     schema = sourceInfo.getUsername();
                 }
                 return load(shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(dataSourceName), 
-                        catalog, schema,logicTableName, dataNodes, generateKeyColumnName, shardingRule.getEncryptRule());
+                        catalog, schema, logicTableName, dataNodes, generateKeyColumnName, shardingRule.getEncryptRule());
             }
         });
     }
@@ -153,7 +153,7 @@ public final class TableMetaDataLoader {
             final String logicTableName, final String actualTableName, final String generateKeyColumnName, final EncryptRule encryptRule) throws SQLException {
         if (isTableExist(connection, catalog, actualTableName)) {
             return new TableMetaData(
-                    getColumnMetaDataList(connection, catalog, logicTableName, actualTableName, generateKeyColumnName, encryptRule), getLogicIndexes(connection, catalog,schema, actualTableName));
+                    getColumnMetaDataList(connection, catalog, logicTableName, actualTableName, generateKeyColumnName, encryptRule), getLogicIndexes(connection, catalog, schema, actualTableName));
         }
         return new TableMetaData(Collections.<ColumnMetaData>emptyList(), Collections.<String>emptySet());
     }
@@ -176,7 +176,7 @@ public final class TableMetaDataLoader {
                 boolean isPrimaryKey = primaryKeys.contains(columnName);
                 boolean isNotNull = isPrimaryKey || !resultSet.getString(IS_NULLABLE).equalsIgnoreCase("YES");
                 String autoIncrement = resultSet.getString(IS_AUTOINCREMENT);
-                boolean isAutoIncrement = autoIncrement.equalsIgnoreCase("YES");
+                boolean isAutoIncrement = "YES".equalsIgnoreCase(autoIncrement);
                 Optional<ColumnMetaData> columnMetaData = getColumnMetaData(logicTableName, columnName, columnType, isPrimaryKey,
                         isNotNull, isAutoIncrement, generateKeyColumnName, encryptRule, derivedColumns);
                 if (columnMetaData.isPresent()) {
@@ -215,7 +215,7 @@ public final class TableMetaDataLoader {
         return Optional.of(new ColumnMetaData(columnName, columnType, isPrimaryKey, isNotNull, isAutoIncrement));
     }
 
-    private Collection<String> getLogicIndexes(final Connection connection, final String catalog,final String schema, final String actualTableName) throws SQLException {
+    private Collection<String> getLogicIndexes(final Connection connection, final String catalog, final String schema, final String actualTableName) throws SQLException {
         Collection<String> result = new HashSet<>();
         try (ResultSet resultSet = connection.getMetaData().getIndexInfo(catalog, schema, actualTableName, false, false)) {
             while (resultSet.next()) {
@@ -229,7 +229,7 @@ public final class TableMetaDataLoader {
     }
 
     private Optional<String> getLogicIndex(final String actualIndexName, final String actualTableName) {
-        if(null == actualIndexName) {
+        if (null == actualIndexName) {
             Optional.absent();
         }
         String indexNameSuffix = "_" + actualTableName;

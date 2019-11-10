@@ -38,5 +38,12 @@ public interface TableMetaDataConnectionManager {
      */
     Connection getConnection(String dataSourceName) throws SQLException;
     
-    public DataSource getDataSource(final String dataSourceName) throws SQLException;
+    /**
+     * Get dataSource.
+     * 
+     * @param dataSourceName data source name
+     * @return dataSource
+     * @throws SQLException SQL exception
+     */
+    DataSource getDataSource(String dataSourceName) throws SQLException;
 }
