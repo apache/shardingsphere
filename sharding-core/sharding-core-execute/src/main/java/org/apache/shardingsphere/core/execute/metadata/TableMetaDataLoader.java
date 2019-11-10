@@ -210,7 +210,7 @@ public final class TableMetaDataLoader {
         Collection<String> result = new HashSet<>();
         String databaseTypeNm = this.dataSourceMetas.getDatabaseType().getName();
         ResultSet resultSet = null;
-        if (!StringUtil.isEmpty(databaseTypeNm) && databaseTypeNm.equals("Oracle")) {
+        if (!StringUtil.isEmpty(databaseTypeNm) && "Oracle".equals(databaseTypeNm)) {
             String userName = connection.getMetaData().getUserName().toUpperCase();
             resultSet = connection.getMetaData().getIndexInfo(catalog, userName, actualTableName, false, false);
         } else {

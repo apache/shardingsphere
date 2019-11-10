@@ -91,6 +91,11 @@ public final class DataSourceMetas {
         return dataSourceMetaDataMap.get(dataSourceName);
     }
 
+    /**
+     * Get database type.
+     *
+     * @return DatabaseType database type info
+     */
     public DatabaseType getDatabaseType() {
         return databaseType;
     }

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 
@@ -112,8 +111,8 @@ public class TableMetaDataInitializerTest {
     @Test
     public void assertShardingTablesCount() throws SQLException {
         Map<String, TableMetaData> tableMetas = tableMetaDataInitializer.load(shardingRule);
-        TableMetaData TableMetaData = tableMetas.get("test_table");
-        assertThat(TableMetaData.getIndexes().size(), is(0));
-        assertThat(TableMetaData.getIndexes().size(), is(0));
+        TableMetaData tableMetaData = tableMetas.get("test_table");
+        assertThat(tableMetaData.getIndexes().size(), is(0));
+        assertThat(tableMetaData.getIndexes().size(), is(0));
     }
 }
