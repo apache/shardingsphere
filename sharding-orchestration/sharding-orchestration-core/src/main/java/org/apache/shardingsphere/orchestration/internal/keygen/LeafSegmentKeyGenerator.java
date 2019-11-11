@@ -81,7 +81,7 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
         if (null == leafRegistryCenter) {
             initLeafSegmentKeyGenerator(leafKey);
         } else {
-            increaseIdWhenLeafKeyStoredInCenter(leafKey);       
+            increaseIdWhenLeafKeyStoredInCenter(leafKey);
         }
         return id;
     }
@@ -92,7 +92,7 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
         step = getStep();
         id = initializeId(leafKey);
         initializeLeafKeyInCenter(leafKey, id, step);
-        initializeCacheIdAsynchronous(id, step);    
+        initializeCacheIdAsynchronous(id, step);
     }
     
     private void increaseIdWhenLeafKeyStoredInCenter(final String leafKey) {
@@ -119,7 +119,7 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
         leafRegistryCenter.persist(leafKey, String.valueOf(id + step - id % step));
         leafRegistryCenter.tryRelease();
     }
-
+    
     private void initializeCacheIdAsynchronous(final long id, final long step) {
         incrementCacheIdExecutor.execute(new Runnable() {
 
