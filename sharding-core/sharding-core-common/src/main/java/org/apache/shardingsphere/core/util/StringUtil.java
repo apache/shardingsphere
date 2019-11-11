@@ -27,20 +27,20 @@ import lombok.AllArgsConstructor;
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StringUtil {
-
+    
     /**
      * Judge is boolean value or not.
-     *
+     * 
      * @param value to be judged string value
      * @return is boolean value or not
      */
     public static boolean isBooleanValue(final String value) {
         return Boolean.TRUE.toString().equalsIgnoreCase(value) || Boolean.FALSE.toString().equalsIgnoreCase(value);
     }
-
+    
     /**
      * Judge is int value or not.
-     *
+     * 
      * @param value to be judged string value
      * @return is int value or not
      */
@@ -52,7 +52,7 @@ public final class StringUtil {
             return false;
         }
     }
-
+    
     /**
      * Judge is long value or not.
      *
@@ -67,7 +67,7 @@ public final class StringUtil {
             return false;
         }
     }
-
+    
     /**
      * Judge string is empty or not.
      *

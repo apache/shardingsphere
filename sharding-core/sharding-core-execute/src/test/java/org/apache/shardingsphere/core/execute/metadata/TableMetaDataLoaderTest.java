@@ -43,11 +43,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class TableMetaDataLoaderTest {
-
+    
     private TableMetaDataLoader tableMetaDataLoader;
-
+    
     private ShardingRule shardingRule;
-
+    
     @Before
     public void setUp() {
         shardingRule = createShardingRule();
@@ -55,7 +55,7 @@ public class TableMetaDataLoaderTest {
         DataSourceMetas dataSourceMetas = buildDataSourceMetas();
         tableMetaDataLoader = new TableMetaDataLoader(dataSourceMetas, executeEngine, getConnectionManager(), 1, false);
     }
-
+    
     private TableMetaDataConnectionManager getConnectionManager() {
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
@@ -84,29 +84,29 @@ public class TableMetaDataLoaderTest {
         }
         return connectionManager;
     }
-
+    
     private DataSourceMetas buildDataSourceMetas() {
         Map<String, String> shardingDataSourceURLs = new LinkedHashMap<>();
         shardingDataSourceURLs.put("ds_0", "jdbc:mysql://localhost:3306/ds_0");
         shardingDataSourceURLs.put("ds_1", "jdbc:mysql://localhost:3306/ds_1");
         return new DataSourceMetas(shardingDataSourceURLs, DatabaseTypes.getActualDatabaseType("MySQL"));
     }
-
+    
     private ShardingRule createShardingRule() {
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfiguration = createTableRuleConfiguration("TEST_TABLE", "ds_${0..1}.test_table_${0..2}");
         shardingRuleConfiguration.getTableRuleConfigs().add(tableRuleConfiguration);
         return new ShardingRule(shardingRuleConfiguration, createDataSourceNames());
     }
-
+    
     private TableRuleConfiguration createTableRuleConfiguration(final String logicTableName, final String actualDataNodes) {
         return new TableRuleConfiguration(logicTableName, actualDataNodes);
     }
-
+    
     private Collection<String> createDataSourceNames() {
         return Arrays.asList("ds_0", "ds_1");
     }
-
+    
     @Test
     public void assertLogicIndexes() throws SQLException {
         TableMetaData tableMetaData = tableMetaDataLoader.load("TEST_TABLE", shardingRule);
