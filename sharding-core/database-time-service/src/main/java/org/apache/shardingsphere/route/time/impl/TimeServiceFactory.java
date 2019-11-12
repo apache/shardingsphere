@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.route.time.impl;
 
 import org.apache.shardingsphere.core.route.spi.TimeService;
-import org.apache.shardingsphere.route.time.TimeServiceConfig;
+import org.apache.shardingsphere.route.time.TimeServiceConfiguration;
 import org.apache.shardingsphere.route.time.spi.SPIDataBaseSQLEntry;
 
 /**
@@ -29,12 +29,12 @@ import org.apache.shardingsphere.route.time.spi.SPIDataBaseSQLEntry;
 public final class TimeServiceFactory {
 
     /**
-     * create a TimeService by {@link TimeServiceConfig}.
+     * create a TimeService by {@link TimeServiceConfiguration}.
      *
      * @return TimeService
      */
     public static TimeService createTimeService() {
-        TimeServiceConfig config = TimeServiceConfig.getInstance();
-        return new DatabaseTimeService(config.getDataSource(), new SPIDataBaseSQLEntry(config.getDriverClassName()).getSQL());
+        TimeServiceConfiguration timeServiceConfiguration = TimeServiceConfiguration.getInstance();
+        return new DatabaseTimeService(timeServiceConfiguration.getDataSource(), new SPIDataBaseSQLEntry(timeServiceConfiguration.getDriverClassName()).getSQL());
     }
 }

@@ -30,48 +30,51 @@ import java.lang.reflect.Method;
 import java.util.Properties;
 
 /**
- * Time service config.
+ * Time service configuration.
+ * 
+ * <p>
  * Need to create a time-service.properties under the classpath.
- *
+ * </p>
+ * 
  * @author chenchuangliu
  */
-public final class TimeServiceConfig {
-
-    private static final TimeServiceConfig CONFIG = new TimeServiceConfig();
-
-    @Getter
+@Getter
+public final class TimeServiceConfiguration {
+    
+    private static final TimeServiceConfiguration CONFIG = new TimeServiceConfiguration();
+    
     private String driverClassName;
-
-    @Getter
+    
     private DataSource dataSource;
-
-    private TimeServiceConfig() {
+    
+    private TimeServiceConfiguration() {
         init();
     }
-
+    
     private void init() {
-        try (InputStream inputStream = TimeServiceConfig.class.getResourceAsStream("/time-service.properties")) {
+        try (InputStream inputStream = TimeServiceConfiguration.class.getResourceAsStream("/time-service.properties")) {
             Properties properties = new Properties();
             properties.load(inputStream);
             String dataSourceType = (String) properties.remove("dataSourceType");
-            this.driverClassName = (String) properties.get("driverClassName");
+            driverClassName = (String) properties.get("driverClassName");
             Class dataSourceClass = Class.forName(dataSourceType);
-            this.dataSource = (DataSource) dataSourceClass.newInstance();
+            dataSource = (DataSource) dataSourceClass.newInstance();
             for (String each : properties.stringPropertyNames()) {
                 PropertyDescriptor propertyDescriptor = new PropertyDescriptor(each, dataSourceClass);
                 Method writeMethod = propertyDescriptor.getWriteMethod();
                 writeMethod.invoke(dataSource, properties.getProperty(each));
             }
-        } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException | IntrospectionException | InvocationTargetException | IOException e) {
-            throw new TimeServiceInitException("please check your time-service.properties", e);
+        } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException | IntrospectionException | InvocationTargetException | IOException ex) {
+            throw new TimeServiceInitException("please check your time-service.properties", ex);
         }
     }
 
     /**
-     * Get TimeServiceConfig instance.
-     * @return TimeServiceConfig
+     * Get configuration instance.
+     * 
+     * @return time service configuration
      */
-    public static TimeServiceConfig getInstance() {
+    public static TimeServiceConfiguration getInstance() {
         return CONFIG;
     }
 }

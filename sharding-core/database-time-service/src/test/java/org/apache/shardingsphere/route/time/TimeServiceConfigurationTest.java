@@ -17,16 +17,18 @@
 
 package org.apache.shardingsphere.route.time;
 
-import org.junit.Assert;
 import org.junit.Test;
 
-public final class TimeServiceConfigTest {
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+public final class TimeServiceConfigurationTest {
+    
     @Test
     public void assertInitDataSource() {
         PropertiesUtils.createProperties("com.mysql.jdbc.Driver", null);
-        TimeServiceConfig config = TimeServiceConfig.getInstance();
-        Assert.assertNotNull(config.getDataSource());
-        Assert.assertTrue(PropertiesUtils.remove());
+        TimeServiceConfiguration config = TimeServiceConfiguration.getInstance();
+        assertNotNull(config.getDataSource());
+        assertTrue(PropertiesUtils.remove());
     }
 }
