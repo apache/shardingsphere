@@ -150,10 +150,38 @@ public final class SnowflakeShardingKeyGeneratorTest {
     }
     
     @Test(expected = IllegalArgumentException.class)
+    public void assertSetMaxVibrationOffsetFailureWhenNegative() {
+        SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
+        Properties properties = new Properties();
+        properties.setProperty("max.vibration.offset", String.valueOf(0));
+        keyGenerator.setProperties(properties);
+        keyGenerator.generateKey();
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenTooMuch() {
         SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         Properties properties = new Properties();
         properties.setProperty("worker.id", String.valueOf(Long.MIN_VALUE));
+        keyGenerator.setProperties(properties);
+        keyGenerator.generateKey();
+    }
+    
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertSetMaxVibrationOffsetFailureWhenTooMuch() {
+        SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
+        Properties properties = new Properties();
+        properties.setProperty("max.vibration.offset", String.valueOf(4096));
+        keyGenerator.setProperties(properties);
+        keyGenerator.generateKey();
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertSetMaxVibrationOffsetFailureWhenNPowerOf2() {
+        SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
+        Properties properties = new Properties();
+        properties.setProperty("max.vibration.offset", String.valueOf(2));
         keyGenerator.setProperties(properties);
         keyGenerator.generateKey();
     }
@@ -180,5 +208,17 @@ public final class SnowflakeShardingKeyGeneratorTest {
         Field props = keyGenerator.getClass().getDeclaredField("properties");
         props.setAccessible(true);
         assertThat(((Properties) props.get(keyGenerator)).get("max.tolerate.time.difference.milliseconds"), is((Object) "1"));
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertSetMaxVibrationOffsetSuccess() {
+        SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
+        Properties properties = new Properties();
+        properties.setProperty("max.vibration.offset", String.valueOf(1));
+        keyGenerator.setProperties(properties);
+        Field props = keyGenerator.getClass().getDeclaredField("properties");
+        props.setAccessible(true);
+        assertThat(((Properties) props.get(keyGenerator)).get("max.vibration.offset"), is((Object) "1"));
     }
 }
