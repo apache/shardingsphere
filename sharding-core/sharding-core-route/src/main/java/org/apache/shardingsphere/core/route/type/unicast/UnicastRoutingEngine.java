@@ -63,6 +63,7 @@ public final class UnicastRoutingEngine implements RoutingEngine {
         } else if (1 == logicTables.size()) {
             String logicTableName = logicTables.iterator().next();
             if (!shardingRule.findTableRule(logicTableName).isPresent()) {
+                result.getRoutingUnits().add(new RoutingUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName()));
                 return result;
             }
             DataNode dataNode = shardingRule.getDataNode(logicTableName);

@@ -81,7 +81,7 @@ public final class RoutingEngineFactory {
             return getDCLRoutingEngine(shardingRule, sqlStatementContext, metaData);
         }
         if (shardingRule.isAllInDefaultDataSource(tableNames)) {
-            return new DefaultDatabaseRoutingEngine(shardingRule, tableNames);
+            return getDefaultRoutingEngine(shardingRule, tableNames);
         }
         if (shardingRule.isAllBroadcastTables(tableNames)) {
             return sqlStatement instanceof SelectStatement ? new UnicastRoutingEngine(shardingRule, tableNames) : new DatabaseBroadcastRoutingEngine(shardingRule);
@@ -115,6 +115,10 @@ public final class RoutingEngineFactory {
     
     private static boolean isGrantForSingleTable(final SQLStatementContext sqlStatementContext) {
         return !sqlStatementContext.getTablesContext().isEmpty() && !"*".equals(sqlStatementContext.getTablesContext().getSingleTableName());
+    }
+    
+    private static RoutingEngine getDefaultRoutingEngine(final ShardingRule shardingRule, final Collection<String> tableNames) {
+        return shardingRule.hasDefaultDataSourceName() ? new DefaultDatabaseRoutingEngine(shardingRule, tableNames) : new UnicastRoutingEngine(shardingRule, tableNames);
     }
     
     private static RoutingEngine getShardingRoutingEngine(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, 
