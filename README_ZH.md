@@ -139,32 +139,5 @@ sharding-distribution/shardingsphere-src-distribution/target/apache-shardingsphe
 ShardingSphere丰富了<a href="https://landscape.cncf.io/landscape=observability-and-analysis&license=apache-license-2-0">CNCF CLOUD NATIVE Landscape</a>。
 </p>
 
-## 谁在使用ShardingSphere?
-
-数以百计的公司和组织将ShardingSphere用于研究，生产和商业产品。包括
-
-1. 58同城
-2. 哔哩哔哩弹幕网
-3. 携程网
-4. 当当
-5. 斗鱼TV
-6. 海康威视
-7. 科大讯飞
-8. 爱奇艺
-9. 京东金融
-10. 京东商城俄文站
-11. 京东大数据与智能供应链
-12. 京东云
-13. 京东金融云
-14. 京东商城海外站
-15. Oppo
-16. 搜狐资讯
-17. TCL
-18. Vivo
-19. 转转
-20. 中通快递
-
-[PoweredBy](https://shardingsphere.apache.org/community/cn/poweredby/)页面包含该项目的更多用户。 鼓励用户将自己添加到那里。
-
 # License
 [Apache 2.0 License.](/LICENSE)

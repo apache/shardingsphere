@@ -141,33 +141,5 @@ sharding-distribution/shardingsphere-src-distribution/target/apache-shardingsphe
 ShardingSphere enriches the <a href="https://landscape.cncf.io/landscape=observability-and-analysis&license=apache-license-2-0">CNCF CLOUD NATIVE Landscape</a>.
 </p>
 
-## Who uses ShardingSphere?
-
-Hundreds of companies and organizations use SkyWalking for research, production, and commercial product. Including
-
-1. 58
-2. Blibili
-3. CTrip
-4. Dangdang
-5. DouYuTV
-6. Hikvision
-7. Iflytek
-8. Iqiyi
-9. JD Finance
-10. JD.ru
-11. JD’s Big Data and Intelligent Supply Chain Department
-12. JDCloud
-13. JDFCloud
-14. Joybuy
-15. Oppo
-16. Souhu
-17. TCL
-18. Vivo
-19. Zhuanzhuan
-20. ZTO Express
-
-The [PoweredBy](https://shardingsphere.apache.org/community/en/poweredby/) page includes more users of the project. Users are encouraged to add themselves to there.
-
-
 # License
 [Apache 2.0 License.](/LICENSE)
