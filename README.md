@@ -138,8 +138,5 @@ sharding-distribution/shardingsphere-src-distribution/target/apache-shardingsphe
 <br/><br/>
 <img src="https://landscape.cncf.io/images/left-logo.svg" width="150"/>&nbsp;&nbsp;<img src="https://landscape.cncf.io/images/right-logo.svg" width="200"/>
 <br/><br/>
-ShardingSphere enriches the <a href="https://landscape.cncf.io/landscape=observability-and-analysis&license=apache-license-2-0">CNCF CLOUD NATIVE Landscape</a>.
+ShardingSphere enriches the <a href="https://landscape.cncf.io/landscape=observability-and-analysis&license=apache-license-2-0">CNCF</a> CLOUD NATIVE Landscape.
 </p>
-
-# License
-[Apache 2.0 License.](/LICENSE)
