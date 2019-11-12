@@ -27,24 +27,24 @@ export const constantRouterMap = [
   },
   {
     path: '/registry-center',
-    component: () => import('@/views/registry-center/index'),
+    component: () => import('@/views/registry-center'),
     hidden: true,
     name: 'Registry center'
   },
   {
     path: '/login',
-    component: () => import('@/views/login/index'),
+    component: () => import('@/views/login'),
     hidden: true
   },
   {
     path: '/rule-config',
-    component: () => import('@/views/rule-config/index'),
+    component: () => import('@/views/rule-config'),
     hidden: true,
     name: 'Rule config'
   },
   {
     path: '/runtime-status',
-    component: () => import('@/views/runtime-status/index'),
+    component: () => import('@/views/runtime-status'),
     hidden: true,
     name: 'Runtime status'
   }
