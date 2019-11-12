@@ -18,15 +18,11 @@
 package org.apache.shardingsphere.route.time.exception;
 
 /**
- * TimeService init exception.
+ * No database SQL entry support.
  *
  * @author chenchuangliu
  */
-public final class TimeServiceInitException extends RuntimeException {
+public final class NoDatabaseSQLEntrySupportException extends RuntimeException {
 
-    private static final long serialVersionUID = -834638295454826244L;
-
-    public TimeServiceInitException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+    private static final long serialVersionUID = 2153295582601133739L;
 }

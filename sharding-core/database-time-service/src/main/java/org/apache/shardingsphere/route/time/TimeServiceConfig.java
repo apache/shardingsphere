@@ -15,70 +15,63 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.route.time.mysql;
+package org.apache.shardingsphere.route.time;
 
-import org.apache.shardingsphere.core.route.spi.TimeService;
+import lombok.Getter;
 import org.apache.shardingsphere.route.time.exception.TimeServiceInitException;
 
 import javax.sql.DataSource;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Date;
 import java.util.Properties;
 
 /**
- * MySQL time service.
- * Need to create a mysql-time-service.properties file under the classpath.
+ * Time service config.
+ * Need to create a time-service.properties under the classpath.
  *
  * @author chenchuangliu
  */
-public final class MySQLTimeService implements TimeService {
+public final class TimeServiceConfig {
 
-    private static DataSource dataSource;
+    private static final TimeServiceConfig CONFIG = new TimeServiceConfig();
 
-    static {
+    @Getter
+    private String driverClassName;
+
+    @Getter
+    private DataSource dataSource;
+
+    private TimeServiceConfig() {
         init();
     }
 
-    private static void init() {
-        try {
+    private void init() {
+        try (InputStream inputStream = TimeServiceConfig.class.getResourceAsStream("/time-service.properties")) {
             Properties properties = new Properties();
-            properties.load(MySQLTimeService.class.getResourceAsStream("/mysql-time-service.properties"));
-            if (properties.isEmpty()) {
-                return;
-            }
+            properties.load(inputStream);
             String dataSourceType = (String) properties.remove("dataSourceType");
+            this.driverClassName = (String) properties.get("driverClassName");
             Class dataSourceClass = Class.forName(dataSourceType);
-            DataSource dataSource = (DataSource) dataSourceClass.newInstance();
+            this.dataSource = (DataSource) dataSourceClass.newInstance();
             for (String each : properties.stringPropertyNames()) {
                 PropertyDescriptor propertyDescriptor = new PropertyDescriptor(each, dataSourceClass);
                 Method writeMethod = propertyDescriptor.getWriteMethod();
                 writeMethod.invoke(dataSource, properties.getProperty(each));
             }
-            MySQLTimeService.dataSource = dataSource;
-        } catch (final NullPointerException | IOException | ClassNotFoundException | InstantiationException | IllegalAccessException | InvocationTargetException | IntrospectionException e) {
-            throw new TimeServiceInitException("please check your mysql-time-service.properties", e);
+        } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException | IntrospectionException | InvocationTargetException | IOException e) {
+            throw new TimeServiceInitException("please check your time-service.properties", e);
         }
     }
 
-    @Override
-    public Date getTime() {
-        if (null != dataSource) {
-            try (Connection connection = dataSource.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement("select now()");
-                 ResultSet resultSet = preparedStatement.executeQuery()) {
-                resultSet.next();
-                return (Date) resultSet.getObject(1);
-            } catch (final SQLException ignore) {
-            }
-        }
-        return new Date();
+    /**
+     * Get TimeServiceConfig instance.
+     * @return TimeServiceConfig
+     */
+    public static TimeServiceConfig getInstance() {
+        return CONFIG;
     }
 }

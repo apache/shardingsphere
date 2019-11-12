@@ -15,18 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.route.time.exception;
+package org.apache.shardingsphere.route.time;
+
+import org.apache.shardingsphere.core.route.spi.TimeService;
+import org.apache.shardingsphere.route.time.impl.TimeServiceFactory;
+
+import java.util.Date;
 
 /**
- * TimeService init exception.
+ * Delegate database time service.
  *
  * @author chenchuangliu
  */
-public final class TimeServiceInitException extends RuntimeException {
+public final class DatabaseTimeServiceDelegate implements TimeService {
 
-    private static final long serialVersionUID = -834638295454826244L;
+    private static final TimeService TIME_SERVICE = TimeServiceFactory.createTimeService();
 
-    public TimeServiceInitException(final String message, final Throwable cause) {
-        super(message, cause);
+    @Override
+    public Date getTime() {
+        return TIME_SERVICE.getTime();
     }
 }
