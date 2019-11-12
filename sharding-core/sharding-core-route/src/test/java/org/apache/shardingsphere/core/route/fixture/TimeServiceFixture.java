@@ -23,12 +23,12 @@ import org.apache.shardingsphere.core.route.spi.TimeService;
 
 import java.util.Date;
 
+@Getter
+@Setter
 public final class TimeServiceFixture implements TimeService {
-
-    @Getter
-    @Setter
+    
     private Date date;
-
+    
     @Override
     public Date getTime() {
         return date;

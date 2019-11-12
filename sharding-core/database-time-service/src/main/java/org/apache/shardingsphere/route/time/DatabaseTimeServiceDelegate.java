@@ -28,9 +28,9 @@ import java.util.Date;
  * @author chenchuangliu
  */
 public final class DatabaseTimeServiceDelegate implements TimeService {
-
+    
     private static final TimeService TIME_SERVICE = TimeServiceFactory.createTimeService();
-
+    
     @Override
     public Date getTime() {
         return TIME_SERVICE.getTime();
