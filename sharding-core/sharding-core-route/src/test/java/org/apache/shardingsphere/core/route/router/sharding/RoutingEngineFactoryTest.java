@@ -152,6 +152,7 @@ public class RoutingEngineFactoryTest {
     @Test
     public void assertNewInstanceForDefaultDataSource() {
         when(shardingRule.isAllInDefaultDataSource(tableNames)).thenReturn(true);
+        when(shardingRule.hasDefaultDataSourceName()).thenReturn(true);
         SQLStatement sqlStatement = mock(SQLStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         RoutingEngine actual = RoutingEngineFactory.newInstance(shardingRule, shardingSphereMetaData, sqlStatementContext, shardingConditions);
