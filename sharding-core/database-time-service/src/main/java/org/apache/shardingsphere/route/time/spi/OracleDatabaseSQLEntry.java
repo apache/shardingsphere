@@ -23,12 +23,12 @@ package org.apache.shardingsphere.route.time.spi;
  * @author chenchuangliu
  */
 public final class OracleDatabaseSQLEntry implements DatabaseSQLEntry {
-
+    
     @Override
     public String getSQL() {
         return "SELECT sysdate FROM DUAL";
     }
-
+    
     @Override
     public boolean isSupport(final String driverClassName) {
         return driverClassName.contains("oracle");

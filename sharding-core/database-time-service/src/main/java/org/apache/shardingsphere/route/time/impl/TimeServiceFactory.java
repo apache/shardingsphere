@@ -22,16 +22,16 @@ import org.apache.shardingsphere.route.time.TimeServiceConfiguration;
 import org.apache.shardingsphere.route.time.spi.SPIDataBaseSQLEntry;
 
 /**
- * A Factory of creating TimeService.
+ * Time service factory.
  *
  * @author chenchuangliu
  */
 public final class TimeServiceFactory {
-
+    
     /**
-     * create a TimeService by {@link TimeServiceConfiguration}.
+     * Create time service by {@link TimeServiceConfiguration}.
      *
-     * @return TimeService
+     * @return time service instance
      */
     public static TimeService createTimeService() {
         TimeServiceConfiguration timeServiceConfiguration = TimeServiceConfiguration.getInstance();

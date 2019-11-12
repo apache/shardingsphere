@@ -23,12 +23,12 @@ package org.apache.shardingsphere.route.time.spi;
  * @author chenchuangliu
  */
 public final class MySQLDatabaseSQLEntry implements DatabaseSQLEntry {
-
+    
     @Override
     public String getSQL() {
         return "SELECT NOW()";
     }
-
+    
     @Override
     public boolean isSupport(final String driverClassName) {
         return driverClassName.contains("mysql") || driverClassName.contains("mariadb");
