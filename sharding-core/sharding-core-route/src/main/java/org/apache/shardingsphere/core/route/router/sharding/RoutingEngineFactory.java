@@ -81,7 +81,7 @@ public final class RoutingEngineFactory {
             return getDCLRoutingEngine(shardingRule, sqlStatementContext, metaData);
         }
         if (shardingRule.isAllInDefaultDataSource(tableNames)) {
-            return getDefaultRoutingEngine(shardingRule, tableNames);
+            return new DefaultDatabaseRoutingEngine(shardingRule, tableNames);
         }
         if (shardingRule.isAllBroadcastTables(tableNames)) {
             return sqlStatement instanceof SelectStatement ? new UnicastRoutingEngine(shardingRule, tableNames) : new DatabaseBroadcastRoutingEngine(shardingRule);
@@ -89,7 +89,7 @@ public final class RoutingEngineFactory {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && tableNames.isEmpty() && shardingRule.hasDefaultDataSourceName()) {
             return new DefaultDatabaseRoutingEngine(shardingRule, tableNames);
         }
-        if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty()) {
+        if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty() || !shardingRule.tableRuleExists(tableNames)) {
             return new UnicastRoutingEngine(shardingRule, tableNames);
         }
         return getShardingRoutingEngine(shardingRule, sqlStatementContext, shardingConditions, tableNames);
@@ -115,10 +115,6 @@ public final class RoutingEngineFactory {
     
     private static boolean isGrantForSingleTable(final SQLStatementContext sqlStatementContext) {
         return !sqlStatementContext.getTablesContext().isEmpty() && !"*".equals(sqlStatementContext.getTablesContext().getSingleTableName());
-    }
-    
-    private static RoutingEngine getDefaultRoutingEngine(final ShardingRule shardingRule, final Collection<String> tableNames) {
-        return shardingRule.hasDefaultDataSourceName() ? new DefaultDatabaseRoutingEngine(shardingRule, tableNames) : new UnicastRoutingEngine(shardingRule, tableNames);
     }
     
     private static RoutingEngine getShardingRoutingEngine(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, 
