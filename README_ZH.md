@@ -130,3 +130,12 @@ sharding-distribution/sharding-proxy-distribution/target/apache-shardingsphere-i
 sharding-distribution/sharding-ui-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-ui-bin.tar.gz: Sharding-UI的二进制包
 sharding-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-src.zip: ShardingSphere的源码包
 ```
+
+## 全景图
+
+<p align="center">
+<br/><br/>
+<img src="https://landscape.cncf.io/images/left-logo.svg" width="150"/>&nbsp;&nbsp;<img src="https://landscape.cncf.io/images/right-logo.svg" width="200"/>
+<br/><br/>
+ShardingSphere进入了<a href="https://landscape.cncf.io/landscape=observability-and-analysis&license=apache-license-2-0">CNCF云原生全景图。</a>
+</p>
