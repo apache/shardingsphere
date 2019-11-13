@@ -74,7 +74,7 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
             hostName = matcher.group(3);
             port = Strings.isNullOrEmpty(matcher.group(4)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(4));
             catalog = matcher.group(5);
-            schemaName = null;
+            schemaName = conn.getMetaData().getUserName();
         } catch (SQLException | UnrecognizedDatabaseURLException e) {
             throw new UnBuildDataSourceMetaException(e);
         }
