@@ -131,7 +131,7 @@ sharding-distribution/sharding-ui-distribution/target/apache-shardingsphere-incu
 sharding-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-src.zip: ShardingSphere的源码包
 ```
 
-## Landscapes
+## 全景图
 
 <p align="center">
 <br/><br/>
