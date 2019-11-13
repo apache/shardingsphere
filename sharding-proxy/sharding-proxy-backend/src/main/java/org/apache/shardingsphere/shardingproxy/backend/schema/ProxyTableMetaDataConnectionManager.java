@@ -24,8 +24,6 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.dataso
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.sql.DataSource;
-
 /**
  * Manager of connection which for table meta data loader of proxy.
  *
@@ -39,10 +37,5 @@ public final class ProxyTableMetaDataConnectionManager implements TableMetaDataC
     @Override
     public Connection getConnection(final String dataSourceName) throws SQLException {
         return backendDataSource.getConnection(dataSourceName);
-    }
-
-    @Override
-    public DataSource getDataSource(final String dataSourceName) throws SQLException {
-        return null;
     }
 }

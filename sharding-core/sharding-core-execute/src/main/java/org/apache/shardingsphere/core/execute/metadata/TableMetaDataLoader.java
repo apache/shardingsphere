@@ -17,28 +17,8 @@
 
 package org.apache.shardingsphere.core.execute.metadata;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
-import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
-import org.apache.shardingsphere.core.execute.ShardingGroupExecuteCallback;
-import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.core.metadata.column.EncryptColumnMetaData;
-import org.apache.shardingsphere.core.metadata.column.ShardingGeneratedKeyColumnMetaData;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceInfo;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.rule.DataNode;
-import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.core.util.DataSourceUtil;
-import org.apache.shardingsphere.spi.database.DataSourceMetaData;
-
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -48,6 +28,26 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
+import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
+import org.apache.shardingsphere.core.execute.ShardingGroupExecuteCallback;
+import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.core.metadata.column.EncryptColumnMetaData;
+import org.apache.shardingsphere.core.metadata.column.ShardingGeneratedKeyColumnMetaData;
+import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.rule.DataNode;
+import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
+
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Table meta data loader.
@@ -102,21 +102,22 @@ public final class TableMetaDataLoader {
                 String dataSourceName = dataNodes.iterator().next().getDataSourceName();
                 DataSourceMetaData dataSourceMetaData = TableMetaDataLoader.this.dataSourceMetas.getDataSourceMetaData(dataSourceName);
                 String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemaName();
-                String schema = null;
-                if (dataSourceMetaData != null && dataSourceMetaData.getClass().isAssignableFrom(OracleDataSourceMetaData.class)) {
-                    DataSourceInfo sourceInfo = DataSourceUtil.getDataSourceInfo(connectionManager.getDataSource(dataSourceName));
-                    schema = sourceInfo.getUsername();
-                }
                 return load(shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(dataSourceName), 
-                        catalog, schema, logicTableName, dataNodes, generateKeyColumnName, shardingRule.getEncryptRule());
+                        catalog, logicTableName, dataNodes, generateKeyColumnName, shardingRule.getEncryptRule());
             }
         });
     }
 
-    private Collection<TableMetaData> load(final String dataSourceName, final String catalog, final String schema,
+    private Collection<TableMetaData> load(final String dataSourceName, final String catalog,
             final String logicTableName, final Collection<DataNode> dataNodes, final String generateKeyColumnName, final EncryptRule encryptRule) throws SQLException {
         Collection<TableMetaData> result = new LinkedList<>();
         try (Connection connection = connectionManager.getConnection(dataSourceName)) {
+            DatabaseMetaData metaData = connection.getMetaData();
+            String databaseName = metaData.getDatabaseProductName();
+            String schema = null;
+            if (databaseName != null && "oracle".equalsIgnoreCase(databaseName)) {
+                schema = metaData.getUserName();
+            }
             for (DataNode each : dataNodes) {
                 result.add(createTableMetaData(connection, catalog, schema, logicTableName, each.getTableName(), generateKeyColumnName, encryptRule));
             }
@@ -230,7 +231,7 @@ public final class TableMetaDataLoader {
 
     private Optional<String> getLogicIndex(final String actualIndexName, final String actualTableName) {
         if (null == actualIndexName) {
-            Optional.absent();
+            return Optional.absent();
         }
         String indexNameSuffix = "_" + actualTableName;
         return actualIndexName.contains(indexNameSuffix) ? Optional.of(actualIndexName.replace(indexNameSuffix, "")) : Optional.<String>absent();

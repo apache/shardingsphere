@@ -20,8 +20,6 @@ package org.apache.shardingsphere.core.execute.metadata;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.sql.DataSource;
-
 /**
  * Manager of connection which for table meta data loader.
  *
@@ -38,12 +36,4 @@ public interface TableMetaDataConnectionManager {
      */
     Connection getConnection(String dataSourceName) throws SQLException;
     
-    /**
-     * Get dataSource.
-     * 
-     * @param dataSourceName data source name
-     * @return dataSource
-     * @throws SQLException SQL exception
-     */
-    DataSource getDataSource(String dataSourceName) throws SQLException;
 }
