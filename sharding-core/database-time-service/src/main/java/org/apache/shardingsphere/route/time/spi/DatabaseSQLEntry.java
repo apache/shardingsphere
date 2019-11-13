@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.spi;
-
-import java.util.Date;
+package org.apache.shardingsphere.route.time.spi;
 
 /**
- * Time service.
+ * Database SQL entry.
  *
  * @author chenchuangliu
  */
-public interface TimeService {
+public interface DatabaseSQLEntry {
     
     /**
-     * Get time.
-     * 
-     * @return time
+     * Get SQL for getting time.
+     *
+     * @return SQL
      */
-    Date getTime();
+    String getSQL();
+    
+    /**
+     * Determine whether it supports.
+     *
+     * @param driverClassName driver class name
+     * @return support or not
+     */
+    boolean isSupport(String driverClassName);
 }

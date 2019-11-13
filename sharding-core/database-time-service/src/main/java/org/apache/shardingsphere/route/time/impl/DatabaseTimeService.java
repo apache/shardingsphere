@@ -15,19 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.spi;
+package org.apache.shardingsphere.route.time.impl;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.route.spi.TimeService;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 
 /**
- * Default time service.
+ * Database time service.
  *
  * @author chenchuangliu
  */
-public final class DefaultTimeService implements TimeService {
+@RequiredArgsConstructor
+public final class DatabaseTimeService implements TimeService {
+    
+    private final DataSource dataSource;
+    
+    private final String sql;
     
     @Override
     public Date getTime() {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                resultSet.next();
+                return (Date) resultSet.getObject(1);
+            }
+        } catch (final SQLException ignore) {
+        }
         return new Date();
     }
 }

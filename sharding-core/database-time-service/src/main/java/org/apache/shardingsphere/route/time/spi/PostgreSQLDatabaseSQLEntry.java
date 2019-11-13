@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.spi;
-
-import java.util.Date;
+package org.apache.shardingsphere.route.time.spi;
 
 /**
- * Time service.
+ * PostgreSQL entry.
  *
  * @author chenchuangliu
  */
-public interface TimeService {
+public final class PostgreSQLDatabaseSQLEntry implements DatabaseSQLEntry {
     
-    /**
-     * Get time.
-     * 
-     * @return time
-     */
-    Date getTime();
+    @Override
+    public String getSQL() {
+        return "SELECT NOW()";
+    }
+    
+    @Override
+    public boolean isSupport(final String driverClassName) {
+        return driverClassName.contains("postgresql");
+    }
 }

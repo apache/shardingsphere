@@ -70,8 +70,8 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
                 new ColumnMetaData("user_id", "int", false, false, false), 
                 new ColumnMetaData("status", "varchar", false, false, false), 
                 new ColumnMetaData("c_date", "timestamp", false, false, false)), Collections.<String>emptySet()));
-        tableMetaDataMap.put("t_other", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true, true, true)), Collections.<String>emptySet()));
-        tableMetaDataMap.put("t_category", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true, true, true)), Collections.<String>emptySet()));
+        tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", "int", true, true, true)), Collections.<String>emptySet()));
+        tableMetaDataMap.put("t_category", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", "int", true, true, true)), Collections.<String>emptySet()));
         return new TableMetas(tableMetaDataMap);
     }
 }

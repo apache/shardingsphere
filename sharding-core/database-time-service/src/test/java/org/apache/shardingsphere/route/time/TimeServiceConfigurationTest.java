@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.spi;
+package org.apache.shardingsphere.route.time;
 
-import java.util.Date;
+import org.junit.Test;
 
-/**
- * Time service.
- *
- * @author chenchuangliu
- */
-public interface TimeService {
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+public final class TimeServiceConfigurationTest {
     
-    /**
-     * Get time.
-     * 
-     * @return time
-     */
-    Date getTime();
+    @Test
+    public void assertInitDataSource() {
+        PropertiesUtils.createProperties("com.mysql.jdbc.Driver", null);
+        TimeServiceConfiguration config = TimeServiceConfiguration.getInstance();
+        assertNotNull(config.getDataSource());
+        assertTrue(PropertiesUtils.remove());
+    }
 }

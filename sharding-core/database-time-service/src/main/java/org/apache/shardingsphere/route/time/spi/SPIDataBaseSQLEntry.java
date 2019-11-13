@@ -15,35 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.spi;
+package org.apache.shardingsphere.route.time.spi;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.route.time.exception.NoDatabaseSQLEntrySupportException;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 
 import java.util.Collection;
-import java.util.Date;
 
 /**
- * Time service for SPI.
+ * SPI for DatabaseSQLEntry.
  *
  * @author chenchuangliu
  */
-public final class SPITimeService implements TimeService {
-    
-    private final Collection<TimeService> timeServices = NewInstanceServiceLoader.newServiceInstances(TimeService.class);
+@RequiredArgsConstructor
+public final class SPIDataBaseSQLEntry implements DatabaseSQLEntry {
     
     static {
-        NewInstanceServiceLoader.register(TimeService.class);
+        NewInstanceServiceLoader.register(DatabaseSQLEntry.class);
+    }
+    
+    private final Collection<DatabaseSQLEntry> sqlEntries = NewInstanceServiceLoader.newServiceInstances(DatabaseSQLEntry.class);
+    
+    private final String driverClassName;
+    
+    @Override
+    public String getSQL() {
+        for (DatabaseSQLEntry each : sqlEntries) {
+            if (each.isSupport(driverClassName)) {
+                return each.getSQL();
+            }
+        }
+        throw new NoDatabaseSQLEntrySupportException();
     }
     
     @Override
-    public Date getTime() {
-        Date result = null;
-        for (TimeService server : timeServices) {
-            result = server.getTime();
-            if (!(server instanceof DefaultTimeService) && null != result) {
-                return result;
-            }
-        }
-        return result;
+    public boolean isSupport(final String driverClassName) {
+        return true;
     }
 }

@@ -15,21 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.spi;
+package org.apache.shardingsphere.route.time.impl;
 
-import java.util.Date;
+import org.apache.shardingsphere.core.route.spi.TimeService;
+import org.apache.shardingsphere.route.time.TimeServiceConfiguration;
+import org.apache.shardingsphere.route.time.spi.SPIDataBaseSQLEntry;
 
 /**
- * Time service.
+ * Time service factory.
  *
  * @author chenchuangliu
  */
-public interface TimeService {
+public final class TimeServiceFactory {
     
     /**
-     * Get time.
-     * 
-     * @return time
+     * Create time service by {@link TimeServiceConfiguration}.
+     *
+     * @return time service instance
      */
-    Date getTime();
+    public static TimeService createTimeService() {
+        TimeServiceConfiguration timeServiceConfiguration = TimeServiceConfiguration.getInstance();
+        return new DatabaseTimeService(timeServiceConfiguration.getDataSource(), new SPIDataBaseSQLEntry(timeServiceConfiguration.getDriverClassName()).getSQL());
+    }
 }

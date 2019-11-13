@@ -112,14 +112,14 @@ public final class MemoryQueryResultTest {
     public void assertGetValueWithColumnIndex() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
-        assertThat(queryResult.getValue(1, Integer.class), Is.<Object>is(Long.valueOf(1)));
+        assertThat(queryResult.getValue(1, Integer.class), Is.<Object>is(1L));
     }
     
     @Test
     public void assertGetValueWithColumnLabel() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
-        assertThat(queryResult.getValue("order_id", Integer.class), Is.<Object>is(Long.valueOf(1)));
+        assertThat(queryResult.getValue("order_id", Integer.class), Is.<Object>is(1L));
     }
     
     @Test
@@ -163,14 +163,14 @@ public final class MemoryQueryResultTest {
     public void assertGetCalendarValueWithColumnIndex() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
-        assertThat(queryResult.getCalendarValue(1, Integer.class, Calendar.getInstance()), Is.<Object>is(Long.valueOf(1)));
+        assertThat(queryResult.getCalendarValue(1, Integer.class, Calendar.getInstance()), Is.<Object>is(1L));
     }
     
     @Test
     public void assertGetCalendarValueWithColumnLabel() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
-        assertThat(queryResult.getCalendarValue("order_id", Integer.class, Calendar.getInstance()), Is.<Object>is(Long.valueOf(1)));
+        assertThat(queryResult.getCalendarValue("order_id", Integer.class, Calendar.getInstance()), Is.<Object>is(1L));
     }
     
     @Test
