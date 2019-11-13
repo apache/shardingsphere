@@ -23,6 +23,8 @@ import org.apache.shardingsphere.core.metadata.datasource.dialect.MariaDBDataSou
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.sql.DataSource;
+
 /**
  * Database type of Mariadb.
  *
@@ -43,6 +45,11 @@ public final class MariaDBDatabaseType implements BranchDatabaseType {
     @Override
     public DataSourceMetaData getDataSourceMetaData(final String url) {
         return new MariaDBDataSourceMetaData(url);
+    }
+    
+    @Override
+    public DataSourceMetaData getDataSourceMetaData(final DataSource dataSource) {
+        return new MariaDBDataSourceMetaData(dataSource);
     }
     
     @Override

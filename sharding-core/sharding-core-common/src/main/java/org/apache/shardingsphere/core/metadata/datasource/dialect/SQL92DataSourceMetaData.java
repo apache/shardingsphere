@@ -18,11 +18,17 @@
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
 import lombok.Getter;
+
+import org.apache.shardingsphere.core.metadata.datasource.exception.UnBuildDataSourceMetaException;
 import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.sql.DataSource;
 
 /**
  * Data source meta data for SQL92.
@@ -31,17 +37,19 @@ import java.util.regex.Pattern;
  */
 @Getter
 public final class SQL92DataSourceMetaData implements DataSourceMetaData {
-    
+
     private static final int DEFAULT_PORT = -1;
-    
+
     private final String hostName;
-    
+
     private final int port;
-    
+
     private final String schemaName;
     
+    private final String catalog;
+
     private final Pattern pattern = Pattern.compile("jdbc:.*", Pattern.CASE_INSENSITIVE);
-    
+
     public SQL92DataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);
         if (!matcher.find()) {
@@ -49,6 +57,24 @@ public final class SQL92DataSourceMetaData implements DataSourceMetaData {
         }
         hostName = "";
         port = DEFAULT_PORT;
-        schemaName = "";
+        catalog = "";
+        schemaName = null;
+    }
+
+    public SQL92DataSourceMetaData(final DataSource dataSource) {
+        try (Connection conn = dataSource.getConnection()) {
+            String url = conn.getMetaData().getURL();
+            
+            Matcher matcher = pattern.matcher(url);
+            if (!matcher.find()) {
+                throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
+            }
+            hostName = "";
+            port = DEFAULT_PORT;
+            catalog = "";
+            schemaName = null;
+        } catch (SQLException | UnrecognizedDatabaseURLException e) {
+            throw new UnBuildDataSourceMetaException(e);
+        }
     }
 }

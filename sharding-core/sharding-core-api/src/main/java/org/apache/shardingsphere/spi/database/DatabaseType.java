@@ -19,6 +19,8 @@ package org.apache.shardingsphere.spi.database;
 
 import java.util.Collection;
 
+import javax.sql.DataSource;
+
 /**
  * Database type.
  *
@@ -47,4 +49,12 @@ public interface DatabaseType {
      * @return data source meta data
      */
     DataSourceMetaData getDataSourceMetaData(String url);
+    
+    /**
+     * Get data source meta data.
+     * 
+     * @param url data source URL
+     * @return data source meta data
+     */
+    DataSourceMetaData getDataSourceMetaData(DataSource dataSource);
 }

@@ -27,6 +27,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.sql.DataSource;
+
 /**
  * Data source metas.
  *
@@ -40,9 +42,21 @@ public final class DataSourceMetas {
         dataSourceMetaDataMap = getDataSourceMetaDataMap(dataSourceURLs, databaseType);
     }
     
+    public DataSourceMetas(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+        dataSourceMetaDataMap = getDataSourceMetaDataMap(databaseType, dataSourceMap);
+    }
+    
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final Map<String, String> dataSourceURLs, final DatabaseType databaseType) {
         Map<String, DataSourceMetaData> result = new HashMap<>(dataSourceURLs.size(), 1);
         for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
+            result.put(entry.getKey(), databaseType.getDataSourceMetaData(entry.getValue()));
+        }
+        return result;
+    }
+    
+    private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+        Map<String, DataSourceMetaData> result = new HashMap<>(dataSourceMap.size(), 1);
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             result.put(entry.getKey(), databaseType.getDataSourceMetaData(entry.getValue()));
         }
         return result;

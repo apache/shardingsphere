@@ -22,6 +22,8 @@ import org.apache.shardingsphere.core.metadata.datasource.dialect.SQLServerDataS
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.sql.DataSource;
+
 /**
  * Database type of SQLServer.
  *
@@ -42,5 +44,10 @@ public final class SQLServerDatabaseType implements DatabaseType {
     @Override
     public DataSourceMetaData getDataSourceMetaData(final String url) {
         return new SQLServerDataSourceMetaData(url);
+    }
+    
+    @Override
+    public DataSourceMetaData getDataSourceMetaData(final DataSource dataSource) {
+        return new SQLServerDataSourceMetaData(dataSource);
     }
 }

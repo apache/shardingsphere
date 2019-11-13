@@ -23,6 +23,8 @@ import org.apache.shardingsphere.core.metadata.datasource.dialect.H2DataSourceMe
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.sql.DataSource;
+
 /**
  * Database type of H2.
  *
@@ -46,7 +48,13 @@ public final class H2DatabaseType implements BranchDatabaseType {
     }
     
     @Override
+    public DataSourceMetaData getDataSourceMetaData(final DataSource dataSource) {
+        return new H2DataSourceMetaData(dataSource);
+    }
+    
+    @Override
     public DatabaseType getTrunkDatabaseType() {
         return DatabaseTypes.getActualDatabaseType("MySQL");
     }
+
 }

@@ -22,6 +22,8 @@ import org.apache.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourc
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.sql.DataSource;
+
 /**
  * Database type of MySQL.
  *
@@ -42,5 +44,10 @@ public final class MySQLDatabaseType implements DatabaseType {
     @Override
     public DataSourceMetaData getDataSourceMetaData(final String url) {
         return new MySQLDataSourceMetaData(url);
+    }
+    
+    @Override
+    public DataSourceMetaData getDataSourceMetaData(final DataSource dataSource) {
+        return new MySQLDataSourceMetaData(dataSource);
     }
 }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.execute.metadata;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -101,25 +100,18 @@ public final class TableMetaDataLoader {
                 
                 String dataSourceName = dataNodes.iterator().next().getDataSourceName();
                 DataSourceMetaData dataSourceMetaData = TableMetaDataLoader.this.dataSourceMetas.getDataSourceMetaData(dataSourceName);
-                String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemaName();
                 return load(shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(dataSourceName), 
-                        catalog, logicTableName, dataNodes, generateKeyColumnName, shardingRule.getEncryptRule());
+                        dataSourceMetaData, logicTableName, dataNodes, generateKeyColumnName, shardingRule.getEncryptRule());
             }
         });
     }
 
-    private Collection<TableMetaData> load(final String dataSourceName, final String catalog,
+    private Collection<TableMetaData> load(final String dataSourceName, final DataSourceMetaData dataSourceMetaData,
             final String logicTableName, final Collection<DataNode> dataNodes, final String generateKeyColumnName, final EncryptRule encryptRule) throws SQLException {
         Collection<TableMetaData> result = new LinkedList<>();
         try (Connection connection = connectionManager.getConnection(dataSourceName)) {
-            DatabaseMetaData metaData = connection.getMetaData();
-            String databaseName = metaData.getDatabaseProductName();
-            String schema = null;
-            if (databaseName != null && "oracle".equalsIgnoreCase(databaseName)) {
-                schema = metaData.getUserName();
-            }
             for (DataNode each : dataNodes) {
-                result.add(createTableMetaData(connection, catalog, schema, logicTableName, each.getTableName(), generateKeyColumnName, encryptRule));
+                result.add(createTableMetaData(connection, dataSourceMetaData, logicTableName, each.getTableName(), generateKeyColumnName, encryptRule));
             }
         }
         return result;
@@ -150,11 +142,12 @@ public final class TableMetaDataLoader {
         return result;
     }
 
-    private TableMetaData createTableMetaData(final Connection connection, final String catalog, final String schema,
+    private TableMetaData createTableMetaData(final Connection connection, final DataSourceMetaData dataSourceMetaData,
             final String logicTableName, final String actualTableName, final String generateKeyColumnName, final EncryptRule encryptRule) throws SQLException {
-        if (isTableExist(connection, catalog, actualTableName)) {
+        if (isTableExist(connection, dataSourceMetaData.getCatalog(), actualTableName)) {
             return new TableMetaData(
-                    getColumnMetaDataList(connection, catalog, logicTableName, actualTableName, generateKeyColumnName, encryptRule), getLogicIndexes(connection, catalog, schema, actualTableName));
+                    getColumnMetaDataList(connection, dataSourceMetaData.getCatalog(), logicTableName, actualTableName, generateKeyColumnName, encryptRule), 
+                    getLogicIndexes(connection, dataSourceMetaData, actualTableName));
         }
         return new TableMetaData(Collections.<ColumnMetaData>emptyList(), Collections.<String>emptySet());
     }
@@ -216,9 +209,9 @@ public final class TableMetaDataLoader {
         return Optional.of(new ColumnMetaData(columnName, columnType, isPrimaryKey, isNotNull, isAutoIncrement));
     }
 
-    private Collection<String> getLogicIndexes(final Connection connection, final String catalog, final String schema, final String actualTableName) throws SQLException {
+    private Collection<String> getLogicIndexes(final Connection connection, final DataSourceMetaData dataSourceMetaData, final String actualTableName) throws SQLException {
         Collection<String> result = new HashSet<>();
-        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(catalog, schema, actualTableName, false, false)) {
+        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(dataSourceMetaData.getCatalog(), dataSourceMetaData.getSchemaName(), actualTableName, false, false)) {
             while (resultSet.next()) {
                 Optional<String> logicIndex = getLogicIndex(resultSet.getString(INDEX_NAME), actualTableName);
                 if (logicIndex.isPresent()) {

@@ -17,13 +17,20 @@
 
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
-import com.google.common.base.Strings;
-import lombok.Getter;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.sql.DataSource;
+
+import org.apache.shardingsphere.core.metadata.datasource.exception.UnBuildDataSourceMetaException;
 import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.google.common.base.Strings;
+
+import lombok.Getter;
 
 /**
  * Data source meta data for MySQL.
@@ -41,6 +48,8 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
     
     private final String schemaName;
     
+    private final String catalog;
+    
     private final Pattern pattern = Pattern.compile("jdbc:(mysql|mysqlx)(:loadbalance|:replication)?:(\\w*:)?//([\\w\\-\\.]+):?([0-9]*)/([\\w\\-]+);?\\S*", Pattern.CASE_INSENSITIVE);
     
     public MySQLDataSourceMetaData(final String url) {
@@ -50,6 +59,23 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
         }
         hostName = matcher.group(4);
         port = Strings.isNullOrEmpty(matcher.group(5)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(5));
-        schemaName = matcher.group(6);
+        catalog = matcher.group(6);
+        schemaName = null;
+    }
+    
+    public MySQLDataSourceMetaData(final DataSource dataSource) {
+        try (Connection conn = dataSource.getConnection()) {
+            String url = conn.getMetaData().getURL();
+            Matcher matcher = pattern.matcher(url);
+            if (!matcher.find()) {
+                throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
+            }
+            hostName = matcher.group(4);
+            port = Strings.isNullOrEmpty(matcher.group(5)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(5));
+            catalog = matcher.group(6);
+            schemaName = null;
+        } catch (SQLException | UnrecognizedDatabaseURLException e) {
+            throw new UnBuildDataSourceMetaException(e);
+        }
     }
 }

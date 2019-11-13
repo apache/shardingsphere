@@ -22,6 +22,8 @@ import org.apache.shardingsphere.core.metadata.datasource.dialect.OracleDataSour
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.sql.DataSource;
+
 /**
  * Database type of Oracle.
  *
@@ -42,5 +44,10 @@ public final class OracleDatabaseType implements DatabaseType {
     @Override
     public DataSourceMetaData getDataSourceMetaData(final String url) {
         return new OracleDataSourceMetaData(url);
+    }
+    
+    @Override
+    public DataSourceMetaData getDataSourceMetaData(final DataSource dataSource) {
+        return new OracleDataSourceMetaData(dataSource);
     }
 }

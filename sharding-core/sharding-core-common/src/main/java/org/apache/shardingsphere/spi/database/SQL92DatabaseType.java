@@ -22,6 +22,8 @@ import org.apache.shardingsphere.core.metadata.datasource.dialect.SQL92DataSourc
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.sql.DataSource;
+
 /**
  * Database type of SQL92.
  *
@@ -42,5 +44,10 @@ public final class SQL92DatabaseType implements DatabaseType {
     @Override
     public DataSourceMetaData getDataSourceMetaData(final String url) {
         return new SQL92DataSourceMetaData(url);
+    }
+    
+    @Override
+    public DataSourceMetaData getDataSourceMetaData(final DataSource dataSource) {
+        return new SQL92DataSourceMetaData(dataSource);
     }
 }

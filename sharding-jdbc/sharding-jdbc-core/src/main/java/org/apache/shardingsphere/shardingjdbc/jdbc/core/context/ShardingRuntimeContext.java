@@ -17,7 +17,14 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
-import lombok.Getter;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.sql.DataSource;
+
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.execute.metadata.TableMetaDataInitializer;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
@@ -29,14 +36,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCTableMetaDataCon
 import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
+import lombok.Getter;
 
 /**
  * Runtime context for sharding.
@@ -69,23 +69,9 @@ public final class ShardingRuntimeContext extends AbstractRuntimeContext<Shardin
     }
     
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType) throws SQLException {
-        DataSourceMetas dataSourceMetas = new DataSourceMetas(getDataSourceURLs(dataSourceMap), databaseType);
+        DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, dataSourceMap);
         TableMetas tableMetas = new TableMetas(getTableMetaDataInitializer(dataSourceMap, dataSourceMetas).load(shardingRule));
         return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
-    }
-    
-    private Map<String, String> getDataSourceURLs(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        Map<String, String> result = new LinkedHashMap<>(dataSourceMap.size(), 1);
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            result.put(entry.getKey(), getDataSourceURL(entry.getValue()));
-        }
-        return result;
-    }
-    
-    private String getDataSourceURL(final DataSource dataSource) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            return connection.getMetaData().getURL();
-        }
     }
     
     private TableMetaDataInitializer getTableMetaDataInitializer(final Map<String, DataSource> dataSourceMap, final DataSourceMetas dataSourceMetas) {
