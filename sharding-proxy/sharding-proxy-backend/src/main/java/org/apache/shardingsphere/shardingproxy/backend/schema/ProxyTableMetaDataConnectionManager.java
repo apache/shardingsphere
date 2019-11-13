@@ -31,9 +31,9 @@ import java.sql.SQLException;
  */
 @RequiredArgsConstructor
 public final class ProxyTableMetaDataConnectionManager implements TableMetaDataConnectionManager {
-    
+
     private final JDBCBackendDataSource backendDataSource;
-    
+
     @Override
     public Connection getConnection(final String dataSourceName) throws SQLException {
         return backendDataSource.getConnection(dataSourceName);

@@ -26,7 +26,7 @@ import java.sql.SQLException;
  * @author zhangliang
  */
 public interface TableMetaDataConnectionManager {
-    
+
     /**
      * Get connection.
      * 
@@ -35,5 +35,5 @@ public interface TableMetaDataConnectionManager {
      * @throws SQLException SQL exception
      */
     Connection getConnection(String dataSourceName) throws SQLException;
-    
+
 }
