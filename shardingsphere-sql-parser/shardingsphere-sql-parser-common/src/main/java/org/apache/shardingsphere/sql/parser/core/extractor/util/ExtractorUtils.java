@@ -35,7 +35,7 @@ import java.util.Queue;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExtractorUtils {
-    
+
     /**
      * Get first child node.
      *
@@ -139,15 +139,21 @@ public final class ExtractorUtils {
      * @param node start node
      * @return all nodes
      */
-    public static Collection<ParserRuleContext> getAllNodes(final ParserRuleContext node) {
+    private static Collection<ParserRuleContext> getAllNodes(final ParserRuleContext node) {
         Collection<ParserRuleContext> result = new LinkedList<>();
-        result.add(node);
-        for (ParserRuleContext each : getChildrenNodes(node)) {
-            result.addAll(getAllNodes(each));
+        LinkedList<ParserRuleContext> stack = new LinkedList<>();
+        stack.add(node);
+        while (!stack.isEmpty()) {
+            ParserRuleContext each = stack.pop();
+            result.add(each);
+            ParserRuleContext[] childNodes = getChildrenNodes(each).toArray(new ParserRuleContext[0]);
+            for (int i = childNodes.length - 1; i >= 0; i--) {
+                stack.push(childNodes[i]);
+            }
         }
         return result;
     }
-    
+
     private static boolean isMatchedNode(final ParserRuleContext node, final RuleName ruleName) {
         return ruleName.getName().equals(node.getClass().getSimpleName());
     }
