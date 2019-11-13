@@ -28,6 +28,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class Event {
 
+    private final String taskId;
+
     private final EventType eventType;
 
     private Object payload;

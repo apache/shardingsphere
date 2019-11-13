@@ -77,11 +77,11 @@ public class HistoryDataSyncTask implements SyncTask {
         try {
             new SyncExecutor(new MemoryChannel(), reader, Collections.singletonList(writer)).execute();
             log.info("{} table slice sync finish", syncConfiguration.getReaderConfiguration().getTableName());
-            reporter.report(new Event(EventType.FINISHED));
+            reporter.report(new Event(syncConfiguration.getTaskId(), EventType.FINISHED));
         } catch (SyncExecuteException ex) {
             log.error("{} table slice sync exception exit", syncConfiguration.getReaderConfiguration().getTableName());
             ex.logExceptions();
-            reporter.report(new Event(EventType.EXCEPTION_EXIT));
+            reporter.report(new Event(syncConfiguration.getTaskId(), EventType.EXCEPTION_EXIT));
         }
     }
 }

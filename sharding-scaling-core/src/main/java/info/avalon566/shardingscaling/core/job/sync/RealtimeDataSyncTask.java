@@ -106,11 +106,11 @@ public class RealtimeDataSyncTask implements SyncTask {
             startReportRealtimeSyncPosition();
             new SyncExecutor(channel, logReader, writers).execute();
             log.info("realtime data sync finish");
-            reporter.report(new Event(EventType.FINISHED));
+            reporter.report(new Event(syncConfiguration.getTaskId(), EventType.FINISHED));
         } catch (SyncExecuteException ex) {
             log.error("realtime data sync exception exit");
             ex.logExceptions();
-            reporter.report(new Event(EventType.EXCEPTION_EXIT));
+            reporter.report(new Event(syncConfiguration.getTaskId(), EventType.EXCEPTION_EXIT));
         }
     }
 
@@ -128,7 +128,7 @@ public class RealtimeDataSyncTask implements SyncTask {
                     }
                     if (null == lastLogPosition || -1 == lastLogPosition.compareTo(currentLogPosition)) {
                         lastLogPosition = currentLogPosition;
-                        Event event = new Event(EventType.REALTIME_SYNC_POSITION);
+                        Event event = new Event(syncConfiguration.getTaskId(), EventType.REALTIME_SYNC_POSITION);
                         event.setPayload(lastLogPosition);
                         reporter.report(event);
                     }

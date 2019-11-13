@@ -21,6 +21,8 @@ import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import java.util.UUID;
+
 /**
  * Sync configuration.
  *
@@ -29,6 +31,8 @@ import lombok.RequiredArgsConstructor;
 @Data
 @RequiredArgsConstructor
 public class SyncConfiguration {
+
+    private final String taskId = UUID.randomUUID().toString();
 
     private final SyncType syncType;
 

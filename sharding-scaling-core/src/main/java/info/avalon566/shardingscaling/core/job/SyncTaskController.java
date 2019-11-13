@@ -20,12 +20,11 @@ package info.avalon566.shardingscaling.core.job;
 import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.config.SyncType;
+import info.avalon566.shardingscaling.core.job.sync.RealtimeDataSyncTask;
 import info.avalon566.shardingscaling.core.job.sync.executor.Event;
 import info.avalon566.shardingscaling.core.job.sync.executor.EventType;
-import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
 import info.avalon566.shardingscaling.core.job.sync.executor.SyncJobExecutor;
 import info.avalon566.shardingscaling.core.job.sync.executor.local.LocalSyncJobExecutor;
-import info.avalon566.shardingscaling.core.job.sync.RealtimeDataSyncTask;
 import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
 import info.avalon566.shardingscaling.core.sync.reader.ReaderFactory;
 import info.avalon566.shardingscaling.core.sync.util.DataSourceFactory;
@@ -35,7 +34,9 @@ import lombok.extern.slf4j.Slf4j;
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Sync task controller, synchronize history data and realtime data.
@@ -43,11 +44,21 @@ import java.util.List;
  * @author avalon566
  */
 @Slf4j
-public final class SyncTaskController implements Runnable {
+public final class SyncTaskController implements ReportCallback, Runnable {
+
+    private static final String STAGE_SYNC_HISTORY_DATA = "SYNC_HISTORY_DATA";
+
+    private static final String STAGE_SYNC_REALTIME_DATA = "SYNC_REALTIME_DATA";
 
     private final SyncJobExecutor syncJobExecutor = new LocalSyncJobExecutor();
 
     private final SyncConfiguration syncConfiguration;
+
+    private final Map<String, Object> migrateProgresses = new HashMap<>();
+
+    private LogPosition startLogPosition;
+
+    private String stage = STAGE_SYNC_HISTORY_DATA;
 
     public SyncTaskController(final SyncConfiguration syncConfiguration) {
         this.syncConfiguration = syncConfiguration;
@@ -82,15 +93,40 @@ public final class SyncTaskController implements Runnable {
 
     @Override
     public void run() {
-        LogPosition position = new RealtimeDataSyncTask(syncConfiguration, null).preRun();
+        startLogPosition = new RealtimeDataSyncTask(syncConfiguration, null).preRun();
         syncHistoryData();
-        syncRealtimeData(position);
+    }
+
+    @Override
+    public void onProcess(final Event event) {
+        migrateProgresses.put(event.getTaskId(), event);
+        if (EventType.FINISHED == event.getEventType()) {
+            boolean finished = true;
+            for (Object each : migrateProgresses.values()) {
+                if (null == each || EventType.FINISHED != ((Event) each).getEventType()) {
+                    finished = false;
+                }
+            }
+            if (finished) {
+                log.info("data sync finish");
+                if (STAGE_SYNC_HISTORY_DATA.equals(stage)) {
+                    stage = STAGE_SYNC_REALTIME_DATA;
+                    syncRealtimeData(startLogPosition);
+                }
+            }
+        }
+        if (EventType.EXCEPTION_EXIT == event.getEventType()) {
+            System.exit(1);
+        }
     }
 
     private void syncHistoryData() {
         List<SyncConfiguration> configs = split(syncConfiguration);
-        Reporter reporter = syncJobExecutor.start(configs);
-        waitSlicesFinished(configs, reporter);
+        migrateProgresses.clear();
+        for (SyncConfiguration each : configs) {
+            migrateProgresses.put(each.getTaskId(), null);
+        }
+        syncJobExecutor.start(configs, this);
     }
 
     private List<SyncConfiguration> split(final SyncConfiguration syncConfiguration) {
@@ -109,25 +145,6 @@ public final class SyncTaskController implements Runnable {
         return syncConfigurations;
     }
 
-    private void waitSlicesFinished(final List<SyncConfiguration> syncConfigurations, final Reporter reporter) {
-        int counter = 0;
-        boolean hasException = false;
-        while (true) {
-            Event event = reporter.consumeEvent();
-            if (EventType.FINISHED == event.getEventType()) {
-                counter++;
-            }
-            if (EventType.EXCEPTION_EXIT == event.getEventType()) {
-                hasException = true;
-                System.exit(1);
-            }
-            if (syncConfigurations.size() == counter) {
-                log.info("history data sync finish");
-                break;
-            }
-        }
-    }
-
     private void syncRealtimeData(final LogPosition position) {
         syncConfiguration.setPosition(position);
         SyncConfiguration realConfiguration = new SyncConfiguration(
@@ -135,18 +152,8 @@ public final class SyncTaskController implements Runnable {
                 syncConfiguration.getReaderConfiguration(),
                 syncConfiguration.getWriterConfiguration());
         realConfiguration.setPosition(position);
-        Reporter realtimeReporter = syncJobExecutor.start(Collections.singletonList(realConfiguration));
-        while (true) {
-            Event event = realtimeReporter.consumeEvent();
-            if (EventType.FINISHED == event.getEventType()) {
-                return;
-            }
-            if (EventType.EXCEPTION_EXIT == event.getEventType()) {
-                System.exit(1);
-            }
-            if (EventType.REALTIME_SYNC_POSITION == event.getEventType()) {
-
-            }
-        }
+        migrateProgresses.clear();
+        migrateProgresses.put(syncConfiguration.getTaskId(), null);
+        syncJobExecutor.start(Collections.singletonList(realConfiguration), this);
     }
 }

@@ -15,38 +15,21 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job.sync.executor;
+package info.avalon566.shardingscaling.core.job;
 
-import info.avalon566.shardingscaling.core.config.SyncConfiguration;
-import info.avalon566.shardingscaling.core.job.ReportCallback;
-import info.avalon566.shardingscaling.core.job.SyncTaskProgress;
-
-import java.util.List;
+import info.avalon566.shardingscaling.core.job.sync.executor.Event;
 
 /**
- * Sync job executor, run in in process, k8s etc.
+ * Report callback.
+ *
  * @author avalon566
  */
-public interface SyncJobExecutor {
+public interface ReportCallback {
 
     /**
-     * start sync jobs.
+     * process report event.
      *
-     * @param configs job configs
-     * @param reportCallback report callback
-     * @return reporter
+     * @param event report event
      */
-    Reporter start(List<SyncConfiguration> configs, ReportCallback reportCallback);
-
-    /**
-     * stop all sync jobs.
-     */
-    void stop();
-
-    /**
-     * get all sync job migrate progresses.
-     *
-     * @return list of migrate progresses
-     */
-    List<SyncTaskProgress> getProgresses();
+    void onProcess(Event event);
 }

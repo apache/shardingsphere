@@ -18,14 +18,18 @@
 package info.avalon566.shardingscaling.core.job.sync.executor.local;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
+import info.avalon566.shardingscaling.core.job.ReportCallback;
 import info.avalon566.shardingscaling.core.job.SyncTaskProgress;
 import info.avalon566.shardingscaling.core.job.sync.SyncTask;
+import info.avalon566.shardingscaling.core.job.sync.executor.Event;
 import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
 import info.avalon566.shardingscaling.core.job.sync.executor.SyncJobExecutor;
 import info.avalon566.shardingscaling.core.job.sync.SyncTaskFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Local sync job executor.
@@ -36,11 +40,29 @@ public class LocalSyncJobExecutor implements SyncJobExecutor {
 
     private List<SyncTask> syncTasks;
 
+    private final LocalReporter reporter = new LocalReporter();
+
+    private final Map<String, ReportCallback> reportCallbackMap = new ConcurrentHashMap<>();
+
+    public LocalSyncJobExecutor() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    Event event = reporter.consumeEvent();
+                    if (null != event) {
+                        reportCallbackMap.get(event.getTaskId()).onProcess(event);
+                    }
+                }
+            }
+        }).start();
+    }
+
     @Override
-    public final Reporter start(final List<SyncConfiguration> syncConfigurations) {
-        LocalReporter reporter = new LocalReporter();
+    public final Reporter start(final List<SyncConfiguration> syncConfigurations, final ReportCallback reportCallback) {
         syncTasks = new ArrayList<>(syncConfigurations.size());
         for (SyncConfiguration syncConfiguration : syncConfigurations) {
+            reportCallbackMap.put(syncConfiguration.getTaskId(), reportCallback);
             SyncTask syncTask = SyncTaskFactory.createSyncJobInstance(syncConfiguration, reporter);
             syncTask.start();
             syncTasks.add(syncTask);
