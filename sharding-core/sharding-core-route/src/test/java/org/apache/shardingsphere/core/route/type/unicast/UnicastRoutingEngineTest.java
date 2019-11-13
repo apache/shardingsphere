@@ -93,7 +93,7 @@ public final class UnicastRoutingEngineTest {
     }
     
     @Test
-    public void assertRoutingForTableWithNoTableRule() {
+    public void assertRoutingForTableWithoutTableRule() {
         UnicastRoutingEngine unicastRoutingEngine = new UnicastRoutingEngine(shardingRule, Collections.singleton("t_other"));
         RoutingResult routingResult = unicastRoutingEngine.route();
         assertThat(routingResult, instanceOf(RoutingResult.class));
