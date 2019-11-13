@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.spi;
-
-import java.util.Date;
+package org.apache.shardingsphere.route.time.spi;
 
 /**
- * Time service.
+ * Oracle entry.
  *
  * @author chenchuangliu
  */
-public interface TimeService {
+public final class OracleDatabaseSQLEntry implements DatabaseSQLEntry {
     
-    /**
-     * Get time.
-     * 
-     * @return time
-     */
-    Date getTime();
+    @Override
+    public String getSQL() {
+        return "SELECT sysdate FROM DUAL";
+    }
+    
+    @Override
+    public boolean isSupport(final String driverClassName) {
+        return driverClassName.contains("oracle");
+    }
 }

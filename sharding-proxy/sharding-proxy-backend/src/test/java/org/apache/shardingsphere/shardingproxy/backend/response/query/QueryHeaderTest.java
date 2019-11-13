@@ -30,7 +30,7 @@ import org.junit.Test;
 
 import java.sql.ResultSetMetaData;
 import java.sql.Types;
-import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -67,7 +67,7 @@ public final class QueryHeaderTest {
     @Test
     public void assertQueryHeaderColumnLength() throws Exception {
         QueryHeader header = new QueryHeader(getResultSetMetaData(), getShardingSchema(), 1);
-        assertThat(header.getColumnLength(), is(Integer.valueOf(1)));
+        assertThat(header.getColumnLength(), is(1));
     }
     
     @Test
@@ -79,7 +79,7 @@ public final class QueryHeaderTest {
     @Test
     public void assertQueryHeaderDecimals() throws Exception {
         QueryHeader header = new QueryHeader(getResultSetMetaData(), getShardingSchema(), 1);
-        assertThat(header.getDecimals(), is(Integer.valueOf(1)));
+        assertThat(header.getDecimals(), is(1));
     }
     
     @Test
@@ -111,7 +111,7 @@ public final class QueryHeaderTest {
         ShardingSchema result = mock(ShardingSchema.class);
         ColumnMetaData columnMetaData = new ColumnMetaData("order_id", "int", true, true, true);
         TableMetas tableMetas = mock(TableMetas.class);
-        when(tableMetas.get("t_order")).thenReturn(new TableMetaData(Arrays.asList(columnMetaData), Arrays.asList("order_id")));
+        when(tableMetas.get("t_order")).thenReturn(new TableMetaData(Collections.singletonList(columnMetaData), Collections.singletonList("order_id")));
         when(tableMetas.containsTable("t_order")).thenReturn(true);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.getTables()).thenReturn(tableMetas);
@@ -120,7 +120,7 @@ public final class QueryHeaderTest {
         when(metaData.getDataSources()).thenReturn(dataSourceMetas);
         when(result.getMetaData()).thenReturn(metaData);
         ShardingRule shardingRule = mock(ShardingRule.class);
-        when(shardingRule.getLogicTableNames("t_order")).thenReturn(Arrays.asList("t_logic_order"));
+        when(shardingRule.getLogicTableNames("t_order")).thenReturn(Collections.singletonList("t_logic_order"));
         when(result.getShardingRule()).thenReturn(shardingRule);
         when(result.getName()).thenReturn("sharding_schema");
         return result;

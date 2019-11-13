@@ -22,17 +22,6 @@ import C from './conf'
 axios.defaults.headers.post['Content-Type'] = 'application/jsoncharset=UTF-8'
 axios.defaults.withCredentials = true
 
-const configData = (type, params) => {
-  if (type === 'post') {
-    return params
-  } else if (type === 'put') {
-    return params
-  } else if (type === 'delete') {
-    return params
-  }
-  return null
-}
-
 function ajax(url, type, options) {
   return new Promise((resolve, reject) => {
     axios({
@@ -43,7 +32,7 @@ function ajax(url, type, options) {
         'Access-Token': window.localStorage.getItem('Access-Token') || ''
       },
       params: type === 'get' ? options : null,
-      data: configData(type, options)
+      data: options
     })
       .then(result => {
         const data = result.data
@@ -55,6 +44,9 @@ function ajax(url, type, options) {
 
         if (!success) {
           if (data.errorCode === 403) {
+            const store = window.localStorage
+            store.removeItem('Access-Token')
+            store.removeItem('username')
             location.href = '#/login'
             return
           }

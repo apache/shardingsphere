@@ -47,12 +47,13 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     }
     
     private Class<?> getOrchestrationDataSourceClass(final String localName) {
-        if (ShardingDataSourceBeanDefinitionParserTag.ROOT_TAG.equals(localName)) {
-            return OrchestrationSpringShardingDataSource.class;
-        } else if (EncryptDataSourceBeanDefinitionParserTag.ROOT_TAG.equals(localName)) {
-            return OrchestrationSpringEncryptDataSource.class;
-        } else {
-            return OrchestrationSpringMasterSlaveDataSource.class;
+        switch (localName) { 
+            case ShardingDataSourceBeanDefinitionParserTag.ROOT_TAG:
+                return OrchestrationSpringShardingDataSource.class;
+            case EncryptDataSourceBeanDefinitionParserTag.ROOT_TAG:
+                return OrchestrationSpringEncryptDataSource.class;
+            default:
+                return OrchestrationSpringMasterSlaveDataSource.class;
         }
     }
     

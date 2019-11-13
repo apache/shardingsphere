@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.spi;
+package org.apache.shardingsphere.route.time;
+
+import org.apache.shardingsphere.core.route.spi.TimeService;
+import org.apache.shardingsphere.route.time.impl.TimeServiceFactory;
 
 import java.util.Date;
 
 /**
- * Time service.
+ * Delegate database time service.
  *
  * @author chenchuangliu
  */
-public interface TimeService {
+public final class DatabaseTimeServiceDelegate implements TimeService {
     
-    /**
-     * Get time.
-     * 
-     * @return time
-     */
-    Date getTime();
+    private static final TimeService TIME_SERVICE = TimeServiceFactory.createTimeService();
+    
+    @Override
+    public Date getTime() {
+        return TIME_SERVICE.getTime();
+    }
 }

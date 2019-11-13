@@ -94,7 +94,7 @@ public final class QueryResultUtilTest {
         when(resultSetMetaData.getColumnType(1)).thenReturn(Types.INTEGER);
         when(resultSetMetaData.isSigned(1)).thenReturn(true);
         when(resultSet.getInt(1)).thenReturn(Integer.MAX_VALUE);
-        assertThat((long) QueryResultUtil.getValue(resultSet, 1), is(Long.valueOf(Integer.MAX_VALUE)));
+        assertThat((long) QueryResultUtil.getValue(resultSet, 1), is((long) Integer.MAX_VALUE));
         assertThat((int) QueryResultUtil.getValue(resultSet, 1, int.class), is(Integer.MAX_VALUE));
     }
     

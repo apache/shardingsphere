@@ -15,21 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.spi;
-
-import java.util.Date;
+package org.apache.shardingsphere.route.time.exception;
 
 /**
- * Time service.
+ * No database SQL entry support.
  *
  * @author chenchuangliu
  */
-public interface TimeService {
+public final class NoDatabaseSQLEntrySupportException extends RuntimeException {
     
-    /**
-     * Get time.
-     * 
-     * @return time
-     */
-    Date getTime();
+    private static final long serialVersionUID = 2153295582601133739L;
 }
