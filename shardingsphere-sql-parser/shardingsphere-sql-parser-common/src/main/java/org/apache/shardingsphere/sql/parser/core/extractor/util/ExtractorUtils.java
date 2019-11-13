@@ -125,11 +125,25 @@ public final class ExtractorUtils {
      */
     public static Collection<ParserRuleContext> getAllDescendantNodes(final ParserRuleContext node, final RuleName ruleName) {
         Collection<ParserRuleContext> result = new LinkedList<>();
-        if (isMatchedNode(node, ruleName)) {
-            result.add(node);
+        for (ParserRuleContext each : getAllNodes(node)) {
+            if (isMatchedNode(each, ruleName)) {
+                result.add(each);
+            }
         }
+        return result;
+    }
+
+    /**
+     * Get all nodes.
+     *
+     * @param node start node
+     * @return all nodes
+     */
+    public static Collection<ParserRuleContext> getAllNodes(final ParserRuleContext node) {
+        Collection<ParserRuleContext> result = new LinkedList<>();
+        result.add(node);
         for (ParserRuleContext each : getChildrenNodes(node)) {
-            result.addAll(getAllDescendantNodes(each, ruleName));
+            result.addAll(getAllNodes(each));
         }
         return result;
     }
