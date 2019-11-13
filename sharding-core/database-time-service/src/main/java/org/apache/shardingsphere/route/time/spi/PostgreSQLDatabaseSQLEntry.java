@@ -23,12 +23,12 @@ package org.apache.shardingsphere.route.time.spi;
  * @author chenchuangliu
  */
 public final class PostgreSQLDatabaseSQLEntry implements DatabaseSQLEntry {
-
+    
     @Override
     public String getSQL() {
         return "SELECT NOW()";
     }
-
+    
     @Override
     public boolean isSupport(final String driverClassName) {
         return driverClassName.contains("postgresql");

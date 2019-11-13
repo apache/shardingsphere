@@ -30,25 +30,25 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 public final class SPIDataBaseSQLEntry implements DatabaseSQLEntry {
-
+    
     static {
         NewInstanceServiceLoader.register(DatabaseSQLEntry.class);
     }
-
+    
     private final Collection<DatabaseSQLEntry> sqlEntries = NewInstanceServiceLoader.newServiceInstances(DatabaseSQLEntry.class);
-
+    
     private final String driverClassName;
-
+    
     @Override
     public String getSQL() {
-        for (DatabaseSQLEntry entry : sqlEntries) {
-            if (entry.isSupport(driverClassName)) {
-                return entry.getSQL();
+        for (DatabaseSQLEntry each : sqlEntries) {
+            if (each.isSupport(driverClassName)) {
+                return each.getSQL();
             }
         }
         throw new NoDatabaseSQLEntrySupportException();
     }
-
+    
     @Override
     public boolean isSupport(final String driverClassName) {
         return true;

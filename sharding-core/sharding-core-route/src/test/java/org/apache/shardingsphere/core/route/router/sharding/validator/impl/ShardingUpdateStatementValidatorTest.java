@@ -63,21 +63,21 @@ public final class ShardingUpdateStatementValidatorTest {
     @Test
     public void assertValidateUpdateWithoutShardingKeyAndParameters() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
-        List parameters = Arrays.asList(1, 1);
+        List<Object> parameters = Arrays.<Object>asList(1, 1);
         new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatement(), parameters);
     }
 
     @Test
     public void assertValidateUpdateWithShardingKeyAndShardingParameterEquals() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        List parameters = Arrays.asList(1, 1);
+        List<Object> parameters = Arrays.<Object>asList(1, 1);
         new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatementAndParameters(1), parameters);
     }
 
     @Test(expected = ShardingException.class)
     public void assertValidateUpdateWithShardingKeyAndShardingParameterNotEquals() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        List parameters = Arrays.asList(1, 1);
+        List<Object> parameters = Arrays.<Object>asList(1, 1);
         new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatementAndParameters(2), parameters);
     }
 
@@ -88,10 +88,10 @@ public final class ShardingUpdateStatementValidatorTest {
         return result;
     }
 
-    private UpdateStatement createUpdateStatementAndParameters(final Object shardingColumnPatamater) {
+    private UpdateStatement createUpdateStatementAndParameters(final Object shardingColumnParameter) {
         UpdateStatement result = new UpdateStatement();
         result.getAllSQLSegments().add(new TableSegment(0, 0, "user"));
-        Collection<AssignmentSegment> assignments = Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "id"), new LiteralExpressionSegment(0, 0, shardingColumnPatamater)));
+        Collection<AssignmentSegment> assignments = Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "id"), new LiteralExpressionSegment(0, 0, shardingColumnParameter)));
         SetAssignmentsSegment setAssignmentsSegment = new SetAssignmentsSegment(0, 0, assignments);
         result.setSetAssignment(setAssignmentsSegment);
         WhereSegment where = new WhereSegment(0, 0, 1);

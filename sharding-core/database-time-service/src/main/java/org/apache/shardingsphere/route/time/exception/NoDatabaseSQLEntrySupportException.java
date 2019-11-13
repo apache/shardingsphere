@@ -23,6 +23,6 @@ package org.apache.shardingsphere.route.time.exception;
  * @author chenchuangliu
  */
 public final class NoDatabaseSQLEntrySupportException extends RuntimeException {
-
+    
     private static final long serialVersionUID = 2153295582601133739L;
 }

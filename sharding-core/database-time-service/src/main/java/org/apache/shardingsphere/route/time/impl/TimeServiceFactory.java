@@ -18,23 +18,23 @@
 package org.apache.shardingsphere.route.time.impl;
 
 import org.apache.shardingsphere.core.route.spi.TimeService;
-import org.apache.shardingsphere.route.time.TimeServiceConfig;
+import org.apache.shardingsphere.route.time.TimeServiceConfiguration;
 import org.apache.shardingsphere.route.time.spi.SPIDataBaseSQLEntry;
 
 /**
- * A Factory of creating TimeService.
+ * Time service factory.
  *
  * @author chenchuangliu
  */
 public final class TimeServiceFactory {
-
+    
     /**
-     * create a TimeService by {@link TimeServiceConfig}.
+     * Create time service by {@link TimeServiceConfiguration}.
      *
-     * @return TimeService
+     * @return time service instance
      */
     public static TimeService createTimeService() {
-        TimeServiceConfig config = TimeServiceConfig.getInstance();
-        return new DatabaseTimeService(config.getDataSource(), new SPIDataBaseSQLEntry(config.getDriverClassName()).getSQL());
+        TimeServiceConfiguration timeServiceConfiguration = TimeServiceConfiguration.getInstance();
+        return new DatabaseTimeService(timeServiceConfiguration.getDataSource(), new SPIDataBaseSQLEntry(timeServiceConfiguration.getDriverClassName()).getSQL());
     }
 }

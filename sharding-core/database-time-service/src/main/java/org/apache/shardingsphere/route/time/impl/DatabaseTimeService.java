@@ -28,17 +28,17 @@ import java.sql.SQLException;
 import java.util.Date;
 
 /**
- * Base database time service.
+ * Database time service.
  *
  * @author chenchuangliu
  */
 @RequiredArgsConstructor
 public final class DatabaseTimeService implements TimeService {
-
+    
     private final DataSource dataSource;
-
+    
     private final String sql;
-
+    
     @Override
     public Date getTime() {
         try (Connection connection = dataSource.getConnection();

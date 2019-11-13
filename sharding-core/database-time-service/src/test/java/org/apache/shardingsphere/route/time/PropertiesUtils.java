@@ -23,14 +23,14 @@ import java.io.IOException;
 import java.util.Properties;
 
 public final class PropertiesUtils {
-
+    
     private static final File FILE = new File(PropertiesUtils.class.getResource("/").getPath() + "time-service.properties");
-
+    
     /**
      * Create a time-service.properties file.
      *
-     * @param driverClassName driverClassName
-     * @param sql sql
+     * @param driverClassName driver class name
+     * @param sql SQL
      */
     public static void createProperties(final String driverClassName, final String sql) {
         try {
@@ -49,7 +49,7 @@ public final class PropertiesUtils {
         } catch (IOException ignore) {
         }
     }
-
+    
     /**
      * Delete time-service.properties.
      *

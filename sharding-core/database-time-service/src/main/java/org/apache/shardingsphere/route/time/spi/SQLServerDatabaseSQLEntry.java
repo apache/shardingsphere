@@ -23,12 +23,12 @@ package org.apache.shardingsphere.route.time.spi;
  * @author chenchuangliu
  */
 public final class SQLServerDatabaseSQLEntry implements DatabaseSQLEntry {
-
+    
     @Override
     public String getSQL() {
         return "SELECT GETDATE()";
     }
-
+    
     @Override
     public boolean isSupport(final String driverClassName) {
         return driverClassName.contains("sqlserver");

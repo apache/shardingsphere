@@ -18,24 +18,24 @@
 package org.apache.shardingsphere.route.time.spi;
 
 /**
- * DatabaseSQLEntry.
+ * Database SQL entry.
  *
  * @author chenchuangliu
  */
 public interface DatabaseSQLEntry {
-
+    
     /**
      * Get SQL for getting time.
      *
      * @return SQL
      */
     String getSQL();
-
+    
     /**
      * Determine whether it supports.
      *
-     * @param driverClassName driverClassName
-     * @return true or false
+     * @param driverClassName driver class name
+     * @return support or not
      */
     boolean isSupport(String driverClassName);
 }
