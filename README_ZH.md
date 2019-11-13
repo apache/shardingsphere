@@ -137,5 +137,5 @@ sharding-distribution/shardingsphere-src-distribution/target/apache-shardingsphe
 <br/><br/>
 <img src="https://landscape.cncf.io/images/left-logo.svg" width="150"/>&nbsp;&nbsp;<img src="https://landscape.cncf.io/images/right-logo.svg" width="200"/>
 <br/><br/>
-ShardingSphere 丰富了<a href="https://landscape.cncf.io/landscape=observability-and-analysis&license=apache-license-2-0"> CNCF </a>云原生景观。
+ShardingSphere进入了<a href="https://landscape.cncf.io/landscape=observability-and-analysis&license=apache-license-2-0">CNCF云原生全景图。</a>
 </p>
