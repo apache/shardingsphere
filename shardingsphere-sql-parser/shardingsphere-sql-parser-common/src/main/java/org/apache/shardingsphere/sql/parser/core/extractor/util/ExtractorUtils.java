@@ -35,7 +35,7 @@ import java.util.Queue;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExtractorUtils {
-
+    
     /**
      * Get first child node.
      *
@@ -153,7 +153,7 @@ public final class ExtractorUtils {
         }
         return result;
     }
-
+    
     private static boolean isMatchedNode(final ParserRuleContext node, final RuleName ruleName) {
         return ruleName.getName().equals(node.getClass().getSimpleName());
     }

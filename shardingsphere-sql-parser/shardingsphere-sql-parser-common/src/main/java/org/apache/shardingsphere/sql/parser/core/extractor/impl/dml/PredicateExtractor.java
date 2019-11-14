@@ -79,36 +79,36 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     }
 
     private ParserRuleContext extractOperatorNode(final ParserRuleContext exprNode, final int childIndex) {
-        ParserRuleContext operatorNode = (ParserRuleContext) exprNode.getChild(childIndex);
-        while (ExtractorUtils.findFirstChildNodeNoneRecursive(operatorNode, RuleName.LOGICAL_OPERATOR).isPresent()) {
-            operatorNode = (ParserRuleContext) operatorNode.getChild(childIndex);
+        ParserRuleContext result = (ParserRuleContext) exprNode.getChild(childIndex);
+        while (ExtractorUtils.findFirstChildNodeNoneRecursive(result, RuleName.LOGICAL_OPERATOR).isPresent()) {
+            result = (ParserRuleContext) result.getChild(childIndex);
         }
-        return operatorNode;
+        return result;
     }
 
     private Optional<OrPredicateSegment> extractPredicateSegment(final ParserRuleContext exprNode, final ParserRuleContext childNode,
                                                                  final int childIndex, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         ParserRuleContext operatorNode = childNode;
-        Optional<OrPredicateSegment> childPredicate = extractRecursiveWithParen(childNode, parameterMarkerIndexes);
+        Optional<OrPredicateSegment> result = extractRecursiveWithParen(childNode, parameterMarkerIndexes);
         Optional<OrPredicateSegment> predicateSegment;
         while (!operatorNode.getParent().equals(exprNode)) {
             Optional<ParserRuleContext> childLogicalNode = ExtractorUtils.findFirstChildNodeNoneRecursive(operatorNode.getParent(), RuleName.LOGICAL_OPERATOR);
             if (childLogicalNode.isPresent() && childIndex == 0) {
                 predicateSegment = extractRecursiveWithParen((ParserRuleContext) operatorNode.getParent().getChild(2), parameterMarkerIndexes);
-                if (childPredicate.isPresent() && predicateSegment.isPresent()) {
-                    childPredicate = Optional.of(mergePredicate(childPredicate.get(), predicateSegment.get(), childLogicalNode.get().getText()));
+                if (result.isPresent() && predicateSegment.isPresent()) {
+                    result = Optional.of(mergePredicate(result.get(), predicateSegment.get(), childLogicalNode.get().getText()));
                 }
-                childPredicate = childPredicate.isPresent() ? childPredicate : predicateSegment;
+                result = result.isPresent() ? result : predicateSegment;
             } else if (childLogicalNode.isPresent() && childIndex == 2) {
                 predicateSegment = extractRecursiveWithParen((ParserRuleContext) operatorNode.getParent().getChild(0), parameterMarkerIndexes);
-                if (childPredicate.isPresent() && predicateSegment.isPresent()) {
-                    childPredicate = Optional.of(mergePredicate(predicateSegment.get(), childPredicate.get(), childLogicalNode.get().getText()));
+                if (result.isPresent() && predicateSegment.isPresent()) {
+                    result = Optional.of(mergePredicate(predicateSegment.get(), result.get(), childLogicalNode.get().getText()));
                 }
-                childPredicate = predicateSegment.isPresent() ? predicateSegment : childPredicate;
+                result = predicateSegment.isPresent() ? predicateSegment : result;
             }
             operatorNode = operatorNode.getParent();
         }
-        return childPredicate;
+        return result;
     }
 
     private Optional<OrPredicateSegment> extractRecursiveWithParen(final ParserRuleContext exprNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
