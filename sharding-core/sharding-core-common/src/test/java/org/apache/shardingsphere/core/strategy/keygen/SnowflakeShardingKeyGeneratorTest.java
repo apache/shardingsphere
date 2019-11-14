@@ -181,11 +181,11 @@ public final class SnowflakeShardingKeyGeneratorTest {
     public void assertSetMaxVibrationOffsetFailureWhenNPowerOf2() {
         SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         Properties properties = new Properties();
-        properties.setProperty("max.vibration.offset", String.valueOf(2));
+        properties.setProperty("max.vibration.offset", String.valueOf(4096));
         keyGenerator.setProperties(properties);
         Field props = keyGenerator.getClass().getDeclaredField("properties");
         props.setAccessible(true);
-        assertThat(((Properties) props.get(keyGenerator)).get("max.vibration.offset"), is((Object) "2"));
+        assertThat(((Properties) props.get(keyGenerator)).get("max.vibration.offset"), is((Object) "4096"));
     }
     
     @Test
@@ -217,10 +217,10 @@ public final class SnowflakeShardingKeyGeneratorTest {
     public void assertSetMaxVibrationOffsetSuccess() {
         SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         Properties properties = new Properties();
-        properties.setProperty("max.vibration.offset", String.valueOf(1));
+        properties.setProperty("max.vibration.offset", String.valueOf(4095));
         keyGenerator.setProperties(properties);
         Field props = keyGenerator.getClass().getDeclaredField("properties");
         props.setAccessible(true);
-        assertThat(((Properties) props.get(keyGenerator)).get("max.vibration.offset"), is((Object) "1"));
+        assertThat(((Properties) props.get(keyGenerator)).get("max.vibration.offset"), is((Object) "4095"));
     }
 }
