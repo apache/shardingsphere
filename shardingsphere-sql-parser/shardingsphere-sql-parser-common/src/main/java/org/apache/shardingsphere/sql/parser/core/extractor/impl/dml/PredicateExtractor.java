@@ -64,7 +64,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         Preconditions.checkState(exprNode.isPresent());
         return extractRecursiveWithLogicalOperation(exprNode.get(), parameterMarkerIndexes);
     }
-
+    
     private Optional<OrPredicateSegment> extractRecursiveWithLogicalOperation(final ParserRuleContext exprNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> logicalOperatorNode = ExtractorUtils.findFirstChildNodeNoneRecursive(exprNode, RuleName.LOGICAL_OPERATOR);
         if (!logicalOperatorNode.isPresent()) {
