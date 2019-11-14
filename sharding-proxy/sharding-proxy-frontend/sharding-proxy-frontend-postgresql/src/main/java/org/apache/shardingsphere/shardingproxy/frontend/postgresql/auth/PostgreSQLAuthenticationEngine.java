@@ -25,6 +25,7 @@ import org.apache.shardingsphere.shardingproxy.frontend.ConnectionIdGenerator;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.AuthenticationEngine;
 import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.BinaryStatementRegistry;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLAuthenticationOKPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLComStartupPacket;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
  * Authentication engine for PostgreSQL.
  *
  * @author zhangliang
+ * @author avalon566
  */
 public final class PostgreSQLAuthenticationEngine implements AuthenticationEngine {
     
@@ -62,8 +64,12 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         PostgreSQLComStartupPacket comStartupPacket = new PostgreSQLComStartupPacket((PostgreSQLPacketPayload) payload);
         String databaseName = comStartupPacket.getParametersMap().get(DATABASE_NAME_KEYWORD);
         if (!Strings.isNullOrEmpty(databaseName) && !LogicSchemas.getInstance().schemaExists(databaseName)) {
-            // TODO send an error message
-            return true;
+            PostgreSQLErrorResponsePacket responsePacket = new PostgreSQLErrorResponsePacket();
+            responsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY, "FATAL");
+            responsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE, "3D000");
+            responsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, String.format("database \"%s\" does not exist", databaseName));
+            context.writeAndFlush(responsePacket);
+            return false;
         }
         backendConnection.setCurrentSchema(databaseName);
         // TODO send a md5 authentication request message
