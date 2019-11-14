@@ -58,8 +58,8 @@ public final class SingleXADataSourceTest {
     
     @Test
     public void assertGetXAConnectionOfXA() throws SQLException {
-        DataSource dataSource = DataSourceUtils.build(DruidXADataSource.class, DatabaseTypes.getActualDatabaseType("H2"), "ds1");
-        SingleXADataSource shardingXADataSource = new SingleXADataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1", dataSource);
+        XADataSource xaDataSource = XADataSourceFactory.build(DatabaseTypes.getActualDatabaseType("H2"));
+        SingleXADataSource shardingXADataSource = new SingleXADataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1", xaDataSource);
         SingleXAConnection actual = shardingXADataSource.getXAConnection();
         assertThat(actual.getConnection(), instanceOf(Connection.class));
     }
@@ -74,8 +74,8 @@ public final class SingleXADataSourceTest {
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetLoginTimeout() throws SQLException {
-        DataSource dataSource = DataSourceUtils.build(DruidXADataSource.class, DatabaseTypes.getActualDatabaseType("H2"), "ds1");
-        SingleXADataSource shardingXADataSource = new SingleXADataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1", dataSource);
+        XADataSource xaDataSource = XADataSourceFactory.build(DatabaseTypes.getActualDatabaseType("H2"));
+        SingleXADataSource shardingXADataSource = new SingleXADataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1", xaDataSource);
         shardingXADataSource.getLoginTimeout();
     }
     
