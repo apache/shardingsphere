@@ -77,7 +77,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         }
         return leftPredicate.isPresent() ? leftPredicate : rightPredicate;
     }
-        
+
     private ParserRuleContext extractOperatorNode(final ParserRuleContext exprNode, final int childIndex) {
         ParserRuleContext result = (ParserRuleContext) exprNode.getChild(childIndex);
         while (ExtractorUtils.findFirstChildNodeNoneRecursive(result, RuleName.LOGICAL_OPERATOR).isPresent()) {
@@ -110,7 +110,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         }
         return result;
     }
-
+        
     private Optional<OrPredicateSegment> extractRecursiveWithParen(final ParserRuleContext exprNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         if (1 == exprNode.getChild(0).getText().length() && Paren.isLeftParen(exprNode.getChild(0).getText().charAt(0))) {
             return extractRecursiveWithLogicalOperation((ParserRuleContext) exprNode.getChild(1), parameterMarkerIndexes);
