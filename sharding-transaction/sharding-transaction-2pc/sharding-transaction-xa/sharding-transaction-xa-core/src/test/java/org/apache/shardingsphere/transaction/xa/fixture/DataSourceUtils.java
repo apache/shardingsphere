@@ -19,11 +19,19 @@ package org.apache.shardingsphere.transaction.xa.fixture;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.xa.DruidXADataSource;
+import com.atomikos.beans.PropertyUtils;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinitionFactory;
 
 import javax.sql.DataSource;
+import javax.sql.XADataSource;
+import java.util.Properties;
 
 /**
  * Data source utility.
@@ -121,6 +129,20 @@ public final class DataSourceUtils {
         druidDataSource.setMaxWait(15 * 1000);
         druidDataSource.setMinEvictableIdleTimeMillis(40 * 1000);
         druidDataSource.setTimeBetweenEvictionRunsMillis(20 * 1000);
+    }
+    
+    /**
+     * Get XA data source.
+     * @param databaseType database type
+     * @return XA data source
+     */
+    @SneakyThrows
+    public static XADataSource createXADataSource(final DatabaseType databaseType) {
+        XADataSource result = XADataSourceFactory.build(databaseType);
+        XADataSourceDefinition xaDataSourceDefinition = XADataSourceDefinitionFactory.getXADataSourceDefinition(databaseType);
+        Properties xaProperties = xaDataSourceDefinition.getXAProperties(new DatabaseAccessConfiguration(getURL(databaseType, "ds1"), "root", "root"));
+        PropertyUtils.setProperties(result, xaProperties);
+        return result;
     }
     
     private static String getURL(final DatabaseType databaseType, final String databaseName) {
