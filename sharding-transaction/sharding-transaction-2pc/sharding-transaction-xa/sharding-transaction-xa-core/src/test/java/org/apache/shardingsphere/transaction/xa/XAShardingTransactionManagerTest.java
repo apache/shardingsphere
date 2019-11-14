@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.transaction.xa;
 
-import com.alibaba.druid.pool.xa.DruidXADataSource;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
@@ -37,7 +36,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
@@ -86,24 +84,15 @@ public final class XAShardingTransactionManagerTest {
     }
     
     @Test
-    public void assertRegisterXATransactionalDataSources() {
-        Collection<ResourceDataSource> resourceDataSources = createResourceDataSources(DruidXADataSource.class, DatabaseTypes.getActualDatabaseType("MySQL"));
-        xaShardingTransactionManager.init(DatabaseTypes.getActualDatabaseType("MySQL"), resourceDataSources);
-        for (ResourceDataSource each : resourceDataSources) {
-            verify(xaTransactionManager).registerRecoveryResource(each.getUniqueResourceName(), (XADataSource) each.getDataSource());
-        }
-    }
-    
-    @Test
     public void assertRegisterAtomikosDataSourceBeans() {
-        xaShardingTransactionManager.init(DatabaseTypes.getActualDatabaseType("MySQL"), createAtomikosDataSourceBeanResource());
+        xaShardingTransactionManager.init(DatabaseTypes.getActualDatabaseType("H2"), createAtomikosDataSourceBeanResource());
         verify(xaTransactionManager, times(0)).registerRecoveryResource(anyString(), any(XADataSource.class));
     }
     
     @Test
     public void assertRegisterNoneXATransactionalDAtaSources() {
-        Collection<ResourceDataSource> resourceDataSources = createResourceDataSources(HikariDataSource.class, DatabaseTypes.getActualDatabaseType("MySQL"));
-        xaShardingTransactionManager.init(DatabaseTypes.getActualDatabaseType("MySQL"), resourceDataSources);
+        Collection<ResourceDataSource> resourceDataSources = createResourceDataSources(DatabaseTypes.getActualDatabaseType("H2"));
+        xaShardingTransactionManager.init(DatabaseTypes.getActualDatabaseType("H2"), resourceDataSources);
         Map<String, SingleXADataSource> cachedXADatasourceMap = getCachedSingleXADataSourceMap();
         assertThat(cachedXADatasourceMap.size(), is(2));
     }
@@ -202,10 +191,10 @@ public final class XAShardingTransactionManagerTest {
         return result;
     }
     
-    private Collection<ResourceDataSource> createResourceDataSources(final Class<? extends DataSource> dataSourceClass, final DatabaseType databaseType) {
+    private Collection<ResourceDataSource> createResourceDataSources(final DatabaseType databaseType) {
         List<ResourceDataSource> result = new LinkedList<>();
-        result.add(new ResourceDataSource("ds1", DataSourceUtils.build(dataSourceClass, databaseType, "demo_ds_1")));
-        result.add(new ResourceDataSource("ds2", DataSourceUtils.build(dataSourceClass, databaseType, "demo_ds_2")));
+        result.add(new ResourceDataSource("ds1", DataSourceUtils.build(HikariDataSource.class, databaseType, "demo_ds_1")));
+        result.add(new ResourceDataSource("ds2", DataSourceUtils.build(HikariDataSource.class, databaseType, "demo_ds_2")));
         return result;
     }
     
