@@ -89,7 +89,7 @@ public final class RoutingEngineFactory {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && tableNames.isEmpty() && shardingRule.hasDefaultDataSourceName()) {
             return new DefaultDatabaseRoutingEngine(shardingRule, tableNames);
         }
-        if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty()) {
+        if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty() || !shardingRule.tableRuleExists(tableNames)) {
             return new UnicastRoutingEngine(shardingRule, tableNames);
         }
         return getShardingRoutingEngine(shardingRule, sqlStatementContext, shardingConditions, tableNames);
