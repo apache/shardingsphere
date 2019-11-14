@@ -153,6 +153,15 @@ public final class SnowflakeShardingKeyGeneratorTest {
     public void assertSetMaxVibrationOffsetFailureWhenNegative() {
         SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         Properties properties = new Properties();
+        properties.setProperty("max.vibration.offset", String.valueOf(-1));
+        keyGenerator.setProperties(properties);
+        keyGenerator.generateKey();
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertSetMaxVibrationOffsetFailureWhenZero() {
+        SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
+        Properties properties = new Properties();
         properties.setProperty("max.vibration.offset", String.valueOf(0));
         keyGenerator.setProperties(properties);
         keyGenerator.generateKey();
@@ -174,23 +183,6 @@ public final class SnowflakeShardingKeyGeneratorTest {
         properties.setProperty("max.vibration.offset", String.valueOf(4096));
         keyGenerator.setProperties(properties);
         keyGenerator.generateKey();
-    }
-    
-    @Test
-    @SneakyThrows
-    public void assertSetMaxVibrationOffsetFailureWhenNPowerOf2() {
-        SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
-        Properties properties = new Properties();
-        List<Object> expected = Arrays.<Object>asList("2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048");
-        List<Object> actual = new ArrayList<>();
-        for (int i = 2; i <= 2048; i = i << 1) {
-            properties.setProperty("max.vibration.offset", String.valueOf(i));
-            keyGenerator.setProperties(properties);
-            Field props = keyGenerator.getClass().getDeclaredField("properties");
-            props.setAccessible(true);
-            actual.add(((Properties) props.get(keyGenerator)).get("max.vibration.offset"));
-        }
-        assertThat(actual, is(expected));
     }
     
     @Test
