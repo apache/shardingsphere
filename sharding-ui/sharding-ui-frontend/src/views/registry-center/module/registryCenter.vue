@@ -23,7 +23,7 @@
         type="primary"
         icon="el-icon-plus"
         @click="add"
-      >{{ $t("index.btnTxt") }}</el-button>
+      >{{ $t("registryCenter.btnTxt") }}</el-button>
     </div>
     <div class="table-wrap">
       <el-table :data="tableData" border style="width: 100%">
@@ -34,10 +34,10 @@
           :label="item.label"
           :width="item.width"
         />
-        <el-table-column :label="$t('index.table.operate')" fixed="right" width="140">
+        <el-table-column :label="$t('registryCenter.table.operate')" fixed="right" width="140">
           <template slot-scope="scope">
             <el-tooltip
-              :content="!scope.row.activated ? $t('index.table.operateConnect'): $t('index.table.operateConnected')"
+              :content="!scope.row.activated ? $t('registryCenter.table.operateConnect'): $t('registryCenter.table.operateConnected')"
               class="item"
               effect="dark"
               placement="top"
@@ -50,7 +50,7 @@
               />
             </el-tooltip>
             <el-tooltip
-              :content="$t('index.table.operateDel')"
+              :content="$t('registryCenter.table.operateDel')"
               class="item"
               effect="dark"
               placement="top"
@@ -76,54 +76,54 @@
       </div>
     </div>
     <el-dialog
-      :title="$t('index.registDialog.title')"
+      :title="$t('registryCenter.registDialog.title')"
       :visible.sync="regustDialogVisible"
       width="1010px"
     >
       <el-form ref="form" :model="form" :rules="rules" label-width="170px">
-        <el-form-item :label="$t('index.registDialog.name')" prop="name">
-          <el-input :placeholder="$t('index.rules.name')" v-model="form.name" autocomplete="off" />
+        <el-form-item :label="$t('registryCenter.registDialog.name')" prop="name">
+          <el-input :placeholder="$t('registryCenter.rules.name')" v-model="form.name" autocomplete="off" />
         </el-form-item>
-        <el-form-item :label="$t('index.registDialog.centerType')" prop="centerType">
+        <el-form-item :label="$t('registryCenter.registDialog.centerType')" prop="centerType">
           <el-radio-group v-model="form.centerType">
             <el-radio label="Zookeeper">Zookeeper</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item :label="$t('index.registDialog.address')" prop="address">
+        <el-form-item :label="$t('registryCenter.registDialog.address')" prop="address">
           <el-input
-            :placeholder="$t('index.rules.address')"
+            :placeholder="$t('registryCenter.rules.address')"
             v-model="form.address"
             autocomplete="off"
           />
         </el-form-item>
-        <el-form-item :label="$t('index.registDialog.orchestrationName')" prop="orchestrationName">
+        <el-form-item :label="$t('registryCenter.registDialog.orchestrationName')" prop="orchestrationName">
           <el-input
-            :placeholder="$t('index.rules.orchestrationName')"
+            :placeholder="$t('registryCenter.rules.orchestrationName')"
             v-model="form.orchestrationName"
             autocomplete="off"
           />
         </el-form-item>
-        <el-form-item :label="$t('index.registDialog.namespaces')" prop="namespaces">
+        <el-form-item :label="$t('registryCenter.registDialog.namespaces')" prop="namespaces">
           <el-input
-            :placeholder="$t('index.rules.namespaces')"
+            :placeholder="$t('registryCenter.rules.namespaces')"
             v-model="form.namespaces"
             autocomplete="off"
           />
         </el-form-item>
-        <el-form-item :label="$t('index.registDialog.digest')">
+        <el-form-item :label="$t('registryCenter.registDialog.digest')">
           <el-input
-            :placeholder="$t('index.rules.digest')"
+            :placeholder="$t('registryCenter.rules.digest')"
             v-model="form.digest"
             autocomplete="off"
           />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="regustDialogVisible = false">{{ $t("index.registDialog.btnCancelTxt") }}</el-button>
+        <el-button @click="regustDialogVisible = false">{{ $t("registryCenter.registDialog.btnCancelTxt") }}</el-button>
         <el-button
           type="primary"
           @click="onConfirm('form')"
-        >{{ $t("index.registDialog.btnConfirmTxt") }}</el-button>
+        >{{ $t("registryCenter.registDialog.btnConfirmTxt") }}</el-button>
       </div>
     </el-dialog>
   </el-row>
@@ -139,23 +139,23 @@ export default {
       regustDialogVisible: false,
       column: [
         {
-          label: this.$t('index').registDialog.name,
+          label: this.$t('registryCenter').registDialog.name,
           prop: 'name'
         },
         {
-          label: this.$t('index').registDialog.centerType,
+          label: this.$t('registryCenter').registDialog.centerType,
           prop: 'registryCenterType'
         },
         {
-          label: this.$t('index').registDialog.address,
+          label: this.$t('registryCenter').registDialog.address,
           prop: 'serverLists'
         },
         {
-          label: this.$t('index').registDialog.namespaces,
+          label: this.$t('registryCenter').registDialog.namespaces,
           prop: 'namespace'
         },
         {
-          label: this.$t('index').registDialog.orchestrationName,
+          label: this.$t('registryCenter').registDialog.orchestrationName,
           prop: 'orchestrationName'
         }
       ],
@@ -171,35 +171,35 @@ export default {
         name: [
           {
             required: true,
-            message: this.$t('index').rules.name,
+            message: this.$t('registryCenter').rules.name,
             trigger: 'change'
           }
         ],
         address: [
           {
             required: true,
-            message: this.$t('index').rules.address,
+            message: this.$t('registryCenter').rules.address,
             trigger: 'change'
           }
         ],
         namespaces: [
           {
             required: true,
-            message: this.$t('index').rules.namespaces,
+            message: this.$t('registryCenter').rules.namespaces,
             trigger: 'change'
           }
         ],
         centerType: [
           {
             required: true,
-            message: this.$t('index').rules.centerType,
+            message: this.$t('registryCenter').rules.centerType,
             trigger: 'change'
           }
         ],
         orchestrationName: [
           {
             required: true,
-            message: this.$t('index').rules.orchestrationName,
+            message: this.$t('registryCenter').rules.orchestrationName,
             trigger: 'change'
           }
         ]

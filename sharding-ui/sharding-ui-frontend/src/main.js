@@ -36,7 +36,7 @@ Vue.use(Vuex)
 // language setting init
 const navLang = navigator.language
 const localLang = navLang === 'zh-CN' || navLang === 'en-US' ? navLang : false
-const lang = window.localStorage.getItem('language') || localLang || 'zh-CN'
+const lang = localStorage.getItem('language') || localLang || 'zh-CN'
 Vue.config.lang = lang
 
 // language setting
@@ -45,7 +45,7 @@ const mergeZH = locales['zh-CN']
 const mergeEN = locales['en-US']
 
 const i18n = new VueI18n({
-  locale: 'en-US',
+  locale: lang,
   messages: {
     'zh-CN': mergeZH,
     'en-US': mergeEN

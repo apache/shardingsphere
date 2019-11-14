@@ -73,16 +73,16 @@
     </el-dialog>
     <el-dialog :visible.sync="addSchemaDialogVisible" title="Add Schema" width="80%" top="3vh">
       <el-form ref="form" :model="form" :rules="rules" label-width="170px">
-        <el-form-item :label="$t('configManage.schema.name')" prop="name">
+        <el-form-item :label="$t('ruleConfig.schema.name')" prop="name">
           <el-input
-            :placeholder="$t('configManage.schemaRules.name')"
+            :placeholder="$t('ruleConfig.schemaRules.name')"
             v-model="form.name"
             autocomplete="off"
           />
         </el-form-item>
-        <el-form-item :label="$t('configManage.schema.ruleConfig')" prop="ruleConfig">
+        <el-form-item :label="$t('ruleConfig.schema.ruleConfig')" prop="ruleConfig">
           <el-input
-            :placeholder="$t('configManage.schemaRules.ruleConfig')"
+            :placeholder="$t('ruleConfig.schemaRules.ruleConfig')"
             :rows="8"
             v-model="form.ruleConfig"
             autocomplete="off"
@@ -90,9 +90,9 @@
             class="edit-text"
           />
         </el-form-item>
-        <el-form-item :label="$t('configManage.schema.dataSourceConfig')" prop="dataSourceConfig">
+        <el-form-item :label="$t('ruleConfig.schema.dataSourceConfig')" prop="dataSourceConfig">
           <el-input
-            :placeholder="$t('configManage.schemaRules.dataSourceConfig')"
+            :placeholder="$t('ruleConfig.schemaRules.dataSourceConfig')"
             :rows="8"
             v-model="form.dataSourceConfig"
             autocomplete="off"
@@ -136,21 +136,21 @@ export default {
         name: [
           {
             required: true,
-            message: this.$t('configManage').schemaRules.name,
+            message: this.$t('ruleConfig').schemaRules.name,
             trigger: 'change'
           }
         ],
         ruleConfig: [
           {
             required: true,
-            message: this.$t('configManage').schemaRules.ruleConfig,
+            message: this.$t('ruleConfig').schemaRules.ruleConfig,
             trigger: 'change'
           }
         ],
         dataSourceConfig: [
           {
             required: true,
-            message: this.$t('configManage').schemaRules.dataSourceConfig,
+            message: this.$t('ruleConfig').schemaRules.dataSourceConfig,
             trigger: 'change'
           }
         ]

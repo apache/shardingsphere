@@ -17,6 +17,7 @@
 
 export default {
   common: {
+    home: '主页',
     menuData: [
       {
         title: '数据治理',
@@ -48,7 +49,17 @@ export default {
       updateCompletedMessage: '更新成功',
       updateFaildMessage: '更新失败'
     },
-    loginOut: '退出登陆'
+    loginOut: '退出登陆',
+    dropdownList: [
+      {
+        title: '中文',
+        command: 'Chinese'
+      },
+      {
+        title: 'English',
+        command: 'English'
+      }
+    ]
   },
   login: {
     btnTxt: '登陆',
@@ -64,7 +75,7 @@ export default {
     pUserName: '请输入用户名',
     pPaasword: '请输入密码'
   },
-  index: {
+  registryCenter: {
     btnTxt: '添加',
     registDialog: {
       title: '添加注册中心',
@@ -92,7 +103,7 @@ export default {
       digest: '请输入登录凭证'
     }
   },
-  orchestration: {
+  runtimeStatus: {
     serviceNode: '服务节点',
     slaveDataSourceName: '从库信息',
     dataSource: {
@@ -105,7 +116,7 @@ export default {
       serverIp: '服务ip'
     }
   },
-  configManage: {
+  ruleConfig: {
     schema: {
       name: '名称',
       ruleConfig: '分片配置规则',
