@@ -77,7 +77,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         }
         return leftPredicate.isPresent() ? leftPredicate : rightPredicate;
     }
-
+        
     private ParserRuleContext extractOperatorNode(final ParserRuleContext exprNode, final int childIndex) {
         ParserRuleContext result = (ParserRuleContext) exprNode.getChild(childIndex);
         while (ExtractorUtils.findFirstChildNodeNoneRecursive(result, RuleName.LOGICAL_OPERATOR).isPresent()) {
