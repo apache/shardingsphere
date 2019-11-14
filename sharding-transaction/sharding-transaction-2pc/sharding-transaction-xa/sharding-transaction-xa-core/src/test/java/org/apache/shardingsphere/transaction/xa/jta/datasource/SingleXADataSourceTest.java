@@ -38,7 +38,7 @@ public final class SingleXADataSourceTest {
     
     @Test
     public void assertBuildSingleXADataSourceOfXA() {
-        XADataSource xaDataSource = DataSourceUtils.createXADataSource(DatabaseTypes.getActualDatabaseType("H2"));
+        XADataSource xaDataSource = DataSourceUtils.createXADataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1");
         SingleXADataSource actual = new SingleXADataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1", xaDataSource);
         assertThat(actual.getResourceName(), is("ds1"));
         assertThat(actual.getXaDataSource(), is(xaDataSource));
@@ -57,7 +57,7 @@ public final class SingleXADataSourceTest {
     
     @Test
     public void assertGetXAConnectionOfXA() throws SQLException {
-        XADataSource xaDataSource = DataSourceUtils.createXADataSource(DatabaseTypes.getActualDatabaseType("H2"));
+        XADataSource xaDataSource = DataSourceUtils.createXADataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1");
         SingleXADataSource shardingXADataSource = new SingleXADataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1", xaDataSource);
         SingleXAConnection actual = shardingXADataSource.getXAConnection();
         assertThat(actual.getConnection(), instanceOf(Connection.class));
