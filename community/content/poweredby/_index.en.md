@@ -5,9 +5,15 @@ weight = 2
 chapter = true
 +++
 
+## Register
+
 Welcome companies who have used ShardingSphere to register here, your support is our biggest encouragement.
 
 Please register [here](https://github.com/sharding-sphere/sharding-sphere/issues/234) with `company` + `homepage` + `company type` + `usefulness`.
+
+## Who uses ShardingSphere?
+ 
+ ![user-wall](https://shardingsphere.apache.org/community/image/poweredby/user-wall.png)
 
 The list here will be shown in the alphabetical order.
 
@@ -28,6 +34,7 @@ The list here will be shown in the alphabetical order.
 1. BBGame http://www.bbgameonline.com/
 1. Biechipang http://www.biechipang.net/
 1. Bilibili https://www.bilibili.com/
+1. BestPay http://www.bestpay.com.cn/
 1. CertusNet http://www.certusnet.com.cn/
 1. Chaojilanling http://www.chaojilanling.cn/
 1. ChinaRoad https://660pp.com/

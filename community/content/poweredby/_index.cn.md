@@ -5,9 +5,15 @@ weight = 2
 chapter = true
 +++
 
+## 登记
+ 
 欢迎采用了ShardingSphere的公司在此登记，您的支持是我们最大的动力。
 
 请按`公司名` + `首页` + `公司类型` + `用处` 的格式在[此处](https://github.com/sharding-sphere/sharding-sphere/issues/234)登记。
+
+## 谁在使用ShardingSphere?
+
+![user-wall](https://shardingsphere.apache.org/community/image/poweredby/user-wall.png)
 
 采用公司列表按字母排序展示。
 
@@ -100,6 +106,7 @@ chapter = true
 1. 天涯社区 http://www.tianya.cn/ 
 1. 兔展 http://www.rabbitpre.com/ 
 1. 团贷网 https://www.tuandai.com/ 
+1. 甜橘金融 http://www.bestpay.com.cn/
 1. 微脉 http://www.myweimai.com/ 
 1. 唯品会 http://www.vip.com/ 
 1. 我爱卡 http://www.51credit.com/ 
