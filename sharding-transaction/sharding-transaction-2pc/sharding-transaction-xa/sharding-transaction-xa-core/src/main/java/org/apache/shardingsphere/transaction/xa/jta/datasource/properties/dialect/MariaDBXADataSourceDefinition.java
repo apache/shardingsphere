@@ -52,7 +52,7 @@ public final class MariaDBXADataSourceDefinition implements XADataSourceDefiniti
         result.setProperty("url", databaseAccessConfiguration.getUrl());
         result.setProperty("ServerName", dataSourceMetaData.getHostName());
         result.setProperty("port", String.valueOf(dataSourceMetaData.getPort()));
-        result.setProperty("DatabaseName", dataSourceMetaData.getSchemaName());
+        result.setProperty("DatabaseName", dataSourceMetaData.getCatalog());
         return result;
     }
 }

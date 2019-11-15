@@ -51,7 +51,7 @@ public final class OracleXADataSourceDefinition implements XADataSourceDefinitio
         result.setProperty("password", Optional.fromNullable(databaseAccessConfiguration.getPassword()).or(""));
         result.setProperty("serverName", dataSourceMetaData.getHostName());
         result.setProperty("portNumber", String.valueOf(dataSourceMetaData.getPort()));
-        result.setProperty("databaseName", dataSourceMetaData.getSchemaName());
+        result.setProperty("databaseName", dataSourceMetaData.getCatalog());
         return result;
     }
 }
