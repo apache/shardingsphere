@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.metadata.datasource;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -46,7 +46,7 @@ public final class DataSourceMetas {
     }
     
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final Map<String, String> dataSourceURLs, final DatabaseType databaseType) {
-        Map<String, DataSourceMetaData> result = new LinkedHashMap<>(dataSourceURLs.size(), 1);
+        Map<String, DataSourceMetaData> result = new HashMap<>(dataSourceURLs.size(), 1);
         for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
             result.put(entry.getKey(), databaseType.getDataSourceMetaData(entry.getValue()));
         }
@@ -54,7 +54,7 @@ public final class DataSourceMetas {
     }
     
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final DatabaseType databaseType, final Map<String, DataSourceInfo> dataSourceInfoMap) {
-        Map<String, DataSourceMetaData> result = new LinkedHashMap<>(dataSourceInfoMap.size(), 1);
+        Map<String, DataSourceMetaData> result = new HashMap<>(dataSourceInfoMap.size(), 1);
         for (Entry<String, DataSourceInfo> entry : dataSourceInfoMap.entrySet()) {
             result.put(entry.getKey(), databaseType.getDataSourceMetaData(entry.getValue()));
         }
