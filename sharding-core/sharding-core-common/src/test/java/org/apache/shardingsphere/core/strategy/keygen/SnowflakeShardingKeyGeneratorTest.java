@@ -64,29 +64,6 @@ public final class SnowflakeShardingKeyGeneratorTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertGenerateKeyWithMultipleThreadsWhenNumberOfTablesBeEqualToNPowerOf2() {
-        int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
-        ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
-        int taskNumber = threadNumber << 2;
-        final SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
-        Properties properties = new Properties();
-        properties.setProperty("max.vibration.offset", String.valueOf(3));
-        keyGenerator.setProperties(properties);
-        Set<Comparable<?>> actual = new HashSet<>();
-        for (int i = 0; i < taskNumber; i++) {
-            actual.add(executor.submit(new Callable<Comparable<?>>() {
-                
-                @Override
-                public Comparable<?> call() {
-                    return keyGenerator.generateKey();
-                }
-            }).get());
-        }
-        assertThat(actual.size(), is(taskNumber));
-    }
-    
-    @Test
     public void assertGenerateKeyWithSingleThread() {
         SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         keyGenerator.setProperties(new Properties());
@@ -100,7 +77,7 @@ public final class SnowflakeShardingKeyGeneratorTest {
     }
     
     @Test
-    public void assertGenerateKeyWithSingleThreadWhenNumberOfTablesBeEqualToNPowerOf2() {
+    public void assertGenerateKeyWithMaxVibrationOffsetBeEquelToNPowerOf2() {
         SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         Properties properties = new Properties();
         properties.setProperty("max.vibration.offset", String.valueOf(3));
