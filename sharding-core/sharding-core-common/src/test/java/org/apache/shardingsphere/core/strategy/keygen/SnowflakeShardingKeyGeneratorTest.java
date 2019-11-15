@@ -77,7 +77,7 @@ public final class SnowflakeShardingKeyGeneratorTest {
     }
     
     @Test
-    public void assertGenerateKeyWithMaxVibrationOffsetBeEquelToNPowerOf2() {
+    public void assertGenerateKeyWithMaxVibrationOffsetBe1LessThanPowerOf2() {
         SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         Properties properties = new Properties();
         properties.setProperty("max.vibration.offset", String.valueOf(3));
