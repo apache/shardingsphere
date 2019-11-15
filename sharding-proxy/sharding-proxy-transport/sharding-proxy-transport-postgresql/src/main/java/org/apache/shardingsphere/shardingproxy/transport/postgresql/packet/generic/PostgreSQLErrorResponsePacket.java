@@ -24,6 +24,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Error response packet for PostgreSQL.
@@ -35,7 +36,7 @@ import java.util.Map;
 public final class PostgreSQLErrorResponsePacket implements PostgreSQLPacket {
 
     public static final char FIELD_TYPE_SEVERITY = 'S';
-    
+
     public static final char FIELD_TYPE_SEVERITY2 = 'V';
 
     public static final char FIELD_TYPE_CODE = 'C';
@@ -77,7 +78,7 @@ public final class PostgreSQLErrorResponsePacket implements PostgreSQLPacket {
 
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-        for (Map.Entry<Character, String> each : fields.entrySet()) {
+        for (Entry<Character, String> each : fields.entrySet()) {
             payload.writeInt1(each.getKey());
             payload.writeStringNul(each.getValue());
         }
