@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.spi.database;
 
-import org.apache.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaData;
-
 import java.util.Collection;
 import java.util.Collections;
 
-import javax.sql.DataSource;
+import org.apache.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaData;
 
 /**
  * Database type of Oracle.
@@ -47,7 +45,7 @@ public final class OracleDatabaseType implements DatabaseType {
     }
     
     @Override
-    public DataSourceMetaData getDataSourceMetaData(final DataSource dataSource) {
-        return new OracleDataSourceMetaData(dataSource);
+    public DataSourceMetaData getDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
+        return new OracleDataSourceMetaData(dataSourceInfo);
     }
 }

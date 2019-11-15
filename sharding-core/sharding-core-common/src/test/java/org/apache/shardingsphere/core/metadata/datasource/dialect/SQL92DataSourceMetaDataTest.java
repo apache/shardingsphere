@@ -17,22 +17,44 @@
 
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
-import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
-import org.junit.Test;
-
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+
+import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.spi.database.DataSourceInfo;
+import org.junit.Before;
+import org.junit.Test;
 
 public final class SQL92DataSourceMetaDataTest {
     
+    private DataSourceInfo dataSourceInfo;
+    
+    @Before
+    public void setUp() {
+        dataSourceInfo = new DataSourceInfo();
+        dataSourceInfo.setUrl("jdbc:sql92_db:ds_0");
+        dataSourceInfo.setUserName("test");
+    }
+    
     @Test
-    public void assertGetProperties() {
-        SQL92DataSourceMetaData actual = new SQL92DataSourceMetaData("jdbc:sql92_db:ds_0");
+    public void assertDataSourceInfoParam() {
+        SQL92DataSourceMetaData actual = new SQL92DataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is(""));
         assertThat(actual.getPort(), is(-1));
-        assertThat(actual.getSchemaName(), is(""));
+        assertThat(actual.getCatalog(), is(""));
+        assertEquals(actual.getSchemaName(), null);
     }
-
+    
+    @Test
+    public void assertGetProperties() {
+        SQL92DataSourceMetaData actual = new SQL92DataSourceMetaData(dataSourceInfo.getUrl());
+        assertThat(actual.getHostName(), is(""));
+        assertThat(actual.getPort(), is(-1));
+        assertThat(actual.getCatalog(), is(""));
+        assertEquals(actual.getSchemaName(), null);
+    }
+    
     @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertGetPropertiesFailure() {
         new SQL92DataSourceMetaData("xxx:xxxx:xxxxxxxx");

@@ -18,19 +18,39 @@
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
 import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.spi.database.DataSourceInfo;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public final class PostgreSQLDataSourceMetaDataTest {
+    private DataSourceInfo dataSourceInfo;
+    
+    @Before
+    public void setUp() {
+        dataSourceInfo = new DataSourceInfo();
+        dataSourceInfo.setUrl("jdbc:postgresql://127.0.0.1:9999/ds_0");
+        dataSourceInfo.setUserName("test");
+    }
+    
+    @Test
+    public void assertDataSourceInfoParam() {
+        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData(dataSourceInfo);
+        assertThat(actual.getHostName(), is("127.0.0.1"));
+        assertThat(actual.getPort(), is(9999));
+        assertThat(actual.getCatalog(), is("ds_0"));
+        assertEquals(actual.getSchemaName(), null);
+    }
     
     @Test
     public void assertGetPropertiesWithPort() {
-        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:postgresql://127.0.0.1:9999/ds_0");
+        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData(dataSourceInfo.getUrl());
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
-        assertThat(actual.getSchemaName(), is("ds_0"));
+        assertEquals(actual.getSchemaName(), null);
     }
     
     @Test
@@ -38,7 +58,8 @@ public final class PostgreSQLDataSourceMetaDataTest {
         PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:postgresql://127.0.0.1/ds_0");
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(5432));
-        assertThat(actual.getSchemaName(), is("ds_0"));
+        assertEquals(actual.getCatalog(), "ds_0");
+        assertEquals(actual.getSchemaName(), null);
     }
     
     @Test(expected = UnrecognizedDatabaseURLException.class)

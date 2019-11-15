@@ -17,15 +17,11 @@
 
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.sql.DataSource;
-
-import org.apache.shardingsphere.core.metadata.datasource.exception.UnBuildDataSourceMetaException;
 import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.spi.database.MemorizedDataSourceMetaData;
 
 import lombok.Getter;
@@ -61,19 +57,15 @@ public final class H2DataSourceMetaData implements MemorizedDataSourceMetaData {
         schemaName = null;
     }
 
-    public H2DataSourceMetaData(final DataSource dataSource) {
-        try (Connection conn = dataSource.getConnection()) {
-            String url = conn.getMetaData().getURL();
-            Matcher matcher = pattern.matcher(url);
-            if (!matcher.find()) {
-                throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
-            }
-            hostName = "";
-            port = DEFAULT_PORT;
-            catalog = matcher.group(2);
-            schemaName = null;
-        } catch (SQLException | UnrecognizedDatabaseURLException e) {
-            throw new UnBuildDataSourceMetaException(e);
+    public H2DataSourceMetaData(final DataSourceInfo dataSourceInfo) {
+        String url = dataSourceInfo.getUrl();
+        Matcher matcher = pattern.matcher(url);
+        if (!matcher.find()) {
+            throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
         }
+        hostName = "";
+        port = DEFAULT_PORT;
+        catalog = matcher.group(2);
+        schemaName = null;
     }
 }

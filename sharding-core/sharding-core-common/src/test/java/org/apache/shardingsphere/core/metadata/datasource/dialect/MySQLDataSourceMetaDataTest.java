@@ -18,19 +18,41 @@
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
 import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.spi.database.DataSourceInfo;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public final class MySQLDataSourceMetaDataTest {
     
+    private DataSourceInfo dataSourceInfo;
+    
+    @Before
+    public void setUp() {
+        dataSourceInfo = new DataSourceInfo();
+        dataSourceInfo.setUrl("jdbc:mysql://127.0.0.1:9999/ds_0?serverTimezone=UTC&useSSL=false");
+        dataSourceInfo.setUserName("test");
+    }
+    
     @Test
-    public void assertGetPropertiesWithPort() {
-        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql://127.0.0.1:9999/ds_0?serverTimezone=UTC&useSSL=false");
+    public void assertDataSourceInfoParam() {
+        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
-        assertThat(actual.getSchemaName(), is("ds_0"));
+        assertThat(actual.getCatalog(), is("ds_0"));
+        assertEquals(actual.getSchemaName(), null);
+    }
+    
+    @Test
+    public void assertGetPropertiesWithPort() {
+        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData(dataSourceInfo.getUrl());
+        assertThat(actual.getHostName(), is("127.0.0.1"));
+        assertThat(actual.getPort(), is(9999));
+        assertEquals(actual.getSchemaName(), null);
+        assertEquals(actual.getCatalog(), "ds_0");
     }
     
     @Test
@@ -38,7 +60,7 @@ public final class MySQLDataSourceMetaDataTest {
         MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql:loadbalance://127.0.0.1/ds_0?serverTimezone=UTC&useSSL=false");
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(3306));
-        assertThat(actual.getSchemaName(), is("ds_0"));
+        assertEquals(actual.getSchemaName(), null);
     }
     
     @Test(expected = UnrecognizedDatabaseURLException.class)

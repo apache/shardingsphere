@@ -20,7 +20,9 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -33,6 +35,7 @@ import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCTableMetaDataConnectionManager;
+import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 
@@ -69,9 +72,27 @@ public final class ShardingRuntimeContext extends AbstractRuntimeContext<Shardin
     }
     
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType) throws SQLException {
-        DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, dataSourceMap);
+        DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDataSourceInfoMap(dataSourceMap));
         TableMetas tableMetas = new TableMetas(getTableMetaDataInitializer(dataSourceMap, dataSourceMetas).load(shardingRule));
         return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
+    }
+    
+    private Map<String, DataSourceInfo> getDataSourceInfoMap(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        Map<String, DataSourceInfo> result = new LinkedHashMap<String, DataSourceInfo>(dataSourceMap.size(), 1);
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            DataSource dataSource = entry.getValue();
+            try (Connection connection = dataSource.getConnection()) {
+                DatabaseMetaData metaData = connection.getMetaData();
+                
+                DataSourceInfo sourceInfo = new DataSourceInfo();
+                sourceInfo.setUrl(metaData.getURL());
+                sourceInfo.setUserName(metaData.getUserName());
+                
+                result.put(entry.getKey(), sourceInfo);
+            }
+            
+        }
+        return result;
     }
     
     private TableMetaDataInitializer getTableMetaDataInitializer(final Map<String, DataSource> dataSourceMap, final DataSourceMetas dataSourceMetas) {

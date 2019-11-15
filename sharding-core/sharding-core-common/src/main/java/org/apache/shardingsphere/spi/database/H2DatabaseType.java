@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.spi.database;
 
-import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.metadata.datasource.dialect.H2DataSourceMetaData;
-
 import java.util.Collection;
 import java.util.Collections;
 
-import javax.sql.DataSource;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.core.metadata.datasource.dialect.H2DataSourceMetaData;
 
 /**
  * Database type of H2.
@@ -48,8 +46,8 @@ public final class H2DatabaseType implements BranchDatabaseType {
     }
     
     @Override
-    public DataSourceMetaData getDataSourceMetaData(final DataSource dataSource) {
-        return new H2DataSourceMetaData(dataSource);
+    public DataSourceMetaData getDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
+        return new H2DataSourceMetaData(dataSourceInfo);
     }
     
     @Override

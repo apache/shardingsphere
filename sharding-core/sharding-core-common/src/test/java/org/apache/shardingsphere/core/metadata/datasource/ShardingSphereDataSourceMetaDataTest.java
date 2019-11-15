@@ -41,11 +41,17 @@ public final class ShardingSphereDataSourceMetaDataTest {
     
     @Test
     public void assertGetAllInstanceDataSourceNamesForShardingRule() {
-        assertEquals(dataSourceMetas.getAllInstanceDataSourceNames(), Lists.newArrayList("ds_1"));
+        assertEquals(dataSourceMetas.getAllInstanceDataSourceNames(), Lists.newArrayList("ds_0"));
     }
     
     @Test
-    public void assertGetActualSchemaNameForShardingRule() {
-        assertEquals(dataSourceMetas.getDataSourceMetaData("ds_0").getSchemaName(), "db_0");
+    public void assertGetActualCatalogForShardingRule() {
+        assertEquals(dataSourceMetas.getDataSourceMetaData("ds_0").getCatalog(), "db_0");
     }
+    
+    @Test
+    public void assertGetActualSchemaNameForShardingRuleForMysql() {
+        assertEquals(dataSourceMetas.getDataSourceMetaData("ds_0").getSchemaName(), null);
+    }
+    
 }
