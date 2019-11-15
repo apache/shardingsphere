@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.core.exception.UnGetDataSourceMetaException;
 import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
 import org.apache.shardingsphere.core.execute.ShardingGroupExecuteCallback;
@@ -93,6 +94,7 @@ public final class TableMetaDataLoader {
 
     private List<TableMetaData> load(final Map<String, List<DataNode>> dataNodeGroups, final ShardingRule shardingRule, final String logicTableName) throws SQLException {
         final String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(logicTableName).orNull();
+        
         return executeEngine.groupExecute(getDataNodeExecuteGroups(dataNodeGroups), new ShardingGroupExecuteCallback<DataNode, TableMetaData>() {
 
             @Override
@@ -100,6 +102,11 @@ public final class TableMetaDataLoader {
                 
                 String dataSourceName = dataNodes.iterator().next().getDataSourceName();
                 DataSourceMetaData dataSourceMetaData = TableMetaDataLoader.this.dataSourceMetas.getDataSourceMetaData(dataSourceName);
+                
+                if (dataSourceMetaData == null) {
+                    throw new UnGetDataSourceMetaException(String.format("can not get dataSourceMeta,the current dataSourceName is %s ", dataSourceName));
+                }
+                
                 return load(shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(dataSourceName), 
                         dataSourceMetaData, logicTableName, dataNodes, generateKeyColumnName, shardingRule.getEncryptRule());
             }
@@ -144,10 +151,13 @@ public final class TableMetaDataLoader {
 
     private TableMetaData createTableMetaData(final Connection connection, final DataSourceMetaData dataSourceMetaData,
             final String logicTableName, final String actualTableName, final String generateKeyColumnName, final EncryptRule encryptRule) throws SQLException {
-        if (isTableExist(connection, dataSourceMetaData.getCatalog(), actualTableName)) {
+        String catalog = dataSourceMetaData == null ? null : dataSourceMetaData.getCatalog();
+        String schema = dataSourceMetaData == null ? null : dataSourceMetaData.getSchemaName();
+        
+        if (isTableExist(connection, catalog, actualTableName)) {
             return new TableMetaData(
-                    getColumnMetaDataList(connection, dataSourceMetaData.getCatalog(), logicTableName, actualTableName, generateKeyColumnName, encryptRule), 
-                    getLogicIndexes(connection, dataSourceMetaData, actualTableName));
+                    getColumnMetaDataList(connection, catalog, logicTableName, actualTableName, generateKeyColumnName, encryptRule), 
+                    getLogicIndexes(connection, catalog, schema, actualTableName));
         }
         return new TableMetaData(Collections.<ColumnMetaData>emptyList(), Collections.<String>emptySet());
     }
@@ -209,9 +219,9 @@ public final class TableMetaDataLoader {
         return Optional.of(new ColumnMetaData(columnName, columnType, isPrimaryKey, isNotNull, isAutoIncrement));
     }
 
-    private Collection<String> getLogicIndexes(final Connection connection, final DataSourceMetaData dataSourceMetaData, final String actualTableName) throws SQLException {
+    private Collection<String> getLogicIndexes(final Connection connection, final String catalog, final String schema, final String actualTableName) throws SQLException {
         Collection<String> result = new HashSet<>();
-        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(dataSourceMetaData.getCatalog(), dataSourceMetaData.getSchemaName(), actualTableName, false, false)) {
+        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(catalog, schema, actualTableName, false, false)) {
             while (resultSet.next()) {
                 Optional<String> logicIndex = getLogicIndex(resultSet.getString(INDEX_NAME), actualTableName);
                 if (logicIndex.isPresent()) {
