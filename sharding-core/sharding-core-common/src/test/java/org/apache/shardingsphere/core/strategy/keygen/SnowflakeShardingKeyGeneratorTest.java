@@ -64,11 +64,49 @@ public final class SnowflakeShardingKeyGeneratorTest {
     }
     
     @Test
+    @SneakyThrows
+    public void assertGenerateKeyWithMultipleThreadsWhenNumberOfTablesBeEqualToNPowerOf2() {
+        int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
+        ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
+        int taskNumber = threadNumber << 2;
+        final SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
+        Properties properties = new Properties();
+        properties.setProperty("max.vibration.offset", String.valueOf(3));
+        keyGenerator.setProperties(properties);
+        Set<Comparable<?>> actual = new HashSet<>();
+        for (int i = 0; i < taskNumber; i++) {
+            actual.add(executor.submit(new Callable<Comparable<?>>() {
+                
+                @Override
+                public Comparable<?> call() {
+                    return keyGenerator.generateKey();
+                }
+            }).get());
+        }
+        assertThat(actual.size(), is(taskNumber));
+    }
+    
+    @Test
     public void assertGenerateKeyWithSingleThread() {
         SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         keyGenerator.setProperties(new Properties());
         SnowflakeShardingKeyGenerator.setTimeService(new FixedTimeService(1));
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(1L, 4194304L, 4194305L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L);
+        List<Comparable<?>> actual = new ArrayList<>();
+        for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
+            actual.add(keyGenerator.generateKey());
+        }
+        assertThat(actual, is(expected));
+    }
+    
+    @Test
+    public void assertGenerateKeyWithSingleThreadWhenNumberOfTablesBeEqualToNPowerOf2() {
+        SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
+        Properties properties = new Properties();
+        properties.setProperty("max.vibration.offset", String.valueOf(3));
+        keyGenerator.setProperties(properties);
+        SnowflakeShardingKeyGenerator.setTimeService(new FixedTimeService(1));
+        List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(1L, 4194306L, 4194307L, 8388611L, 8388612L, 12582912L, 12582913L, 16777217L, 16777218L, 20971522L);
         List<Comparable<?>> actual = new ArrayList<>();
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
             actual.add(keyGenerator.generateKey());
