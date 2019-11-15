@@ -69,6 +69,7 @@ public final class XAShardingTransactionManagerTest {
         ReflectiveUtil.setProperty(xaShardingTransactionManager, "xaTransactionManager", xaTransactionManager);
         Collection<ResourceDataSource> resourceDataSources = createResourceDataSources(DatabaseTypes.getActualDatabaseType("H2"));
         xaShardingTransactionManager.init(DatabaseTypes.getActualDatabaseType("H2"), resourceDataSources);
+        verify(xaTransactionManager).init();
     }
     
     @After
@@ -82,28 +83,17 @@ public final class XAShardingTransactionManagerTest {
     }
     
     @Test
-    public void assertRegisterNoneXATransactionalDAtaSources() {
+    public void assertRegisterXADataSource() {
         Map<String, SingleXADataSource> cachedXADatasourceMap = getCachedSingleXADataSourceMap();
         assertThat(cachedXADatasourceMap.size(), is(2));
-        verify(xaTransactionManager).init();
-    }
-    
-    @Test
-    public void assertRegisterAtomikosDataSourceBeans() {
-        xaShardingTransactionManager.init(DatabaseTypes.getActualDatabaseType("H2"), createAtomikosDataSourceBeanResource());
-        verify(xaTransactionManager, times(2)).registerRecoveryResource(anyString(), any(XADataSource.class));
     }
     
     @Test
     public void assertIsInTransaction() {
+        assertFalse(xaShardingTransactionManager.isInTransaction());
         xaShardingTransactionManager.begin();
         assertTrue(xaShardingTransactionManager.isInTransaction());
         xaShardingTransactionManager.commit();
-    }
-    
-    @Test
-    public void assertIsNotInTransaction() {
-        assertFalse(xaShardingTransactionManager.isInTransaction());
     }
     
     @Test
@@ -162,13 +152,7 @@ public final class XAShardingTransactionManagerTest {
         List<ResourceDataSource> result = new LinkedList<>();
         result.add(new ResourceDataSource("ds1", DataSourceUtils.build(HikariDataSource.class, databaseType, "demo_ds_1")));
         result.add(new ResourceDataSource("ds2", DataSourceUtils.build(HikariDataSource.class, databaseType, "demo_ds_2")));
-        return result;
-    }
-    
-    private Collection<ResourceDataSource> createAtomikosDataSourceBeanResource() {
-        List<ResourceDataSource> result = new LinkedList<>();
-        result.add(new ResourceDataSource("ds1", new AtomikosDataSourceBean()));
-        result.add(new ResourceDataSource("ds2", new AtomikosDataSourceBean()));
+        result.add(new ResourceDataSource("ds3", DataSourceUtils.build(AtomikosDataSourceBean.class, databaseType, "demo_ds_3")));
         return result;
     }
 }
