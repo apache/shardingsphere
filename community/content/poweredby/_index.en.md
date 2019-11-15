@@ -7,7 +7,7 @@ chapter = true
 
 ## Register
 
-Welcome companies who have used ShardingSphere to register here, your support is important to us.
+Welcome to register by company + homepage + use case(optional), your support is important to us.
 
 Please register [here](https://github.com/sharding-sphere/sharding-sphere/issues/234) with `company` + `homepage` + `use case(optional)`.
 
@@ -18,12 +18,10 @@ Please register [here](https://github.com/sharding-sphere/sharding-sphere/issues
 The list here will be shown in the alphabetical order.
 
 1. 19pay http://www.19pay.com.cn/
-1. 41soo http://www.41soo.com/
 1. 4pyun https://4pyun.com/
 1. 500px https://500px.me/
 1. 51credit https://www.51credit.com/
 1. 58 https://bj.58.com/
-1. 5grain http://www.5grain.com/
 1. 912688 https://www.912688.com/
 1. 9fgroup https://www.9fgroup.com/
 1. AreoSpace http://www.ascf.com.cn/
@@ -38,7 +36,7 @@ The list here will be shown in the alphabetical order.
 1. ChaoJiLanLing https://www.chaojilanling.cn/
 1. ChinaRoad https://660pp.com/
 1. ChuChuJie https://www.chuchujie.com/
-1. CIBN http://www.91vst.com/
+1. CIBN http://www.cibnvst.com/ 
 1. Cloudansys http://www.cloudansys.com/
 1. Compasshz http://www.compasshz.com/
 1. CTrip https://www.ctrip.com/
@@ -58,7 +56,7 @@ The list here will be shown in the alphabetical order.
 1. Guangxi Province Territorial Resources Information Center http://z.gxdlr.gov.cn/
 1. GuaZi https://www.guazi.com/
 1. Haier Cash https://www.haiercash.com/
-1. Hikvision https://www.hikvision.com 
+1. Hikvision https://www.hikvision.com/ 
 1. Hiveview http://www.hiveview.com/
 1. HQWX http://www.hqwx.com/
 1. HuaXia Finance https://www.huaxiafinance.com/
@@ -68,7 +66,7 @@ The list here will be shown in the alphabetical order.
 1. Iflytek https://www.iflytek.com/
 1. Iqiyi https://www.iqiyi.com/
 1. IZXCS http://www.izxcs.com/
-1. JD Finance https://jr.jd.com/
+1. JD Digits https://www.jddglobal.com/
 1. JD.ru https://www.jd.ru/
 1. JD’s Big Data and Intelligent Supply Chain Department
 1. JDCloud https://www.jdcloud.com/cn/
@@ -82,7 +80,7 @@ The list here will be shown in the alphabetical order.
 1. Lily&Beauty https://www.lrlz.com/
 1. MaFengWo https://www.mafengwo.cn/
 1. MagicEares https://magicears.com.cn/
-1. MaiFang https://www.maifang.com/
+1. MiaoMaiFang https://www.miaomaifang.com/
 1. MissFresh https://www.missfresh.cn/
 1. MLJR https://www.mljr.com/
 1. MyWeiMai https://www.myweimai.com/
@@ -93,13 +91,13 @@ The list here will be shown in the alphabetical order.
 1. OPPO https://www.oppo.com/
 1. Pagoda http://www.pagoda.com.cn/
 1. PPDai https://www.ppdai.com/
-1. QuanDaShi http://www.quandashi.com/
+1. QuanDaShi https://www.quandashi.com/
 1. Rabbitpre https://www.rabbitpre.com/
 1. RayCloud https://www.raycloud.com/
 1. Ruff https://ruff.io/
 1. ShouQi https://www.01zhuanche.com/
 1. SoHu https://ss.sohu.com/
-1. SouChe https://www.souche.com/zh/
+1. SouChe https://www.souche.com/
 1. Sui https://www.sui.com/
 1. Super SOCO https://www.supersoco.com/
 1. TAL http://www.100tal.com/

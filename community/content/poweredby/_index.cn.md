@@ -19,25 +19,24 @@ chapter = true
 
 1. 58同城 https://bj.58.com/ 
 1. BBGame https://www.bbgameonline.com/ 
-1. CIBN微视听 http://www.91vst.com/ 
-1. oppo https://www.oppo.com/ 
+1. CIBN微视听 http://www.cibnvst.com/  
+1. OPPO https://www.oppo.com/ 
 1. PP停车 https://660pp.com/ 
 1. P云+ | 行业知名的互联网停车开放平台 https://4pyun.com/
 1. TCL https://www.tcl.com/ 
 1. TonySourcing  https://TonySourcing.com/ 
-1. vivo https://www.vivo.com/ 
+1. VIVO https://www.vivo.com/ 
 1. YOU选 https://www.youx.mobi/ 
 1. 爱奇艺 https://www.iqiyi.com/ 
 1. 百果园 http://www.pagoda.com.cn/ 
 1. 百姓网 https://www.baixing.com/ 
-1. 佰昌科技 http://www.sdbaichang.com/ 
+1. 百畅科技 http://www.sdbaichang.com/ 
 1. 北京环球网校 http://www.hqwx.com/ 
 1. 哔哩哔哩弹幕网 https://www.bilibili.com/ 
 1. 策赢平台 https://www.cypfintech.com/ 
 1. 超级蓝领 https://www.chaojilanling.cn/ 
-1. 楚楚街 https://www.chuchujie.com/ 
-1. 创安家 http://www.41soo.com/ 
-1. 大搜车 https://www.souche.com/zh/ 
+1. 楚楚街 https://www.chuchujie.com/  
+1. 大搜车 https://www.souche.com/
 1. 大易有塑 https://www.dayi35.com/ 
 1. 当当 http://www.dangdang.com/ 
 1. 滴滴小桔车服 https://www.didiglobal.com/ 
@@ -66,8 +65,9 @@ chapter = true
 1. 家视天下 http://www.hiveview.com/ 
 1. 金康高科 http://www.kingcome.cn/ 
 1. 金通科技集团 http://www.jtkjbike.com/ 
-1. 京东数科 https://jr.jd.com/ 
+1. 京东数科 https://www.jddglobal.com/ 
 1. 京东金融云 https://www.jdfcloud.com/ 
+1. 京东大数据与智能供应链
 1. 京东商城俄文站 https://www.jd.ru/ 
 1. 京东商城海外站 https://www.joybuy.com/ 
 1. 京东云 https://www.jdcloud.com/cn/ 
@@ -78,19 +78,18 @@ chapter = true
 1. 科大讯飞 https://www.iflytek.com/ 
 1. 客如云 https://www.keruyun.com/
 1. 丽人丽妆 https://www.lrlz.com/ 
-1. 马蜂窝 http://www.mafengwo.com/ 
+1. 马蜂窝 https://www.mafengwo.cn/ 
 1. 每日优鲜便利购 https://www.missfresh.cn/ 
-1. 美利金融 https://www.mljr.com/ 
-1. 秒卖房 https://www.maifang.com/ 
+1. 美利车金融 https://www.mljr.com/ 
+1. 秒卖房 https://www.miaomaifang.com/ 
 1. 魔力耳朵 https://magicears.com.cn/ 
 1. 男衣库 https://www.nanyiku.com/
 1. 南潮信息科技 https://ruff.io/ 
 1. 你我金融 https://www.niiwoo.com/ 
 1. 拍拍贷 https://www.ppdai.com/ 
 1. 汽车之家  https://www.autohome.com.cn/ 
-1. 权大师 http://www.quandashi.com/ 
+1. 权大师 https://www.quandashi.com/ 
 1. 赛特斯CertusNet http://www.certusnet.com.cn/ 
-1. 食蚁兽网络 http://www.41soo.com 
 1. 视觉中国 https://500px.me/ 
 1. 首汽约车 https://www.01zhuanche.com/
 1. 搜好货 https://www.912688.com/
@@ -103,8 +102,7 @@ chapter = true
 1. 团贷网 https://www.tuandai.com/ 
 1. 微脉 https://www.myweimai.com/
 1. 唯品会 https://www.vip.com/
-1. 我爱卡 https://www.51credit.com/
-1. 五谷图像 http://www.5grain.com/ 
+1. 我爱卡 https://www.51credit.com/ 
 1. 下厨房 https://www.xiachufang.com/
 1. 小红唇 https://www.xiaohongchun.com/ 
 1. 小牛在线 https://www.xiaoniu88.com/ 
