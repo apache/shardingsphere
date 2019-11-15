@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.exception.UnGetDataSourceMetaException;
 import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
 import org.apache.shardingsphere.core.execute.ShardingGroupExecuteCallback;
@@ -102,10 +101,6 @@ public final class TableMetaDataLoader {
                 
                 String dataSourceName = dataNodes.iterator().next().getDataSourceName();
                 DataSourceMetaData dataSourceMetaData = TableMetaDataLoader.this.dataSourceMetas.getDataSourceMetaData(dataSourceName);
-                
-                if (dataSourceMetaData == null) {
-                    throw new UnGetDataSourceMetaException(String.format("can not get dataSourceMeta,the current dataSourceName is %s ", dataSourceName));
-                }
                 
                 return load(shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(dataSourceName), 
                         dataSourceMetaData, logicTableName, dataNodes, generateKeyColumnName, shardingRule.getEncryptRule());
