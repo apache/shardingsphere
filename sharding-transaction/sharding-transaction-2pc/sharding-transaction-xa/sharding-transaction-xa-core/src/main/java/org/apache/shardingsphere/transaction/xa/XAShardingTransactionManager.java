@@ -17,25 +17,22 @@
 
 package org.apache.shardingsphere.transaction.xa;
 
-import com.atomikos.jdbc.AtomikosDataSourceBean;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
-import org.apache.shardingsphere.transaction.xa.jta.connection.XATransactionConnection;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
 import org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerLoader;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
 
-import javax.sql.DataSource;
+import javax.transaction.RollbackException;
 import javax.transaction.Status;
+import javax.transaction.SystemException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,23 +46,10 @@ public final class XAShardingTransactionManager implements ShardingTransactionMa
     
     private final XATransactionManager xaTransactionManager = XATransactionManagerLoader.getInstance().getTransactionManager();
     
-    private ThreadLocal<List<String>> enlistedXAResource = new ThreadLocal<List<String>>() {
-        @Override
-        public List<String> initialValue() {
-            return new LinkedList<>();
-        }
-    };
-    
     @Override
     public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
         for (ResourceDataSource each : resourceDataSources) {
-            DataSource dataSource = each.getDataSource();
-            if (dataSource instanceof AtomikosDataSourceBean) {
-                continue;
-            }
-            XATransactionDataSource xaTransactionDataSource = new XATransactionDataSource(databaseType, each.getUniqueResourceName(), dataSource);
-            cachedDataSources.put(each.getOriginalName(), xaTransactionDataSource);
-            xaTransactionManager.registerRecoveryResource(each.getUniqueResourceName(), xaTransactionDataSource.getXaDataSource());
+            cachedDataSources.put(each.getOriginalName(), new XATransactionDataSource(databaseType, each.getUniqueResourceName(), each.getDataSource(), xaTransactionManager));
         }
         xaTransactionManager.init();
     }
@@ -83,12 +67,11 @@ public final class XAShardingTransactionManager implements ShardingTransactionMa
     
     @Override
     public Connection getConnection(final String dataSourceName) throws SQLException {
-        XATransactionConnection transactionConnection = cachedDataSources.get(dataSourceName).getConnection();
-        if (!enlistedXAResource.get().contains(dataSourceName)) {
-            xaTransactionManager.enlistResource(transactionConnection.getXAResource());
-            enlistedXAResource.get().add(dataSourceName);
+        try {
+            return cachedDataSources.get(dataSourceName).getConnection();
+        } catch (final SystemException | RollbackException ex) {
+            throw new SQLException(ex);
         }
-        return transactionConnection.getTargetConnection();
     }
     
     @SneakyThrows
@@ -100,30 +83,21 @@ public final class XAShardingTransactionManager implements ShardingTransactionMa
     @SneakyThrows
     @Override
     public void commit() {
-        try {
-            xaTransactionManager.getTransactionManager().commit();
-        } finally {
-            enlistedXAResource.remove();
-        }
+        xaTransactionManager.getTransactionManager().commit();
     }
     
     @SneakyThrows
     @Override
     public void rollback() {
-        try {
-            xaTransactionManager.getTransactionManager().rollback();
-        } finally {
-            enlistedXAResource.remove();
-        }
+        xaTransactionManager.getTransactionManager().rollback();
     }
     
     @Override
     public void close() throws Exception {
         for (XATransactionDataSource each : cachedDataSources.values()) {
-            xaTransactionManager.removeRecoveryResource(each.getResourceName(), each.getXaDataSource());
+            each.close();
         }
         cachedDataSources.clear();
         xaTransactionManager.close();
-        enlistedXAResource = null;
     }
 }
