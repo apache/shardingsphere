@@ -33,7 +33,7 @@ import java.sql.SQLException;
  *
  * @author zhaojun
  */
-public final class SingleXADataSource extends AbstractUnsupportedSingleXADataSource {
+public final class SingleXADataSource {
     
     @Getter
     private final String resourceName;
@@ -68,7 +68,12 @@ public final class SingleXADataSource extends AbstractUnsupportedSingleXADataSou
         }
     }
     
-    @Override
+    /**
+     * Get XA connection.
+     *
+     * @return single XA connection
+     * @throws SQLException SQL exception
+     */
     public SingleXAConnection getXAConnection() throws SQLException {
         return isOriginalXADataSource ? getXAConnectionFromXADataSource() : getXAConnectionFromNoneXADataSource();
     }
