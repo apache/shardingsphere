@@ -17,9 +17,21 @@
 
 package org.apache.shardingsphere.dbtest.engine;
 
-import com.google.common.base.Joiner;
-import lombok.AccessLevel;
-import lombok.Getter;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TimeZone;
+
+import javax.sql.DataSource;
+import javax.xml.bind.JAXBException;
+
 import org.apache.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
@@ -29,6 +41,7 @@ import org.apache.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.spi.database.MemorizedDataSourceMetaData;
@@ -36,18 +49,10 @@ import org.junit.After;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import javax.sql.DataSource;
-import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TimeZone;
+import com.google.common.base.Joiner;
+
+import lombok.AccessLevel;
+import lombok.Getter;
 
 @RunWith(Parameterized.class)
 @Getter(AccessLevel.PROTECTED)
@@ -156,14 +161,15 @@ public abstract class BaseIT {
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap() throws SQLException {
         Map<String, DataSourceMetaData> result = new LinkedHashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            result.put(entry.getKey(), databaseTypeEnvironment.getDatabaseType().getDataSourceMetaData(getDataSourceURL(entry.getValue())));
+            result.put(entry.getKey(), databaseTypeEnvironment.getDatabaseType().getDataSourceMetaData(getDataSourceInfo(entry.getValue())));
         }
         return result;
     }
     
-    private static String getDataSourceURL(final DataSource dataSource) throws SQLException {
+    private static DataSourceInfo getDataSourceInfo(final DataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            return connection.getMetaData().getURL();
+            DatabaseMetaData metaData = connection.getMetaData();
+            return new DataSourceInfo(metaData.getURL(), metaData.getUserName());
         }
     }
 

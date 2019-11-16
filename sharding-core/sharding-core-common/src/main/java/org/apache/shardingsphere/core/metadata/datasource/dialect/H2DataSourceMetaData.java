@@ -46,17 +46,6 @@ public final class H2DataSourceMetaData implements MemorizedDataSourceMetaData {
 
     private final Pattern pattern = Pattern.compile("jdbc:h2:(mem|~)[:/]([\\w\\-]+);?\\S*", Pattern.CASE_INSENSITIVE);
 
-    public H2DataSourceMetaData(final String url) {
-        Matcher matcher = pattern.matcher(url);
-        if (!matcher.find()) {
-            throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
-        }
-        hostName = "";
-        port = DEFAULT_PORT;
-        catalog = matcher.group(2);
-        schemaName = null;
-    }
-
     public H2DataSourceMetaData(final DataSourceInfo dataSourceInfo) {
         String url = dataSourceInfo.getUrl();
         Matcher matcher = pattern.matcher(url);

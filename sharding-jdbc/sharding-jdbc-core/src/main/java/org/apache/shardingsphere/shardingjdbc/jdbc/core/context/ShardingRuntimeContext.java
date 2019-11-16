@@ -83,12 +83,7 @@ public final class ShardingRuntimeContext extends AbstractRuntimeContext<Shardin
             DataSource dataSource = entry.getValue();
             try (Connection connection = dataSource.getConnection()) {
                 DatabaseMetaData metaData = connection.getMetaData();
-                
-                DataSourceInfo sourceInfo = new DataSourceInfo();
-                sourceInfo.setUrl(metaData.getURL());
-                sourceInfo.setUsername(metaData.getUserName());
-                
-                result.put(entry.getKey(), sourceInfo);
+                result.put(entry.getKey(), new DataSourceInfo(metaData.getURL(),metaData.getUserName()));
             }
             
         }

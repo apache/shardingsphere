@@ -48,7 +48,7 @@ public final class H2DataSourceMetaDataTest {
     
     @Test
     public void assertGetPropertiesWithMem() {
-        H2DataSourceMetaData actual = new H2DataSourceMetaData(dataSourceInfo.getUrl());
+        H2DataSourceMetaData actual = new H2DataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is(""));
         assertThat(actual.getPort(), is(-1));
         assertEquals(actual.getSchemaName(), null);
@@ -56,7 +56,8 @@ public final class H2DataSourceMetaDataTest {
     
     @Test
     public void assertGetPropertiesWithSymbol() {
-        H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:~:ds-0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        dataSourceInfo.setUrl("jdbc:h2:~:ds-0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        H2DataSourceMetaData actual = new H2DataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is(""));
         assertThat(actual.getPort(), is(-1));
         assertEquals(actual.getSchemaName(), null);
@@ -64,6 +65,7 @@ public final class H2DataSourceMetaDataTest {
     
     @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertGetPropertiesFailure() {
-        new H2DataSourceMetaData("jdbc:h2:file:/data/sample");
+        dataSourceInfo.setUrl("jdbc:h2:file:/data/sample");
+        new H2DataSourceMetaData(dataSourceInfo);
     }
 }
