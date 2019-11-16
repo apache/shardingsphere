@@ -149,7 +149,8 @@ public abstract class BaseIT {
     
     private boolean isInSameDatabaseInstance(final DataSourceMetaData sample, final DataSourceMetaData target) {
         return sample instanceof MemorizedDataSourceMetaData
-                ? target.getSchemaName().equals(sample.getSchemaName()) : target.getHostName().equals(sample.getHostName()) && target.getPort() == sample.getPort();
+                ? (target.getSchemaName() == sample.getSchemaName() || target.getSchemaName().equals(sample.getSchemaName())) 
+                        : target.getHostName().equals(sample.getHostName()) && target.getPort() == sample.getPort();
     }
     
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap() throws SQLException {
