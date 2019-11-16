@@ -29,11 +29,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Single XA data source.
+ * XA transaction data source.
  *
  * @author zhaojun
  */
-public final class SingleXADataSource {
+public final class XATransactionDataSource {
     
     @Getter
     private final String resourceName;
@@ -47,7 +47,7 @@ public final class SingleXADataSource {
     
     private final boolean isOriginalXADataSource;
     
-    public SingleXADataSource(final DatabaseType databaseType, final String resourceName, final XADataSource xaDataSource) {
+    public XATransactionDataSource(final DatabaseType databaseType, final String resourceName, final XADataSource xaDataSource) {
         this.databaseType = databaseType;
         this.resourceName = resourceName;
         this.xaDataSource = xaDataSource;
@@ -55,7 +55,7 @@ public final class SingleXADataSource {
         this.isOriginalXADataSource = true;
     }
     
-    public SingleXADataSource(final DatabaseType databaseType, final String resourceName, final DataSource dataSource) {
+    public XATransactionDataSource(final DatabaseType databaseType, final String resourceName, final DataSource dataSource) {
         this.databaseType = databaseType;
         this.resourceName = resourceName;
         originalDataSource = dataSource;

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.SingleXADataSource;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
 import org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerLoader;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
@@ -85,7 +85,7 @@ public final class XAShardingTransactionManagerTest {
     
     @Test
     public void assertRegisterXADataSource() {
-        Map<String, SingleXADataSource> cachedXADatasourceMap = getCachedSingleXADataSourceMap();
+        Map<String, XATransactionDataSource> cachedXADatasourceMap = getCachedSingleXADataSourceMap();
         assertThat(cachedXADatasourceMap.size(), is(2));
     }
     
@@ -125,7 +125,7 @@ public final class XAShardingTransactionManagerTest {
     @Test
     public void assertClose() throws Exception {
         xaShardingTransactionManager.close();
-        Map<String, SingleXADataSource> cachedSingleXADataSourceMap = getCachedSingleXADataSourceMap();
+        Map<String, XATransactionDataSource> cachedSingleXADataSourceMap = getCachedSingleXADataSourceMap();
         verify(xaTransactionManager, times(2)).removeRecoveryResource(anyString(), any(XADataSource.class));
         assertThat(cachedSingleXADataSourceMap.size(), is(0));
     }
@@ -148,10 +148,10 @@ public final class XAShardingTransactionManagerTest {
     
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    private Map<String, SingleXADataSource> getCachedSingleXADataSourceMap() {
-        Field field = xaShardingTransactionManager.getClass().getDeclaredField("singleXADataSourceMap");
+    private Map<String, XATransactionDataSource> getCachedSingleXADataSourceMap() {
+        Field field = xaShardingTransactionManager.getClass().getDeclaredField("cachedDataSources");
         field.setAccessible(true);
-        return (Map<String, SingleXADataSource>) field.get(xaShardingTransactionManager);
+        return (Map<String, XATransactionDataSource>) field.get(xaShardingTransactionManager);
     }
     
     private Collection<ResourceDataSource> createResourceDataSources(final DatabaseType databaseType) {

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 import org.apache.shardingsphere.transaction.xa.jta.connection.SingleXAConnection;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.SingleXADataSource;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
 import org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerLoader;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
 
@@ -45,7 +45,7 @@ import java.util.Map;
  */
 public final class XAShardingTransactionManager implements ShardingTransactionManager {
     
-    private final Map<String, SingleXADataSource> singleXADataSourceMap = new HashMap<>();
+    private final Map<String, XATransactionDataSource> cachedDataSources = new HashMap<>();
     
     private final XATransactionManager xaTransactionManager = XATransactionManagerLoader.getInstance().getTransactionManager();
     
@@ -63,9 +63,9 @@ public final class XAShardingTransactionManager implements ShardingTransactionMa
             if (dataSource instanceof AtomikosDataSourceBean) {
                 continue;
             }
-            SingleXADataSource singleXADataSource = new SingleXADataSource(databaseType, each.getUniqueResourceName(), dataSource);
-            singleXADataSourceMap.put(each.getOriginalName(), singleXADataSource);
-            xaTransactionManager.registerRecoveryResource(each.getUniqueResourceName(), singleXADataSource.getXaDataSource());
+            XATransactionDataSource xaTransactionDataSource = new XATransactionDataSource(databaseType, each.getUniqueResourceName(), dataSource);
+            cachedDataSources.put(each.getOriginalName(), xaTransactionDataSource);
+            xaTransactionManager.registerRecoveryResource(each.getUniqueResourceName(), xaTransactionDataSource.getXaDataSource());
         }
         xaTransactionManager.init();
     }
@@ -83,7 +83,7 @@ public final class XAShardingTransactionManager implements ShardingTransactionMa
     
     @Override
     public Connection getConnection(final String dataSourceName) throws SQLException {
-        SingleXAConnection singleXAConnection = singleXADataSourceMap.get(dataSourceName).getXAConnection();
+        SingleXAConnection singleXAConnection = cachedDataSources.get(dataSourceName).getXAConnection();
         if (!enlistedXAResource.get().contains(dataSourceName)) {
             xaTransactionManager.enlistResource(singleXAConnection.getXAResource());
             enlistedXAResource.get().add(dataSourceName);
@@ -119,10 +119,10 @@ public final class XAShardingTransactionManager implements ShardingTransactionMa
     
     @Override
     public void close() throws Exception {
-        for (SingleXADataSource each : singleXADataSourceMap.values()) {
+        for (XATransactionDataSource each : cachedDataSources.values()) {
             xaTransactionManager.removeRecoveryResource(each.getResourceName(), each.getXaDataSource());
         }
-        singleXADataSourceMap.clear();
+        cachedDataSources.clear();
         xaTransactionManager.close();
         enlistedXAResource = null;
     }
