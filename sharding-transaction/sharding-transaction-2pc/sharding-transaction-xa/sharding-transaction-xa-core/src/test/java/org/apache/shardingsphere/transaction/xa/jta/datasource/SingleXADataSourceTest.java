@@ -25,7 +25,6 @@ import org.h2.jdbcx.JdbcDataSource;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import javax.sql.XADataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -36,14 +35,6 @@ import static org.junit.Assert.assertThat;
 public final class SingleXADataSourceTest {
     
     @Test
-    public void assertBuildSingleXADataSourceOfXA() {
-        XADataSource xaDataSource = DataSourceUtils.createXADataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1");
-        XATransactionDataSource actual = new XATransactionDataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1", xaDataSource);
-        assertThat(actual.getResourceName(), is("ds1"));
-        assertThat(actual.getXaDataSource(), is(xaDataSource));
-    }
-    
-    @Test
     public void assertBuildSingleXADataSourceOfNoneXA() {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseTypes.getActualDatabaseType("H2"), "ds1");
         XATransactionDataSource actual = new XATransactionDataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1", dataSource);
@@ -52,14 +43,6 @@ public final class SingleXADataSourceTest {
         JdbcDataSource jdbcDataSource = (JdbcDataSource) actual.getXaDataSource();
         assertThat(jdbcDataSource.getUser(), is("root"));
         assertThat(jdbcDataSource.getPassword(), is("root"));
-    }
-    
-    @Test
-    public void assertGetXAConnectionOfXA() throws SQLException {
-        XADataSource xaDataSource = DataSourceUtils.createXADataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1");
-        XATransactionDataSource transactionDataSource = new XATransactionDataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1", xaDataSource);
-        XATransactionConnection actual = transactionDataSource.getXAConnection();
-        assertThat(actual.getTargetConnection(), instanceOf(Connection.class));
     }
     
     @Test

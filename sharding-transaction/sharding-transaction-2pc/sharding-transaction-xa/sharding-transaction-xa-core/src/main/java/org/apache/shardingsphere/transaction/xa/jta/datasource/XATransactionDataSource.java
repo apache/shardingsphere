@@ -47,14 +47,6 @@ public final class XATransactionDataSource {
     
     private final boolean isOriginalXADataSource;
     
-    public XATransactionDataSource(final DatabaseType databaseType, final String resourceName, final XADataSource xaDataSource) {
-        this.databaseType = databaseType;
-        this.resourceName = resourceName;
-        this.xaDataSource = xaDataSource;
-        this.originalDataSource = null;
-        this.isOriginalXADataSource = true;
-    }
-    
     public XATransactionDataSource(final DatabaseType databaseType, final String resourceName, final DataSource dataSource) {
         this.databaseType = databaseType;
         this.resourceName = resourceName;
