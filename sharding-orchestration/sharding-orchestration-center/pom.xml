@@ -28,6 +28,10 @@
     <artifactId>sharding-orchestration-center</artifactId>
     <name>${project.artifactId}</name>
 
+    <properties>
+        <apollo.client.version>1.4.0</apollo.client.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -54,6 +58,18 @@
         <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-test</artifactId>
-        </dependency>        
+        </dependency>
+        <dependency>
+            <groupId>com.ctrip.framework.apollo</groupId>
+            <artifactId>apollo-client</artifactId>
+            <version>${apollo.client.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ctrip.framework.apollo</groupId>
+            <artifactId>apollo-mockserver</artifactId>
+            <version>${apollo.client.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>
