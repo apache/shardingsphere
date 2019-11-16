@@ -19,8 +19,8 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
 import lombok.Getter;
 import org.apache.shardingsphere.spi.database.DatabaseType;
-import org.apache.shardingsphere.transaction.xa.jta.connection.SingleXAConnection;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionFactory;
+import org.apache.shardingsphere.transaction.xa.jta.connection.XATransactionConnection;
 
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
@@ -29,11 +29,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Single XA data source.
+ * XA transaction data source.
  *
  * @author zhaojun
  */
-public final class SingleXADataSource extends AbstractUnsupportedSingleXADataSource {
+public final class XATransactionDataSource {
     
     @Getter
     private final String resourceName;
@@ -45,42 +45,22 @@ public final class SingleXADataSource extends AbstractUnsupportedSingleXADataSou
     
     private final DataSource originalDataSource;
     
-    private final boolean isOriginalXADataSource;
-    
-    public SingleXADataSource(final DatabaseType databaseType, final String resourceName, final XADataSource xaDataSource) {
-        this.databaseType = databaseType;
-        this.resourceName = resourceName;
-        this.xaDataSource = xaDataSource;
-        this.originalDataSource = null;
-        this.isOriginalXADataSource = true;
-    }
-    
-    public SingleXADataSource(final DatabaseType databaseType, final String resourceName, final DataSource dataSource) {
+    public XATransactionDataSource(final DatabaseType databaseType, final String resourceName, final DataSource dataSource) {
         this.databaseType = databaseType;
         this.resourceName = resourceName;
         originalDataSource = dataSource;
-        if (dataSource instanceof XADataSource) {
-            xaDataSource = (XADataSource) dataSource;
-            isOriginalXADataSource = true;
-        } else {
-            xaDataSource = XADataSourceFactory.build(databaseType, dataSource);
-            isOriginalXADataSource = false;
-        }
+        xaDataSource = XADataSourceFactory.build(databaseType, dataSource);
     }
     
-    @Override
-    public SingleXAConnection getXAConnection() throws SQLException {
-        return isOriginalXADataSource ? getXAConnectionFromXADataSource() : getXAConnectionFromNoneXADataSource();
-    }
-    
-    private SingleXAConnection getXAConnectionFromXADataSource() throws SQLException {
-        XAConnection xaConnection = xaDataSource.getXAConnection();
-        return new SingleXAConnection(resourceName, xaConnection.getConnection(), xaConnection);
-    }
-    
-    private SingleXAConnection getXAConnectionFromNoneXADataSource() throws SQLException {
+    /**
+     * Get XA connection.
+     *
+     * @return XA transaction connection
+     * @throws SQLException SQL exception
+     */
+    public XATransactionConnection getConnection() throws SQLException {
         Connection originalConnection = originalDataSource.getConnection();
         XAConnection xaConnection = XAConnectionFactory.createXAConnection(databaseType, xaDataSource, originalConnection);
-        return new SingleXAConnection(resourceName, originalConnection, xaConnection);
+        return new XATransactionConnection(resourceName, originalConnection, xaConnection);
     }
 }

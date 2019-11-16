@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.transaction.xa.fixture;
 
 import com.atomikos.beans.PropertyUtils;
+import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -50,7 +51,10 @@ public final class DataSourceUtils {
     public static DataSource build(final Class<? extends DataSource> dataSourceClass, final DatabaseType databaseType, final String databaseName) {
         if (HikariDataSource.class == dataSourceClass) {
             return createHikariDataSource(databaseType, databaseName);
+        } else if (AtomikosDataSourceBean.class == dataSourceClass) {
+            return createAtomikosDataSourceBean(databaseType, databaseName);
         }
+        
         throw new UnsupportedOperationException(dataSourceClass.getClass().getName());
     }
     
@@ -63,6 +67,12 @@ public final class DataSourceUtils {
         result.setMinimumIdle(2);
         result.setConnectionTimeout(15 * 1000);
         result.setIdleTimeout(40 * 1000);
+        return result;
+    }
+    
+    private static AtomikosDataSourceBean createAtomikosDataSourceBean(final DatabaseType databaseType, final String databaseName) {
+        AtomikosDataSourceBean result = new AtomikosDataSourceBean();
+        result.setXaDataSource(createXADataSource(databaseType, databaseName));
         return result;
     }
     
