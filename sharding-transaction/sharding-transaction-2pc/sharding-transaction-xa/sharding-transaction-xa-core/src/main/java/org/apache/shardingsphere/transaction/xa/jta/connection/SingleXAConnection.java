@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.connection;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 
-import javax.sql.ConnectionEventListener;
-import javax.sql.StatementEventListener;
 import javax.sql.XAConnection;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -32,46 +31,22 @@ import java.sql.SQLException;
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public final class SingleXAConnection implements XAConnection {
+public final class SingleXAConnection {
     
     private final String resourceName;
     
+    @Getter
     private final Connection connection;
     
     private final XAConnection xaConnection;
     
-    @Override
+    /**
+     * Get XA resource.
+     *
+     * @return single XA resource
+     * @throws SQLException SQL exception
+     */
     public SingleXAResource getXAResource() throws SQLException {
         return new SingleXAResource(resourceName, xaConnection.getXAResource());
-    }
-    
-    @Override
-    public Connection getConnection() {
-        return connection;
-    }
-    
-    @Override
-    public void close() throws SQLException {
-        xaConnection.close();
-    }
-    
-    @Override
-    public void addConnectionEventListener(final ConnectionEventListener listener) {
-        xaConnection.addConnectionEventListener(listener);
-    }
-    
-    @Override
-    public void removeConnectionEventListener(final ConnectionEventListener listener) {
-        xaConnection.removeConnectionEventListener(listener);
-    }
-    
-    @Override
-    public void addStatementEventListener(final StatementEventListener listener) {
-        xaConnection.addStatementEventListener(listener);
-    }
-    
-    @Override
-    public void removeStatementEventListener(final StatementEventListener listener) {
-        xaConnection.removeStatementEventListener(listener);
     }
 }

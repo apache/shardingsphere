@@ -24,8 +24,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.ConnectionEventListener;
-import javax.sql.StatementEventListener;
 import javax.sql.XAConnection;
 import javax.transaction.xa.XAResource;
 import java.sql.Connection;
@@ -34,9 +32,6 @@ import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SingleXAConnectionTest {
@@ -64,35 +59,5 @@ public final class SingleXAConnectionTest {
     public void assertGetXAResource() throws SQLException {
         XAResource actual = singleXAConnection.getXAResource();
         assertThat(actual, instanceOf(SingleXAResource.class));
-    }
-    
-    @Test
-    public void close() throws SQLException {
-        singleXAConnection.close();
-        verify(xaConnection).close();
-    }
-    
-    @Test
-    public void assertAddConnectionEventListener() {
-        singleXAConnection.addConnectionEventListener(mock(ConnectionEventListener.class));
-        verify(xaConnection).addConnectionEventListener(any(ConnectionEventListener.class));
-    }
-    
-    @Test
-    public void assertRemoveConnectionEventListener() {
-        singleXAConnection.removeConnectionEventListener(mock(ConnectionEventListener.class));
-        verify(xaConnection).removeConnectionEventListener(any(ConnectionEventListener.class));
-    }
-    
-    @Test
-    public void assertAddStatementEventListener() {
-        singleXAConnection.addStatementEventListener(mock(StatementEventListener.class));
-        verify(xaConnection).addStatementEventListener(any(StatementEventListener.class));
-    }
-    
-    @Test
-    public void removeStatementEventListener() {
-        singleXAConnection.removeStatementEventListener(mock(StatementEventListener.class));
-        verify(xaConnection).removeStatementEventListener(any(StatementEventListener.class));
     }
 }
