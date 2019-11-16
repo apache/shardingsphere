@@ -49,7 +49,7 @@ public final class SingleXADataSourceTest {
     public void assertGetXAConnectionOfNoneXA() throws SQLException {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseTypes.getActualDatabaseType("H2"), "ds1");
         XATransactionDataSource transactionDataSource = new XATransactionDataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1", dataSource);
-        XATransactionConnection actual = transactionDataSource.getXAConnection();
+        XATransactionConnection actual = transactionDataSource.getConnection();
         assertThat(actual.getTargetConnection(), instanceOf(Connection.class));
     }
 }

@@ -83,7 +83,7 @@ public final class XAShardingTransactionManager implements ShardingTransactionMa
     
     @Override
     public Connection getConnection(final String dataSourceName) throws SQLException {
-        XATransactionConnection transactionConnection = cachedDataSources.get(dataSourceName).getXAConnection();
+        XATransactionConnection transactionConnection = cachedDataSources.get(dataSourceName).getConnection();
         if (!enlistedXAResource.get().contains(dataSourceName)) {
             xaTransactionManager.enlistResource(transactionConnection.getXAResource());
             enlistedXAResource.get().add(dataSourceName);

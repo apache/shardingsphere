@@ -45,19 +45,11 @@ public final class XATransactionDataSource {
     
     private final DataSource originalDataSource;
     
-    private final boolean isOriginalXADataSource;
-    
     public XATransactionDataSource(final DatabaseType databaseType, final String resourceName, final DataSource dataSource) {
         this.databaseType = databaseType;
         this.resourceName = resourceName;
         originalDataSource = dataSource;
-        if (dataSource instanceof XADataSource) {
-            xaDataSource = (XADataSource) dataSource;
-            isOriginalXADataSource = true;
-        } else {
-            xaDataSource = XADataSourceFactory.build(databaseType, dataSource);
-            isOriginalXADataSource = false;
-        }
+        xaDataSource = XADataSourceFactory.build(databaseType, dataSource);
     }
     
     /**
@@ -66,16 +58,7 @@ public final class XATransactionDataSource {
      * @return XA transaction connection
      * @throws SQLException SQL exception
      */
-    public XATransactionConnection getXAConnection() throws SQLException {
-        return isOriginalXADataSource ? getXAConnectionFromXADataSource() : getXAConnectionFromNoneXADataSource();
-    }
-    
-    private XATransactionConnection getXAConnectionFromXADataSource() throws SQLException {
-        XAConnection xaConnection = xaDataSource.getXAConnection();
-        return new XATransactionConnection(resourceName, xaConnection.getConnection(), xaConnection);
-    }
-    
-    private XATransactionConnection getXAConnectionFromNoneXADataSource() throws SQLException {
+    public XATransactionConnection getConnection() throws SQLException {
         Connection originalConnection = originalDataSource.getConnection();
         XAConnection xaConnection = XAConnectionFactory.createXAConnection(databaseType, xaDataSource, originalConnection);
         return new XATransactionConnection(resourceName, originalConnection, xaConnection);
