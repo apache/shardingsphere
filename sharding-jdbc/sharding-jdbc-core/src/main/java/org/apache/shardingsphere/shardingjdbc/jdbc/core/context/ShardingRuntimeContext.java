@@ -86,7 +86,7 @@ public final class ShardingRuntimeContext extends AbstractRuntimeContext<Shardin
                 
                 DataSourceInfo sourceInfo = new DataSourceInfo();
                 sourceInfo.setUrl(metaData.getURL());
-                sourceInfo.setUserName(metaData.getUserName());
+                sourceInfo.setUsername(metaData.getUserName());
                 
                 result.put(entry.getKey(), sourceInfo);
             }

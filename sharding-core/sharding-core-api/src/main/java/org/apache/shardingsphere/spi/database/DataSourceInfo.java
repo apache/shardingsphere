@@ -26,6 +26,6 @@ public class DataSourceInfo {
     
     private String url;
     
-    private String userName;
+    private String username;
     
 }

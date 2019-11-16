@@ -34,7 +34,7 @@ public final class SQL92DataSourceMetaDataTest {
     public void setUp() {
         dataSourceInfo = new DataSourceInfo();
         dataSourceInfo.setUrl("jdbc:sql92_db:ds_0");
-        dataSourceInfo.setUserName("test");
+        dataSourceInfo.setUsername("test");
     }
     
     @Test

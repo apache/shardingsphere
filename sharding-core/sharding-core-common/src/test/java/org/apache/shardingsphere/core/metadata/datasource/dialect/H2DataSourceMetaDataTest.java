@@ -34,7 +34,7 @@ public final class H2DataSourceMetaDataTest {
     public void setUp() {
         dataSourceInfo = new DataSourceInfo();
         dataSourceInfo.setUrl("jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        dataSourceInfo.setUserName("test");
+        dataSourceInfo.setUsername("test");
     }
     
     @Test

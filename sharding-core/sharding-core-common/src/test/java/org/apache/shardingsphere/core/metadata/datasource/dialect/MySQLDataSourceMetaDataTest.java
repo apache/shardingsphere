@@ -34,7 +34,7 @@ public final class MySQLDataSourceMetaDataTest {
     public void setUp() {
         dataSourceInfo = new DataSourceInfo();
         dataSourceInfo.setUrl("jdbc:mysql://127.0.0.1:9999/ds_0?serverTimezone=UTC&useSSL=false");
-        dataSourceInfo.setUserName("test");
+        dataSourceInfo.setUsername("test");
     }
     
     @Test

@@ -34,7 +34,7 @@ public final class OracleDataSourceMetaDataTest {
     public void setUp() {
         dataSourceInfo = new DataSourceInfo();
         dataSourceInfo.setUrl("jdbc:oracle:thin:@//127.0.0.1:9999/ds_0");
-        dataSourceInfo.setUserName("test");
+        dataSourceInfo.setUsername("test");
     }
     
     @Test
@@ -43,7 +43,7 @@ public final class OracleDataSourceMetaDataTest {
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
         assertThat(actual.getCatalog(), is("ds_0"));
-        assertEquals(actual.getSchemaName(), dataSourceInfo.getUserName());
+        assertEquals(actual.getSchemaName(), dataSourceInfo.getUsername());
     }
     
     @Test

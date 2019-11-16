@@ -34,7 +34,7 @@ public final class SQLServerDataSourceMetaDataTest {
     public void setUp() {
         dataSourceInfo = new DataSourceInfo();
         dataSourceInfo.setUrl("jdbc:microsoft:sqlserver://127.0.0.1:9999;DatabaseName=ds_0");
-        dataSourceInfo.setUserName("test");
+        dataSourceInfo.setUsername("test");
     }
     
     @Test

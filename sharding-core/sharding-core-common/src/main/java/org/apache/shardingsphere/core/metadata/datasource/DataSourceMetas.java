@@ -37,20 +37,8 @@ public final class DataSourceMetas {
     
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
-    public DataSourceMetas(final Map<String, String> dataSourceURLs, final DatabaseType databaseType) {
-        dataSourceMetaDataMap = getDataSourceMetaDataMap(dataSourceURLs, databaseType);
-    }
-    
     public DataSourceMetas(final DatabaseType databaseType, final Map<String, DataSourceInfo> dataSourceMap) {
         dataSourceMetaDataMap = getDataSourceMetaDataMap(databaseType, dataSourceMap);
-    }
-    
-    private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final Map<String, String> dataSourceURLs, final DatabaseType databaseType) {
-        Map<String, DataSourceMetaData> result = new HashMap<>(dataSourceURLs.size(), 1);
-        for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
-            result.put(entry.getKey(), databaseType.getDataSourceMetaData(entry.getValue()));
-        }
-        return result;
     }
     
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final DatabaseType databaseType, final Map<String, DataSourceInfo> dataSourceInfoMap) {

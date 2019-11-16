@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.core.metadata.datasource;
 
-import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.spi.database.DataSourceInfo;
+import org.junit.Before;
+import org.junit.Test;
 
 public final class ShardingSphereDataSourceMetaDataTest {
     
@@ -33,12 +34,20 @@ public final class ShardingSphereDataSourceMetaDataTest {
     
     @Before
     public void setUp() {
-        Map<String, String> dataSourceURLs = new LinkedHashMap<>();
-        dataSourceURLs.put("ds_0", "jdbc:mysql://127.0.0.1:3306/db_0");
-        dataSourceURLs.put("ds_1", "jdbc:mysql://127.0.0.1:3306/db_1");
-        dataSourceMetas = new DataSourceMetas(dataSourceURLs, DatabaseTypes.getActualDatabaseType("MySQL"));
+        final Map<String, DataSourceInfo> dataSourceInfoMap = new HashMap<String, DataSourceInfo>();
+        DataSourceInfo info0 = new DataSourceInfo();
+        info0.setUrl("jdbc:mysql://127.0.0.1:3306/db_0");
+        info0.setUsername("test");
+        
+        DataSourceInfo info1 = new DataSourceInfo();
+        info1.setUrl("jdbc:mysql://127.0.0.1:3306/db_1");
+        info1.setUsername("test");
+        
+        dataSourceInfoMap.put("ds_0", info0);
+        dataSourceInfoMap.put("ds_1", info1);
+        dataSourceMetas = new DataSourceMetas(DatabaseTypes.getActualDatabaseType("MySQL"), dataSourceInfoMap);
     }
-    
+
     @Test
     public void assertGetAllInstanceDataSourceNamesForShardingRule() {
         assertNotNull(dataSourceMetas.getAllInstanceDataSourceNames());
