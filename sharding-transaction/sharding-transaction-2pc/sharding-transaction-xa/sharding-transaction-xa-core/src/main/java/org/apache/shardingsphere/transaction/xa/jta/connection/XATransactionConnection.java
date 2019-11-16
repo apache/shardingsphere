@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.connection;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 
@@ -26,16 +25,15 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Single XA Connection.
+ * XA transaction connection.
  *
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public final class SingleXAConnection {
+public final class XATransactionConnection {
     
     private final String resourceName;
     
-    @Getter
     private final Connection connection;
     
     private final XAConnection xaConnection;
@@ -48,5 +46,14 @@ public final class SingleXAConnection {
      */
     public SingleXAResource getXAResource() throws SQLException {
         return new SingleXAResource(resourceName, xaConnection.getXAResource());
+    }
+    
+    /**
+     * Get target connection.
+     *
+     * @return target connection
+     */
+    public Connection getTargetConnection() {
+        return connection;
     }
 }

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
-import org.apache.shardingsphere.transaction.xa.jta.connection.SingleXAConnection;
+import org.apache.shardingsphere.transaction.xa.jta.connection.XATransactionConnection;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
 import org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerLoader;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
@@ -83,12 +83,12 @@ public final class XAShardingTransactionManager implements ShardingTransactionMa
     
     @Override
     public Connection getConnection(final String dataSourceName) throws SQLException {
-        SingleXAConnection singleXAConnection = cachedDataSources.get(dataSourceName).getXAConnection();
+        XATransactionConnection transactionConnection = cachedDataSources.get(dataSourceName).getXAConnection();
         if (!enlistedXAResource.get().contains(dataSourceName)) {
-            xaTransactionManager.enlistResource(singleXAConnection.getXAResource());
+            xaTransactionManager.enlistResource(transactionConnection.getXAResource());
             enlistedXAResource.get().add(dataSourceName);
         }
-        return singleXAConnection.getConnection();
+        return transactionConnection.getTargetConnection();
     }
     
     @SneakyThrows

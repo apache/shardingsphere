@@ -19,8 +19,8 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
 import lombok.Getter;
 import org.apache.shardingsphere.spi.database.DatabaseType;
-import org.apache.shardingsphere.transaction.xa.jta.connection.SingleXAConnection;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionFactory;
+import org.apache.shardingsphere.transaction.xa.jta.connection.XATransactionConnection;
 
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
@@ -71,21 +71,21 @@ public final class XATransactionDataSource {
     /**
      * Get XA connection.
      *
-     * @return single XA connection
+     * @return XA transaction connection
      * @throws SQLException SQL exception
      */
-    public SingleXAConnection getXAConnection() throws SQLException {
+    public XATransactionConnection getXAConnection() throws SQLException {
         return isOriginalXADataSource ? getXAConnectionFromXADataSource() : getXAConnectionFromNoneXADataSource();
     }
     
-    private SingleXAConnection getXAConnectionFromXADataSource() throws SQLException {
+    private XATransactionConnection getXAConnectionFromXADataSource() throws SQLException {
         XAConnection xaConnection = xaDataSource.getXAConnection();
-        return new SingleXAConnection(resourceName, xaConnection.getConnection(), xaConnection);
+        return new XATransactionConnection(resourceName, xaConnection.getConnection(), xaConnection);
     }
     
-    private SingleXAConnection getXAConnectionFromNoneXADataSource() throws SQLException {
+    private XATransactionConnection getXAConnectionFromNoneXADataSource() throws SQLException {
         Connection originalConnection = originalDataSource.getConnection();
         XAConnection xaConnection = XAConnectionFactory.createXAConnection(databaseType, xaDataSource, originalConnection);
-        return new SingleXAConnection(resourceName, originalConnection, xaConnection);
+        return new XATransactionConnection(resourceName, originalConnection, xaConnection);
     }
 }

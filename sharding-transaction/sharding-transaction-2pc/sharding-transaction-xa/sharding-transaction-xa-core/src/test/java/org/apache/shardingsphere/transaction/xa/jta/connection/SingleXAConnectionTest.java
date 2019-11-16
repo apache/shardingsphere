@@ -42,22 +42,22 @@ public final class SingleXAConnectionTest {
     @Mock
     private Connection connection;
     
-    private SingleXAConnection singleXAConnection;
+    private XATransactionConnection xaTransactionConnection;
     
     @Before
     public void setUp() {
-        singleXAConnection = new SingleXAConnection("ds1", connection, xaConnection);
+        xaTransactionConnection = new XATransactionConnection("ds1", connection, xaConnection);
     }
     
     @Test
     public void assertGetConnection() {
-        Connection actual = singleXAConnection.getConnection();
+        Connection actual = xaTransactionConnection.getTargetConnection();
         assertThat(actual, is(connection));
     }
     
     @Test
     public void assertGetXAResource() throws SQLException {
-        XAResource actual = singleXAConnection.getXAResource();
+        XAResource actual = xaTransactionConnection.getXAResource();
         assertThat(actual, instanceOf(SingleXAResource.class));
     }
 }

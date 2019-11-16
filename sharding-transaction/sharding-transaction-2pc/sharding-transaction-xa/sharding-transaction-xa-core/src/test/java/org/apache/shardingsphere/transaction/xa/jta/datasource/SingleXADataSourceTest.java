@@ -20,7 +20,7 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
-import org.apache.shardingsphere.transaction.xa.jta.connection.SingleXAConnection;
+import org.apache.shardingsphere.transaction.xa.jta.connection.XATransactionConnection;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.Test;
 
@@ -57,16 +57,16 @@ public final class SingleXADataSourceTest {
     @Test
     public void assertGetXAConnectionOfXA() throws SQLException {
         XADataSource xaDataSource = DataSourceUtils.createXADataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1");
-        XATransactionDataSource shardingXADataSource = new XATransactionDataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1", xaDataSource);
-        SingleXAConnection actual = shardingXADataSource.getXAConnection();
-        assertThat(actual.getConnection(), instanceOf(Connection.class));
+        XATransactionDataSource transactionDataSource = new XATransactionDataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1", xaDataSource);
+        XATransactionConnection actual = transactionDataSource.getXAConnection();
+        assertThat(actual.getTargetConnection(), instanceOf(Connection.class));
     }
     
     @Test
     public void assertGetXAConnectionOfNoneXA() throws SQLException {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseTypes.getActualDatabaseType("H2"), "ds1");
-        XATransactionDataSource shardingXADataSource = new XATransactionDataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1", dataSource);
-        SingleXAConnection actual = shardingXADataSource.getXAConnection();
-        assertThat(actual.getConnection(), instanceOf(Connection.class));
+        XATransactionDataSource transactionDataSource = new XATransactionDataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1", dataSource);
+        XATransactionConnection actual = transactionDataSource.getXAConnection();
+        assertThat(actual.getTargetConnection(), instanceOf(Connection.class));
     }
 }
