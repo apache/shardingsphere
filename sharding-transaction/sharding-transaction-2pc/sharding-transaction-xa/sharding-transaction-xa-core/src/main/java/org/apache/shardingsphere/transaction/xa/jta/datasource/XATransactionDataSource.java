@@ -33,6 +33,7 @@ import javax.transaction.Transaction;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -44,10 +45,10 @@ public final class XATransactionDataSource implements AutoCloseable {
     
     private static final Set<String> CONTAINER_DATASOURCE_NAMES = Sets.newHashSet("AtomikosDataSourceBean", "BasicManagedDataSource");
     
-    private static final ThreadLocal<Boolean> IS_ENLISTED = new ThreadLocal<Boolean>() {
+    private static final ThreadLocal<Set<String>> ENLISTED_RESOURCES = new ThreadLocal<Set<String>>() {
         @Override
-        public Boolean initialValue() {
-            return false;
+        public Set<String> initialValue() {
+            return new HashSet<>();
         }
     };
     
@@ -87,7 +88,7 @@ public final class XATransactionDataSource implements AutoCloseable {
         Connection result = dataSource.getConnection();
         XAConnection xaConnection = XAConnectionFactory.createXAConnection(databaseType, xaDataSource, result);
         Transaction transaction = xaTransactionManager.getTransactionManager().getTransaction();
-        if (!IS_ENLISTED.get()) {
+        if (!ENLISTED_RESOURCES.get().contains(resourceName)) {
             transaction.enlistResource(new SingleXAResource(resourceName, xaConnection.getXAResource()));
             transaction.registerSynchronization(new Synchronization() {
                 @Override
@@ -97,10 +98,10 @@ public final class XATransactionDataSource implements AutoCloseable {
     
                 @Override
                 public void afterCompletion(final int status) {
-                    IS_ENLISTED.set(false);
+                    ENLISTED_RESOURCES.remove();
                 }
             });
-            IS_ENLISTED.set(true);
+            ENLISTED_RESOURCES.get().add(resourceName);
         }
         return result;
     }
