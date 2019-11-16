@@ -346,7 +346,7 @@ to check the following items:
     *   All the third party dependency licenses are under `licenses` folder
     *   If it depends on Apache license and has a `NOTICE` file, that `NOTICE` file need to be added to `NOTICE` file of the release
 
-For the whole check list, please see [here](https://wiki.apache.org/incubator/IncubatorReleaseChecklist).
+For the whole check list, please see [here](https://cwiki.apache.org/confluence/display/INCUBATOR/Incubator+Release+Checklist).
 
 ### Check dependency impact
 
