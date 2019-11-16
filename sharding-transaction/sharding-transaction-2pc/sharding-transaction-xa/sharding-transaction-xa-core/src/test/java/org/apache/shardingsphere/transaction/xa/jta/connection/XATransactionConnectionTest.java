@@ -34,7 +34,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SingleXAConnectionTest {
+public final class XATransactionConnectionTest {
     
     @Mock
     private XAConnection xaConnection;
