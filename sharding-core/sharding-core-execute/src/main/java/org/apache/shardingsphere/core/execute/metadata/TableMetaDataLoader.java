@@ -142,7 +142,7 @@ public final class TableMetaDataLoader {
     
     private TableMetaData createTableMetaData(final Connection connection, final String catalog, 
                                               final String logicTableName, final String actualTableName,
-                                              final String generateKeyColumnName, final EncryptRule encryptRule,final String dataSourceName) throws SQLException {
+                                              final String generateKeyColumnName, final EncryptRule encryptRule, final String dataSourceName) throws SQLException {
         if (isTableExist(connection, catalog, actualTableName)) {
             return new TableMetaData(
                     getColumnMetaDataList(connection, catalog, logicTableName, actualTableName, generateKeyColumnName, encryptRule),
