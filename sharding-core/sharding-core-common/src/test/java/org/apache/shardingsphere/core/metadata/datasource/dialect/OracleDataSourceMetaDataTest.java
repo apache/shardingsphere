@@ -43,7 +43,7 @@ public final class OracleDataSourceMetaDataTest {
     
     @Test
     public void assertGetPropertiesWithOracleRacCfg() {
-        String url = "jdbc:oracle:thin:@(DESCRIPTION =(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.2)(PORT=1521))"
+        String url = "jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.2)(PORT=1521))"
                 + "(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.3)(PORT=1521))(LOAD_BALANCE=yes)(FAILOVER=ON)"
                 + "(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=ds_0)(FAILOVER_MODE=(TYPE=SELECT)"
                 + "(METHOD=BASIC)(RETIRES=20)(DELAY=15))))";
