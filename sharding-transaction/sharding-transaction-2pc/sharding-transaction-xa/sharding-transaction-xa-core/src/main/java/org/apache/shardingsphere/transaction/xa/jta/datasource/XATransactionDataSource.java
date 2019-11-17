@@ -17,50 +17,110 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
-import lombok.Getter;
+import com.google.common.collect.Sets;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionFactory;
-import org.apache.shardingsphere.transaction.xa.jta.connection.XATransactionConnection;
+import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
+import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
 
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
+import javax.transaction.RollbackException;
+import javax.transaction.Synchronization;
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * XA transaction data source.
  *
  * @author zhaojun
  */
-public final class XATransactionDataSource {
+public final class XATransactionDataSource implements AutoCloseable {
     
-    @Getter
-    private final String resourceName;
+    private static final Set<String> CONTAINER_DATASOURCE_NAMES = Sets.newHashSet("AtomikosDataSourceBean", "BasicManagedDataSource");
     
-    @Getter
-    private final XADataSource xaDataSource;
+    private static final ThreadLocal<Set<String>> ENLISTED_RESOURCES = new ThreadLocal<Set<String>>() {
+        @Override
+        public Set<String> initialValue() {
+            return new HashSet<>();
+        }
+    };
     
     private final DatabaseType databaseType;
     
-    private final DataSource originalDataSource;
+    private final String resourceName;
     
-    public XATransactionDataSource(final DatabaseType databaseType, final String resourceName, final DataSource dataSource) {
+    private final DataSource dataSource;
+    
+    private XADataSource xaDataSource;
+    
+    private XATransactionManager xaTransactionManager;
+    
+    public XATransactionDataSource(final DatabaseType databaseType, final String resourceName, final DataSource dataSource, final XATransactionManager xaTransactionManager) {
         this.databaseType = databaseType;
         this.resourceName = resourceName;
-        originalDataSource = dataSource;
-        xaDataSource = XADataSourceFactory.build(databaseType, dataSource);
+        this.dataSource = dataSource;
+        if (!CONTAINER_DATASOURCE_NAMES.contains(dataSource.getClass().getSimpleName())) {
+            this.xaDataSource = XADataSourceFactory.build(databaseType, dataSource);
+            this.xaTransactionManager = xaTransactionManager;
+            xaTransactionManager.registerRecoveryResource(resourceName, xaDataSource);
+        }
     }
     
     /**
-     * Get XA connection.
+     * Get connection.
      *
      * @return XA transaction connection
      * @throws SQLException SQL exception
+     * @throws SystemException system exception
+     * @throws RollbackException rollback exception
      */
-    public XATransactionConnection getConnection() throws SQLException {
-        Connection originalConnection = originalDataSource.getConnection();
-        XAConnection xaConnection = XAConnectionFactory.createXAConnection(databaseType, xaDataSource, originalConnection);
-        return new XATransactionConnection(resourceName, originalConnection, xaConnection);
+    public Connection getConnection() throws SQLException, SystemException, RollbackException {
+        if (CONTAINER_DATASOURCE_NAMES.contains(dataSource.getClass().getSimpleName())) {
+            return dataSource.getConnection();
+        }
+        Connection result = dataSource.getConnection();
+        XAConnection xaConnection = XAConnectionFactory.createXAConnection(databaseType, xaDataSource, result);
+        Transaction transaction = xaTransactionManager.getTransactionManager().getTransaction();
+        if (!ENLISTED_RESOURCES.get().contains(resourceName)) {
+            transaction.enlistResource(new SingleXAResource(resourceName, xaConnection.getXAResource()));
+            transaction.registerSynchronization(new Synchronization() {
+                @Override
+                public void beforeCompletion() {
+        
+                }
+    
+                @Override
+                public void afterCompletion(final int status) {
+                    ENLISTED_RESOURCES.remove();
+                }
+            });
+            ENLISTED_RESOURCES.get().add(resourceName);
+        }
+        return result;
+    }
+    
+    @Override
+    public void close() {
+        if (!CONTAINER_DATASOURCE_NAMES.contains(dataSource.getClass().getSimpleName())) {
+            xaTransactionManager.removeRecoveryResource(resourceName, xaDataSource);
+        } else {
+            close(dataSource);
+        }
+    }
+    
+    private void close(final DataSource dataSource) {
+        try {
+            Method method = dataSource.getClass().getDeclaredMethod("close");
+            method.setAccessible(true);
+            method.invoke(dataSource);
+        } catch (final ReflectiveOperationException ignored) {
+        }
     }
 }

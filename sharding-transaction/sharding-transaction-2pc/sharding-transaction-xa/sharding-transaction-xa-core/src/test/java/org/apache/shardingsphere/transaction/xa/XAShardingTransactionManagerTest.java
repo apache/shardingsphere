@@ -28,7 +28,6 @@ import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
 import org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerLoader;
-import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
 import org.junit.After;
 import org.junit.Before;
@@ -84,8 +83,8 @@ public final class XAShardingTransactionManagerTest {
     
     @Test
     public void assertRegisterXADataSource() {
-        Map<String, XATransactionDataSource> cachedXADatasourceMap = getCachedSingleXADataSourceMap();
-        assertThat(cachedXADatasourceMap.size(), is(2));
+        Map<String, XATransactionDataSource> cachedXADatasourceMap = getCachedDataSources();
+        assertThat(cachedXADatasourceMap.size(), is(3));
     }
     
     @Test
@@ -100,28 +99,18 @@ public final class XAShardingTransactionManagerTest {
     public void assertGetConnection() throws SQLException {
         xaShardingTransactionManager.begin();
         Connection actual1 = xaShardingTransactionManager.getConnection("ds1");
-        Connection actual2 = xaShardingTransactionManager.getConnection("ds1");
+        Connection actual2 = xaShardingTransactionManager.getConnection("ds2");
+        Connection actual3 = xaShardingTransactionManager.getConnection("ds3");
         assertThat(actual1, instanceOf(Connection.class));
         assertThat(actual2, instanceOf(Connection.class));
-        verify(xaTransactionManager).enlistResource(any(SingleXAResource.class));
-        xaShardingTransactionManager.commit();
-    }
-    
-    @Test
-    public void assertGetConnectionWithoutEnlist() throws SQLException {
-        xaShardingTransactionManager.begin();
-        Connection actual = xaShardingTransactionManager.getConnection("ds1");
-        assertThat(actual, instanceOf(Connection.class));
-        xaShardingTransactionManager.getConnection("ds1");
-        assertThat(actual, instanceOf(Connection.class));
-        verify(xaTransactionManager).enlistResource(any(SingleXAResource.class));
+        assertThat(actual3, instanceOf(Connection.class));
         xaShardingTransactionManager.commit();
     }
     
     @Test
     public void assertClose() throws Exception {
         xaShardingTransactionManager.close();
-        Map<String, XATransactionDataSource> cachedSingleXADataSourceMap = getCachedSingleXADataSourceMap();
+        Map<String, XATransactionDataSource> cachedSingleXADataSourceMap = getCachedDataSources();
         verify(xaTransactionManager, times(2)).removeRecoveryResource(anyString(), any(XADataSource.class));
         assertThat(cachedSingleXADataSourceMap.size(), is(0));
     }
@@ -144,7 +133,7 @@ public final class XAShardingTransactionManagerTest {
     
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    private Map<String, XATransactionDataSource> getCachedSingleXADataSourceMap() {
+    private Map<String, XATransactionDataSource> getCachedDataSources() {
         Field field = xaShardingTransactionManager.getClass().getDeclaredField("cachedDataSources");
         field.setAccessible(true);
         return (Map<String, XATransactionDataSource>) field.get(xaShardingTransactionManager);

@@ -72,6 +72,7 @@ public final class DataSourceUtils {
     
     private static AtomikosDataSourceBean createAtomikosDataSourceBean(final DatabaseType databaseType, final String databaseName) {
         AtomikosDataSourceBean result = new AtomikosDataSourceBean();
+        result.setUniqueResourceName(databaseName);
         result.setXaDataSource(createXADataSource(databaseType, databaseName));
         return result;
     }
@@ -83,7 +84,7 @@ public final class DataSourceUtils {
      * @return XA data source
      */
     @SneakyThrows
-    public static XADataSource createXADataSource(final DatabaseType databaseType, final String databaseName) {
+    private static XADataSource createXADataSource(final DatabaseType databaseType, final String databaseName) {
         XADataSource result = XADataSourceFactory.build(databaseType);
         XADataSourceDefinition xaDataSourceDefinition = XADataSourceDefinitionFactory.getXADataSourceDefinition(databaseType);
         Properties xaProperties = xaDataSourceDefinition.getXAProperties(new DatabaseAccessConfiguration(getURL(databaseType, databaseName), "root", "root"));
