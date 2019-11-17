@@ -43,19 +43,20 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
     
     private final Pattern pattern = Pattern.compile("jdbc:oracle:(thin|oci|kprb):@(//)?([\\w\\-\\.]+):?([0-9]*)[:/]([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
     
+    private final Pattern racPattern = Pattern.compile("jdbc:oracle:thin:@([\\w\\(\\=\\)]+)host=([0-9\\.]+)\\)\\(port=([0-9]+)"
+                                       + "([\\w\\=\\(\\)]+)host=([0-9\\.]+)\\)\\(port=([0-9]+)([\\w\\=\\(\\)]+)\\(service_name\\=([\\w\\d]+)\\)", Pattern.CASE_INSENSITIVE);
+    
     public OracleDataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);
+        Matcher racMatcher = racPattern.matcher(url.trim());
         if (matcher.find()) {
             hostName = matcher.group(3);
             port = Strings.isNullOrEmpty(matcher.group(4)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(4));
             schemaName = matcher.group(5);
-        } else if (url.contains("HOST") && url.contains("PORT") && url.contains("SERVICE_NAME")) {
-            String hostConfig = url.substring(url.indexOf("HOST"));
-            hostName = hostConfig.substring(5, hostConfig.indexOf(")"));
-            String portConfig = url.substring(url.indexOf("PORT"));
-            port = Integer.valueOf(portConfig.substring(5, portConfig.indexOf(")")));
-            String serviceNameConfig = url.substring(url.indexOf("SERVICE_NAME"));
-            schemaName = serviceNameConfig.substring("SERVICE_NAME".length() + 1, serviceNameConfig.indexOf(")"));
+        } else if (racMatcher.find()) {
+            hostName = racMatcher.group(2);
+            port = Strings.isNullOrEmpty(racMatcher.group(3)) ? DEFAULT_PORT : Integer.valueOf(racMatcher.group(3));
+            schemaName = racMatcher.group(8);
         } else {
             throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
         }
