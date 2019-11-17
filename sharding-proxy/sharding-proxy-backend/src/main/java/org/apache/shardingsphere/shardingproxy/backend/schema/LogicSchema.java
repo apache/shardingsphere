@@ -67,6 +67,12 @@ public abstract class LogicSchema {
         ShardingOrchestrationEventBus.getInstance().register(this);
     }
     
+    /**
+     * Get dataSource map.
+     * @param dataSourceMap dataSource map
+     * @return get dataSource map
+     * @throws SQLException SQLException
+     */
     public Map<String, DataSourceInfo> getDataSourceInfoMap(final Map<String, YamlDataSourceParameter> dataSourceMap) throws SQLException {
         Map<String, DataSourceInfo> result = new HashMap<String, DataSourceInfo>(dataSourceMap.size(), 1);
         for (Entry<String, YamlDataSourceParameter> entry : dataSourceMap.entrySet()) {
