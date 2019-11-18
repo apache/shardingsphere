@@ -19,7 +19,7 @@ package info.avalon566.shardingscaling.core.synctask;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.config.SyncType;
-import info.avalon566.shardingscaling.core.execute.executor.local.LocalReporter;
+import info.avalon566.shardingscaling.core.execute.engine.local.LocalReporter;
 
 /**
  * Sync task factory.
