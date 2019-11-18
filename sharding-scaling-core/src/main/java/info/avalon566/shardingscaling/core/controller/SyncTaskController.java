@@ -20,7 +20,7 @@ package info.avalon566.shardingscaling.core.controller;
 import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.config.SyncType;
-import info.avalon566.shardingscaling.core.job.sync.RealtimeDataSyncTask;
+import info.avalon566.shardingscaling.core.synctask.RealtimeDataSyncTask;
 import info.avalon566.shardingscaling.core.job.sync.executor.Event;
 import info.avalon566.shardingscaling.core.job.sync.executor.EventType;
 import info.avalon566.shardingscaling.core.job.sync.executor.SyncJobExecutor;

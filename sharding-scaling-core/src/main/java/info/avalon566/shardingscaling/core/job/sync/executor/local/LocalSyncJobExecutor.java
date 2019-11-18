@@ -20,11 +20,11 @@ package info.avalon566.shardingscaling.core.job.sync.executor.local;
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.controller.ReportCallback;
 import info.avalon566.shardingscaling.core.controller.SyncTaskProgress;
-import info.avalon566.shardingscaling.core.job.sync.SyncTask;
+import info.avalon566.shardingscaling.core.synctask.SyncTask;
 import info.avalon566.shardingscaling.core.job.sync.executor.Event;
 import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
 import info.avalon566.shardingscaling.core.job.sync.executor.SyncJobExecutor;
-import info.avalon566.shardingscaling.core.job.sync.SyncTaskFactory;
+import info.avalon566.shardingscaling.core.synctask.SyncTaskFactory;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job.sync;
+package info.avalon566.shardingscaling.core.synctask;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
