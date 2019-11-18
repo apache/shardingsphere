@@ -17,7 +17,7 @@
 
 package info.avalon566.shardingscaling.core.controller;
 
-import info.avalon566.shardingscaling.core.job.sync.executor.Event;
+import info.avalon566.shardingscaling.core.execute.executor.Event;
 
 /**
  * Report callback.

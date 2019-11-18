@@ -19,9 +19,9 @@ package info.avalon566.shardingscaling.core.synctask;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.controller.SyncTaskProgress;
-import info.avalon566.shardingscaling.core.job.sync.executor.Event;
-import info.avalon566.shardingscaling.core.job.sync.executor.EventType;
-import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
+import info.avalon566.shardingscaling.core.execute.executor.Event;
+import info.avalon566.shardingscaling.core.execute.executor.EventType;
+import info.avalon566.shardingscaling.core.execute.executor.Reporter;
 import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.core.execute.SyncExecutor;
 import info.avalon566.shardingscaling.core.execute.channel.MemoryChannel;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job.sync.executor;
+package info.avalon566.shardingscaling.core.execute.executor;
 
 /**
  * Event type.

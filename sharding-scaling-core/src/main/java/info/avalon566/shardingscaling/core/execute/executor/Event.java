@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job.sync.executor;
+package info.avalon566.shardingscaling.core.execute.executor;
+
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Job Running reporter.
+ * Event.
  * @author avalon566
  */
-public interface Reporter {
+@Data
+@RequiredArgsConstructor
+public class Event {
 
-    /**
-     * Report job running event.
-     * @param event job running event
-     */
-    void report(Event event);
+    private final String taskId;
 
-    /**
-     * Get job running report.
-     * @return event
-     */
-    Event consumeEvent();
+    private final EventType eventType;
+
+    private Object payload;
 }

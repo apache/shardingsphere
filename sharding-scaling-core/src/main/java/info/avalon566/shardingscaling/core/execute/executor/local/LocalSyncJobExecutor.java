@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job.sync.executor.local;
+package info.avalon566.shardingscaling.core.execute.executor.local;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.controller.ReportCallback;
 import info.avalon566.shardingscaling.core.controller.SyncTaskProgress;
 import info.avalon566.shardingscaling.core.synctask.SyncTask;
-import info.avalon566.shardingscaling.core.job.sync.executor.Event;
-import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
-import info.avalon566.shardingscaling.core.job.sync.executor.SyncJobExecutor;
+import info.avalon566.shardingscaling.core.execute.executor.Event;
+import info.avalon566.shardingscaling.core.execute.executor.Reporter;
+import info.avalon566.shardingscaling.core.execute.executor.SyncJobExecutor;
 import info.avalon566.shardingscaling.core.synctask.SyncTaskFactory;
 
 import java.util.ArrayList;
