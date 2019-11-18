@@ -15,29 +15,18 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.writer;
-
-import info.avalon566.shardingscaling.core.execute.channel.Channel;
-import info.avalon566.shardingscaling.core.execute.SyncRunner;
+package info.avalon566.shardingscaling.core.execute.executor.reader;
 
 /**
- * Writer.
+ * Log reader.
  *
- * @author avalon566
+ * @author yangyi
  */
-public interface Writer extends SyncRunner {
-
+public interface LogReader extends Reader {
+    
     /**
-     * Set channel.
-     *
-     * @param channel channel
+     * mark log position.
+     * @return log position
      */
-    void setChannel(Channel channel);
-
-    /**
-     * write data to channel.
-     *
-     * @param channel channel
-     */
-    void write(Channel channel);
+    LogPosition markPosition();
 }

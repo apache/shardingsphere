@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.record;
+package info.avalon566.shardingscaling.core.execute.executor.record;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import info.avalon566.shardingscaling.core.execute.executor.reader.LogPosition;
 
 /**
- * Column.
+ * Finished record.
  *
  * @author avalon566
  */
-@Data
-@AllArgsConstructor
-public class Column {
-    
-    private Object value;
+public class FinishedRecord extends Record {
 
-    private boolean updated;
+    public FinishedRecord(final LogPosition logPosition) {
+        super(logPosition);
+    }
 }

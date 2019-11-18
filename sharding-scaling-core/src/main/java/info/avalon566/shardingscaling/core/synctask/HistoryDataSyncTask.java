@@ -24,12 +24,12 @@ import info.avalon566.shardingscaling.core.execute.EventType;
 import info.avalon566.shardingscaling.core.execute.Reporter;
 import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.core.execute.engine.SyncExecutor;
-import info.avalon566.shardingscaling.core.execute.channel.MemoryChannel;
-import info.avalon566.shardingscaling.core.execute.reader.NopLogPosition;
-import info.avalon566.shardingscaling.core.execute.reader.Reader;
-import info.avalon566.shardingscaling.core.execute.reader.ReaderFactory;
-import info.avalon566.shardingscaling.core.execute.writer.Writer;
-import info.avalon566.shardingscaling.core.execute.writer.WriterFactory;
+import info.avalon566.shardingscaling.core.execute.executor.channel.MemoryChannel;
+import info.avalon566.shardingscaling.core.execute.executor.reader.NopLogPosition;
+import info.avalon566.shardingscaling.core.execute.executor.reader.Reader;
+import info.avalon566.shardingscaling.core.execute.executor.reader.ReaderFactory;
+import info.avalon566.shardingscaling.core.execute.executor.writer.Writer;
+import info.avalon566.shardingscaling.core.execute.executor.writer.WriterFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;

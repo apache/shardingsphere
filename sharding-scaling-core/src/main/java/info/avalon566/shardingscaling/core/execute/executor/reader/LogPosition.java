@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.record;
+package info.avalon566.shardingscaling.core.execute.executor.reader;
 
-import info.avalon566.shardingscaling.core.execute.reader.LogPosition;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import java.io.Serializable;
 
 /**
- * Record interface.
+ * Log position interface.
  *
  * @author avalon566
  */
-@Getter
-@RequiredArgsConstructor
-public abstract class Record {
-
-    private final LogPosition logPosition;
+public interface LogPosition<T> extends Comparable<T>, Serializable {
 }

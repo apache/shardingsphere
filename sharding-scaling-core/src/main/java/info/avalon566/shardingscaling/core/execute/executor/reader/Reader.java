@@ -15,14 +15,30 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.reader;
+package info.avalon566.shardingscaling.core.execute.executor.reader;
 
-import java.io.Serializable;
+import info.avalon566.shardingscaling.core.execute.executor.channel.Channel;
+import info.avalon566.shardingscaling.core.execute.executor.SyncRunner;
 
 /**
- * Log position interface.
+ * Reader interface.
  *
  * @author avalon566
  */
-public interface LogPosition<T> extends Comparable<T>, Serializable {
+public interface Reader extends SyncRunner {
+
+    /**
+     * Set channel.
+     *
+     * @param channel channel
+     */
+    void setChannel(Channel channel);
+
+    /**
+     * Read Record to channel.
+     *
+     * @param channel channel
+     */
+    void read(Channel channel);
+    
 }

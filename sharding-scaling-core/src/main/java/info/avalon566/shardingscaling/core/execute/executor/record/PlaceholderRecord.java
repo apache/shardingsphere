@@ -15,36 +15,18 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute;
+package info.avalon566.shardingscaling.core.execute.executor.record;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import info.avalon566.shardingscaling.core.execute.executor.reader.LogPosition;
 
 /**
- * Abstract runner.
+ * Placeholder record.
  *
  * @author avalon566
  */
-public abstract class AbstractSyncRunner implements SyncRunner {
+public class PlaceholderRecord extends Record {
 
-    @Setter(AccessLevel.PROTECTED)
-    @Getter(AccessLevel.PROTECTED)
-    private boolean running;
-
-    /**
-     * generic start implement.
-     */
-    @Override
-    public void start() {
-        running = true;
-    }
-
-    /**
-     * generic stop implement.
-     */
-    @Override
-    public void stop() {
-        running = false;
+    public PlaceholderRecord(final LogPosition logPosition) {
+        super(logPosition);
     }
 }

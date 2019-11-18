@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.reader;
+package info.avalon566.shardingscaling.core.execute.executor.reader;
 
 import info.avalon566.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
 import info.avalon566.shardingscaling.core.exception.SyncRunException;
-import info.avalon566.shardingscaling.core.execute.AbstractSyncRunner;
-import info.avalon566.shardingscaling.core.execute.channel.Channel;
+import info.avalon566.shardingscaling.core.execute.executor.AbstractSyncRunner;
+import info.avalon566.shardingscaling.core.execute.executor.channel.Channel;
 import info.avalon566.shardingscaling.core.execute.metadata.ColumnMetaData;
-import info.avalon566.shardingscaling.core.execute.record.Column;
-import info.avalon566.shardingscaling.core.execute.record.DataRecord;
-import info.avalon566.shardingscaling.core.execute.record.FinishedRecord;
-import info.avalon566.shardingscaling.core.execute.record.Record;
+import info.avalon566.shardingscaling.core.execute.executor.record.Column;
+import info.avalon566.shardingscaling.core.execute.executor.record.DataRecord;
+import info.avalon566.shardingscaling.core.execute.executor.record.FinishedRecord;
+import info.avalon566.shardingscaling.core.execute.executor.record.Record;
 import info.avalon566.shardingscaling.core.execute.util.DataSourceFactory;
 import info.avalon566.shardingscaling.core.execute.util.DbMetaDataUtil;
 import lombok.AccessLevel;

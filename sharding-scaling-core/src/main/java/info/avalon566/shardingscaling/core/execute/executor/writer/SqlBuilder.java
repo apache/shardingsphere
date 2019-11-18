@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.writer;
+package info.avalon566.shardingscaling.core.execute.executor.writer;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;

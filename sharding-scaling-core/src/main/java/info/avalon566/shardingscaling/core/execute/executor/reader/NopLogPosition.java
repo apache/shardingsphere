@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.record;
-
-import info.avalon566.shardingscaling.core.execute.reader.LogPosition;
+package info.avalon566.shardingscaling.core.execute.executor.reader;
 
 /**
- * Finished record.
+ * Nop log position.
  *
  * @author avalon566
  */
-public class FinishedRecord extends Record {
+public class NopLogPosition implements LogPosition<NopLogPosition> {
 
-    public FinishedRecord(final LogPosition logPosition) {
-        super(logPosition);
+    @Override
+    public final int compareTo(final NopLogPosition nopLogPosition) {
+        return 0;
     }
 }

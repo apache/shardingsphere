@@ -15,18 +15,23 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.reader;
+package info.avalon566.shardingscaling.core.execute.executor.channel;
+
+import info.avalon566.shardingscaling.core.execute.executor.record.Record;
+
+import java.util.List;
 
 /**
- * Log reader.
+ * Record acknowledged callback.
  *
- * @author yangyi
+ * @author avalon566
  */
-public interface LogReader extends Reader {
-    
+public interface AckCallback {
+
     /**
-     * mark log position.
-     * @return log position
+     * Call after record acknowledged.
+     *
+     * @param records acknowledged record list
      */
-    LogPosition markPosition();
+    void onAck(List<Record> records);
 }

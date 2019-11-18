@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.channel;
+package info.avalon566.shardingscaling.core.execute.executor.channel;
 
 import info.avalon566.shardingscaling.core.config.ScalingContext;
-import info.avalon566.shardingscaling.core.execute.record.Record;
+import info.avalon566.shardingscaling.core.execute.executor.record.Record;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

@@ -21,6 +21,7 @@ import lombok.Data;
 
 /**
  * Column meta data.
+ *
  * @author avalon566
  */
 @Data

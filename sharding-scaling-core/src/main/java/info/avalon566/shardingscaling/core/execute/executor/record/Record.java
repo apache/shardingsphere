@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute;
+package info.avalon566.shardingscaling.core.execute.executor.record;
+
+import info.avalon566.shardingscaling.core.execute.executor.reader.LogPosition;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * execute runner.
+ * Record interface.
  *
  * @author avalon566
  */
-public interface SyncRunner extends Runnable {
+@Getter
+@RequiredArgsConstructor
+public abstract class Record {
 
-    /**
-     * Start run execute.
-     */
-    void start();
-
-    /**
-     * Stop running execute.
-     */
-    void stop();
+    private final LogPosition logPosition;
 }

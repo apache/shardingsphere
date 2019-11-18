@@ -17,10 +17,10 @@
 
 package info.avalon556.shardingscaling.postgresql;
 
-import info.avalon566.shardingscaling.core.execute.AbstractSyncRunner;
-import info.avalon566.shardingscaling.core.execute.channel.Channel;
-import info.avalon566.shardingscaling.core.execute.reader.LogPosition;
-import info.avalon566.shardingscaling.core.execute.reader.LogReader;
+import info.avalon566.shardingscaling.core.execute.executor.AbstractSyncRunner;
+import info.avalon566.shardingscaling.core.execute.executor.channel.Channel;
+import info.avalon566.shardingscaling.core.execute.executor.reader.LogPosition;
+import info.avalon566.shardingscaling.core.execute.executor.reader.LogReader;
 import lombok.Setter;
 
 /**

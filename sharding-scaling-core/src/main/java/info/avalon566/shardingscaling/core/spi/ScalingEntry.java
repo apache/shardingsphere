@@ -17,9 +17,9 @@
 
 package info.avalon566.shardingscaling.core.spi;
 
-import info.avalon566.shardingscaling.core.execute.reader.JdbcReader;
-import info.avalon566.shardingscaling.core.execute.reader.LogReader;
-import info.avalon566.shardingscaling.core.execute.writer.Writer;
+import info.avalon566.shardingscaling.core.execute.executor.reader.JdbcReader;
+import info.avalon566.shardingscaling.core.execute.executor.reader.LogReader;
+import info.avalon566.shardingscaling.core.execute.executor.writer.Writer;
 import org.apache.shardingsphere.spi.DatabaseTypeAwareSPI;
 
 /**

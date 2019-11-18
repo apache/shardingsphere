@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.record;
+package info.avalon566.shardingscaling.core.execute.executor.record;
 
-import info.avalon566.shardingscaling.core.execute.reader.LogPosition;
+import info.avalon566.shardingscaling.core.execute.executor.reader.LogPosition;
 import lombok.Data;
 
 import java.util.ArrayList;

@@ -18,7 +18,7 @@
 package info.avalon556.shardingscaling.postgresql;
 
 import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
-import info.avalon566.shardingscaling.core.execute.writer.AbstractJdbcWriter;
+import info.avalon566.shardingscaling.core.execute.executor.writer.AbstractJdbcWriter;
 
 /**
  * postgreSQL writer.

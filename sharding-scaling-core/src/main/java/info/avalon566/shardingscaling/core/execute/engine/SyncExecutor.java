@@ -18,10 +18,10 @@
 package info.avalon566.shardingscaling.core.execute.engine;
 
 import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
-import info.avalon566.shardingscaling.core.execute.SyncRunner;
-import info.avalon566.shardingscaling.core.execute.channel.Channel;
-import info.avalon566.shardingscaling.core.execute.reader.Reader;
-import info.avalon566.shardingscaling.core.execute.writer.Writer;
+import info.avalon566.shardingscaling.core.execute.executor.SyncRunner;
+import info.avalon566.shardingscaling.core.execute.executor.channel.Channel;
+import info.avalon566.shardingscaling.core.execute.executor.reader.Reader;
+import info.avalon566.shardingscaling.core.execute.executor.writer.Writer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;

@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.reader;
+package info.avalon566.shardingscaling.core.execute.executor.record;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 /**
- * Nop log position.
+ * Column.
  *
  * @author avalon566
  */
-public class NopLogPosition implements LogPosition<NopLogPosition> {
+@Data
+@AllArgsConstructor
+public class Column {
+    
+    private Object value;
 
-    @Override
-    public final int compareTo(final NopLogPosition nopLogPosition) {
-        return 0;
-    }
+    private boolean updated;
 }

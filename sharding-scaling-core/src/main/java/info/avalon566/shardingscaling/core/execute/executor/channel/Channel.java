@@ -15,23 +15,38 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.channel;
+package info.avalon566.shardingscaling.core.execute.executor.channel;
 
-import info.avalon566.shardingscaling.core.execute.record.Record;
+import info.avalon566.shardingscaling.core.execute.executor.record.Record;
 
 import java.util.List;
 
 /**
- * Record acknowledged callback.
+ * Channel.
  *
  * @author avalon566
  */
-public interface AckCallback {
+public interface Channel {
 
     /**
-     * Call after record acknowledged.
+     * push a {@code DataRecord} to channel.
      *
-     * @param records acknowledged record list
+     * @param dataRecord data
+     * @throws InterruptedException if thread interrupted
      */
-    void onAck(List<Record> records);
+    void pushRecord(Record dataRecord) throws InterruptedException;
+
+    /**
+     * fetch {@code Record} from channel, if the timeout also returns the record.
+     *
+     * @param batchSize record batch size
+     * @param timeout value
+     * @return record
+     */
+    List<Record> fetchRecords(int batchSize, int timeout);
+
+    /**
+     * Ack the last batch.
+     */
+    void ack();
 }

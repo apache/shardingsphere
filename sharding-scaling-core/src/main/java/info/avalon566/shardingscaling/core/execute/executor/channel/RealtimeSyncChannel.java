@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.channel;
+package info.avalon566.shardingscaling.core.execute.executor.channel;
 
-import info.avalon566.shardingscaling.core.execute.reader.LogPosition;
-import info.avalon566.shardingscaling.core.execute.record.DataRecord;
-import info.avalon566.shardingscaling.core.execute.record.FinishedRecord;
-import info.avalon566.shardingscaling.core.execute.record.PlaceholderRecord;
-import info.avalon566.shardingscaling.core.execute.record.Record;
+import info.avalon566.shardingscaling.core.execute.executor.reader.LogPosition;
+import info.avalon566.shardingscaling.core.execute.executor.record.DataRecord;
+import info.avalon566.shardingscaling.core.execute.executor.record.FinishedRecord;
+import info.avalon566.shardingscaling.core.execute.executor.record.PlaceholderRecord;
+import info.avalon566.shardingscaling.core.execute.executor.record.Record;
 
 import java.util.Collections;
 import java.util.HashMap;

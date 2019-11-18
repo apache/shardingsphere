@@ -15,30 +15,22 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.reader;
-
-import info.avalon566.shardingscaling.core.execute.channel.Channel;
-import info.avalon566.shardingscaling.core.execute.SyncRunner;
+package info.avalon566.shardingscaling.core.execute.executor;
 
 /**
- * Reader interface.
+ * execute runner.
  *
  * @author avalon566
  */
-public interface Reader extends SyncRunner {
+public interface SyncRunner extends Runnable {
 
     /**
-     * Set channel.
-     *
-     * @param channel channel
+     * Start run execute.
      */
-    void setChannel(Channel channel);
+    void start();
 
     /**
-     * Read Record to channel.
-     *
-     * @param channel channel
+     * Stop running execute.
      */
-    void read(Channel channel);
-    
+    void stop();
 }

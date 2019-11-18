@@ -15,38 +15,23 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.channel;
-
-import info.avalon566.shardingscaling.core.execute.record.Record;
+package info.avalon566.shardingscaling.core.execute.executor.reader;
 
 import java.util.List;
 
+import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
+
 /**
- * Channel.
+ * JDBC reader.
  *
- * @author avalon566
+ * @author yangyi
  */
-public interface Channel {
-
+public interface JdbcReader extends Reader {
+    
     /**
-     * push a {@code DataRecord} to channel.
-     *
-     * @param dataRecord data
-     * @throws InterruptedException if thread interrupted
+     * Split job to job slices.
+     * @param concurrency slices number.
+     * @return rmdbs configuration
      */
-    void pushRecord(Record dataRecord) throws InterruptedException;
-
-    /**
-     * fetch {@code Record} from channel, if the timeout also returns the record.
-     *
-     * @param batchSize record batch size
-     * @param timeout value
-     * @return record
-     */
-    List<Record> fetchRecords(int batchSize, int timeout);
-
-    /**
-     * Ack the last batch.
-     */
-    void ack();
+    List<RdbmsConfiguration> split(int concurrency);
 }

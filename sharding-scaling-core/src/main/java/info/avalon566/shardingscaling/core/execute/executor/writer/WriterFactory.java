@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.writer;
+package info.avalon566.shardingscaling.core.execute.executor.writer;
 
 import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
 import info.avalon566.shardingscaling.core.spi.ScalingEntry;

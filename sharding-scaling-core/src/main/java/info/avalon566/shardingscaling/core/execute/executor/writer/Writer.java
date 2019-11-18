@@ -15,23 +15,29 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.reader;
+package info.avalon566.shardingscaling.core.execute.executor.writer;
 
-import java.util.List;
-
-import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
+import info.avalon566.shardingscaling.core.execute.executor.channel.Channel;
+import info.avalon566.shardingscaling.core.execute.executor.SyncRunner;
 
 /**
- * JDBC reader.
+ * Writer.
  *
- * @author yangyi
+ * @author avalon566
  */
-public interface JdbcReader extends Reader {
-    
+public interface Writer extends SyncRunner {
+
     /**
-     * Split job to job slices.
-     * @param concurrency slices number.
-     * @return rmdbs configuration
+     * Set channel.
+     *
+     * @param channel channel
      */
-    List<RdbmsConfiguration> split(int concurrency);
+    void setChannel(Channel channel);
+
+    /**
+     * write data to channel.
+     *
+     * @param channel channel
+     */
+    void write(Channel channel);
 }

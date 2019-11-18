@@ -17,7 +17,7 @@
 
 package info.avalon566.shardingscaling.core.config;
 
-import info.avalon566.shardingscaling.core.execute.reader.LogPosition;
+import info.avalon566.shardingscaling.core.execute.executor.reader.LogPosition;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
