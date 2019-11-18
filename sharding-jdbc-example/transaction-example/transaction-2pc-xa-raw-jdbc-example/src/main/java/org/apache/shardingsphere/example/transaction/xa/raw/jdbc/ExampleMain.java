@@ -17,22 +17,21 @@
 
 package org.apache.shardingsphere.example.transaction.xa.raw.jdbc;
 
-import org.apache.shardingsphere.example.core.api.entity.Order;
-import org.apache.shardingsphere.example.core.api.service.ExampleService;
-import org.apache.shardingsphere.example.core.jdbc.repository.OrderRepositoryImpl;
-import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ConnectionCallback;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.List;
+import java.util.Map;
 
 public class ExampleMain {
     
@@ -41,72 +40,77 @@ public class ExampleMain {
     
     public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(getFile(configFile));
-        ExampleService exampleService = getExampleService(dataSource);
-        exampleService.initEnvironment();
-        processXATransaction(dataSource, exampleService);
-        exampleService.cleanEnvironment();
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        initEnvironment(jdbcTemplate);
+        process(jdbcTemplate);
     }
     
     private static File getFile(final String fileName) {
         return new File(Thread.currentThread().getClass().getResource(fileName).getFile());
     }
     
-    private static ExampleService getExampleService(final DataSource dataSource) {
-        return new OrderServiceImpl(dataSource);
+    private static void initEnvironment(final JdbcTemplate jdbcTemplate) {
+        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))");
+        jdbcTemplate.execute("TRUNCATE table t_order");
     }
     
-    private static void processXATransaction(final DataSource dataSource, final ExampleService exampleService) throws SQLException {
+    private static void process(final JdbcTemplate jdbcTemplate) {
         TransactionTypeHolder.set(TransactionType.XA);
-        System.out.println("------ start succeed transaction ------");
-        try (Connection connection = dataSource.getConnection()) {
-            insertSuccess(connection, exampleService);
-            connection.commit();
-            exampleService.printData();
-        }
-        truncateTable(dataSource);
-        System.out.println("------ end succeed transaction ------");
-        System.out.println("------ start failure transaction ------");
-        Connection connection = dataSource.getConnection();
-        try {
-            insertSuccess(connection, exampleService);
-            throw new SQLException("exception occur!");
-        } catch (final SQLException ex) {
-            connection.rollback();
-        }
-        exampleService.printData();
-        System.out.println("------ end failure transaction ------");
-        truncateTable(dataSource);
-    }
-    
-    private static void insertSuccess(final Connection connection, final ExampleService exampleService) throws SQLException {
-        connection.setAutoCommit(false);
-        for (int i = 0; i < 10; i++) {
-            Order order = new Order();
-            order.setUserId(i);
-            order.setStatus("INIT");
-            insertOrder(connection, order);
-        }
-        exampleService.printData();
-    }
-    
-    private static Long insertOrder(final Connection connection, final Order order) {
-        String sql = "INSERT INTO t_order (user_id, status) VALUES (?, ?)";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setInt(1, order.getUserId());
-            preparedStatement.setString(2, order.getStatus());
-            preparedStatement.executeUpdate();
-            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
-                if (resultSet.next()) {
-                    order.setOrderId(resultSet.getLong(1));
+        System.out.println("############### start commit transaction ################");
+        jdbcTemplate.execute(new ConnectionCallback<Object>() {
+            @Override
+            public Object doInConnection(final Connection connection) throws SQLException, DataAccessException {
+                connection.setAutoCommit(false);
+                int result;
+                try {
+                    result = doInsert(connection);
+                    printData(jdbcTemplate, "----------------- query all before commit ------------------");
+                    connection.commit();
+                    printData(jdbcTemplate, "----------------- query all after  commit ------------------");
+                } catch (final SQLException ex) {
+                    connection.rollback();
+                    throw ex;
                 }
+                return result;
             }
-        } catch (final SQLException ignored) {
-        }
-        return order.getOrderId();
+        });
+        System.out.println("############### start rollback transaction ################");
+        TransactionTypeHolder.set(TransactionType.XA);
+        jdbcTemplate.execute(new ConnectionCallback<Object>() {
+            @Override
+            public Object doInConnection(final Connection connection) throws SQLException, DataAccessException {
+                connection.setAutoCommit(false);
+                doInsert(connection);
+                connection.rollback();
+                printData(jdbcTemplate, "----------------- query all after rollback ------------------");
+                return null;
+            }
+        });
     }
     
-    private static void truncateTable(final DataSource dataSource) throws SQLException {
-        OrderRepositoryImpl orderRepository = new OrderRepositoryImpl(dataSource);
-        orderRepository.truncateTable();
+    private static int doInsert(final Connection connection) throws SQLException {
+        int updateCount = 0;
+        String sql = "INSERT INTO t_order (user_id, address_id, status) VALUES (?, ?, ?)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            for (int i = 0; i < 10; i++) {
+                preparedStatement.setInt(1, i);
+                preparedStatement.setLong(2, i);
+                preparedStatement.setString(3, "INIT");
+                updateCount += preparedStatement.executeUpdate();
+            }
+            return updateCount;
+        }
+    }
+    
+    private static void printData(final JdbcTemplate jdbcTemplate, final String title) {
+        System.out.println(title);
+        List<Map<String, Object>> data = jdbcTemplate.queryForList("SELECT * FROM t_order");
+        if (data.isEmpty()) {
+            System.out.println("t_order is empty");
+            return;
+        }
+        for (Map<String, Object> each : data) {
+            System.out.println(each.toString());
+        }
     }
 }
