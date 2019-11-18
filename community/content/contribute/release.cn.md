@@ -328,7 +328,8 @@ gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin
 
 #### 检查二进制包的文件内容
 
-解压缩`apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz`，`apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz`，`apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz`
+解压缩`apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz`，`apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz`
+和 `apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz`
 进行如下检查:
 
 - 文件夹包含单词`incubating`
@@ -341,7 +342,18 @@ gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin
   - 依赖许可证的完整版全部在`license`目录
   - 如果依赖的是Apache许可证并且存在`NOTICE`文件，那么这些`NOTICE`文件也需要加入到版本的`NOTICE`文件中
 
-全部的检查列表参见[这里](https://wiki.apache.org/incubator/IncubatorReleaseChecklist)。
+全部的检查列表参见[这里](https://cwiki.apache.org/confluence/display/INCUBATOR/Incubator+Release+Checklist)。
+
+### 检查依赖影响
+
+#### SkyWalking
+
+如果此版本存在以下接口的变更，则需要到SkyWalking项目提交最新版本的插件：
+
+- org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback.execute0
+- org.apache.shardingsphere.shardingjdbc.executor.AbstractStatementExecutor.executeCallback
+- org.apache.shardingsphere.core.route.router.sharding.ParsingSQLRouter.parse
+- org.apache.shardingsphere.shardingproxy.frontend.command.CommandExecutorTask.run
 
 ### 检查依赖影响
 

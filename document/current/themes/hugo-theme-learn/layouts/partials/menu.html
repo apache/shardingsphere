@@ -103,6 +103,7 @@
         {{if .Params.alwaysopen}}parent{{end}}
         ">
       <a href="{{.RelPermalink}}">
+          <span class="collapse" style="display:inline; font-family:'courier'">{{if .IsAncestor $currentNode }}-&nbsp;{{else}}+&nbsp;{{end}}</span>
           {{safeHTML .Params.Pre}}{{or .Params.menuTitle .LinkTitle .Title}}{{safeHTML .Params.Post}}
           {{ if $showvisitedlinks}}
             <i class="fa fa-check read-icon"></i>

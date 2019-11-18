@@ -332,7 +332,8 @@ Decompress `apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip` and che
 
 #### Check binary packages
 
-Decompress `apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz`, `apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz` and `apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz`
+Decompress `apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz`, `apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz` 
+and `apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz`
 to check the following items:
 
 *   The release files have the word `incubating` in their name
@@ -345,7 +346,18 @@ to check the following items:
     *   All the third party dependency licenses are under `licenses` folder
     *   If it depends on Apache license and has a `NOTICE` file, that `NOTICE` file need to be added to `NOTICE` file of the release
 
-For the whole check list, please see [here](https://wiki.apache.org/incubator/IncubatorReleaseChecklist).
+For the whole check list, please see [here](https://cwiki.apache.org/confluence/display/INCUBATOR/Incubator+Release+Checklist).
+
+### Check dependency impact
+
+#### SkyWalking
+
+If there are changes to the following interfaces in this version, you need to submit the latest version of the plugin to the SkyWalking project:
+
+- org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback.execute0
+- org.apache.shardingsphere.shardingjdbc.executor.AbstractStatementExecutor.executeCallback
+- org.apache.shardingsphere.core.route.router.sharding.ParsingSQLRouter.parse
+- org.apache.shardingsphere.shardingproxy.frontend.command.CommandExecutorTask.run
 
 ### Check dependency impact
 
