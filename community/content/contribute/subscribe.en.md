@@ -14,3 +14,5 @@ After Step 1, you will receive a confirmation e-mail from [dev-help@shardingsphe
 
 1. Receive the welcome e-mail.
 After finishing the two steps above, an e-mail with the subject of `WELCOME to dev@shardingsphere.apache.org` will be sent to your e-mail address. Until now, you have succeeded in subscribing Apache ShardingSphere（Incubating）mail-list.
+
+1. Until now, you can interact with community by your subscribed email or track email conversations by [Archived email list](https://lists.apache.org/list.html?dev@shardingsphere.apache.org).
