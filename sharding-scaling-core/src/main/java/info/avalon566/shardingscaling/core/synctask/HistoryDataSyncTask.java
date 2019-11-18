@@ -19,11 +19,11 @@ package info.avalon566.shardingscaling.core.synctask;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.controller.SyncTaskProgress;
-import info.avalon566.shardingscaling.core.execute.executor.Event;
-import info.avalon566.shardingscaling.core.execute.executor.EventType;
-import info.avalon566.shardingscaling.core.execute.executor.Reporter;
+import info.avalon566.shardingscaling.core.execute.Event;
+import info.avalon566.shardingscaling.core.execute.EventType;
+import info.avalon566.shardingscaling.core.execute.Reporter;
 import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
-import info.avalon566.shardingscaling.core.execute.SyncExecutor;
+import info.avalon566.shardingscaling.core.execute.engine.SyncExecutor;
 import info.avalon566.shardingscaling.core.execute.channel.MemoryChannel;
 import info.avalon566.shardingscaling.core.execute.reader.NopLogPosition;
 import info.avalon566.shardingscaling.core.execute.reader.Reader;

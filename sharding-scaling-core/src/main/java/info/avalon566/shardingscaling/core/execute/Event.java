@@ -15,16 +15,23 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.executor;
+package info.avalon566.shardingscaling.core.execute;
+
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Event type.
+ * Event.
  *
  * @author avalon566
  */
+@Data
+@RequiredArgsConstructor
+public class Event {
 
-public enum EventType {
-    REALTIME_SYNC_POSITION,
-    FINISHED,
-    EXCEPTION_EXIT
+    private final String taskId;
+
+    private final EventType eventType;
+
+    private Object payload;
 }

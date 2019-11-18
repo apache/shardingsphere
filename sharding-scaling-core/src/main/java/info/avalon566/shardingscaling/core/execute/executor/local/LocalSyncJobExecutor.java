@@ -21,8 +21,8 @@ import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 import info.avalon566.shardingscaling.core.controller.ReportCallback;
 import info.avalon566.shardingscaling.core.controller.SyncTaskProgress;
 import info.avalon566.shardingscaling.core.synctask.SyncTask;
-import info.avalon566.shardingscaling.core.execute.executor.Event;
-import info.avalon566.shardingscaling.core.execute.executor.Reporter;
+import info.avalon566.shardingscaling.core.execute.Event;
+import info.avalon566.shardingscaling.core.execute.Reporter;
 import info.avalon566.shardingscaling.core.execute.executor.SyncJobExecutor;
 import info.avalon566.shardingscaling.core.synctask.SyncTaskFactory;
 

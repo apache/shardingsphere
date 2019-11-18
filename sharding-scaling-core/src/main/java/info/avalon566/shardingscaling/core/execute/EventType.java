@@ -15,24 +15,16 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.executor;
+package info.avalon566.shardingscaling.core.execute;
 
 /**
- * Job Running reporter.
+ * Event type.
  *
  * @author avalon566
  */
-public interface Reporter {
 
-    /**
-     * Report job running event.
-     * @param event job running event
-     */
-    void report(Event event);
-
-    /**
-     * Get job running report.
-     * @return event
-     */
-    Event consumeEvent();
+public enum EventType {
+    REALTIME_SYNC_POSITION,
+    FINISHED,
+    EXCEPTION_EXIT
 }

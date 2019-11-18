@@ -17,8 +17,8 @@
 
 package info.avalon566.shardingscaling.core.execute.executor.local;
 
-import info.avalon566.shardingscaling.core.execute.executor.Event;
-import info.avalon566.shardingscaling.core.execute.executor.Reporter;
+import info.avalon566.shardingscaling.core.execute.Event;
+import info.avalon566.shardingscaling.core.execute.Reporter;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
