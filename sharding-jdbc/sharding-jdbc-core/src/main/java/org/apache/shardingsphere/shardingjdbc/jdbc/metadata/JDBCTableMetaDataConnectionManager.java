@@ -32,9 +32,9 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public final class JDBCTableMetaDataConnectionManager implements TableMetaDataConnectionManager {
-
+    
     private final Map<String, DataSource> dataSourceMap;
-
+    
     @Override
     public Connection getConnection(final String dataSourceName) throws SQLException {
         return dataSourceMap.get(dataSourceName).getConnection();

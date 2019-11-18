@@ -32,12 +32,12 @@ public final class PostgreSQLDataSourceMetaDataTest {
     @Before
     public void setUp() {
         dataSourceInfo = new DataSourceInfo();
-        dataSourceInfo.setUrl("jdbc:postgresql://127.0.0.1:9999/ds_0");
         dataSourceInfo.setUsername("test");
     }
     
     @Test
     public void assertDataSourceInfoParam() {
+        dataSourceInfo.setUrl("jdbc:postgresql://127.0.0.1:9999/ds_0");
         PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
@@ -47,7 +47,8 @@ public final class PostgreSQLDataSourceMetaDataTest {
     
     @Test
     public void assertGetPropertiesWithPort() {
-        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData(dataSourceInfo.getUrl());
+        dataSourceInfo.setUrl("jdbc:postgresql://127.0.0.1:9999/ds_0");
+        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
         assertEquals(actual.getSchemaName(), null);
@@ -55,7 +56,8 @@ public final class PostgreSQLDataSourceMetaDataTest {
     
     @Test
     public void assertGetPropertiesWithDefaultPort() {
-        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:postgresql://127.0.0.1/ds_0");
+        dataSourceInfo.setUrl("jdbc:postgresql://127.0.0.1/ds_0");
+        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(5432));
         assertEquals(actual.getCatalog(), "ds_0");
@@ -64,6 +66,7 @@ public final class PostgreSQLDataSourceMetaDataTest {
     
     @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertGetPropertiesFailure() {
-        new PostgreSQLDataSourceMetaData("jdbc:postgresql:xxxxxxxx");
+        dataSourceInfo.setUrl("jdbc:postgresql:xxxxxxxx");
+        new PostgreSQLDataSourceMetaData(dataSourceInfo);
     }
 }

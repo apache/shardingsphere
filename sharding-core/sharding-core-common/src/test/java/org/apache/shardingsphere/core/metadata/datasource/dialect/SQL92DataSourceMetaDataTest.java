@@ -39,6 +39,7 @@ public final class SQL92DataSourceMetaDataTest {
     
     @Test
     public void assertDataSourceInfoParam() {
+        dataSourceInfo.setUrl("jdbc:sql92_db:ds_0");
         SQL92DataSourceMetaData actual = new SQL92DataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is(""));
         assertThat(actual.getPort(), is(-1));
@@ -48,7 +49,8 @@ public final class SQL92DataSourceMetaDataTest {
     
     @Test
     public void assertGetProperties() {
-        SQL92DataSourceMetaData actual = new SQL92DataSourceMetaData(dataSourceInfo.getUrl());
+        dataSourceInfo.setUrl("jdbc:sql92_db:ds_0");
+        SQL92DataSourceMetaData actual = new SQL92DataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is(""));
         assertThat(actual.getPort(), is(-1));
         assertThat(actual.getCatalog(), is(""));
@@ -57,6 +59,7 @@ public final class SQL92DataSourceMetaDataTest {
     
     @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertGetPropertiesFailure() {
-        new SQL92DataSourceMetaData("xxx:xxxx:xxxxxxxx");
+        dataSourceInfo.setUrl("xxx:xxxx:xxxxxxxx");
+        new SQL92DataSourceMetaData(dataSourceInfo);
     }
 }
