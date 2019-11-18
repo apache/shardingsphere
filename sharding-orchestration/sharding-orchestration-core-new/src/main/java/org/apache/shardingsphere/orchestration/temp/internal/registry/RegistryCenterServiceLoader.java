@@ -45,13 +45,13 @@ public final class RegistryCenterServiceLoader extends TypeBasedSPIServiceLoader
     /**
      * Load registry center from SPI.
      * 
-     * @param regCenterConfig registry center configuration
+     * @param config configuration for registry center
      * @return registry center
      */
-    public RegistryCenter load(final InstanceConfiguration regCenterConfig) {
-        Preconditions.checkNotNull(regCenterConfig, "Registry center configuration cannot be null.");
-        RegistryCenter result = newService(regCenterConfig.getType(), regCenterConfig.getProperties());
-        result.init(regCenterConfig);
+    public RegistryCenter load(final InstanceConfiguration config) {
+        Preconditions.checkNotNull(config, "Registry center configuration cannot be null.");
+        RegistryCenter result = newService(config.getType(), config.getProperties());
+        result.init(config);
         return result;
     }
 }

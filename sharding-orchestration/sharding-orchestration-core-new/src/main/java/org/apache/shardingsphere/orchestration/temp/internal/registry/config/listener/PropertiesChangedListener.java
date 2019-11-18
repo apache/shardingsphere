@@ -28,6 +28,7 @@ import org.apache.shardingsphere.orchestration.temp.internal.registry.listener.P
  * Properties changed listener.
  *
  * @author panjuan
+ * @author wangguangyuan
  */
 public final class PropertiesChangedListener extends PostShardingConfigCenterEventListener {
     

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
 import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.temp.constant.OrchestrationType;
 import org.apache.shardingsphere.orchestration.temp.internal.configcenter.ConfigCenterServiceLoader;
 import org.apache.shardingsphere.orchestration.temp.internal.registry.config.service.ConfigurationService;
 import org.apache.shardingsphere.orchestration.temp.internal.registry.listener.ShardingOrchestrationListenerManager;
@@ -62,12 +63,12 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
     
     public ShardingOrchestrationFacade(final OrchestrationConfiguration orchestrationConfig, final Collection<String> shardingSchemaNames) {
         InstanceConfiguration registryCenterConfiguration = getConfigurationByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(),
-                "registry_center");
+                OrchestrationType.REGISTRY_CENTER.getValue());
         regCenter = new RegistryCenterServiceLoader().load(registryCenterConfiguration);
         isOverwrite = Boolean.valueOf(registryCenterConfiguration.getProperties().getProperty("isOverwrite"));
         stateService = new StateService(registryCenterConfiguration.getNamespace(), regCenter);
         InstanceConfiguration configCenterConfiguration = getConfigurationByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(),
-                "config_center");
+                OrchestrationType.CONFIG_CENTER.getValue());
         configCenter = new ConfigCenterServiceLoader().load(configCenterConfiguration);
         configService = new ConfigurationService(configCenterConfiguration.getNamespace(), configCenter);
         listenerManager = shardingSchemaNames.isEmpty() 
@@ -119,8 +120,8 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         if (null == map || null == type) {
             return null;
         }
-        for (Entry entry: map.entrySet()) {
-            InstanceConfiguration configuration = (InstanceConfiguration) entry.getValue();
+        for (Entry<String, InstanceConfiguration> entry: map.entrySet()) {
+            InstanceConfiguration configuration = entry.getValue();
             if (type.equals(configuration.getOrchestrationType())) {
                 return configuration;
             }

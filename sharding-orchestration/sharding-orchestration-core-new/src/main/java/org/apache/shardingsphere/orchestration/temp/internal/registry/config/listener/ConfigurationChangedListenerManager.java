@@ -27,6 +27,7 @@ import java.util.Collection;
  *
  * @author zhangliang
  * @author panjuan
+ * @author wangguangyuan
  */
 public final class ConfigurationChangedListenerManager {
     

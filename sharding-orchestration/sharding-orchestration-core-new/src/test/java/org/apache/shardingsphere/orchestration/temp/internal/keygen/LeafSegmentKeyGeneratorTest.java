@@ -118,7 +118,6 @@ public final class LeafSegmentKeyGeneratorTest {
         int taskNumber = threadNumber * 2;
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
-
                 @Override
                 public Comparable<?> call() {
                     return leafSegmentKeyGenerator.generateKey();
@@ -144,7 +143,6 @@ public final class LeafSegmentKeyGeneratorTest {
         int taskNumber = threadNumber * 2;
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
-
                 @Override
                 public Comparable<?> call() {
                     return leafSegmentKeyGenerator.generateKey();
@@ -168,7 +166,6 @@ public final class LeafSegmentKeyGeneratorTest {
         int taskNumber = threadNumber * 2;
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
-
                 @Override
                 public Comparable<?> call() {
                     return leafSegmentKeyGenerator.generateKey();
@@ -192,7 +189,6 @@ public final class LeafSegmentKeyGeneratorTest {
         Set<Comparable<?>> actual = new HashSet<>();
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
-
                 @Override
                 public Comparable<?> call() {
                     return leafSegmentKeyGenerator.generateKey();

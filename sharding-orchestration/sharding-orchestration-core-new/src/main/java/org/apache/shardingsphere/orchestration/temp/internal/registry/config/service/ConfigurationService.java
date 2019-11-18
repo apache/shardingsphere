@@ -51,6 +51,7 @@ import java.util.Properties;
  * @author caohao
  * @author zhangliang
  * @author panjuan
+ * @author wangguangyuan
  */
 public final class ConfigurationService {
     

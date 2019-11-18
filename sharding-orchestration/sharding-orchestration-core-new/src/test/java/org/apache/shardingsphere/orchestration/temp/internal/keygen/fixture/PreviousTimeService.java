@@ -20,6 +20,11 @@ package org.apache.shardingsphere.orchestration.temp.internal.keygen.fixture;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.orchestration.temp.internal.keygen.TimeService;
 
+/**
+ * Previous time service.
+ *
+ * @author wangguangyuan
+ */
 @RequiredArgsConstructor
 public final class PreviousTimeService extends TimeService {
     

@@ -29,6 +29,7 @@ import java.util.Collection;
  *
  * @author caohao
  * @author panjuan
+ * @author wangguangyuan
  */
 public final class ShardingOrchestrationListenerManager {
     

@@ -33,6 +33,7 @@ import java.util.Collection;
  *
  * @author zhangliang
  * @author panjuan
+ * @author wangguangyuan
  */
 @RequiredArgsConstructor
 public abstract class PostShardingConfigCenterEventListener implements ShardingOrchestrationListener {

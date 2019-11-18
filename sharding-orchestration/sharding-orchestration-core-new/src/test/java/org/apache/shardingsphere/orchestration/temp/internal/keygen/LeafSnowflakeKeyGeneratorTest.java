@@ -141,7 +141,6 @@ public final class LeafSnowflakeKeyGeneratorTest {
         int taskNumber = threadNumber << 2;
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
-
                 @Override
                 public Comparable<?> call() {
                     return leafSnowflakeKeyGenerator.generateKey();
@@ -164,7 +163,6 @@ public final class LeafSnowflakeKeyGeneratorTest {
         int taskNumber = threadNumber << 2;
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
-
                 @Override
                 public Comparable<?> call() {
                     return leafSnowflakeKeyGenerator.generateKey();

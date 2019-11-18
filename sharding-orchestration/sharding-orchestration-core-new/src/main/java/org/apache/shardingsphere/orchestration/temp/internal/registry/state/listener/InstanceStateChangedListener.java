@@ -30,6 +30,7 @@ import org.apache.shardingsphere.orchestration.temp.internal.registry.state.node
  *
  * @author caohao
  * @author panjuan
+ * @author wangguangyuan
  */
 public final class InstanceStateChangedListener extends PostShardingRegistryCenterEventListener {
     

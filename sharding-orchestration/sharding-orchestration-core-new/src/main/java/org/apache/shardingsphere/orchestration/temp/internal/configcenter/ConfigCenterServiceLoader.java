@@ -43,13 +43,13 @@ public final class ConfigCenterServiceLoader extends TypeBasedSPIServiceLoader<C
     /**
      * Load config center from SPI.
      * 
-     * @param configCenterConfig config center configuration
+     * @param config configuration for config center
      * @return config center
      */
-    public ConfigCenter load(final InstanceConfiguration configCenterConfig) {
-        Preconditions.checkNotNull(configCenterConfig, "Config center configuration cannot be null.");
-        ConfigCenter result = newService(configCenterConfig.getType(), configCenterConfig.getProperties());
-        result.init(configCenterConfig);
+    public ConfigCenter load(final InstanceConfiguration config) {
+        Preconditions.checkNotNull(config, "Config center configuration cannot be null.");
+        ConfigCenter result = newService(config.getType(), config.getProperties());
+        result.init(config);
         return result;
     }
 }

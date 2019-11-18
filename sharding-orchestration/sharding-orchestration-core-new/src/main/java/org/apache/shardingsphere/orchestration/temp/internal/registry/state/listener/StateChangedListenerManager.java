@@ -24,6 +24,7 @@ import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.
  * State changed listener manager.
  *
  * @author zhangliang
+ * @author wangguangyuan
  */
 public final class StateChangedListenerManager {
     

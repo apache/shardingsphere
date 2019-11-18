@@ -145,7 +145,6 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
         InstanceConfiguration result = new InstanceConfiguration(getRegistryCenterType(), properties);
         result.setNamespace(DEFAULT_NAMESPACE);
         result.setServerLists(getServerList());
-        //result.setDigest(getDigest());
         return result;
     }
     
@@ -203,10 +202,6 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
         String result = properties.getProperty("serverList");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(result));
         return result;
-    }
-    
-    private String getDigest() {
-        return properties.getProperty("digest");
     }
     
     private String getRegistryCenterType() {
