@@ -63,6 +63,12 @@ public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallb
         return result;
     }
     
+    /**
+     * To make sure SkyWalking will be available at the next release of ShardingSphere,
+     * a new plugin should be provided to SkyWalking project if this API changed.
+     *
+     * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
+     */
     private T execute0(final StatementExecuteUnit statementExecuteUnit, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) throws SQLException {
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         Connection conn = statementExecuteUnit.getStatement().getConnection();
