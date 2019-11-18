@@ -117,6 +117,9 @@ export default {
     }
   },
   ruleConfig: {
+    form: {
+      inputPlaceholder: '请输入内容'
+    },
     schema: {
       name: '名称',
       ruleConfig: '分片配置规则',
@@ -126,6 +129,11 @@ export default {
       name: '请输入名称',
       ruleConfig: '请输入数据分片配置规则',
       dataSourceConfig: '请输入数据源配置规则'
+    },
+    radioBtn: {
+      schema: '架构',
+      authentication: '验证',
+      props: '属性'
     }
   }
 }

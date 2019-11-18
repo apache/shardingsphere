@@ -48,9 +48,9 @@
           <span style="font-size: 18px; font-weight: bold;">Edit source here:</span>
           <el-input
             :rows="20"
+            :placeholder="$t('ruleConfig.form.inputPlaceholder')"
             v-model="textarea"
             type="textarea"
-            placeholder="请输入内容"
             class="edit-text"
           />
         </el-col>
@@ -58,10 +58,10 @@
           <span style="font-size: 18px; font-weight: bold;">Result (JS object dump):</span>
           <el-input
             :rows="20"
+            :placeholder="$t('ruleConfig.form.inputPlaceholder')"
             v-model="textarea2"
             type="textarea"
             readonly
-            placeholder="请输入内容"
             class="show-text"
           />
         </el-col>

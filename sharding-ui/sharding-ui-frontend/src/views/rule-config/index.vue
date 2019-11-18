@@ -18,9 +18,9 @@
 <template>
   <el-row class="box-card">
     <el-radio-group v-model="radioValue" @change="onChange">
-      <el-radio-button label="Schema" />
-      <el-radio-button label="Authentication" />
-      <el-radio-button label="Props" />
+      <el-radio-button :label="$t('ruleConfig.radioBtn.schema')" />
+      <el-radio-button :label="$t('ruleConfig.radioBtn.authentication')" />
+      <el-radio-button :label="$t('ruleConfig.radioBtn.props')" />
     </el-radio-group>
     <component :is="currentView" />
   </el-row>
