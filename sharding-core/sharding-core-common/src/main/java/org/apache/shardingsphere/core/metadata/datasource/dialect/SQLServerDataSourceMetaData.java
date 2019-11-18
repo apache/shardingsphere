@@ -35,17 +35,17 @@ import lombok.Getter;
  */
 @Getter
 public final class SQLServerDataSourceMetaData implements DataSourceMetaData {
-
+    
     private static final int DEFAULT_PORT = 1433;
-
+    
     private final String hostName;
-
+    
     private final int port;
-
+    
     private final String schemaName;
-
+    
     private final String catalog;
-
+    
     private final Pattern pattern = Pattern.compile("jdbc:(microsoft:)?sqlserver://([\\w\\-\\.]+):?([0-9]*);\\S*(DatabaseName|database)=([\\w\\-]+);?", Pattern.CASE_INSENSITIVE);
 
     public SQLServerDataSourceMetaData(final DataSourceInfo dataSourceInfo) {

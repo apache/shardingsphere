@@ -35,19 +35,19 @@ import lombok.Getter;
  */
 @Getter
 public final class OracleDataSourceMetaData implements DataSourceMetaData {
-
+    
     private static final int DEFAULT_PORT = 1521;
-
+    
     private final String hostName;
-
+    
     private final int port;
-
+    
     private final String schemaName;
-
+    
     private final String catalog;
-
+    
     private final Pattern pattern = Pattern.compile("jdbc:oracle:(thin|oci|kprb):@(//)?([\\w\\-\\.]+):?([0-9]*)[:/]([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
-
+    
     public OracleDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
         String url = dataSourceInfo.getUrl();
 

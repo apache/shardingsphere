@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.spi.database.MemorizedDataSourceMetaData;
 
-import lombok.Getter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Data source meta data for H2.
@@ -33,19 +32,19 @@ import lombok.Getter;
  */
 @Getter
 public final class H2DataSourceMetaData implements MemorizedDataSourceMetaData {
-
+    
     private static final int DEFAULT_PORT = -1;
-
+    
     private final String hostName;
-
+    
     private final int port;
-
+    
     private final String schemaName;
-
+    
     private final String catalog;
-
+    
     private final Pattern pattern = Pattern.compile("jdbc:h2:(mem|~)[:/]([\\w\\-]+);?\\S*", Pattern.CASE_INSENSITIVE);
-
+    
     public H2DataSourceMetaData(final DataSourceInfo dataSourceInfo) {
         String url = dataSourceInfo.getUrl();
         Matcher matcher = pattern.matcher(url);

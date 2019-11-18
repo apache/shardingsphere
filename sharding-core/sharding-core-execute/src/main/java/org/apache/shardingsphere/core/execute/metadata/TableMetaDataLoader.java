@@ -56,27 +56,27 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public final class TableMetaDataLoader {
-
+    
     private static final String COLUMN_NAME = "COLUMN_NAME";
-
+    
     private static final String TYPE_NAME = "TYPE_NAME";
-
+    
     private static final String INDEX_NAME = "INDEX_NAME";
-
+    
     private static final String IS_NULLABLE = "IS_NULLABLE";
-
+    
     private static final String IS_AUTOINCREMENT = "IS_AUTOINCREMENT";
-
+    
     private final DataSourceMetas dataSourceMetas;
-
+    
     private final ShardingExecuteEngine executeEngine;
-
+    
     private final TableMetaDataConnectionManager connectionManager;
-
+    
     private final int maxConnectionsSizePerQuery;
-
+    
     private final boolean isCheckingMetaData;
-
+    
     /**
      * Load table meta data.
      *

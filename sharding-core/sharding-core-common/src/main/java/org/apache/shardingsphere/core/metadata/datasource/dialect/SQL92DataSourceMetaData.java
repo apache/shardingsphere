@@ -33,15 +33,15 @@ import lombok.Getter;
  */
 @Getter
 public final class SQL92DataSourceMetaData implements DataSourceMetaData {
-
+    
     private static final int DEFAULT_PORT = -1;
-
+    
     private final String hostName;
-
+    
     private final int port;
-
+    
     private final String schemaName;
-
+    
     private final String catalog;
 
     private final Pattern pattern = Pattern.compile("jdbc:.*", Pattern.CASE_INSENSITIVE);

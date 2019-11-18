@@ -35,17 +35,17 @@ import lombok.Getter;
  */
 @Getter
 public final class PostgreSQLDataSourceMetaData implements DataSourceMetaData {
-
+    
     private static final int DEFAULT_PORT = 5432;
-
+    
     private final String hostName;
-
+    
     private final int port;
-
+    
     private final String schemaName;
-
+    
     private final String catalog;
-
+    
     private final Pattern pattern = Pattern.compile("jdbc:postgresql://([\\w\\-\\.]+):?([0-9]*)/([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
 
     public PostgreSQLDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
