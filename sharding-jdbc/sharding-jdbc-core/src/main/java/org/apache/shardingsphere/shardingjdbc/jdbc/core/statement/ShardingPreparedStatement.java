@@ -130,21 +130,16 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         }
         List<ResultSet> resultSets = new ArrayList<>(preparedStatementExecutor.getStatements().size());
         List<QueryResult> queryResults = new ArrayList<>(preparedStatementExecutor.getStatements().size());
+        boolean hasResultSets = false;
         for (Statement each : preparedStatementExecutor.getStatements()) {
             ResultSet resultSet = each.getResultSet();
             resultSets.add(resultSet);
             if (resultSet != null) {
                 queryResults.add(new StreamQueryResult(resultSet, connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getProps(), sqlRouteResult.getSqlStatementContext()));
+                hasResultSets = true;
             }
         }
-        boolean allResultSetAreNull = true;
-        for (ResultSet resultSet: resultSets) {
-            if (resultSet != null) {
-                allResultSetAreNull = false;
-                break;
-            }
-        }
-        if (allResultSetAreNull) {
+        if (!hasResultSets) {
             return null;
         }
         if (sqlRouteResult.getSqlStatementContext() instanceof SelectSQLStatementContext || sqlRouteResult.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
