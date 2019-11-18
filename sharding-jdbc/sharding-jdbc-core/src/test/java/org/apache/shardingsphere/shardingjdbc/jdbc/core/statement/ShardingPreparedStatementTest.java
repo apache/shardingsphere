@@ -31,6 +31,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
+
 
 public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
@@ -203,7 +205,31 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
             assertThat(result[2], is(4));
         }
     }
-    
+
+    @Test
+    public void assertExecuteGetResultSet() throws SQLException {
+        String sql = "UPDATE t_order SET status = ? WHERE user_id = ? AND order_id = ?";
+        try (PreparedStatement preparedStatement = getShardingDataSource().getConnection().prepareStatement(sql)) {
+            preparedStatement.setString(1, "OK");
+            preparedStatement.setInt(2, 11);
+            preparedStatement.setInt(3, 11);
+            preparedStatement.execute();
+            assertNull(preparedStatement.getResultSet());
+        }
+    }
+
+    @Test
+    public void assertExecuteUpdateGetResultSet() throws SQLException {
+        String sql = "UPDATE t_order SET status = ? WHERE user_id = ? AND order_id = ?";
+        try (PreparedStatement preparedStatement = getShardingDataSource().getConnection().prepareStatement(sql)) {
+            preparedStatement.setString(1, "OK");
+            preparedStatement.setInt(2, 11);
+            preparedStatement.setInt(3, 11);
+            preparedStatement.executeUpdate();
+            assertNull(preparedStatement.getResultSet());
+        }
+    }
+
     @Test
     public void assertClearBatch() throws SQLException {
         try (
