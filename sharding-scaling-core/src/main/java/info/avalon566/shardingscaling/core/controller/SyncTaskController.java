@@ -27,8 +27,8 @@ import info.avalon566.shardingscaling.core.execute.engine.SyncJobExecutor;
 import info.avalon566.shardingscaling.core.execute.engine.local.LocalSyncJobExecutor;
 import info.avalon566.shardingscaling.core.execute.executor.reader.LogPosition;
 import info.avalon566.shardingscaling.core.execute.executor.reader.ReaderFactory;
-import info.avalon566.shardingscaling.core.execute.util.DataSourceFactory;
-import info.avalon566.shardingscaling.core.execute.util.DbMetaDataUtil;
+import info.avalon566.shardingscaling.core.util.DataSourceFactory;
+import info.avalon566.shardingscaling.core.util.DbMetaDataUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;

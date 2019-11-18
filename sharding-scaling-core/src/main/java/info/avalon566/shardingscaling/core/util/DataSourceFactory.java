@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.util;
+package info.avalon566.shardingscaling.core.util;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import info.avalon566.shardingscaling.core.config.DataSourceConfiguration;

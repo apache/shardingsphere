@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.metadata;
+package info.avalon566.shardingscaling.core.metadata;
 
 import com.google.common.base.Strings;
 

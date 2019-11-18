@@ -25,8 +25,8 @@ import javax.sql.DataSource;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import info.avalon566.shardingscaling.core.execute.metadata.ColumnMetaData;
-import info.avalon566.shardingscaling.core.execute.util.DbMetaDataUtil;
+import info.avalon566.shardingscaling.core.metadata.ColumnMetaData;
+import info.avalon566.shardingscaling.core.util.DbMetaDataUtil;
 
 /**
  * Sql builder.

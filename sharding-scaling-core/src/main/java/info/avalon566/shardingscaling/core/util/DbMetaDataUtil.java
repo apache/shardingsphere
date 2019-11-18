@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.util;
+package info.avalon566.shardingscaling.core.util;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-import info.avalon566.shardingscaling.core.execute.metadata.ColumnMetaData;
+import info.avalon566.shardingscaling.core.metadata.ColumnMetaData;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;

@@ -21,13 +21,13 @@ import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
 import info.avalon566.shardingscaling.core.exception.SyncRunException;
 import info.avalon566.shardingscaling.core.execute.executor.AbstractSyncRunner;
 import info.avalon566.shardingscaling.core.execute.executor.channel.Channel;
-import info.avalon566.shardingscaling.core.execute.metadata.ColumnMetaData;
+import info.avalon566.shardingscaling.core.metadata.ColumnMetaData;
 import info.avalon566.shardingscaling.core.execute.executor.record.Column;
 import info.avalon566.shardingscaling.core.execute.executor.record.DataRecord;
 import info.avalon566.shardingscaling.core.execute.executor.record.FinishedRecord;
 import info.avalon566.shardingscaling.core.execute.executor.record.Record;
-import info.avalon566.shardingscaling.core.execute.util.DataSourceFactory;
-import info.avalon566.shardingscaling.core.execute.util.DbMetaDataUtil;
+import info.avalon566.shardingscaling.core.util.DataSourceFactory;
+import info.avalon566.shardingscaling.core.util.DbMetaDataUtil;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
