@@ -18,9 +18,9 @@
 package info.avalon566.shardingscaling.mysql;
 
 import info.avalon566.shardingscaling.core.spi.ScalingEntry;
-import info.avalon566.shardingscaling.core.sync.reader.JdbcReader;
-import info.avalon566.shardingscaling.core.sync.reader.LogReader;
-import info.avalon566.shardingscaling.core.sync.writer.Writer;
+import info.avalon566.shardingscaling.core.execute.reader.JdbcReader;
+import info.avalon566.shardingscaling.core.execute.reader.LogReader;
+import info.avalon566.shardingscaling.core.execute.writer.Writer;
 
 /**
  * MySQL scaling entry.

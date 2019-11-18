@@ -25,10 +25,10 @@ import info.avalon566.shardingscaling.core.job.sync.executor.Event;
 import info.avalon566.shardingscaling.core.job.sync.executor.EventType;
 import info.avalon566.shardingscaling.core.job.sync.executor.SyncJobExecutor;
 import info.avalon566.shardingscaling.core.job.sync.executor.local.LocalSyncJobExecutor;
-import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
-import info.avalon566.shardingscaling.core.sync.reader.ReaderFactory;
-import info.avalon566.shardingscaling.core.sync.util.DataSourceFactory;
-import info.avalon566.shardingscaling.core.sync.util.DbMetaDataUtil;
+import info.avalon566.shardingscaling.core.execute.reader.LogPosition;
+import info.avalon566.shardingscaling.core.execute.reader.ReaderFactory;
+import info.avalon566.shardingscaling.core.execute.util.DataSourceFactory;
+import info.avalon566.shardingscaling.core.execute.util.DbMetaDataUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
@@ -86,8 +86,8 @@ public final class SyncTaskController implements ReportCallback, Runnable {
      */
     public SyncTaskProgress getProgress() {
         List<SyncTaskProgress> result = syncJobExecutor.getProgresses();
-        // if history data sync job, only return first migrate progress.
-        // if realtime data sync job, there only one migrate progress.
+        // if history data execute job, only return first migrate progress.
+        // if realtime data execute job, there only one migrate progress.
         return result.get(0);
     }
 
@@ -108,7 +108,7 @@ public final class SyncTaskController implements ReportCallback, Runnable {
                 }
             }
             if (finished) {
-                log.info("data sync finish");
+                log.info("data execute finish");
                 if (STAGE_SYNC_HISTORY_DATA.equals(stage)) {
                     stage = STAGE_SYNC_REALTIME_DATA;
                     syncRealtimeData(startLogPosition);

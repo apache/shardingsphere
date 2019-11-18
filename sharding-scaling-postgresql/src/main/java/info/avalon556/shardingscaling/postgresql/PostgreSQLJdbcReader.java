@@ -18,7 +18,7 @@
 package info.avalon556.shardingscaling.postgresql;
 
 import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
-import info.avalon566.shardingscaling.core.sync.reader.AbstractJdbcReader;
+import info.avalon566.shardingscaling.core.execute.reader.AbstractJdbcReader;
 
 /**
  * PostgreSQL JDBC reader.

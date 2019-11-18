@@ -15,22 +15,17 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job;
-
-import info.avalon566.shardingscaling.core.execute.reader.LogPosition;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package info.avalon566.shardingscaling.core.execute.reader;
 
 /**
- * Migrate progress.
+ * Nop log position.
  *
  * @author avalon566
  */
-@Getter
-@RequiredArgsConstructor
-public class SyncTaskProgress {
+public class NopLogPosition implements LogPosition<NopLogPosition> {
 
-    private final String stage;
-
-    private final LogPosition logPosition;
+    @Override
+    public final int compareTo(final NopLogPosition nopLogPosition) {
+        return 0;
+    }
 }

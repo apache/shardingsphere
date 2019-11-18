@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job;
+package info.avalon566.shardingscaling.core.execute.reader;
 
-import info.avalon566.shardingscaling.core.execute.reader.LogPosition;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
+import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
 
 /**
- * Migrate progress.
+ * JDBC reader.
  *
- * @author avalon566
+ * @author yangyi
  */
-@Getter
-@RequiredArgsConstructor
-public class SyncTaskProgress {
-
-    private final String stage;
-
-    private final LogPosition logPosition;
+public interface JdbcReader extends Reader {
+    
+    /**
+     * Split job to job slices.
+     * @param concurrency slices number.
+     * @return rmdbs configuration
+     */
+    List<RdbmsConfiguration> split(int concurrency);
 }

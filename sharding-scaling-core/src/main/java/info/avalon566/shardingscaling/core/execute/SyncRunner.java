@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job;
-
-import info.avalon566.shardingscaling.core.execute.reader.LogPosition;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package info.avalon566.shardingscaling.core.execute;
 
 /**
- * Migrate progress.
- *
+ * execute runner.
  * @author avalon566
  */
-@Getter
-@RequiredArgsConstructor
-public class SyncTaskProgress {
+public interface SyncRunner extends Runnable {
 
-    private final String stage;
+    /**
+     * Start run execute.
+     */
+    void start();
 
-    private final LogPosition logPosition;
+    /**
+     * Stop running execute.
+     */
+    void stop();
 }

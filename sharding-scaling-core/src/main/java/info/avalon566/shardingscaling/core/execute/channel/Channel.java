@@ -15,22 +15,38 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job;
+package info.avalon566.shardingscaling.core.execute.channel;
 
-import info.avalon566.shardingscaling.core.execute.reader.LogPosition;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import info.avalon566.shardingscaling.core.execute.record.Record;
+
+import java.util.List;
 
 /**
- * Migrate progress.
+ * Channel.
  *
  * @author avalon566
  */
-@Getter
-@RequiredArgsConstructor
-public class SyncTaskProgress {
+public interface Channel {
 
-    private final String stage;
+    /**
+     * push a {@code DataRecord} to channel.
+     *
+     * @param dataRecord data
+     * @throws InterruptedException if thread interrupted
+     */
+    void pushRecord(Record dataRecord) throws InterruptedException;
 
-    private final LogPosition logPosition;
+    /**
+     * fetch {@code Record} from channel, if the timeout also returns the record.
+     *
+     * @param batchSize record batch size
+     * @param timeout value
+     * @return record
+     */
+    List<Record> fetchRecords(int batchSize, int timeout);
+
+    /**
+     * Ack the last batch.
+     */
+    void ack();
 }

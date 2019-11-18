@@ -29,11 +29,11 @@ import info.avalon566.shardingscaling.core.job.sync.executor.local.LocalReporter
 public final class SyncTaskFactory {
 
     /**
-     * create sync job instance by sync configuration.
+     * create execute job instance by execute configuration.
      *
      * @param syncConfiguration value
      * @param reporter value
-     * @return sync job
+     * @return execute job
      */
     public static SyncTask createSyncJobInstance(final SyncConfiguration syncConfiguration, final LocalReporter reporter) {
         if (SyncType.TableSlice.equals(syncConfiguration.getSyncType())) {

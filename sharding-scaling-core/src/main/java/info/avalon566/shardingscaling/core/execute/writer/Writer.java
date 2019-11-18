@@ -15,22 +15,26 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job;
+package info.avalon566.shardingscaling.core.execute.writer;
 
-import info.avalon566.shardingscaling.core.execute.reader.LogPosition;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import info.avalon566.shardingscaling.core.execute.channel.Channel;
+import info.avalon566.shardingscaling.core.execute.SyncRunner;
 
 /**
- * Migrate progress.
- *
+ * Writer.
  * @author avalon566
  */
-@Getter
-@RequiredArgsConstructor
-public class SyncTaskProgress {
+public interface Writer extends SyncRunner {
 
-    private final String stage;
+    /**
+     * Set channel.
+     * @param channel channel
+     */
+    void setChannel(Channel channel);
 
-    private final LogPosition logPosition;
+    /**
+     * write data to channel.
+     * @param channel channel
+     */
+    void write(Channel channel);
 }

@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job;
+package info.avalon566.shardingscaling.core.execute.record;
 
 import info.avalon566.shardingscaling.core.execute.reader.LogPosition;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
- * Migrate progress.
+ * Placeholder record.
  *
  * @author avalon566
  */
-@Getter
-@RequiredArgsConstructor
-public class SyncTaskProgress {
+public class PlaceholderRecord extends Record {
 
-    private final String stage;
-
-    private final LogPosition logPosition;
+    public PlaceholderRecord(final LogPosition logPosition) {
+        super(logPosition);
+    }
 }

@@ -23,15 +23,15 @@ import info.avalon566.shardingscaling.core.job.SyncTaskProgress;
 import info.avalon566.shardingscaling.core.job.sync.executor.Event;
 import info.avalon566.shardingscaling.core.job.sync.executor.EventType;
 import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
-import info.avalon566.shardingscaling.core.sync.SyncExecutor;
-import info.avalon566.shardingscaling.core.sync.channel.AckCallback;
-import info.avalon566.shardingscaling.core.sync.channel.RealtimeSyncChannel;
-import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
-import info.avalon566.shardingscaling.core.sync.reader.LogReader;
-import info.avalon566.shardingscaling.core.sync.reader.ReaderFactory;
-import info.avalon566.shardingscaling.core.sync.record.Record;
-import info.avalon566.shardingscaling.core.sync.writer.Writer;
-import info.avalon566.shardingscaling.core.sync.writer.WriterFactory;
+import info.avalon566.shardingscaling.core.execute.SyncExecutor;
+import info.avalon566.shardingscaling.core.execute.channel.AckCallback;
+import info.avalon566.shardingscaling.core.execute.channel.RealtimeSyncChannel;
+import info.avalon566.shardingscaling.core.execute.reader.LogPosition;
+import info.avalon566.shardingscaling.core.execute.reader.LogReader;
+import info.avalon566.shardingscaling.core.execute.reader.ReaderFactory;
+import info.avalon566.shardingscaling.core.execute.record.Record;
+import info.avalon566.shardingscaling.core.execute.writer.Writer;
+import info.avalon566.shardingscaling.core.execute.writer.WriterFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Realtime data sync task.
+ * Realtime data execute task.
  *
  * @author avalon566
  */
@@ -87,7 +87,7 @@ public class RealtimeDataSyncTask implements SyncTask {
     }
 
     /**
-     * Start to sync realtime data.
+     * Start to execute realtime data.
      */
     @Override
     public final void run() {
@@ -105,10 +105,10 @@ public class RealtimeDataSyncTask implements SyncTask {
             }));
             startReportRealtimeSyncPosition();
             new SyncExecutor(channel, logReader, writers).execute();
-            log.info("realtime data sync finish");
+            log.info("realtime data execute finish");
             reporter.report(new Event(syncConfiguration.getTaskId(), EventType.FINISHED));
         } catch (SyncExecuteException ex) {
-            log.error("realtime data sync exception exit");
+            log.error("realtime data execute exception exit");
             ex.logExceptions();
             reporter.report(new Event(syncConfiguration.getTaskId(), EventType.EXCEPTION_EXIT));
         }

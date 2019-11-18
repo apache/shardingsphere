@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job;
+package info.avalon566.shardingscaling.core.execute.channel;
 
-import info.avalon566.shardingscaling.core.execute.reader.LogPosition;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import info.avalon566.shardingscaling.core.execute.record.Record;
+
+import java.util.List;
 
 /**
- * Migrate progress.
+ * Record acknowledged callback.
  *
  * @author avalon566
  */
-@Getter
-@RequiredArgsConstructor
-public class SyncTaskProgress {
+public interface AckCallback {
 
-    private final String stage;
-
-    private final LogPosition logPosition;
+    /**
+     * Call after record acknowledged.
+     *
+     * @param records acknowledged record list
+     */
+    void onAck(List<Record> records);
 }

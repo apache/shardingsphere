@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Local sync job executor.
+ * Local execute job executor.
  *
  * @author avalon566
  */

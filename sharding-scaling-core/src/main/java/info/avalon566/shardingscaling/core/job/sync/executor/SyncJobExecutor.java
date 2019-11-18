@@ -30,7 +30,7 @@ import java.util.List;
 public interface SyncJobExecutor {
 
     /**
-     * start sync jobs.
+     * start execute jobs.
      *
      * @param configs job configs
      * @param reportCallback report callback
@@ -39,12 +39,12 @@ public interface SyncJobExecutor {
     Reporter start(List<SyncConfiguration> configs, ReportCallback reportCallback);
 
     /**
-     * stop all sync jobs.
+     * stop all execute jobs.
      */
     void stop();
 
     /**
-     * get all sync job migrate progresses.
+     * get all execute job migrate progresses.
      *
      * @return list of migrate progresses
      */

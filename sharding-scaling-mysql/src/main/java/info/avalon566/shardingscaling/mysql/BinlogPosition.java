@@ -17,7 +17,7 @@
 
 package info.avalon566.shardingscaling.mysql;
 
-import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
+import info.avalon566.shardingscaling.core.execute.reader.LogPosition;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

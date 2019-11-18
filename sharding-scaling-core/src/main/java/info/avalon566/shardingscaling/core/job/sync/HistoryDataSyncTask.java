@@ -23,19 +23,19 @@ import info.avalon566.shardingscaling.core.job.sync.executor.Event;
 import info.avalon566.shardingscaling.core.job.sync.executor.EventType;
 import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;
 import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
-import info.avalon566.shardingscaling.core.sync.SyncExecutor;
-import info.avalon566.shardingscaling.core.sync.channel.MemoryChannel;
-import info.avalon566.shardingscaling.core.sync.reader.NopLogPosition;
-import info.avalon566.shardingscaling.core.sync.reader.Reader;
-import info.avalon566.shardingscaling.core.sync.reader.ReaderFactory;
-import info.avalon566.shardingscaling.core.sync.writer.Writer;
-import info.avalon566.shardingscaling.core.sync.writer.WriterFactory;
+import info.avalon566.shardingscaling.core.execute.SyncExecutor;
+import info.avalon566.shardingscaling.core.execute.channel.MemoryChannel;
+import info.avalon566.shardingscaling.core.execute.reader.NopLogPosition;
+import info.avalon566.shardingscaling.core.execute.reader.Reader;
+import info.avalon566.shardingscaling.core.execute.reader.ReaderFactory;
+import info.avalon566.shardingscaling.core.execute.writer.Writer;
+import info.avalon566.shardingscaling.core.execute.writer.WriterFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;
 
 /**
- * Table slice sync task.
+ * Table slice execute task.
  *
  * @author avalon566
  * @author yangyi
@@ -76,10 +76,10 @@ public class HistoryDataSyncTask implements SyncTask {
         final Writer writer = WriterFactory.newInstance(syncConfiguration.getWriterConfiguration());
         try {
             new SyncExecutor(new MemoryChannel(), reader, Collections.singletonList(writer)).execute();
-            log.info("{} table slice sync finish", syncConfiguration.getReaderConfiguration().getTableName());
+            log.info("{} table slice execute finish", syncConfiguration.getReaderConfiguration().getTableName());
             reporter.report(new Event(syncConfiguration.getTaskId(), EventType.FINISHED));
         } catch (SyncExecuteException ex) {
-            log.error("{} table slice sync exception exit", syncConfiguration.getReaderConfiguration().getTableName());
+            log.error("{} table slice execute exception exit", syncConfiguration.getReaderConfiguration().getTableName());
             ex.logExceptions();
             reporter.report(new Event(syncConfiguration.getTaskId(), EventType.EXCEPTION_EXIT));
         }

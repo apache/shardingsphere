@@ -18,7 +18,7 @@
 package info.avalon566.shardingscaling.mysql;
 
 import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
-import info.avalon566.shardingscaling.core.sync.writer.AbstractJdbcWriter;
+import info.avalon566.shardingscaling.core.execute.writer.AbstractJdbcWriter;
 
 /**
  * MySQL writer.
