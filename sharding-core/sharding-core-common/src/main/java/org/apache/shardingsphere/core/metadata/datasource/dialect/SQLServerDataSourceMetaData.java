@@ -48,17 +48,6 @@ public final class SQLServerDataSourceMetaData implements DataSourceMetaData {
 
     private final Pattern pattern = Pattern.compile("jdbc:(microsoft:)?sqlserver://([\\w\\-\\.]+):?([0-9]*);\\S*(DatabaseName|database)=([\\w\\-]+);?", Pattern.CASE_INSENSITIVE);
 
-    public SQLServerDataSourceMetaData(final String url) {
-        Matcher matcher = pattern.matcher(url);
-        if (!matcher.find()) {
-            throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
-        }
-        hostName = matcher.group(2);
-        port = Strings.isNullOrEmpty(matcher.group(3)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(3));
-        catalog = matcher.group(5);
-        schemaName = null;
-    }
-
     public SQLServerDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
         String url = dataSourceInfo.getUrl();
 

@@ -48,17 +48,6 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
 
     private final Pattern pattern = Pattern.compile("jdbc:oracle:(thin|oci|kprb):@(//)?([\\w\\-\\.]+):?([0-9]*)[:/]([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
 
-    public OracleDataSourceMetaData(final String url) {
-        Matcher matcher = pattern.matcher(url);
-        if (!matcher.find()) {
-            throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
-        }
-        hostName = matcher.group(3);
-        port = Strings.isNullOrEmpty(matcher.group(4)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(4));
-        catalog = matcher.group(5);
-        schemaName = null;
-    }
-
     public OracleDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
         String url = dataSourceInfo.getUrl();
 

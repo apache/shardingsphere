@@ -33,12 +33,12 @@ public final class MySQLDataSourceMetaDataTest {
     @Before
     public void setUp() {
         dataSourceInfo = new DataSourceInfo();
-        dataSourceInfo.setUrl("jdbc:mysql://127.0.0.1:9999/ds_0?serverTimezone=UTC&useSSL=false");
         dataSourceInfo.setUsername("test");
     }
     
     @Test
     public void assertDataSourceInfoParam() {
+        dataSourceInfo.setUrl("jdbc:mysql://127.0.0.1:9999/ds_0?serverTimezone=UTC&useSSL=false");
         MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
@@ -48,7 +48,8 @@ public final class MySQLDataSourceMetaDataTest {
     
     @Test
     public void assertGetPropertiesWithPort() {
-        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData(dataSourceInfo.getUrl());
+        dataSourceInfo.setUrl("jdbc:mysql://127.0.0.1:9999/ds_0?serverTimezone=UTC&useSSL=false");
+        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
         assertEquals(actual.getSchemaName(), null);
@@ -57,7 +58,8 @@ public final class MySQLDataSourceMetaDataTest {
     
     @Test
     public void assertGetPropertiesWithDefaultPort() {
-        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql:loadbalance://127.0.0.1/ds_0?serverTimezone=UTC&useSSL=false");
+        dataSourceInfo.setUrl("jdbc:mysql:loadbalance://127.0.0.1/ds_0?serverTimezone=UTC&useSSL=false");
+        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(3306));
         assertEquals(actual.getSchemaName(), null);
@@ -65,6 +67,7 @@ public final class MySQLDataSourceMetaDataTest {
     
     @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertGetPropertiesFailure() {
-        new MySQLDataSourceMetaData("jdbc:mysql:xxxxxxxx");
+        dataSourceInfo.setUrl("jdbc:mysql:xxxxxxxx");
+        new MySQLDataSourceMetaData(dataSourceInfo);
     }
 }

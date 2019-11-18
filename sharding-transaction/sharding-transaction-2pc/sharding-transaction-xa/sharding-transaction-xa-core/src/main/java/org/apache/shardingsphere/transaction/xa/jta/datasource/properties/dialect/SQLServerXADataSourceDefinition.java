@@ -20,6 +20,7 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.diale
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaData;
+import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 
 import java.util.Collection;
@@ -46,7 +47,9 @@ public final class SQLServerXADataSourceDefinition implements XADataSourceDefini
     @Override
     public Properties getXAProperties(final DatabaseAccessConfiguration databaseAccessConfiguration) {
         Properties result = new Properties();
-        SQLServerDataSourceMetaData dataSourceMetaData = new SQLServerDataSourceMetaData(databaseAccessConfiguration.getUrl());
+        DataSourceInfo dataSourceInfo = new DataSourceInfo();
+        dataSourceInfo.setUrl(databaseAccessConfiguration.getUrl());
+        SQLServerDataSourceMetaData dataSourceMetaData = new SQLServerDataSourceMetaData(dataSourceInfo);
         result.setProperty("user", databaseAccessConfiguration.getUsername());
         result.setProperty("password", Optional.fromNullable(databaseAccessConfiguration.getPassword()).or(""));
         result.setProperty("serverName", dataSourceMetaData.getHostName());

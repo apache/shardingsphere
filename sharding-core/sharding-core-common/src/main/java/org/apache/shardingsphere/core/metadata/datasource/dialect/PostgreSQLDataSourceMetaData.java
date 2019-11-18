@@ -48,17 +48,6 @@ public final class PostgreSQLDataSourceMetaData implements DataSourceMetaData {
 
     private final Pattern pattern = Pattern.compile("jdbc:postgresql://([\\w\\-\\.]+):?([0-9]*)/([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
 
-    public PostgreSQLDataSourceMetaData(final String url) {
-        Matcher matcher = pattern.matcher(url);
-        if (!matcher.find()) {
-            throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
-        }
-        hostName = matcher.group(1);
-        port = Strings.isNullOrEmpty(matcher.group(2)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(2));
-        catalog = matcher.group(3);
-        schemaName = null;
-    }
-
     public PostgreSQLDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
         String url = dataSourceInfo.getUrl();
 

@@ -33,12 +33,12 @@ public final class OracleDataSourceMetaDataTest {
     @Before
     public void setUp() {
         dataSourceInfo = new DataSourceInfo();
-        dataSourceInfo.setUrl("jdbc:oracle:thin:@//127.0.0.1:9999/ds_0");
         dataSourceInfo.setUsername("test");
     }
     
     @Test
     public void assertDataSourceInfoParam() {
+        dataSourceInfo.setUrl("jdbc:oracle:thin:@//127.0.0.1:9999/ds_0");
         OracleDataSourceMetaData actual = new OracleDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
@@ -48,21 +48,24 @@ public final class OracleDataSourceMetaDataTest {
     
     @Test
     public void assertGetPropertiesWithPort() {
-        OracleDataSourceMetaData actual = new OracleDataSourceMetaData(dataSourceInfo.getUrl());
+        dataSourceInfo.setUrl("jdbc:oracle:thin:@//127.0.0.1:9999/ds_0");
+        OracleDataSourceMetaData actual = new OracleDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
     }
     
     @Test
     public void assertGetPropertiesWithDefaultPort() {
-        OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:oci:@127.0.0.1/ds_0");
+        dataSourceInfo.setUrl("jdbc:oracle:oci:@127.0.0.1/ds_0");
+        OracleDataSourceMetaData actual = new OracleDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(1521));
-        assertEquals(actual.getSchemaName(), null);
+        assertEquals(actual.getSchemaName(), "test");
     }
     
     @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertGetPropertiesFailure() {
-        new OracleDataSourceMetaData("jdbc:oracle:xxxxxxxx");
+        dataSourceInfo.setUrl("jdbc:oracle:xxxxxxxx");
+        new OracleDataSourceMetaData(dataSourceInfo);
     }
 }
