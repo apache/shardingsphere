@@ -18,7 +18,7 @@
 package info.avalon566.shardingscaling.core.job.sync;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
-import info.avalon566.shardingscaling.core.job.SyncTaskProgress;
+import info.avalon566.shardingscaling.core.controller.SyncTaskProgress;
 import info.avalon566.shardingscaling.core.job.sync.executor.Event;
 import info.avalon566.shardingscaling.core.job.sync.executor.EventType;
 import info.avalon566.shardingscaling.core.job.sync.executor.Reporter;

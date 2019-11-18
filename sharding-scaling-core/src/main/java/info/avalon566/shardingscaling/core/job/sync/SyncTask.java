@@ -17,7 +17,7 @@
 
 package info.avalon566.shardingscaling.core.job.sync;
 
-import info.avalon566.shardingscaling.core.job.SyncTaskProgress;
+import info.avalon566.shardingscaling.core.controller.SyncTaskProgress;
 
 /**
  * Sync task interface.

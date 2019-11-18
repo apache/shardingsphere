@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.job;
+package info.avalon566.shardingscaling.core.controller;
 
-import info.avalon566.shardingscaling.core.execute.reader.LogPosition;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import info.avalon566.shardingscaling.core.job.sync.executor.Event;
 
 /**
- * Migrate progress.
+ * Report callback.
  *
  * @author avalon566
  */
-@Getter
-@RequiredArgsConstructor
-public class SyncTaskProgress {
+public interface ReportCallback {
 
-    private final String stage;
-
-    private final LogPosition logPosition;
+    /**
+     * process report event.
+     *
+     * @param event report event
+     */
+    void onProcess(Event event);
 }
