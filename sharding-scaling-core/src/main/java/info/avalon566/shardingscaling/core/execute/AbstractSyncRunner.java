@@ -23,6 +23,7 @@ import lombok.Setter;
 
 /**
  * Abstract runner.
+ *
  * @author avalon566
  */
 public abstract class AbstractSyncRunner implements SyncRunner {

@@ -22,18 +22,21 @@ import info.avalon566.shardingscaling.core.execute.SyncRunner;
 
 /**
  * Reader interface.
+ *
  * @author avalon566
  */
 public interface Reader extends SyncRunner {
 
     /**
      * Set channel.
+     *
      * @param channel channel
      */
     void setChannel(Channel channel);
 
     /**
      * Read Record to channel.
+     *
      * @param channel channel
      */
     void read(Channel channel);

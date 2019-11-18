@@ -19,6 +19,7 @@ package info.avalon566.shardingscaling.core.execute.executor;
 
 /**
  * Job Running reporter.
+ *
  * @author avalon566
  */
 public interface Reporter {

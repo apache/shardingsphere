@@ -19,6 +19,7 @@ package info.avalon566.shardingscaling.core.execute.executor;
 
 /**
  * Event type.
+ *
  * @author avalon566
  */
 

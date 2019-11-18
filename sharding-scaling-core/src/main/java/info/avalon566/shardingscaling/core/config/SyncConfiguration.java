@@ -37,7 +37,7 @@ public class SyncConfiguration {
     private final SyncType syncType;
 
     /**
-     * 单表写入并发度.
+     * The concurrency of writers.
      */
     private final int concurrency;
 

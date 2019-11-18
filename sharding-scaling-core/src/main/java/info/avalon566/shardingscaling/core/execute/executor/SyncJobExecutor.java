@@ -25,6 +25,7 @@ import java.util.List;
 
 /**
  * Sync job executor, run in in process, k8s etc.
+ *
  * @author avalon566
  */
 public interface SyncJobExecutor {

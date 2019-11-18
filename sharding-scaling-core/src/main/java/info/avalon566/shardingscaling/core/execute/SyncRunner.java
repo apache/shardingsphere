@@ -19,6 +19,7 @@ package info.avalon566.shardingscaling.core.execute;
 
 /**
  * execute runner.
+ *
  * @author avalon566
  */
 public interface SyncRunner extends Runnable {

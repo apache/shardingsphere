@@ -25,6 +25,7 @@ import java.util.List;
 
 /**
  * Data record.
+ *
  * @author avalon566
  */
 @Data
@@ -45,6 +46,7 @@ public class DataRecord extends Record {
 
     /**
      * Add a column to record.
+     *
      * @param data column
      */
     public void addColumn(final Column data) {
@@ -53,6 +55,7 @@ public class DataRecord extends Record {
 
     /**
      * Return column count.
+     *
      * @return count
      */
     public int getColumnCount() {
@@ -61,6 +64,7 @@ public class DataRecord extends Record {
 
     /**
      * Get column by index.
+     *
      * @param index of column
      * @return column
      */
@@ -70,6 +74,7 @@ public class DataRecord extends Record {
 
     /**
      * Get table name.
+     *
      * @return tableName
      */
     public String getTableName() {

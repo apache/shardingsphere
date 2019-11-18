@@ -22,18 +22,21 @@ import info.avalon566.shardingscaling.core.execute.SyncRunner;
 
 /**
  * Writer.
+ *
  * @author avalon566
  */
 public interface Writer extends SyncRunner {
 
     /**
      * Set channel.
+     *
      * @param channel channel
      */
     void setChannel(Channel channel);
 
     /**
      * write data to channel.
+     *
      * @param channel channel
      */
     void write(Channel channel);

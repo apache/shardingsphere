@@ -24,6 +24,7 @@ import java.util.List;
 
 /**
  * Rule configuration.
+ *
  * @author avalon566
  */
 @Data
