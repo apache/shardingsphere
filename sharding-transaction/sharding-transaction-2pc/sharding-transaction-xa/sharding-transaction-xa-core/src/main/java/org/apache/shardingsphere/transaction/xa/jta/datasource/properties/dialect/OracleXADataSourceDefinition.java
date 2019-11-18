@@ -47,6 +47,7 @@ public final class OracleXADataSourceDefinition implements XADataSourceDefinitio
     @Override
     public Properties getXAProperties(final DatabaseAccessConfiguration databaseAccessConfiguration) {
         Properties result = new Properties();
+        
         DataSourceInfo dataSourceInfo = new DataSourceInfo();
         dataSourceInfo.setUrl(databaseAccessConfiguration.getUrl());
         OracleDataSourceMetaData dataSourceMetaData = new OracleDataSourceMetaData(dataSourceInfo);
