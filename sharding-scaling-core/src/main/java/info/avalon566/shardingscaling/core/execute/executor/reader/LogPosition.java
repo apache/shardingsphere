@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.mysql;
+package info.avalon566.shardingscaling.core.execute.executor.reader;
 
-import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
-import info.avalon566.shardingscaling.core.execute.executor.writer.AbstractJdbcWriter;
+import java.io.Serializable;
 
 /**
- * MySQL writer.
+ * Log position interface.
  *
  * @author avalon566
- * @author yangyi
  */
-public class MySQLWriter extends AbstractJdbcWriter {
-
-    public MySQLWriter(final RdbmsConfiguration rdbmsConfiguration) {
-        super(rdbmsConfiguration);
-    }
+public interface LogPosition<T> extends Comparable<T>, Serializable {
 }

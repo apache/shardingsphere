@@ -17,7 +17,7 @@
 
 package info.avalon566.shardingscaling.core.config;
 
-import info.avalon566.shardingscaling.core.sync.reader.LogPosition;
+import info.avalon566.shardingscaling.core.execute.executor.reader.LogPosition;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -37,7 +37,7 @@ public class SyncConfiguration {
     private final SyncType syncType;
 
     /**
-     * 单表写入并发度.
+     * The concurrency of writers.
      */
     private final int concurrency;
 

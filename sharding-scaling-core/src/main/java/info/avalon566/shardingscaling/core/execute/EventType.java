@@ -15,20 +15,16 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.mysql;
-
-import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
-import info.avalon566.shardingscaling.core.execute.executor.writer.AbstractJdbcWriter;
+package info.avalon566.shardingscaling.core.execute;
 
 /**
- * MySQL writer.
+ * Event type.
  *
  * @author avalon566
- * @author yangyi
  */
-public class MySQLWriter extends AbstractJdbcWriter {
 
-    public MySQLWriter(final RdbmsConfiguration rdbmsConfiguration) {
-        super(rdbmsConfiguration);
-    }
+public enum EventType {
+    REALTIME_SYNC_POSITION,
+    FINISHED,
+    EXCEPTION_EXIT
 }

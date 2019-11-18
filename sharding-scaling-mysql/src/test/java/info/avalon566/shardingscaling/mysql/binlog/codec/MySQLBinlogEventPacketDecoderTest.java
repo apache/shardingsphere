@@ -64,7 +64,7 @@ public class MySQLBinlogEventPacketDecoderTest {
     @Test(expected = UnsupportedOperationException.class)
     public void assertDecodeWithReadError() {
         when(byteBuf.isReadable()).thenReturn(true);
-        binlogEventPacketDecoder.decode(null, byteBuf, null);
+        binlogEventPacketDecoder.decode(null, byteBuf, new ArrayList<Object>());
     }
     
     @Test

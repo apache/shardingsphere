@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.mysql;
-
-import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
-import info.avalon566.shardingscaling.core.execute.executor.writer.AbstractJdbcWriter;
+package info.avalon566.shardingscaling.core.execute.executor.reader;
 
 /**
- * MySQL writer.
+ * Nop log position.
  *
  * @author avalon566
- * @author yangyi
  */
-public class MySQLWriter extends AbstractJdbcWriter {
+public class NopLogPosition implements LogPosition<NopLogPosition> {
 
-    public MySQLWriter(final RdbmsConfiguration rdbmsConfiguration) {
-        super(rdbmsConfiguration);
+    @Override
+    public final int compareTo(final NopLogPosition nopLogPosition) {
+        return 0;
     }
 }

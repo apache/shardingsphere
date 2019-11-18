@@ -15,38 +15,31 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.spi;
+package info.avalon566.shardingscaling.core.synctask;
 
-import info.avalon566.shardingscaling.core.execute.executor.reader.JdbcReader;
-import info.avalon566.shardingscaling.core.execute.executor.reader.LogReader;
-import info.avalon566.shardingscaling.core.execute.executor.writer.Writer;
-import org.apache.shardingsphere.spi.DatabaseTypeAwareSPI;
+import info.avalon566.shardingscaling.core.controller.SyncTaskProgress;
 
 /**
- * Scaling entry.
+ * Sync task interface.
  *
- * @author yangyi
+ * @author avalon566
  */
-public interface ScalingEntry extends DatabaseTypeAwareSPI {
-    
+public interface SyncTask extends Runnable {
+
     /**
-     * Get JDBC reader type.
-     *
-     * @return JDBC reader type
+     * Start synchronize data.
      */
-    Class<? extends JdbcReader> getJdbcReaderClass();
-    
+    void start();
+
     /**
-     * Get log reader type.
-     *
-     * @return log reader type
+     * Stop synchronize data.
      */
-    Class<? extends LogReader> getLogReaderClass();
-    
+    void stop();
+
     /**
-     * Get writer type.
+     * Get synchronize progress.
      *
-     * @return writer type
+     * @return migrate progress
      */
-    Class<? extends Writer> getWriterClass();
+    SyncTaskProgress getProgress();
 }

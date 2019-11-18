@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.mysql;
+package info.avalon566.shardingscaling.core.execute.executor.record;
 
-import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
-import info.avalon566.shardingscaling.core.execute.executor.writer.AbstractJdbcWriter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 /**
- * MySQL writer.
+ * Column.
  *
  * @author avalon566
- * @author yangyi
  */
-public class MySQLWriter extends AbstractJdbcWriter {
+@Data
+@AllArgsConstructor
+public class Column {
+    
+    private Object value;
 
-    public MySQLWriter(final RdbmsConfiguration rdbmsConfiguration) {
-        super(rdbmsConfiguration);
-    }
+    private boolean updated;
 }

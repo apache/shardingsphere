@@ -15,38 +15,38 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.spi;
+package info.avalon566.shardingscaling.core.execute.executor.channel;
 
-import info.avalon566.shardingscaling.core.execute.executor.reader.JdbcReader;
-import info.avalon566.shardingscaling.core.execute.executor.reader.LogReader;
-import info.avalon566.shardingscaling.core.execute.executor.writer.Writer;
-import org.apache.shardingsphere.spi.DatabaseTypeAwareSPI;
+import info.avalon566.shardingscaling.core.execute.executor.record.Record;
+
+import java.util.List;
 
 /**
- * Scaling entry.
+ * Channel.
  *
- * @author yangyi
+ * @author avalon566
  */
-public interface ScalingEntry extends DatabaseTypeAwareSPI {
-    
+public interface Channel {
+
     /**
-     * Get JDBC reader type.
+     * push a {@code DataRecord} to channel.
      *
-     * @return JDBC reader type
+     * @param dataRecord data
+     * @throws InterruptedException if thread interrupted
      */
-    Class<? extends JdbcReader> getJdbcReaderClass();
-    
+    void pushRecord(Record dataRecord) throws InterruptedException;
+
     /**
-     * Get log reader type.
+     * fetch {@code Record} from channel, if the timeout also returns the record.
      *
-     * @return log reader type
+     * @param batchSize record batch size
+     * @param timeout value
+     * @return record
      */
-    Class<? extends LogReader> getLogReaderClass();
-    
+    List<Record> fetchRecords(int batchSize, int timeout);
+
     /**
-     * Get writer type.
-     *
-     * @return writer type
+     * Ack the last batch.
      */
-    Class<? extends Writer> getWriterClass();
+    void ack();
 }

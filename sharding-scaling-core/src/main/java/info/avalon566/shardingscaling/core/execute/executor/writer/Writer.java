@@ -15,38 +15,29 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.spi;
+package info.avalon566.shardingscaling.core.execute.executor.writer;
 
-import info.avalon566.shardingscaling.core.execute.executor.reader.JdbcReader;
-import info.avalon566.shardingscaling.core.execute.executor.reader.LogReader;
-import info.avalon566.shardingscaling.core.execute.executor.writer.Writer;
-import org.apache.shardingsphere.spi.DatabaseTypeAwareSPI;
+import info.avalon566.shardingscaling.core.execute.executor.channel.Channel;
+import info.avalon566.shardingscaling.core.execute.executor.SyncRunner;
 
 /**
- * Scaling entry.
+ * Writer.
  *
- * @author yangyi
+ * @author avalon566
  */
-public interface ScalingEntry extends DatabaseTypeAwareSPI {
-    
+public interface Writer extends SyncRunner {
+
     /**
-     * Get JDBC reader type.
+     * Set channel.
      *
-     * @return JDBC reader type
+     * @param channel channel
      */
-    Class<? extends JdbcReader> getJdbcReaderClass();
-    
+    void setChannel(Channel channel);
+
     /**
-     * Get log reader type.
+     * write data to channel.
      *
-     * @return log reader type
+     * @param channel channel
      */
-    Class<? extends LogReader> getLogReaderClass();
-    
-    /**
-     * Get writer type.
-     *
-     * @return writer type
-     */
-    Class<? extends Writer> getWriterClass();
+    void write(Channel channel);
 }

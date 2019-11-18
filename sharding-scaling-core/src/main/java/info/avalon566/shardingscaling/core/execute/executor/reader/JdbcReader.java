@@ -15,38 +15,23 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.spi;
+package info.avalon566.shardingscaling.core.execute.executor.reader;
 
-import info.avalon566.shardingscaling.core.execute.executor.reader.JdbcReader;
-import info.avalon566.shardingscaling.core.execute.executor.reader.LogReader;
-import info.avalon566.shardingscaling.core.execute.executor.writer.Writer;
-import org.apache.shardingsphere.spi.DatabaseTypeAwareSPI;
+import java.util.List;
+
+import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
 
 /**
- * Scaling entry.
+ * JDBC reader.
  *
  * @author yangyi
  */
-public interface ScalingEntry extends DatabaseTypeAwareSPI {
+public interface JdbcReader extends Reader {
     
     /**
-     * Get JDBC reader type.
-     *
-     * @return JDBC reader type
+     * Split job to job slices.
+     * @param concurrency slices number.
+     * @return rmdbs configuration
      */
-    Class<? extends JdbcReader> getJdbcReaderClass();
-    
-    /**
-     * Get log reader type.
-     *
-     * @return log reader type
-     */
-    Class<? extends LogReader> getLogReaderClass();
-    
-    /**
-     * Get writer type.
-     *
-     * @return writer type
-     */
-    Class<? extends Writer> getWriterClass();
+    List<RdbmsConfiguration> split(int concurrency);
 }

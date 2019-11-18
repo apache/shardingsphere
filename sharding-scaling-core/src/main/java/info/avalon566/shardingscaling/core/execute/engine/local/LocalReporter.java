@@ -15,20 +15,39 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.mysql;
+package info.avalon566.shardingscaling.core.execute.engine.local;
 
-import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
-import info.avalon566.shardingscaling.core.execute.executor.writer.AbstractJdbcWriter;
+import info.avalon566.shardingscaling.core.execute.Event;
+import info.avalon566.shardingscaling.core.execute.Reporter;
+
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * MySQL writer.
+ * local reporter.
  *
  * @author avalon566
- * @author yangyi
  */
-public class MySQLWriter extends AbstractJdbcWriter {
+public class LocalReporter implements Reporter {
 
-    public MySQLWriter(final RdbmsConfiguration rdbmsConfiguration) {
-        super(rdbmsConfiguration);
+    private ConcurrentLinkedQueue<Event> queue = new ConcurrentLinkedQueue<>();
+
+    @Override
+    public final void report(final Event event) {
+        queue.offer(event);
+    }
+
+    @Override
+    public final Event consumeEvent() {
+        while (true) {
+            Event event = queue.poll();
+            if (null != event) {
+                return event;
+            }
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                // ignore
+            }
+        }
     }
 }

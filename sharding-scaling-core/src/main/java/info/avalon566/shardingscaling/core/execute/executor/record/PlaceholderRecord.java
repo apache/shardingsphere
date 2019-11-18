@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.mysql;
+package info.avalon566.shardingscaling.core.execute.executor.record;
 
-import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
-import info.avalon566.shardingscaling.core.execute.executor.writer.AbstractJdbcWriter;
+import info.avalon566.shardingscaling.core.execute.executor.reader.LogPosition;
 
 /**
- * MySQL writer.
+ * Placeholder record.
  *
  * @author avalon566
- * @author yangyi
  */
-public class MySQLWriter extends AbstractJdbcWriter {
+public class PlaceholderRecord extends Record {
 
-    public MySQLWriter(final RdbmsConfiguration rdbmsConfiguration) {
-        super(rdbmsConfiguration);
+    public PlaceholderRecord(final LogPosition logPosition) {
+        super(logPosition);
     }
 }

@@ -15,38 +15,36 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.spi;
+package info.avalon566.shardingscaling.core.execute.executor;
 
-import info.avalon566.shardingscaling.core.execute.executor.reader.JdbcReader;
-import info.avalon566.shardingscaling.core.execute.executor.reader.LogReader;
-import info.avalon566.shardingscaling.core.execute.executor.writer.Writer;
-import org.apache.shardingsphere.spi.DatabaseTypeAwareSPI;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Scaling entry.
+ * Abstract runner.
  *
- * @author yangyi
+ * @author avalon566
  */
-public interface ScalingEntry extends DatabaseTypeAwareSPI {
-    
+public abstract class AbstractSyncRunner implements SyncRunner {
+
+    @Setter(AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
+    private boolean running;
+
     /**
-     * Get JDBC reader type.
-     *
-     * @return JDBC reader type
+     * generic start implement.
      */
-    Class<? extends JdbcReader> getJdbcReaderClass();
-    
+    @Override
+    public void start() {
+        running = true;
+    }
+
     /**
-     * Get log reader type.
-     *
-     * @return log reader type
+     * generic stop implement.
      */
-    Class<? extends LogReader> getLogReaderClass();
-    
-    /**
-     * Get writer type.
-     *
-     * @return writer type
-     */
-    Class<? extends Writer> getWriterClass();
+    @Override
+    public void stop() {
+        running = false;
+    }
 }

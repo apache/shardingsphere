@@ -15,38 +15,40 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.spi;
+package info.avalon566.shardingscaling.core.execute.engine;
 
-import info.avalon566.shardingscaling.core.execute.executor.reader.JdbcReader;
-import info.avalon566.shardingscaling.core.execute.executor.reader.LogReader;
-import info.avalon566.shardingscaling.core.execute.executor.writer.Writer;
-import org.apache.shardingsphere.spi.DatabaseTypeAwareSPI;
+import info.avalon566.shardingscaling.core.config.SyncConfiguration;
+import info.avalon566.shardingscaling.core.controller.ReportCallback;
+import info.avalon566.shardingscaling.core.controller.SyncTaskProgress;
+import info.avalon566.shardingscaling.core.execute.Reporter;
+
+import java.util.List;
 
 /**
- * Scaling entry.
+ * Sync job executor, run in in process, k8s etc.
  *
- * @author yangyi
+ * @author avalon566
  */
-public interface ScalingEntry extends DatabaseTypeAwareSPI {
-    
+public interface SyncJobExecutor {
+
     /**
-     * Get JDBC reader type.
+     * start execute jobs.
      *
-     * @return JDBC reader type
+     * @param configs job configs
+     * @param reportCallback report callback
+     * @return reporter
      */
-    Class<? extends JdbcReader> getJdbcReaderClass();
-    
+    Reporter start(List<SyncConfiguration> configs, ReportCallback reportCallback);
+
     /**
-     * Get log reader type.
-     *
-     * @return log reader type
+     * stop all execute jobs.
      */
-    Class<? extends LogReader> getLogReaderClass();
-    
+    void stop();
+
     /**
-     * Get writer type.
+     * get all execute job migrate progresses.
      *
-     * @return writer type
+     * @return list of migrate progresses
      */
-    Class<? extends Writer> getWriterClass();
+    List<SyncTaskProgress> getProgresses();
 }

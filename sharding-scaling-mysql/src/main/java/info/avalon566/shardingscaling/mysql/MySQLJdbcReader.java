@@ -19,8 +19,8 @@ package info.avalon566.shardingscaling.mysql;
 
 import info.avalon566.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
-import info.avalon566.shardingscaling.core.sync.reader.AbstractJdbcReader;
-import info.avalon566.shardingscaling.core.sync.metadata.JdbcUri;
+import info.avalon566.shardingscaling.core.execute.executor.reader.AbstractJdbcReader;
+import info.avalon566.shardingscaling.core.metadata.JdbcUri;
 
 import java.util.List;
 import java.util.Map;

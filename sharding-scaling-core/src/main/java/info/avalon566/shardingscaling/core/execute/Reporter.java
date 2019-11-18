@@ -15,38 +15,24 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.spi;
-
-import info.avalon566.shardingscaling.core.execute.executor.reader.JdbcReader;
-import info.avalon566.shardingscaling.core.execute.executor.reader.LogReader;
-import info.avalon566.shardingscaling.core.execute.executor.writer.Writer;
-import org.apache.shardingsphere.spi.DatabaseTypeAwareSPI;
+package info.avalon566.shardingscaling.core.execute;
 
 /**
- * Scaling entry.
+ * Job Running reporter.
  *
- * @author yangyi
+ * @author avalon566
  */
-public interface ScalingEntry extends DatabaseTypeAwareSPI {
-    
+public interface Reporter {
+
     /**
-     * Get JDBC reader type.
-     *
-     * @return JDBC reader type
+     * Report job running event.
+     * @param event job running event
      */
-    Class<? extends JdbcReader> getJdbcReaderClass();
-    
+    void report(Event event);
+
     /**
-     * Get log reader type.
-     *
-     * @return log reader type
+     * Get job running report.
+     * @return event
      */
-    Class<? extends LogReader> getLogReaderClass();
-    
-    /**
-     * Get writer type.
-     *
-     * @return writer type
-     */
-    Class<? extends Writer> getWriterClass();
+    Event consumeEvent();
 }
