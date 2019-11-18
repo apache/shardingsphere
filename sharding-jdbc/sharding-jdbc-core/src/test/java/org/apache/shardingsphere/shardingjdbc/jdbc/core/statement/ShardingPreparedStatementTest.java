@@ -33,7 +33,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 
-
 public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
     @Test
