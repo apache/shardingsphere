@@ -37,6 +37,7 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.XADataSource;
+import javax.transaction.Transaction;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -44,6 +45,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -108,6 +110,27 @@ public final class XAShardingTransactionManagerTest {
     }
     
     @Test
+    public void assertGetConnectionOfNestedTransaction() throws SQLException {
+        ThreadLocal<Set<Transaction>> transactions = getEnlistedTransactions(getCachedDataSources().get("ds1"));
+        xaShardingTransactionManager.begin();
+        assertThat(transactions.get().size(), is(0));
+        xaShardingTransactionManager.getConnection("ds1");
+        assertThat(transactions.get().size(), is(1));
+        executeNestedTransaction(transactions);
+        assertThat(transactions.get().size(), is(1));
+        xaShardingTransactionManager.commit();
+        assertThat(transactions.get().size(), is(0));
+    }
+    
+    private void executeNestedTransaction(final ThreadLocal<Set<Transaction>> transactions) throws SQLException {
+        xaShardingTransactionManager.begin();
+        xaShardingTransactionManager.getConnection("ds1");
+        assertThat(transactions.get().size(), is(2));
+        xaShardingTransactionManager.commit();
+        assertThat(transactions.get().size(), is(1));
+    }
+    
+    @Test
     public void assertClose() throws Exception {
         xaShardingTransactionManager.close();
         Map<String, XATransactionDataSource> cachedSingleXADataSourceMap = getCachedDataSources();
@@ -137,6 +160,14 @@ public final class XAShardingTransactionManagerTest {
         Field field = xaShardingTransactionManager.getClass().getDeclaredField("cachedDataSources");
         field.setAccessible(true);
         return (Map<String, XATransactionDataSource>) field.get(xaShardingTransactionManager);
+    }
+    
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    private ThreadLocal<Set<Transaction>> getEnlistedTransactions(final XATransactionDataSource transactionDataSource) {
+        Field field = transactionDataSource.getClass().getDeclaredField("enlistedTransactions");
+        field.setAccessible(true);
+        return (ThreadLocal<Set<Transaction>>) field.get(transactionDataSource);
     }
     
     private Collection<ResourceDataSource> createResourceDataSources(final DatabaseType databaseType) {

@@ -45,9 +45,9 @@ public final class XATransactionDataSource implements AutoCloseable {
     
     private static final Set<String> CONTAINER_DATASOURCE_NAMES = Sets.newHashSet("AtomikosDataSourceBean", "BasicManagedDataSource");
     
-    private static final ThreadLocal<Set<String>> ENLISTED_RESOURCES = new ThreadLocal<Set<String>>() {
+    private final ThreadLocal<Set<Transaction>> enlistedTransactions = new ThreadLocal<Set<Transaction>>() {
         @Override
-        public Set<String> initialValue() {
+        public Set<Transaction> initialValue() {
             return new HashSet<>();
         }
     };
@@ -87,21 +87,21 @@ public final class XATransactionDataSource implements AutoCloseable {
         }
         Connection result = dataSource.getConnection();
         XAConnection xaConnection = XAConnectionFactory.createXAConnection(databaseType, xaDataSource, result);
-        Transaction transaction = xaTransactionManager.getTransactionManager().getTransaction();
-        if (!ENLISTED_RESOURCES.get().contains(resourceName)) {
+        final Transaction transaction = xaTransactionManager.getTransactionManager().getTransaction();
+        if (!enlistedTransactions.get().contains(transaction)) {
             transaction.enlistResource(new SingleXAResource(resourceName, xaConnection.getXAResource()));
             transaction.registerSynchronization(new Synchronization() {
                 @Override
                 public void beforeCompletion() {
-        
+                    enlistedTransactions.get().remove(transaction);
                 }
     
                 @Override
                 public void afterCompletion(final int status) {
-                    ENLISTED_RESOURCES.remove();
+                    enlistedTransactions.get().clear();
                 }
             });
-            ENLISTED_RESOURCES.get().add(resourceName);
+            enlistedTransactions.get().add(transaction);
         }
         return result;
     }
