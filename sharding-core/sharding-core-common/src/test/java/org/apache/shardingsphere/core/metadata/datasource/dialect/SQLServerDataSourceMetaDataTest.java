@@ -17,28 +17,19 @@
 
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
 import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.spi.database.DataSourceInfo;
-import org.junit.Before;
 import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertEquals;
 
 public final class SQLServerDataSourceMetaDataTest {
     
-    private DataSourceInfo dataSourceInfo;
-    
-    @Before
-    public void setUp() {
-        dataSourceInfo = new DataSourceInfo();
-        dataSourceInfo.setUsername("test");
-    }
-    
     @Test
     public void assertDataSourceInfoParam() {
-        dataSourceInfo.setUrl("jdbc:microsoft:sqlserver://127.0.0.1:9999;DatabaseName=ds_0");
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:microsoft:sqlserver://127.0.0.1:9999;DatabaseName=ds_0", "test");
         SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
@@ -48,7 +39,7 @@ public final class SQLServerDataSourceMetaDataTest {
     
     @Test
     public void assertGetPropertiesWithPortAndMicrosoft() {
-        dataSourceInfo.setUrl("jdbc:microsoft:sqlserver://127.0.0.1:9999;DatabaseName=ds_0");
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:microsoft:sqlserver://127.0.0.1:9999;DatabaseName=ds_0", "test");
         SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
@@ -58,7 +49,7 @@ public final class SQLServerDataSourceMetaDataTest {
     
     @Test
     public void assertGetPropertiesWithPortAndWithoutMicrosoft() {
-        dataSourceInfo.setUrl("jdbc:sqlserver://127.0.0.1:9999;DatabaseName=ds_0");
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:sqlserver://127.0.0.1:9999;DatabaseName=ds_0", "test");
         SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
@@ -67,7 +58,7 @@ public final class SQLServerDataSourceMetaDataTest {
     
     @Test
     public void assertGetPropertiesWithDefaultPortAndMicrosoft() {
-        dataSourceInfo.setUrl("jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=ds_0");
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=ds_0", "test");
         SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(1433));
@@ -76,7 +67,7 @@ public final class SQLServerDataSourceMetaDataTest {
     
     @Test
     public void assertGetPropertiesWithDefaultPortWithoutMicrosoft() {
-        dataSourceInfo.setUrl("jdbc:sqlserver://127.0.0.1;DatabaseName=ds_0");
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:sqlserver://127.0.0.1;DatabaseName=ds_0", "test");
         SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(1433));
@@ -85,7 +76,7 @@ public final class SQLServerDataSourceMetaDataTest {
     
     @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertGetPropertiesFailure() {
-        dataSourceInfo.setUrl("jdbc:sqlserver:xxxxxxxx");
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:sqlserver:xxxxxxxx", "test");
         new SQLServerDataSourceMetaData(dataSourceInfo);
     }
 }

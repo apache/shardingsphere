@@ -35,13 +35,9 @@ public final class ShardingSphereDataSourceMetaDataTest {
     @Before
     public void setUp() {
         final Map<String, DataSourceInfo> dataSourceInfoMap = new HashMap<String, DataSourceInfo>();
-        DataSourceInfo info0 = new DataSourceInfo();
-        info0.setUrl("jdbc:mysql://127.0.0.1:3306/db_0");
-        info0.setUsername("test");
+        DataSourceInfo info0 = new DataSourceInfo("jdbc:mysql://127.0.0.1:3306/db_0", "test");
         
-        DataSourceInfo info1 = new DataSourceInfo();
-        info1.setUrl("jdbc:mysql://127.0.0.1:3306/db_1");
-        info1.setUsername("test");
+        DataSourceInfo info1 = new DataSourceInfo("jdbc:mysql://127.0.0.1:3306/db_1", "test");
         
         dataSourceInfoMap.put("ds_0", info0);
         dataSourceInfoMap.put("ds_1", info1);

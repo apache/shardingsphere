@@ -17,28 +17,19 @@
 
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
-import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.spi.database.DataSourceInfo;
-import org.junit.Before;
-import org.junit.Test;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.spi.database.DataSourceInfo;
+import org.junit.Test;
+
 public final class MySQLDataSourceMetaDataTest {
-    
-    private DataSourceInfo dataSourceInfo;
-    
-    @Before
-    public void setUp() {
-        dataSourceInfo = new DataSourceInfo();
-        dataSourceInfo.setUsername("test");
-    }
     
     @Test
     public void assertDataSourceInfoParam() {
-        dataSourceInfo.setUrl("jdbc:mysql://127.0.0.1:9999/ds_0?serverTimezone=UTC&useSSL=false");
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:mysql://127.0.0.1:9999/ds_0?serverTimezone=UTC&useSSL=false", "test");
         MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
@@ -48,7 +39,7 @@ public final class MySQLDataSourceMetaDataTest {
     
     @Test
     public void assertGetPropertiesWithPort() {
-        dataSourceInfo.setUrl("jdbc:mysql://127.0.0.1:9999/ds_0?serverTimezone=UTC&useSSL=false");
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:mysql://127.0.0.1:9999/ds_0?serverTimezone=UTC&useSSL=false", "test");
         MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
@@ -58,7 +49,7 @@ public final class MySQLDataSourceMetaDataTest {
     
     @Test
     public void assertGetPropertiesWithDefaultPort() {
-        dataSourceInfo.setUrl("jdbc:mysql:loadbalance://127.0.0.1/ds_0?serverTimezone=UTC&useSSL=false");
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:mysql:loadbalance://127.0.0.1/ds_0?serverTimezone=UTC&useSSL=false", "test");
         MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(3306));
@@ -67,7 +58,7 @@ public final class MySQLDataSourceMetaDataTest {
     
     @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertGetPropertiesFailure() {
-        dataSourceInfo.setUrl("jdbc:mysql:xxxxxxxx");
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:mysql:xxxxxxxx", "test");
         new MySQLDataSourceMetaData(dataSourceInfo);
     }
 }

@@ -22,23 +22,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import org.apache.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaData;
-import org.junit.Before;
 import org.junit.Test;
 
 public final class MySQLDatabaseTypeTest {
     
-    private DataSourceInfo dataSourceInfo;
-    
-    @Before
-    public void setUp() {
-        dataSourceInfo = new DataSourceInfo();
-        dataSourceInfo.setUsername("test");
-    }
-    
     @Test
     public void assertMySQLDatabaseType() {
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
-        dataSourceInfo.setUrl("jdbc:mysql://127.0.0.1:9999/ds_0?serverTimezone=UTC&useSSL=false");
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:mysql://127.0.0.1:9999/ds_0?serverTimezone=UTC&useSSL=false", null);
         MySQLDataSourceMetaData actual = (MySQLDataSourceMetaData) databaseType.getDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));

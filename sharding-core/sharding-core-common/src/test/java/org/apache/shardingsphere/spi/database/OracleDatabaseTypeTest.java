@@ -22,23 +22,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import org.apache.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaData;
-import org.junit.Before;
 import org.junit.Test;
 
 public final class OracleDatabaseTypeTest {
     
-    private DataSourceInfo dataSourceInfo;
-    
-    @Before
-    public void setUp() {
-        dataSourceInfo = new DataSourceInfo();
-        dataSourceInfo.setUsername("test");
-    }
-    
     @Test
     public void assertDataSourceInfoParam() {
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:oracle:thin:@//127.0.0.1:9999/ds_0", "test");
+        
         OracleDatabaseType databaseType = new OracleDatabaseType();
-        dataSourceInfo.setUrl("jdbc:oracle:thin:@//127.0.0.1:9999/ds_0");
         OracleDataSourceMetaData actual = (OracleDataSourceMetaData) databaseType.getDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));

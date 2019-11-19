@@ -31,9 +31,7 @@ public class H2DatabaseTypeTest {
     
     @Before
     public void setUp() {
-        dataSourceInfo = new DataSourceInfo();
-        dataSourceInfo.setUrl("jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        dataSourceInfo.setUsername("test");
+        dataSourceInfo = new DataSourceInfo("jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "test");
     }
     
     @Test

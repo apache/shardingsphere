@@ -47,8 +47,7 @@ public final class SQLServerXADataSourceDefinition implements XADataSourceDefini
     @Override
     public Properties getXAProperties(final DatabaseAccessConfiguration databaseAccessConfiguration) {
         Properties result = new Properties();
-        DataSourceInfo dataSourceInfo = new DataSourceInfo();
-        dataSourceInfo.setUrl(databaseAccessConfiguration.getUrl());
+        DataSourceInfo dataSourceInfo = new DataSourceInfo(databaseAccessConfiguration.getUrl(), null);
         SQLServerDataSourceMetaData dataSourceMetaData = new SQLServerDataSourceMetaData(dataSourceInfo);
         result.setProperty("user", databaseAccessConfiguration.getUsername());
         result.setProperty("password", Optional.fromNullable(databaseAccessConfiguration.getPassword()).or(""));

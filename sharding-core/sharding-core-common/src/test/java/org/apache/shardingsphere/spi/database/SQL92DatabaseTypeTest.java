@@ -22,23 +22,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import org.apache.shardingsphere.core.metadata.datasource.dialect.SQL92DataSourceMetaData;
-import org.junit.Before;
 import org.junit.Test;
 
 public final class SQL92DatabaseTypeTest {
     
-    private DataSourceInfo dataSourceInfo;
-    
-    @Before
-    public void setUp() {
-        dataSourceInfo = new DataSourceInfo();
-        dataSourceInfo.setUrl("jdbc:sql92_db:ds_0");
-        dataSourceInfo.setUsername("test");
-    }
-    
     @Test
     public void assertDataSourceInfoParam() {
-        dataSourceInfo.setUrl("jdbc:sql92_db:ds_0");
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:sql92_db:ds_0", null);
         SQL92DatabaseType databaseType = new SQL92DatabaseType();
         SQL92DataSourceMetaData actual = (SQL92DataSourceMetaData) databaseType.getDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is(""));

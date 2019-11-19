@@ -75,8 +75,7 @@ public abstract class LogicSchema {
         Map<String, DataSourceInfo> result = new HashMap<String, DataSourceInfo>(dataSourceMap.size(), 1);
         for (Entry<String, YamlDataSourceParameter> entry : dataSourceMap.entrySet()) {
             YamlDataSourceParameter dataSource = entry.getValue();
-            DataSourceInfo sourceInfo = new DataSourceInfo();
-            sourceInfo.setUrl(dataSource.getUrl());
+            DataSourceInfo sourceInfo = new DataSourceInfo(dataSource.getUrl(), null);
             result.put(entry.getKey(), sourceInfo);
         }
         return result;

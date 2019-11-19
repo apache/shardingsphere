@@ -47,8 +47,7 @@ public final class MariaDBXADataSourceDefinition implements XADataSourceDefiniti
     @Override
     public Properties getXAProperties(final DatabaseAccessConfiguration databaseAccessConfiguration) {
         Properties result = new Properties();
-        DataSourceInfo dataSourceInfo = new DataSourceInfo();
-        dataSourceInfo.setUrl(databaseAccessConfiguration.getUrl());
+        DataSourceInfo dataSourceInfo = new DataSourceInfo(databaseAccessConfiguration.getUrl(), null);
         MariaDBDataSourceMetaData dataSourceMetaData = new MariaDBDataSourceMetaData(dataSourceInfo);
         result.setProperty("user", databaseAccessConfiguration.getUsername());
         result.setProperty("password", Optional.fromNullable(databaseAccessConfiguration.getPassword()).or(""));

@@ -55,17 +55,9 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     private DataSourceMetas buildDataSourceMetas() {
         
         final Map<String, DataSourceInfo> dataSourceInfoMap = new HashMap<String, DataSourceInfo>();
-        DataSourceInfo main = new DataSourceInfo();
-        main.setUrl("jdbc:mysql://127.0.0.1:3306/actual_db");
-        main.setUsername("test");
-        
-        DataSourceInfo ds0 = new DataSourceInfo();
-        ds0.setUrl("jdbc:mysql://127.0.0.1:3306/actual_db");
-        ds0.setUsername("test");
-        
-        DataSourceInfo ds1 = new DataSourceInfo();
-        ds1.setUrl("jdbc:mysql://127.0.0.1:3306/actual_db");
-        ds1.setUsername("test");
+        DataSourceInfo main = new DataSourceInfo("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
+        DataSourceInfo ds0 = new DataSourceInfo("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
+        DataSourceInfo ds1 = new DataSourceInfo("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
         
         dataSourceInfoMap.put("main", main);
         dataSourceInfoMap.put("ds_0", ds0);

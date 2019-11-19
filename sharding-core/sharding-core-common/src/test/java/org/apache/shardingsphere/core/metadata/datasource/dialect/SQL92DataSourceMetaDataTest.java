@@ -23,23 +23,13 @@ import static org.junit.Assert.assertThat;
 
 import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.spi.database.DataSourceInfo;
-import org.junit.Before;
 import org.junit.Test;
 
 public final class SQL92DataSourceMetaDataTest {
     
-    private DataSourceInfo dataSourceInfo;
-    
-    @Before
-    public void setUp() {
-        dataSourceInfo = new DataSourceInfo();
-        dataSourceInfo.setUrl("jdbc:sql92_db:ds_0");
-        dataSourceInfo.setUsername("test");
-    }
-    
     @Test
     public void assertDataSourceInfoParam() {
-        dataSourceInfo.setUrl("jdbc:sql92_db:ds_0");
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:sql92_db:ds_0", "test");
         SQL92DataSourceMetaData actual = new SQL92DataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is(""));
         assertThat(actual.getPort(), is(-1));
@@ -49,7 +39,7 @@ public final class SQL92DataSourceMetaDataTest {
     
     @Test
     public void assertGetProperties() {
-        dataSourceInfo.setUrl("jdbc:sql92_db:ds_0");
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:sql92_db:ds_0", "test");
         SQL92DataSourceMetaData actual = new SQL92DataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is(""));
         assertThat(actual.getPort(), is(-1));
@@ -59,7 +49,7 @@ public final class SQL92DataSourceMetaDataTest {
     
     @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertGetPropertiesFailure() {
-        dataSourceInfo.setUrl("xxx:xxxx:xxxxxxxx");
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("xxx:xxxx:xxxxxxxx", "test");
         new SQL92DataSourceMetaData(dataSourceInfo);
     }
 }

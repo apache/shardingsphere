@@ -22,21 +22,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import org.apache.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
-import org.junit.Before;
 import org.junit.Test;
 
 public final class PostgreSQLDatabaseTypeTest {
-    private DataSourceInfo dataSourceInfo;
-    
-    @Before
-    public void setUp() {
-        dataSourceInfo = new DataSourceInfo();
-        dataSourceInfo.setUsername("test");
-    }
     
     @Test
     public void assertDataSourceInfoParam() {
-        dataSourceInfo.setUrl("jdbc:postgresql://127.0.0.1:9999/ds_0");
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:postgresql://127.0.0.1:9999/ds_0", null);
         PostgreSQLDatabaseType databaseType = new PostgreSQLDatabaseType();
         
         PostgreSQLDataSourceMetaData actual = (PostgreSQLDataSourceMetaData) databaseType.getDataSourceMetaData(dataSourceInfo);
