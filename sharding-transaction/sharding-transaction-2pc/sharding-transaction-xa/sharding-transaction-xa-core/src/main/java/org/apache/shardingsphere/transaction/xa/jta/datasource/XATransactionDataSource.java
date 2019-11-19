@@ -33,9 +33,7 @@ import javax.transaction.Transaction;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -47,10 +45,10 @@ public final class XATransactionDataSource implements AutoCloseable {
     
     private static final Set<String> CONTAINER_DATASOURCE_NAMES = Sets.newHashSet("AtomikosDataSourceBean", "BasicManagedDataSource");
     
-    private static final ThreadLocal<Map<Transaction, Set<String>>> ENLISTED_RESOURCES = new ThreadLocal<Map<Transaction, Set<String>>>() {
+    private final ThreadLocal<Set<Transaction>> enlistedTransactions = new ThreadLocal<Set<Transaction>>() {
         @Override
-        public Map<Transaction, Set<String>> initialValue() {
-            return new HashMap<>();
+        public Set<Transaction> initialValue() {
+            return new HashSet<>();
         }
     };
     
@@ -90,22 +88,20 @@ public final class XATransactionDataSource implements AutoCloseable {
         Connection result = dataSource.getConnection();
         XAConnection xaConnection = XAConnectionFactory.createXAConnection(databaseType, xaDataSource, result);
         final Transaction transaction = xaTransactionManager.getTransactionManager().getTransaction();
-        if (!ENLISTED_RESOURCES.get().containsKey(transaction)) {
-            ENLISTED_RESOURCES.get().put(transaction, new HashSet<String>());
-        }
-        if (!ENLISTED_RESOURCES.get().get(transaction).contains(resourceName)) {
+        if (!enlistedTransactions.get().contains(transaction)) {
             transaction.enlistResource(new SingleXAResource(resourceName, xaConnection.getXAResource()));
             transaction.registerSynchronization(new Synchronization() {
                 @Override
                 public void beforeCompletion() {
-                    ENLISTED_RESOURCES.get().remove(transaction);
+                    enlistedTransactions.get().remove(transaction);
                 }
     
                 @Override
                 public void afterCompletion(final int status) {
+                    enlistedTransactions.get().clear();
                 }
             });
-            ENLISTED_RESOURCES.get().get(transaction).add(resourceName);
+            enlistedTransactions.get().add(transaction);
         }
         return result;
     }

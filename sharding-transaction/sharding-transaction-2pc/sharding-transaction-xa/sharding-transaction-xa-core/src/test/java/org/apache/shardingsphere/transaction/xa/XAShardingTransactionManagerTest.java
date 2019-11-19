@@ -111,24 +111,23 @@ public final class XAShardingTransactionManagerTest {
     
     @Test
     public void assertGetConnectionOfNestedTransaction() throws SQLException {
-        ThreadLocal<Map<Transaction, Set<String>>> enlistResources = getEnlistedResources(getCachedDataSources().get("ds1"));
+        ThreadLocal<Set<Transaction>> transactions = getEnlistedTransactions(getCachedDataSources().get("ds1"));
         xaShardingTransactionManager.begin();
-        assertThat(enlistResources.get().size(), is(0));
+        assertThat(transactions.get().size(), is(0));
         xaShardingTransactionManager.getConnection("ds1");
-        assertThat(enlistResources.get().size(), is(1));
-        executeNestedTransaction(enlistResources);
-        assertThat(enlistResources.get().size(), is(1));
+        assertThat(transactions.get().size(), is(1));
+        executeNestedTransaction(transactions);
+        assertThat(transactions.get().size(), is(1));
         xaShardingTransactionManager.commit();
-        assertThat(enlistResources.get().size(), is(0));
-    
+        assertThat(transactions.get().size(), is(0));
     }
     
-    private void executeNestedTransaction(final ThreadLocal<Map<Transaction, Set<String>>> enlistResources) throws SQLException {
+    private void executeNestedTransaction(final ThreadLocal<Set<Transaction>> transactions) throws SQLException {
         xaShardingTransactionManager.begin();
         xaShardingTransactionManager.getConnection("ds1");
-        assertThat(enlistResources.get().size(), is(2));
+        assertThat(transactions.get().size(), is(2));
         xaShardingTransactionManager.commit();
-        assertThat(enlistResources.get().size(), is(1));
+        assertThat(transactions.get().size(), is(1));
     }
     
     @Test
@@ -165,10 +164,10 @@ public final class XAShardingTransactionManagerTest {
     
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    private ThreadLocal<Map<Transaction, Set<String>>> getEnlistedResources(final XATransactionDataSource transactionDataSource) {
-        Field field = transactionDataSource.getClass().getDeclaredField("ENLISTED_RESOURCES");
+    private ThreadLocal<Set<Transaction>> getEnlistedTransactions(final XATransactionDataSource transactionDataSource) {
+        Field field = transactionDataSource.getClass().getDeclaredField("enlistedTransactions");
         field.setAccessible(true);
-        return (ThreadLocal<Map<Transaction, Set<String>>>) field.get(transactionDataSource);
+        return (ThreadLocal<Set<Transaction>>) field.get(transactionDataSource);
     }
     
     private Collection<ResourceDataSource> createResourceDataSources(final DatabaseType databaseType) {
