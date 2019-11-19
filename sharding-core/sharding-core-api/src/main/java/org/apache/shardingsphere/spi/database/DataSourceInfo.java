@@ -22,6 +22,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
+/**
+ * DataSource info.
+ *
+ * @author duanchao
+ */
 @Getter
 @Setter
 @NoArgsConstructor
