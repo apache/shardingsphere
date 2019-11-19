@@ -102,6 +102,9 @@ public final class RoutingEngineFactory {
         if (sqlStatement instanceof SetStatement || sqlStatement instanceof ResetParameterStatement || sqlStatement instanceof ShowDatabasesStatement) {
             return new DatabaseBroadcastRoutingEngine(shardingRule);
         }
+        if (!tableNames.isEmpty() && !shardingRule.tableRuleExists(tableNames) && shardingRule.hasDefaultDataSourceName()) {
+            return new DefaultDatabaseRoutingEngine(shardingRule, tableNames);
+        }
         if (!tableNames.isEmpty()) {
             return new UnicastRoutingEngine(shardingRule, tableNames);
         }
