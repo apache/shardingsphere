@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.preprocessor.segment.table;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.preprocessor.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableAvailable;
@@ -34,8 +34,8 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -168,21 +168,21 @@ public final class TablesContextTest {
         TablesContext tablesContext = new TablesContext(selectStatement);
         ColumnSegment columnSegment = mock(ColumnSegment.class);
         when(columnSegment.getOwner()).thenReturn(Optional.<TableSegment>absent());
-        TableMetas tableMetas = mock(TableMetas.class);
-        assertFalse(tablesContext.findTableName(columnSegment, tableMetas).isPresent());
+        RelationMetas relationMetas = mock(RelationMetas.class);
+        assertFalse(tablesContext.findTableName(columnSegment, relationMetas).isPresent());
     }
     
     @Test
-    public void assertFindTableNameWhenColumnSegmentOwnerAbsentAndTableMetasContainsColumn() {
+    public void assertFindTableNameWhenColumnSegmentOwnerAbsentAndRelationMetasContainsColumn() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
         selectStatement.getAllSQLSegments().add(createTableSegment("table_2", "tbl_2"));
         ColumnSegment columnSegment = mock(ColumnSegment.class);
         when(columnSegment.getOwner()).thenReturn(Optional.<TableSegment>absent());
         when(columnSegment.getName()).thenReturn("columnName");
-        TableMetas tableMetas = mock(TableMetas.class);
-        when(tableMetas.containsColumn(anyString(), anyString())).thenReturn(true);
-        assertTrue(new TablesContext(selectStatement).findTableName(columnSegment, tableMetas).isPresent());
+        RelationMetas relationMetas = mock(RelationMetas.class);
+        when(relationMetas.containsColumn(anyString(), anyString())).thenReturn(true);
+        assertTrue(new TablesContext(selectStatement).findTableName(columnSegment, relationMetas).isPresent());
     }
     
     @Test

@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.core.preprocessor.segment.select.projection;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.preprocessor.metadata.RelationMetaData;
+import org.apache.shardingsphere.core.preprocessor.metadata.RelationMetas;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.ColumnProjection;
@@ -120,7 +119,7 @@ public final class ProjectionsContextTest {
     public void assertGetColumnLabelWithShorthandProjection() {
         Projection projection = getShorthandProjection();
         List<String> columnLabels = new ProjectionsContext(
-                0, 0, true, Collections.singletonList(projection)).getColumnLabels(createTableMetas(), Collections.singletonList(new TableSegment(0, 0, "table")));
+                0, 0, true, Collections.singletonList(projection)).getColumnLabels(createRelationMetas(), Collections.singletonList(new TableSegment(0, 0, "table")));
         assertEquals(columnLabels, Arrays.asList("id", "name"));
     }
     
@@ -128,71 +127,70 @@ public final class ProjectionsContextTest {
     public void assertGetColumnLabelWithShorthandProjectionWithoutOwner() {
         Projection projection = getShorthandProjectionWithoutOwner();
         List<String> columnLabels = new ProjectionsContext(
-                0, 0, true, Collections.singletonList(projection)).getColumnLabels(createTableMetas(), Collections.singletonList(new TableSegment(0, 0, "table")));
+                0, 0, true, Collections.singletonList(projection)).getColumnLabels(createRelationMetas(), Collections.singletonList(new TableSegment(0, 0, "table")));
         assertEquals(columnLabels, Arrays.asList("id", "name"));
     }
     
     @Test
     public void assertGetColumnLabelsWithCommonProjection() {
         Projection projection = getColumnProjection();
-        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
+        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createRelationMetas(), Collections.<TableSegment>emptyList());
         assertTrue(columnLabels.contains(projection.getColumnLabel()));
     }
     
     @Test
     public void assertGetColumnLabelsWithCommonProjectionAlias() {
         Projection projection = getColumnProjectionWithAlias();
-        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
+        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createRelationMetas(), Collections.<TableSegment>emptyList());
         assertTrue(columnLabels.contains(projection.getAlias().or("")));
     }
     
     @Test
     public void assertGetColumnLabelsWithExpressionProjection() {
         Projection projection = getExpressionProjection();
-        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
+        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createRelationMetas(), Collections.<TableSegment>emptyList());
         assertTrue(columnLabels.contains(projection.getColumnLabel()));
     }
     
     @Test
     public void assertGetColumnLabelsWithExpressionProjectionAlias() {
         Projection projection = getExpressionSelectProjectionWithAlias();
-        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
+        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createRelationMetas(), Collections.<TableSegment>emptyList());
         assertTrue(columnLabels.contains(projection.getAlias().or("")));
     }
     
     @Test
     public void assertGetColumnLabelsWithDerivedProjection() {
         Projection projection = getDerivedProjection();
-        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
+        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createRelationMetas(), Collections.<TableSegment>emptyList());
         assertTrue(columnLabels.contains(projection.getColumnLabel()));
     }
     
     @Test
     public void assertGetColumnLabelsWithDerivedProjectionAlias() {
         Projection projection = getDerivedProjectionWithAlias();
-        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
+        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createRelationMetas(), Collections.<TableSegment>emptyList());
         assertTrue(columnLabels.contains(projection.getAlias().or("")));
     }
     
     @Test
     public void assertGetColumnLabelsWithAggregationProjection() {
         Projection projection = getAggregationProjection();
-        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
+        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createRelationMetas(), Collections.<TableSegment>emptyList());
         assertTrue(columnLabels.contains(projection.getColumnLabel()));
     }
     
     @Test
     public void assertGetColumnLabelsWithAggregationDistinctProjection() {
         Projection projection = getAggregationDistinctProjection();
-        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createTableMetas(), Collections.<TableSegment>emptyList());
+        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createRelationMetas(), Collections.<TableSegment>emptyList());
         assertTrue(columnLabels.contains(projection.getColumnLabel()));
     }
     
-    private TableMetas createTableMetas() {
-        Map<String, TableMetaData> tables = new HashMap<>(1, 1);
-        tables.put("table", new TableMetaData(Arrays.asList(new ColumnMetaData("id", "number", true, true, true), 
-                new ColumnMetaData("name", "varchar", false, false, false)), Collections.<String>emptyList()));
-        return new TableMetas(tables);
+    private RelationMetas createRelationMetas() {
+        Map<String, RelationMetaData> relations = new HashMap<>(1, 1);
+        relations.put("table", new RelationMetaData(Arrays.asList("id", "name")));
+        return new RelationMetas(relations);
     }
     
     private ShorthandProjection getShorthandProjection() {

@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.preprocessor.metadata.RelationMetas;
 import org.apache.shardingsphere.core.preprocessor.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.core.preprocessor.segment.select.groupby.engine.GroupByContextEngine;
@@ -163,11 +162,11 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
     /**
      * Get column labels.
      *
-     * @param tableMetas table metas
+     * @param relationMetas relation metas
      * @return column labels
      */
-    public List<String> getColumnLabels(final TableMetas tableMetas) {
-        return projectionsContext.getColumnLabels(tableMetas, ((SelectStatement) getSqlStatement()).getTables());
+    public List<String> getColumnLabels(final RelationMetas relationMetas) {
+        return projectionsContext.getColumnLabels(relationMetas, ((SelectStatement) getSqlStatement()).getTables());
     }
     
     /**

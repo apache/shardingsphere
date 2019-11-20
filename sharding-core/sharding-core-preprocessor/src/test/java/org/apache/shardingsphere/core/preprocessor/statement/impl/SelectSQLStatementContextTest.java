@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.core.preprocessor.statement.impl;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.preprocessor.metadata.RelationMetas;
 import org.apache.shardingsphere.core.preprocessor.segment.select.groupby.GroupByContext;
-import org.apache.shardingsphere.core.preprocessor.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.core.preprocessor.segment.select.projection.Projection;
-import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.AggregationProjection;
-import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.core.preprocessor.segment.select.projection.Projection;
+import org.apache.shardingsphere.core.preprocessor.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemsSegment;
@@ -45,9 +45,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -145,16 +145,16 @@ public final class SelectSQLStatementContextTest {
     public void assertGetColumnLabelsWhenResultIsEmpty() {
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
                 new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS), mock(ProjectionsContext.class), null);
-        assertTrue(selectSQLStatementContext.getColumnLabels(mock(TableMetas.class)).isEmpty());
+        assertTrue(selectSQLStatementContext.getColumnLabels(mock(RelationMetas.class)).isEmpty());
     }
     
     @Test
     public void assertGetColumnLabelsWhenResultIsNotEmpty() {
         ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
-        when(projectionsContext.getColumnLabels((TableMetas) any(), ArgumentMatchers.<TableSegment>anyCollection())).thenReturn(Collections.singletonList("result"));
+        when(projectionsContext.getColumnLabels((RelationMetas) any(), ArgumentMatchers.<TableSegment>anyCollection())).thenReturn(Collections.singletonList("result"));
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
                 new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS), projectionsContext, null);
-        assertFalse(selectSQLStatementContext.getColumnLabels(mock(TableMetas.class)).isEmpty());
+        assertFalse(selectSQLStatementContext.getColumnLabels(mock(RelationMetas.class)).isEmpty());
     }
     
     private OrderByContext createOrderBy(final String type) {

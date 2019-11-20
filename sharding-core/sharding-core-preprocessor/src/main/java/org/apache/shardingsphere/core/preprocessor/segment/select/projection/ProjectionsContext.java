@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.preprocessor.metadata.RelationMetas;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.ShorthandProjection;
@@ -132,15 +132,15 @@ public final class ProjectionsContext {
     /**
      * Get column labels.
      * 
-     * @param tableMetas table metas
+     * @param relationMetas relation metas
      * @param tables tables
      * @return column labels
      */
-    public List<String> getColumnLabels(final TableMetas tableMetas, final Collection<TableSegment> tables) {
+    public List<String> getColumnLabels(final RelationMetas relationMetas, final Collection<TableSegment> tables) {
         List<String> result = new ArrayList<>(projections.size());
         for (Projection each : projections) {
             if (each instanceof ShorthandProjection) {
-                result.addAll(getShorthandColumnLabels(tableMetas, tables, (ShorthandProjection) each));
+                result.addAll(getShorthandColumnLabels(relationMetas, tables, (ShorthandProjection) each));
             } else {
                 result.add(each.getColumnLabel());
             }
@@ -148,24 +148,24 @@ public final class ProjectionsContext {
         return result;
     }
     
-    private Collection<String> getShorthandColumnLabels(final TableMetas tableMetas, final Collection<TableSegment> tables, final ShorthandProjection shorthandProjection) {
+    private Collection<String> getShorthandColumnLabels(final RelationMetas relationMetas, final Collection<TableSegment> tables, final ShorthandProjection shorthandProjection) {
         return shorthandProjection.getOwner().isPresent()
-                ? getQualifiedShorthandColumnLabels(tableMetas, tables, shorthandProjection.getOwner().get()) : getUnqualifiedShorthandColumnLabels(tableMetas, tables);
+                ? getQualifiedShorthandColumnLabels(relationMetas, tables, shorthandProjection.getOwner().get()) : getUnqualifiedShorthandColumnLabels(relationMetas, tables);
     }
     
-    private Collection<String> getQualifiedShorthandColumnLabels(final TableMetas tableMetas, final Collection<TableSegment> tables, final String owner) {
+    private Collection<String> getQualifiedShorthandColumnLabels(final RelationMetas relationMetas, final Collection<TableSegment> tables, final String owner) {
         for (TableSegment each : tables) {
             if (owner.equalsIgnoreCase(each.getAlias().or(each.getTableName()))) {
-                return tableMetas.get(each.getTableName()).getColumns().keySet();
+                return relationMetas.getAllColumnNames(each.getTableName());
             }
         }
         return Collections.emptyList();
     }
     
-    private Collection<String> getUnqualifiedShorthandColumnLabels(final TableMetas tableMetas, final Collection<TableSegment> tables) {
+    private Collection<String> getUnqualifiedShorthandColumnLabels(final RelationMetas relationMetas, final Collection<TableSegment> tables) {
         Collection<String> result = new LinkedList<>();
         for (TableSegment each : tables) {
-            result.addAll(tableMetas.get(each.getTableName()).getColumns().keySet());
+            result.addAll(relationMetas.getAllColumnNames(each.getTableName()));
         }
         return result;
     }

@@ -104,10 +104,11 @@ public final class ShardingRouter {
         if (shardingStatementValidator.isPresent()) {
             shardingStatementValidator.get().validate(shardingRule, sqlStatement, parameters);
         }
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(getRelationMetas(metaData.getTables()), logicSQL, parameters, sqlStatement);
+        RelationMetas relationMetas = getRelationMetas(metaData.getTables());
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(relationMetas, logicSQL, parameters, sqlStatement);
         Optional<GeneratedKey> generatedKey = sqlStatement instanceof InsertStatement
                 ? GeneratedKey.getGenerateKey(shardingRule, metaData.getTables(), parameters, (InsertStatement) sqlStatement) : Optional.<GeneratedKey>absent();
-        ShardingConditions shardingConditions = getShardingConditions(parameters, sqlStatementContext, generatedKey.orNull());
+        ShardingConditions shardingConditions = getShardingConditions(parameters, sqlStatementContext, generatedKey.orNull(), relationMetas);
         boolean needMergeShardingValues = isNeedMergeShardingValues(sqlStatementContext);
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && needMergeShardingValues) {
             checkSubqueryShardingValues(sqlStatementContext, shardingConditions);
@@ -126,22 +127,22 @@ public final class ShardingRouter {
         return result;
     }
     
-    private RelationMetas getRelationMetas(final TableMetas tables) {
-        Map<String, RelationMetaData> result = new HashMap<>(tables.getAllTableNames().size());
-        for (String each : tables.getAllTableNames()) {
-            TableMetaData tableMetaData = tables.get(each);
+    private RelationMetas getRelationMetas(final TableMetas tableMetas) {
+        Map<String, RelationMetaData> result = new HashMap<>(tableMetas.getAllTableNames().size());
+        for (String each : tableMetas.getAllTableNames()) {
+            TableMetaData tableMetaData = tableMetas.get(each);
             result.put(each, new RelationMetaData(tableMetaData.getColumns().keySet()));
         }
         return new RelationMetas(result);
     }
     
-    private ShardingConditions getShardingConditions(final List<Object> parameters, final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
+    private ShardingConditions getShardingConditions(final List<Object> parameters, final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey, final RelationMetas relationMetas) {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
             if (sqlStatementContext instanceof InsertSQLStatementContext) {
                 InsertSQLStatementContext shardingInsertStatement = (InsertSQLStatementContext) sqlStatementContext;
                 return new ShardingConditions(new InsertClauseShardingConditionEngine(shardingRule).createShardingConditions(shardingInsertStatement, generatedKey, parameters));
             }
-            return new ShardingConditions(new WhereClauseShardingConditionEngine(shardingRule, metaData.getTables()).createShardingConditions(sqlStatementContext.getSqlStatement(), parameters));
+            return new ShardingConditions(new WhereClauseShardingConditionEngine(shardingRule, relationMetas).createShardingConditions(sqlStatementContext.getSqlStatement(), parameters));
         }
         return new ShardingConditions(Collections.<ShardingCondition>emptyList());
     }

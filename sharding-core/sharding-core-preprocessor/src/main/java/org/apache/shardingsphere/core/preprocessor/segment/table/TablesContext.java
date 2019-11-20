@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.preprocessor.segment.table;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.ToString;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.preprocessor.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableAvailable;
@@ -156,10 +156,10 @@ public final class TablesContext {
      * Find table name.
      *
      * @param columnSegment column segment
-     * @param tableMetas table metas
+     * @param relationMetas relation metas
      * @return table name
      */
-    public Optional<String> findTableName(final ColumnSegment columnSegment, final TableMetas tableMetas) {
+    public Optional<String> findTableName(final ColumnSegment columnSegment, final RelationMetas relationMetas) {
         if (isSingleTable()) {
             return Optional.of(getSingleTableName());
         }
@@ -167,12 +167,12 @@ public final class TablesContext {
             Optional<Table> table = find(columnSegment.getOwner().get().getTableName());
             return table.isPresent() ? Optional.of(table.get().getName()) : Optional.<String>absent();
         }
-        return findTableNameFromMetaData(columnSegment.getName(), tableMetas);
+        return findTableNameFromMetaData(columnSegment.getName(), relationMetas);
     }
     
-    private Optional<String> findTableNameFromMetaData(final String columnName, final TableMetas tableMetas) {
+    private Optional<String> findTableNameFromMetaData(final String columnName, final RelationMetas relationMetas) {
         for (String each : getTableNames()) {
-            if (tableMetas.containsColumn(each, columnName)) {
+            if (relationMetas.containsColumn(each, columnName)) {
                 return Optional.of(each);
             }
         }

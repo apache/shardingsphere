@@ -172,10 +172,10 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         return new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters());
     }
     
-    private RelationMetas getRelationMetas(final TableMetas tables) {
-        Map<String, RelationMetaData> result = new HashMap<>(tables.getAllTableNames().size());
-        for (String each : tables.getAllTableNames()) {
-            TableMetaData tableMetaData = tables.get(each);
+    private RelationMetas getRelationMetas(final TableMetas tableMetas) {
+        Map<String, RelationMetaData> result = new HashMap<>(tableMetas.getAllTableNames().size());
+        for (String each : tableMetas.getAllTableNames()) {
+            TableMetaData tableMetaData = tableMetas.get(each);
             result.put(each, new RelationMetaData(tableMetaData.getColumns().keySet()));
         }
         return new RelationMetas(result);
