@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.preprocessor.statement.impl;
 
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.preprocessor.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
@@ -42,29 +42,29 @@ public final class InsertSQLStatementContextTest {
         insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
         insertStatement.getColumns().addAll(Arrays.asList(new ColumnSegment(0, 0, "id"), new ColumnSegment(0, 0, "name"), new ColumnSegment(0, 0, "status")));
         setUpInsertValues(insertStatement);
-        InsertSQLStatementContext actual = new InsertSQLStatementContext(mock(TableMetas.class), Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
+        InsertSQLStatementContext actual = new InsertSQLStatementContext(mock(RelationMetas.class), Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
         assertInsertSQLStatementContext(actual);
     }
     
     @Test
     public void assertInsertSQLStatementContextWithoutColumnNames() {
-        TableMetas tableMetas = mock(TableMetas.class);
-        when(tableMetas.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
+        RelationMetas relationMetas = mock(RelationMetas.class);
+        when(relationMetas.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
         setUpInsertValues(insertStatement);
-        InsertSQLStatementContext actual = new InsertSQLStatementContext(tableMetas, Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
+        InsertSQLStatementContext actual = new InsertSQLStatementContext(relationMetas, Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
         assertInsertSQLStatementContext(actual);
     }
     
     @Test
     public void assertGetGroupedParameters() {
-        TableMetas tableMetas = mock(TableMetas.class);
-        when(tableMetas.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
+        RelationMetas relationMetas = mock(RelationMetas.class);
+        when(relationMetas.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
         setUpInsertValues(insertStatement);
-        InsertSQLStatementContext actual = new InsertSQLStatementContext(tableMetas, Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
+        InsertSQLStatementContext actual = new InsertSQLStatementContext(relationMetas, Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
         assertThat(actual.getGroupedParameters().size(), is(2));
     }
     

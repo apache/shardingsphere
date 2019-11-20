@@ -22,17 +22,18 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.preprocessor.metadata.RelationMetas;
 import org.apache.shardingsphere.core.preprocessor.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.core.preprocessor.segment.select.groupby.engine.GroupByContextEngine;
-import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.AggregationProjection;
-import org.apache.shardingsphere.core.preprocessor.segment.select.projection.Projection;
-import org.apache.shardingsphere.core.preprocessor.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.core.preprocessor.segment.select.projection.engine.ProjectionsContextEngine;
 import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.engine.OrderByContextEngine;
 import org.apache.shardingsphere.core.preprocessor.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.core.preprocessor.segment.select.pagination.engine.PaginationContextEngine;
+import org.apache.shardingsphere.core.preprocessor.segment.select.projection.Projection;
+import org.apache.shardingsphere.core.preprocessor.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.core.preprocessor.segment.select.projection.engine.ProjectionsContextEngine;
+import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
@@ -75,11 +76,11 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
         containsSubquery = containsSubquery();
     }
     
-    public SelectSQLStatementContext(final TableMetas tableMetas, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
+    public SelectSQLStatementContext(final RelationMetas relationMetas, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
         super(sqlStatement);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
-        projectionsContext = new ProjectionsContextEngine(tableMetas).createProjectionsContext(sql, sqlStatement, groupByContext, orderByContext);
+        projectionsContext = new ProjectionsContextEngine(relationMetas).createProjectionsContext(sql, sqlStatement, groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
         containsSubquery = containsSubquery();
     }

@@ -19,10 +19,10 @@ package org.apache.shardingsphere.core.preprocessor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.preprocessor.metadata.RelationMetas;
+import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.CommonSQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
@@ -43,18 +43,18 @@ public final class SQLStatementContextFactory {
     /**
      * Create SQL statement context.
      *
-     * @param tableMetas table meta data
+     * @param relationMetas relation metas
      * @param sql SQL
      * @param parameters SQL parameters
      * @param sqlStatement SQL statement
      * @return SQL statement context
      */
-    public static SQLStatementContext newInstance(final TableMetas tableMetas, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
+    public static SQLStatementContext newInstance(final RelationMetas relationMetas, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
-            return new SelectSQLStatementContext(tableMetas, sql, parameters, (SelectStatement) sqlStatement);
+            return new SelectSQLStatementContext(relationMetas, sql, parameters, (SelectStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
-            return new InsertSQLStatementContext(tableMetas, parameters, (InsertStatement) sqlStatement);
+            return new InsertSQLStatementContext(relationMetas, parameters, (InsertStatement) sqlStatement);
         }
         return new CommonSQLStatementContext(sqlStatement);
     }

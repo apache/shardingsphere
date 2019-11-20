@@ -25,6 +25,7 @@ import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
@@ -199,15 +200,27 @@ public final class MixSQLRewriteEngineParameterizedTest {
     
     private ShardingSphereMetaData createShardingSphereMetaData() {
         TableMetas tableMetas = mock(TableMetas.class);
-        when(tableMetas.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_detail"));
+        when(tableMetas.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_bak", "t_account_detail"));
         TableMetaData accountTableMetaData = mock(TableMetaData.class);
+        when(accountTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
         when(accountTableMetaData.containsIndex(anyString())).thenReturn(true);
         when(tableMetas.get("t_account")).thenReturn(accountTableMetaData);
-        when(tableMetas.get("t_account_bak")).thenReturn(mock(TableMetaData.class));
+        TableMetaData accountBakTableMetaData = mock(TableMetaData.class);
+        when(accountBakTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
+        when(tableMetas.get("t_account_bak")).thenReturn(accountBakTableMetaData);
         when(tableMetas.get("t_account_detail")).thenReturn(mock(TableMetaData.class));
         when(tableMetas.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
         when(tableMetas.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
         return new ShardingSphereMetaData(mock(DataSourceMetas.class), tableMetas);
+    }
+    
+    private Map<String, ColumnMetaData> createColumnMetaDataMap() {
+        Map<String, ColumnMetaData> result = new LinkedHashMap<>();
+        result.put("account_id", mock(ColumnMetaData.class));
+        result.put("password", mock(ColumnMetaData.class));
+        result.put("amount", mock(ColumnMetaData.class));
+        result.put("status", mock(ColumnMetaData.class));
+        return result;
     }
     
     private Map<String, String> getLogicAndActualTables(final ShardingRule shardingRule, final RoutingUnit routingUnit, final Collection<String> parsedTableNames) {

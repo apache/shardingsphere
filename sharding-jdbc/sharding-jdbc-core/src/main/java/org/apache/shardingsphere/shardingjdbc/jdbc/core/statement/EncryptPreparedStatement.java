@@ -20,12 +20,15 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.preprocessor.SQLStatementContextFactory;
+import org.apache.shardingsphere.core.preprocessor.metadata.RelationMetaData;
+import org.apache.shardingsphere.core.preprocessor.metadata.RelationMetas;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.core.rewrite.engine.impl.DefaultSQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteResult;
+import org.apache.shardingsphere.core.rewrite.engine.impl.DefaultSQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.route.SQLUnit;
@@ -33,6 +36,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractShardingPrepa
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultSet;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -40,7 +44,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Encrypt prepared statement.
@@ -156,7 +162,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     private SQLUnit getSQLUnit(final String sql) {
         EncryptConnection connection = preparedStatementGenerator.connection;
         SQLStatement sqlStatement = connection.getRuntimeContext().getParseEngine().parse(sql, true);
-        sqlStatementContext = SQLStatementContextFactory.newInstance(connection.getRuntimeContext().getTableMetas(), sql, getParameters(), sqlStatement);
+        sqlStatementContext = SQLStatementContextFactory.newInstance(getRelationMetas(connection.getRuntimeContext().getTableMetas()), sql, getParameters(), sqlStatement);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(connection.getRuntimeContext().getTableMetas(), sqlStatementContext, sql, getParameters());
         boolean isQueryWithCipherColumn = connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         new EncryptSQLRewriteContextDecorator(connection.getRuntimeContext().getRule(), isQueryWithCipherColumn).decorate(sqlRewriteContext);
@@ -164,6 +170,15 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         SQLRewriteResult sqlRewriteResult = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
         showSQL(sqlRewriteResult.getSql());
         return new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters());
+    }
+    
+    private RelationMetas getRelationMetas(final TableMetas tables) {
+        Map<String, RelationMetaData> result = new HashMap<>(tables.getAllTableNames().size());
+        for (String each : tables.getAllTableNames()) {
+            TableMetaData tableMetaData = tables.get(each);
+            result.put(each, new RelationMetaData(tableMetaData.getColumns().keySet()));
+        }
+        return new RelationMetas(result);
     }
     
     private void showSQL(final String sql) {

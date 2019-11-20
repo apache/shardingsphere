@@ -30,7 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author panjuan
  * @author zhaojun
  * @author zhangliang
- * @author panjuan
  */
 public final class TableMetas {
     
@@ -79,14 +78,14 @@ public final class TableMetas {
     }
     
     /**
-     * Judge contains column from table meta data or not.
-     * 
+     * Judge whether contains column name.
+     *
      * @param tableName table name
-     * @param column column
-     * @return contains column from table meta data or not
+     * @param columnName column name
+     * @return contains column name or not
      */
-    public boolean containsColumn(final String tableName, final String column) {
-        return containsTable(tableName) && tables.get(tableName).getColumns().keySet().contains(column.toLowerCase());
+    public boolean containsColumn(final String tableName, final String columnName) {
+        return containsTable(tableName) && tables.get(tableName).getColumns().containsKey(columnName.toLowerCase());
     }
     
     /**

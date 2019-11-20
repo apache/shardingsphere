@@ -20,17 +20,17 @@ package org.apache.shardingsphere.core.preprocessor.segment.select.projection.en
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.preprocessor.segment.table.Table;
-import org.apache.shardingsphere.core.preprocessor.segment.table.TablesContext;
+import org.apache.shardingsphere.core.preprocessor.metadata.RelationMetas;
+import org.apache.shardingsphere.core.preprocessor.segment.select.groupby.GroupByContext;
+import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderByContext;
+import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.Projection;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.DerivedProjection;
-import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.core.preprocessor.segment.select.groupby.GroupByContext;
-import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderByContext;
+import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.ShorthandProjection;
+import org.apache.shardingsphere.core.preprocessor.segment.table.Table;
+import org.apache.shardingsphere.core.preprocessor.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -51,7 +51,7 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 public final class ProjectionsContextEngine {
     
-    private final TableMetas tableMetas;
+    private final RelationMetas relationMetas;
     
     private final ProjectionEngine selectItemEngine = new ProjectionEngine();
     
@@ -184,7 +184,7 @@ public final class ProjectionsContextEngine {
     private boolean isSameProjection(final TablesContext tablesContext, final ShorthandProjection shorthandProjection, final ColumnOrderByItemSegment orderItem) {
         Preconditions.checkState(shorthandProjection.getOwner().isPresent());
         Optional<Table> table = tablesContext.find(shorthandProjection.getOwner().get());
-        return table.isPresent() && tableMetas.containsColumn(table.get().getName(), orderItem.getColumn().getName());
+        return table.isPresent() && relationMetas.containsColumn(table.get().getName(), orderItem.getColumn().getName());
     }
     
     private boolean isSameAlias(final Projection projection, final TextOrderByItemSegment orderItem) {

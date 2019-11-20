@@ -19,10 +19,10 @@ package org.apache.shardingsphere.core.preprocessor.statement.impl;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.preprocessor.metadata.RelationMetas;
+import org.apache.shardingsphere.core.preprocessor.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.preprocessor.segment.insert.InsertValueContext;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -42,9 +42,9 @@ public final class InsertSQLStatementContext extends CommonSQLStatementContext {
     
     private final List<InsertValueContext> insertValueContexts;
     
-    public InsertSQLStatementContext(final TableMetas tableMetas, final List<Object> parameters, final InsertStatement sqlStatement) {
+    public InsertSQLStatementContext(final RelationMetas relationMetas, final List<Object> parameters, final InsertStatement sqlStatement) {
         super(sqlStatement);
-        columnNames = sqlStatement.useDefaultColumns() ? tableMetas.getAllColumnNames(getTablesContext().getSingleTableName()) : sqlStatement.getColumnNames();
+        columnNames = sqlStatement.useDefaultColumns() ? relationMetas.getAllColumnNames(getTablesContext().getSingleTableName()) : sqlStatement.getColumnNames();
         insertValueContexts = getInsertValueContexts(parameters);
     }
     
