@@ -17,37 +17,30 @@
 
 package org.apache.shardingsphere.spi.database;
 
-import java.util.Collection;
-import java.util.Collections;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
-import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.H2DataSourceMetaData;
+import org.junit.Before;
+import org.junit.Test;
 
-/**
- * Database type of H2.
- *
- * @author zhangliang
- */
-public final class H2DatabaseType implements BranchDatabaseType {
+public class H2DatabaseTypeTest {
     
-    @Override
-    public String getName() {
-        return "H2";
+    private DataSourceInfo dataSourceInfo;
+    
+    @Before
+    public void setUp() {
+        dataSourceInfo = new DataSourceInfo("jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "test");
     }
     
-    @Override
-    public Collection<String> getJdbcUrlPrefixAlias() {
-        return Collections.emptyList();
+    @Test
+    public void assertDataSourceInfoParam() {
+        H2DatabaseType databaseType = new H2DatabaseType();
+        H2DataSourceMetaData actual = (H2DataSourceMetaData) databaseType.getDataSourceMetaData(dataSourceInfo);
+        assertThat(actual.getHostName(), is(""));
+        assertThat(actual.getPort(), is(-1));
+        assertThat(actual.getCatalog(), is("ds_0"));
+        assertEquals(actual.getSchemaName(), null);
     }
-    
-    @Override
-    public DataSourceMetaData getDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
-        return new H2DataSourceMetaData(dataSourceInfo);
-    }
-    
-    @Override
-    public DatabaseType getTrunkDatabaseType() {
-        return DatabaseTypes.getActualDatabaseType("MySQL");
-    }
-
 }

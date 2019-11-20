@@ -17,30 +17,23 @@
 
 package org.apache.shardingsphere.spi.database;
 
-import java.util.Collection;
-import java.util.Collections;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
-import org.apache.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaData;
+import org.apache.shardingsphere.core.metadata.datasource.dialect.SQL92DataSourceMetaData;
+import org.junit.Test;
 
-/**
- * Database type of Oracle.
- *
- * @author zhangliang
- */
-public final class OracleDatabaseType implements DatabaseType {
+public final class SQL92DatabaseTypeTest {
     
-    @Override
-    public String getName() {
-        return "Oracle";
-    }
-    
-    @Override
-    public Collection<String> getJdbcUrlPrefixAlias() {
-        return Collections.emptyList();
-    }
-    
-    @Override
-    public DataSourceMetaData getDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
-        return new OracleDataSourceMetaData(dataSourceInfo);
+    @Test
+    public void assertDataSourceInfoParam() {
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:sql92_db:ds_0", null);
+        SQL92DatabaseType databaseType = new SQL92DatabaseType();
+        SQL92DataSourceMetaData actual = (SQL92DataSourceMetaData) databaseType.getDataSourceMetaData(dataSourceInfo);
+        assertThat(actual.getHostName(), is(""));
+        assertThat(actual.getPort(), is(-1));
+        assertThat(actual.getCatalog(), is(""));
+        assertEquals(actual.getSchemaName(), null);
     }
 }

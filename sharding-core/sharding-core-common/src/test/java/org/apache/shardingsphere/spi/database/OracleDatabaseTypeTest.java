@@ -17,30 +17,24 @@
 
 package org.apache.shardingsphere.spi.database;
 
-import java.util.Collection;
-import java.util.Collections;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import org.apache.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaData;
+import org.junit.Test;
 
-/**
- * Database type of Oracle.
- *
- * @author zhangliang
- */
-public final class OracleDatabaseType implements DatabaseType {
+public final class OracleDatabaseTypeTest {
     
-    @Override
-    public String getName() {
-        return "Oracle";
-    }
-    
-    @Override
-    public Collection<String> getJdbcUrlPrefixAlias() {
-        return Collections.emptyList();
-    }
-    
-    @Override
-    public DataSourceMetaData getDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
-        return new OracleDataSourceMetaData(dataSourceInfo);
+    @Test
+    public void assertDataSourceInfoParam() {
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:oracle:thin:@//127.0.0.1:9999/ds_0", "test");
+        
+        OracleDatabaseType databaseType = new OracleDatabaseType();
+        OracleDataSourceMetaData actual = (OracleDataSourceMetaData) databaseType.getDataSourceMetaData(dataSourceInfo);
+        assertThat(actual.getHostName(), is("127.0.0.1"));
+        assertThat(actual.getPort(), is(9999));
+        assertThat(actual.getCatalog(), is("ds_0"));
+        assertEquals(actual.getSchemaName(), dataSourceInfo.getUsername());
     }
 }

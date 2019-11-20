@@ -34,10 +34,12 @@ import org.apache.shardingsphere.shardingproxy.backend.executor.BackendExecutorC
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
+import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -61,6 +63,22 @@ public abstract class LogicSchema {
         parseEngine = SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getDatabaseTypeName(LogicSchemas.getInstance().getDatabaseType()));
         backendDataSource = new JDBCBackendDataSource(dataSources);
         ShardingOrchestrationEventBus.getInstance().register(this);
+    }
+    
+    /**
+     * Get dataSource map.
+     * @param dataSourceMap dataSource map
+     * @return get dataSource map
+     * @throws SQLException SQLException
+     */
+    public Map<String, DataSourceInfo> getDataSourceInfoMap(final Map<String, YamlDataSourceParameter> dataSourceMap) throws SQLException {
+        Map<String, DataSourceInfo> result = new HashMap<String, DataSourceInfo>(dataSourceMap.size(), 1);
+        for (Entry<String, YamlDataSourceParameter> entry : dataSourceMap.entrySet()) {
+            YamlDataSourceParameter dataSource = entry.getValue();
+            DataSourceInfo sourceInfo = new DataSourceInfo(dataSource.getUrl(), null);
+            result.put(entry.getKey(), sourceInfo);
+        }
+        return result;
     }
     
     /**

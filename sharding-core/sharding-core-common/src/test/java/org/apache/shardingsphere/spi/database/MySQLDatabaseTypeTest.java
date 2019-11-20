@@ -17,30 +17,23 @@
 
 package org.apache.shardingsphere.spi.database;
 
-import java.util.Collection;
-import java.util.Collections;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import org.apache.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaData;
+import org.junit.Test;
 
-/**
- * Database type of MySQL.
- *
- * @author zhangliang
- */
-public final class MySQLDatabaseType implements DatabaseType {
+public final class MySQLDatabaseTypeTest {
     
-    @Override
-    public String getName() {
-        return "MySQL";
-    }
-    
-    @Override
-    public Collection<String> getJdbcUrlPrefixAlias() {
-        return Collections.singletonList("jdbc:mysqlx:");
-    }
-    
-    @Override
-    public DataSourceMetaData getDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
-        return new MySQLDataSourceMetaData(dataSourceInfo);
+    @Test
+    public void assertMySQLDatabaseType() {
+        MySQLDatabaseType databaseType = new MySQLDatabaseType();
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:mysql://127.0.0.1:9999/ds_0?serverTimezone=UTC&useSSL=false", null);
+        MySQLDataSourceMetaData actual = (MySQLDataSourceMetaData) databaseType.getDataSourceMetaData(dataSourceInfo);
+        assertThat(actual.getHostName(), is("127.0.0.1"));
+        assertThat(actual.getPort(), is(9999));
+        assertThat(actual.getCatalog(), is("ds_0"));
+        assertEquals(actual.getSchemaName(), null);
     }
 }

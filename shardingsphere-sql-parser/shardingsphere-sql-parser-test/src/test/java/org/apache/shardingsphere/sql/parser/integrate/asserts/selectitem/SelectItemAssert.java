@@ -55,6 +55,12 @@ public final class SelectItemAssert {
 
     private final SQLStatementAssertMessage assertMessage;
 
+    /**
+     * Assert predicate.
+     * 
+     * @param actual actual where segment
+     * @param expectedSelectItems expected select items
+     */
     public void assertSelectItems(final SelectItemsSegment actual, final ExpectedSelectItems expectedSelectItems) {
         Collection<SelectItemSegment> actualItems = actual.getSelectItems();
         assertThat(assertMessage.getFullAssertMessage("Select items size error: "), actualItems.size(), is(expectedSelectItems.getSize()));
