@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.preprocessor.segment.table;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.ToString;
-import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
@@ -73,7 +72,7 @@ public final class TablesContext {
     private void setSchema(final TableSegment tableSegment) {
         if (tableSegment.getOwner().isPresent()) {
             if (null != schema && !tableSegment.getOwner().get().getName().equalsIgnoreCase(schema)) {
-                throw new ShardingException("Cannot support multiple schemas in one SQL");
+                throw new UnsupportedOperationException("Cannot support multiple schemas in one SQL");
             }
             schema = tableSegment.getOwner().get().getName();
         }
