@@ -15,30 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.center.configuration;
+package org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml;
 
 import java.util.Map;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
 
 /**
- * Config center configuration.
+ * Orchestration sharding configuration for YAML.
  *
- * @author zhangliang
- * @author sunbufu
- * @author dongzonglei
- * @author wangguangyuan
+ * @author caohao
  */
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public final class OrchestrationConfiguration {
+public final class YamlOrchestrationShardingRuleConfiguration extends YamlRootShardingConfiguration {
     
-    /**
-     * Instance configuration map.
-     */
-    private Map<String, InstanceConfiguration> instanceConfigurationMap;
+    private Map<String, YamlInstanceConfiguration> orchestration;
 }
