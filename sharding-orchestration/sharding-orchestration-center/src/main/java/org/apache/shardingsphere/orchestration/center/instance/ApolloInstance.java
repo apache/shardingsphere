@@ -162,7 +162,7 @@ public final class ApolloInstance implements ConfigCenter {
         String apolloKey = convertKey(key);
         updateKey(apolloKey, value);
         publishNamespace();
-        if (!apolloKey.contains(".")) {
+        if (!apolloKey.contains(APOLLO_KEY_SEPARATOR)) {
             addRelationship(SHARDING_SPHERE_KEY_ROOT, SHARDING_SPHERE_KEY_ROOT + apolloKey);
             return;
         }
