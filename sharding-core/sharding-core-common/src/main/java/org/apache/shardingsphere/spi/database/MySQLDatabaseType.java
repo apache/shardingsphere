@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.spi.database;
 
-import org.apache.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaData;
-
 import java.util.Collection;
 import java.util.Collections;
+
+import org.apache.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaData;
 
 /**
  * Database type of MySQL.
@@ -40,7 +40,7 @@ public final class MySQLDatabaseType implements DatabaseType {
     }
     
     @Override
-    public DataSourceMetaData getDataSourceMetaData(final String url) {
-        return new MySQLDataSourceMetaData(url);
+    public DataSourceMetaData getDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
+        return new MySQLDataSourceMetaData(dataSourceInfo);
     }
 }

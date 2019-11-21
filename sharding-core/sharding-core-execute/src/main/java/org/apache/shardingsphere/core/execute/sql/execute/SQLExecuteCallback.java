@@ -17,7 +17,14 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute;
 
-import lombok.RequiredArgsConstructor;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+
 import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.execute.ShardingGroupExecuteCallback;
 import org.apache.shardingsphere.core.execute.StatementExecuteUnit;
@@ -25,14 +32,11 @@ import org.apache.shardingsphere.core.execute.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.core.execute.hook.SQLExecutionHook;
 import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.core.route.RouteUnit;
+import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Statement execute callback interface.
@@ -67,7 +71,10 @@ public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallb
      */
     private T execute0(final StatementExecuteUnit statementExecuteUnit, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) throws SQLException {
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
-        DataSourceMetaData dataSourceMetaData = databaseType.getDataSourceMetaData(statementExecuteUnit.getStatement().getConnection().getMetaData().getURL());
+        Connection conn = statementExecuteUnit.getStatement().getConnection();
+        DatabaseMetaData metaData = conn.getMetaData();
+        
+        DataSourceMetaData dataSourceMetaData = databaseType.getDataSourceMetaData(new DataSourceInfo(metaData.getURL(), metaData.getUserName()));
         SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
         try {
             sqlExecutionHook.start(statementExecuteUnit.getRouteUnit(), dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);

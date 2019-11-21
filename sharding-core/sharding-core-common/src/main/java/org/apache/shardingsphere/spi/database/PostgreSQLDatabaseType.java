@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.spi.database;
 
-import org.apache.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
-
 import java.util.Collection;
 import java.util.Collections;
+
+import org.apache.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
 
 /**
  * Database type of PostgreSQL.
@@ -40,7 +40,7 @@ public final class PostgreSQLDatabaseType implements DatabaseType {
     }
     
     @Override
-    public DataSourceMetaData getDataSourceMetaData(final String url) {
-        return new PostgreSQLDataSourceMetaData(url);
+    public DataSourceMetaData getDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
+        return new PostgreSQLDataSourceMetaData(dataSourceInfo);
     }
 }
