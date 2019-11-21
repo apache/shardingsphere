@@ -69,7 +69,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-preprocessor</artifactId>
+            <artifactId>shardingsphere-sql-parser-relation</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
