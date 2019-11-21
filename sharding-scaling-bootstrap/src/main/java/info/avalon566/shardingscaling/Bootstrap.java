@@ -25,8 +25,7 @@ import info.avalon566.shardingscaling.core.config.RuleConfiguration;
 import info.avalon566.shardingscaling.core.config.ScalingConfiguration;
 import info.avalon566.shardingscaling.core.config.ScalingContext;
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
-import info.avalon566.shardingscaling.core.config.SyncType;
-import info.avalon566.shardingscaling.core.controller.SyncTaskProgress;
+import info.avalon566.shardingscaling.core.controller.SyncProgress;
 import info.avalon566.shardingscaling.core.controller.ScalingJobController;
 import info.avalon566.shardingscaling.utils.RuntimeUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -74,9 +73,9 @@ public class Bootstrap {
                         } catch (InterruptedException ex) {
                             break;
                         }
-                        for (SyncTaskProgress progress : scalingJobController.getProgresses()) {
-                            if (null != progress.getLogPosition()) {
-                                log.info(progress.getLogPosition().toString());
+                        for (SyncProgress syncProgress : scalingJobController.getProgresses()) {
+                            if (null != syncProgress) {
+                                log.info(syncProgress.toString());
                             }
                         }
                     }
@@ -113,7 +112,7 @@ public class Bootstrap {
                     ruleConfig.getDestinationDataSources().getUsername(),
                     ruleConfig.getDestinationDataSources().getPassword());
             writerConfiguration.setDataSourceConfiguration(writerDataSourceConfiguration);
-            syncConfigurations.add(new SyncConfiguration(SyncType.NONE, ScalingContext.getInstance().getServerConfiguration().getConcurrency(), readerConfiguration, writerConfiguration));
+            syncConfigurations.add(new SyncConfiguration(ScalingContext.getInstance().getServerConfiguration().getConcurrency(), readerConfiguration, writerConfiguration));
         }
         return syncConfigurations;
     }

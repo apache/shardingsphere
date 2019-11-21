@@ -17,6 +17,7 @@
 
 package info.avalon566.shardingscaling.mysql;
 
+import info.avalon566.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import info.avalon566.shardingscaling.core.config.RdbmsConfiguration;
 import info.avalon566.shardingscaling.core.execute.executor.AbstractSyncRunner;
 import info.avalon566.shardingscaling.core.execute.executor.channel.Channel;
@@ -25,27 +26,20 @@ import info.avalon566.shardingscaling.core.execute.executor.reader.LogReader;
 import info.avalon566.shardingscaling.core.execute.executor.reader.NopLogPosition;
 import info.avalon566.shardingscaling.core.execute.executor.record.Column;
 import info.avalon566.shardingscaling.core.execute.executor.record.DataRecord;
-import info.avalon566.shardingscaling.core.metadata.JdbcUri;
 import info.avalon566.shardingscaling.core.execute.executor.record.FinishedRecord;
 import info.avalon566.shardingscaling.core.execute.executor.record.PlaceholderRecord;
 import info.avalon566.shardingscaling.core.execute.executor.record.Record;
+import info.avalon566.shardingscaling.core.metadata.JdbcUri;
+import info.avalon566.shardingscaling.mysql.binlog.MySQLConnector;
 import info.avalon566.shardingscaling.mysql.binlog.event.AbstractBinlogEvent;
 import info.avalon566.shardingscaling.mysql.binlog.event.DeleteRowsEvent;
 import info.avalon566.shardingscaling.mysql.binlog.event.PlaceholderEvent;
 import info.avalon566.shardingscaling.mysql.binlog.event.UpdateRowsEvent;
 import info.avalon566.shardingscaling.mysql.binlog.event.WriteRowsEvent;
-import info.avalon566.shardingscaling.core.util.DataSourceFactory;
-import info.avalon566.shardingscaling.core.config.JdbcDataSourceConfiguration;
-import info.avalon566.shardingscaling.mysql.binlog.MySQLConnector;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.sql.DataSource;
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 /**
  * MySQL binlog reader.
@@ -75,26 +69,6 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
     public void run() {
         start();
         read(channel);
-    }
-
-    @Override
-    public LogPosition markPosition() {
-        try {
-            DataSource dataSource = DataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
-            try (Connection connection = dataSource.getConnection()) {
-                PreparedStatement ps = connection.prepareStatement("show master status");
-                ResultSet rs = ps.executeQuery();
-                rs.next();
-                final BinlogPosition currentPosition = new BinlogPosition(null, rs.getString(1), rs.getLong(2));
-                ps = connection.prepareStatement("show variables like 'server_id'");
-                rs = ps.executeQuery();
-                rs.next();
-                currentPosition.setServerId(rs.getString(2));
-                return currentPosition;
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("markPosition error", e);
-        }
     }
 
     @Override

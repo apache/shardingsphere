@@ -17,19 +17,27 @@
 
 package info.avalon566.shardingscaling.core.synctask;
 
-import info.avalon566.shardingscaling.core.controller.SyncTaskProgress;
+import info.avalon566.shardingscaling.core.controller.SyncProgress;
+import info.avalon566.shardingscaling.core.controller.ReportCallback;
 
 /**
  * Sync task interface.
  *
  * @author avalon566
  */
-public interface SyncTask extends Runnable {
+public interface SyncTask {
+
+    /**
+     * Prepare to start synchronize data.
+     */
+    void prepare();
 
     /**
      * Start synchronize data.
+     *
+     * @param callback invoke when sync task exit.
      */
-    void start();
+    void start(ReportCallback callback);
 
     /**
      * Stop synchronize data.
@@ -41,5 +49,5 @@ public interface SyncTask extends Runnable {
      *
      * @return migrate progress
      */
-    SyncTaskProgress getProgress();
+    SyncProgress getProgress();
 }

@@ -18,29 +18,35 @@
 package info.avalon566.shardingscaling.core.synctask;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
-import info.avalon566.shardingscaling.core.config.SyncType;
-import info.avalon566.shardingscaling.core.execute.engine.local.LocalReporter;
 
 /**
  * Sync task factory.
  *
  * @author avalon566
  */
-public final class SyncTaskFactory {
+public interface SyncTaskFactory {
 
     /**
-     * create execute job instance by execute configuration.
+     * Create history data sync task group.
      *
-     * @param syncConfiguration value
-     * @param reporter value
-     * @return execute job
+     * @param syncConfiguration sync configuration
+     * @return history data sync task group
      */
-    public static SyncTask createSyncJobInstance(final SyncConfiguration syncConfiguration, final LocalReporter reporter) {
-        if (SyncType.TableSlice.equals(syncConfiguration.getSyncType())) {
-            return new HistoryDataSyncTask(syncConfiguration, reporter);
-        } else if (SyncType.Realtime.equals(syncConfiguration.getSyncType())) {
-            return new RealtimeDataSyncTask(syncConfiguration, reporter);
-        }
-        throw new UnsupportedOperationException();
-    }
+    HistoryDataSyncTaskGroup createHistoryDataSyncTaskGroup(SyncConfiguration syncConfiguration);
+
+    /**
+     * Create history data sync task.
+     *
+     * @param syncConfiguration sync configuration
+     * @return history data sync task
+     */
+    HistoryDataSyncTask createHistoryDataSyncTask(SyncConfiguration syncConfiguration);
+
+    /**
+     * Create realtime data sync task.
+     *
+     * @param syncConfiguration sync configuration
+     * @return realtime data sync task
+     */
+    RealtimeDataSyncTask createRealtimeDataSyncTask(SyncConfiguration syncConfiguration);
 }

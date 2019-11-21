@@ -17,10 +17,11 @@
 
 package info.avalon566.shardingscaling.mysql;
 
-import info.avalon566.shardingscaling.core.spi.ScalingEntry;
 import info.avalon566.shardingscaling.core.execute.executor.reader.JdbcReader;
+import info.avalon566.shardingscaling.core.execute.executor.log.LogManager;
 import info.avalon566.shardingscaling.core.execute.executor.reader.LogReader;
 import info.avalon566.shardingscaling.core.execute.executor.writer.Writer;
+import info.avalon566.shardingscaling.core.spi.ScalingEntry;
 
 /**
  * MySQL scaling entry.
@@ -38,7 +39,12 @@ public final class MySQLScalingEntry implements ScalingEntry {
     public Class<? extends LogReader> getLogReaderClass() {
         return MySQLBinlogReader.class;
     }
-    
+
+    @Override
+    public Class<? extends LogManager> getLogManagerClass() {
+        return MySQLLogManager.class;
+    }
+
     @Override
     public Class<? extends Writer> getWriterClass() {
         return MySQLWriter.class;

@@ -15,24 +15,12 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute;
+package info.avalon566.shardingscaling.core.controller;
 
 /**
- * Job Running reporter.
+ * Sync progress.
  *
  * @author avalon566
  */
-public interface Reporter {
-
-    /**
-     * Report job running event.
-     * @param event job running event
-     */
-    void report(Event event);
-
-    /**
-     * Get job running report.
-     * @return event
-     */
-    Event consumeEvent();
+public interface SyncProgress {
 }

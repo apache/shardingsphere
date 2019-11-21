@@ -17,6 +17,7 @@
 
 package info.avalon556.shardingscaling.postgresql;
 
+import info.avalon566.shardingscaling.core.execute.executor.log.LogManager;
 import info.avalon566.shardingscaling.core.spi.ScalingEntry;
 import info.avalon566.shardingscaling.core.execute.executor.reader.JdbcReader;
 import info.avalon566.shardingscaling.core.execute.executor.reader.LogReader;
@@ -38,7 +39,12 @@ public final class PostgreSQLScalingEntry implements ScalingEntry {
     public Class<? extends LogReader> getLogReaderClass() {
         return PostgreSQLWalReader.class;
     }
-    
+
+    @Override
+    public Class<? extends LogManager> getLogManagerClass() {
+        throw new UnsupportedOperationException();
+    }
+
     @Override
     public Class<? extends Writer> getWriterClass() {
         return PostgreSQLWriter.class;

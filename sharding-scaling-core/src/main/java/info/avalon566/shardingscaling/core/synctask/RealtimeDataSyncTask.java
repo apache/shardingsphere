@@ -18,16 +18,18 @@
 package info.avalon566.shardingscaling.core.synctask;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
+import info.avalon566.shardingscaling.core.controller.ReportCallback;
+import info.avalon566.shardingscaling.core.controller.SyncProgress;
 import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
-import info.avalon566.shardingscaling.core.controller.SyncTaskProgress;
 import info.avalon566.shardingscaling.core.execute.Event;
 import info.avalon566.shardingscaling.core.execute.EventType;
-import info.avalon566.shardingscaling.core.execute.Reporter;
 import info.avalon566.shardingscaling.core.execute.engine.SyncExecutor;
 import info.avalon566.shardingscaling.core.execute.executor.channel.AckCallback;
 import info.avalon566.shardingscaling.core.execute.executor.channel.RealtimeSyncChannel;
+import info.avalon566.shardingscaling.core.execute.executor.log.LogManager;
+import info.avalon566.shardingscaling.core.execute.executor.log.LogManagerFactory;
 import info.avalon566.shardingscaling.core.execute.executor.reader.LogPosition;
-import info.avalon566.shardingscaling.core.execute.executor.reader.LogReader;
+import info.avalon566.shardingscaling.core.execute.executor.reader.Reader;
 import info.avalon566.shardingscaling.core.execute.executor.reader.ReaderFactory;
 import info.avalon566.shardingscaling.core.execute.executor.record.Record;
 import info.avalon566.shardingscaling.core.execute.executor.writer.Writer;
@@ -48,92 +50,63 @@ public class RealtimeDataSyncTask implements SyncTask {
 
     private final SyncConfiguration syncConfiguration;
 
-    private final LogReader logReader;
+    private LogManager logManager;
 
-    private final Reporter reporter;
-
-    private RealtimeSyncChannel channel;
+    private Reader reader;
 
     private LogPosition currentLogPosition;
 
-    public RealtimeDataSyncTask(final SyncConfiguration syncConfiguration, final Reporter reporter) {
+    private RealtimeSyncChannel channel;
+
+    public RealtimeDataSyncTask(final SyncConfiguration syncConfiguration) {
         this.syncConfiguration = syncConfiguration;
-        this.reporter = reporter;
-        logReader = ReaderFactory.newInstanceLogReader(syncConfiguration.getReaderConfiguration(), syncConfiguration.getPosition());
     }
 
     @Override
-    public final void start() {
-        new Thread(this).start();
+    public final void prepare() {
+        this.logManager = LogManagerFactory.newInstanceLogManager(syncConfiguration.getReaderConfiguration());
+        currentLogPosition = logManager.getCurrentPosition();
+        this.reader = ReaderFactory.newInstanceLogReader(syncConfiguration.getReaderConfiguration(), currentLogPosition);
+    }
+
+    @Override
+    public final void start(final ReportCallback callback) {
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                final List<Writer> writers = new ArrayList<>(syncConfiguration.getConcurrency());
+                for (int i = 0; i < syncConfiguration.getConcurrency(); i++) {
+                    writers.add(WriterFactory.newInstance(syncConfiguration.getWriterConfiguration()));
+                }
+                channel = new RealtimeSyncChannel(writers.size(), Collections.singletonList((AckCallback) new AckCallback() {
+                    @Override
+                    public void onAck(final List<Record> records) {
+                        Record record = records.get(records.size() - 1);
+                        currentLogPosition = record.getLogPosition();
+                    }
+                }));
+                try {
+                    new SyncExecutor(channel, reader, writers).execute();
+                    log.info("realtime data execute finish");
+                    callback.onProcess(new Event(syncConfiguration.getTaskId(), EventType.FINISHED));
+                } catch (SyncExecuteException ex) {
+                    log.error("realtime data execute exception exit");
+                    ex.logExceptions();
+                    callback.onProcess(new Event(syncConfiguration.getTaskId(), EventType.EXCEPTION_EXIT));
+                }
+            }
+        }).start();
     }
 
     @Override
     public final void stop() {
-        logReader.stop();
+        reader.stop();
     }
 
     @Override
-    public final SyncTaskProgress getProgress() {
-        return new SyncTaskProgress("REALTIME_DATA_SYNC", currentLogPosition);
-    }
-
-    /**
-     * Do something before run,mark binlog position.
-     *
-     * @return log position
-     */
-    public final LogPosition preRun() {
-        return logReader.markPosition();
-    }
-
-    /**
-     * Start to execute realtime data.
-     */
-    @Override
-    public final void run() {
-        final List<Writer> writers = new ArrayList<>(syncConfiguration.getConcurrency());
-        for (int i = 0; i < syncConfiguration.getConcurrency(); i++) {
-            writers.add(WriterFactory.newInstance(syncConfiguration.getWriterConfiguration()));
-        }
-        try {
-            channel = new RealtimeSyncChannel(writers.size(), Collections.singletonList((AckCallback) new AckCallback() {
-                @Override
-                public void onAck(final List<Record> records) {
-                    Record record = records.get(records.size() - 1);
-                    currentLogPosition = record.getLogPosition();
-                }
-            }));
-            startReportRealtimeSyncPosition();
-            new SyncExecutor(channel, logReader, writers).execute();
-            log.info("realtime data execute finish");
-            reporter.report(new Event(syncConfiguration.getTaskId(), EventType.FINISHED));
-        } catch (SyncExecuteException ex) {
-            log.error("realtime data execute exception exit");
-            ex.logExceptions();
-            reporter.report(new Event(syncConfiguration.getTaskId(), EventType.EXCEPTION_EXIT));
-        }
-    }
-
-    private void startReportRealtimeSyncPosition() {
-        new Thread(new Runnable() {
-            
-            @Override
-            public void run() {
-                LogPosition lastLogPosition = null;
-                while (true) {
-                    try {
-                        Thread.sleep(1 * 1000);
-                    } catch (InterruptedException ignored) {
-                        break;
-                    }
-                    if (null == lastLogPosition || -1 == lastLogPosition.compareTo(currentLogPosition)) {
-                        lastLogPosition = currentLogPosition;
-                        Event event = new Event(syncConfiguration.getTaskId(), EventType.REALTIME_SYNC_POSITION);
-                        event.setPayload(lastLogPosition);
-                        reporter.report(event);
-                    }
-                }
-            }
-        }).start();
+    public final SyncProgress getProgress() {
+        return new SyncProgress() {
+        };
     }
 }

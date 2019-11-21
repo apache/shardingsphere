@@ -18,6 +18,7 @@
 package info.avalon566.shardingscaling.core.spi;
 
 import info.avalon566.shardingscaling.core.execute.executor.reader.JdbcReader;
+import info.avalon566.shardingscaling.core.execute.executor.log.LogManager;
 import info.avalon566.shardingscaling.core.execute.executor.reader.LogReader;
 import info.avalon566.shardingscaling.core.execute.executor.writer.Writer;
 import org.apache.shardingsphere.spi.DatabaseTypeAwareSPI;
@@ -42,6 +43,13 @@ public interface ScalingEntry extends DatabaseTypeAwareSPI {
      * @return log reader type
      */
     Class<? extends LogReader> getLogReaderClass();
+
+    /**
+     * Get log manager type.
+     *
+     * @return log manager type
+     */
+    Class<? extends LogManager> getLogManagerClass();
     
     /**
      * Get writer type.

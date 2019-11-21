@@ -15,39 +15,22 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.execute.engine.local;
+package info.avalon566.shardingscaling.core.execute.executor.log;
 
-import info.avalon566.shardingscaling.core.execute.Event;
-import info.avalon566.shardingscaling.core.execute.Reporter;
-
-import java.util.concurrent.ConcurrentLinkedQueue;
+import info.avalon566.shardingscaling.core.execute.executor.reader.LogPosition;
 
 /**
- * local reporter.
+ * Database itself data synchronize position manager.
+ * Such as mysql binlog, postgresql wal.
  *
  * @author avalon566
  */
-public class LocalReporter implements Reporter {
+public interface LogManager {
 
-    private ConcurrentLinkedQueue<Event> queue = new ConcurrentLinkedQueue<>();
-
-    @Override
-    public final void report(final Event event) {
-        queue.offer(event);
-    }
-
-    @Override
-    public final Event consumeEvent() {
-        while (true) {
-            Event event = queue.poll();
-            if (null != event) {
-                return event;
-            }
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                // ignore
-            }
-        }
-    }
+    /**
+     * Get current log position.
+     *
+     * @return log position
+     */
+    LogPosition getCurrentPosition();
 }

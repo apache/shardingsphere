@@ -17,7 +17,6 @@
 
 package info.avalon566.shardingscaling.core.config;
 
-import info.avalon566.shardingscaling.core.execute.executor.reader.LogPosition;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -34,14 +33,10 @@ public class SyncConfiguration {
 
     private final String taskId = UUID.randomUUID().toString();
 
-    private final SyncType syncType;
-
     /**
      * The concurrency of writers.
      */
     private final int concurrency;
-
-    private LogPosition position;
 
     private final RdbmsConfiguration readerConfiguration;
 

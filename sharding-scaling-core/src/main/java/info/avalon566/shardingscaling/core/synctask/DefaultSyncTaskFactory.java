@@ -15,15 +15,29 @@
  * limitations under the License.
  */
 
-package info.avalon566.shardingscaling.core.config;
+package info.avalon566.shardingscaling.core.synctask;
+
+import info.avalon566.shardingscaling.core.config.SyncConfiguration;
 
 /**
- * Sync type.
+ * Default sync task factory.
  *
  * @author avalon566
  */
+public final class DefaultSyncTaskFactory implements SyncTaskFactory {
 
-public enum SyncType {
+    @Override
+    public HistoryDataSyncTaskGroup createHistoryDataSyncTaskGroup(final SyncConfiguration syncConfiguration) {
+        return new HistoryDataSyncTaskGroup(syncConfiguration);
+    }
 
-    NONE, TableSlice, Realtime
+    @Override
+    public HistoryDataSyncTask createHistoryDataSyncTask(final SyncConfiguration syncConfiguration) {
+        return new HistoryDataSyncTask(syncConfiguration);
+    }
+
+    @Override
+    public RealtimeDataSyncTask createRealtimeDataSyncTask(final SyncConfiguration syncConfiguration) {
+        return new RealtimeDataSyncTask(syncConfiguration);
+    }
 }

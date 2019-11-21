@@ -63,8 +63,8 @@ public class ScalingJobController {
      *
      * @return data nodes migrate progress
      */
-    public List<SyncTaskProgress> getProgresses() {
-        List<SyncTaskProgress> result = new ArrayList<>(this.syncConfigurations.size());
+    public List<SyncProgress> getProgresses() {
+        List<SyncProgress> result = new ArrayList<>(this.syncConfigurations.size());
         for (SyncTaskController syncTaskController : syncTaskControllers) {
             result.add(syncTaskController.getProgress());
         }

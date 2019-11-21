@@ -18,14 +18,13 @@
 package info.avalon566.shardingscaling.core.synctask;
 
 import info.avalon566.shardingscaling.core.config.SyncConfiguration;
-import info.avalon566.shardingscaling.core.controller.SyncTaskProgress;
+import info.avalon566.shardingscaling.core.controller.ReportCallback;
+import info.avalon566.shardingscaling.core.controller.SyncProgress;
+import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.core.execute.Event;
 import info.avalon566.shardingscaling.core.execute.EventType;
-import info.avalon566.shardingscaling.core.execute.Reporter;
-import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.core.execute.engine.SyncExecutor;
 import info.avalon566.shardingscaling.core.execute.executor.channel.MemoryChannel;
-import info.avalon566.shardingscaling.core.execute.executor.reader.NopLogPosition;
 import info.avalon566.shardingscaling.core.execute.executor.reader.Reader;
 import info.avalon566.shardingscaling.core.execute.executor.reader.ReaderFactory;
 import info.avalon566.shardingscaling.core.execute.executor.writer.Writer;
@@ -45,16 +44,34 @@ public class HistoryDataSyncTask implements SyncTask {
 
     private final SyncConfiguration syncConfiguration;
 
-    private final Reporter reporter;
-
-    public HistoryDataSyncTask(final SyncConfiguration syncConfiguration, final Reporter reporter) {
+    public HistoryDataSyncTask(final SyncConfiguration syncConfiguration) {
         this.syncConfiguration = syncConfiguration;
-        this.reporter = reporter;
     }
 
     @Override
-    public final void start() {
-        new Thread(this).start();
+    public void prepare() {
+
+    }
+
+    @Override
+    public final void start(final ReportCallback callback) {
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                final Reader reader = ReaderFactory.newInstanceJdbcReader(syncConfiguration.getReaderConfiguration());
+                final Writer writer = WriterFactory.newInstance(syncConfiguration.getWriterConfiguration());
+                try {
+                    new SyncExecutor(new MemoryChannel(), reader, Collections.singletonList(writer)).execute();
+                    log.info("{} table slice execute finish", syncConfiguration.getReaderConfiguration().getTableName());
+                    callback.onProcess(new Event(syncConfiguration.getTaskId(), EventType.FINISHED));
+                } catch (SyncExecuteException ex) {
+                    log.error("{} table slice execute exception exit", syncConfiguration.getReaderConfiguration().getTableName());
+                    ex.logExceptions();
+                    callback.onProcess(new Event(syncConfiguration.getTaskId(), EventType.EXCEPTION_EXIT));
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -63,25 +80,8 @@ public class HistoryDataSyncTask implements SyncTask {
     }
 
     @Override
-    public final SyncTaskProgress getProgress() {
-        return new SyncTaskProgress("HISTORY_DATA_SYNC", new NopLogPosition());
-    }
-
-    /**
-     * Run synchronize task.
-     */
-    @Override
-    public void run() {
-        final Reader reader = ReaderFactory.newInstanceJdbcReader(syncConfiguration.getReaderConfiguration());
-        final Writer writer = WriterFactory.newInstance(syncConfiguration.getWriterConfiguration());
-        try {
-            new SyncExecutor(new MemoryChannel(), reader, Collections.singletonList(writer)).execute();
-            log.info("{} table slice execute finish", syncConfiguration.getReaderConfiguration().getTableName());
-            reporter.report(new Event(syncConfiguration.getTaskId(), EventType.FINISHED));
-        } catch (SyncExecuteException ex) {
-            log.error("{} table slice execute exception exit", syncConfiguration.getReaderConfiguration().getTableName());
-            ex.logExceptions();
-            reporter.report(new Event(syncConfiguration.getTaskId(), EventType.EXCEPTION_EXIT));
-        }
+    public final SyncProgress getProgress() {
+        return new SyncProgress() {
+        };
     }
 }
