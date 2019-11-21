@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.spi.database;
 
+import org.apache.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
+
 import java.util.Collection;
 import java.util.Collections;
-
-import org.apache.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
 
 /**
  * Database type of PostgreSQL.
