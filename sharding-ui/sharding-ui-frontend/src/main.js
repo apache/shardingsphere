@@ -34,9 +34,7 @@ Vue.use(VueI18n)
 Vue.use(Vuex)
 
 // language setting init
-const navLang = navigator.language
-const localLang = navLang === 'zh-CN' || navLang === 'en-US' ? navLang : false
-const lang = localStorage.getItem('language') || localLang || 'zh-CN'
+const lang = localStorage.getItem('language') || 'en-US'
 Vue.config.lang = lang
 
 // language setting

@@ -39,17 +39,18 @@ export default {
   },
   data() {
     return {
-      radioValue: 'Schema',
+      radioValue: this.$t('ruleConfig').radioBtn.schema,
       currentView: MSchema
     }
   },
   methods: {
     onChange(val) {
-      if (val === 'Schema') {
+      const radioBtn = this.$t('ruleConfig').radioBtn
+      if (val === radioBtn.schema) {
         this.currentView = MSchema
-      } else if (val === 'Authentication') {
+      } else if (val === radioBtn.authentication) {
         this.currentView = MAuthentication
-      } else if (val === 'Props') {
+      } else if (val === radioBtn.props) {
         this.currentView = MProps
       }
     }

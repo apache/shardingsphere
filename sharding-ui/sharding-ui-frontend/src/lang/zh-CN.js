@@ -23,7 +23,7 @@ export default {
         title: '数据治理',
         child: [
           {
-            title: '注册配置中心',
+            title: '注册中心',
             href: '/registry-center'
           },
           {
@@ -123,7 +123,7 @@ export default {
     schema: {
       name: '名称',
       ruleConfig: '分片配置规则',
-      dataSourceConfig: '据源配置规则'
+      dataSourceConfig: '数据源配置规则'
     },
     schemaRules: {
       name: '请输入名称',
@@ -131,9 +131,9 @@ export default {
       dataSourceConfig: '请输入数据源配置规则'
     },
     radioBtn: {
-      schema: '架构',
-      authentication: '验证',
-      props: '属性'
+      schema: '数据源',
+      authentication: '认证信息',
+      props: '属性配置'
     }
   }
 }
