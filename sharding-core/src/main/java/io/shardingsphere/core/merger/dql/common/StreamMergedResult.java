@@ -26,9 +26,9 @@ import java.sql.SQLException;
 import java.util.Calendar;
 
 /**
- * 流式归并结果集.
+ * Stream merged result.
  *
- * @author thor zhangliang
+ * @author zhangliang
  */
 @Setter
 public abstract class StreamMergedResult implements MergedResult {

@@ -27,16 +27,16 @@ import com.google.common.base.Optional;
 public interface SelectItem {
     
     /**
-     * 获取表达式.
+     * Get expression.
      * 
-     * @return 表达式
+     * @return expression
      */
     String getExpression();
     
     /**
-     * 获取别名.
+     * Get alias.
      * 
-     * @return 别名
+     * @return alias
      */
     Optional<String> getAlias();
 }

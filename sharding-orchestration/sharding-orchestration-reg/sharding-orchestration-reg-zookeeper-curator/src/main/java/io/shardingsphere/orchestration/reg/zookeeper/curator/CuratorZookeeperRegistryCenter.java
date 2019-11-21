@@ -22,7 +22,8 @@ import com.google.common.base.Strings;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import io.shardingsphere.orchestration.reg.listener.EventListener;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
@@ -211,7 +212,7 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
     }
     
     @Override
-    public void watch(final String key, final EventListener eventListener) {
+    public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
         final String path = key + "/";
         if (!caches.containsKey(path)) {
             addCacheData(key);
@@ -225,20 +226,23 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
                 if (null == data || null == data.getPath()) {
                     return;
                 }
-                eventListener.onChange(new DataChangedEvent(getEventType(event), data.getPath(), null == data.getData() ? null : new String(data.getData(), "UTF-8")));
-            }
-            
-            private DataChangedEvent.Type getEventType(final TreeCacheEvent event) {
-                switch (event.getType()) {
-                    case NODE_UPDATED:
-                        return DataChangedEvent.Type.UPDATED;
-                    case NODE_REMOVED:
-                        return DataChangedEvent.Type.DELETED;
-                    default:
-                        return DataChangedEvent.Type.IGNORED;
+                ChangedType changedType = getChangedType(event);
+                if (ChangedType.IGNORED != changedType) {
+                    dataChangedEventListener.onChange(new DataChangedEvent(data.getPath(), null == data.getData() ? null : new String(data.getData(), "UTF-8"), changedType));
                 }
             }
         });
+    }
+    
+    private ChangedType getChangedType(final TreeCacheEvent event) {
+        switch (event.getType()) {
+            case NODE_UPDATED:
+                return DataChangedEvent.ChangedType.UPDATED;
+            case NODE_REMOVED:
+                return DataChangedEvent.ChangedType.DELETED;
+            default:
+                return DataChangedEvent.ChangedType.IGNORED;
+        }
     }
     
     private void addCacheData(final String cachePath) {

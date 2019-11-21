@@ -62,7 +62,7 @@ public abstract class LogicTablesMergedResult extends MemoryMergedResult {
             while (each.next()) {
                 MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(each);
                 String actualTableName = memoryResultSetRow.getCell(1).toString();
-                Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByActualTable(actualTableName);
+                Optional<TableRule> tableRule = shardingRule.findTableRuleByActualTable(actualTableName);
                 if (!tableRule.isPresent()) {
                     if (shardingRule.getTableRules().isEmpty() || shardingTableMetaData.containsTable(actualTableName) && tableNames.add(actualTableName)) {
                         result.add(memoryResultSetRow);

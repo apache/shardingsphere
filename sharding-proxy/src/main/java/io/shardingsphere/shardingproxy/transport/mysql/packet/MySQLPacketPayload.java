@@ -267,6 +267,20 @@ public final class MySQLPacketPayload implements AutoCloseable {
     }
     
     /**
+     * Write lenenc bytes to byte buffers.
+     *
+     * @param value fixed length bytes
+     */
+    public void writeBytesLenenc(final byte[] value) {
+        if (0 == value.length) {
+            byteBuf.writeByte(0);
+            return;
+        }
+        writeIntLenenc(value.length);
+        byteBuf.writeBytes(value);
+    }
+    
+    /**
      * Read fixed length string from byte buffers.
      * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>

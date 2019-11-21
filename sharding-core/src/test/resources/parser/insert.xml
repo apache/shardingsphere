@@ -142,6 +142,7 @@
                 <items>
                     <item>order_id</item>
                     <item>user_id</item>
+                    <item>status</item>
                 </items>
             </items-token>
             <insert-column-token begin-position="19" column-name=")" />

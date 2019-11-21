@@ -17,12 +17,11 @@
 
 package io.shardingsphere.orchestration.internal.rule;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
+import lombok.Getter;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -32,29 +31,15 @@ import java.util.LinkedList;
  *
  * @author panjuan
  */
+@Getter
 public final class OrchestrationShardingRule extends ShardingRule {
     
-    private final Collection<OrchestrationMasterSlaveRule> masterSlaveRules = new LinkedList<>();
+    private final Collection<MasterSlaveRule> masterSlaveRules = new LinkedList<>();
     
     public OrchestrationShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
         super(shardingRuleConfig, dataSourceNames);
-        initMasterSlaveRules(shardingRuleConfig);
-    }
-    
-    private void initMasterSlaveRules(final ShardingRuleConfiguration shardingRuleConfig) {
         for (MasterSlaveRuleConfiguration each : shardingRuleConfig.getMasterSlaveRuleConfigs()) {
             masterSlaveRules.add(new OrchestrationMasterSlaveRule(each));
         }
-    }
-    
-    @Override
-    public Collection<MasterSlaveRule> getMasterSlaveRules() {
-        return Collections2.transform(masterSlaveRules, new Function<OrchestrationMasterSlaveRule, MasterSlaveRule>() {
-            
-            @Override
-            public MasterSlaveRule apply(final OrchestrationMasterSlaveRule input) {
-                return input;
-            }
-        });
     }
 }

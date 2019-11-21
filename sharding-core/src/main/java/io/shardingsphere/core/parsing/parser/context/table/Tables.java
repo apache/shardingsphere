@@ -108,7 +108,7 @@ public final class Tables {
     
     private Optional<Table> findTableFromAlias(final String alias) {
         for (Table each : tables) {
-            if (each.getAlias().isPresent() && each.getAlias().get().equals(alias)) {
+            if (each.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(alias)) {
                 return Optional.of(each);
             }
         }

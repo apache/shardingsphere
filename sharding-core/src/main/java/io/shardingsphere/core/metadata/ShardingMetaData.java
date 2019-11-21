@@ -25,6 +25,7 @@ import io.shardingsphere.core.metadata.table.executor.TableMetaDataConnectionMan
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataInitializer;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
@@ -33,6 +34,8 @@ import java.util.Map;
  *
  * @author zhangliang
  */
+// TODO RequiredArgsConstructor for test only, should remove later
+@RequiredArgsConstructor
 @Getter
 public final class ShardingMetaData {
     
@@ -40,9 +43,9 @@ public final class ShardingMetaData {
     
     private final ShardingTableMetaData table;
     
-    public ShardingMetaData(final Map<String, String> dataSourceURLs, final ShardingRule shardingRule,
-                            final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, final TableMetaDataConnectionManager connectionManager, final int maxConnectionsSizePerQuery) {
+    public ShardingMetaData(final Map<String, String> dataSourceURLs, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, 
+                            final TableMetaDataConnectionManager connectionManager, final int maxConnectionsSizePerQuery, final boolean isCheckingMetaData) {
         dataSource = new ShardingDataSourceMetaData(dataSourceURLs, shardingRule, databaseType);
-        table = new ShardingTableMetaData(new TableMetaDataInitializer(dataSource, executeEngine, connectionManager, maxConnectionsSizePerQuery).load(shardingRule));
+        table = new ShardingTableMetaData(new TableMetaDataInitializer(dataSource, executeEngine, connectionManager, maxConnectionsSizePerQuery, isCheckingMetaData).load(shardingRule));
     }
 }

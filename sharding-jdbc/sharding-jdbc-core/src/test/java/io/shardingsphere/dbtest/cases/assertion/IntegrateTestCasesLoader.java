@@ -158,7 +158,7 @@ public final class IntegrateTestCasesLoader {
      */
     public DQLIntegrateTestCase getDQLIntegrateTestCase(final String sqlCaseId) {
         // TODO resume when transfer finished
-//        Preconditions.checkState(dqlIntegrateTestCaseMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
+//        Preconditions.checkState(dqlIntegrateTestCaseMap.containsKey(sqlCaseId), "Can't find SQL of id: %s", sqlCaseId);
         // TODO remove when transfer finished
         if (!dqlIntegrateTestCaseMap.containsKey(sqlCaseId)) {
             log.warn("Have not finishSuccess case `{}`", sqlCaseId);
@@ -174,7 +174,7 @@ public final class IntegrateTestCasesLoader {
      */
     public DMLIntegrateTestCase getDMLIntegrateTestCase(final String sqlCaseId) {
         // TODO resume when transfer finished
-        //        Preconditions.checkState(dmlIntegrateTestCaseMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
+        //        Preconditions.checkState(dqlIntegrateTestCaseMap.containsKey(sqlCaseId), "Can't find SQL of id: %s", sqlCaseId);
         // TODO remove when transfer finished
         if (!dmlIntegrateTestCaseMap.containsKey(sqlCaseId)) {
             log.warn("Have not finishSuccess case `{}`", sqlCaseId);
@@ -190,7 +190,7 @@ public final class IntegrateTestCasesLoader {
      */
     public DDLIntegrateTestCase getDDLIntegrateTestCase(final String sqlCaseId) {
         // TODO resume when transfer finished
-        //        Preconditions.checkState(ddlIntegrateTestCaseMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
+        //        Preconditions.checkState(dqlIntegrateTestCaseMap.containsKey(sqlCaseId), "Can't find SQL of id: %s", sqlCaseId);
         // TODO remove when transfer finished
         if (!ddlIntegrateTestCaseMap.containsKey(sqlCaseId)) {
             log.warn("Have not finishSuccess case `{}`", sqlCaseId);
@@ -206,7 +206,7 @@ public final class IntegrateTestCasesLoader {
      */
     public DCLIntegrateTestCase getDCLIntegrateTestCase(final String sqlCaseId) {
         // TODO resume when transfer finished
-        //        Preconditions.checkState(ddlIntegrateTestCaseMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
+        //        Preconditions.checkState(dqlIntegrateTestCaseMap.containsKey(sqlCaseId), "Can't find SQL of id: %s", sqlCaseId);
         // TODO remove when transfer finished
         if (!dclIntegrateTestCaseMap.containsKey(sqlCaseId)) {
             log.warn("Have not finishSuccess case `{}`", sqlCaseId);

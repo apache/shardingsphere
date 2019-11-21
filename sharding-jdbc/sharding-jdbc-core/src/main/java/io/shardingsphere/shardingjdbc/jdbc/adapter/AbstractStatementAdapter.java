@@ -17,8 +17,16 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.adapter;
 
+import com.google.common.base.Optional;
+import io.shardingsphere.core.metadata.table.TableMetaData;
+import io.shardingsphere.core.metadata.table.TableMetaDataFactory;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DropTableStatement;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
+import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 import lombok.RequiredArgsConstructor;
 
@@ -32,6 +40,7 @@ import java.util.Collection;
  * 
  * @author zhangliang
  * @author gaohongtao
+ * @author yangyi
  */
 @RequiredArgsConstructor
 public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperationStatement {
@@ -158,8 +167,12 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     }
     
     @Override
-    public final boolean getMoreResults() {
-        return false;
+    public final boolean getMoreResults() throws SQLException {
+        boolean result = false;
+        for (Statement each : getRoutedStatements()) {
+            result = each.getMoreResults();
+        }
+        return result;
     }
     
     @Override
@@ -223,4 +236,36 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     }
     
     protected abstract Collection<? extends Statement> getRoutedStatements();
+    
+    protected final void refreshTableMetaData(final ShardingContext shardingContext, final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof CreateTableStatement) {
+            refreshTableMetaData(shardingContext, (CreateTableStatement) sqlStatement);
+        } else if (sqlStatement instanceof AlterTableStatement) {
+            refreshTableMetaData(shardingContext, (AlterTableStatement) sqlStatement);
+        } else if (sqlStatement instanceof DropTableStatement) {
+            refreshTableMetaData(shardingContext, (DropTableStatement) sqlStatement);
+        }
+    }
+    
+    private void refreshTableMetaData(final ShardingContext shardingContext, final CreateTableStatement createTableStatement) {
+        shardingContext.getMetaData().getTable().put(createTableStatement.getTables().getSingleTableName(), TableMetaDataFactory.newInstance(createTableStatement));
+    }
+    
+    private void refreshTableMetaData(final ShardingContext shardingContext, final AlterTableStatement alterTableStatement) {
+        String logicTableName = alterTableStatement.getTables().getSingleTableName();
+        TableMetaData newTableMetaData = TableMetaDataFactory.newInstance(alterTableStatement, shardingContext.getMetaData().getTable().get(logicTableName));
+        Optional<String> newTableName = alterTableStatement.getNewTableName();
+        if (newTableName.isPresent()) {
+            shardingContext.getMetaData().getTable().put(newTableName.get(), newTableMetaData);
+            shardingContext.getMetaData().getTable().remove(logicTableName);
+        } else {
+            shardingContext.getMetaData().getTable().put(logicTableName, newTableMetaData);
+        }
+    }
+    
+    private void refreshTableMetaData(final ShardingContext shardingContext, final DropTableStatement dropTableStatement) {
+        for (String each : dropTableStatement.getTables().getTableNames()) {
+            shardingContext.getMetaData().getTable().remove(each);
+        }
+    }
 }

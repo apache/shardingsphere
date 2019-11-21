@@ -35,7 +35,7 @@ public final class ExpectedTokens {
     private List<ExpectedTableToken> tableTokens = new LinkedList<>();
     
     @XmlElement(name = "index-token")
-    private ExpectedIndexToken indexToken;
+    private List<ExpectedIndexToken> indexTokens = new LinkedList<>();
     
     @XmlElement(name = "items-token")
     private ExpectedItemsToken itemsToken;
@@ -60,4 +60,7 @@ public final class ExpectedTokens {
     
     @XmlElement(name = "schema-token")
     private List<ExpectedSchemaToken> schemaTokens = new LinkedList<>();
+    
+    @XmlElement(name = "aggregation-distinct-token")
+    private List<ExpectedAggregationDistinctToken> aggregationDistinctTokens = new LinkedList<>();
 }

@@ -17,6 +17,9 @@
 
 package io.shardingsphere.core.parsing.integrate.asserts;
 
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
+import io.shardingsphere.core.parsing.antlr.sql.statement.tcl.TCLStatement;
 import io.shardingsphere.core.parsing.integrate.asserts.condition.ConditionAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.groupby.GroupByAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.index.IndexAssert;
@@ -24,13 +27,17 @@ import io.shardingsphere.core.parsing.integrate.asserts.item.ItemAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.limit.LimitAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.meta.TableMetaDataAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.orderby.OrderByAssert;
+import io.shardingsphere.core.parsing.integrate.asserts.table.AlterTableAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.table.TableAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.token.TokenAssert;
 import io.shardingsphere.core.parsing.integrate.jaxb.root.ParserResult;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.test.sql.SQLCaseType;
+import io.shardingsphere.test.sql.SQLCasesLoader;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * SQL statement assert.
@@ -61,10 +68,15 @@ public final class SQLStatementAssert {
     
     private final TableMetaDataAssert metaAssert;
     
+    private final AlterTableAssert alterTableAssert;
+    
     public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
-        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlCaseId, sqlCaseType);
+        this(actual, sqlCaseId, sqlCaseType, SQLCasesLoader.getInstance(), ParserResultSetLoader.getInstance());
+    }
+    
+    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType, final SQLCasesLoader sqlLoader, final ParserResultSetLoader parserResultSetLoader) {
+        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlLoader, parserResultSetLoader, sqlCaseId, sqlCaseType);
         this.actual = actual;
-        final ParserResultSetLoader parserResultSetLoader = ParserResultSetLoader.getInstance();
         expected = parserResultSetLoader.getParserResult(sqlCaseId);
         tableAssert = new TableAssert(assertMessage);
         conditionAssert = new ConditionAssert(assertMessage);
@@ -75,6 +87,7 @@ public final class SQLStatementAssert {
         orderByAssert = new OrderByAssert(assertMessage);
         limitAssert = new LimitAssert(sqlCaseType, assertMessage);
         metaAssert = new TableMetaDataAssert(assertMessage);
+        alterTableAssert = new AlterTableAssert(assertMessage);
     }
     
     /**
@@ -91,16 +104,32 @@ public final class SQLStatementAssert {
         if (actual instanceof CreateTableStatement) {
             assertCreateTableStatement((CreateTableStatement) actual);
         }
+        if (actual instanceof AlterTableStatement) {
+            assertAlterTableStatement((AlterTableStatement) actual);
+        }
+        if (actual instanceof TCLStatement) {
+            assertTCLStatement((TCLStatement) actual);
+        }
     }
     
     private void assertSelectStatement(final SelectStatement actual) {
-        itemAssert.assertItems(actual.getItems(), expected.getAggregationSelectItems());
+        itemAssert.assertItems(actual.getItems(), expected.getSelectItems());
         groupByAssert.assertGroupByItems(actual.getGroupByItems(), expected.getGroupByColumns());
         orderByAssert.assertOrderByItems(actual.getOrderByItems(), expected.getOrderByColumns());
         limitAssert.assertLimit(actual.getLimit(), expected.getLimit());
     }
     
     private void assertCreateTableStatement(final CreateTableStatement actual) {
-        metaAssert.assertMeta(actual.getColumnNames(), actual.getColumnTypes(), actual.getPrimaryKeyColumns(), expected.getMeta());
+        metaAssert.assertMeta(actual.getColumnDefinitions(), expected.getMeta());
+    }
+    
+    private void assertAlterTableStatement(final AlterTableStatement actual) {
+        if (null != expected.getAlterTable()) {
+            alterTableAssert.assertAlterTable(actual, expected.getAlterTable());
+        }
+    }
+    
+    private void assertTCLStatement(final TCLStatement actual) {
+        assertThat(actual.getClass().getName(), is(expected.getTclActualStatementClassType()));
     }
 }

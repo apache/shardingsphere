@@ -44,9 +44,9 @@ public final class ColumnTypeTest {
         assertThat(ColumnType.valueOfJDBCType(Types.DATE), is(ColumnType.MYSQL_TYPE_DATE));
         assertThat(ColumnType.valueOfJDBCType(Types.TIME), is(ColumnType.MYSQL_TYPE_TIME));
         assertThat(ColumnType.valueOfJDBCType(Types.TIMESTAMP), is(ColumnType.MYSQL_TYPE_TIMESTAMP));
-        assertThat(ColumnType.valueOfJDBCType(Types.BINARY), is(ColumnType.MYSQL_TYPE_BLOB));
-        assertThat(ColumnType.valueOfJDBCType(Types.VARBINARY), is(ColumnType.MYSQL_TYPE_MEDIUM_BLOB));
-        assertThat(ColumnType.valueOfJDBCType(Types.LONGVARBINARY), is(ColumnType.MYSQL_TYPE_LONG_BLOB));
+        assertThat(ColumnType.valueOfJDBCType(Types.BINARY), is(ColumnType.MYSQL_TYPE_VARCHAR));
+        assertThat(ColumnType.valueOfJDBCType(Types.VARBINARY), is(ColumnType.MYSQL_TYPE_VARCHAR));
+        assertThat(ColumnType.valueOfJDBCType(Types.LONGVARBINARY), is(ColumnType.MYSQL_TYPE_VARCHAR));
         assertThat(ColumnType.valueOfJDBCType(Types.NULL), is(ColumnType.MYSQL_TYPE_NULL));
         assertThat(ColumnType.valueOfJDBCType(Types.BLOB), is(ColumnType.MYSQL_TYPE_BLOB));
     }

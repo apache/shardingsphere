@@ -20,7 +20,6 @@ package io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.facade;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.clause.HavingClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.facade.AbstractSelectClauseParserFacade;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLDistinctClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLGroupByClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLOrderByClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLSelectListClauseParser;
@@ -37,7 +36,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 public final class PostgreSQLSelectClauseParserFacade extends AbstractSelectClauseParserFacade {
     
     public PostgreSQLSelectClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(new PostgreSQLDistinctClauseParser(lexerEngine), new PostgreSQLSelectListClauseParser(shardingRule, lexerEngine),
+        super(new PostgreSQLSelectListClauseParser(shardingRule, lexerEngine),
                 new PostgreSQLTableReferencesClauseParser(shardingRule, lexerEngine), 
                 new PostgreSQLWhereClauseParser(lexerEngine), new PostgreSQLGroupByClauseParser(lexerEngine), new HavingClauseParser(lexerEngine), 
                 new PostgreSQLOrderByClauseParser(lexerEngine), new PostgreSQLSelectRestClauseParser(lexerEngine));

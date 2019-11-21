@@ -7,9 +7,11 @@
         <tokens>
             <table-token begin-position="49" original-literals="t_order" />
         </tokens>
-        <aggregation-select-items>
-            <aggregation-select-item type="SUM" inner-expression="(order_id)" alias="orders_sum" />
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="SUM" inner-expression="(order_id)" alias="orders_sum" />
+            </aggregation-select-items>
+        </select-items>
         <group-by-columns>
             <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
@@ -25,9 +27,11 @@
         <tokens>
             <table-token begin-position="53" original-literals="t_order" />
         </tokens>
-        <aggregation-select-items>
-            <aggregation-select-item type="COUNT" inner-expression="(order_id)" alias="orders_count" />
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(order_id)" alias="orders_count" />
+            </aggregation-select-items>
+        </select-items>
         <group-by-columns>
             <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
@@ -43,9 +47,11 @@
         <tokens>
             <table-token begin-position="51" original-literals="t_order" />
         </tokens>
-        <aggregation-select-items>
-            <aggregation-select-item type="MAX" inner-expression="(order_id)" alias="max_order_id" />
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="MAX" inner-expression="(order_id)" alias="max_order_id" />
+            </aggregation-select-items>
+        </select-items>
         <group-by-columns>
             <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
@@ -61,9 +67,11 @@
         <tokens>
             <table-token begin-position="51" original-literals="t_order" />
         </tokens>
-        <aggregation-select-items>
-            <aggregation-select-item type="MIN" inner-expression="(order_id)" alias="min_order_id"/>
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="MIN" inner-expression="(order_id)" alias="min_order_id"/>
+            </aggregation-select-items>
+        </select-items>
         <group-by-columns>
             <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
@@ -85,12 +93,14 @@
                 </items>
             </items-token>
         </tokens>
-        <aggregation-select-items>
-            <aggregation-select-item type="AVG" inner-expression="(order_id)" alias="orders_avg">
-                <derived-column type="COUNT" inner-expression="(order_id)" alias="AVG_DERIVED_COUNT_0" />
-                <derived-column type="SUM" inner-expression="(order_id)" alias="AVG_DERIVED_SUM_0" />
-            </aggregation-select-item>
-        </aggregation-select-items>
+        <select-items>
+             <aggregation-select-items>
+                <aggregation-select-item type="AVG" inner-expression="(order_id)" alias="orders_avg">
+                    <derived-column type="COUNT" inner-expression="(order_id)" alias="AVG_DERIVED_COUNT_0" />
+                    <derived-column type="SUM" inner-expression="(order_id)" alias="AVG_DERIVED_SUM_0" />
+                </aggregation-select-item>
+            </aggregation-select-items>
+        </select-items>
         <group-by-columns>
             <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
@@ -106,9 +116,11 @@
         <tokens>
             <table-token begin-position="49" original-literals="t_order" />
         </tokens>
-        <aggregation-select-items>
-            <aggregation-select-item type="SUM" inner-expression="(order_id)" alias="orders_sum" />
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="SUM" inner-expression="(order_id)" alias="orders_sum" />
+            </aggregation-select-items>
+        </select-items>
         <group-by-columns>
             <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
@@ -144,9 +156,11 @@
                 </condition>
             </and-condition>
         </or-condition>
-        <aggregation-select-items>
-            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count" />
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count" />
+            </aggregation-select-items>
+        </select-items>
         <group-by-columns>
             <group-by-column name="user_id" alias="GROUP_BY_DERIVED_0" owner="o" order-direction="ASC" />
         </group-by-columns>
@@ -180,9 +194,11 @@
             <table-token begin-position="49" original-literals="t_order" />
             <row-count-token row-count="5" begin-position="103" />
         </tokens>
-        <aggregation-select-items>
-            <aggregation-select-item type="SUM" inner-expression="(order_id)" alias="orders_sum" />
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="SUM" inner-expression="(order_id)" alias="orders_sum" />
+            </aggregation-select-items>
+        </select-items>
         <group-by-columns>
             <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
@@ -212,8 +228,8 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token begin-position="90" original-literals="`t_order_item`" />
-            <order-by-token placeholder-begin-position="177" literal-begin-position="183" />
+            <table-token begin-position="91" original-literals="`t_order_item`" />
+            <order-by-token placeholder-begin-position="178" literal-begin-position="184" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -223,14 +239,16 @@
                 </condition>
             </and-condition>
         </or-condition>
-        <aggregation-select-items>
-            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="c_number" />
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(*)" alias="c_number" />
+            </aggregation-select-items>
+        </select-items>
         <group-by-columns>
-            <group-by-column name="date_format(creation_date, '%y-%m-%d')" order-direction="ASC" alias="creation_date" />
+            <group-by-column name="date_format(creation_date,'%y-%m-%d')" order-direction="ASC" alias="creation_date" />
         </group-by-columns>
         <order-by-columns>
-            <order-by-column name="date_format(creation_date, '%y-%m-%d')" order-direction="ASC" alias="creation_date" />
+            <order-by-column name="date_format(creation_date,'%y-%m-%d')" order-direction="ASC" alias="creation_date" />
         </order-by-columns>
     </parser-result>
     
@@ -242,9 +260,11 @@
             <table-token begin-position="58" original-literals="t_order" />
             <order-by-token placeholder-begin-position="80" literal-begin-position="80" />
         </tokens>
-        <aggregation-select-items>
-            <aggregation-select-item type="SUM" inner-expression="(order_id)" alias="orders_sum" />
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="SUM" inner-expression="(order_id)" alias="orders_sum" />
+            </aggregation-select-items>
+        </select-items>
         <group-by-columns>
             <group-by-column name="key" alias="key" order-direction="ASC" />
         </group-by-columns>
@@ -260,9 +280,11 @@
         <tokens>
             <table-token begin-position="53" original-literals="t_order" />
         </tokens>
-        <aggregation-select-items>
-            <aggregation-select-item type="COUNT" inner-expression="(order_id)" alias="orders_count" />
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(order_id)" alias="orders_count" />
+            </aggregation-select-items>
+        </select-items>
         <group-by-columns>
             <group-by-column index="2" order-direction="ASC" />
         </group-by-columns>

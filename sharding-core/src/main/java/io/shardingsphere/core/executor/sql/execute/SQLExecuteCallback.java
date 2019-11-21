@@ -17,12 +17,7 @@
 
 package io.shardingsphere.core.executor.sql.execute;
 
-import com.google.common.eventbus.EventBus;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.core.event.executor.SQLExecutionEvent;
-import io.shardingsphere.core.event.executor.SQLExecutionEventFactory;
 import io.shardingsphere.core.executor.ShardingExecuteCallback;
 import io.shardingsphere.core.executor.ShardingGroupExecuteCallback;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
@@ -36,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Statement execute callback interface.
@@ -51,54 +46,34 @@ public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<S
     
     private final DatabaseType databaseType;
     
-    private final SQLType sqlType;
-    
     private final boolean isExceptionThrown;
     
-    private final EventBus shardingEventBus = ShardingEventBusInstance.getInstance();
-    
     @Override
-    public final T execute(final StatementExecuteUnit statementExecuteUnit, final boolean isTrunkThread) throws SQLException {
-        return execute0(statementExecuteUnit, isTrunkThread);
+    public final T execute(final StatementExecuteUnit statementExecuteUnit, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) throws SQLException {
+        return execute0(statementExecuteUnit, isTrunkThread, shardingExecuteDataMap);
     }
     
     @Override
-    public final Collection<T> execute(final Collection<StatementExecuteUnit> statementExecuteUnits, final boolean isTrunkThread) throws SQLException {
+    public final Collection<T> execute(final Collection<StatementExecuteUnit> statementExecuteUnits, final boolean isTrunkThread,
+                                       final Map<String, Object> shardingExecuteDataMap) throws SQLException {
         Collection<T> result = new LinkedList<>();
         for (StatementExecuteUnit each : statementExecuteUnits) {
-            result.add(execute0(each, isTrunkThread));
+            result.add(execute0(each, isTrunkThread, shardingExecuteDataMap));
         }
         return result;
     }
     
-    private T execute0(final StatementExecuteUnit statementExecuteUnit, final boolean isTrunkThread) throws SQLException {
+    private T execute0(final StatementExecuteUnit statementExecuteUnit, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) throws SQLException {
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
-        List<List<Object>> parameterSets = statementExecuteUnit.getRouteUnit().getSqlUnit().getParameterSets();
-        DataSourceMetaData dataSourceMetaData = DataSourceMetaDataFactory.newInstance(databaseType, statementExecuteUnit.getStatement().getConnection().getMetaData().getURL());
+        DataSourceMetaData dataSourceMetaData = DataSourceMetaDataFactory.newInstance(databaseType, statementExecuteUnit.getDatabaseMetaData().getURL());
         SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
-        for (List<Object> each : parameterSets) {
-            // TODO remove after BED removed
-            shardingEventBus.post(SQLExecutionEventFactory.createEvent(sqlType, statementExecuteUnit, each, dataSourceMetaData));
-        }
         try {
-            sqlExecutionHook.start(statementExecuteUnit.getRouteUnit(), dataSourceMetaData, isTrunkThread);
+            sqlExecutionHook.start(statementExecuteUnit.getRouteUnit(), dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);
             T result = executeSQL(statementExecuteUnit);
             sqlExecutionHook.finishSuccess();
-            for (List<Object> each : parameterSets) {
-                // TODO remove after BED removed
-                SQLExecutionEvent finishEvent = SQLExecutionEventFactory.createEvent(sqlType, statementExecuteUnit, each, dataSourceMetaData);
-                finishEvent.setExecuteSuccess();
-                shardingEventBus.post(finishEvent);
-            }
             return result;
         } catch (final SQLException ex) {
             sqlExecutionHook.finishFailure(ex);
-            for (List<Object> each : parameterSets) {
-                // TODO remove after BED removed
-                SQLExecutionEvent finishEvent = SQLExecutionEventFactory.createEvent(sqlType, statementExecuteUnit, each, dataSourceMetaData);
-                finishEvent.setExecuteFailure(ex);
-                shardingEventBus.post(finishEvent);
-            }
             ExecutorExceptionHandler.handleException(ex);
             return null;
         }

@@ -45,7 +45,6 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     
     @Override
     protected void parseInternal(final SelectStatement selectStatement) {
-        parseDistinct();
         parseTop(selectStatement);
         parseSelectList(selectStatement, getItems());
         parseFrom(selectStatement);

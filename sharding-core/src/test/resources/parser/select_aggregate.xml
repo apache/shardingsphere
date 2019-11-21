@@ -7,9 +7,11 @@
         <tokens>
             <table-token begin-position="40" original-literals="t_order" />
         </tokens>
-        <aggregation-select-items>
-            <aggregation-select-item type="SUM" inner-expression="(user_id)" alias="user_id_sum" />
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="SUM" inner-expression="(user_id)" alias="user_id_sum" />
+            </aggregation-select-items>
+        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_count">
@@ -19,9 +21,11 @@
         <tokens>
             <table-token begin-position="37" original-literals="t_order" />
         </tokens>
-        <aggregation-select-items>
-            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="orders_count" />
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(*)" alias="orders_count" />
+            </aggregation-select-items>
+        </select-items>
     </parser-result>
 
     <parser-result sql-case-id="select_count_with_sub">
@@ -31,9 +35,11 @@
         <tokens>
             <table-token begin-position="37" original-literals="t_order" />
         </tokens>
-        <aggregation-select-items>
-            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="orders_count" />
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(*)" alias="orders_count" />
+            </aggregation-select-items>
+        </select-items>
     </parser-result>
 
     <parser-result sql-case-id="select_count_with_sub_with_whitespace">
@@ -43,9 +49,11 @@
         <tokens>
             <table-token begin-position="37" original-literals="t_order" />
         </tokens>
-        <aggregation-select-items>
-            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="orders_count" />
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(*)" alias="orders_count" />
+            </aggregation-select-items>
+        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_max">
@@ -55,9 +63,11 @@
         <tokens>
             <table-token begin-position="40" original-literals="t_order" />
         </tokens>
-        <aggregation-select-items>
-            <aggregation-select-item type="MAX" inner-expression="(user_id)" alias="max_user_id" />
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="MAX" inner-expression="(user_id)" alias="max_user_id" />
+            </aggregation-select-items>
+        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_min">
@@ -67,9 +77,11 @@
         <tokens>
             <table-token begin-position="40" original-literals="t_order" />
         </tokens>
-        <aggregation-select-items>
-            <aggregation-select-item type="MIN" inner-expression="(user_id)" alias="min_user_id" />
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="MIN" inner-expression="(user_id)" alias="min_user_id" />
+            </aggregation-select-items>
+        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_avg">
@@ -85,12 +97,14 @@
                 </items>
             </items-token>
         </tokens>
-        <aggregation-select-items>
-            <aggregation-select-item type="AVG" inner-expression="(user_id)" alias="user_id_avg">
-                <derived-column type="COUNT" inner-expression="(user_id)" alias="AVG_DERIVED_COUNT_0" />
-                <derived-column type="SUM" inner-expression="(user_id)" alias="AVG_DERIVED_SUM_0" />
-            </aggregation-select-item>
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="AVG" inner-expression="(user_id)" alias="user_id_avg">
+                    <derived-column type="COUNT" inner-expression="(user_id)" alias="AVG_DERIVED_COUNT_0" />
+                    <derived-column type="SUM" inner-expression="(user_id)" alias="AVG_DERIVED_SUM_0" />
+                </aggregation-select-item>
+            </aggregation-select-items>
+        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_count_with_binding_tables_without_join" parameters="1, 2, 9, 10">
@@ -114,9 +128,11 @@
                 </condition>
             </and-condition>
         </or-condition>
-        <aggregation-select-items>
-            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count"/>
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count"/>
+            </aggregation-select-items>
+        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_count_with_binding_tables_with_join" parameters="1, 2, 9, 10">
@@ -140,9 +156,11 @@
                 </condition>
             </and-condition>
         </or-condition>
-        <aggregation-select-items>
-            <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count"/>
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(*)" alias="items_count"/>
+            </aggregation-select-items>
+        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_count_with_escape_character">
@@ -152,8 +170,10 @@
         <tokens>
             <table-token begin-position="46" original-literals="t_order" />
         </tokens>
-        <aggregation-select-items>
-            <aggregation-select-item type="COUNT" inner-expression="(`order_id`)" alias="orders_count" />
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(`order_id`)" alias="orders_count" />
+            </aggregation-select-items>
+        </select-items>
     </parser-result>
 </parser-result-sets>

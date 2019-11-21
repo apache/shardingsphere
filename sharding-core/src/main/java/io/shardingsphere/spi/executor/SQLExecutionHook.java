@@ -20,6 +20,8 @@ package io.shardingsphere.spi.executor;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.routing.RouteUnit;
 
+import java.util.Map;
+
 /**
  * SQL Execution hook.
  *
@@ -33,8 +35,9 @@ public interface SQLExecutionHook {
      * @param routeUnit route unit to be executed
      * @param dataSourceMetaData data source meta data
      * @param isTrunkThread is execution in trunk thread
+     * @param shardingExecuteDataMap sharding execute data map
      */
-    void start(RouteUnit routeUnit, DataSourceMetaData dataSourceMetaData, boolean isTrunkThread);
+    void start(RouteUnit routeUnit, DataSourceMetaData dataSourceMetaData, boolean isTrunkThread, Map<String, Object> shardingExecuteDataMap);
     
     /**
      * Handle when SQL execution finished success.

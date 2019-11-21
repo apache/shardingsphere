@@ -73,6 +73,8 @@ shardingRule:
           rangeAlgorithmClassName: TestRangeAlgorithmClassName
   bindingTables:
     - t_order, t_order_item
+  broadcastTables:
+    - t_config
   defaultDataSourceName: default_ds
   defaultDatabaseStrategy: 
     inline:
@@ -89,20 +91,18 @@ shardingRule:
         - master_ds_0_slave_0
         - master_ds_0_slave_1
       loadBalanceAlgorithmType: ROUND_ROBIN
-      configMap:
-        master-slave-key0: master-slave-value0
     ds_1:
       masterDataSourceName: master_ds_1
       slaveDataSourceNames: 
         - master_ds_1_slave_0
         - master_ds_1_slave_1
       loadBalanceAlgorithmClassName: TestAlgorithmClass
-      configMap:
-        master-slave-key1: master-slave-value1
-  
-  configMap:
-    sharding-key1: sharding-value1
-    sharding-key2: sharding-value2
-  
-  props:
-    sql.show: true
+
+configMap:
+  sharding-key1: sharding-value1
+  sharding-key2: sharding-value2
+  master-slave-key0: master-slave-value0
+  master-slave-key1: master-slave-value1
+
+props:
+  sql.show: true

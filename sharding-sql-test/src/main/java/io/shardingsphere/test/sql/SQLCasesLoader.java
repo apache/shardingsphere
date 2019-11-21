@@ -44,17 +44,17 @@ import java.util.jar.JarFile;
  * 
  * @author zhangliang 
  */
-public final class SQLCasesLoader {
+public class SQLCasesLoader {
     
     private static final SQLCasesLoader INSTANCE = new SQLCasesLoader();
     
-    private final Map<String, SQLCase> supportedSQLCaseMap;
+    protected Map<String, SQLCase> supportedSQLCaseMap;
     
-    private final Map<String, SQLCase> unsupportedSQLCaseMap;
+    protected Map<String, SQLCase> unsupportedSQLCaseMap;
     
     private final Map<String, SQLCase> parseErrorSQLCaseMap;
     
-    private SQLCasesLoader() {
+    protected SQLCasesLoader() {
         supportedSQLCaseMap = loadSQLCases("sql");
         unsupportedSQLCaseMap = loadSQLCases("unsupported_sql");
         parseErrorSQLCaseMap = loadSQLCases("parse_error_sql");
@@ -69,8 +69,17 @@ public final class SQLCasesLoader {
         return INSTANCE;
     }
     
+    /**
+     * Switch SQL case.
+     * 
+     * @param path path
+     */
+    public void switchSQLCase(final String path) {
+        supportedSQLCaseMap = loadSQLCases(path);
+    }
+    
     @SneakyThrows
-    private static Map<String, SQLCase> loadSQLCases(final String path) {
+    protected static Map<String, SQLCase> loadSQLCases(final String path) {
         File file = new File(SQLCasesLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
         return file.isFile() ? loadSQLCasesFromJar(path, file) : loadSQLCasesFromTargetDirectory(path);
     }
@@ -117,7 +126,7 @@ public final class SQLCasesLoader {
                 return;
             }
             for (File each : files) {
-                fillSQLMap(sqlStatementMap, new FileInputStream(each), file.getName());
+                loadSQLCasesFromDirectory(sqlStatementMap, each);
             }
         } else {
             fillSQLMap(sqlStatementMap, new FileInputStream(file));
@@ -127,14 +136,12 @@ public final class SQLCasesLoader {
     private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream) throws JAXBException {
         SQLCases sqlCases = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
         for (SQLCase each : sqlCases.getSqlCases()) {
-            sqlCaseMap.put(each.getId(), each);
-        }
-    }
-    
-    private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream, final String sqlType) throws JAXBException {
-        SQLCases sqlCases = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
-        for (SQLCase each : sqlCases.getSqlCases()) {
-            each.setSqlType(sqlType);
+            if (null == each.getDatabaseTypes()) {
+                each.setDatabaseTypes(sqlCases.getDatabaseTypes());
+            }
+            if (null != sqlCases.getNamespace()) {
+                each.setId(sqlCases.getNamespace() + "." + each.getId());
+            }
             sqlCaseMap.put(each.getId(), each);
         }
     }

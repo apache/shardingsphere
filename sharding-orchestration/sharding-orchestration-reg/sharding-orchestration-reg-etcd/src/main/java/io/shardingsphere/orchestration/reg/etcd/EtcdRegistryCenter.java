@@ -40,7 +40,7 @@ import io.shardingsphere.orchestration.reg.etcd.internal.keepalive.KeepAlive;
 import io.shardingsphere.orchestration.reg.etcd.internal.retry.EtcdRetryEngine;
 import io.shardingsphere.orchestration.reg.etcd.internal.watcher.EtcdWatchStreamObserver;
 import io.shardingsphere.orchestration.reg.exception.RegistryCenterException;
-import io.shardingsphere.orchestration.reg.listener.EventListener;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 import mvccpb.Kv.KeyValue;
 
 import java.util.ArrayList;
@@ -174,14 +174,14 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     }
 
     @Override
-    public void watch(final String key, final EventListener eventListener) {
+    public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
         WatchCreateRequest createWatchRequest = WatchCreateRequest.newBuilder().setKey(ByteString.copyFromUtf8(key)).setRangeEnd(getRangeEnd(key)).build();
         final WatchRequest request = WatchRequest.newBuilder().setCreateRequest(createWatchRequest).build();
         etcdRetryEngine.execute(new Callable<Void>() {
             
             @Override
             public Void call() {
-                watchStub.watch(new EtcdWatchStreamObserver(eventListener)).onNext(request);
+                watchStub.watch(new EtcdWatchStreamObserver(dataChangedEventListener)).onNext(request);
                 return null;
             }
         });

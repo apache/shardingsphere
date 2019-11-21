@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.parser.dialect.mysql.clause;
 
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Literals;
@@ -79,7 +78,7 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
         } else {
             selectStatement.addSQLToken(new RowCountToken(valueBeginPosition, value));
         }
-        Limit limit = new Limit(DatabaseType.MySQL);
+        Limit limit = new Limit();
         limit.setRowCount(new LimitValue(value, valueIndex, false));
         selectStatement.setLimit(limit);
     }
@@ -111,7 +110,7 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
         } else {
             selectStatement.addSQLToken(new RowCountToken(rowCountBeginPosition, rowCountValue));
         }
-        Limit result = new Limit(DatabaseType.MySQL);
+        Limit result = new Limit();
         result.setRowCount(new LimitValue(rowCountValue, rowCountIndex, false));
         result.setOffset(new LimitValue(value, index, true));
         return result;
@@ -143,7 +142,7 @@ public final class MySQLLimitClauseParser implements SQLClauseParser {
         } else {
             selectStatement.addSQLToken(new RowCountToken(valueBeginPosition, value));
         }
-        Limit result = new Limit(DatabaseType.MySQL);
+        Limit result = new Limit();
         result.setRowCount(new LimitValue(value, index, false));
         result.setOffset(new LimitValue(offsetValue, offsetIndex, true));
         return result;

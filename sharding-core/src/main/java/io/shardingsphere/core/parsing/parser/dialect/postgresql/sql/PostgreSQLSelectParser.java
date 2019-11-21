@@ -45,7 +45,6 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
     
     @Override
     protected void parseInternal(final SelectStatement selectStatement) {
-        parseDistinct();
         parseSelectList(selectStatement, getItems());
         parseFrom(selectStatement);
         parseWhere(getShardingRule(), selectStatement, getItems());

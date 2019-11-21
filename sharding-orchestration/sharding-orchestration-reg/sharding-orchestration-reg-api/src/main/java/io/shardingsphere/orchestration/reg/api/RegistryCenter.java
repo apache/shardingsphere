@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.reg.api;
 
-import io.shardingsphere.orchestration.reg.listener.EventListener;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 
 import java.util.List;
 
@@ -99,7 +99,7 @@ public interface RegistryCenter extends AutoCloseable {
      * Watch key or path of the registry.
      *
      * @param key key of data
-     * @param eventListener change listener
+     * @param dataChangedEventListener data changed event listener
      */
-    void watch(String key, EventListener eventListener);
+    void watch(String key, DataChangedEventListener dataChangedEventListener);
 }

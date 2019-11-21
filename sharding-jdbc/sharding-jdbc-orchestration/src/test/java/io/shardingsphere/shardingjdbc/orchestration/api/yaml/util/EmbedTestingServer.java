@@ -54,7 +54,7 @@ public final class EmbedTestingServer {
                 public void run() {
                     try {
                         testingServer.close();
-                    } catch (final IOException ignore) {
+                    } catch (final IOException ignored) {
                     }
                 }
             });

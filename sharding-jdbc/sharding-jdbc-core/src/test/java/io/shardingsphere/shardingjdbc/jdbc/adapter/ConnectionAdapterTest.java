@@ -20,8 +20,13 @@ package io.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.collect.Multimap;
 import io.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import io.shardingsphere.shardingjdbc.jdbc.core.fixed.FixedBaseShardingTransactionHandler;
+import io.shardingsphere.shardingjdbc.jdbc.core.fixed.FixedXAShardingTransactionHandler;
 import io.shardingsphere.shardingjdbc.jdbc.util.JDBCTestSQL;
+import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.api.TransactionTypeHolder;
 import lombok.SneakyThrows;
+import org.junit.After;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -30,6 +35,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -37,6 +43,13 @@ import static org.junit.Assert.assertTrue;
 public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
     private String sql = JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL;
+    
+    @After
+    public void tearDown() {
+        TransactionTypeHolder.clear();
+        FixedXAShardingTransactionHandler.getInvokes().clear();
+        FixedBaseShardingTransactionHandler.getInvokes().clear();
+    }
     
     @Test
     public void assertSetAutoCommit() throws SQLException {
@@ -58,12 +71,39 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     }
     
     @Test
+    public void assertIgnoreAutoCommitForXA() throws SQLException {
+        TransactionTypeHolder.set(TransactionType.XA);
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            actual.setAutoCommit(true);
+            assertNull(FixedXAShardingTransactionHandler.getInvokes().get("begin"));
+        }
+    }
+    
+    @Test
+    public void assertIgnoreAutoCommitForBase() throws SQLException {
+        TransactionTypeHolder.set(TransactionType.BASE);
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            actual.setAutoCommit(true);
+            assertNull(FixedBaseShardingTransactionHandler.getInvokes().get("begin"));
+        }
+    }
+    
+    @Test
     // TODO 缺少断言，做柔性事务时补充
     public void assertCommit() throws SQLException {
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
             actual.setAutoCommit(false);
             actual.createStatement().executeQuery(sql);
             actual.commit();
+        }
+    }
+    
+    @Test
+    public void assertXACommit() throws SQLException {
+        TransactionTypeHolder.set(TransactionType.XA);
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            actual.commit();
+            assertNotNull(FixedXAShardingTransactionHandler.getInvokes().get("commit"));
         }
     }
     
@@ -78,22 +118,27 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     }
     
     @Test
-    public void assertClose() throws SQLException {
+    public void assertXARollback() throws SQLException {
+        TransactionTypeHolder.set(TransactionType.XA);
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
-            actual.createStatement().executeQuery(sql);
-            assertClose(actual, false);
-            actual.close();
-            assertClose(actual, true);
+            actual.rollback();
+            assertNotNull(FixedXAShardingTransactionHandler.getInvokes().get("rollback"));
         }
     }
     
-    private void assertClose(final ShardingConnection actual, final boolean closed) throws SQLException {
-        assertThat(actual.isClosed(), is(closed));
-        Multimap<String, Connection> cachedConnections = getCachedConnections(actual);
-        assertThat(cachedConnections.size(), is(2));
-        for (Connection each : cachedConnections.values()) {
-            assertThat(each.isClosed(), is(closed));
+    @Test
+    public void assertClose() throws SQLException {
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            actual.createStatement().executeQuery(sql);
+            actual.close();
+            assertClose(actual);
         }
+    }
+    
+    private void assertClose(final ShardingConnection actual) {
+        assertTrue(actual.isClosed());
+        Multimap<String, Connection> cachedConnections = getCachedConnections(actual);
+        assertTrue(cachedConnections.isEmpty());
     }
     
     @Test

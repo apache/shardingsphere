@@ -32,9 +32,9 @@ public final class ShardingConstant {
      * Logic database schema name.
      * 
      * <p>
-     * Sharding-Sphere just have one logic database table.
+     * ShardingSphere just have one logic database table.
      * Default: sharding_db
      * </p>
      */
-    public static final String LOGIC_SCHEMA_NAME = "sharding_db";
+    public static final String LOGIC_SCHEMA_NAME = "logic_db";
 }

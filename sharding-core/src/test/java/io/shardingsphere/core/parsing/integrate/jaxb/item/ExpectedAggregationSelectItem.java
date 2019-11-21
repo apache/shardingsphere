@@ -44,6 +44,9 @@ public final class ExpectedAggregationSelectItem {
     @XmlAttribute 
     private Integer index = -1;
     
+    @XmlAttribute(name = "distinct-column")
+    private String distinctColumnName;
+    
     @XmlElement(name = "derived-column") 
     private List<ExpectedAggregationSelectItem> derivedColumns = new ArrayList<>(2);
 }

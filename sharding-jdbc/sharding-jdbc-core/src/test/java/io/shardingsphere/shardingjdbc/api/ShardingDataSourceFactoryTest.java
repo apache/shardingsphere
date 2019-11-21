@@ -18,11 +18,12 @@
 package io.shardingsphere.shardingjdbc.api;
 
 import io.shardingsphere.api.ConfigMapContext;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import lombok.SneakyThrows;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -47,6 +48,11 @@ import static org.mockito.Mockito.when;
 
 public final class ShardingDataSourceFactoryTest {
     
+    @Before
+    public void setUp() {
+        ConfigMapContext.getInstance().getConfigMap().clear();
+    }
+    
     @Test
     public void assertCreateDataSourceWithShardingRuleAndConfigMapAndProperties() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfig();
@@ -55,7 +61,7 @@ public final class ShardingDataSourceFactoryTest {
         configMap.put("key1", "value1");
         DataSource dataSource = ShardingDataSourceFactory.createDataSource(getDataSourceMap(), shardingRuleConfig, configMap, props);
         assertNotNull(getShardingRule(dataSource));
-        assertThat(ConfigMapContext.getInstance().getShardingConfig(), is(configMap));
+        assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
         assertThat(getShardingProperties(dataSource), is(props));
     }
     
@@ -100,10 +106,9 @@ public final class ShardingDataSourceFactoryTest {
     
     @SneakyThrows
     private Properties getShardingProperties(final DataSource dataSource) {
-        Field shardingPropertiesField = dataSource.getClass().getDeclaredField("shardingProperties");
-        shardingPropertiesField.setAccessible(true);
-        Field propsField = shardingPropertiesField.get(dataSource).getClass().getDeclaredField("props");
-        propsField.setAccessible(true);
-        return (Properties) propsField.get(shardingPropertiesField.get(dataSource));
+        Field shardingContextField = dataSource.getClass().getDeclaredField("shardingContext");
+        shardingContextField.setAccessible(true);
+        ShardingContext shardingContext = (ShardingContext) shardingContextField.get(dataSource);
+        return shardingContext.getShardingProperties().getProps();
     }
 }

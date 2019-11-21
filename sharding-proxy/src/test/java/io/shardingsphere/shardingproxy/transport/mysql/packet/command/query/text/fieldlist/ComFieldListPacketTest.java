@@ -18,10 +18,12 @@
 package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.fieldlist;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.constant.properties.ShardingProperties;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
@@ -33,6 +35,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.Fiel
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import lombok.SneakyThrows;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -42,6 +45,7 @@ import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -61,14 +65,24 @@ public final class ComFieldListPacketTest {
     @Mock
     private BackendHandler backendHandler;
     
-    @Mock
-    private FrontendHandler frontendHandler;
+    @Before
+    public void setUp() throws ReflectiveOperationException {
+        setMaxConnectionsSizePerQuery();
+    }
+    
+    private void setMaxConnectionsSizePerQuery() throws ReflectiveOperationException {
+        Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
+        field.setAccessible(true);
+        Properties props = new Properties();
+        props.setProperty(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), String.valueOf(1));
+        field.set(GlobalRegistry.getInstance(), new ShardingProperties(props));
+    }
     
     @Test
     public void assertWrite() {
         when(payload.readStringNul()).thenReturn("tbl");
         when(payload.readStringEOF()).thenReturn("-");
-        ComFieldListPacket actual = new ComFieldListPacket(1, 1000, payload, backendConnection, frontendHandler);
+        ComFieldListPacket actual = new ComFieldListPacket(1, payload, backendConnection);
         assertThat(actual.getSequenceId(), is(1));
         actual.write(payload);
         verify(payload).writeInt1(CommandPacketType.COM_FIELD_LIST.getValue());
@@ -83,7 +97,7 @@ public final class ComFieldListPacketTest {
         when(backendHandler.next()).thenReturn(true, false);
         when(backendHandler.getResultValue()).thenReturn(new ResultPacket(1, Collections.<Object>singletonList("id"), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_VARCHAR)));
         when(backendHandler.execute()).thenReturn(new CommandResponsePackets(new FieldCountPacket(1, 1)));
-        ComFieldListPacket packet = new ComFieldListPacket(1, 1000, payload, backendConnection, frontendHandler);
+        ComFieldListPacket packet = new ComFieldListPacket(1, payload, backendConnection);
         setBackendHandler(packet);
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
@@ -109,7 +123,7 @@ public final class ComFieldListPacketTest {
         when(payload.readStringEOF()).thenReturn("-");
         CommandResponsePackets expected = new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, "unknown"));
         when(backendHandler.execute()).thenReturn(expected);
-        ComFieldListPacket packet = new ComFieldListPacket(1, 1000, payload, backendConnection, frontendHandler);
+        ComFieldListPacket packet = new ComFieldListPacket(1, payload, backendConnection);
         setBackendHandler(packet);
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());

@@ -6,9 +6,10 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-sphere</artifactId>
-        <version>3.0.0</version>
+        <version>3.1.0</version>
     </parent>
     <artifactId>sharding-proxy</artifactId>
+    <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
@@ -18,8 +19,8 @@
         </dependency>
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-transaction</artifactId>
-            <version>${project.version}</version>
+            <artifactId>sharding-transaction-2pc-xa</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>io.shardingsphere</groupId>
@@ -87,7 +88,7 @@
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
                 <configuration>
-                    <imageName>shardingsphere/sharding-proxy:3.0.0</imageName>
+                    <imageName>shardingsphere/sharding-proxy:3.1.0</imageName>
                     <dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
                     <resources>
                         <resource>

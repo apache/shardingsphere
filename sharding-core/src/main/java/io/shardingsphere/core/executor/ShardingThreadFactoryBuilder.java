@@ -31,7 +31,7 @@ import java.util.concurrent.ThreadFactory;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingThreadFactoryBuilder {
     
-    private static final String NAME_FORMAT_PREFIX = "Sharding-Sphere-";
+    private static final String NAME_FORMAT_PREFIX = "ShardingSphere-";
     
     private static final String DEFAULT_EXECUTOR_NAME_FORMAT = NAME_FORMAT_PREFIX + "%d";
     

@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.bootstrap.ShardingBootstrap;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
+import io.shardingsphere.transaction.core.datasource.ShardingTransactionalDataSource;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,6 +30,7 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -36,10 +38,11 @@ import java.util.logging.Logger;
  * 
  * @author zhangliang
  * @author panjuan
+ * @author zhaojun
  */
 @Getter
 @Setter
-public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource {
+public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
     static {
         ShardingBootstrap.init();
@@ -47,10 +50,13 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     private final DatabaseType databaseType;
     
+    private final ShardingTransactionalDataSource shardingTransactionalDataSources;
+    
     private PrintWriter logWriter = new PrintWriter(System.out);
     
-    public AbstractDataSourceAdapter(final Collection<DataSource> dataSources) throws SQLException {
-        databaseType = getDatabaseType(dataSources);
+    public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        databaseType = getDatabaseType(dataSourceMap.values());
+        shardingTransactionalDataSources = new ShardingTransactionalDataSource(databaseType, dataSourceMap);
     }
     
     protected final DatabaseType getDatabaseType(final Collection<DataSource> dataSources) throws SQLException {
@@ -72,6 +78,15 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         }
     }
     
+    /**
+     * Get data source map.
+     * 
+     * @return data source map
+     */
+    public final Map<String, DataSource> getDataSourceMap() {
+        return shardingTransactionalDataSources.getOriginalDataSourceMap();
+    }
+    
     @Override
     public final Logger getParentLogger() {
         return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -80,5 +95,10 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     @Override
     public final Connection getConnection(final String username, final String password) throws SQLException {
         return getConnection();
+    }
+    
+    @Override
+    public void close() {
+        shardingTransactionalDataSources.close();
     }
 }

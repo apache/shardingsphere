@@ -32,6 +32,9 @@ public final class ExpectedTableToken {
     @XmlAttribute(name = "begin-position")
     private int beginPosition;
     
+    @XmlAttribute(name = "skipped-schema-name-length")
+    private int skippedSchemaNameLength;
+    
     @XmlAttribute(name = "original-literals")
     private String originalLiterals;
 }

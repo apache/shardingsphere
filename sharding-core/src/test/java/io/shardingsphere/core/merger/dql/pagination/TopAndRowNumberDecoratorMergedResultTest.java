@@ -66,20 +66,20 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextForSkipAll() throws SQLException {
-        Limit limit = new Limit(DatabaseType.SQLServer);
+        Limit limit = new Limit();
         limit.setOffset(new LimitValue(Integer.MAX_VALUE, -1, true));
         selectStatement.setLimit(limit);
-        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        mergeEngine = new DQLMergeEngine(DatabaseType.SQLServer, selectStatement, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextWithoutOffsetWithRowCount() throws SQLException {
-        Limit limit = new Limit(DatabaseType.SQLServer);
+        Limit limit = new Limit();
         limit.setRowCount(new LimitValue(5, -1, false));
         selectStatement.setLimit(limit);
-        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        mergeEngine = new DQLMergeEngine(DatabaseType.SQLServer, selectStatement, queryResults);
         MergedResult actual = mergeEngine.merge();
         for (int i = 0; i < 5; i++) {
             assertTrue(actual.next());
@@ -89,10 +89,10 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextWithOffsetWithoutRowCount() throws SQLException {
-        Limit limit = new Limit(DatabaseType.SQLServer);
+        Limit limit = new Limit();
         limit.setOffset(new LimitValue(2, -1, true));
         selectStatement.setLimit(limit);
-        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        mergeEngine = new DQLMergeEngine(DatabaseType.SQLServer, selectStatement, queryResults);
         MergedResult actual = mergeEngine.merge();
         for (int i = 0; i < 7; i++) {
             assertTrue(actual.next());
@@ -102,11 +102,11 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextWithOffsetBoundOpenedFalse() throws SQLException {
-        Limit limit = new Limit(DatabaseType.SQLServer);
+        Limit limit = new Limit();
         limit.setOffset(new LimitValue(2, -1, false));
         limit.setRowCount(new LimitValue(4, -1, false));
         selectStatement.setLimit(limit);
-        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        mergeEngine = new DQLMergeEngine(DatabaseType.SQLServer, selectStatement, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -115,11 +115,11 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
 
     @Test
     public void assertNextWithOffsetBoundOpenedTrue() throws SQLException {
-        Limit limit = new Limit(DatabaseType.SQLServer);
+        Limit limit = new Limit();
         limit.setOffset(new LimitValue(2, -1, true));
         limit.setRowCount(new LimitValue(4, -1, false));
         selectStatement.setLimit(limit);
-        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        mergeEngine = new DQLMergeEngine(DatabaseType.SQLServer, selectStatement, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());

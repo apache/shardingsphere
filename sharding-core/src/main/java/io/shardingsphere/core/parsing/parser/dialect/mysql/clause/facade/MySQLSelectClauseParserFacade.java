@@ -20,7 +20,6 @@ package io.shardingsphere.core.parsing.parser.dialect.mysql.clause.facade;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.clause.HavingClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.facade.AbstractSelectClauseParserFacade;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLDistinctClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLGroupByClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLOrderByClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.clause.MySQLSelectListClauseParser;
@@ -37,7 +36,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 public final class MySQLSelectClauseParserFacade extends AbstractSelectClauseParserFacade {
     
     public MySQLSelectClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(new MySQLDistinctClauseParser(lexerEngine), new MySQLSelectListClauseParser(shardingRule, lexerEngine),
+        super(new MySQLSelectListClauseParser(shardingRule, lexerEngine),
                 new MySQLTableReferencesClauseParser(shardingRule, lexerEngine), new MySQLWhereClauseParser(lexerEngine), new MySQLGroupByClauseParser(lexerEngine),
                 new HavingClauseParser(lexerEngine), new MySQLOrderByClauseParser(lexerEngine), new MySQLSelectRestClauseParser(lexerEngine));
     }

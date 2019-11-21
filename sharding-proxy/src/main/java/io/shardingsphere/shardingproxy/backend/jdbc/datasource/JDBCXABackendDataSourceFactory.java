@@ -17,14 +17,15 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.datasource;
 
-import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.manager.ShardingTransactionManagerRegistry;
-import io.shardingsphere.transaction.manager.xa.XATransactionManager;
-import lombok.SneakyThrows;
+import io.shardingsphere.transaction.spi.xa.XATransactionManager;
+import io.shardingsphere.transaction.xa.convert.datasource.XADataSourceFactory;
+import io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
-import javax.sql.XADataSource;
 
 /**
  * Backend data source factory using {@code AtomikosDataSourceBean} for JDBC and XA protocol.
@@ -32,24 +33,23 @@ import javax.sql.XADataSource;
  * @author zhaojun
  * @author zhangliang
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JDBCXABackendDataSourceFactory implements JDBCBackendDataSourceFactory {
     
-    private static final String XA_DRIVER_CLASS_NAME = "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource";
+    private static final JDBCXABackendDataSourceFactory INSTANCE = new JDBCXABackendDataSourceFactory();
+    
+    /**
+     * Get instance of {@code JDBCXABackendDataSourceFactory}.
+     *
+     * @return JDBC XA backend data source factory
+     */
+    public static JDBCBackendDataSourceFactory getInstance() {
+        return INSTANCE;
+    }
     
     @Override
-    public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) throws Exception {
-        XATransactionManager xaTransactionManager = (XATransactionManager) ShardingTransactionManagerRegistry.getInstance().getShardingTransactionManager(TransactionType.XA);
-        return xaTransactionManager.wrapDataSource(newXADriverClass(XA_DRIVER_CLASS_NAME), dataSourceName, dataSourceParameter);
-    }
-
-    @SneakyThrows
-    private XADataSource newXADriverClass(final String className) {
-        Class<?> result;
-        try {
-            result = Thread.currentThread().getContextClassLoader().loadClass(className);
-        } catch (final ClassNotFoundException ignored) {
-            result = Class.forName(className);
-        }
-        return (XADataSource) result.newInstance();
+    public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) {
+        XATransactionManager xaTransactionManager = XATransactionManagerSPILoader.getInstance().getTransactionManager();
+        return xaTransactionManager.wrapDataSource(DatabaseType.MySQL, XADataSourceFactory.build(DatabaseType.MySQL), dataSourceName, dataSourceParameter);
     }
 }

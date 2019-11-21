@@ -18,10 +18,12 @@
 package io.shardingsphere.shardingjdbc.api;
 
 import io.shardingsphere.api.ConfigMapContext;
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
+import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import io.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.hamcrest.MatcherAssert;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -39,6 +41,11 @@ import static org.junit.Assert.assertThat;
 
 public final class MasterSlaveDataSourceFactoryTest {
     
+    @Before
+    public void setUp() {
+        ConfigMapContext.getInstance().getConfigMap().clear();
+    }
+    
     @Test
     public void assertCreateDataSourceForSingleSlave() throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
@@ -49,8 +56,9 @@ public final class MasterSlaveDataSourceFactoryTest {
         properties.setProperty("sql.show", "true");
         configMap.put("key1", "value1");
         assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, 
-                new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Collections.singletonList("slave_ds")), configMap, properties), instanceOf(MasterSlaveDataSource.class));
-        MatcherAssert.assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
+                new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Collections.singletonList("slave_ds"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()), 
+                configMap, properties), instanceOf(MasterSlaveDataSource.class));
+        MatcherAssert.assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
     }
     
     @Test
@@ -64,8 +72,8 @@ public final class MasterSlaveDataSourceFactoryTest {
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
         assertThat(MasterSlaveDataSourceFactory.createDataSource(
-                dataSourceMap, new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1")),
+                dataSourceMap, new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()),
                 configMap, properties), instanceOf(MasterSlaveDataSource.class));
-        MatcherAssert.assertThat(ConfigMapContext.getInstance().getMasterSlaveConfig(), is(configMap));
+        MatcherAssert.assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
     }
 }

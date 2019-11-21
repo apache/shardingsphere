@@ -34,6 +34,10 @@ public final class StringLenencBinaryProtocolValue implements BinaryProtocolValu
     
     @Override
     public void write(final MySQLPacketPayload payload, final Object value) {
-        payload.writeStringLenenc(value.toString());
+        if (value instanceof byte[]) {
+            payload.writeBytesLenenc((byte[]) value);
+        } else {
+            payload.writeStringLenenc(value.toString());
+        }
     }
 }

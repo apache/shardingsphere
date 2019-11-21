@@ -17,8 +17,8 @@
 
 package io.shardingsphere.shardingproxy.config;
 
-import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlRuleConfiguration;
-import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlServerConfiguration;
+import io.shardingsphere.shardingproxy.config.yaml.YamlProxyRuleConfiguration;
+import io.shardingsphere.shardingproxy.config.yaml.YamlProxyServerConfiguration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -33,7 +33,7 @@ import java.util.Map;
 @Getter
 public final class ShardingConfiguration {
     
-    private final ProxyYamlServerConfiguration serverConfiguration;
+    private final YamlProxyServerConfiguration serverConfiguration;
     
-    private final Map<String, ProxyYamlRuleConfiguration> ruleConfigurationMap;
+    private final Map<String, YamlProxyRuleConfiguration> ruleConfigurationMap;
 }

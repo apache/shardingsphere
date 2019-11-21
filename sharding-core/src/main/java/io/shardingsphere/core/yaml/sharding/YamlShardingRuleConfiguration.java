@@ -17,9 +17,9 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.core.keygen.KeyGeneratorFactory;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import lombok.Getter;
@@ -28,19 +28,17 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 
 /**
  * Sharding rule configuration for yaml.
  *
  * @author caohao
  * @author panjuan
+ * @author maxiaoguang
  */
 @NoArgsConstructor
 @Getter
@@ -51,7 +49,9 @@ public class YamlShardingRuleConfiguration {
     
     private Map<String, YamlTableRuleConfiguration> tables = new LinkedHashMap<>();
     
-    private List<String> bindingTables = new ArrayList<>();
+    private Collection<String> bindingTables = new ArrayList<>();
+    
+    private Collection<String> broadcastTables = new ArrayList<>();
     
     private YamlShardingStrategyConfiguration defaultDatabaseStrategy;
     
@@ -61,24 +61,19 @@ public class YamlShardingRuleConfiguration {
     
     private Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules = new LinkedHashMap<>();
     
-    private Map<String, Object> configMap = new LinkedHashMap<>();
-    
-    private Properties props = new Properties();
-    
-    public YamlShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfiguration, final Map<String, Object> configMap, final Properties props) {
+    public YamlShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfiguration) {
         defaultDataSourceName = shardingRuleConfiguration.getDefaultDataSourceName();
         for (TableRuleConfiguration each : shardingRuleConfiguration.getTableRuleConfigs()) {
             tables.put(each.getLogicTable(), new YamlTableRuleConfiguration(each));
         }
         bindingTables.addAll(shardingRuleConfiguration.getBindingTableGroups());
+        bindingTables.addAll(shardingRuleConfiguration.getBroadcastTables());
         defaultDatabaseStrategy = new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultDatabaseShardingStrategyConfig());
         defaultTableStrategy = new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultTableShardingStrategyConfig());
         defaultKeyGeneratorClassName = null == shardingRuleConfiguration.getDefaultKeyGenerator() ? null : shardingRuleConfiguration.getDefaultKeyGenerator().getClass().getName();
         for (MasterSlaveRuleConfiguration each : shardingRuleConfiguration.getMasterSlaveRuleConfigs()) {
-            masterSlaveRules.put(each.getName(), new YamlMasterSlaveRuleConfiguration(each, new HashMap<String, Object>(), new Properties()));
+            masterSlaveRules.put(each.getName(), new YamlMasterSlaveRuleConfiguration(each));
         }
-        this.configMap = configMap;
-        this.props = props;
     }
     
     /**
@@ -95,6 +90,7 @@ public class YamlShardingRuleConfiguration {
             result.getTableRuleConfigs().add(tableRuleConfig.build());
         }
         result.getBindingTableGroups().addAll(bindingTables);
+        result.getBroadcastTables().addAll(broadcastTables);
         if (null != defaultDatabaseStrategy) {
             result.setDefaultDatabaseShardingStrategyConfig(defaultDatabaseStrategy.build());
         }

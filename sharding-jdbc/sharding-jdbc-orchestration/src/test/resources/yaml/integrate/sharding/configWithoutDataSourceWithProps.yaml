@@ -35,9 +35,6 @@ shardingRule:
     complex:
       shardingColumns: id, order_id
       algorithmClassName: io.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.MultiAlgorithm
-  
-  props:
-    sql.show: true
 
 orchestration:
   name: demo_ds_ms
