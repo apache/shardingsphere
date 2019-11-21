@@ -86,7 +86,7 @@ public final class InlineShardingStrategy implements ShardingStrategy {
     private String execute(final PreciseShardingValue shardingValue) {
         Closure<?> result = closure.rehydrate(new Expando(), null, null);
         result.setResolveStrategy(Closure.DELEGATE_ONLY);
-        result.setProperty(shardingValue.getColumnName(), shardingValue.getValue());
+        result.setProperty(shardingColumn, shardingValue.getValue());
         return result.call().toString();
     }
     

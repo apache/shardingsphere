@@ -25,10 +25,11 @@ import java.util.Date;
  * @author chenchuangliu
  */
 public interface TimeService {
-
+    
     /**
-     * Get date from time server.
-     * @return date
+     * Get time.
+     * 
+     * @return time
      */
     Date getTime();
 }

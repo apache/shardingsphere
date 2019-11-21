@@ -26,16 +26,16 @@ import org.apache.shardingsphere.core.preprocessor.segment.select.projection.imp
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.GroupBySegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 

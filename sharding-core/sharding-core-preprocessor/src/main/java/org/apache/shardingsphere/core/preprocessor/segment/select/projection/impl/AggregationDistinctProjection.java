@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 
 /**
  * Aggregation distinct projection.

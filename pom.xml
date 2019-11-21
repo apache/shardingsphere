@@ -30,6 +30,10 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>shardingsphere-spi</module>
+        
+        <module>shardingsphere-sql-parser</module>
+        
         <module>sharding-core</module>
         
         <module>sharding-jdbc</module>
@@ -86,9 +90,7 @@
         <logback.version>1.2.0</logback.version>
         
         <hikari-cp.version>2.4.11</hikari-cp.version>
-        <alibaba.druid.version>1.1.11</alibaba.druid.version>
         <commons-dbcp2.version>2.2.0</commons-dbcp2.version>
-        <tomcat-dbcp.version>9.0.14</tomcat-dbcp.version>
         <commons-pool.version>1.6</commons-pool.version>
         <h2.version>1.4.196</h2.version>
         <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
@@ -379,12 +381,6 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>druid</artifactId>
-                <version>${alibaba.druid.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
                 <groupId>commons-pool</groupId>
                 <artifactId>commons-pool</artifactId>
                 <version>${commons-pool.version}</version>
@@ -400,12 +396,6 @@
                         <artifactId>commons-pool</artifactId>
                     </exclusion>
                 </exclusions>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.tomcat</groupId>
-                <artifactId>tomcat-dbcp</artifactId>
-                <version>${tomcat-dbcp.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -723,7 +713,7 @@
                             <ignoreMethodAnnotation>lombok.Generated</ignoreMethodAnnotation>
                         </ignoreMethodAnnotations>
                         <excludes>
-                            <exclude>org/apache/shardingsphere/core/parse/autogen/*.class</exclude>
+                            <exclude>org/apache/shardingsphere/sql/parser/autogen/*.class</exclude>
                             <exclude>org/apache/shardingsphere/orchestration/reg/zookeeper/*.class</exclude>
                             <exclude>org/apache/shardingsphere/**/*Test.class</exclude>
                             <exclude>org/apache/shardingsphere/**/Test*.class</exclude>

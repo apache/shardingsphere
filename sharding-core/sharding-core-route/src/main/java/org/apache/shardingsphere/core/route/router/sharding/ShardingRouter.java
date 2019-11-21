@@ -26,10 +26,10 @@ import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLState
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.SQLStatementContextFactory;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.core.parse.SQLParseEngine;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.SQLParseEngine;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
@@ -71,6 +71,10 @@ public final class ShardingRouter {
     
     /**
      * Parse SQL.
+     * To make sure SkyWalking will be available at the next release of ShardingSphere,
+     * a new plugin should be provided to SkyWalking project if this API changed.
+     *
+     * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
      *
      * @param logicSQL logic SQL
      * @param useCache use cache to save SQL parse result or not

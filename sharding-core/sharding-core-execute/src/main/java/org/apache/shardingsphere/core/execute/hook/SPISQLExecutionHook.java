@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.execute.hook;
 
 import org.apache.shardingsphere.core.route.RouteUnit;
-import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
 import java.util.Collection;

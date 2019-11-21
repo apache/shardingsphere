@@ -24,10 +24,10 @@ import static org.mockito.Mockito.when;
 import java.util.Collection;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.SQLParseEngine;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.LockSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.SQLParseEngine;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.junit.After;

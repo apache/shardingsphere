@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.route.router.sharding.condition.generator
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 import java.util.List;
 

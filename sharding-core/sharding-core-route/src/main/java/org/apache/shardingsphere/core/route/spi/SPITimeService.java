@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.route.spi;
 
-import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 
 import java.util.Collection;
 import java.util.Date;
@@ -28,22 +28,22 @@ import java.util.Date;
  * @author chenchuangliu
  */
 public final class SPITimeService implements TimeService {
-
+    
     private final Collection<TimeService> timeServices = NewInstanceServiceLoader.newServiceInstances(TimeService.class);
-
+    
     static {
         NewInstanceServiceLoader.register(TimeService.class);
     }
-
+    
     @Override
     public Date getTime() {
-        Date date = null;
+        Date result = null;
         for (TimeService server : timeServices) {
-            date = server.getTime();
-            if (!(server instanceof DefaultTimeService) && null != date) {
-                return date;
+            result = server.getTime();
+            if (!(server instanceof DefaultTimeService) && null != result) {
+                return result;
             }
         }
-        return date;
+        return result;
     }
 }

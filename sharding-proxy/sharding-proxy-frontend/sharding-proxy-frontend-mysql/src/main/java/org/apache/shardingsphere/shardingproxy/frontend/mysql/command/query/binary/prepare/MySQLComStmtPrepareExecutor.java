@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.query.binary.prepare;
 
 import org.apache.shardingsphere.core.preprocessor.segment.table.TablesContext;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;

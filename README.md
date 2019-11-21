@@ -133,3 +133,12 @@ sharding-distribution/sharding-proxy-distribution/target/apache-shardingsphere-i
 sharding-distribution/sharding-ui-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-ui-bin.tar.gz: Binary package of Sharding-UI
 sharding-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-src.zip: Source code package of ShardingSphere
 ```
+
+## Landscapes
+
+<p align="center">
+<br/><br/>
+<img src="https://landscape.cncf.io/images/left-logo.svg" width="150"/>&nbsp;&nbsp;<img src="https://landscape.cncf.io/images/right-logo.svg" width="200"/>
+<br/><br/>
+ShardingSphere enriches the <a href="https://landscape.cncf.io/landscape=observability-and-analysis&license=apache-license-2-0">CNCF CLOUD NATIVE Landscape.</a>
+</p>

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.config.ShardingConfigurationException;
-import org.apache.shardingsphere.core.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
+import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategyFactory;
 import org.apache.shardingsphere.core.strategy.route.hint.HintShardingStrategy;
@@ -304,12 +304,30 @@ public class ShardingRule implements BaseRule {
      * @return logic tables is all belong to default data source
      */
     public boolean isAllInDefaultDataSource(final Collection<String> logicTableNames) {
+        if (!hasDefaultDataSourceName()) {
+            return false;
+        }
         for (String each : logicTableNames) {
             if (findTableRule(each).isPresent() || isBroadcastTable(each)) {
                 return false;
             }
         }
         return !logicTableNames.isEmpty();
+    }
+    
+    /**
+     * Judge if there is at least one table rule for logic tables.
+     *
+     * @param logicTableNames logic table names
+     * @return whether a table rule exists for logic tables
+     */
+    public boolean tableRuleExists(final Collection<String> logicTableNames) {
+        for (String each : logicTableNames) {
+            if (findTableRule(each).isPresent() || isBroadcastTable(each)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**

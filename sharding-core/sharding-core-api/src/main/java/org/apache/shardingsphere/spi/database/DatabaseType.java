@@ -43,8 +43,8 @@ public interface DatabaseType {
     /**
      * Get data source meta data.
      * 
-     * @param url data source URL
+     * @param sourceInfo current sourceInfo
      * @return data source meta data
      */
-    DataSourceMetaData getDataSourceMetaData(String url);
+    DataSourceMetaData getDataSourceMetaData(DataSourceInfo sourceInfo);
 }

@@ -17,34 +17,35 @@
 
 package org.apache.shardingsphere.core.route.type.standard;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.parse.SQLParseEngine;
 import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import org.apache.shardingsphere.spi.database.DataSourceInfo;
+import org.apache.shardingsphere.sql.parser.SQLParseEngine;
+import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
 
 public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     
     protected final SQLRouteResult assertRoute(final String sql, final List<Object> parameters) {
         ShardingRule shardingRule = createAllShardingRule();
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildTableMetas());
-        SQLParseEngine parseEngine = new SQLParseEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
+        SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine("MySQL");
         PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(sql, shardingRule, metaData, parseEngine);
         SQLRouteResult result = engine.route(parameters);
         assertThat(result.getRoutingResult().getRoutingUnits().size(), is(1));
@@ -52,11 +53,17 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     }
     
     private DataSourceMetas buildDataSourceMetas() {
-        Map<String, String> shardingDataSourceURLs = new LinkedHashMap<>();
-        shardingDataSourceURLs.put("main", "jdbc:mysql://127.0.0.1:3306/actual_db");
-        shardingDataSourceURLs.put("ds_0", "jdbc:mysql://127.0.0.1:3306/actual_db");
-        shardingDataSourceURLs.put("ds_1", "jdbc:mysql://127.0.0.1:3306/actual_db");
-        return new DataSourceMetas(shardingDataSourceURLs, DatabaseTypes.getActualDatabaseType("MySQL"));
+        
+        final Map<String, DataSourceInfo> dataSourceInfoMap = new HashMap<String, DataSourceInfo>();
+        DataSourceInfo main = new DataSourceInfo("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
+        DataSourceInfo ds0 = new DataSourceInfo("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
+        DataSourceInfo ds1 = new DataSourceInfo("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
+        
+        dataSourceInfoMap.put("main", main);
+        dataSourceInfoMap.put("ds_0", ds0);
+        dataSourceInfoMap.put("ds_1", ds1);
+        
+        return new DataSourceMetas(DatabaseTypes.getActualDatabaseType("MySQL"), dataSourceInfoMap);
     }
     
     private TableMetas buildTableMetas() {
@@ -69,8 +76,8 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
                 new ColumnMetaData("user_id", "int", false, false, false), 
                 new ColumnMetaData("status", "varchar", false, false, false), 
                 new ColumnMetaData("c_date", "timestamp", false, false, false)), Collections.<String>emptySet()));
-        tableMetaDataMap.put("t_other", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true, true, true)), Collections.<String>emptySet()));
-        tableMetaDataMap.put("t_category", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true, true, true)), Collections.<String>emptySet()));
+        tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", "int", true, true, true)), Collections.<String>emptySet()));
+        tableMetaDataMap.put("t_category", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", "int", true, true, true)), Collections.<String>emptySet()));
         return new TableMetas(tableMetaDataMap);
     }
 }

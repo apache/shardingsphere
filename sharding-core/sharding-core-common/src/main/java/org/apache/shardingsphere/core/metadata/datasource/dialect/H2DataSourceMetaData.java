@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.spi.database.MemorizedDataSourceMetaData;
 
 import java.util.regex.Matcher;
@@ -40,15 +41,19 @@ public final class H2DataSourceMetaData implements MemorizedDataSourceMetaData {
     
     private final String schemaName;
     
+    private final String catalog;
+    
     private final Pattern pattern = Pattern.compile("jdbc:h2:(mem|~)[:/]([\\w\\-]+);?\\S*", Pattern.CASE_INSENSITIVE);
     
-    public H2DataSourceMetaData(final String url) {
+    public H2DataSourceMetaData(final DataSourceInfo dataSourceInfo) {
+        String url = dataSourceInfo.getUrl();
         Matcher matcher = pattern.matcher(url);
         if (!matcher.find()) {
             throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
         }
         hostName = "";
         port = DEFAULT_PORT;
-        schemaName = matcher.group(2);
+        catalog = matcher.group(2);
+        schemaName = null;
     }
 }

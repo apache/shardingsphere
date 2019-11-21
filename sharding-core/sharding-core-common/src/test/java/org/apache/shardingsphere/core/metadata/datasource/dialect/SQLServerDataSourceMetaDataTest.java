@@ -17,48 +17,66 @@
 
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
-import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
-import org.junit.Test;
-
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+
+import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.spi.database.DataSourceInfo;
+import org.junit.Test;
 
 public final class SQLServerDataSourceMetaDataTest {
     
     @Test
-    public void assertGetPropertiesWithPortAndMicrosoft() {
-        SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData("jdbc:microsoft:sqlserver://127.0.0.1:9999;DatabaseName=ds_0");
+    public void assertDataSourceInfoParam() {
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:microsoft:sqlserver://127.0.0.1:9999;DatabaseName=ds_0", "test");
+        SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
-        assertThat(actual.getSchemaName(), is("ds_0"));
+        assertThat(actual.getCatalog(), is("ds_0"));
+        assertEquals(actual.getSchemaName(), null);
+    }
+    
+    @Test
+    public void assertGetPropertiesWithPortAndMicrosoft() {
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:microsoft:sqlserver://127.0.0.1:9999;DatabaseName=ds_0", "test");
+        SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData(dataSourceInfo);
+        assertThat(actual.getHostName(), is("127.0.0.1"));
+        assertThat(actual.getPort(), is(9999));
+        assertEquals(actual.getCatalog(), "ds_0");
+        assertEquals(actual.getSchemaName(), null);
     }
     
     @Test
     public void assertGetPropertiesWithPortAndWithoutMicrosoft() {
-        SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData("jdbc:sqlserver://127.0.0.1:9999;DatabaseName=ds_0");
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:sqlserver://127.0.0.1:9999;DatabaseName=ds_0", "test");
+        SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
-        assertThat(actual.getSchemaName(), is("ds_0"));
+        assertEquals(actual.getSchemaName(), null);
     }
     
     @Test
     public void assertGetPropertiesWithDefaultPortAndMicrosoft() {
-        SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData("jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=ds_0");
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=ds_0", "test");
+        SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(1433));
-        assertThat(actual.getSchemaName(), is("ds_0"));
+        assertEquals(actual.getSchemaName(), null);
     }
     
     @Test
     public void assertGetPropertiesWithDefaultPortWithoutMicrosoft() {
-        SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData("jdbc:sqlserver://127.0.0.1;DatabaseName=ds_0");
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:sqlserver://127.0.0.1;DatabaseName=ds_0", "test");
+        SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(1433));
-        assertThat(actual.getSchemaName(), is("ds_0"));
+        assertEquals(actual.getSchemaName(), null);
     }
     
     @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertGetPropertiesFailure() {
-        new SQLServerDataSourceMetaData("jdbc:sqlserver:xxxxxxxx");
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:sqlserver:xxxxxxxx", "test");
+        new SQLServerDataSourceMetaData(dataSourceInfo);
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.merge.dql.orderby;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 
 /**
  * Compare util.

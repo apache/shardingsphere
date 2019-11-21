@@ -19,22 +19,22 @@ package org.apache.shardingsphere.core.preprocessor.segment.select.projection.en
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ColumnSelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.TextOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.TableAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnSelectItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.TextOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableAvailable;
 import org.apache.shardingsphere.core.preprocessor.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.core.preprocessor.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.SelectItemsSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.item.ShorthandSelectItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.SchemaSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandSelectItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
 import org.junit.Test;
 

@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.core.preprocessor.segment.select.orderby.engine;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.OrderBySegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.IndexOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.preprocessor.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderByItem;

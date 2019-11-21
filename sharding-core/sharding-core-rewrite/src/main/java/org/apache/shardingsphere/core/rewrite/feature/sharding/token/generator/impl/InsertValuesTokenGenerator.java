@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.impl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.assignment.InsertValuesSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.preprocessor.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
