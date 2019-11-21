@@ -69,14 +69,13 @@ public abstract class LogicSchema {
      * Get dataSource map.
      * @param dataSourceMap dataSource map
      * @return get dataSource map
-     * @throws SQLException SQLException
      */
-    public Map<String, DataSourceInfo> getDataSourceInfoMap(final Map<String, YamlDataSourceParameter> dataSourceMap) throws SQLException {
+    public Map<String, DataSourceInfo> getDataSourceInfoMap(final Map<String, YamlDataSourceParameter> dataSourceMap) {
         Map<String, DataSourceInfo> result = new HashMap<String, DataSourceInfo>(dataSourceMap.size(), 1);
         for (Entry<String, YamlDataSourceParameter> entry : dataSourceMap.entrySet()) {
             YamlDataSourceParameter dataSource = entry.getValue();
-            DataSourceInfo sourceInfo = new DataSourceInfo(dataSource.getUrl(), null);
-            result.put(entry.getKey(), sourceInfo);
+            DataSourceInfo dataSourceInfo = new DataSourceInfo(dataSource.getUrl(), null);
+            result.put(entry.getKey(), dataSourceInfo);
         }
         return result;
     }
