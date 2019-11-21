@@ -73,7 +73,6 @@ public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallb
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         Connection conn = statementExecuteUnit.getStatement().getConnection();
         DatabaseMetaData metaData = conn.getMetaData();
-        
         DataSourceMetaData dataSourceMetaData = databaseType.getDataSourceMetaData(new DataSourceInfo(metaData.getURL(), metaData.getUserName()));
         SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
         try {

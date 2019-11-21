@@ -73,5 +73,4 @@ public final class SQLServerDatabaseTypeTest {
         assertThat(actual.getPort(), is(1433));
         assertEquals(actual.getSchemaName(), null);
     }
-    
 }

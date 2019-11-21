@@ -102,9 +102,10 @@ public final class TableMetaDataInitializer {
     private Collection<String> getAllTableNames(final String dataSourceName) throws SQLException {
         Collection<String> result = new LinkedHashSet<>();
         DataSourceMetaData dataSourceMetaData = this.dataSourceMetas.getDataSourceMetaData(dataSourceName);
-        String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemaName();
+        String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getCatalog();
+        String schemaName = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemaName();
         try (Connection connection = connectionManager.getConnection(dataSourceName);
-             ResultSet resultSet = connection.getMetaData().getTables(catalog, getCurrentSchemaName(connection), null, new String[]{"TABLE"})) {
+             ResultSet resultSet = connection.getMetaData().getTables(catalog, schemaName, null, new String[]{"TABLE"})) {
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
                 if (!tableName.contains("$") && !tableName.contains("/")) {

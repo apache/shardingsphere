@@ -58,11 +58,9 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         DataSourceInfo main = new DataSourceInfo("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
         DataSourceInfo ds0 = new DataSourceInfo("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
         DataSourceInfo ds1 = new DataSourceInfo("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
-        
         dataSourceInfoMap.put("main", main);
         dataSourceInfoMap.put("ds_0", ds0);
         dataSourceInfoMap.put("ds_1", ds1);
-        
         return new DataSourceMetas(DatabaseTypes.getActualDatabaseType("MySQL"), dataSourceInfoMap);
     }
     
