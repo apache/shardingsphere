@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.sql.token.generator;
 
-import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 /**
  * SQL token generator.

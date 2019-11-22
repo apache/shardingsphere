@@ -24,7 +24,6 @@ import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
@@ -70,7 +69,7 @@ public final class TableMetasTest {
     @Test
     public void assertGetAllColumnNamesWhenContainsKey() {
         TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("name", "dataType", false, false, false)), Collections.<String>emptyList());
-        assertThat(new TableMetas(ImmutableMap.of("tableMetaData", tableMetaData)).getAllColumnNames("tableMetaData"), is((List<String>) Collections.singletonList("name")));
+        assertThat(new TableMetas(ImmutableMap.of("tableMetaData", tableMetaData)).getAllColumnNames("tableMetaData"), is(Collections.singletonList("name")));
     }
     
     @Test

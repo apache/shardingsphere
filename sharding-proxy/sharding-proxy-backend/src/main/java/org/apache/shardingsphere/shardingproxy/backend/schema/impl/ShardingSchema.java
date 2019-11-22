@@ -24,13 +24,13 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateIndexStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.util.ConfigurationLogger;
@@ -77,7 +77,7 @@ public final class ShardingSchema extends LogicSchema {
     }
     
     private ShardingSphereMetaData createMetaData() throws SQLException {
-        DataSourceMetas dataSourceMetas = new DataSourceMetas(getDataSourceURLs(getDataSources()), LogicSchemas.getInstance().getDatabaseType());
+        DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDataSourceInfoMap(getDataSources()));
         TableMetas tableMetas = new TableMetas(getTableMetaDataInitializer(dataSourceMetas).load(shardingRule));
         return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
     }

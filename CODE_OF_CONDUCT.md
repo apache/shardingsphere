@@ -1,5 +1,7 @@
 # Contributor Covenant Code of Conduct
 
+The following code of conduct is based on full compliance with [ASF CODE OF CONDUCT](https://www.apache.org/foundation/policies/conduct.html).
+
 ## Development Concept
 
  - Write codes with heart. Pursue clean, simplified and extremely elegant codes. Agree with concepts in &lt;Refactoring: Improving the Design of Existing Code&gt; and &lt;Clean Code: A Handbook of Agile Software Craftsmanship&gt;.

@@ -222,6 +222,11 @@ public final class ShardingRuleTest {
     }
     
     @Test
+    public void assertIsNotAllInDefaultDataSourceWithoutDefaultDataSource() {
+        assertFalse(createMinimumShardingRule().isAllInDefaultDataSource(Collections.singletonList("table_0")));
+    }
+    
+    @Test
     public void assertIsNotAllInDefaultDataSourceWithShardingTable() {
         assertFalse(createMaximumShardingRule().isAllInDefaultDataSource(Arrays.asList("table_0", "logic_table")));
     }
@@ -366,6 +371,21 @@ public final class ShardingRuleTest {
         shardingRuleConfiguration.getMasterSlaveRuleConfigs().add(createMasterSlaveRuleConfiguration("ms_ds_0", "master_ds_0", "slave_ds_0"));
         shardingRuleConfiguration.getMasterSlaveRuleConfigs().add(createMasterSlaveRuleConfiguration("ms_ds_1", "master_ds_1", "slave_ds_1"));
         new ShardingRule(shardingRuleConfiguration, null);
+    }
+    
+    @Test
+    public void assertTableRuleExists() {
+        assertTrue(createMaximumShardingRule().tableRuleExists(Collections.singletonList("logic_table")));
+    }
+    
+    @Test
+    public void assertTableRuleExistsForMultipleTables() {
+        assertTrue(createMaximumShardingRule().tableRuleExists(Arrays.asList("logic_table", "table_0")));
+    }
+    
+    @Test
+    public void assertTableRuleNotExists() {
+        assertFalse(createMinimumShardingRule().tableRuleExists(Collections.singletonList("table_0")));
     }
     
     private ShardingRule createMaximumShardingRule() {

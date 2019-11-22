@@ -17,13 +17,16 @@
 
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
-import com.google.common.base.Strings;
-import lombok.Getter;
-import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.spi.database.DataSourceMetaData;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.spi.database.DataSourceInfo;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
+
+import com.google.common.base.Strings;
+
+import lombok.Getter;
 
 /**
  * Data source meta data for Oracle.
@@ -41,15 +44,20 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
     
     private final String schemaName;
     
+    private final String catalog;
+    
     private final Pattern pattern = Pattern.compile("jdbc:oracle:(thin|oci|kprb):@(//)?([\\w\\-\\.]+):?([0-9]*)[:/]([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
     
-    public OracleDataSourceMetaData(final String url) {
+    public OracleDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
+        String url = dataSourceInfo.getUrl();
+
         Matcher matcher = pattern.matcher(url);
         if (!matcher.find()) {
             throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
         }
         hostName = matcher.group(3);
         port = Strings.isNullOrEmpty(matcher.group(4)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(4));
-        schemaName = matcher.group(5);
+        catalog = matcher.group(5);
+        schemaName = dataSourceInfo.getUsername();
     }
 }

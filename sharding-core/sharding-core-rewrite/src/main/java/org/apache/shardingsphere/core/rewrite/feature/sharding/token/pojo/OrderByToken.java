@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.parse.core.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 

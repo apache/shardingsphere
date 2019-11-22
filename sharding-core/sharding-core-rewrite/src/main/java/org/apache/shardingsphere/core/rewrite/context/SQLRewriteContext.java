@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.rewrite.context;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.StandardParameterBuilder;

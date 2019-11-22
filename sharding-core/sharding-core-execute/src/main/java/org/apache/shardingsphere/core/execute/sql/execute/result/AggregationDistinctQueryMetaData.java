@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.AggregationDistinctProjection;
-import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.AggregationProjection;
-import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
+import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 
 import java.util.Collection;
 import java.util.HashMap;

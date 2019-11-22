@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.core.route.router.sharding.condition.generator.impl;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.complex.CommonExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.core.route.router.sharding.condition.Column;
 import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;

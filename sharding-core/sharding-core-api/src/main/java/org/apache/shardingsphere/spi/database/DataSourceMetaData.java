@@ -45,4 +45,11 @@ public interface DataSourceMetaData {
      * @return schema name
      */
     String getSchemaName();
+    
+    /**
+     * Get catalog.
+     * 
+     * @return catalog
+     */
+    String getCatalog();
 }

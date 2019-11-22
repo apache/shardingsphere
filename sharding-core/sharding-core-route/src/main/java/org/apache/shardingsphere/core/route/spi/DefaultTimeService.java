@@ -25,10 +25,9 @@ import java.util.Date;
  * @author chenchuangliu
  */
 public final class DefaultTimeService implements TimeService {
-
+    
     @Override
     public Date getTime() {
         return new Date();
     }
 }
-

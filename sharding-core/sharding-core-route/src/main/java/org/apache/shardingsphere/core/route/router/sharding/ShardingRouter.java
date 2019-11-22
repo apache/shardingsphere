@@ -22,14 +22,14 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.preprocessor.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.preprocessor.SQLStatementContextFactory;
-import org.apache.shardingsphere.core.preprocessor.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.core.parse.SQLParseEngine;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.DMLStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.relation.SQLStatementContextFactory;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetaData;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
@@ -45,10 +45,16 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+import org.apache.shardingsphere.sql.parser.SQLParseEngine;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Sharding router.
@@ -71,6 +77,10 @@ public final class ShardingRouter {
     
     /**
      * Parse SQL.
+     * To make sure SkyWalking will be available at the next release of ShardingSphere,
+     * a new plugin should be provided to SkyWalking project if this API changed.
+     *
+     * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
      *
      * @param logicSQL logic SQL
      * @param useCache use cache to save SQL parse result or not
@@ -94,10 +104,11 @@ public final class ShardingRouter {
         if (shardingStatementValidator.isPresent()) {
             shardingStatementValidator.get().validate(shardingRule, sqlStatement, parameters);
         }
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getTables(), logicSQL, parameters, sqlStatement);
+        RelationMetas relationMetas = getRelationMetas(metaData.getTables());
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(relationMetas, logicSQL, parameters, sqlStatement);
         Optional<GeneratedKey> generatedKey = sqlStatement instanceof InsertStatement
                 ? GeneratedKey.getGenerateKey(shardingRule, metaData.getTables(), parameters, (InsertStatement) sqlStatement) : Optional.<GeneratedKey>absent();
-        ShardingConditions shardingConditions = getShardingConditions(parameters, sqlStatementContext, generatedKey.orNull());
+        ShardingConditions shardingConditions = getShardingConditions(parameters, sqlStatementContext, generatedKey.orNull(), relationMetas);
         boolean needMergeShardingValues = isNeedMergeShardingValues(sqlStatementContext);
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && needMergeShardingValues) {
             checkSubqueryShardingValues(sqlStatementContext, shardingConditions);
@@ -116,13 +127,22 @@ public final class ShardingRouter {
         return result;
     }
     
-    private ShardingConditions getShardingConditions(final List<Object> parameters, final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
+    private RelationMetas getRelationMetas(final TableMetas tableMetas) {
+        Map<String, RelationMetaData> result = new HashMap<>(tableMetas.getAllTableNames().size());
+        for (String each : tableMetas.getAllTableNames()) {
+            TableMetaData tableMetaData = tableMetas.get(each);
+            result.put(each, new RelationMetaData(tableMetaData.getColumns().keySet()));
+        }
+        return new RelationMetas(result);
+    }
+    
+    private ShardingConditions getShardingConditions(final List<Object> parameters, final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey, final RelationMetas relationMetas) {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
             if (sqlStatementContext instanceof InsertSQLStatementContext) {
                 InsertSQLStatementContext shardingInsertStatement = (InsertSQLStatementContext) sqlStatementContext;
                 return new ShardingConditions(new InsertClauseShardingConditionEngine(shardingRule).createShardingConditions(shardingInsertStatement, generatedKey, parameters));
             }
-            return new ShardingConditions(new WhereClauseShardingConditionEngine(shardingRule, metaData.getTables()).createShardingConditions(sqlStatementContext.getSqlStatement(), parameters));
+            return new ShardingConditions(new WhereClauseShardingConditionEngine(shardingRule, relationMetas).createShardingConditions(sqlStatementContext.getSqlStatement(), parameters));
         }
         return new ShardingConditions(Collections.<ShardingCondition>emptyList());
     }

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.rewrite.feature.sharding.parameter.impl;
 
 import com.google.common.base.Optional;
 import lombok.Setter;
-import org.apache.shardingsphere.core.preprocessor.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.preprocessor.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.aware.SQLRouteResultAware;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.StandardParameterBuilder;

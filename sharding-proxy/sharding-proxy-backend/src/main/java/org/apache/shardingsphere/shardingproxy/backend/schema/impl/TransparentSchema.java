@@ -22,7 +22,7 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.parse.SQLParseEngine;
+import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
@@ -56,7 +56,7 @@ public final class TransparentSchema extends LogicSchema {
     }
     
     private ShardingSphereMetaData createMetaData() throws SQLException {
-        DataSourceMetas dataSourceMetas = new DataSourceMetas(getDataSourceURLs(getDataSources()), LogicSchemas.getInstance().getDatabaseType());
+        DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDataSourceInfoMap(getDataSources()));
         TableMetas tableMetas = new TableMetas(getTableMetaDataInitializer(dataSourceMetas).load(shardingRule));
         return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
     }

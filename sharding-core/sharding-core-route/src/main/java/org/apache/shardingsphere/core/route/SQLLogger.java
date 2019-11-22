@@ -21,7 +21,7 @@ import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.util.Collection;
 import java.util.HashSet;

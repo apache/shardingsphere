@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.impl;
 
-import org.apache.shardingsphere.core.preprocessor.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.preprocessor.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.core.parse.core.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ColumnOrderByItemSegment;
-import org.apache.shardingsphere.core.parse.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.OrderByToken;

@@ -17,13 +17,16 @@
 
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
-import com.google.common.base.Strings;
-import lombok.Getter;
-import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.spi.database.DataSourceMetaData;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.spi.database.DataSourceInfo;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
+
+import com.google.common.base.Strings;
+
+import lombok.Getter;
 
 /**
  * Data source meta data for PostgreSQL.
@@ -41,15 +44,20 @@ public final class PostgreSQLDataSourceMetaData implements DataSourceMetaData {
     
     private final String schemaName;
     
-    private final Pattern pattern = Pattern.compile("jdbc:postgresql://([\\w\\-\\.]+):?([0-9]*)/([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
+    private final String catalog;
     
-    public PostgreSQLDataSourceMetaData(final String url) {
+    private final Pattern pattern = Pattern.compile("jdbc:postgresql://([\\w\\-\\.]+):?([0-9]*)/([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
+
+    public PostgreSQLDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
+        String url = dataSourceInfo.getUrl();
+
         Matcher matcher = pattern.matcher(url);
         if (!matcher.find()) {
             throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
         }
         hostName = matcher.group(1);
         port = Strings.isNullOrEmpty(matcher.group(2)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(2));
-        schemaName = matcher.group(3);
+        catalog = matcher.group(3);
+        schemaName = null;
     }
 }

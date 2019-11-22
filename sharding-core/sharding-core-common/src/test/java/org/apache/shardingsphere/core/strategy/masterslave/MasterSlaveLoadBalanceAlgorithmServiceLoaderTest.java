@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.strategy.masterslave;
 
-import org.apache.shardingsphere.core.spi.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmServiceLoader;
+import org.apache.shardingsphere.spi.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmServiceLoader;
 import org.junit.Test;
 
 import java.util.Properties;

@@ -23,15 +23,15 @@ export default {
         child: [
           {
             title: '注册配置中心',
-            href: '/config-regist'
+            href: '/registry-center'
           },
           {
             title: '配置管理',
-            href: '/config-manage'
+            href: '/rule-config'
           },
           {
-            title: 'Orchestration',
-            href: '/orchestration'
+            title: '运行状态',
+            href: '/runtime-status'
           }
         ]
       }

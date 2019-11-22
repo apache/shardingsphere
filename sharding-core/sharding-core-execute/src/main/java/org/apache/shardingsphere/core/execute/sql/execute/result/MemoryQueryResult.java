@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.execute.sql.execute.row.QueryRow;
-import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;

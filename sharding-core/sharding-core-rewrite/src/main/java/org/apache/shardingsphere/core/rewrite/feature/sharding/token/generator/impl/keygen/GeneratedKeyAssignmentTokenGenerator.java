@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.rewrite.feature.sharding.token.generator.
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.parse.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.ParametersAware;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.GeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.LiteralGeneratedKeyAssignmentToken;

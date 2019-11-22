@@ -24,13 +24,11 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.parse.SQLParseEngine;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.context.ShardingSQLRewriteContextDecorator;
@@ -48,6 +46,9 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.sql.parser.SQLParseEngine;
+import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -173,7 +174,7 @@ public final class ShardingSQLRewriteEngineParameterizedTest {
     private Collection<SQLRewriteResult> getSQLRewriteResults() throws IOException {
         YamlRootShardingConfiguration ruleConfiguration = createRuleConfiguration();
         ShardingRule shardingRule = new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(ruleConfiguration.getShardingRule()), ruleConfiguration.getDataSources().keySet());
-        SQLParseEngine parseEngine = new SQLParseEngine(DatabaseTypes.getActualDatabaseType(null == databaseType ? "SQL92" : databaseType));
+        SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine(null == databaseType ? "SQL92" : databaseType);
         ShardingRouter shardingRouter = new ShardingRouter(shardingRule, createShardingSphereMetaData(), parseEngine);
         SQLStatement sqlStatement = shardingRouter.parse(inputSQL, false);
         SQLRouteResult sqlRouteResult = shardingRouter.route(inputSQL, inputParameters, sqlStatement);
@@ -198,11 +199,20 @@ public final class ShardingSQLRewriteEngineParameterizedTest {
         TableMetas tableMetas = mock(TableMetas.class);
         when(tableMetas.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_detail"));
         TableMetaData accountTableMetaData = mock(TableMetaData.class);
+        when(accountTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
         when(accountTableMetaData.containsIndex(anyString())).thenReturn(true);
         when(tableMetas.get("t_account")).thenReturn(accountTableMetaData);
         when(tableMetas.get("t_account_detail")).thenReturn(mock(TableMetaData.class));
         when(tableMetas.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "amount", "status"));
         return new ShardingSphereMetaData(mock(DataSourceMetas.class), tableMetas);
+    }
+    
+    private Map<String, ColumnMetaData> createColumnMetaDataMap() {
+        Map<String, ColumnMetaData> result = new LinkedHashMap<>();
+        result.put("account_id", mock(ColumnMetaData.class));
+        result.put("amount", mock(ColumnMetaData.class));
+        result.put("status", mock(ColumnMetaData.class));
+        return result;
     }
     
     private Map<String, String> getLogicAndActualTables(final ShardingRule shardingRule, final RoutingUnit routingUnit, final Collection<String> parsedTableNames) {

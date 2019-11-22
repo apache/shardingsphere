@@ -34,13 +34,13 @@ import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.core.execute.sql.prepare.SQLExecutePrepareTemplate;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateIndexStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCTableMetaDataConnectionManager;
@@ -129,6 +129,12 @@ public class AbstractStatementExecutor {
         }
     }
     
+    /**
+     * To make sure SkyWalking will be available at the next release of ShardingSphere,
+     * a new plugin should be provided to SkyWalking project if this API changed.
+     *
+     * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
+     */
     @SuppressWarnings("unchecked")
     protected final <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
         List<T> result = sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);

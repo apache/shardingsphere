@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
-import org.apache.shardingsphere.core.preprocessor.segment.select.projection.impl.AggregationDistinctProjection;
-import org.apache.shardingsphere.core.parse.core.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
+import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 import org.junit.Before;
 import org.junit.Test;
 
