@@ -34,8 +34,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -110,14 +111,14 @@ public final class DescribeTableMergedResultTest {
         ShardingRule shardingRule = mockShardingRuleWithEncryptRule();
         DescribeTableMergedResult describeTableMergedResult = new DescribeTableMergedResult(shardingRule, queryResults, sqlStatementContext);
         assertTrue(describeTableMergedResult.next());
-        assertEquals(describeTableMergedResult.getValue(1, String.class), "id");
-        assertEquals(describeTableMergedResult.getValue("Field", String.class), "id");
+        assertThat(describeTableMergedResult.getValue(1, String.class).toString(), is("id"));
+        assertThat(describeTableMergedResult.getValue("Field", String.class).toString(), is("id"));
         assertTrue(describeTableMergedResult.next());
-        assertEquals(describeTableMergedResult.getValue(1, String.class), "logic_name");
-        assertEquals(describeTableMergedResult.getValue("Field", String.class), "logic_name");
+        assertThat(describeTableMergedResult.getValue(1, String.class).toString(), is("logic_name"));
+        assertThat(describeTableMergedResult.getValue("Field", String.class).toString(), is("logic_name"));
         assertTrue(describeTableMergedResult.next());
-        assertEquals(describeTableMergedResult.getValue(1, String.class), "pre_name");
-        assertEquals(describeTableMergedResult.getValue("Field", String.class), "pre_name");
+        assertThat(describeTableMergedResult.getValue(1, String.class).toString(), is("pre_name"));
+        assertThat(describeTableMergedResult.getValue("Field", String.class).toString(), is("pre_name"));
         assertFalse(describeTableMergedResult.next());
     }
 
@@ -126,17 +127,17 @@ public final class DescribeTableMergedResultTest {
         ShardingRule shardingRule = mockShardingRuleWithoutEncryptRule();
         DescribeTableMergedResult describeTableMergedResult = new DescribeTableMergedResult(shardingRule, queryResults, sqlStatementContext);
         assertTrue(describeTableMergedResult.next());
-        assertEquals(describeTableMergedResult.getValue(1, String.class), "id");
-        assertEquals(describeTableMergedResult.getValue("Field", String.class), "id");
+        assertThat(describeTableMergedResult.getValue(1, String.class).toString(), is("id"));
+        assertThat(describeTableMergedResult.getValue("Field", String.class).toString(), is("id"));
         assertTrue(describeTableMergedResult.next());
-        assertEquals(describeTableMergedResult.getValue(1, String.class), "name");
-        assertEquals(describeTableMergedResult.getValue("Field", String.class), "name");
+        assertThat(describeTableMergedResult.getValue(1, String.class).toString(), is("name"));
+        assertThat(describeTableMergedResult.getValue("Field", String.class).toString(), is("name"));
         assertTrue(describeTableMergedResult.next());
-        assertEquals(describeTableMergedResult.getValue(1, String.class), "pre_name");
-        assertEquals(describeTableMergedResult.getValue("Field", String.class), "pre_name");
+        assertThat(describeTableMergedResult.getValue(1, String.class).toString(), is("pre_name"));
+        assertThat(describeTableMergedResult.getValue("Field", String.class).toString(), is("pre_name"));
         assertTrue(describeTableMergedResult.next());
-        assertEquals(describeTableMergedResult.getValue(1, String.class), "name_assisted");
-        assertEquals(describeTableMergedResult.getValue("Field", String.class), "name_assisted");
+        assertThat(describeTableMergedResult.getValue(1, String.class).toString(), is("name_assisted"));
+        assertThat(describeTableMergedResult.getValue("Field", String.class).toString(), is("name_assisted"));
     }
 
     @Test
@@ -144,18 +145,18 @@ public final class DescribeTableMergedResultTest {
         ShardingRule shardingRule = mockShardingRuleWithoutEncryptRule();
         DescribeTableMergedResult describeTableMergedResult = new DescribeTableMergedResult(shardingRule, queryResults, sqlStatementContext);
         assertTrue(describeTableMergedResult.next());
-        assertEquals(describeTableMergedResult.getValue(1, String.class), "id");
-        assertEquals(describeTableMergedResult.getValue("Field", String.class), "id");
-        assertEquals(describeTableMergedResult.getValue(2, String.class), "int(11) unsigned");
-        assertEquals(describeTableMergedResult.getValue("Type", String.class), "int(11) unsigned");
-        assertEquals(describeTableMergedResult.getValue(3, String.class), "NO");
-        assertEquals(describeTableMergedResult.getValue("Null", String.class), "NO");
-        assertEquals(describeTableMergedResult.getValue(4, String.class), "PRI");
-        assertEquals(describeTableMergedResult.getValue("Key", String.class), "PRI");
-        assertEquals(describeTableMergedResult.getValue(5, String.class), "");
-        assertEquals(describeTableMergedResult.getValue("Default", String.class), "");
-        assertEquals(describeTableMergedResult.getValue(6, String.class), "auto_increment");
-        assertEquals(describeTableMergedResult.getValue("Extra", String.class), "auto_increment");
+        assertThat(describeTableMergedResult.getValue(1, String.class).toString(), is("id"));
+        assertThat(describeTableMergedResult.getValue("Field", String.class).toString(), is("id"));
+        assertThat(describeTableMergedResult.getValue(2, String.class).toString(), is("int(11) unsigned"));
+        assertThat(describeTableMergedResult.getValue("Type", String.class).toString(), is("int(11) unsigned"));
+        assertThat(describeTableMergedResult.getValue(3, String.class).toString(), is("NO"));
+        assertThat(describeTableMergedResult.getValue("Null", String.class).toString(), is("NO"));
+        assertThat(describeTableMergedResult.getValue(4, String.class).toString(), is("PRI"));
+        assertThat(describeTableMergedResult.getValue("Key", String.class).toString(), is("PRI"));
+        assertThat(describeTableMergedResult.getValue(5, String.class).toString(), is(""));
+        assertThat(describeTableMergedResult.getValue("Default", String.class).toString(), is(""));
+        assertThat(describeTableMergedResult.getValue(6, String.class).toString(), is("auto_increment"));
+        assertThat(describeTableMergedResult.getValue("Extra", String.class).toString(), is("auto_increment"));
     }
 
     @Test
@@ -163,18 +164,18 @@ public final class DescribeTableMergedResultTest {
         ShardingRule shardingRule = mockShardingRuleWithEncryptRule();
         DescribeTableMergedResult describeTableMergedResult = new DescribeTableMergedResult(shardingRule, queryResults, sqlStatementContext);
         assertTrue(describeTableMergedResult.next());
-        assertEquals(describeTableMergedResult.getValue(1, String.class), "id");
-        assertEquals(describeTableMergedResult.getValue("Field", String.class), "id");
-        assertEquals(describeTableMergedResult.getValue(2, String.class), "int(11) unsigned");
-        assertEquals(describeTableMergedResult.getValue("Type", String.class), "int(11) unsigned");
-        assertEquals(describeTableMergedResult.getValue(3, String.class), "NO");
-        assertEquals(describeTableMergedResult.getValue("Null", String.class), "NO");
-        assertEquals(describeTableMergedResult.getValue(4, String.class), "PRI");
-        assertEquals(describeTableMergedResult.getValue("Key", String.class), "PRI");
-        assertEquals(describeTableMergedResult.getValue(5, String.class), "");
-        assertEquals(describeTableMergedResult.getValue("Default", String.class), "");
-        assertEquals(describeTableMergedResult.getValue(6, String.class), "auto_increment");
-        assertEquals(describeTableMergedResult.getValue("Extra", String.class), "auto_increment");
+        assertThat(describeTableMergedResult.getValue(1, String.class).toString(), is("id"));
+        assertThat(describeTableMergedResult.getValue("Field", String.class).toString(), is("id"));
+        assertThat(describeTableMergedResult.getValue(2, String.class).toString(), is("int(11) unsigned"));
+        assertThat(describeTableMergedResult.getValue("Type", String.class).toString(), is("int(11) unsigned"));
+        assertThat(describeTableMergedResult.getValue(3, String.class).toString(), is("NO"));
+        assertThat(describeTableMergedResult.getValue("Null", String.class).toString(), is("NO"));
+        assertThat(describeTableMergedResult.getValue(4, String.class).toString(), is("PRI"));
+        assertThat(describeTableMergedResult.getValue("Key", String.class).toString(), is("PRI"));
+        assertThat(describeTableMergedResult.getValue(5, String.class).toString(), is(""));
+        assertThat(describeTableMergedResult.getValue("Default", String.class).toString(), is(""));
+        assertThat(describeTableMergedResult.getValue(6, String.class).toString(), is("auto_increment"));
+        assertThat(describeTableMergedResult.getValue("Extra", String.class).toString(), is("auto_increment"));
     }
 
     private ShardingRule mockShardingRuleWithoutEncryptRule() {
