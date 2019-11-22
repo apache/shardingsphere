@@ -20,10 +20,10 @@ package org.apache.shardingsphere.core.rewrite.parameterized.engine;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.preprocessor.SQLStatementContextFactory;
-import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.SQLStatementContextFactory;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.core.rewrite.engine.impl.DefaultSQLRewriteEngine;
@@ -142,16 +142,13 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
     
     private SQLRewriteContext getSQLRewriteContext() {
         SQLStatement sqlStatement = SQLParseEngineFactory.getSQLParseEngine(null == databaseType ? "SQL92" : databaseType).parse(inputSQL, false);
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(createTableMetas(), inputSQL, inputParameters, sqlStatement);
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(createRelationMetas(), inputSQL, inputParameters, sqlStatement);
         return new SQLRewriteContext(mock(TableMetas.class), sqlStatementContext, inputSQL, inputParameters);
     }
     
-    private TableMetas createTableMetas() {
-        TableMetas result = mock(TableMetas.class);
-        when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_bak"));
-        when(result.get("t_account")).thenReturn(mock(TableMetaData.class));
+    private RelationMetas createRelationMetas() {
+        RelationMetas result = mock(RelationMetas.class);
         when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
-        when(result.get("t_account_bak")).thenReturn(mock(TableMetaData.class));
         when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         return result;
     }

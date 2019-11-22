@@ -20,18 +20,16 @@ package org.apache.shardingsphere.spi.database;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-
 /**
- * DataSource info.
+ * Data source info.
  *
  * @author duanchao
  */
-@Getter
 @AllArgsConstructor
-public class DataSourceInfo {
+@Getter
+public final class DataSourceInfo {
     
     private String url;
     
     private String username;
-    
 }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnSelectIte
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemsSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.CollectionSQLTokenGenerator;

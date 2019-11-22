@@ -30,7 +30,6 @@
     <modules>
         <module>sharding-core-api</module>
         <module>sharding-core-common</module>
-        <module>sharding-core-preprocessor</module>
         <module>sharding-core-route</module>
         <module>database-time-service</module>
         <module>sharding-core-rewrite</module>

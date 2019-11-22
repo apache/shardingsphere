@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
-import lombok.Getter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Data source meta data for SQL92.

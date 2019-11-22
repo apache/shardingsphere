@@ -31,12 +31,15 @@
     
     <modules>
         <module>shardingsphere-sql-parser-spi</module>
-        <module>shardingsphere-sql-parser-common</module>
+        <module>shardingsphere-sql-parser-engine</module>
+        <module>shardingsphere-sql-parser-relation</module>
+        
         <module>shardingsphere-sql-parser-sql92</module>
         <module>shardingsphere-sql-parser-mysql</module>
         <module>shardingsphere-sql-parser-postgresql</module>
         <module>shardingsphere-sql-parser-oracle</module>
         <module>shardingsphere-sql-parser-sqlserver</module>
+        
         <module>shardingsphere-sql-parser-test</module>
     </modules>
     
