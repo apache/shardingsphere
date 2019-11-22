@@ -89,15 +89,11 @@ jQuery(document).ready(function() {
 
 
 jQuery(document).ready(function(){
-	$("#sidebar .topics li span").click(function(event){   
+	$("#sidebar .topics li svg").click(function(event){   
 		event.preventDefault();
 		event.stopPropagation();
 		var that=$(this);
-		if(that.is(":contains('+')")){
-		   that.html('-&nbsp;')
-		}else{
-		   that.html('+&nbsp;')
-		}
+    that.toggle().siblings('svg').toggle()
 		that.closest("li").children("ul").toggle();
 	});
 })
