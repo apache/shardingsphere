@@ -40,9 +40,9 @@ public final class PostgreSQLDataSourceMetaData implements DataSourceMetaData {
     
     private final int port;
     
-    private final String schema;
-    
     private final String catalog;
+    
+    private final String schema;
     
     private final Pattern pattern = Pattern.compile("jdbc:postgresql://([\\w\\-\\.]+):?([0-9]*)/([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
     

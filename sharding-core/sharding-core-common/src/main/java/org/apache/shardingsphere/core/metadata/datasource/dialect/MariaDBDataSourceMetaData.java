@@ -40,9 +40,9 @@ public final class MariaDBDataSourceMetaData implements DataSourceMetaData {
     
     private final int port;
     
-    private final String schema;
-    
     private final String catalog;
+    
+    private final String schema;
     
     private final Pattern pattern = Pattern.compile("jdbc:(mysql|mariadb)(:replication|:failover|:sequential|:aurora)?:(\\w*:)?//([\\w\\-\\.]+):?([0-9]*)/([\\w\\-]+);?\\S*", Pattern.CASE_INSENSITIVE);
     

@@ -40,9 +40,9 @@ public final class SQLServerDataSourceMetaData implements DataSourceMetaData {
     
     private final int port;
     
-    private final String schema;
-    
     private final String catalog;
+    
+    private final String schema;
     
     private final Pattern pattern = Pattern.compile("jdbc:(microsoft:)?sqlserver://([\\w\\-\\.]+):?([0-9]*);\\S*(DatabaseName|database)=([\\w\\-]+);?", Pattern.CASE_INSENSITIVE);
     
