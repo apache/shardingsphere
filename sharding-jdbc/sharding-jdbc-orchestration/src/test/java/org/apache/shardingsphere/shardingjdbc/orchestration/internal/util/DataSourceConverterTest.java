@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class DataSourceConverterTest {
+public final class DataSourceConverterTest {
     
     @Test
     public void assertGetDataSourceMap() {

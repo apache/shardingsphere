@@ -38,7 +38,7 @@ import java.util.Collection;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public class YamlOrchestrationMasterSlaveIntegrateTest extends AbstractYamlDataSourceTest {
+public final class YamlOrchestrationMasterSlaveIntegrateTest extends AbstractYamlDataSourceTest {
     
     private final String filePath;
     
@@ -68,11 +68,11 @@ public class YamlOrchestrationMasterSlaveIntegrateTest extends AbstractYamlDataS
                 }
             }), yamlFile);
         }
-        try (Connection conn = dataSource.getConnection();
-             Statement stm = conn.createStatement()) {
-            stm.executeQuery("SELECT * FROM t_order");
-            stm.executeQuery("SELECT * FROM t_order_item");
-            stm.executeQuery("SELECT * FROM t_config");
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.executeQuery("SELECT * FROM t_order");
+            statement.executeQuery("SELECT * FROM t_order_item");
+            statement.executeQuery("SELECT * FROM t_config");
         }
         ((OrchestrationMasterSlaveDataSource) dataSource).close();
     }

@@ -46,7 +46,7 @@ public final class ShardingSphereDataSourceMetaDataTest {
     public void assertGetAllInstanceDataSourceNamesForShardingRule() {
         assertNotNull(dataSourceMetas.getAllInstanceDataSourceNames());
     }
-        
+    
     @Test
     public void assertGetActualCatalogForShardingRule() {
         assertThat(dataSourceMetas.getDataSourceMetaData("ds_0").getCatalog(), is("db_0"));

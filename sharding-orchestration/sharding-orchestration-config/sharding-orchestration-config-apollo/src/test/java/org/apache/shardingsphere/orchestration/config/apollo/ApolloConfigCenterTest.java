@@ -30,18 +30,18 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ApolloConfigCenterTest {
-
+public final class ApolloConfigCenterTest {
+    
     static {
         System.setProperty("env", "DEV");
         System.setProperty("idc", ConfigConsts.CLUSTER_NAME_DEFAULT);
     }
-
+    
     @ClassRule
     public static EmbeddedApollo embeddedApollo = new EmbeddedApollo();
-
+    
     private static ConfigCenter configCenter = new ApolloConfigCenter();
-
+    
     @BeforeClass
     public static void init() {
         ConfigCenterConfiguration configuration = new ConfigCenterConfiguration(configCenter.getType(), new Properties());
@@ -49,17 +49,17 @@ public class ApolloConfigCenterTest {
         configuration.setNamespace("orchestration");
         configCenter.init(configuration);
     }
-
+    
     @Test
     public void assertGet() {
         assertThat(configCenter.get("key1"), is("value1"));
     }
-
+    
     @Test
     public void assertGetDirectly() {
         assertThat(configCenter.getDirectly("key2"), is("value2"));
     }
-
+    
     @Test
     public void assertIsExisted() {
         assertThat(configCenter.isExisted("key1"), is(true));

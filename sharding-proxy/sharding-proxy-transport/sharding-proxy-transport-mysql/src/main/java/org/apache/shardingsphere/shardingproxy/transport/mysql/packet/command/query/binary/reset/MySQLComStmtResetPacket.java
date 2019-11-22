@@ -30,7 +30,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPack
  * @author zhaojun
  */
 @Getter
-public class MySQLComStmtResetPacket extends MySQLCommandPacket {
+public final class MySQLComStmtResetPacket extends MySQLCommandPacket {
     
     private final int statementId;
     

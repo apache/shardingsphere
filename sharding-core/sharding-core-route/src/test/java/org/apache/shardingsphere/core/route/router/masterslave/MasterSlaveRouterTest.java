@@ -17,19 +17,14 @@
 
 package org.apache.shardingsphere.core.route.router.masterslave;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
-
-import java.util.Collection;
-
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
+import org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,10 +32,14 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.google.common.collect.Lists;
+import java.util.Collection;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MasterSlaveRouterTest {
+public final class MasterSlaveRouterTest {
     
     private static final String QUERY_SQL = "select * from table";
 
@@ -67,7 +66,7 @@ public class MasterSlaveRouterTest {
     private MasterSlaveRouter masterSlaveRouter;
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         masterSlaveRouter = new MasterSlaveRouter(masterSlaveRule, sqlParseEngine, true);
         when(sqlParseEngine.parse(QUERY_SQL, false)).thenReturn(selectStatement);
         when(sqlParseEngine.parse(INSERT_SQL, false)).thenReturn(insertStatement);

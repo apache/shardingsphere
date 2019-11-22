@@ -29,7 +29,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class UnSupportedDatabaseMetaDataResultSetTest {
+public final class UnSupportedDatabaseMetaDataResultSetTest {
     
     private DatabaseMetaDataResultSet databaseMetaDataResultSet;
     

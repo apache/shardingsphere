@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SQLExecuteCallbackFactoryTest {
+public final class SQLExecuteCallbackFactoryTest {
     
     @Mock
     private PreparedStatement preparedStatement;

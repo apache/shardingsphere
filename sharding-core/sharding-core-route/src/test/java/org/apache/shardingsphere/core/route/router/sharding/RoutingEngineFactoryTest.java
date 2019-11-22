@@ -57,7 +57,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RoutingEngineFactoryTest {
+public final class RoutingEngineFactoryTest {
     
     @Mock
     private ShardingRule shardingRule;

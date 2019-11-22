@@ -17,15 +17,6 @@
 
 package org.apache.shardingsphere.core.route.type.standard;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
@@ -40,6 +31,15 @@ import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     
     protected final SQLRouteResult assertRoute(final String sql, final List<Object> parameters) {
@@ -53,16 +53,13 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     }
     
     private DataSourceMetas buildDataSourceMetas() {
-        
-        final Map<String, DataSourceInfo> dataSourceInfoMap = new HashMap<String, DataSourceInfo>();
-        DataSourceInfo main = new DataSourceInfo("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
-        DataSourceInfo ds0 = new DataSourceInfo("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
-        DataSourceInfo ds1 = new DataSourceInfo("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
-        
-        dataSourceInfoMap.put("main", main);
-        dataSourceInfoMap.put("ds_0", ds0);
-        dataSourceInfoMap.put("ds_1", ds1);
-        
+        Map<String, DataSourceInfo> dataSourceInfoMap = new HashMap<>();
+        DataSourceInfo mainDataSourceInfo = new DataSourceInfo("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
+        DataSourceInfo dataSourceInfo0 = new DataSourceInfo("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
+        DataSourceInfo dataSourceInfo1 = new DataSourceInfo("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
+        dataSourceInfoMap.put("main", mainDataSourceInfo);
+        dataSourceInfoMap.put("ds_0", dataSourceInfo0);
+        dataSourceInfoMap.put("ds_1", dataSourceInfo1);
         return new DataSourceMetas(DatabaseTypes.getActualDatabaseType("MySQL"), dataSourceInfoMap);
     }
     

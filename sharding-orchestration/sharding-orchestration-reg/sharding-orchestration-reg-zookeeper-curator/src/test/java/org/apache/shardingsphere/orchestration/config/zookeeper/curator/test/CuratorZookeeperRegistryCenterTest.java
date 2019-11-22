@@ -30,7 +30,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class CuratorZookeeperRegistryCenterTest {
+public final class CuratorZookeeperRegistryCenterTest {
     
     private static RegistryCenter curatorZookeeperRegistryCenter = new CuratorZookeeperRegistryCenter();
     

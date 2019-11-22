@@ -41,10 +41,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = SpringBootJndiTest.class)
+@SpringBootTest(classes = SpringBootJNDITest.class)
 @SpringBootApplication
 @ActiveProfiles("jndi")
-public class SpringBootJndiTest {
+public class SpringBootJNDITest {
     
     private static final String TEST_DATASOURCE_URL = "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL";
     

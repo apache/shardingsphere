@@ -27,7 +27,7 @@ import java.sql.SQLException;
  * 
  * @author zhangliang
  */
-public class MemoryQueryResultRow {
+public final class MemoryQueryResultRow {
     
     private final Object[] data;
     

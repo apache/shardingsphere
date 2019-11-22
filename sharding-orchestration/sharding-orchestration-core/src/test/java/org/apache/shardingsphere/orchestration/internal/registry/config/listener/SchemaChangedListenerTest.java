@@ -47,7 +47,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SchemaChangedListenerTest {
+public final class SchemaChangedListenerTest {
     
     private static final String DATA_SOURCE_YAML = "master_ds: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n"
             + "  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n" + "  properties:\n"

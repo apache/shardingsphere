@@ -26,7 +26,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class SQLRouteTest extends AbstractSQLRouteTest {
+public final class SQLRouteTest extends AbstractSQLRouteTest {
     
     @Test
     public void assertNoTableUnicastRandomDataSource() {
