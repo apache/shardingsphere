@@ -36,10 +36,14 @@ import static org.junit.Assert.assertTrue;
 
 public final class ConditionValueInOperatorGeneratorTest {
     
+    private final ConditionValueInOperatorGenerator generator = new ConditionValueInOperatorGenerator();
+    
+    private final Column column = new Column("id", "tbl");
+    
     @Test
     public void assertNowExpression() {
         PredicateInRightValue inRightValue = new PredicateInRightValue(Collections.<ExpressionSegment>singletonList(new CommonExpressionSegment(0, 0, "now()")));
-        Optional<RouteValue> routeValue = new ConditionValueInOperatorGenerator().generate(inRightValue, new Column("id", "tbl"), new LinkedList<>());
+        Optional<RouteValue> routeValue = generator.generate(inRightValue, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         assertThat(((ListRouteValue) routeValue.get()).getValues().iterator().next(), instanceOf(Date.class));
     }

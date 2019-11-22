@@ -37,6 +37,8 @@ import static org.junit.Assert.assertTrue;
 
 public final class ConditionValueBetweenOperatorGeneratorTest {
     
+    private final ConditionValueBetweenOperatorGenerator generator = new ConditionValueBetweenOperatorGenerator();
+    
     private final Column column = new Column("id", "tbl");
     
     @SuppressWarnings("unchecked")
@@ -47,7 +49,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, between);
         ExpressionSegment andSegment = new LiteralExpressionSegment(0, 0, and);
         PredicateBetweenRightValue value = new PredicateBetweenRightValue(betweenSegment, andSegment);
-        Optional<RouteValue> routeValue = new ConditionValueBetweenOperatorGenerator().generate(value, column, new LinkedList<>());
+        Optional<RouteValue> routeValue = generator.generate(value, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         RangeRouteValue<Integer> rangeRouteValue = (RangeRouteValue<Integer>) routeValue.get();
         assertThat(rangeRouteValue.getColumnName(), is(column.getName()));
@@ -62,7 +64,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, between);
         ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()");
         PredicateBetweenRightValue value = new PredicateBetweenRightValue(betweenSegment, andSegment);
-        new ConditionValueBetweenOperatorGenerator().generate(value, column, new LinkedList<>());
+        generator.generate(value, column, new LinkedList<>());
     }
     
     @SuppressWarnings("unchecked")
@@ -72,7 +74,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, date);
         ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()");
         PredicateBetweenRightValue value = new PredicateBetweenRightValue(betweenSegment, andSegment);
-        Optional<RouteValue> routeValue = new ConditionValueBetweenOperatorGenerator().generate(value, column, new LinkedList<>());
+        Optional<RouteValue> routeValue = generator.generate(value, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         RangeRouteValue<Date> rangeRouteValue = (RangeRouteValue<Date>) routeValue.get();
         assertThat(rangeRouteValue.getColumnName(), is(column.getName()));
@@ -89,7 +91,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         ExpressionSegment betweenSegment = new CommonExpressionSegment(0, 0, "now()");
         ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()");
         PredicateBetweenRightValue value = new PredicateBetweenRightValue(betweenSegment, andSegment);
-        Optional<RouteValue> routeValue = new ConditionValueBetweenOperatorGenerator().generate(value, column, new LinkedList<>());
+        Optional<RouteValue> routeValue = generator.generate(value, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         RangeRouteValue<Date> rangeRouteValue = (RangeRouteValue<Date>) routeValue.get();
         assertThat(rangeRouteValue.getColumnName(), is(column.getName()));
