@@ -39,7 +39,7 @@ public final class SQL92DataSourceMetaData implements DataSourceMetaData {
     
     private final int port;
     
-    private final String schemaName;
+    private final String schema;
     
     private final String catalog;
     
@@ -54,6 +54,6 @@ public final class SQL92DataSourceMetaData implements DataSourceMetaData {
         hostName = "";
         port = DEFAULT_PORT;
         catalog = "";
-        schemaName = null;
+        schema = null;
     }
 }

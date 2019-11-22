@@ -33,7 +33,7 @@ public final class MySQLDataSourceMetaDataTest {
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
         assertThat(actual.getCatalog(), is("ds_0"));
-        assertNull(actual.getSchemaName());
+        assertNull(actual.getSchema());
     }
     
     @Test
@@ -41,7 +41,7 @@ public final class MySQLDataSourceMetaDataTest {
         MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData(new DataSourceInfo("jdbc:mysql:loadbalance://127.0.0.1/ds_0?serverTimezone=UTC&useSSL=false", "test"));
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(3306));
-        assertNull(actual.getSchemaName());
+        assertNull(actual.getSchema());
     }
     
     @Test(expected = UnrecognizedDatabaseURLException.class)

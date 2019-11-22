@@ -40,7 +40,7 @@ public final class MariaDBDataSourceMetaData implements DataSourceMetaData {
     
     private final int port;
     
-    private final String schemaName;
+    private final String schema;
     
     private final String catalog;
     
@@ -55,6 +55,6 @@ public final class MariaDBDataSourceMetaData implements DataSourceMetaData {
         hostName = matcher.group(4);
         port = Strings.isNullOrEmpty(matcher.group(5)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(5));
         catalog = matcher.group(6);
-        schemaName = null;
+        schema = null;
     }
 }

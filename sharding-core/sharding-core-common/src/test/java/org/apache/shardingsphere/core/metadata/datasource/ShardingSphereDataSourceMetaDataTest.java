@@ -54,6 +54,6 @@ public final class ShardingSphereDataSourceMetaDataTest {
     
     @Test
     public void assertGetActualSchemaNameForShardingRuleForMysql() {
-        assertNull(dataSourceMetas.getDataSourceMetaData("ds_0").getSchemaName());
+        assertNull(dataSourceMetas.getDataSourceMetaData("ds_0").getSchema());
     }
 }

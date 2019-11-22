@@ -33,7 +33,7 @@ public final class OracleDataSourceMetaDataTest {
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
         assertThat(actual.getCatalog(), is("ds_0"));
-        assertThat(actual.getSchemaName(), is(dataSourceInfo.getUsername()));
+        assertThat(actual.getSchema(), is(dataSourceInfo.getUsername()));
     }
     
     @Test
@@ -42,7 +42,7 @@ public final class OracleDataSourceMetaDataTest {
         OracleDataSourceMetaData actual = new OracleDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(1521));
-        assertThat(actual.getSchemaName(), is("test"));
+        assertThat(actual.getSchema(), is("test"));
     }
     
     @Test(expected = UnrecognizedDatabaseURLException.class)

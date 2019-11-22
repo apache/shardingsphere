@@ -40,7 +40,7 @@ public final class SQLServerDataSourceMetaData implements DataSourceMetaData {
     
     private final int port;
     
-    private final String schemaName;
+    private final String schema;
     
     private final String catalog;
     
@@ -55,6 +55,6 @@ public final class SQLServerDataSourceMetaData implements DataSourceMetaData {
         hostName = matcher.group(2);
         port = Strings.isNullOrEmpty(matcher.group(3)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(3));
         catalog = matcher.group(5);
-        schemaName = null;
+        schema = null;
     }
 }

@@ -39,7 +39,7 @@ public final class H2DataSourceMetaData implements MemorizedDataSourceMetaData {
     
     private final int port;
     
-    private final String schemaName;
+    private final String schema;
     
     private final String catalog;
     
@@ -54,6 +54,6 @@ public final class H2DataSourceMetaData implements MemorizedDataSourceMetaData {
         hostName = "";
         port = DEFAULT_PORT;
         catalog = matcher.group(2);
-        schemaName = null;
+        schema = null;
     }
 }

@@ -33,7 +33,7 @@ public final class SQL92DataSourceMetaDataTest {
         assertThat(actual.getHostName(), is(""));
         assertThat(actual.getPort(), is(-1));
         assertThat(actual.getCatalog(), is(""));
-        assertNull(actual.getSchemaName());
+        assertNull(actual.getSchema());
     }
     
     @Test(expected = UnrecognizedDatabaseURLException.class)

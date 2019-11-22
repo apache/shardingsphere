@@ -33,7 +33,7 @@ public final class SQLServerDataSourceMetaDataTest {
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
         assertThat(actual.getCatalog(), is("ds_0"));
-        assertNull(actual.getSchemaName());
+        assertNull(actual.getSchema());
     }
     
     @Test
@@ -41,7 +41,7 @@ public final class SQLServerDataSourceMetaDataTest {
         SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData(new DataSourceInfo("jdbc:sqlserver://127.0.0.1:9999;DatabaseName=ds_0", "test"));
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
-        assertNull(actual.getSchemaName());
+        assertNull(actual.getSchema());
     }
     
     @Test
@@ -49,7 +49,7 @@ public final class SQLServerDataSourceMetaDataTest {
         SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData(new DataSourceInfo("jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=ds_0", "test"));
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(1433));
-        assertNull(actual.getSchemaName());
+        assertNull(actual.getSchema());
     }
     
     @Test
@@ -57,7 +57,7 @@ public final class SQLServerDataSourceMetaDataTest {
         SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData(new DataSourceInfo("jdbc:sqlserver://127.0.0.1;DatabaseName=ds_0", "test"));
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(1433));
-        assertNull(actual.getSchemaName());
+        assertNull(actual.getSchema());
     }
     
     @Test(expected = UnrecognizedDatabaseURLException.class)
