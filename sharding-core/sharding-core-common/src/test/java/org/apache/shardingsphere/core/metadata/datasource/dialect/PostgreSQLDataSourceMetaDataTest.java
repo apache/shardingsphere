@@ -17,48 +17,36 @@
 
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-
 import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+
 public final class PostgreSQLDataSourceMetaDataTest {
     
     @Test
-    public void assertDataSourceInfoParam() {
-        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:postgresql://127.0.0.1:9999/ds_0", "test");
-        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData(dataSourceInfo);
+    public void assertNewConstructorWithPort() {
+        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData(new DataSourceInfo("jdbc:postgresql://127.0.0.1:9999/ds_0", "test"));
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
         assertThat(actual.getCatalog(), is("ds_0"));
-        assertEquals(actual.getSchemaName(), null);
+        assertNull(actual.getSchemaName());
     }
     
     @Test
-    public void assertGetPropertiesWithPort() {
-        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:postgresql://127.0.0.1:9999/ds_0", "test");
-        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData(dataSourceInfo);
-        assertThat(actual.getHostName(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(9999));
-        assertEquals(actual.getSchemaName(), null);
-    }
-    
-    @Test
-    public void assertGetPropertiesWithDefaultPort() {
-        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:postgresql://127.0.0.1/ds_0", "test");
-        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData(dataSourceInfo);
+    public void assertNewConstructorWithDefaultPort() {
+        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData(new DataSourceInfo("jdbc:postgresql://127.0.0.1/ds_0", "test"));
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(5432));
-        assertEquals(actual.getCatalog(), "ds_0");
-        assertEquals(actual.getSchemaName(), null);
+        assertThat(actual.getCatalog(), is("ds_0"));
+        assertNull(actual.getSchemaName());
     }
     
     @Test(expected = UnrecognizedDatabaseURLException.class)
-    public void assertGetPropertiesFailure() {
-        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:postgresql:xxxxxxxx", "test");
-        new PostgreSQLDataSourceMetaData(dataSourceInfo);
+    public void assertNewConstructorFailure() {
+        new PostgreSQLDataSourceMetaData(new DataSourceInfo("jdbc:postgresql:xxxxxxxx", "test"));
     }
 }

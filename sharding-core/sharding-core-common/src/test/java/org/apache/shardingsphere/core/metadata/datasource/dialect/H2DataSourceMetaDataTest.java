@@ -17,44 +17,35 @@
 
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-
 import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+
 public final class H2DataSourceMetaDataTest {
     
     @Test
-    public void assertDataSourceInfoParam() {
+    public void assertNewConstructorWithMem() {
         H2DataSourceMetaData actual = new H2DataSourceMetaData(new DataSourceInfo("jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "test"));
         assertThat(actual.getHostName(), is(""));
         assertThat(actual.getPort(), is(-1));
         assertThat(actual.getCatalog(), is("ds_0"));
-        assertEquals(actual.getSchemaName(), null);
+        assertNull(actual.getSchemaName());
     }
     
     @Test
-    public void assertGetPropertiesWithMem() {
-        H2DataSourceMetaData actual = new H2DataSourceMetaData(new DataSourceInfo("jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "test"));
-        assertThat(actual.getHostName(), is(""));
-        assertThat(actual.getPort(), is(-1));
-        assertEquals(actual.getSchemaName(), null);
-    }
-    
-    @Test
-    public void assertGetPropertiesWithSymbol() {
+    public void assertNewConstructorWithSymbol() {
         H2DataSourceMetaData actual = new H2DataSourceMetaData(new DataSourceInfo("jdbc:h2:~:ds-0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "test"));
         assertThat(actual.getHostName(), is(""));
         assertThat(actual.getPort(), is(-1));
-        assertEquals(actual.getSchemaName(), null);
+        assertNull(actual.getSchemaName());
     }
     
     @Test(expected = UnrecognizedDatabaseURLException.class)
-    public void assertGetPropertiesFailure() {
-        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:h2:file:/data/sample", "test");
-        new H2DataSourceMetaData(dataSourceInfo);
+    public void assertNewConstructorFailure() {
+        new H2DataSourceMetaData(new DataSourceInfo("jdbc:h2:file:/data/sample", "test"));
     }
 }
