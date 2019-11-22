@@ -37,8 +37,8 @@ public final class DataSourceMetas {
     
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
-    public DataSourceMetas(final DatabaseType databaseType, final Map<String, DataSourceInfo> dataSourceMap) {
-        dataSourceMetaDataMap = getDataSourceMetaDataMap(databaseType, dataSourceMap);
+    public DataSourceMetas(final DatabaseType databaseType, final Map<String, DataSourceInfo> dataSourceInfoMap) {
+        dataSourceMetaDataMap = getDataSourceMetaDataMap(databaseType, dataSourceInfoMap);
     }
     
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final DatabaseType databaseType, final Map<String, DataSourceInfo> dataSourceInfoMap) {
