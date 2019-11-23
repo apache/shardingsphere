@@ -48,5 +48,11 @@
             <version>${apollo.client.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>
