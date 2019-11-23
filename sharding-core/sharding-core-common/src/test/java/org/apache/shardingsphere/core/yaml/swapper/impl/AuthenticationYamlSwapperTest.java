@@ -28,7 +28,7 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class AuthenticationYamlSwapperTest {
+public final class AuthenticationYamlSwapperTest {
         
     @Test
     public void assertSwapToYaml() {

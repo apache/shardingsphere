@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.core.metadata.datasource;
 
+import org.apache.shardingsphere.spi.database.DataSourceInfo;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
+import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.spi.database.MemorizedDataSourceMetaData;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.apache.shardingsphere.spi.database.DataSourceInfo;
-import org.apache.shardingsphere.spi.database.DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.DatabaseType;
-import org.apache.shardingsphere.spi.database.MemorizedDataSourceMetaData;
 
 /**
  * Data source metas.
@@ -37,8 +37,8 @@ public final class DataSourceMetas {
     
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
-    public DataSourceMetas(final DatabaseType databaseType, final Map<String, DataSourceInfo> dataSourceMap) {
-        dataSourceMetaDataMap = getDataSourceMetaDataMap(databaseType, dataSourceMap);
+    public DataSourceMetas(final DatabaseType databaseType, final Map<String, DataSourceInfo> dataSourceInfoMap) {
+        dataSourceMetaDataMap = getDataSourceMetaDataMap(databaseType, dataSourceInfoMap);
     }
     
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final DatabaseType databaseType, final Map<String, DataSourceInfo> dataSourceInfoMap) {
@@ -76,7 +76,7 @@ public final class DataSourceMetas {
     
     private boolean isInSameDatabaseInstance(final DataSourceMetaData sample, final DataSourceMetaData target) {
         return sample instanceof MemorizedDataSourceMetaData
-                ? target.getSchemaName().equals(sample.getSchemaName()) : target.getHostName().equals(sample.getHostName()) && target.getPort() == sample.getPort();
+                ? target.getSchema().equals(sample.getSchema()) : target.getHostName().equals(sample.getHostName()) && target.getPort() == sample.getPort();
     }
     
     /**

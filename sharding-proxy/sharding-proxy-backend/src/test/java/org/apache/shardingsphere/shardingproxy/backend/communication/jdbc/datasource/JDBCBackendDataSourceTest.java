@@ -41,7 +41,7 @@ import java.util.concurrent.Future;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -78,7 +78,7 @@ public final class JDBCBackendDataSourceTest {
     @Test
     public void assertGetConnectionsSucceed() throws SQLException {
         List<Connection> actual = jdbcBackendDataSource.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds_1", 5);
-        assertEquals(5, actual.size());
+        assertThat(actual.size(), is(5));
     }
     
     @Test(expected = SQLException.class)

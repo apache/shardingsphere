@@ -33,19 +33,19 @@ import java.util.regex.Pattern;
  */
 @Getter
 public final class MariaDBDataSourceMetaData implements DataSourceMetaData {
-
+    
     private static final int DEFAULT_PORT = 3306;
-
+    
     private final String hostName;
-
+    
     private final int port;
-
-    private final String schemaName;
-
+    
     private final String catalog;
-
+    
+    private final String schema;
+    
     private final Pattern pattern = Pattern.compile("jdbc:(mysql|mariadb)(:replication|:failover|:sequential|:aurora)?:(\\w*:)?//([\\w\\-\\.]+):?([0-9]*)/([\\w\\-]+);?\\S*", Pattern.CASE_INSENSITIVE);
-
+    
     public MariaDBDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
         String url = dataSourceInfo.getUrl();
         Matcher matcher = pattern.matcher(url);
@@ -55,6 +55,6 @@ public final class MariaDBDataSourceMetaData implements DataSourceMetaData {
         hostName = matcher.group(4);
         port = Strings.isNullOrEmpty(matcher.group(5)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(5));
         catalog = matcher.group(6);
-        schemaName = null;
+        schema = null;
     }
 }

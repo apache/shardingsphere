@@ -31,7 +31,6 @@ import java.lang.reflect.Field;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.isA;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -52,11 +51,11 @@ public final class ShardingTracerTest {
     @Test
     public void assertDuplicatedLoading() {
         ShardingTracer.init(mock(Tracer.class));
-        Tracer t1 = ShardingTracer.get();
+        Tracer tracer = ShardingTracer.get();
         ShardingTracer.init();
-        assertEquals(t1, ShardingTracer.get());
+        assertThat(ShardingTracer.get(), is(tracer));
         ShardingTracer.init(mock(Tracer.class));
-        assertEquals(t1, ShardingTracer.get());
+        assertThat(ShardingTracer.get(), is(tracer));
     }
     
     @Test

@@ -30,7 +30,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class RoutingUnitTest {
+public final class RoutingUnitTest {
     
     private static final String DATASOURCE_NAME = "ds";
     

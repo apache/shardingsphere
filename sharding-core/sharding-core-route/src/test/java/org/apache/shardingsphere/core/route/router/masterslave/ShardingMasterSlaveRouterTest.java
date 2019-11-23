@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ShardingMasterSlaveRouterTest {
+public final class ShardingMasterSlaveRouterTest {
     
     private static final String DATASOURCE_NAME = "ds";
     

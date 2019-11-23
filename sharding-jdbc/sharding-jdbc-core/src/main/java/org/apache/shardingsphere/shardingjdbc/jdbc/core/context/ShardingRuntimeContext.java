@@ -17,16 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-
-import javax.sql.DataSource;
-
+import lombok.Getter;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.execute.metadata.TableMetaDataInitializer;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
@@ -39,7 +30,14 @@ import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 
-import lombok.Getter;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * Runtime context for sharding.
@@ -78,14 +76,13 @@ public final class ShardingRuntimeContext extends AbstractRuntimeContext<Shardin
     }
     
     private Map<String, DataSourceInfo> getDataSourceInfoMap(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        Map<String, DataSourceInfo> result = new LinkedHashMap<String, DataSourceInfo>(dataSourceMap.size(), 1);
+        Map<String, DataSourceInfo> result = new LinkedHashMap<>(dataSourceMap.size(), 1);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             DataSource dataSource = entry.getValue();
             try (Connection connection = dataSource.getConnection()) {
                 DatabaseMetaData metaData = connection.getMetaData();
                 result.put(entry.getKey(), new DataSourceInfo(metaData.getURL(), metaData.getUserName()));
             }
-            
         }
         return result;
     }

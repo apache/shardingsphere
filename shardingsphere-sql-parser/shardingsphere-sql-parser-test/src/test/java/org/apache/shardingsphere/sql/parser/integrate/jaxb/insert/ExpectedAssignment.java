@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ExpectedAssignment {
+public final class ExpectedAssignment {
     
     @XmlAttribute(name = "type-for-placeholder")
     private String typeForPlaceholder;

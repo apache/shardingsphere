@@ -17,20 +17,19 @@
 
 package org.apache.shardingsphere.core.merge.dal.show;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -108,15 +107,15 @@ public final class ShowDatabasesMergedResultTest {
     public void assertSchemes() throws SQLException {
         ShowDatabasesMergedResult showDatabasesMergedResult = buildMergedShowDatabasesMergedResult();
         showDatabasesMergedResult.next();
-        Assert.assertEquals("A", showDatabasesMergedResult.getValue(1, String.class));
+        assertThat(showDatabasesMergedResult.getValue(1, String.class).toString(), is("A"));
         showDatabasesMergedResult.next();
-        Assert.assertEquals("B", showDatabasesMergedResult.getValue(1, String.class));
+        assertThat(showDatabasesMergedResult.getValue(1, String.class).toString(), is("B"));
         showDatabasesMergedResult.next();
-        Assert.assertEquals("C", showDatabasesMergedResult.getValue(1, String.class));
+        assertThat(showDatabasesMergedResult.getValue(1, String.class).toString(), is("C"));
         showDatabasesMergedResult.next();
-        Assert.assertEquals("D", showDatabasesMergedResult.getValue(1, String.class));
+        assertThat(showDatabasesMergedResult.getValue(1, String.class).toString(), is("D"));
         showDatabasesMergedResult.next();
-        Assert.assertEquals("E", showDatabasesMergedResult.getValue(1, String.class));
+        assertThat(showDatabasesMergedResult.getValue(1, String.class).toString(), is("E"));
     }
 
     private ShowDatabasesMergedResult buildMergedShowDatabasesMergedResult() throws SQLException {

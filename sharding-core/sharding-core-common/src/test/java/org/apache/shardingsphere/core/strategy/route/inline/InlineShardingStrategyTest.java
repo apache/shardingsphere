@@ -30,12 +30,12 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class InlineShardingStrategyTest {
+public final class InlineShardingStrategyTest {
     
     private InlineShardingStrategy shardingStrategy;
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         InlineShardingStrategyConfiguration shardingStrategyConfig = new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 4}");
         shardingStrategy = new InlineShardingStrategy(shardingStrategyConfig);
     }
@@ -43,7 +43,7 @@ public class InlineShardingStrategyTest {
     @Test
     public void assertDoSharding() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        List<RouteValue> shardingValues = Lists.<RouteValue>newArrayList(new ListRouteValue("order_id", "t_order", Lists.newArrayList(0, 1, 2, 3)));
+        List<RouteValue> shardingValues = Lists.<RouteValue>newArrayList(new ListRouteValue<>("order_id", "t_order", Lists.newArrayList(0, 1, 2, 3)));
         Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues);
         assertThat(actual.size(), is(4));
     }
@@ -51,7 +51,7 @@ public class InlineShardingStrategyTest {
     @Test
     public void assertDoShardingWithNonExistNodes() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1");
-        List<RouteValue> shardingValues = Lists.<RouteValue>newArrayList(new ListRouteValue("order_id", "t_order", Lists.newArrayList(0, 1, 2, 3)));
+        List<RouteValue> shardingValues = Lists.<RouteValue>newArrayList(new ListRouteValue<>("order_id", "t_order", Lists.newArrayList(0, 1, 2, 3)));
         Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues);
         assertThat(actual.size(), is(2));
     }

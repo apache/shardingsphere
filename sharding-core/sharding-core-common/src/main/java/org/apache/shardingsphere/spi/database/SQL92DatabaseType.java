@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.spi.database;
 
+import org.apache.shardingsphere.core.metadata.datasource.dialect.SQL92DataSourceMetaData;
+
 import java.util.Collection;
 import java.util.Collections;
-
-import org.apache.shardingsphere.core.metadata.datasource.dialect.SQL92DataSourceMetaData;
 
 /**
  * Database type of SQL92.
@@ -40,7 +40,7 @@ public final class SQL92DatabaseType implements DatabaseType {
     }
     
     @Override
-    public DataSourceMetaData getDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
+    public SQL92DataSourceMetaData getDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
         return new SQL92DataSourceMetaData(dataSourceInfo);
     }
 }

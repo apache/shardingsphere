@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -104,7 +103,7 @@ public final class ProjectionsContextTest {
         Projection projection = getAggregationProjection();
         List<AggregationProjection> items = new ProjectionsContext(0, 0, true, Arrays.asList(projection, getColumnProjection())).getAggregationProjections();
         assertTrue(items.contains(projection));
-        assertEquals(items.size(), 1);
+        assertThat(items.size(), is(1));
     }
     
     @Test
@@ -112,7 +111,7 @@ public final class ProjectionsContextTest {
         Projection projection = getAggregationDistinctProjection();
         List<AggregationDistinctProjection> items = new ProjectionsContext(0, 0, true, Arrays.asList(projection, getColumnProjection())).getAggregationDistinctProjections();
         assertTrue(items.contains(projection));
-        assertEquals(items.size(), 1);
+        assertThat(items.size(), is(1));
     }
     
     @Test
@@ -120,7 +119,7 @@ public final class ProjectionsContextTest {
         Projection projection = getShorthandProjection();
         List<String> columnLabels = new ProjectionsContext(
                 0, 0, true, Collections.singletonList(projection)).getColumnLabels(createRelationMetas(), Collections.singletonList(new TableSegment(0, 0, "table")));
-        assertEquals(columnLabels, Arrays.asList("id", "name"));
+        assertThat(columnLabels, is(Arrays.asList("id", "name")));
     }
     
     @Test
@@ -128,7 +127,7 @@ public final class ProjectionsContextTest {
         Projection projection = getShorthandProjectionWithoutOwner();
         List<String> columnLabels = new ProjectionsContext(
                 0, 0, true, Collections.singletonList(projection)).getColumnLabels(createRelationMetas(), Collections.singletonList(new TableSegment(0, 0, "table")));
-        assertEquals(columnLabels, Arrays.asList("id", "name"));
+        assertThat(columnLabels, is(Arrays.asList("id", "name")));
     }
     
     @Test
