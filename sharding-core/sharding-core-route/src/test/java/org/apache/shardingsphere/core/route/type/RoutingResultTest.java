@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.core.route.type;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -31,10 +34,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
-
-public class RoutingResultTest {
+public final class RoutingResultTest {
     
     private static final String DATASOURCE_NAME_0 = "ds0";
     
@@ -49,7 +49,7 @@ public class RoutingResultTest {
     private RoutingResult multiRoutingResult;
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         singleRoutingResult = new RoutingResult();
         multiRoutingResult = new RoutingResult();
         multiRoutingResult.getRoutingUnits().addAll(mockRoutingUnits());

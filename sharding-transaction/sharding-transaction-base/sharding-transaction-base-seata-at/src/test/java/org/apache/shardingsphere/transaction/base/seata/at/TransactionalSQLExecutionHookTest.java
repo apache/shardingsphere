@@ -34,7 +34,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TransactionalSQLExecutionHookTest {
+public final class TransactionalSQLExecutionHookTest {
     
     private final Map<String, Object> shardingExecuteDataMap = new HashMap<>();
     

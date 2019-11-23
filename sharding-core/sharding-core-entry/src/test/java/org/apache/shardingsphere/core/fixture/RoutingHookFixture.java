@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.route.hook.RoutingHook;
  *
  * @author zhaojun
  */
-public class RoutingHookFixture implements RoutingHook {
+public final class RoutingHookFixture implements RoutingHook {
     
     @Override
     public void start(final String sql) {

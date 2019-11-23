@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DataSourceGroupBroadcastRoutingEngineTest {
+public final class DataSourceGroupBroadcastRoutingEngineTest {
     
     @Mock
     private ShardingRule shardingRule;

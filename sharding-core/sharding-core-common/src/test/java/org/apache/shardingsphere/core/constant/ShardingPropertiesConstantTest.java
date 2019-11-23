@@ -24,7 +24,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-public class ShardingPropertiesConstantTest {
+public final class ShardingPropertiesConstantTest {
     
     @Test
     public void assertFindByKey() {

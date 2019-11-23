@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import java.util.Properties;
 
-public class NacosRegistryCenterTest {
+public final class NacosRegistryCenterTest {
 
     private static RegistryCenter nacosRegistryCenter = new NacosRegistryCenter();
 

@@ -39,15 +39,14 @@ public final class SQL92DataSourceMetaData implements DataSourceMetaData {
     
     private final int port;
     
-    private final String schemaName;
-    
     private final String catalog;
-
+    
+    private final String schema;
+    
     private final Pattern pattern = Pattern.compile("jdbc:.*", Pattern.CASE_INSENSITIVE);
-
+    
     public SQL92DataSourceMetaData(final DataSourceInfo dataSourceInfo) {
         String url = dataSourceInfo.getUrl();
-
         Matcher matcher = pattern.matcher(url);
         if (!matcher.find()) {
             throw new UnrecognizedDatabaseURLException(url, pattern.pattern());
@@ -55,6 +54,6 @@ public final class SQL92DataSourceMetaData implements DataSourceMetaData {
         hostName = "";
         port = DEFAULT_PORT;
         catalog = "";
-        schemaName = null;
+        schema = null;
     }
 }

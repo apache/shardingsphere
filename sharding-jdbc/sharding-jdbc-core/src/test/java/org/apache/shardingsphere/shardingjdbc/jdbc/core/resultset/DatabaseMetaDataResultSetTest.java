@@ -40,7 +40,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DatabaseMetaDataResultSetTest {
+public final class DatabaseMetaDataResultSetTest {
     
     private static final String TABLE_NAME_COLUMN_LABEL = "TABLE_NAME";
     

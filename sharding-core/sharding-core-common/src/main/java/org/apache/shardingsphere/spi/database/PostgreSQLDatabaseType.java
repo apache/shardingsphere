@@ -40,7 +40,7 @@ public final class PostgreSQLDatabaseType implements DatabaseType {
     }
     
     @Override
-    public DataSourceMetaData getDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
+    public PostgreSQLDataSourceMetaData getDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
         return new PostgreSQLDataSourceMetaData(dataSourceInfo);
     }
 }
