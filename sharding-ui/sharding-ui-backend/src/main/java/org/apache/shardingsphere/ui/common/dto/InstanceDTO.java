@@ -29,7 +29,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class InstanceDTO {
+public final class InstanceDTO {
     
     private static final String DELIMITER = "@";
     
@@ -44,5 +44,4 @@ public class InstanceDTO {
         this.enabled = enabled;
         this.serverIp = instanceId.split(DELIMITER)[0];
     }
-    
 }

@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.spi.database;
 
+import org.apache.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaData;
+
 import java.util.Collection;
 import java.util.Collections;
-
-import org.apache.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaData;
 
 /**
  * Database type of SQLServer.
@@ -40,7 +40,7 @@ public final class SQLServerDatabaseType implements DatabaseType {
     }
     
     @Override
-    public DataSourceMetaData getDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
+    public SQLServerDataSourceMetaData getDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
         return new SQLServerDataSourceMetaData(dataSourceInfo);
     }
 }

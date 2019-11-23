@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.metadata.TableMetaDataInitializer;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
@@ -37,10 +36,10 @@ import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
 import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -71,7 +70,7 @@ public abstract class LogicSchema {
      * @return get dataSource map
      */
     public Map<String, DataSourceInfo> getDataSourceInfoMap(final Map<String, YamlDataSourceParameter> dataSourceMap) {
-        Map<String, DataSourceInfo> result = new HashMap<String, DataSourceInfo>(dataSourceMap.size(), 1);
+        Map<String, DataSourceInfo> result = new HashMap<>(dataSourceMap.size(), 1);
         for (Entry<String, YamlDataSourceParameter> entry : dataSourceMap.entrySet()) {
             YamlDataSourceParameter dataSource = entry.getValue();
             DataSourceInfo dataSourceInfo = new DataSourceInfo(dataSource.getUrl(), null);
@@ -102,14 +101,6 @@ public abstract class LogicSchema {
      */
     public Map<String, YamlDataSourceParameter> getDataSources() {
         return backendDataSource.getDataSourceParameters();
-    }
-    
-    protected final Map<String, String> getDataSourceURLs(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
-        Map<String, String> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
-        for (Entry<String, YamlDataSourceParameter> entry : dataSourceParameters.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().getUrl());
-        }
-        return result;
     }
     
     protected final TableMetaDataInitializer getTableMetaDataInitializer(final DataSourceMetas dataSourceMetas) {

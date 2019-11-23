@@ -39,9 +39,9 @@ public final class H2DataSourceMetaData implements MemorizedDataSourceMetaData {
     
     private final int port;
     
-    private final String schemaName;
-    
     private final String catalog;
+    
+    private final String schema;
     
     private final Pattern pattern = Pattern.compile("jdbc:h2:(mem|~)[:/]([\\w\\-]+);?\\S*", Pattern.CASE_INSENSITIVE);
     
@@ -54,6 +54,6 @@ public final class H2DataSourceMetaData implements MemorizedDataSourceMetaData {
         hostName = "";
         port = DEFAULT_PORT;
         catalog = matcher.group(2);
-        schemaName = null;
+        schema = null;
     }
 }

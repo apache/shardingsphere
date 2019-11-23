@@ -25,7 +25,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
 
-public class UnsupportedGeneratedKeysResultSetTest {
+public final class UnsupportedGeneratedKeysResultSetTest {
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void getBoolean() throws SQLException {

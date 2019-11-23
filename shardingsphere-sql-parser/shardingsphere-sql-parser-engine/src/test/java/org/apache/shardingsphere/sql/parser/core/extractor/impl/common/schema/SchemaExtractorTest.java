@@ -17,28 +17,17 @@
 
 package org.apache.shardingsphere.sql.parser.core.extractor.impl.common.schema;
 
-import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.junit.Test;
 
 import java.util.HashMap;
-import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
-/**
- * Unit tests for class {@link SchemaExtractor}.
- *
- * @see SchemaExtractor
- */
-public class SchemaExtractorTest {
-
+public final class SchemaExtractorTest {
+    
     @Test
-    public void testCreatesSchemaExtractorAndCallsExtract() {
-        ParserRuleContext parserRuleContext = new ParserRuleContext();
-        Map<ParserRuleContext, Integer> hashMap = new HashMap<>();
-
-        assertEquals(Optional.absent(), new SchemaExtractor().extract(parserRuleContext, hashMap));
+    public void assertCreatesSchemaExtractorAndCallsExtract() {
+        assertFalse(new SchemaExtractor().extract(new ParserRuleContext(), new HashMap<ParserRuleContext, Integer>()).isPresent());
     }
-
 }

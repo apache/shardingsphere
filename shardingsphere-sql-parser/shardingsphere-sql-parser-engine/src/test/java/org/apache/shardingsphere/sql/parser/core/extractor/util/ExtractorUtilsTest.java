@@ -22,23 +22,18 @@ import org.junit.Test;
 
 import java.util.Collection;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 
-/**
- * Unit tests for class {@link ExtractorUtils}.
- *
- * @see ExtractorUtils
- */
-public class ExtractorUtilsTest {
-
+public final class ExtractorUtilsTest {
+    
     @Test
-    public void testGetAllDescendantNodesUsingNullParserRuleContextChild() {
+    public void assertGetAllDescendantNodesUsingNullParserRuleContextChild() {
         ParserRuleContext parserRuleContext = new ParserRuleContext();
         parserRuleContext.addAnyChild(null);
         Collection<ParserRuleContext> collection = ExtractorUtils.getAllDescendantNodes(parserRuleContext, RuleName.ADD_COLUMN_SPECIFICATION);
-
-        assertEquals(0, collection.size());
+        assertThat(collection.size(), is(0));
         assertFalse(collection.contains(parserRuleContext));
     }
 }

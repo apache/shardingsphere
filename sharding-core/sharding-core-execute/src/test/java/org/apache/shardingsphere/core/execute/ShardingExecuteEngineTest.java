@@ -36,7 +36,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ShardingExecuteEngineTest {
+public final class ShardingExecuteEngineTest {
     
     private ShardingExecuteEngine shardingExecuteEngine = new ShardingExecuteEngine(10);
     

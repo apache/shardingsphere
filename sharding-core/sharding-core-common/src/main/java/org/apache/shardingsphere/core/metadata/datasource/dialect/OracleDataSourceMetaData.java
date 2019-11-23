@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.google.common.base.Strings;
+import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
-import com.google.common.base.Strings;
-
-import lombok.Getter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Data source meta data for Oracle.
@@ -42,9 +40,9 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
     
     private final int port;
     
-    private final String schemaName;
-    
     private final String catalog;
+    
+    private final String schema;
     
     private final Pattern pattern = Pattern.compile("jdbc:oracle:(thin|oci|kprb):@(//)?([\\w\\-\\.]+):?([0-9]*)[:/]([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
     
@@ -58,6 +56,6 @@ public final class OracleDataSourceMetaData implements DataSourceMetaData {
         hostName = matcher.group(3);
         port = Strings.isNullOrEmpty(matcher.group(4)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(4));
         catalog = matcher.group(5);
-        schemaName = dataSourceInfo.getUsername();
+        schema = dataSourceInfo.getUsername();
     }
 }

@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.spi.database;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.MariaDBDataSourceMetaData;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Database type of Mariadb.
@@ -41,7 +41,7 @@ public final class MariaDBDatabaseType implements BranchDatabaseType {
     }
     
     @Override
-    public DataSourceMetaData getDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
+    public MariaDBDataSourceMetaData getDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
         return new MariaDBDataSourceMetaData(dataSourceInfo);
     }
     

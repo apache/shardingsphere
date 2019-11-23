@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.util;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
@@ -27,7 +28,6 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.rule.ProxyUser;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,23 +43,25 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ConfigurationLoggerTest {
+public final class ConfigurationLoggerTest {
     
     @Mock
     private Logger log;
     
+    @SneakyThrows
     @Before
-    public void setLog() throws NoSuchFieldException, IllegalAccessException {
+    public void setLog() {
         Field field = ConfigurationLogger.class.getDeclaredField("log");
         setFinalStatic(field, log);
     }
     
-    private static void setFinalStatic(final Field field, final Object newValue)
-        throws NoSuchFieldException, IllegalAccessException {
+    private static void setFinalStatic(final Field field, final Object newValue) throws NoSuchFieldException, IllegalAccessException {
         field.setAccessible(true);
         Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);
@@ -72,8 +74,8 @@ public class ConfigurationLoggerTest {
             
             @Override
             public Void answer(final InvocationOnMock invocationOnMock) {
-                Assert.assertEquals(base, invocationOnMock.getArgument(1));
-                Assert.assertEquals(yamlStr, invocationOnMock.getArgument(2));
+                assertThat(invocationOnMock.getArgument(1).toString(), is(base));
+                assertThat(invocationOnMock.getArgument(2).toString(), is(yamlStr));
                 return null;
             }
         }).when(log).info(anyString(), anyString(), anyString());
