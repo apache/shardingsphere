@@ -83,7 +83,6 @@ public class YamlOrchestrationShardingWithMasterSlaveIntegrateTest extends Abstr
             stm.executeQuery("SELECT * FROM t_order_item");
             stm.executeQuery("SELECT * FROM config");
         }
-
         ((OrchestrationShardingDataSource) dataSource).close();
     }
 }
