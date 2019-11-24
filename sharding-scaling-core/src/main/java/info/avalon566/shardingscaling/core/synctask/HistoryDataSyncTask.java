@@ -23,6 +23,7 @@ import info.avalon566.shardingscaling.core.controller.SyncProgress;
 import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.core.execute.Event;
 import info.avalon566.shardingscaling.core.execute.EventType;
+import info.avalon566.shardingscaling.core.execute.engine.ExecuteCallback;
 import info.avalon566.shardingscaling.core.execute.engine.SyncExecutor;
 import info.avalon566.shardingscaling.core.execute.executor.channel.MemoryChannel;
 import info.avalon566.shardingscaling.core.execute.executor.reader.Reader;
@@ -55,23 +56,23 @@ public class HistoryDataSyncTask implements SyncTask {
 
     @Override
     public final void start(final ReportCallback callback) {
-        new Thread(new Runnable() {
+        final Reader reader = ReaderFactory.newInstanceJdbcReader(syncConfiguration.getReaderConfiguration());
+        final Writer writer = WriterFactory.newInstance(syncConfiguration.getWriterConfiguration());
+        new SyncExecutor(new MemoryChannel(), reader, Collections.singletonList(writer)).execute(new ExecuteCallback() {
 
             @Override
-            public void run() {
-                final Reader reader = ReaderFactory.newInstanceJdbcReader(syncConfiguration.getReaderConfiguration());
-                final Writer writer = WriterFactory.newInstance(syncConfiguration.getWriterConfiguration());
-                try {
-                    new SyncExecutor(new MemoryChannel(), reader, Collections.singletonList(writer)).execute();
-                    log.info("{} table slice execute finish", syncConfiguration.getReaderConfiguration().getTableName());
-                    callback.onProcess(new Event(syncConfiguration.getTaskId(), EventType.FINISHED));
-                } catch (SyncExecuteException ex) {
-                    log.error("{} table slice execute exception exit", syncConfiguration.getReaderConfiguration().getTableName());
-                    ex.logExceptions();
-                    callback.onProcess(new Event(syncConfiguration.getTaskId(), EventType.EXCEPTION_EXIT));
-                }
+            public void onSuccess() {
+                log.info("{} table slice execute finish", syncConfiguration.getReaderConfiguration().getTableName());
+                callback.onProcess(new Event(syncConfiguration.getTaskId(), EventType.FINISHED));
             }
-        }).start();
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+                log.error("{} table slice execute exception exit", syncConfiguration.getReaderConfiguration().getTableName());
+                ((SyncExecuteException) throwable).logExceptions();
+                callback.onProcess(new Event(syncConfiguration.getTaskId(), EventType.EXCEPTION_EXIT));
+            }
+        });
     }
 
     @Override

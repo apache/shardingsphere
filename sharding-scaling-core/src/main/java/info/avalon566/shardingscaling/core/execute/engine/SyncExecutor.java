@@ -17,6 +17,11 @@
 
 package info.avalon566.shardingscaling.core.execute.engine;
 
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.core.execute.executor.SyncRunner;
 import info.avalon566.shardingscaling.core.execute.executor.channel.Channel;
@@ -26,12 +31,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * Sync executor.
@@ -64,47 +65,48 @@ public class SyncExecutor {
     /**
      * Execute.
      *
-     * @throws SyncExecuteException execute execute exception
+     * @param executeCallback call when execute finish
      */
-    public void execute() throws SyncExecuteException {
-        List<Future<?>> futures = new ArrayList<>(syncRunners.size());
-        ExecutorService executorService = Executors.newFixedThreadPool(syncRunners.size());
-        CompletionService<?> completionService = new ExecutorCompletionService(executorService);
+    public void execute(final ExecuteCallback executeCallback) {
+        final CountDownLatch countDownLatch = new CountDownLatch(syncRunners.size());
+        ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(syncRunners.size()));
         for (SyncRunner syncRunner : syncRunners) {
-            futures.add(completionService.submit(syncRunner, null));
+            ListenableFuture listenableFuture = executorService.submit(syncRunner, null);
+            Futures.addCallback(listenableFuture, new FutureCallback() {
+
+                @Override
+                public void onSuccess(final Object result) {
+                    checkFinish();
+                }
+
+                @Override
+                public void onFailure(final Throwable t) {
+                    if (null == syncExecuteException) {
+                        syncExecuteException = new SyncExecuteException();
+                    }
+                    syncExecuteException.addException(t);
+                    stopExecute();
+                    checkFinish();
+                }
+
+                private void checkFinish() {
+                    synchronized (this) {
+                        countDownLatch.countDown();
+                        if (0 == countDownLatch.getCount()) {
+                            if (null == syncExecuteException) {
+                                executeCallback.onSuccess();
+                            } else {
+                                executeCallback.onFailure(syncExecuteException);
+                            }
+                        }
+                    }
+                }
+            });
         }
         executorService.shutdown();
-        waitExecute(futures, completionService);
     }
 
-    private void waitExecute(final List<Future<?>> futures, final CompletionService<?> completionService) throws SyncExecuteException {
-        int exitedCount = 1;
-        while (futures.size() >= exitedCount) {
-            try {
-                handleResult(completionService.take(), futures);
-            } catch (InterruptedException ignored) {
-            }
-            exitedCount++;
-        }
-        if (null != syncExecuteException) {
-            throw syncExecuteException;
-        }
-    }
-
-    private void handleResult(final Future<?> future, final List<Future<?>> allFutures) {
-        try {
-            future.get();
-        } catch (InterruptedException ignored) {
-        } catch (ExecutionException e) {
-            if (null == syncExecuteException) {
-                syncExecuteException = new SyncExecuteException();
-            }
-            syncExecuteException.addException(e.getCause());
-            stopExecute(allFutures);
-        }
-    }
-
-    private void stopExecute(final List<Future<?>> allFutures) {
+    private void stopExecute() {
         if (!running) {
             return;
         }

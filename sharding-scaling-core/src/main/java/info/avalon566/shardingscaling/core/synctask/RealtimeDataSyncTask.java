@@ -23,6 +23,7 @@ import info.avalon566.shardingscaling.core.controller.SyncProgress;
 import info.avalon566.shardingscaling.core.exception.SyncExecuteException;
 import info.avalon566.shardingscaling.core.execute.Event;
 import info.avalon566.shardingscaling.core.execute.EventType;
+import info.avalon566.shardingscaling.core.execute.engine.ExecuteCallback;
 import info.avalon566.shardingscaling.core.execute.engine.SyncExecutor;
 import info.avalon566.shardingscaling.core.execute.executor.channel.AckCallback;
 import info.avalon566.shardingscaling.core.execute.executor.channel.RealtimeSyncChannel;
@@ -71,32 +72,32 @@ public class RealtimeDataSyncTask implements SyncTask {
 
     @Override
     public final void start(final ReportCallback callback) {
-        new Thread(new Runnable() {
+        final List<Writer> writers = new ArrayList<>(syncConfiguration.getConcurrency());
+        for (int i = 0; i < syncConfiguration.getConcurrency(); i++) {
+            writers.add(WriterFactory.newInstance(syncConfiguration.getWriterConfiguration()));
+        }
+        channel = new RealtimeSyncChannel(writers.size(), Collections.singletonList((AckCallback) new AckCallback() {
+            @Override
+            public void onAck(final List<Record> records) {
+                Record record = records.get(records.size() - 1);
+                currentLogPosition = record.getLogPosition();
+            }
+        }));
+        new SyncExecutor(channel, reader, writers).execute(new ExecuteCallback() {
 
             @Override
-            public void run() {
-                final List<Writer> writers = new ArrayList<>(syncConfiguration.getConcurrency());
-                for (int i = 0; i < syncConfiguration.getConcurrency(); i++) {
-                    writers.add(WriterFactory.newInstance(syncConfiguration.getWriterConfiguration()));
-                }
-                channel = new RealtimeSyncChannel(writers.size(), Collections.singletonList((AckCallback) new AckCallback() {
-                    @Override
-                    public void onAck(final List<Record> records) {
-                        Record record = records.get(records.size() - 1);
-                        currentLogPosition = record.getLogPosition();
-                    }
-                }));
-                try {
-                    new SyncExecutor(channel, reader, writers).execute();
-                    log.info("realtime data execute finish");
-                    callback.onProcess(new Event(syncConfiguration.getTaskId(), EventType.FINISHED));
-                } catch (SyncExecuteException ex) {
-                    log.error("realtime data execute exception exit");
-                    ex.logExceptions();
-                    callback.onProcess(new Event(syncConfiguration.getTaskId(), EventType.EXCEPTION_EXIT));
-                }
+            public void onSuccess() {
+                log.info("realtime data execute finish");
+                callback.onProcess(new Event(syncConfiguration.getTaskId(), EventType.FINISHED));
             }
-        }).start();
+
+            @Override
+            public void onFailure(final Throwable throwable) {
+                log.error("realtime data execute exception exit");
+                ((SyncExecuteException) throwable).logExceptions();
+                callback.onProcess(new Event(syncConfiguration.getTaskId(), EventType.EXCEPTION_EXIT));
+            }
+        });
     }
 
     @Override
