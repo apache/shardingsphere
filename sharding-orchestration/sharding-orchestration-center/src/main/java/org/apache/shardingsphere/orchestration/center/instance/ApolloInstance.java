@@ -39,13 +39,12 @@ import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Registry center for Apollo.
@@ -61,6 +60,14 @@ public final class ApolloInstance implements ConfigCenter {
     
     private static final String APOLLO_KEY_SEPARATOR = ".";
     
+    private static final String APOLLO_KEY_APP_ID = "app.id";
+    
+    private static final String APOLLO_KEY_ENV = "env";
+    
+    private static final String APOLLO_KEY_CLUSTER = ConfigConsts.APOLLO_CLUSTER_KEY;
+    
+    private static final String APOLLO_KEY_META = ConfigConsts.APOLLO_META_KEY;
+    
     private String namespace;
     
     private String appId;
@@ -69,13 +76,13 @@ public final class ApolloInstance implements ConfigCenter {
     
     private String clusterName;
     
-    private String modifiyDataUserId;
+    private String administrator;
     
     private Config apolloConfig;
     
     private ApolloOpenApiClient client;
     
-    private Map<String, Set<String>> keyAndChildrenMap = new HashMap<>();
+    private Map<String, Set<String>> keyAndChildrenMap = new ConcurrentHashMap<>();
     
     @Getter
     @Setter
@@ -93,36 +100,37 @@ public final class ApolloInstance implements ConfigCenter {
         appId = properties.getProperty("appId", "APOLLO_SHARDING_SPHERE");
         env = properties.getProperty("env", "DEV");
         clusterName = properties.getProperty("clusterName", ConfigConsts.CLUSTER_NAME_DEFAULT);
-        System.setProperty("app.id", appId);
-        System.setProperty("env", env);
-        System.setProperty(ConfigConsts.APOLLO_CLUSTER_KEY, clusterName);
-        System.setProperty(ConfigConsts.APOLLO_META_KEY, config.getServerLists());
+        System.setProperty(APOLLO_KEY_APP_ID, appId);
+        System.setProperty(APOLLO_KEY_ENV, env);
+        System.setProperty(APOLLO_KEY_CLUSTER, clusterName);
+        System.setProperty(APOLLO_KEY_META, config.getServerLists());
         apolloConfig = ConfigService.getConfig(namespace);
     }
     
     private void initApolloOpenApiClient() {
-        modifiyDataUserId = properties.getProperty("modifiyDataUserId");
+        administrator = properties.getProperty("administrator");
         String apolloToken = properties.getProperty("token");
         String portalUrl = properties.getProperty("portalUrl");
-        String connectTimeout = properties.getProperty("connectTimeout", Objects.toString(ApolloOpenApiConstants.DEFAULT_CONNECT_TIMEOUT));
-        String readTimeout = properties.getProperty("readTimeout", Objects.toString(ApolloOpenApiConstants.DEFAULT_READ_TIMEOUT));
+        Integer connectTimeout = Ints.tryParse(properties.getProperty("connectTimeout"));
+        Integer readTimeout = Ints.tryParse(properties.getProperty("readTimeout"));
         client = ApolloOpenApiClient.newBuilder().withPortalUrl(portalUrl)
-                .withConnectTimeout(Ints.tryParse(connectTimeout)).withReadTimeout(Ints.tryParse(readTimeout))
+                .withConnectTimeout(connectTimeout == null ? ApolloOpenApiConstants.DEFAULT_CONNECT_TIMEOUT : connectTimeout)
+                .withReadTimeout(readTimeout == null ? ApolloOpenApiConstants.DEFAULT_READ_TIMEOUT : readTimeout)
                 .withToken(apolloToken).build();
     }
     
     private void initKeysRelationship() {
         List<OpenItemDTO> items = client.getNamespace(appId, env, clusterName, namespace).getItems();
         for (OpenItemDTO each : items) {
-            if (!each.getKey().contains(APOLLO_KEY_SEPARATOR)) {
-                addRelationship(SHARDING_SPHERE_KEY_ROOT, SHARDING_SPHERE_KEY_ROOT + each.getKey());
-                continue;
-            }
-            initKeysRelationship(each.getKey());
+            refreshKeysRelationship(each.getKey());
         }
     }
     
-    private void initKeysRelationship(final String apolloKey) {
+    private void refreshKeysRelationship(final String apolloKey) {
+        if (!apolloKey.contains(APOLLO_KEY_SEPARATOR)) {
+            addRelationship(SHARDING_SPHERE_KEY_ROOT, SHARDING_SPHERE_KEY_ROOT + apolloKey);
+            return;
+        }
         String parentKey = SHARDING_SPHERE_KEY_ROOT;
         String shardingSphereKey = deConvertKey(apolloKey);
         for (int i = 1; i <= shardingSphereKey.lastIndexOf(SHARDING_SPHERE_KEY_SEPARATOR); i = shardingSphereKey.indexOf(SHARDING_SPHERE_KEY_SEPARATOR, i) + 1) {
@@ -162,11 +170,7 @@ public final class ApolloInstance implements ConfigCenter {
         String apolloKey = convertKey(key);
         updateKey(apolloKey, value);
         publishNamespace();
-        if (!apolloKey.contains(APOLLO_KEY_SEPARATOR)) {
-            addRelationship(SHARDING_SPHERE_KEY_ROOT, SHARDING_SPHERE_KEY_ROOT + apolloKey);
-            return;
-        }
-        initKeysRelationship(apolloKey);
+        refreshKeysRelationship(apolloKey);
     }
     
     private void updateKey(final String key, final String value) {
@@ -174,7 +178,7 @@ public final class ApolloInstance implements ConfigCenter {
         openItem.setKey(key);
         openItem.setValue(value);
         openItem.setComment("ShardingSphere create or update config");
-        openItem.setDataChangeCreatedBy(modifiyDataUserId);
+        openItem.setDataChangeCreatedBy(administrator);
         client.createOrUpdateItem(appId, env, clusterName, namespace, openItem);
     }
     
@@ -182,7 +186,7 @@ public final class ApolloInstance implements ConfigCenter {
         NamespaceReleaseDTO release = new NamespaceReleaseDTO();
         release.setReleaseTitle("ShardingSphere namespace release");
         release.setReleaseComment("ShardingSphere namespace release");
-        release.setReleasedBy(modifiyDataUserId);
+        release.setReleasedBy(administrator);
         release.setEmergencyPublish(true);
         client.publishNamespace(appId, env, clusterName, namespace, release);
     }
