@@ -359,17 +359,6 @@ If there are changes to the following interfaces in this version, you need to su
 - org.apache.shardingsphere.core.route.router.sharding.ParsingSQLRouter.parse
 - org.apache.shardingsphere.shardingproxy.frontend.command.CommandExecutorTask.run
 
-### Check dependency impact
-
-#### SkyWalking
-
-If there are changes to the following interfaces in this version, you need to submit the latest version of the plugin to the SkyWalking project:
-
-- org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback.execute0
-- org.apache.shardingsphere.shardingjdbc.executor.AbstractStatementExecutor.executeCallback
-- org.apache.shardingsphere.core.route.router.sharding.ParsingSQLRouter.parse
-- org.apache.shardingsphere.shardingproxy.frontend.command.CommandExecutorTask.run
-
 ## Call for a Vote
 
 ### Vote procedure
