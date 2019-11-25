@@ -20,7 +20,6 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.diale
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.MariaDBDataSourceMetaData;
-import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 
 import java.util.Collection;
@@ -47,8 +46,7 @@ public final class MariaDBXADataSourceDefinition implements XADataSourceDefiniti
     @Override
     public Properties getXAProperties(final DatabaseAccessConfiguration databaseAccessConfiguration) {
         Properties result = new Properties();
-        DataSourceInfo dataSourceInfo = new DataSourceInfo(databaseAccessConfiguration.getUrl(), null);
-        MariaDBDataSourceMetaData dataSourceMetaData = new MariaDBDataSourceMetaData(dataSourceInfo);
+        MariaDBDataSourceMetaData dataSourceMetaData = new MariaDBDataSourceMetaData(databaseAccessConfiguration.getUrl());
         result.setProperty("user", databaseAccessConfiguration.getUsername());
         result.setProperty("password", Optional.fromNullable(databaseAccessConfiguration.getPassword()).or(""));
         result.setProperty("url", databaseAccessConfiguration.getUrl());

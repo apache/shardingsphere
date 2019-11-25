@@ -42,7 +42,7 @@ public final class H2DatabaseType implements BranchDatabaseType {
     
     @Override
     public H2DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new H2DataSourceMetaData(new DataSourceInfo(url, username));
+        return new H2DataSourceMetaData(url);
     }
     
     @Override

@@ -41,6 +41,6 @@ public final class SQLServerDatabaseType implements DatabaseType {
     
     @Override
     public SQLServerDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new SQLServerDataSourceMetaData(new DataSourceInfo(url, username));
+        return new SQLServerDataSourceMetaData(url);
     }
 }

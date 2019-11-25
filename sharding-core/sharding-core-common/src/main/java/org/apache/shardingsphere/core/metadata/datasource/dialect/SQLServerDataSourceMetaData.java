@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.metadata.datasource.dialect;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
 import java.util.regex.Matcher;
@@ -46,8 +45,7 @@ public final class SQLServerDataSourceMetaData implements DataSourceMetaData {
     
     private final Pattern pattern = Pattern.compile("jdbc:(microsoft:)?sqlserver://([\\w\\-\\.]+):?([0-9]*);\\S*(DatabaseName|database)=([\\w\\-]+);?", Pattern.CASE_INSENSITIVE);
     
-    public SQLServerDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
-        String url = dataSourceInfo.getUrl();
+    public SQLServerDataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);
         if (!matcher.find()) {
             throw new UnrecognizedDatabaseURLException(url, pattern.pattern());

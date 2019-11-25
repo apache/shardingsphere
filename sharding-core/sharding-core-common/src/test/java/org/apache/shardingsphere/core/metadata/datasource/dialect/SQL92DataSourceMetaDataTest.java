@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
 import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,7 +28,7 @@ public final class SQL92DataSourceMetaDataTest {
     
     @Test
     public void assertNewConstructorSuccess() {
-        SQL92DataSourceMetaData actual = new SQL92DataSourceMetaData(new DataSourceInfo("jdbc:sql92_db:ds_0", "test"));
+        SQL92DataSourceMetaData actual = new SQL92DataSourceMetaData("jdbc:sql92_db:ds_0");
         assertThat(actual.getHostName(), is(""));
         assertThat(actual.getPort(), is(-1));
         assertThat(actual.getCatalog(), is(""));
@@ -38,6 +37,6 @@ public final class SQL92DataSourceMetaDataTest {
     
     @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertNewConstructorFailure() {
-        new SQL92DataSourceMetaData(new DataSourceInfo("xxx:xxxx:xxxxxxxx", "test"));
+        new SQL92DataSourceMetaData("xxx:xxxx:xxxxxxxx");
     }
 }

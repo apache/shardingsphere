@@ -41,6 +41,6 @@ public final class SQL92DatabaseType implements DatabaseType {
     
     @Override
     public SQL92DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new SQL92DataSourceMetaData(new DataSourceInfo(url, username));
+        return new SQL92DataSourceMetaData(url);
     }
 }
