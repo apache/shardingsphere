@@ -17,6 +17,14 @@
 
 package org.apache.shardingsphere.orchestration.temp.internal.registry;
 
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
@@ -31,11 +39,6 @@ import org.apache.shardingsphere.orchestration.temp.internal.configcenter.Config
 import org.apache.shardingsphere.orchestration.temp.internal.registry.config.service.ConfigurationService;
 import org.apache.shardingsphere.orchestration.temp.internal.registry.listener.ShardingOrchestrationListenerManager;
 import org.apache.shardingsphere.orchestration.temp.internal.registry.state.service.StateService;
-
-import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
 
 /**
  * Sharding orchestration facade.
@@ -122,10 +125,23 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         }
         for (Entry<String, InstanceConfiguration> entry: map.entrySet()) {
             InstanceConfiguration configuration = entry.getValue();
-            if (type.equals(configuration.getOrchestrationType())) {
+            if (contains(configuration.getOrchestrationType(), type)) {
                 return configuration;
             }
         }
         return null;
+    }
+    
+    private boolean contains(final String collection, final String element) {
+        if (Strings.isNullOrEmpty(collection)) {
+            return false;
+        }
+        Iterator<String> iterator = Splitter.on(",").split(collection).iterator();
+        while (iterator.hasNext()) {
+            if (element.equals(iterator.next())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

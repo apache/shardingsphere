@@ -15,30 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.center.configuration;
+package org.apache.shardingsphere.shardingjdbc.orchestration.temp.api.yaml.fixture;
 
-import java.util.Map;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 
-/**
- * Config center configuration.
- *
- * @author zhangliang
- * @author sunbufu
- * @author dongzonglei
- * @author wangguangyuan
- */
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public final class OrchestrationConfiguration {
+import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public final class IncrementShardingKeyGenerator implements ShardingKeyGenerator {
     
-    /**
-     * Instance configuration map.
-     */
-    private Map<String, InstanceConfiguration> instanceConfigurationMap;
+    private static final AtomicInteger SEQUENCE = new AtomicInteger(100);
+    
+    @Getter
+    private final String type = "INCREMENT";
+    
+    @Getter
+    @Setter
+    private Properties properties = new Properties();
+    
+    @Override
+    public Comparable<?> generateKey() {
+        return SEQUENCE.incrementAndGet();
+    }
 }

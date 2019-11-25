@@ -15,30 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.center.configuration;
-
-import java.util.Map;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-/**
- * Config center configuration.
- *
- * @author zhangliang
- * @author sunbufu
- * @author dongzonglei
- * @author wangguangyuan
- */
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public final class OrchestrationConfiguration {
-    
-    /**
-     * Instance configuration map.
-     */
-    private Map<String, InstanceConfiguration> instanceConfigurationMap;
-}
+DROP SCHEMA IF EXISTS `db_slave_0`;
+CREATE SCHEMA `db_slave_0`;
+DROP TABLE IF EXISTS `t_order`;
+DROP TABLE IF EXISTS `t_order_item`;
+DROP TABLE IF EXISTS `t_config`;
+CREATE TABLE `t_order` (`order_id` INT NOT NULL, `user_id` INT NOT NULL, `status` VARCHAR(45) NULL, PRIMARY KEY (`order_id`));
+CREATE TABLE `t_order_item` (`order_item_id` INT NOT NULL, `order_id` INT NOT NULL, `user_id` INT NOT NULL, `status` VARCHAR(45) NULL, PRIMARY KEY (`order_item_id`));
+CREATE TABLE `t_config` (`id` INT NOT NULL, `status` VARCHAR(45) NULL, PRIMARY KEY (`id`));

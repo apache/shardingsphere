@@ -15,30 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.center.configuration;
+package org.apache.shardingsphere.shardingjdbc.orchestration.temp.api.yaml.fixture;
 
-import java.util.Map;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.apache.shardingsphere.api.sharding.standard.PreciseShardingAlgorithm;
+import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
 
-/**
- * Config center configuration.
- *
- * @author zhangliang
- * @author sunbufu
- * @author dongzonglei
- * @author wangguangyuan
- */
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public final class OrchestrationConfiguration {
-    
-    /**
-     * Instance configuration map.
-     */
-    private Map<String, InstanceConfiguration> instanceConfigurationMap;
+import java.util.Collection;
+
+public final class SingleAlgorithm implements PreciseShardingAlgorithm<Integer> {
+
+    @Override
+    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
+        for (String each : availableTargetNames) {
+            if (each.endsWith(shardingValue.getValue() % 10 + "")) {
+                return each;
+            }
+        }
+        throw new UnsupportedOperationException();
+    }
 }
