@@ -28,26 +28,26 @@ import java.util.Properties;
 
 /**
  * Snowflake distributed primary key generator.
- * 
+ *
  * <p>
  * Use snowflake algorithm. Length is 64 bit.
  * </p>
- * 
+ *
  * <pre>
  * 1bit sign bit.
  * 41bits timestamp offset from 2016.11.01(ShardingSphere distributed primary key published data) to now.
  * 10bits worker process id.
  * 12bits auto increment offset in one mills
  * </pre>
- * 
+ *
  * <p>
  * Call @{@code SnowflakeShardingKeyGenerator.setWorkerId} to set worker id, default value is 0.
  * </p>
- * 
+ *
  * <p>
  * Call @{@code SnowflakeShardingKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds} to set max tolerate time difference milliseconds, default value is 0.
  * </p>
- * 
+ *
  * @author gaohongtao
  * @author panjuan
  */
@@ -69,6 +69,8 @@ public final class SnowflakeShardingKeyGenerator implements ShardingKeyGenerator
     
     private static final long WORKER_ID = 0;
     
+    private static final int DEFAULT_VIBRATION_VALUE = 1;
+    
     private static final int MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS = 10;
     
     @Setter
@@ -78,7 +80,9 @@ public final class SnowflakeShardingKeyGenerator implements ShardingKeyGenerator
     @Setter
     private Properties properties = new Properties();
     
-    private byte sequenceOffset;
+    private int sequenceOffset;
+    
+    private int sequenceFlag;
     
     private long sequence;
     
@@ -123,20 +127,26 @@ public final class SnowflakeShardingKeyGenerator implements ShardingKeyGenerator
             return false;
         }
         long timeDifferenceMilliseconds = lastMilliseconds - currentMilliseconds;
-        Preconditions.checkState(timeDifferenceMilliseconds < getMaxTolerateTimeDifferenceMilliseconds(), 
+        Preconditions.checkState(timeDifferenceMilliseconds < getMaxTolerateTimeDifferenceMilliseconds(),
                 "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastMilliseconds, currentMilliseconds);
         Thread.sleep(timeDifferenceMilliseconds);
         return true;
     }
     
     private long getWorkerId() {
-        long result = Long.valueOf(properties.getProperty("worker.id", String.valueOf(WORKER_ID)));
+        long result = Long.parseLong(properties.getProperty("worker.id", String.valueOf(WORKER_ID)));
         Preconditions.checkArgument(result >= 0L && result < WORKER_ID_MAX_VALUE);
         return result;
     }
     
+    private int getMaxVibrationOffset() {
+        int result = Integer.parseInt(properties.getProperty("max.vibration.offset", String.valueOf(DEFAULT_VIBRATION_VALUE)));
+        Preconditions.checkArgument(result > 0 && result <= SEQUENCE_MASK, "Illegal max vibration offset");
+        return result;
+    }
+    
     private int getMaxTolerateTimeDifferenceMilliseconds() {
-        return Integer.valueOf(properties.getProperty("max.tolerate.time.difference.milliseconds", String.valueOf(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS)));
+        return Integer.parseInt(properties.getProperty("max.tolerate.time.difference.milliseconds", String.valueOf(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS)));
     }
     
     private long waitUntilNextTime(final long lastTime) {
@@ -148,6 +158,7 @@ public final class SnowflakeShardingKeyGenerator implements ShardingKeyGenerator
     }
     
     private void vibrateSequenceOffset() {
-        sequenceOffset = (byte) (~sequenceOffset & 1);
+        sequenceOffset = sequenceFlag;
+        sequenceFlag = sequenceFlag >= getMaxVibrationOffset() ? 0 : sequenceFlag + 1;
     }
 }
