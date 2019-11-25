@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.TimeZone;
 
 @RunWith(Parameterized.class)
@@ -150,8 +151,7 @@ public abstract class BaseIT {
     
     private boolean isInSameDatabaseInstance(final DataSourceMetaData sample, final DataSourceMetaData target) {
         return sample instanceof MemorizedDataSourceMetaData
-                ? (target.getSchema() == sample.getSchema() || target.getSchema().equals(sample.getSchema())) 
-                        : target.getHostName().equals(sample.getHostName()) && target.getPort() == sample.getPort();
+                ? (Objects.equals(target.getSchema(), sample.getSchema())) : target.getHostName().equals(sample.getHostName()) && target.getPort() == sample.getPort();
     }
     
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap() throws SQLException {
