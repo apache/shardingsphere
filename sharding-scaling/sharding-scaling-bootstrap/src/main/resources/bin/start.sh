@@ -22,6 +22,6 @@ DEPLOY_DIR=`pwd`
 
 CLASS_PATH=.:${DEPLOY_DIR}/conf:${DEPLOY_DIR}/lib/*
 
-MAIN_CLASS=info.avalon566.shardingscaling.Bootstrap
+MAIN_CLASS=Bootstrap
 
 java -classpath ${CLASS_PATH} ${MAIN_CLASS}
