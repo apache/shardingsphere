@@ -592,7 +592,7 @@ I will process to publish the release and send ANNOUNCE.
 1. Move source packages and binary packages from the `dev` directory to `release` directory
 
 ```shell
-svn mv https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION}/ https://dist.apache.org/repos/dist/release/incubator/shardingsphere/
+svn mv https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION} https://dist.apache.org/repos/dist/release/incubator/shardingsphere/
 ```
 
 2. Find ShardingSphere in staging repository and click `Release`
@@ -613,7 +613,44 @@ https://shardingsphere.apache.org/document/current/en/downloads/
 https://shardingsphere.apache.org/document/current/cn/downloads/
 ```
 
-5. Send e-mail to `general@incubator.apache.org` and `dev@shardingsphere.apache.org` to announce the release is finished.
+5. Update READEME files
+
+Update ${PREVIOUS.RELEASE.VERSION} to ${LATEST.RELEASE.VERSION} in README.md and README_ZH.md
+
+6. Docker Release
+
+```
+0 Preparation
+0.1 Install docker locally and start the docker service
+0.2 Enter ~/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/src/main/docker/
+vim Dockerfile,change `ENV CURRENT_VERSION `${LEGACY.RELEASE.VERSION}` to `${LATEST.RELEASE.VERSION}`
+```
+
+```
+1 Compile Docker Image
+1.1 Enter ~/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/
+1.2 Execute `mvn clean package docker:build`
+```
+
+```
+2 Tag the local Docker Image
+2.1 Check the image ID through `docker images`, for example: e9ea51023687
+2.2 Execute `docker tag e9ea51023687 apache/sharding-proxy:latest`
+2.3 Execute `docker tag e9ea51023687 apache/sharding-proxy:${LATEST.RELEASE.VERSION}`
+```
+
+```
+3 Publish Docker Image
+3.1 Execute `docker push apache/sharding-proxy:latest`
+3.2 Execute `docker push apache/sharding-proxy:${RELEASE_VERSION}`
+```
+
+```
+4 Confirm the successful release
+4.1 Login [Docker Hub](https://hub.docker.com/r/apache/sharding-proxy/) to check whether there are published images
+```
+
+7. Send e-mail to `general@incubator.apache.org` and `dev@shardingsphere.apache.org` to announce the release is finished.
 
 Announcement e-mail template:
 
