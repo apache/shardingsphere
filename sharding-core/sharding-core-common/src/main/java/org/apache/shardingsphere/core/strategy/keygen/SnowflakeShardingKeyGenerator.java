@@ -28,26 +28,26 @@ import java.util.Properties;
 
 /**
  * Snowflake distributed primary key generator.
- *
+ * 
  * <p>
  * Use snowflake algorithm. Length is 64 bit.
  * </p>
- *
+ * 
  * <pre>
  * 1bit sign bit.
  * 41bits timestamp offset from 2016.11.01(ShardingSphere distributed primary key published data) to now.
  * 10bits worker process id.
  * 12bits auto increment offset in one mills
  * </pre>
- *
+ * 
  * <p>
  * Call @{@code SnowflakeShardingKeyGenerator.setWorkerId} to set worker id, default value is 0.
  * </p>
- *
+ * 
  * <p>
  * Call @{@code SnowflakeShardingKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds} to set max tolerate time difference milliseconds, default value is 0.
  * </p>
- *
+ * 
  * @author gaohongtao
  * @author panjuan
  */
@@ -127,7 +127,7 @@ public final class SnowflakeShardingKeyGenerator implements ShardingKeyGenerator
             return false;
         }
         long timeDifferenceMilliseconds = lastMilliseconds - currentMilliseconds;
-        Preconditions.checkState(timeDifferenceMilliseconds < getMaxTolerateTimeDifferenceMilliseconds(),
+        Preconditions.checkState(timeDifferenceMilliseconds < getMaxTolerateTimeDifferenceMilliseconds(), 
                 "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastMilliseconds, currentMilliseconds);
         Thread.sleep(timeDifferenceMilliseconds);
         return true;
