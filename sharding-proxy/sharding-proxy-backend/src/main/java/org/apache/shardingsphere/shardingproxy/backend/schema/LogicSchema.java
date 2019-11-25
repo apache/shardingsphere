@@ -64,9 +64,9 @@ public abstract class LogicSchema {
         ShardingOrchestrationEventBus.getInstance().register(this);
     }
     
-    protected final Map<String, DataSourceInfo> getDataSourceInfoMap(final Map<String, YamlDataSourceParameter> dataSourceMap) {
-        Map<String, DataSourceInfo> result = new HashMap<>(dataSourceMap.size(), 1);
-        for (Entry<String, YamlDataSourceParameter> entry : dataSourceMap.entrySet()) {
+    protected final Map<String, DataSourceInfo> getDataSourceInfoMap() {
+        Map<String, DataSourceInfo> result = new HashMap<>(backendDataSource.getDataSourceParameters().size(), 1);
+        for (Entry<String, YamlDataSourceParameter> entry : backendDataSource.getDataSourceParameters().entrySet()) {
             YamlDataSourceParameter dataSource = entry.getValue();
             DataSourceInfo dataSourceInfo = new DataSourceInfo(dataSource.getUrl(), null);
             result.put(entry.getKey(), dataSourceInfo);
