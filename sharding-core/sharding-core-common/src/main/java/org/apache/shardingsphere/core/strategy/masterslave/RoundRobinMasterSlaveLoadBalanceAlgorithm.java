@@ -45,7 +45,7 @@ public final class RoundRobinMasterSlaveLoadBalanceAlgorithm implements MasterSl
     }
     
     @Override
-    public String getDataSource(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames) {
+    public String getDataSource(final String name, final List<String> slaveDataSourceNames) {
         AtomicInteger count = COUNTS.containsKey(name) ? COUNTS.get(name) : new AtomicInteger(0);
         COUNTS.putIfAbsent(name, count);
         count.compareAndSet(slaveDataSourceNames.size(), 0);

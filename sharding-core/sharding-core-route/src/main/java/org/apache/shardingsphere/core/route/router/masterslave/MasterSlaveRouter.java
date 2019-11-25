@@ -66,7 +66,7 @@ public final class MasterSlaveRouter {
             return Collections.singletonList(masterSlaveRule.getMasterDataSourceName());
         }
         return Collections.singletonList(masterSlaveRule.getLoadBalanceAlgorithm().getDataSource(
-                masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), new ArrayList<>(masterSlaveRule.getSlaveDataSourceNames())));
+                masterSlaveRule.getName(), new ArrayList<>(masterSlaveRule.getSlaveDataSourceNames())));
     }
     
     private boolean isMasterRoute(final SQLStatement sqlStatement) {

@@ -35,8 +35,8 @@ public final class RoundRobinMasterSlaveLoadBalanceAlgorithmTest {
         String slaveDataSourceName1 = "test_ds_slave_1";
         String slaveDataSourceName2 = "test_ds_slave_2";
         List<String> slaveDataSourceNames = Arrays.asList(slaveDataSourceName1, slaveDataSourceName2);
-        assertThat(roundRobinMasterSlaveLoadBalanceAlgorithm.getDataSource("ds", masterDataSourceName, slaveDataSourceNames), is(slaveDataSourceName1));
-        assertThat(roundRobinMasterSlaveLoadBalanceAlgorithm.getDataSource("ds", masterDataSourceName, slaveDataSourceNames), is(slaveDataSourceName2));
-        assertThat(roundRobinMasterSlaveLoadBalanceAlgorithm.getDataSource("ds", masterDataSourceName, slaveDataSourceNames), is(slaveDataSourceName1));
+        assertThat(roundRobinMasterSlaveLoadBalanceAlgorithm.getDataSource("ds", slaveDataSourceNames), is(slaveDataSourceName1));
+        assertThat(roundRobinMasterSlaveLoadBalanceAlgorithm.getDataSource("ds", slaveDataSourceNames), is(slaveDataSourceName2));
+        assertThat(roundRobinMasterSlaveLoadBalanceAlgorithm.getDataSource("ds", slaveDataSourceNames), is(slaveDataSourceName1));
     }
 }

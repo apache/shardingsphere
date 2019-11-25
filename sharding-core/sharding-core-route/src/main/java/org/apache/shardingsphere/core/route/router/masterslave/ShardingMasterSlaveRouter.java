@@ -66,7 +66,7 @@ public final class ShardingMasterSlaveRouter {
                 actualDataSourceName = masterSlaveRule.getMasterDataSourceName();
             } else {
                 actualDataSourceName = masterSlaveRule.getLoadBalanceAlgorithm().getDataSource(
-                        masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), new ArrayList<>(masterSlaveRule.getSlaveDataSourceNames()));
+                        masterSlaveRule.getName(), new ArrayList<>(masterSlaveRule.getSlaveDataSourceNames()));
             }
             toBeAdded.add(createNewRoutingUnit(actualDataSourceName, each));
         }

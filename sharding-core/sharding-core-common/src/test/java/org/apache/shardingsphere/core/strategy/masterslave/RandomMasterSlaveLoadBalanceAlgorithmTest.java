@@ -34,8 +34,8 @@ public final class RandomMasterSlaveLoadBalanceAlgorithmTest {
         String slaveDataSourceName1 = "test_ds_slave_1";
         String slaveDataSourceName2 = "test_ds_slave_2";
         List<String> slaveDataSourceNames = Arrays.asList(slaveDataSourceName1, slaveDataSourceName2);
-        assertTrue(slaveDataSourceNames.contains(randomMasterSlaveLoadBalanceAlgorithm.getDataSource("ds", masterDataSourceName, slaveDataSourceNames)));
-        assertTrue(slaveDataSourceNames.contains(randomMasterSlaveLoadBalanceAlgorithm.getDataSource("ds", masterDataSourceName, slaveDataSourceNames)));
-        assertTrue(slaveDataSourceNames.contains(randomMasterSlaveLoadBalanceAlgorithm.getDataSource("ds", masterDataSourceName, slaveDataSourceNames)));
+        assertTrue(slaveDataSourceNames.contains(randomMasterSlaveLoadBalanceAlgorithm.getDataSource("ds", slaveDataSourceNames)));
+        assertTrue(slaveDataSourceNames.contains(randomMasterSlaveLoadBalanceAlgorithm.getDataSource("ds", slaveDataSourceNames)));
+        assertTrue(slaveDataSourceNames.contains(randomMasterSlaveLoadBalanceAlgorithm.getDataSource("ds", slaveDataSourceNames)));
     }
 }
