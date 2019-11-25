@@ -21,26 +21,26 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>info.avalon566</groupId>
+        <groupId>org.apache.shardingsphere</groupId>
         <artifactId>sharding-scaling</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>4.0.0-RC4-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-scaling-bootstrap</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
-            <groupId>info.avalon566</groupId>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-scaling-core</artifactId>
             <version>${parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>info.avalon566</groupId>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-scaling-mysql</artifactId>
             <version>${parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>info.avalon566</groupId>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-scaling-postgresql</artifactId>
             <version>${parent.version}</version>
         </dependency>
@@ -53,7 +53,7 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
         </dependency>
-
+    
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
@@ -62,10 +62,11 @@
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
         </dependency>
-
+    
     </dependencies>
-
+    
     <build>
         <plugins>
             <plugin>
