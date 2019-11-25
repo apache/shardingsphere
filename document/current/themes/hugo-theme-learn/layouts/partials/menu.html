@@ -156,6 +156,7 @@
     {{ if not .Params.Hidden }}
       <li data-nav-id="{{.URL}}" title="{{.Title}}" class="dd-item {{if eq .UniqueID $currentNode.UniqueID}}active{{end}}">
         <a href="{{ .RelPermalink}}">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
         {{safeHTML .Params.Pre}}{{or .Params.menuTitle .LinkTitle .Title}}{{safeHTML .Params.Post}}
         {{ if $showvisitedlinks}}<i class="fa fa-check read-icon"></i>{{end}}
         </a>
