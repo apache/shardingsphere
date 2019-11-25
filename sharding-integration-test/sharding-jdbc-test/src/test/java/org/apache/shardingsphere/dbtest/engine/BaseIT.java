@@ -17,6 +17,27 @@
 
 package org.apache.shardingsphere.dbtest.engine;
 
+import com.google.common.base.Joiner;
+import lombok.AccessLevel;
+import lombok.Getter;
+import org.apache.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
+import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
+import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
+import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
+import org.apache.shardingsphere.dbtest.env.datasource.DataSourceUtil;
+import org.apache.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
+import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.spi.database.MemorizedDataSourceMetaData;
+import org.junit.After;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+
+import javax.sql.DataSource;
+import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -28,31 +49,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
-
-import javax.sql.DataSource;
-import javax.xml.bind.JAXBException;
-
-import org.apache.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
-import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
-import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
-import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
-import org.apache.shardingsphere.dbtest.env.datasource.DataSourceUtil;
-import org.apache.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.spi.database.DataSourceInfo;
-import org.apache.shardingsphere.spi.database.DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.DatabaseType;
-import org.apache.shardingsphere.spi.database.MemorizedDataSourceMetaData;
-import org.junit.After;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
-import com.google.common.base.Joiner;
-
-import lombok.AccessLevel;
-import lombok.Getter;
 
 @RunWith(Parameterized.class)
 @Getter(AccessLevel.PROTECTED)
@@ -161,24 +157,20 @@ public abstract class BaseIT {
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap() throws SQLException {
         Map<String, DataSourceMetaData> result = new LinkedHashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            result.put(entry.getKey(), databaseTypeEnvironment.getDatabaseType().getDataSourceMetaData(getDataSourceInfo(entry.getValue())));
+            try (Connection connection = entry.getValue().getConnection()) {
+                DatabaseMetaData metaData = connection.getMetaData();
+                result.put(entry.getKey(), databaseTypeEnvironment.getDatabaseType().getDataSourceMetaData(metaData.getURL(), metaData.getUserName()));
+            }
         }
         return result;
     }
     
-    private static DataSourceInfo getDataSourceInfo(final DataSource dataSource) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            DatabaseMetaData metaData = connection.getMetaData();
-            return new DataSourceInfo(metaData.getURL(), metaData.getUserName());
-        }
-    }
-
     protected static void createDatabasesAndTables() {
         createDatabases();
         dropTables();
         createTables();
     }
-
+    
     protected static void createDatabases() {
         try {
             for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
@@ -191,7 +183,7 @@ public abstract class BaseIT {
             ex.printStackTrace();
         }
     }
-
+    
     protected static void createTables() {
         try {
             for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
@@ -201,7 +193,7 @@ public abstract class BaseIT {
             ex.printStackTrace();
         }
     }
-
+    
     protected static void dropDatabases() {
         try {
             for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
@@ -211,7 +203,7 @@ public abstract class BaseIT {
             ex.printStackTrace();
         }
     }
-
+    
     protected static void dropTables() {
         try {
             for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
@@ -221,7 +213,7 @@ public abstract class BaseIT {
             ex.printStackTrace();
         }
     }
-
+    
     @After
     public void tearDown() {
         if (dataSource instanceof ShardingDataSource) {

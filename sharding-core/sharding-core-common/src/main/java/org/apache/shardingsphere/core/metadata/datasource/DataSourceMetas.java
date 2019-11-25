@@ -44,7 +44,7 @@ public final class DataSourceMetas {
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final DatabaseType databaseType, final Map<String, DataSourceInfo> dataSourceInfoMap) {
         Map<String, DataSourceMetaData> result = new HashMap<>(dataSourceInfoMap.size(), 1);
         for (Entry<String, DataSourceInfo> entry : dataSourceInfoMap.entrySet()) {
-            result.put(entry.getKey(), databaseType.getDataSourceMetaData(entry.getValue()));
+            result.put(entry.getKey(), databaseType.getDataSourceMetaData(entry.getValue().getUrl(), entry.getValue().getUsername()));
         }
         return result;
     }
