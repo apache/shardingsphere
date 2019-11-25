@@ -72,6 +72,8 @@ public class SyncExecutor {
         ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(syncRunners.size()));
         for (SyncRunner syncRunner : syncRunners) {
             ListenableFuture listenableFuture = executorService.submit(syncRunner, null);
+            // TODO refactor for checkstyle
+            // CHECKSTYLE:OFF
             Futures.addCallback(listenableFuture, new FutureCallback() {
 
                 @Override
@@ -102,6 +104,7 @@ public class SyncExecutor {
                     }
                 }
             });
+            // CHECKSTYLE:ON
         }
         executorService.shutdown();
     }

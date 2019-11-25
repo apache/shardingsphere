@@ -17,7 +17,7 @@
 
 package info.avalon566.shardingscaling.core.spi;
 
-import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import java.util.Map;
 import java.util.TreeMap;
 

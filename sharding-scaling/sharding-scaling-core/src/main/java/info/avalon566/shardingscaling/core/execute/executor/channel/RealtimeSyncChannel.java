@@ -131,6 +131,8 @@ public class RealtimeSyncChannel implements Channel {
     }
 
     private void scheduleAckRecords() {
+        // TODO refactor for checkstyle
+        // CHECKSTYLE:OFF
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -155,6 +157,7 @@ public class RealtimeSyncChannel implements Channel {
                 }
             }
         }, 5000, 1000);
+        // CHECKSTYLE:ON
     }
 
     class SingleChannelAckCallback implements AckCallback {
