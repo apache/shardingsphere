@@ -24,15 +24,14 @@
         <artifactId>shardingsphere</artifactId>
         <version>4.0.0-RC4-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-proxy</artifactId>
+    <artifactId>sharding-scaling</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>sharding-proxy-common</module>
-        <module>sharding-proxy-transport</module>
-        <module>sharding-proxy-frontend</module>
-        <module>sharding-proxy-backend</module>
-        <module>sharding-proxy-bootstrap</module>
+        <module>sharding-scaling-core</module>
+        <module>sharding-scaling-bootstrap</module>
+        <module>sharding-scaling-mysql</module>
+        <module>sharding-scaling-postgresql</module>
     </modules>
 </project>
