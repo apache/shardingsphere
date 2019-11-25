@@ -102,14 +102,30 @@
         {{if eq .UniqueID $currentNode.UniqueID}}active{{end}}
         {{if .Params.alwaysopen}}parent{{end}}
         ">
+      {{ $numberOfPages := (add (len .Pages) (len .Sections)) }}      
       <a href="{{.RelPermalink}}">
-          <span class="collapse" style="display:inline; font-family:'courier'">{{if .IsAncestor $currentNode }}-&nbsp;{{else}}+&nbsp;{{end}}</span>
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         {{ if ne $numberOfPages 0 }}
+             <svg  class="icon icon-down" 
+              style="display: {{if .IsAncestor $currentNode }}inline-block;{{else}}none;{{end}}"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
+              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
+            </svg>
+            <svg  class="icon icon-right" 
+              style="display: {{if .IsAncestor $currentNode }}none;{{else}}inline-block;{{end}}"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
+              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
+            </svg>
+          {{else}}
+            <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+          {{end}}
+          </i>
           {{safeHTML .Params.Pre}}{{or .Params.menuTitle .LinkTitle .Title}}{{safeHTML .Params.Post}}
           {{ if $showvisitedlinks}}
             <i class="fa fa-check read-icon"></i>
           {{ end }}
       </a>
-      {{ $numberOfPages := (add (len .Pages) (len .Sections)) }}
+      
       {{ if ne $numberOfPages 0 }}
         <ul>
           {{ $currentNode.Scratch.Set "pages" .Pages }}
@@ -140,6 +156,7 @@
     {{ if not .Params.Hidden }}
       <li data-nav-id="{{.URL}}" title="{{.Title}}" class="dd-item {{if eq .UniqueID $currentNode.UniqueID}}active{{end}}">
         <a href="{{ .RelPermalink}}">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
         {{safeHTML .Params.Pre}}{{or .Params.menuTitle .LinkTitle .Title}}{{safeHTML .Params.Post}}
         {{ if $showvisitedlinks}}<i class="fa fa-check read-icon"></i>{{end}}
         </a>

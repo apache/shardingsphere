@@ -1,5 +1,5 @@
 +++
-pre = "<b>3.1.1. </b>"
+pre = "<b>3.1.2. </b>"
 title = "Guide to Kernel"
 weight = 2
 chapter = true

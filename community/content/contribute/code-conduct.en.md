@@ -4,7 +4,9 @@ weight = 4
 chapter = true
 +++
 
-## Development Concept
+The following code of conduct is based on full compliance with [ASF CODE OF CONDUCT](https://www.apache.org/foundation/policies/conduct.html).
+
+## Development Guidelines
 
  - Write codes with heart. Pursue clean, simplified and extremely elegant codes. Agree with concepts in &lt;Refactoring: Improving the Design of Existing Code&gt; and &lt;Clean Code: A Handbook of Agile Software Craftsmanship&gt;.
  - Be familiar with codes already had, to keep consistent with the style and use.
@@ -66,7 +68,7 @@ chapter = true
  - Actual values of test cases should be named `actualXXX`, expected values `expectedXXX`.
  - Class for test case and `@Test` annotation do not need javadoc.
 
-## G4 code of Conduct
+## Contributor Covenant G4 Code of Conduct
  - Common Conduct
    - Every line cannot over `200` chars, guarantee every line have complete semantics.
  - Lexer Conduct

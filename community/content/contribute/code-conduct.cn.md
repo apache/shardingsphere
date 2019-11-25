@@ -4,6 +4,8 @@ weight = 4
 chapter = true
 +++
 
+以下行为准则以完全遵循[Apache软件基金会行为准则](https://www.apache.org/foundation/policies/conduct.html)为前提。
+
 ## 开发理念
 
  - **用心** 保持责任心和敬畏心，以工匠精神持续雕琢。
@@ -70,7 +72,7 @@ chapter = true
  - 测试用例的真实值应名为为actualXXX，期望值应命名为expectedXXX。
  - 测试类和`@Test`标注的方法无需javadoc。
 
-## G4规范
+## G4编码规范
  - 公共规范
    - 每行长度不超过`200`个字符，保证每一行语义完整以便于理解。
  - 词法解析规范
