@@ -80,9 +80,7 @@ public final class SnowflakeShardingKeyGenerator implements ShardingKeyGenerator
     @Setter
     private Properties properties = new Properties();
     
-    private int sequenceOffset;
-    
-    private int sequenceFlag;
+    private int sequenceOffset = -1;
     
     private long sequence;
     
@@ -134,19 +132,19 @@ public final class SnowflakeShardingKeyGenerator implements ShardingKeyGenerator
     }
     
     private long getWorkerId() {
-        long result = Long.parseLong(properties.getProperty("worker.id", String.valueOf(WORKER_ID)));
+        long result = Long.valueOf(properties.getProperty("worker.id", String.valueOf(WORKER_ID)));
         Preconditions.checkArgument(result >= 0L && result < WORKER_ID_MAX_VALUE);
         return result;
     }
     
     private int getMaxVibrationOffset() {
         int result = Integer.parseInt(properties.getProperty("max.vibration.offset", String.valueOf(DEFAULT_VIBRATION_VALUE)));
-        Preconditions.checkArgument(result > 0 && result <= SEQUENCE_MASK, "Illegal max vibration offset");
+        Preconditions.checkArgument(result >= 0 && result <= SEQUENCE_MASK, "Illegal max vibration offset");
         return result;
     }
     
     private int getMaxTolerateTimeDifferenceMilliseconds() {
-        return Integer.parseInt(properties.getProperty("max.tolerate.time.difference.milliseconds", String.valueOf(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS)));
+        return Integer.valueOf(properties.getProperty("max.tolerate.time.difference.milliseconds", String.valueOf(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS)));
     }
     
     private long waitUntilNextTime(final long lastTime) {
@@ -158,7 +156,6 @@ public final class SnowflakeShardingKeyGenerator implements ShardingKeyGenerator
     }
     
     private void vibrateSequenceOffset() {
-        sequenceOffset = sequenceFlag;
-        sequenceFlag = sequenceFlag >= getMaxVibrationOffset() ? 0 : sequenceFlag + 1;
+        sequenceOffset = sequenceOffset >= getMaxVibrationOffset() ? 0 : sequenceOffset + 1;
     }
 }
