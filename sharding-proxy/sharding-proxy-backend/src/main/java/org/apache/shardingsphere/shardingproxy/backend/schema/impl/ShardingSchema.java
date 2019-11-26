@@ -77,7 +77,7 @@ public final class ShardingSchema extends LogicSchema {
     }
     
     private ShardingSphereMetaData createMetaData() throws SQLException {
-        DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDataSourceInfoMap());
+        DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDatabaseAccessConfigurationMap());
         TableMetas tableMetas = new TableMetas(getTableMetaDataInitializer(dataSourceMetas).load(shardingRule));
         return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
     }

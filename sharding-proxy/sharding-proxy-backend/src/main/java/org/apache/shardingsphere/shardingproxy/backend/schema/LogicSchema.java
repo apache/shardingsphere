@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.schema;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
+import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
@@ -33,7 +34,6 @@ import org.apache.shardingsphere.shardingproxy.backend.executor.BackendExecutorC
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
-import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
@@ -64,11 +64,11 @@ public abstract class LogicSchema {
         ShardingOrchestrationEventBus.getInstance().register(this);
     }
     
-    protected final Map<String, DataSourceInfo> getDataSourceInfoMap() {
-        Map<String, DataSourceInfo> result = new HashMap<>(backendDataSource.getDataSourceParameters().size(), 1);
+    protected final Map<String, DatabaseAccessConfiguration> getDatabaseAccessConfigurationMap() {
+        Map<String, DatabaseAccessConfiguration> result = new HashMap<>(backendDataSource.getDataSourceParameters().size(), 1);
         for (Entry<String, YamlDataSourceParameter> entry : backendDataSource.getDataSourceParameters().entrySet()) {
             YamlDataSourceParameter dataSource = entry.getValue();
-            DataSourceInfo dataSourceInfo = new DataSourceInfo(dataSource.getUrl(), null);
+            DatabaseAccessConfiguration dataSourceInfo = new DatabaseAccessConfiguration(dataSource.getUrl(), null, null);
             result.put(entry.getKey(), dataSourceInfo);
         }
         return result;

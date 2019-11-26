@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.metadata.datasource;
 
-import org.apache.shardingsphere.spi.database.DataSourceInfo;
+import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.spi.database.MemorizedDataSourceMetaData;
@@ -37,13 +37,13 @@ public final class DataSourceMetas {
     
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
-    public DataSourceMetas(final DatabaseType databaseType, final Map<String, DataSourceInfo> dataSourceInfoMap) {
-        dataSourceMetaDataMap = getDataSourceMetaDataMap(databaseType, dataSourceInfoMap);
+    public DataSourceMetas(final DatabaseType databaseType, final Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap) {
+        dataSourceMetaDataMap = getDataSourceMetaDataMap(databaseType, databaseAccessConfigurationMap);
     }
     
-    private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final DatabaseType databaseType, final Map<String, DataSourceInfo> dataSourceInfoMap) {
-        Map<String, DataSourceMetaData> result = new HashMap<>(dataSourceInfoMap.size(), 1);
-        for (Entry<String, DataSourceInfo> entry : dataSourceInfoMap.entrySet()) {
+    private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final DatabaseType databaseType, final Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap) {
+        Map<String, DataSourceMetaData> result = new HashMap<>(databaseAccessConfigurationMap.size(), 1);
+        for (Entry<String, DatabaseAccessConfiguration> entry : databaseAccessConfigurationMap.entrySet()) {
             result.put(entry.getKey(), databaseType.getDataSourceMetaData(entry.getValue().getUrl(), entry.getValue().getUsername()));
         }
         return result;
