@@ -44,11 +44,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-/**
- *
- *
- * @author yangyi
- */
 public class HistoryDataSyncTaskGroupTest {
     
     private static String dataSourceUrl = "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
@@ -116,7 +111,7 @@ public class HistoryDataSyncTaskGroupTest {
         historyDataSyncTaskGroup.start(new ReportCallback() {
             
             @Override
-            public void onProcess(Event event) {
+            public void onProcess(final Event event) {
             }
         });
         verify(syncTask).start(any(ReportCallback.class));

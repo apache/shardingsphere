@@ -17,33 +17,28 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.reader;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.exception.SyncRunException;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractSyncRunner;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
-import org.apache.shardingsphere.shardingscaling.core.metadata.ColumnMetaData;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
-import org.apache.shardingsphere.shardingscaling.core.util.DbMetaDataUtil;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import javax.sql.DataSource;
 
 /**
  * generic jdbc reader implement.

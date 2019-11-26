@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.Lo
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntry;
 
-public class FixtureH2ScalingEntry implements ScalingEntry {
+public final class FixtureH2ScalingEntry implements ScalingEntry {
     
     @Override
     public Class<? extends JdbcReader> getJdbcReaderClass() {

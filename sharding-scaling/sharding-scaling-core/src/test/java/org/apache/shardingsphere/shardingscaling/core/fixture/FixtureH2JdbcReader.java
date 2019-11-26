@@ -22,7 +22,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.Ab
 
 public class FixtureH2JdbcReader extends AbstractJdbcReader {
     
-    public FixtureH2JdbcReader(RdbmsConfiguration rdbmsConfiguration) {
+    public FixtureH2JdbcReader(final RdbmsConfiguration rdbmsConfiguration) {
         super(rdbmsConfiguration);
     }
 }
