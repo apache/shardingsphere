@@ -35,16 +35,14 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.instance.node.ConfigTreeNode;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Registry center for Apollo.
@@ -82,7 +80,7 @@ public final class ApolloInstance implements ConfigCenter {
     
     private ApolloOpenApiClient client;
     
-    private Map<String, Set<String>> keyAndChildrenMap = new ConcurrentHashMap<>();
+    private ConfigTreeNode tree = new ConfigTreeNode(null, "/", Sets.<ConfigTreeNode>newHashSet());
     
     @Getter
     @Setter
@@ -121,30 +119,11 @@ public final class ApolloInstance implements ConfigCenter {
     
     private void initKeysRelationship() {
         List<OpenItemDTO> items = client.getNamespace(appId, env, clusterName, namespace).getItems();
+        Set<String> keys = Sets.newHashSet();
         for (OpenItemDTO each : items) {
-            refreshKeysRelationship(each.getKey());
+            keys.add(each.getKey());
         }
-    }
-    
-    private void refreshKeysRelationship(final String apolloKey) {
-        if (!apolloKey.contains(APOLLO_KEY_SEPARATOR)) {
-            addRelationship(SHARDING_SPHERE_KEY_ROOT, SHARDING_SPHERE_KEY_ROOT + apolloKey);
-            return;
-        }
-        String parentKey = SHARDING_SPHERE_KEY_ROOT;
-        String shardingSphereKey = deConvertKey(apolloKey);
-        for (int i = 1; i <= shardingSphereKey.lastIndexOf(SHARDING_SPHERE_KEY_SEPARATOR); i = shardingSphereKey.indexOf(SHARDING_SPHERE_KEY_SEPARATOR, i) + 1) {
-            String childrenKey = shardingSphereKey.substring(0, shardingSphereKey.indexOf(SHARDING_SPHERE_KEY_SEPARATOR, i));
-            addRelationship(parentKey, childrenKey);
-            parentKey = childrenKey;
-        }
-        addRelationship(parentKey, shardingSphereKey);
-    }
-    
-    private void addRelationship(final String parentKey, final String childrenKey) {
-        Set<String> childrenKeys = keyAndChildrenMap.containsKey(parentKey) ? keyAndChildrenMap.get(parentKey) : new HashSet<String>();
-        childrenKeys.add(childrenKey);
-        keyAndChildrenMap.put(parentKey, childrenKeys);
+        tree.initTree(keys, APOLLO_KEY_SEPARATOR);
     }
     
     @Override
@@ -162,7 +141,7 @@ public final class ApolloInstance implements ConfigCenter {
     
     @Override
     public List<String> getChildrenKeys(final String key) {
-        return new ArrayList<>(keyAndChildrenMap.get(key));
+        return new ArrayList<>(tree.getChildrenKeys(key));
     }
     
     @Override
@@ -170,7 +149,7 @@ public final class ApolloInstance implements ConfigCenter {
         String apolloKey = convertKey(key);
         updateKey(apolloKey, value);
         publishNamespace();
-        refreshKeysRelationship(apolloKey);
+        tree.refresh(apolloKey, APOLLO_KEY_SEPARATOR);
     }
     
     private void updateKey(final String key, final String value) {
