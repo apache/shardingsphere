@@ -73,7 +73,7 @@ public final class DbMetaDataUtil {
                 .build(new CacheLoader<String, List<ColumnMetaData>>() {
                     @Override
                     public List<ColumnMetaData> load(final String key) {
-                        return getColumNamesInternal(key);
+                        return getColumnNamesInternal(key);
                     }
                 });
     }
@@ -141,7 +141,7 @@ public final class DbMetaDataUtil {
         }
     }
 
-    private List<ColumnMetaData> getColumNamesInternal(final String tableName) {
+    private List<ColumnMetaData> getColumnNamesInternal(final String tableName) {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 List<ColumnMetaData> result = new ArrayList<>();
