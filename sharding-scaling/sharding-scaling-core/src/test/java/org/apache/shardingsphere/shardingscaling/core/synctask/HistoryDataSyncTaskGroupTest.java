@@ -21,6 +21,9 @@ import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfigura
 import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.controller.ReportCallback;
+import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
+import org.apache.shardingsphere.shardingscaling.core.execute.Event;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 import org.apache.shardingsphere.shardingscaling.core.util.ReflectionUtil;
 import org.junit.Before;
@@ -29,12 +32,17 @@ import lombok.SneakyThrows;
 
 import java.sql.Connection;
 import java.sql.Statement;
+import java.util.LinkedList;
 import java.util.List;
 import javax.sql.DataSource;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  *
@@ -52,7 +60,7 @@ public class HistoryDataSyncTaskGroupTest {
     private SyncConfiguration syncConfiguration;
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         RdbmsConfiguration readerConfig = mockReaderConfig();
         RdbmsConfiguration writerConfig = new RdbmsConfiguration();
         syncConfiguration = new SyncConfiguration(3, readerConfig, writerConfig);
@@ -99,15 +107,36 @@ public class HistoryDataSyncTaskGroupTest {
     }
     
     @Test
-    public void assertStart() {
+    public void assertStart() throws NoSuchFieldException, IllegalAccessException {
+        SyncTask syncTask = mock(SyncTask.class);
+        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration);
+        List<SyncTask> syncTasks = new LinkedList<>();
+        syncTasks.add(syncTask);
+        ReflectionUtil.setFieldValueToClass(historyDataSyncTaskGroup, "syncTasks", syncTasks);
+        historyDataSyncTaskGroup.start(new ReportCallback() {
+            
+            @Override
+            public void onProcess(Event event) {
+            }
+        });
+        verify(syncTask).start(any(ReportCallback.class));
     }
     
     @Test
-    public void assertStop() {
+    public void assertStop() throws NoSuchFieldException, IllegalAccessException {
+        SyncTask syncTask = mock(SyncTask.class);
+        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration);
+        List<SyncTask> syncTasks = new LinkedList<>();
+        syncTasks.add(syncTask);
+        ReflectionUtil.setFieldValueToClass(historyDataSyncTaskGroup, "syncTasks", syncTasks);
+        historyDataSyncTaskGroup.stop();
+        verify(syncTask).stop();
     }
     
     @Test
     public void assertGetProgress() {
+        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration);
+        assertThat(historyDataSyncTaskGroup.getProgress(), instanceOf(SyncProgress.class));
     }
     
     @SneakyThrows
