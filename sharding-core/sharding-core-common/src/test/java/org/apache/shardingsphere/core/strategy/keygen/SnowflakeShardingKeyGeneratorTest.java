@@ -82,21 +82,16 @@ public final class SnowflakeShardingKeyGeneratorTest {
         Properties properties = new Properties();
         properties.setProperty("max.vibration.offset", String.valueOf(3));
         keyGenerator.setProperties(properties);
-    
-        String actualGenerateKeyBinaryOne = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(actualGenerateKeyBinaryOne.substring(actualGenerateKeyBinaryOne.length() - 3), is("000"));
-    
-        String actualGenerateKeyBinaryTwo = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(actualGenerateKeyBinaryTwo.substring(actualGenerateKeyBinaryTwo.length() - 3), is("001"));
-    
-        String actualGenerateKeyBinaryThree = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(actualGenerateKeyBinaryThree.substring(actualGenerateKeyBinaryThree.length() - 3), is("010"));
-    
-        String actualGenerateKeyBinaryFour = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(actualGenerateKeyBinaryFour.substring(actualGenerateKeyBinaryFour.length() - 3), is("011"));
-    
-        String actualGenerateKeyBinaryFive = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(actualGenerateKeyBinaryFive.substring(actualGenerateKeyBinaryFive.length() - 3), is("100"));
+        String actualGenerateKeyBinary1 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKeyBinary1.substring(actualGenerateKeyBinary1.length() - 3), 2), is(0));
+        String actualGenerateKeyBinary2 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKeyBinary2.substring(actualGenerateKeyBinary2.length() - 3), 2), is(1));
+        String actualGenerateKeyBinary3 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKeyBinary3.substring(actualGenerateKeyBinary3.length() - 3), 2), is(2));
+        String actualGenerateKeyBinary4 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKeyBinary4.substring(actualGenerateKeyBinary4.length() - 3), 2), is(3));
+        String actualGenerateKeyBinary5 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKeyBinary5.substring(actualGenerateKeyBinary5.length() - 3), 2), is(4));
     }
     
     @Test
@@ -107,25 +102,20 @@ public final class SnowflakeShardingKeyGeneratorTest {
         SnowflakeShardingKeyGenerator.setTimeService(new TimeService());
         properties.setProperty("max.vibration.offset", String.valueOf(3));
         keyGenerator.setProperties(properties);
-    
-        String actualGenerateKeyBinaryOne = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(actualGenerateKeyBinaryOne.substring(actualGenerateKeyBinaryOne.length() - 3), is("000"));
-        Thread.sleep(2);
-    
-        String actualGenerateKeyBinaryTwo = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(actualGenerateKeyBinaryTwo.substring(actualGenerateKeyBinaryTwo.length() - 3), is("001"));
-        Thread.sleep(2);
-    
-        String actualGenerateKeyBinaryThree = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(actualGenerateKeyBinaryThree.substring(actualGenerateKeyBinaryThree.length() - 3), is("010"));
-        Thread.sleep(2);
-    
-        String actualGenerateKeyBinaryFour = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(actualGenerateKeyBinaryFour.substring(actualGenerateKeyBinaryFour.length() - 3), is("011"));
-        Thread.sleep(2);
-    
-        String actualGenerateKeyBinaryFive = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(actualGenerateKeyBinaryFive.substring(actualGenerateKeyBinaryFive.length() - 3), is("000"));
+        String actualGenerateKeyBinary1 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKeyBinary1.substring(actualGenerateKeyBinary1.length() - 3), 2), is(0));
+        Thread.sleep(2L);
+        String actualGenerateKeyBinary2 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKeyBinary2.substring(actualGenerateKeyBinary2.length() - 3), 2), is(1));
+        Thread.sleep(2L);
+        String actualGenerateKeyBinary3 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKeyBinary3.substring(actualGenerateKeyBinary3.length() - 3), 2), is(2));
+        Thread.sleep(2L);
+        String actualGenerateKeyBinary4 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKeyBinary4.substring(actualGenerateKeyBinary4.length() - 3), 2), is(3));
+        Thread.sleep(2L);
+        String actualGenerateKeyBinary5 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKeyBinary5.substring(actualGenerateKeyBinary5.length() - 3), 2), is(0));
     }
     
     @Test
