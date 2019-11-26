@@ -69,7 +69,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+            <artifactId>sharding-orchestration-core-new</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -77,13 +77,11 @@
             <artifactId>sharding-opentracing</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP-java7</artifactId>
             <scope>compile</scope>
         </dependency>
-        
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
