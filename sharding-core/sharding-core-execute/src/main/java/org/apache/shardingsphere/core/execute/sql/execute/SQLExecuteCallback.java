@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.execute.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.core.execute.hook.SQLExecutionHook;
 import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.core.route.RouteUnit;
+import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
@@ -33,6 +34,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -46,6 +48,8 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallback<StatementExecuteUnit, T> {
+    
+    private static final Map<String, DataSourceMetaData> CACHED_DATASOURCE_METADATA = new HashMap<>();
     
     private final DatabaseType databaseType;
     
@@ -72,6 +76,14 @@ public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallb
         Connection connection = statementExecuteUnit.getStatement().getConnection();
         DatabaseMetaData metaData = connection.getMetaData();
         DataSourceMetaData dataSourceMetaData = databaseType.getDataSourceMetaData(metaData.getURL(), metaData.getUserName());
+        String url = metaData.getURL();
+        DataSourceMetaData dataSourceMetaData;
+        if (CACHED_DATASOURCE_METADATA.containsKey(url)) {
+            dataSourceMetaData = CACHED_DATASOURCE_METADATA.get(url);
+        } else {
+            dataSourceMetaData = databaseType.getDataSourceMetaData(new DataSourceInfo(url, metaData.getUserName()));
+            CACHED_DATASOURCE_METADATA.put(url, dataSourceMetaData);
+        }
         SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
         try {
             sqlExecutionHook.start(statementExecuteUnit.getRouteUnit(), dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);
