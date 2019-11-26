@@ -17,21 +17,11 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.reader;
 
-import java.util.List;
-
-import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
-
 /**
  * JDBC reader.
  *
  * @author yangyi
  */
 public interface JdbcReader extends Reader {
-    
-    /**
-     * Split job to job slices.
-     * @param concurrency slices number.
-     * @return rmdbs configuration
-     */
-    List<RdbmsConfiguration> split(int concurrency);
+
 }
