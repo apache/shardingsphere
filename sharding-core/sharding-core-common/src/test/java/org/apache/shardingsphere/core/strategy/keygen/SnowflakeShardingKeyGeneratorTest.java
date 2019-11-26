@@ -82,44 +82,42 @@ public final class SnowflakeShardingKeyGeneratorTest {
         Properties properties = new Properties();
         properties.setProperty("max.vibration.offset", String.valueOf(3));
         keyGenerator.setProperties(properties);
-        String actualGenerateKeyBinary1 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinary1.substring(actualGenerateKeyBinary1.length() - 3), 2), is(0));
-        String actualGenerateKeyBinary2 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinary2.substring(actualGenerateKeyBinary2.length() - 3), 2), is(1));
-        String actualGenerateKeyBinary3 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinary3.substring(actualGenerateKeyBinary3.length() - 3), 2), is(2));
-        String actualGenerateKeyBinary4 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinary4.substring(actualGenerateKeyBinary4.length() - 3), 2), is(3));
-        String actualGenerateKeyBinary5 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinary5.substring(actualGenerateKeyBinary5.length() - 3), 2), is(4));
+        String actualGenerateKeyBinaryString0 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKeyBinaryString0.substring(actualGenerateKeyBinaryString0.length() - 3), 2), is(0));
+        String actualGenerateKeyBinaryString1 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKeyBinaryString1.substring(actualGenerateKeyBinaryString1.length() - 3), 2), is(1));
+        String actualGenerateKeyBinaryString2 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKeyBinaryString2.substring(actualGenerateKeyBinaryString2.length() - 3), 2), is(2));
+        String actualGenerateKeyBinaryString3 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKeyBinaryString3.substring(actualGenerateKeyBinaryString3.length() - 3), 2), is(3));
+        String actualGenerateKeyBinaryString4 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKeyBinaryString4.substring(actualGenerateKeyBinaryString4.length() - 3), 2), is(4));
     }
     
     @Test
-    @SneakyThrows
-    public void assertLastDigitalOfGenerateKeyDifferentMillisecond() {
+    public void assertLastDigitalOfGenerateKeyDifferentMillisecond() throws InterruptedException {
         SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         Properties properties = new Properties();
         SnowflakeShardingKeyGenerator.setTimeService(new TimeService());
         properties.setProperty("max.vibration.offset", String.valueOf(3));
         keyGenerator.setProperties(properties);
-        String actualGenerateKeyBinary1 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinary1.substring(actualGenerateKeyBinary1.length() - 3), 2), is(0));
+        String actualGenerateKeyBinaryString0 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKeyBinaryString0.substring(actualGenerateKeyBinaryString0.length() - 3), 2), is(0));
         Thread.sleep(2L);
-        String actualGenerateKeyBinary2 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinary2.substring(actualGenerateKeyBinary2.length() - 3), 2), is(1));
+        String actualGenerateKeyBinaryString1 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKeyBinaryString1.substring(actualGenerateKeyBinaryString1.length() - 3), 2), is(1));
         Thread.sleep(2L);
-        String actualGenerateKeyBinary3 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinary3.substring(actualGenerateKeyBinary3.length() - 3), 2), is(2));
+        String actualGenerateKeyBinaryString2 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKeyBinaryString2.substring(actualGenerateKeyBinaryString2.length() - 3), 2), is(2));
         Thread.sleep(2L);
-        String actualGenerateKeyBinary4 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinary4.substring(actualGenerateKeyBinary4.length() - 3), 2), is(3));
+        String actualGenerateKeyBinaryString3 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKeyBinaryString3.substring(actualGenerateKeyBinaryString3.length() - 3), 2), is(3));
         Thread.sleep(2L);
-        String actualGenerateKeyBinary5 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinary5.substring(actualGenerateKeyBinary5.length() - 3), 2), is(0));
+        String actualGenerateKeyBinaryString4 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
+        assertThat(Integer.parseInt(actualGenerateKeyBinaryString4.substring(actualGenerateKeyBinaryString4.length() - 3), 2), is(0));
     }
     
     @Test
-    @SneakyThrows
     public void assertGenerateKeyWithClockCallBack() {
         SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         TimeService timeService = new FixedTimeService(1);
