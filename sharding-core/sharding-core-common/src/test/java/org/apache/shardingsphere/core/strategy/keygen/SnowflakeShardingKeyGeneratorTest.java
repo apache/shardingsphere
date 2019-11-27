@@ -83,16 +83,11 @@ public final class SnowflakeShardingKeyGeneratorTest {
         SnowflakeShardingKeyGenerator.setTimeService(new FixedTimeService(5));
         properties.setProperty("max.vibration.offset", String.valueOf(3));
         keyGenerator.setProperties(properties);
-        String actualGenerateKeyBinaryString0 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinaryString0, 2), is(0));
-        String actualGenerateKeyBinaryString1 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinaryString1, 2), is(1));
-        String actualGenerateKeyBinaryString2 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinaryString2, 2), is(2));
-        String actualGenerateKeyBinaryString3 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinaryString3, 2), is(3));
-        String actualGenerateKeyBinaryString4 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinaryString4, 2), is(4));
+        assertThat(keyGenerator.generateKey(), is((Comparable) 0L));
+        assertThat(keyGenerator.generateKey(), is((Comparable) 1L));
+        assertThat(keyGenerator.generateKey(), is((Comparable) 2L));
+        assertThat(keyGenerator.generateKey(), is((Comparable) 3L));
+        assertThat(keyGenerator.generateKey(), is((Comparable) 4L));
     }
     
     @Test
