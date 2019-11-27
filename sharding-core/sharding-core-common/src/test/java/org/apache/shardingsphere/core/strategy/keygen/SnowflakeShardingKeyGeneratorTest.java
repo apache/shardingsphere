@@ -80,18 +80,19 @@ public final class SnowflakeShardingKeyGeneratorTest {
     public void assertLastDigitalOfGenerateKeySameMillisecond() {
         SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         Properties properties = new Properties();
+        SnowflakeShardingKeyGenerator.setTimeService(new FixedTimeService(5));
         properties.setProperty("max.vibration.offset", String.valueOf(3));
         keyGenerator.setProperties(properties);
         String actualGenerateKeyBinaryString0 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinaryString0.substring(actualGenerateKeyBinaryString0.length() - 3), 2), is(0));
+        assertThat(Integer.parseInt(actualGenerateKeyBinaryString0, 2), is(0));
         String actualGenerateKeyBinaryString1 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinaryString1.substring(actualGenerateKeyBinaryString1.length() - 3), 2), is(1));
+        assertThat(Integer.parseInt(actualGenerateKeyBinaryString1, 2), is(1));
         String actualGenerateKeyBinaryString2 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinaryString2.substring(actualGenerateKeyBinaryString2.length() - 3), 2), is(2));
+        assertThat(Integer.parseInt(actualGenerateKeyBinaryString2, 2), is(2));
         String actualGenerateKeyBinaryString3 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinaryString3.substring(actualGenerateKeyBinaryString3.length() - 3), 2), is(3));
+        assertThat(Integer.parseInt(actualGenerateKeyBinaryString3, 2), is(3));
         String actualGenerateKeyBinaryString4 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinaryString4.substring(actualGenerateKeyBinaryString4.length() - 3), 2), is(4));
+        assertThat(Integer.parseInt(actualGenerateKeyBinaryString4, 2), is(4));
     }
     
     @Test
