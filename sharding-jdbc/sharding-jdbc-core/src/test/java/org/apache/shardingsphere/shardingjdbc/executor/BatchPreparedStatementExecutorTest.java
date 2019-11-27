@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
+import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.route.BatchRouteUnit;
 import org.apache.shardingsphere.core.route.RouteUnit;
@@ -121,7 +121,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         verify(preparedStatement2).executeBatch();
     }
     
-    private void setExecuteGroups(final List<PreparedStatement> preparedStatements) throws SQLException {
+    private void setExecuteGroups(final List<PreparedStatement> preparedStatements) {
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
         List<StatementExecuteUnit> preparedStatementExecuteUnits = new LinkedList<>();
         executeGroups.add(new ShardingExecuteGroup<>(preparedStatementExecuteUnits));

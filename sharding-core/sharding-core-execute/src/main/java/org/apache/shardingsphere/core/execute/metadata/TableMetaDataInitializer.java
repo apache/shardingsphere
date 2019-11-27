@@ -17,6 +17,14 @@
 
 package org.apache.shardingsphere.core.execute.metadata;
 
+import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.execute.engine.ShardingExecuteEngine;
+import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,15 +32,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-
-import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.spi.database.DataSourceMetaData;
-
-import com.google.common.base.Optional;
 
 /**
  * Table meta data initializer.
