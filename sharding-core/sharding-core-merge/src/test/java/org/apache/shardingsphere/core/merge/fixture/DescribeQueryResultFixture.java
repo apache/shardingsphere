@@ -26,68 +26,62 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Iterator;
 
-
-/**
- * fixture for test DescribeTableMergedResult.
- *
- * @author liya
- */
 @RequiredArgsConstructor
 public final class DescribeQueryResultFixture implements QueryResult {
-
+    
     private final Iterator<QueryResult> queryResults;
-
+    
     private QueryResult currQueryResult;
-
+    
     @Override
-    public boolean next() throws SQLException {
+    public boolean next() {
         boolean hasNext = queryResults.hasNext();
         if (hasNext) {
             currQueryResult = queryResults.next();
         }
         return hasNext;
     }
-
+    
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         return currQueryResult.getValue(columnIndex, type);
     }
-
+    
     @Override
-    public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
+    public Object getValue(final String columnLabel, final Class<?> type) {
         return null;
     }
-
+    
     @Override
-    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
+    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
         return null;
     }
-
+    
     @Override
-    public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) throws SQLException {
+    public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
         return null;
     }
-
+    
     @Override
-    public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
+    public InputStream getInputStream(final int columnIndex, final String type) {
         return null;
     }
-
+    
     @Override
-    public InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
+    public InputStream getInputStream(final String columnLabel, final String type) {
         return null;
     }
-
+    
     @Override
-    public boolean wasNull() throws SQLException {
+    public boolean wasNull() {
         return false;
     }
-
+    
     @Override
-    public boolean isCaseSensitive(final int columnIndex) throws SQLException {
+    public boolean isCaseSensitive(final int columnIndex) {
         return false;
     }
-
+    
     @Override
     public QueryResultMetaData getQueryResultMetaData() {
         return null;
@@ -97,9 +91,9 @@ public final class DescribeQueryResultFixture implements QueryResult {
     public int getColumnCount() throws SQLException {
         return currQueryResult.getColumnCount();
     }
-
+    
     @Override
-    public String getColumnLabel(final int columnIndex) throws SQLException {
+    public String getColumnLabel(final int columnIndex) {
         return null;
     }
 }
