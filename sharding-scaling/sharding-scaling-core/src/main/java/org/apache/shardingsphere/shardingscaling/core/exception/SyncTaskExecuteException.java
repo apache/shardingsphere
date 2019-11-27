@@ -17,36 +17,23 @@
 
 package org.apache.shardingsphere.shardingscaling.core.exception;
 
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Sync execute exception.
+ * Synchronize task run exception.
  *
- * @author avalon566
+ * @author yangyi
  */
-@Slf4j
-public final class SyncExecuteException extends Exception {
-
-    private final List<Throwable> aggregatedExceptions = new ArrayList<>();
-
-    /**
-     * add exception to list.
-     *
-     * @param throwable exception
-     */
-    public void addException(final Throwable throwable) {
-        aggregatedExceptions.add(throwable);
+public final class SyncTaskExecuteException extends RuntimeException {
+    
+    public SyncTaskExecuteException(final String message) {
+        super(message);
     }
     
-    /**
-     * Log all exceptions.
-     */
-    public void logExceptions() {
-        for (Throwable exception : aggregatedExceptions) {
-            log.error(null, exception);
-        }
+    public SyncTaskExecuteException(final Throwable cause) {
+        super(cause);
     }
+    
+    public SyncTaskExecuteException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+    
 }
