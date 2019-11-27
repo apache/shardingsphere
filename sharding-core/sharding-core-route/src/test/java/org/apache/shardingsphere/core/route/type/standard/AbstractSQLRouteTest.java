@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.route.type.standard;
 
+import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
@@ -27,7 +28,6 @@ import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
 
@@ -53,13 +53,13 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     }
     
     private DataSourceMetas buildDataSourceMetas() {
-        Map<String, DataSourceInfo> dataSourceInfoMap = new HashMap<>();
-        DataSourceInfo mainDataSourceInfo = new DataSourceInfo("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
-        DataSourceInfo dataSourceInfo0 = new DataSourceInfo("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
-        DataSourceInfo dataSourceInfo1 = new DataSourceInfo("jdbc:mysql://127.0.0.1:3306/actual_db", "test");
-        dataSourceInfoMap.put("main", mainDataSourceInfo);
-        dataSourceInfoMap.put("ds_0", dataSourceInfo0);
-        dataSourceInfoMap.put("ds_1", dataSourceInfo1);
+        Map<String, DatabaseAccessConfiguration> dataSourceInfoMap = new HashMap<>();
+        DatabaseAccessConfiguration mainDatabaseAccessConfiguration = new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/actual_db", "test", null);
+        DatabaseAccessConfiguration databaseAccessConfiguration0 = new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/actual_db", "test", null);
+        DatabaseAccessConfiguration databaseAccessConfiguration1 = new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/actual_db", "test", null);
+        dataSourceInfoMap.put("main", mainDatabaseAccessConfiguration);
+        dataSourceInfoMap.put("ds_0", databaseAccessConfiguration0);
+        dataSourceInfoMap.put("ds_1", databaseAccessConfiguration1);
         return new DataSourceMetas(DatabaseTypes.getActualDatabaseType("MySQL"), dataSourceInfoMap);
     }
     

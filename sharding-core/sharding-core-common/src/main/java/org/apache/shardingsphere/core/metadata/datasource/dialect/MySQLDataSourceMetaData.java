@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.metadata.datasource.dialect;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
 import java.util.regex.Matcher;
@@ -46,8 +45,7 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
     
     private final Pattern pattern = Pattern.compile("jdbc:(mysql|mysqlx)(:loadbalance|:replication)?:(\\w*:)?//([\\w\\-\\.]+):?([0-9]*)/([\\w\\-]+);?\\S*", Pattern.CASE_INSENSITIVE);
     
-    public MySQLDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
-        String url = dataSourceInfo.getUrl();
+    public MySQLDataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);
         if (!matcher.find()) {
             throw new UnrecognizedDatabaseURLException(url, pattern.pattern());

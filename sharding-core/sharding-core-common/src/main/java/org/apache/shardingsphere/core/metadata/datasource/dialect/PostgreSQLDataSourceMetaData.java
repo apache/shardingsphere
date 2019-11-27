@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.metadata.datasource.dialect;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
 import java.util.regex.Matcher;
@@ -46,9 +45,7 @@ public final class PostgreSQLDataSourceMetaData implements DataSourceMetaData {
     
     private final Pattern pattern = Pattern.compile("jdbc:postgresql://([\\w\\-\\.]+):?([0-9]*)/([\\w\\-]+)", Pattern.CASE_INSENSITIVE);
     
-    public PostgreSQLDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
-        String url = dataSourceInfo.getUrl();
-
+    public PostgreSQLDataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);
         if (!matcher.find()) {
             throw new UnrecognizedDatabaseURLException(url, pattern.pattern());

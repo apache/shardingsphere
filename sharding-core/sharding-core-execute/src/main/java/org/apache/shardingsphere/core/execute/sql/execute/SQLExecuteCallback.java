@@ -25,18 +25,16 @@ import org.apache.shardingsphere.core.execute.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.core.execute.hook.SQLExecutionHook;
 import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.core.route.RouteUnit;
-import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Statement execute callback interface.
@@ -49,7 +47,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallback<StatementExecuteUnit, T> {
     
-    private static final Map<String, DataSourceMetaData> CACHED_DATASOURCE_METADATA = new HashMap<>();
+    private static final Map<String, DataSourceMetaData> CACHED_DATASOURCE_METADATA = new ConcurrentHashMap<>();
     
     private final DatabaseType databaseType;
     
@@ -73,16 +71,7 @@ public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallb
      */
     private T execute0(final StatementExecuteUnit statementExecuteUnit, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) throws SQLException {
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
-        Connection connection = statementExecuteUnit.getStatement().getConnection();
-        DatabaseMetaData metaData = connection.getMetaData();
-        String url = metaData.getURL();
-        DataSourceMetaData dataSourceMetaData;
-        if (CACHED_DATASOURCE_METADATA.containsKey(url)) {
-            dataSourceMetaData = CACHED_DATASOURCE_METADATA.get(url);
-        } else {
-            dataSourceMetaData = databaseType.getDataSourceMetaData(new DataSourceInfo(url, metaData.getUserName()));
-            CACHED_DATASOURCE_METADATA.put(url, dataSourceMetaData);
-        }
+        DataSourceMetaData dataSourceMetaData = getDataSourceMetaData(statementExecuteUnit.getStatement().getConnection().getMetaData());
         SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
         try {
             sqlExecutionHook.start(statementExecuteUnit.getRouteUnit(), dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);
@@ -94,6 +83,16 @@ public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallb
             ExecutorExceptionHandler.handleException(ex);
             return null;
         }
+    }
+    
+    private DataSourceMetaData getDataSourceMetaData(final DatabaseMetaData metaData) throws SQLException {
+        String url = metaData.getURL();
+        if (CACHED_DATASOURCE_METADATA.containsKey(url)) {
+            return CACHED_DATASOURCE_METADATA.get(url);
+        }
+        DataSourceMetaData result = databaseType.getDataSourceMetaData(url, metaData.getUserName());
+        CACHED_DATASOURCE_METADATA.put(url, result);
+        return result;
     }
     
     protected abstract T executeSQL(RouteUnit routeUnit, Statement statement, ConnectionMode connectionMode) throws SQLException;
