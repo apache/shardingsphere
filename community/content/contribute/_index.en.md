@@ -7,7 +7,7 @@ chapter = true
 
 ShardingSphere is a very open and active community, where excellent contributors of high value are welcomed to join us in the construction of `Apache Way` together.
 
-You may start to participate community from [Mailing-list Subscription](en/contribute/subscribe/).
+You may start to participate community from [Mailing-list Subscription](/en/contribute/subscribe/).
 
 Before becoming a contributor, please read the [Contributors' Guide](/en/contribute/contributor/), [Document Contributors' Guide](/en/contribute/document-contributor/) and the [Code of Conduct](/en/contribute/code-conduct/). 
 
