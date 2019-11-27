@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.center.instance.node;
 
 import com.google.common.collect.Sets;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Set;
@@ -29,12 +29,11 @@ import static org.junit.Assert.assertThat;
 
 public final class ConfigTreeNodeTest {
     
-    private final Set<String> instanceKeys = Sets.newHashSet();
+    private static ConfigTreeNode root = new ConfigTreeNode(null, "/", Sets.<ConfigTreeNode>newHashSet());
     
-    private final ConfigTreeNode root = new ConfigTreeNode(null, "/", Sets.<ConfigTreeNode>newHashSet());
-    
-    @Before
-    public void setUp() {
+    @BeforeClass
+    public static void init() {
+        Set<String> instanceKeys = Sets.newHashSet();
         instanceKeys.add("test.children.1");
         instanceKeys.add("test.children.2");
         instanceKeys.add("test1.children.3");
