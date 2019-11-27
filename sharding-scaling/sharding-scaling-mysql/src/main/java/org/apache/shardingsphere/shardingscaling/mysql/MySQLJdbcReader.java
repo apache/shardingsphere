@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql;
 
-import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.AbstractJdbcReader;
-import org.apache.shardingsphere.shardingscaling.core.metadata.JdbcUri;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,18 +31,6 @@ public final class MySQLJdbcReader extends AbstractJdbcReader {
 
     public MySQLJdbcReader(final RdbmsConfiguration rdbmsConfiguration) {
         super(rdbmsConfiguration);
-    }
-
-    @Override
-    public List<RdbmsConfiguration> split(final int concurrency) {
-        JdbcDataSourceConfiguration jdbcDataSourceConfiguration = (JdbcDataSourceConfiguration) getRdbmsConfiguration().getDataSourceConfiguration();
-        jdbcDataSourceConfiguration.setJdbcUrl(fixMysqlUrl(jdbcDataSourceConfiguration.getJdbcUrl()));
-        return super.split(concurrency);
-    }
-
-    private String fixMysqlUrl(final String url) {
-        JdbcUri uri = new JdbcUri(url);
-        return String.format("jdbc:%s://%s/%s?%s", uri.getScheme(), uri.getHost(), uri.getDatabase(), fixMysqlParams(uri.getParameters()));
     }
 
     private String formatMysqlParams(final Map<String, String> params) {

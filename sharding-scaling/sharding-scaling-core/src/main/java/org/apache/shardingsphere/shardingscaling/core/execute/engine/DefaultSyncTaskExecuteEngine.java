@@ -49,14 +49,14 @@ public class DefaultSyncTaskExecuteEngine implements SyncTaskExecuteEngine {
     }
 
     @Override
-    public final synchronized List<ListenableFuture> submit(final List<SyncRunner> syncRunners) {
+    public final synchronized List<ListenableFuture<Object>> submit(final List<SyncRunner> syncRunners) {
         if (null == syncRunners || 0 == syncRunners.size()) {
             return Collections.emptyList();
         }
         if (availableWorkerThread < syncRunners.size()) {
             throw new RejectedExecutionException("The execute engine does not have enough threads to execute sync runner.");
         }
-        List<ListenableFuture> result = new ArrayList<>(syncRunners.size());
+        List<ListenableFuture<Object>> result = new ArrayList<>(syncRunners.size());
         availableWorkerThread -= syncRunners.size();
         for (SyncRunner syncRunner : syncRunners) {
             ListenableFuture listenableFuture = executorService.submit(syncRunner);

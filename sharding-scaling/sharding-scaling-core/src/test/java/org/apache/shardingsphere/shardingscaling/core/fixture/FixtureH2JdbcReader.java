@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute.executor.reader;
+package org.apache.shardingsphere.shardingscaling.core.fixture;
 
-/**
- * JDBC reader.
- *
- * @author yangyi
- */
-public interface JdbcReader extends Reader {
+import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.AbstractJdbcReader;
 
+public class FixtureH2JdbcReader extends AbstractJdbcReader {
+    
+    public FixtureH2JdbcReader(final RdbmsConfiguration rdbmsConfiguration) {
+        super(rdbmsConfiguration);
+    }
 }
