@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.execute;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

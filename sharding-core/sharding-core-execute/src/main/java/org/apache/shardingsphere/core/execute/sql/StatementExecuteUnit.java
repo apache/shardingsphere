@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.execute;
+package org.apache.shardingsphere.core.execute.sql;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
