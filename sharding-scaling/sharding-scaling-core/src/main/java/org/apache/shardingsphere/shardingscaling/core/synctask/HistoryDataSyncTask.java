@@ -17,20 +17,19 @@
 
 package org.apache.shardingsphere.shardingscaling.core.synctask;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
-import org.apache.shardingsphere.shardingscaling.core.exception.SyncExecuteException;
 import org.apache.shardingsphere.shardingscaling.core.execute.Event;
 import org.apache.shardingsphere.shardingscaling.core.execute.EventType;
 import org.apache.shardingsphere.shardingscaling.core.execute.engine.ExecuteCallback;
-import org.apache.shardingsphere.shardingscaling.core.execute.engine.SyncExecutor;
+import org.apache.shardingsphere.shardingscaling.core.execute.engine.ExecuteUtil;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.MemoryChannel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.Reader;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.ReaderFactory;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.WriterFactory;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;
 
@@ -58,7 +57,7 @@ public class HistoryDataSyncTask implements SyncTask {
     public final void start(final ReportCallback callback) {
         final Reader reader = ReaderFactory.newInstanceJdbcReader(syncConfiguration.getReaderConfiguration());
         final Writer writer = WriterFactory.newInstance(syncConfiguration.getWriterConfiguration());
-        new SyncExecutor(new MemoryChannel(), reader, Collections.singletonList(writer)).execute(new ExecuteCallback() {
+        ExecuteUtil.execute(new MemoryChannel(), reader, Collections.singletonList(writer), new ExecuteCallback() {
 
             @Override
             public void onSuccess() {
@@ -68,8 +67,7 @@ public class HistoryDataSyncTask implements SyncTask {
 
             @Override
             public void onFailure(final Throwable throwable) {
-                log.error("{} table slice execute exception exit", syncConfiguration.getReaderConfiguration().getTableName());
-                ((SyncExecuteException) throwable).logExceptions();
+                log.error("{} table slice execute exception exit", syncConfiguration.getReaderConfiguration().getTableName(), throwable);
                 callback.onProcess(new Event(syncConfiguration.getTaskId(), EventType.EXCEPTION_EXIT));
             }
         });
