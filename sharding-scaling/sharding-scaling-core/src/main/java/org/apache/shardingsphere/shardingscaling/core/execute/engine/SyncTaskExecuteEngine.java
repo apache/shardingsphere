@@ -35,5 +35,5 @@ public interface SyncTaskExecuteEngine {
      * @param syncRunners sync runner list
      * @return listenable future
      */
-    List<ListenableFuture> submit(List<SyncRunner> syncRunners);
+    List<ListenableFuture<Object>> submit(List<SyncRunner> syncRunners);
 }

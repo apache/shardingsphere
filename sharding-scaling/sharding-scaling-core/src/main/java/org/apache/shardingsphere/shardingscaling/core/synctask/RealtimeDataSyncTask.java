@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.shardingscaling.core.synctask;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
-import org.apache.shardingsphere.shardingscaling.core.exception.SyncExecuteException;
 import org.apache.shardingsphere.shardingscaling.core.execute.Event;
 import org.apache.shardingsphere.shardingscaling.core.execute.EventType;
 import org.apache.shardingsphere.shardingscaling.core.execute.engine.ExecuteCallback;
-import org.apache.shardingsphere.shardingscaling.core.execute.engine.SyncExecutor;
+import org.apache.shardingsphere.shardingscaling.core.execute.engine.ExecuteUtil;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.AckCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.RealtimeSyncChannel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.log.LogManager;
@@ -35,7 +35,6 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.Re
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.WriterFactory;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -83,7 +82,7 @@ public class RealtimeDataSyncTask implements SyncTask {
                 currentLogPosition = record.getLogPosition();
             }
         }));
-        new SyncExecutor(channel, reader, writers).execute(new ExecuteCallback() {
+        ExecuteUtil.execute(channel, reader, writers, new ExecuteCallback() {
 
             @Override
             public void onSuccess() {
@@ -93,8 +92,7 @@ public class RealtimeDataSyncTask implements SyncTask {
 
             @Override
             public void onFailure(final Throwable throwable) {
-                log.error("realtime data execute exception exit");
-                ((SyncExecuteException) throwable).logExceptions();
+                log.error("realtime data execute exception exit", throwable);
                 callback.onProcess(new Event(syncConfiguration.getTaskId(), EventType.EXCEPTION_EXIT));
             }
         });
