@@ -16,17 +16,13 @@
   -->
 
 <assembly>
-    <id>bin</id>
+    <id>sharding-scaling-bin</id>
     <formats>
-        <format>zip</format>
+        <format>tar.gz</format>
     </formats>
-    <dependencySets>
-        <dependencySet>
-            <useProjectArtifact>false</useProjectArtifact>
-            <outputDirectory>lib</outputDirectory>
-            <unpack>false</unpack>
-        </dependencySet>
-    </dependencySets>
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <baseDirectory>${project.build.finalName}-sharding-scaling-bin</baseDirectory>
+
     <fileSets>
         <fileSet>
             <directory>${project.build.directory}</directory>
@@ -51,4 +47,11 @@
             </includes>
         </fileSet>
     </fileSets>
+
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+            <fileMode>0644</fileMode>
+        </dependencySet>
+    </dependencySets>
 </assembly>

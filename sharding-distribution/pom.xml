@@ -36,5 +36,6 @@
         <module>sharding-jdbc-distribution</module>
         <module>sharding-proxy-distribution</module>
         <module>sharding-ui-distribution</module>
+        <module>sharding-scaling-distribution</module>
     </modules>
 </project>
