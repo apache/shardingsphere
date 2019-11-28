@@ -24,13 +24,21 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.Lo
  * Such as mysql binlog, postgresql wal.
  *
  * @author avalon566
+ * @author yangyi
  */
-public interface LogManager {
+public interface LogManager<T extends LogPosition> {
 
     /**
      * Get current log position.
      *
      * @return log position
      */
-    LogPosition getCurrentPosition();
+    T getCurrentPosition();
+    
+    /**
+     * Update currentPosition.
+     *
+     * @param newLogPosition new log position.
+     */
+    void updateCurrentPosition(T newLogPosition);
 }

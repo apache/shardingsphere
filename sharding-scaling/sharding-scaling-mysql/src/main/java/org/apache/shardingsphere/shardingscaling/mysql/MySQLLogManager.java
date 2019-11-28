@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.shardingscaling.mysql;
 
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.LogPosition;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.log.LogManager;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
-import lombok.AllArgsConstructor;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -33,29 +31,43 @@ import java.sql.SQLException;
  * MySQL log manager, based on binlog mechanism.
  *
  * @author avalon566
+ * @author yangyi
  */
-@AllArgsConstructor
-public class MySQLLogManager implements LogManager {
+public final class MySQLLogManager implements LogManager<BinlogPosition> {
 
-    private final RdbmsConfiguration rdbmsConfiguration;
+    private final DataSource dataSource;
+    
+    private BinlogPosition currentPosition;
+    
+    public MySQLLogManager(final RdbmsConfiguration rdbmsConfiguration) {
+        dataSource = DataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
+    }
 
     @Override
-    public final LogPosition getCurrentPosition() {
-        try {
-            DataSource dataSource = DataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
-            try (Connection connection = dataSource.getConnection()) {
-                PreparedStatement ps = connection.prepareStatement("show master status");
-                ResultSet rs = ps.executeQuery();
-                rs.next();
-                final BinlogPosition currentPosition = new BinlogPosition(null, rs.getString(1), rs.getLong(2));
-                ps = connection.prepareStatement("show variables like 'server_id'");
-                rs = ps.executeQuery();
-                rs.next();
-                currentPosition.setServerId(rs.getString(2));
-                return currentPosition;
-            }
+    public BinlogPosition getCurrentPosition() {
+        if (null == currentPosition) {
+            getCurrentPositionFromSource();
+        }
+        return currentPosition;
+    }
+    
+    private void getCurrentPositionFromSource() {
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement ps = connection.prepareStatement("show master status");
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            currentPosition = new BinlogPosition(null, rs.getString(1), rs.getLong(2));
+            ps = connection.prepareStatement("show variables like 'server_id'");
+            rs = ps.executeQuery();
+            rs.next();
+            currentPosition.setServerId(rs.getString(2));
         } catch (SQLException e) {
             throw new RuntimeException("markPosition error", e);
         }
+    }
+    
+    @Override
+    public void updateCurrentPosition(final BinlogPosition newLogPosition) {
+        this.currentPosition = newLogPosition;
     }
 }
