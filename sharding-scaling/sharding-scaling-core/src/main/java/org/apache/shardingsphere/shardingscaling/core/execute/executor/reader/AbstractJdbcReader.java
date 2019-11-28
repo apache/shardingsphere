@@ -23,9 +23,10 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.exception.SyncRunException;
+import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractSyncRunner;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.NopLogPosition;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.FinishedRecord;
@@ -96,7 +97,7 @@ public abstract class AbstractJdbcReader extends AbstractSyncRunner implements J
                 pushRecord(record);
             }
         } catch (SQLException e) {
-            throw new SyncRunException(e);
+            throw new SyncTaskExecuteException(e);
         } finally {
             pushRecord(new FinishedRecord(new NopLogPosition()));
         }

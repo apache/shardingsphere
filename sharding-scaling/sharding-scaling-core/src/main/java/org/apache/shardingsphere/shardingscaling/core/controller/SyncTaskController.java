@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingscaling.core.controller;
 
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.execute.Event;
+import org.apache.shardingsphere.shardingscaling.core.execute.EventType;
 import org.apache.shardingsphere.shardingscaling.core.synctask.DefaultSyncTaskFactory;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTaskFactory;
@@ -31,11 +32,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class SyncTaskController implements Runnable {
-
-    private final SyncConfiguration syncConfiguration;
-
-    private final SyncTaskFactory syncTaskFactory = new DefaultSyncTaskFactory();
-
+    
     private final SyncTask historyDataSyncTaskGroup;
 
     private final SyncTask realtimeDataSyncTask;
@@ -43,7 +40,7 @@ public final class SyncTaskController implements Runnable {
     private SyncTask currentSyncTask;
 
     public SyncTaskController(final SyncConfiguration syncConfiguration) {
-        this.syncConfiguration = syncConfiguration;
+        SyncTaskFactory syncTaskFactory = new DefaultSyncTaskFactory();
         this.historyDataSyncTaskGroup = syncTaskFactory.createHistoryDataSyncTaskGroup(syncConfiguration);
         this.realtimeDataSyncTask = syncTaskFactory.createRealtimeDataSyncTask(syncConfiguration);
     }
@@ -80,15 +77,21 @@ public final class SyncTaskController implements Runnable {
 
             @Override
             public void onProcess(final Event event) {
-                log.info("history data sync finished");
-                currentSyncTask = realtimeDataSyncTask;
-                currentSyncTask.start(new ReportCallback() {
-
-                    @Override
-                    public void onProcess(final Event event) {
-                        //TODO
-                    }
-                });
+                log.info("history data sync finished, execute result: {}", event.getEventType().name());
+                if (EventType.FINISHED.equals(event.getEventType())) {
+                    executeRealTimeSyncTask();
+                }
+            }
+        });
+    }
+    
+    private void executeRealTimeSyncTask() {
+        currentSyncTask = realtimeDataSyncTask;
+        currentSyncTask.start(new ReportCallback() {
+        
+            @Override
+            public void onProcess(final Event event) {
+                //TODO
             }
         });
     }

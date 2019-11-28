@@ -15,17 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute.executor.reader;
+package org.apache.shardingsphere.shardingscaling.core.exception;
 
 /**
- * Nop log position.
+ * Synchronize task run exception.
  *
- * @author avalon566
+ * @author yangyi
  */
-public class NopLogPosition implements LogPosition<NopLogPosition> {
-
-    @Override
-    public final int compareTo(final NopLogPosition nopLogPosition) {
-        return 0;
+public final class SyncTaskExecuteException extends RuntimeException {
+    
+    public SyncTaskExecuteException(final String message) {
+        super(message);
     }
+    
+    public SyncTaskExecuteException(final Throwable cause) {
+        super(cause);
+    }
+    
+    public SyncTaskExecuteException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+    
 }

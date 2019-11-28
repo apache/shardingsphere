@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingscaling.core.spi;
 
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.JdbcReader;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.log.LogManager;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.LogReader;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
 import org.apache.shardingsphere.spi.DatabaseTypeAwareSPI;
@@ -45,11 +45,11 @@ public interface ScalingEntry extends DatabaseTypeAwareSPI {
     Class<? extends LogReader> getLogReaderClass();
 
     /**
-     * Get log manager type.
+     * Get log position manager type.
      *
      * @return log manager type
      */
-    Class<? extends LogManager> getLogManagerClass();
+    Class<? extends LogPositionManager> getLogPositionManager();
     
     /**
      * Get writer type.

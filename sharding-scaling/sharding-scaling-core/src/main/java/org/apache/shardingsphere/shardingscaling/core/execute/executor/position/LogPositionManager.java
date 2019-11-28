@@ -15,38 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.exception;
-
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.apache.shardingsphere.shardingscaling.core.execute.executor.position;
 
 /**
- * Sync execute exception.
+ * Database itself data synchronize position manager.
+ * Such as mysql binlog, postgresql wal.
  *
  * @author avalon566
+ * @author yangyi
  */
-@Slf4j
-public final class SyncExecuteException extends Exception {
-
-    private final List<Throwable> aggregatedExceptions = new ArrayList<>();
+public interface LogPositionManager<T extends LogPosition> {
 
     /**
-     * add exception to list.
+     * Get current log position.
      *
-     * @param throwable exception
+     * @return log position
      */
-    public void addException(final Throwable throwable) {
-        aggregatedExceptions.add(throwable);
-    }
+    T getCurrentPosition();
     
     /**
-     * Log all exceptions.
+     * Update currentPosition.
+     *
+     * @param newLogPosition new log position.
      */
-    public void logExceptions() {
-        for (Throwable exception : aggregatedExceptions) {
-            log.error(null, exception);
-        }
-    }
+    void updateCurrentPosition(T newLogPosition);
 }

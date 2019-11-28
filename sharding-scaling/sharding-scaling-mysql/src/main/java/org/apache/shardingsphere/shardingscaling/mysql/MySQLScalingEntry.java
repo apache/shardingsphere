@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingscaling.mysql;
 
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.JdbcReader;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.log.LogManager;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.LogReader;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntry;
@@ -41,8 +41,8 @@ public final class MySQLScalingEntry implements ScalingEntry {
     }
 
     @Override
-    public Class<? extends LogManager> getLogManagerClass() {
-        return MySQLLogManager.class;
+    public Class<? extends LogPositionManager> getLogPositionManager() {
+        return MySQLLogPositionManager.class;
     }
 
     @Override

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.reader;
 
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntryLoader;
 
