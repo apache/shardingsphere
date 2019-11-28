@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.merge.dql.groupby;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
-import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
+import org.apache.shardingsphere.core.merge.fixture.ResultSetBasedQueryResultFixture;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
@@ -152,6 +152,6 @@ public final class GroupByRowComparatorTest {
         for (Object each : values) {
             when(result.getObject(++index)).thenReturn(each);
         }
-        return new TestQueryResult(result);
+        return new ResultSetBasedQueryResultFixture(result);
     }
 }

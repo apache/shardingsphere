@@ -66,7 +66,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     @Override
     public List<DistinctQueryResult> divide() {
         return Lists.newArrayList(Iterators.transform(getResultData(), new Function<QueryRow, DistinctQueryResult>() {
-    
+            
             @Override
             public DistinctQueryResult apply(final QueryRow input) {
                 Set<QueryRow> resultData = new LinkedHashSet<>();

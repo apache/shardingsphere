@@ -36,7 +36,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 @RequiredArgsConstructor
-public final class TestQueryResult implements QueryResult {
+public final class ResultSetBasedQueryResultFixture implements QueryResult {
     
     private final ResultSet resultSet; 
     

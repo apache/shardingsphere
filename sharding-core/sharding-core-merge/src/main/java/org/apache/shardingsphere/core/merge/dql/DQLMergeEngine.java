@@ -95,7 +95,7 @@ public final class DQLMergeEngine implements MergeEngine {
         if (!aggregationDistinctProjections.isEmpty()) {
             result = getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, aggregationDistinctProjections));
         }
-        if (isDistinctRowSelectItems()) {
+        if (isDistinctRowProjections()) {
             result = getDividedQueryResults(new DistinctQueryResult(queryResults, selectSQLStatementContext.getColumnLabels(relationMetas)));
         }
         return result.isEmpty() ? queryResults : result;
@@ -111,7 +111,7 @@ public final class DQLMergeEngine implements MergeEngine {
         });
     }
     
-    private boolean isDistinctRowSelectItems() {
+    private boolean isDistinctRowProjections() {
         return selectSQLStatementContext.getProjectionsContext().isDistinctRow() && selectSQLStatementContext.getGroupByContext().getItems().isEmpty();
     }
     

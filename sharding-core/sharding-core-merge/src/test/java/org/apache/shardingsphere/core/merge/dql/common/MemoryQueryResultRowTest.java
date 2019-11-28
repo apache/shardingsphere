@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.merge.dql.common;
 
-import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
+import org.apache.shardingsphere.core.merge.fixture.ResultSetBasedQueryResultFixture;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,7 +47,7 @@ public final class MemoryQueryResultRowTest {
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSet.getObject(1)).thenReturn("value");
-        memoryResultSetRow = new MemoryQueryResultRow(new TestQueryResult(resultSet));
+        memoryResultSetRow = new MemoryQueryResultRow(new ResultSetBasedQueryResultFixture(resultSet));
     }
     
     @Test

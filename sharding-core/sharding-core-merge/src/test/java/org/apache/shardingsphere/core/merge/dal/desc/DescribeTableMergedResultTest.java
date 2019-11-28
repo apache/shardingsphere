@@ -20,12 +20,12 @@ package org.apache.shardingsphere.core.merge.dal.desc;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
-import org.apache.shardingsphere.core.merge.fixture.DescribeQueryResultFixture;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.merge.fixture.QueryResultBasedQueryResultFixture;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -54,7 +54,7 @@ public final class DescribeTableMergedResultTest {
         when(tablesContext.getSingleTableName()).thenReturn("user");
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         List<QueryResult> mockQueryResults = mockQueryResults();
-        QueryResult queryResult = new DescribeQueryResultFixture(mockQueryResults.iterator());
+        QueryResult queryResult = new QueryResultBasedQueryResultFixture(mockQueryResults.iterator());
         queryResults = Lists.newArrayList(queryResult);
     }
     

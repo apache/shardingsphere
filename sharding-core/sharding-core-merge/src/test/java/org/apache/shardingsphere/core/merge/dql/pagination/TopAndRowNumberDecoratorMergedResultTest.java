@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
-import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
+import org.apache.shardingsphere.core.merge.fixture.ResultSetBasedQueryResultFixture;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
@@ -70,7 +70,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
         }
         queryResults = new ArrayList<>(resultSets.size());
         for (ResultSet each : resultSets) {
-            queryResults.add(new TestQueryResult(each));
+            queryResults.add(new ResultSetBasedQueryResultFixture(each));
         }
     }
     

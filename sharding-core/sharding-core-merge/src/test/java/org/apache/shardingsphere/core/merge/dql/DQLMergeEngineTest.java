@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.merge.dql.orderby.OrderByStreamMergedResul
 import org.apache.shardingsphere.core.merge.dql.pagination.LimitDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
-import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
+import org.apache.shardingsphere.core.merge.fixture.ResultSetBasedQueryResultFixture;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
@@ -80,11 +80,11 @@ public final class DQLMergeEngineTest {
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("count(*)");
-        singleQueryResult = Collections.<QueryResult>singletonList(new TestQueryResult(resultSet));
+        singleQueryResult = Collections.<QueryResult>singletonList(new ResultSetBasedQueryResultFixture(resultSet));
         List<ResultSet> resultSets = Lists.newArrayList(resultSet, mockResultSet(), mockResultSet(), mockResultSet());
         queryResults = new ArrayList<>(resultSets.size());
         for (ResultSet each : resultSets) {
-            queryResults.add(new TestQueryResult(each));
+            queryResults.add(new ResultSetBasedQueryResultFixture(each));
         }
     }
     

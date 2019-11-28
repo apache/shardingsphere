@@ -27,7 +27,7 @@ import java.util.Calendar;
 import java.util.Iterator;
 
 @RequiredArgsConstructor
-public final class DescribeQueryResultFixture implements QueryResult {
+public final class QueryResultBasedQueryResultFixture implements QueryResult {
     
     private final Iterator<QueryResult> queryResults;
     

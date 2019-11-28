@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.merge.dal.show;
 
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
-import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
+import org.apache.shardingsphere.core.merge.fixture.ResultSetBasedQueryResultFixture;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -136,8 +136,8 @@ public final class ShowDatabasesMergedResultTest {
         when(resultSetMetaData2.getColumnLabel(1)).thenReturn("SCHEMA_NAME");
 
         List<QueryResult> queryResults = new ArrayList<>();
-        queryResults.add(new TestQueryResult(resultSet));
-        queryResults.add(new TestQueryResult(resultSet2));
+        queryResults.add(new ResultSetBasedQueryResultFixture(resultSet));
+        queryResults.add(new ResultSetBasedQueryResultFixture(resultSet2));
         return new ShowDatabasesMergedResult(null, queryResults);
     }
 }

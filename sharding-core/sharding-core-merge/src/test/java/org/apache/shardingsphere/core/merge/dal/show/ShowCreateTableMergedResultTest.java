@@ -23,7 +23,7 @@ import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.fixture.ComplexKeysShardingAlgorithmFixture;
-import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
+import org.apache.shardingsphere.core.merge.fixture.ResultSetBasedQueryResultFixture;
 import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
@@ -75,7 +75,7 @@ public final class ShowCreateTableMergedResultTest {
         }
         queryResults = new ArrayList<>(resultSets.size());
         for (ResultSet each : resultSets) {
-            queryResults.add(new TestQueryResult(each));
+            queryResults.add(new ResultSetBasedQueryResultFixture(each));
         }
     }
     

@@ -58,13 +58,12 @@ public class DistinctQueryResult implements QueryResult {
     private QueryRow currentRow;
     
     public DistinctQueryResult(final Collection<QueryResult> queryResults, final List<String> distinctColumnLabels) throws SQLException {
-        QueryResult firstQueryResult = queryResults.iterator().next();
-        this.queryResultMetaData = firstQueryResult.getQueryResultMetaData();
+        this.queryResultMetaData = queryResults.iterator().next().getQueryResultMetaData();
         resultData = getResultData(queryResults, distinctColumnLabels);
     }
     
     private Iterator<QueryRow> getResultData(final Collection<QueryResult> queryResults, final List<String> distinctColumnLabels) throws SQLException {
-        Set<QueryRow> result = new LinkedHashSet<>();
+        Collection<QueryRow> result = new LinkedHashSet<>();
         List<Integer> distinctColumnIndexes = Lists.transform(distinctColumnLabels, new Function<String, Integer>() {
             
             @Override
@@ -78,7 +77,7 @@ public class DistinctQueryResult implements QueryResult {
         return result.iterator();
     }
     
-    private void fill(final Set<QueryRow> resultData, final QueryResult queryResult, final List<Integer> distinctColumnIndexes) throws SQLException {
+    private void fill(final Collection<QueryRow> resultData, final QueryResult queryResult, final List<Integer> distinctColumnIndexes) throws SQLException {
         while (queryResult.next()) {
             List<Object> rowData = new ArrayList<>(queryResult.getColumnCount());
             for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
@@ -100,7 +99,6 @@ public class DistinctQueryResult implements QueryResult {
             public DistinctQueryResult apply(final QueryRow row) {
                 Set<QueryRow> resultData = new LinkedHashSet<>();
                 resultData.add(row);
-
                 return new DistinctQueryResult(queryResultMetaData, resultData.iterator());
             }
         }));
