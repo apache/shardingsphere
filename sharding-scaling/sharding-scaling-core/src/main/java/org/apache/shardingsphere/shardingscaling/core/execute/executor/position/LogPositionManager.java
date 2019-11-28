@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute.executor.log;
-
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.LogPosition;
+package org.apache.shardingsphere.shardingscaling.core.execute.executor.position;
 
 /**
  * Database itself data synchronize position manager.
@@ -26,7 +24,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.Lo
  * @author avalon566
  * @author yangyi
  */
-public interface LogManager<T extends LogPosition> {
+public interface LogPositionManager<T extends LogPosition> {
 
     /**
      * Get current log position.

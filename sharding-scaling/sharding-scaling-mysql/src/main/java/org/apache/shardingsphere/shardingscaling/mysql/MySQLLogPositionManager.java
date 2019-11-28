@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingscaling.mysql;
 
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.log.LogManager;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 
 import javax.sql.DataSource;
@@ -33,13 +33,13 @@ import java.sql.SQLException;
  * @author avalon566
  * @author yangyi
  */
-public final class MySQLLogManager implements LogManager<BinlogPosition> {
+public final class MySQLLogPositionManager implements LogPositionManager<BinlogPosition> {
 
     private final DataSource dataSource;
     
     private BinlogPosition currentPosition;
     
-    public MySQLLogManager(final RdbmsConfiguration rdbmsConfiguration) {
+    public MySQLLogPositionManager(final RdbmsConfiguration rdbmsConfiguration) {
         dataSource = DataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
     }
 

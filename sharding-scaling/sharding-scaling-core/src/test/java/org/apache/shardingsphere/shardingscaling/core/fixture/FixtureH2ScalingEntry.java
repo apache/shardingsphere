@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.core.fixture;
 
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.log.LogManager;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.JdbcReader;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.LogReader;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
@@ -36,7 +36,7 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<? extends LogManager> getLogManagerClass() {
+    public Class<? extends LogPositionManager> getLogManagerClass() {
         return null;
     }
     

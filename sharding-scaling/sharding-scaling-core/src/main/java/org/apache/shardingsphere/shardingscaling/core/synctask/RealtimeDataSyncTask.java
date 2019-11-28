@@ -25,8 +25,8 @@ import org.apache.shardingsphere.shardingscaling.core.execute.engine.ExecuteUtil
 import org.apache.shardingsphere.shardingscaling.core.execute.engine.SyncTaskExecuteCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.AckCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.RealtimeSyncChannel;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.log.LogManager;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.log.LogManagerFactory;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManagerFactory;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.Reader;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.ReaderFactory;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
@@ -47,7 +47,7 @@ public final class RealtimeDataSyncTask implements SyncTask {
 
     private final SyncConfiguration syncConfiguration;
 
-    private LogManager logManager;
+    private LogPositionManager logPositionManager;
 
     private Reader reader;
     
@@ -57,13 +57,13 @@ public final class RealtimeDataSyncTask implements SyncTask {
 
     @Override
     public void prepare() {
-        this.logManager = LogManagerFactory.newInstanceLogManager(syncConfiguration.getReaderConfiguration());
-        logManager.getCurrentPosition();
+        this.logPositionManager = LogPositionManagerFactory.newInstanceLogManager(syncConfiguration.getReaderConfiguration());
+        logPositionManager.getCurrentPosition();
     }
 
     @Override
     public void start(final ReportCallback callback) {
-        reader = ReaderFactory.newInstanceLogReader(syncConfiguration.getReaderConfiguration(), logManager.getCurrentPosition());
+        reader = ReaderFactory.newInstanceLogReader(syncConfiguration.getReaderConfiguration(), logPositionManager.getCurrentPosition());
         List<Writer> writers = instanceWriters();
         RealtimeSyncChannel channel = instanceChannel(writers.size());
         ExecuteUtil.execute(channel, reader, writers, new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncConfiguration, callback));
@@ -81,7 +81,7 @@ public final class RealtimeDataSyncTask implements SyncTask {
         return new RealtimeSyncChannel(channelSize, Collections.<AckCallback>singletonList(new AckCallback() {
             @Override
             public void onAck(final List<Record> records) {
-                logManager.updateCurrentPosition(records.get(records.size() - 1).getLogPosition());
+                logPositionManager.updateCurrentPosition(records.get(records.size() - 1).getLogPosition());
             }
         }));
     }

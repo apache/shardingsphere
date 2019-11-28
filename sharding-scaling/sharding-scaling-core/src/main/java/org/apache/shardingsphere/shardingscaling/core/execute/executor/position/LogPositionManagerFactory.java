@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute.executor.log;
+package org.apache.shardingsphere.shardingscaling.core.execute.executor.position;
 
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntry;
@@ -28,7 +28,7 @@ import lombok.SneakyThrows;
  *
  * @author avalon566
  */
-public class LogManagerFactory {
+public class LogPositionManagerFactory {
 
     /**
      * New instance of log manager.
@@ -37,7 +37,7 @@ public class LogManagerFactory {
      * @return log manager
      */
     @SneakyThrows
-    public static LogManager newInstanceLogManager(final RdbmsConfiguration rdbmsConfiguration) {
+    public static LogPositionManager newInstanceLogManager(final RdbmsConfiguration rdbmsConfiguration) {
         return newInstanceLogManager(rdbmsConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), rdbmsConfiguration);
     }
 
@@ -49,7 +49,7 @@ public class LogManagerFactory {
      * @return log manager
      */
     @SneakyThrows
-    public static LogManager newInstanceLogManager(final String databaseType, final RdbmsConfiguration rdbmsConfiguration) {
+    public static LogPositionManager newInstanceLogManager(final String databaseType, final RdbmsConfiguration rdbmsConfiguration) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
         return scalingEntry.getLogManagerClass().getConstructor(RdbmsConfiguration.class).newInstance(rdbmsConfiguration);
     }
