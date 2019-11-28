@@ -36,6 +36,7 @@ chapter = true
 | 王奇             | wqzwh                   |
 | 孙海生           | sunbufu                 |
 | 李亚             | betterjava              |
+| 颜志一           | yanyzy              |
 
 ## 导师
 
