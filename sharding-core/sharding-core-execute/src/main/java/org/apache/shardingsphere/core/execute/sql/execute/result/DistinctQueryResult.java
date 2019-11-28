@@ -72,19 +72,21 @@ public class DistinctQueryResult implements QueryResult {
             }
         });
         for (QueryResult each : queryResults) {
-            fill(result, each, distinctColumnIndexes);
+            result.addAll(getQueryRows(each, distinctColumnIndexes));
         }
         return result.iterator();
     }
     
-    private void fill(final Collection<QueryRow> resultData, final QueryResult queryResult, final List<Integer> distinctColumnIndexes) throws SQLException {
+    private Collection<QueryRow> getQueryRows(final QueryResult queryResult, final List<Integer> distinctColumnIndexes) throws SQLException {
+        Collection<QueryRow> result = new LinkedHashSet<>();
         while (queryResult.next()) {
             List<Object> rowData = new ArrayList<>(queryResult.getColumnCount());
             for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
                 rowData.add(queryResult.getValue(columnIndex, Object.class));
             }
-            resultData.add(new QueryRow(rowData, distinctColumnIndexes));
+            result.add(new QueryRow(rowData, distinctColumnIndexes));
         }
+        return result;
     }
     
     /**
