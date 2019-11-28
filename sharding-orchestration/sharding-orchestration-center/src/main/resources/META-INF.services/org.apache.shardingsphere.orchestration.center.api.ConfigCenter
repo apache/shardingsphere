@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.orchestration.center.instance.CuratorZookeeperInstance
+org.apache.shardingsphere.orchestration.center.instance.ApolloInstance
