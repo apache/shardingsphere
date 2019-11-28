@@ -95,7 +95,7 @@ public final class DQLMergeEngine implements MergeEngine {
         if (!aggregationDistinctProjections.isEmpty()) {
             result = getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, aggregationDistinctProjections));
         }
-        if (isDistinctRowProjections()) {
+        if (isNeedProcessDistinctRow()) {
             result = getDividedQueryResults(new DistinctQueryResult(queryResults, selectSQLStatementContext.getColumnLabels(relationMetas)));
         }
         return result.isEmpty() ? queryResults : result;
@@ -111,8 +111,8 @@ public final class DQLMergeEngine implements MergeEngine {
         });
     }
     
-    private boolean isDistinctRowProjections() {
-        return selectSQLStatementContext.getProjectionsContext().isDistinctRow() && selectSQLStatementContext.getGroupByContext().getItems().isEmpty();
+    private boolean isNeedProcessDistinctRow() {
+        return selectSQLStatementContext.getProjectionsContext().isDistinctRow() && !isNeedProcessGroupBy();
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
@@ -133,13 +133,17 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private MergedResult build() throws SQLException {
-        if (!selectSQLStatementContext.getGroupByContext().getItems().isEmpty() || !selectSQLStatementContext.getProjectionsContext().getAggregationProjections().isEmpty()) {
+        if (isNeedProcessGroupBy()) {
             return getGroupByMergedResult();
         }
         if (!selectSQLStatementContext.getOrderByContext().getItems().isEmpty()) {
             return new OrderByStreamMergedResult(queryResults, selectSQLStatementContext.getOrderByContext().getItems());
         }
         return new IteratorStreamMergedResult(queryResults);
+    }
+    
+    private boolean isNeedProcessGroupBy() {
+        return !selectSQLStatementContext.getGroupByContext().getItems().isEmpty() || !selectSQLStatementContext.getProjectionsContext().getAggregationProjections().isEmpty();
     }
     
     private MergedResult getGroupByMergedResult() throws SQLException {

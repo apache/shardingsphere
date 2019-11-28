@@ -37,7 +37,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Distinct query result.
@@ -99,7 +98,7 @@ public class DistinctQueryResult implements QueryResult {
             
             @Override
             public DistinctQueryResult apply(final QueryRow row) {
-                Set<QueryRow> resultData = new LinkedHashSet<>();
+                Collection<QueryRow> resultData = new LinkedHashSet<>();
                 resultData.add(row);
                 return new DistinctQueryResult(queryResultMetaData, resultData.iterator());
             }
