@@ -102,6 +102,7 @@ The list here will be shown in the alphabetical order.
 1. Super SOCO https://www.supersoco.com/
 1. TAL http://www.100tal.com/
 1. TCL https://www.tcl.com/
+1. Three Squirrels http://www.3songshu.com/
 1. TianYa https://www.tianya.cn/
 1. TonySourcing  https://TonySourcing.com/
 1. Trawe https://www.trawe.cn/
