@@ -136,7 +136,7 @@ public final class DQLMergeEngine implements MergeEngine {
         if (isNeedProcessGroupBy()) {
             return getGroupByMergedResult();
         }
-        if (!selectSQLStatementContext.getOrderByContext().getItems().isEmpty()) {
+        if (isNeedProcessOrderBy()) {
             return new OrderByStreamMergedResult(queryResults, selectSQLStatementContext.getOrderByContext().getItems());
         }
         return new IteratorStreamMergedResult(queryResults);
@@ -150,6 +150,10 @@ public final class DQLMergeEngine implements MergeEngine {
         return selectSQLStatementContext.isSameGroupByAndOrderByItems()
                 ? new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, selectSQLStatementContext)
                 : new GroupByMemoryMergedResult(columnLabelIndexMap, queryResults, selectSQLStatementContext);
+    }
+    
+    private boolean isNeedProcessOrderBy() {
+        return !selectSQLStatementContext.getOrderByContext().getItems().isEmpty();
     }
     
     private MergedResult decorate(final MergedResult mergedResult) throws SQLException {
