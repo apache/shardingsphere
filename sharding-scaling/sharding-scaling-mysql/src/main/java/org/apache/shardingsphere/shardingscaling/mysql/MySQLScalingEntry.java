@@ -41,7 +41,7 @@ public final class MySQLScalingEntry implements ScalingEntry {
     }
 
     @Override
-    public Class<? extends LogPositionManager> getLogManagerClass() {
+    public Class<? extends LogPositionManager> getLogPositionManager() {
         return MySQLLogPositionManager.class;
     }
 

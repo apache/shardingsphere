@@ -45,11 +45,11 @@ public interface ScalingEntry extends DatabaseTypeAwareSPI {
     Class<? extends LogReader> getLogReaderClass();
 
     /**
-     * Get log manager type.
+     * Get log position manager type.
      *
      * @return log manager type
      */
-    Class<? extends LogPositionManager> getLogManagerClass();
+    Class<? extends LogPositionManager> getLogPositionManager();
     
     /**
      * Get writer type.

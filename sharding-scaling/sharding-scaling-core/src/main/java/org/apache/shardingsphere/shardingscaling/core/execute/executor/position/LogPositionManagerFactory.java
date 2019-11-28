@@ -51,6 +51,6 @@ public class LogPositionManagerFactory {
     @SneakyThrows
     public static LogPositionManager newInstanceLogManager(final String databaseType, final RdbmsConfiguration rdbmsConfiguration) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
-        return scalingEntry.getLogManagerClass().getConstructor(RdbmsConfiguration.class).newInstance(rdbmsConfiguration);
+        return scalingEntry.getLogPositionManager().getConstructor(RdbmsConfiguration.class).newInstance(rdbmsConfiguration);
     }
 }

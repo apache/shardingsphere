@@ -36,7 +36,7 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<? extends LogPositionManager> getLogManagerClass() {
+    public Class<? extends LogPositionManager> getLogPositionManager() {
         return null;
     }
     
