@@ -572,7 +572,7 @@ I will process to publish the release and send ANNOUNCE.
 1. 将源码和二进制包从svn的dev目录移动到release目录
 
 ```shell
-svn mv https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION}/ https://dist.apache.org/repos/dist/release/incubator/shardingsphere/
+svn mv https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION} https://dist.apache.org/repos/dist/release/incubator/shardingsphere/
 ```
 
 2. 在Apache Staging仓库找到ShardingSphere并点击`Release`
@@ -593,7 +593,44 @@ https://shardingsphere.apache.org/document/current/en/downloads/
 https://shardingsphere.apache.org/document/current/cn/downloads/
 ```
 
-5. 发送邮件到`general@incubator.apache.org`和`dev@shardingsphere.apache.org`通知完成版本发布。
+5. 修改READEME文件
+
+将README.md和README_ZH.md里的${PREVIOUS.RELEASE.VERSION}修改为${LATEST.RELEASE.VERSION}
+
+6. 发布Docker
+
+```
+0 准备工作
+0.1 本地安装Docker，并将Docker service启动起来
+0.2 进入到 ~/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/src/main/docker/
+vim Dockerfile，将`ENV CURRENT_VERSION `${LEGACY.RELEASE.VERSION}` 改为 `${LATEST.RELEASE.VERSION}`
+```
+
+```
+1 编译Docker Image
+1.1 进入到 ~/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/
+1.2 执行 `mvn clean package docker:build`
+```
+
+```
+2 给本地Docker Image打上Tag
+2.1 通过`docker images`查看到IMAGE ID，例如为：e9ea51023687
+2.2 执行`docker tag e9ea51023687 apache/sharding-proxy:latest`
+2.3 执行`docker tag e9ea51023687 apache/sharding-proxy:${LATEST.RELEASE.VERSION}`
+```
+
+```
+3 发布Docker Image
+3.1 执行`docker push apache/sharding-proxy:latest`
+3.2 执行`docker push apache/sharding-proxy:${RELEASE_VERSION}`
+```
+
+```
+4 确认发布成功
+4.1 登录[Docker Hub](https://hub.docker.com/r/apache/sharding-proxy/)查看是否有发布的Images
+```
+
+7. 发送邮件到`general@incubator.apache.org`和`dev@shardingsphere.apache.org`通知完成版本发布。
 
 通知邮件模板：
 
