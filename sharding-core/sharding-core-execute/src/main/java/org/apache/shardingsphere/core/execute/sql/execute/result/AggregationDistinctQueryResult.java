@@ -20,42 +20,81 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.execute.sql.execute.row.QueryRow;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Aggregation distinct query result.
  *
  * @author panjuan
  */
-public final class AggregationDistinctQueryResult extends DistinctQueryResult {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class AggregationDistinctQueryResult implements QueryResult {
+    
+    @Getter
+    private final QueryResultMetaData queryResultMetaData;
+    
+    private final Iterator<QueryRow> resultData;
     
     private final AggregationDistinctQueryMetaData metaData;
     
-    private AggregationDistinctQueryResult(final QueryResultMetaData queryResultMetaData, final Iterator<QueryRow> resultData, final AggregationDistinctQueryMetaData distinctQueryMetaData) {
-        super(queryResultMetaData, resultData);
-        metaData = distinctQueryMetaData;
-    }
+    private QueryRow currentRow;
     
     public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final List<AggregationDistinctProjection> aggregationDistinctProjections) throws SQLException {
-        super(queryResults, Lists.transform(aggregationDistinctProjections, new Function<AggregationDistinctProjection, String>() {
+        List<String> distinctColumnLabels = Lists.transform(aggregationDistinctProjections, new Function<AggregationDistinctProjection, String>() {
             
             @Override
             public String apply(final AggregationDistinctProjection input) {
                 return input.getDistinctColumnLabel();
             }
-        }));
-        metaData = new AggregationDistinctQueryMetaData(aggregationDistinctProjections, getQueryResultMetaData());
+        });
+        this.queryResultMetaData = queryResults.iterator().next().getQueryResultMetaData();
+        this.resultData = getResultData(queryResults, distinctColumnLabels);
+        metaData = new AggregationDistinctQueryMetaData(aggregationDistinctProjections, queryResultMetaData);
+    }
+    
+    private Iterator<QueryRow> getResultData(final Collection<QueryResult> queryResults, final List<String> distinctColumnLabels) throws SQLException {
+        Collection<QueryRow> result = new LinkedHashSet<>();
+        List<Integer> distinctColumnIndexes = Lists.transform(distinctColumnLabels, new Function<String, Integer>() {
+            
+            @Override
+            public Integer apply(final String input) {
+                return getColumnIndex(input);
+            }
+        });
+        for (QueryResult each : queryResults) {
+            result.addAll(getQueryRows(each, distinctColumnIndexes));
+        }
+        return result.iterator();
+    }
+    
+    private Collection<QueryRow> getQueryRows(final QueryResult queryResult, final List<Integer> distinctColumnIndexes) throws SQLException {
+        Collection<QueryRow> result = new LinkedHashSet<>();
+        while (queryResult.next()) {
+            List<Object> rowData = new ArrayList<>(queryResult.getColumnCount());
+            for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
+                rowData.add(queryResult.getValue(columnIndex, Object.class));
+            }
+            result.add(new QueryRow(rowData, distinctColumnIndexes));
+        }
+        return result;
     }
     
     /**
@@ -63,16 +102,26 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
      *
      * @return multiple child distinct query results
      */
-    public List<DistinctQueryResult> divide() {
-        return Lists.newArrayList(Iterators.transform(getResultData(), new Function<QueryRow, DistinctQueryResult>() {
+    public List<AggregationDistinctQueryResult> divide() {
+        return Lists.newArrayList(Iterators.transform(resultData, new Function<QueryRow, AggregationDistinctQueryResult>() {
             
             @Override
-            public DistinctQueryResult apply(final QueryRow input) {
-                Set<QueryRow> resultData = new LinkedHashSet<>();
+            public AggregationDistinctQueryResult apply(final QueryRow input) {
+                Collection<QueryRow> resultData = new LinkedHashSet<>();
                 resultData.add(input);
-                return new AggregationDistinctQueryResult(getQueryResultMetaData(), resultData.iterator(), metaData);
+                return new AggregationDistinctQueryResult(queryResultMetaData, resultData.iterator(), metaData);
             }
         }));
+    }
+    
+    @Override
+    public boolean next() {
+        if (resultData.hasNext()) {
+            currentRow = resultData.next();
+            return true;
+        }
+        currentRow = null;
+        return false;
     }
     
     @Override
@@ -87,15 +136,15 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private Object getValue(final int columnIndex) {
         if (metaData.isAggregationDistinctColumnIndex(columnIndex)) {
-            return AggregationType.COUNT == metaData.getAggregationType(columnIndex) ? 1 : super.getValue(columnIndex, Object.class);
+            return AggregationType.COUNT == metaData.getAggregationType(columnIndex) ? 1 : currentRow.getValue(columnIndex);
         }
         if (metaData.isDerivedCountColumnIndex(columnIndex)) {
             return 1;
         }
         if (metaData.isDerivedSumColumnIndex(columnIndex)) {
-            return super.getValue(metaData.getAggregationDistinctColumnIndex(columnIndex), Object.class);
+            return currentRow.getValue(metaData.getAggregationDistinctColumnIndex(columnIndex));
         }
-        return super.getValue(columnIndex, Object.class);
+        return currentRow.getValue(columnIndex);
     }
     
     private Object getValue(final String columnLabel) {
@@ -122,9 +171,29 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         return getInputStream(getValue(columnLabel));
     }
     
+    @SneakyThrows
+    protected InputStream getInputStream(final Object value) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+        objectOutputStream.writeObject(value);
+        objectOutputStream.flush();
+        objectOutputStream.close();
+        return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+    }
+    
     @Override
     public boolean wasNull() {
-        return null == getCurrentRow();
+        return null == currentRow;
+    }
+    
+    @Override
+    public boolean isCaseSensitive(final int columnIndex) throws SQLException {
+        return queryResultMetaData.isCaseSensitive(columnIndex);
+    }
+    
+    @Override
+    public int getColumnCount() throws SQLException {
+        return queryResultMetaData.getColumnCount();
     }
     
     @Override
@@ -132,19 +201,14 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         if (metaData.isAggregationDistinctColumnIndex(columnIndex)) {
             return metaData.getAggregationDistinctColumnLabel(columnIndex);
         }
-        String columnLabel = getQueryResultMetaData().getColumnLabel(columnIndex);
+        String columnLabel = queryResultMetaData.getColumnLabel(columnIndex);
         if (null != columnLabel) {
             return columnLabel;
         }
         throw new SQLException("Column index out of range", "9999");
     }
     
-    @Override
-    protected Integer getColumnIndex(final String columnLabel) {
-        return isContainColumnLabel(columnLabel) ? metaData.getAggregationDistinctColumnIndex(columnLabel) : super.getColumnIndex(columnLabel);
-    }
-    
-    private boolean isContainColumnLabel(final String columnLabel) {
-        return null != metaData && metaData.isAggregationDistinctColumnLabel(columnLabel);
+    private Integer getColumnIndex(final String columnLabel) {
+        return null != metaData && metaData.isAggregationDistinctColumnLabel(columnLabel) ? metaData.getAggregationDistinctColumnIndex(columnLabel) : queryResultMetaData.getColumnIndex(columnLabel);
     }
 }

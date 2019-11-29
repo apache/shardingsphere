@@ -101,7 +101,7 @@ public final class AggregationDistinctQueryResultTest {
     
     @Test
     public void assertDivide() throws SQLException {
-        List<DistinctQueryResult> actual = aggregationDistinctQueryResult.divide();
+        List<AggregationDistinctQueryResult> actual = aggregationDistinctQueryResult.divide();
         assertThat(actual.size(), is(2));
         assertThat(actual.iterator().next().getColumnCount(), is((Object) 5));
     }
@@ -175,10 +175,5 @@ public final class AggregationDistinctQueryResultTest {
     @Test(expected = SQLException.class)
     public void assertGetColumnLabelWithException() throws SQLException {
         assertThat(aggregationDistinctQueryResult.getColumnLabel(6), is("order_id"));
-    }
-    
-    @Test
-    public void assertGetColumnIndex() {
-        assertThat(aggregationDistinctQueryResult.getColumnIndex("c"), is(2));
     }
 }

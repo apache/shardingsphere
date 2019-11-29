@@ -22,7 +22,6 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.sql.execute.result.AggregationDistinctQueryResult;
-import org.apache.shardingsphere.core.execute.sql.execute.result.DistinctQueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergedResult;
@@ -105,10 +104,10 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private List<QueryResult> getDividedQueryResults(final AggregationDistinctQueryResult distinctQueryResult) {
-        return Lists.transform(distinctQueryResult.divide(), new Function<DistinctQueryResult, QueryResult>() {
+        return Lists.transform(distinctQueryResult.divide(), new Function<AggregationDistinctQueryResult, QueryResult>() {
             
             @Override
-            public QueryResult apply(final DistinctQueryResult input) {
+            public QueryResult apply(final AggregationDistinctQueryResult input) {
                 return input;
             }
         });
