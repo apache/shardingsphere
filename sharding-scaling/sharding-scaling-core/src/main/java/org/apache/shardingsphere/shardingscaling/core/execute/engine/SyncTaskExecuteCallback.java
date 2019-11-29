@@ -42,13 +42,13 @@ public final class SyncTaskExecuteCallback implements ExecuteCallback {
     
     @Override
     public void onSuccess() {
-        log.info("{} for table {} execute finish", syncTaskType, syncConfiguration.getReaderConfiguration().getTableName());
+        log.info("{} {} execute finish", syncTaskType, syncConfiguration.getTaskId());
         reportCallback.onProcess(new Event(syncConfiguration.getTaskId(), EventType.FINISHED));
     }
     
     @Override
     public void onFailure(final Throwable throwable) {
-        log.error("{} for table {} execute exception exit", syncTaskType, syncConfiguration.getReaderConfiguration().getTableName(), throwable);
+        log.error("{} {} execute exception exit", syncTaskType, syncConfiguration.getTaskId(), throwable);
         reportCallback.onProcess(new Event(syncConfiguration.getTaskId(), EventType.EXCEPTION_EXIT));
     }
 }

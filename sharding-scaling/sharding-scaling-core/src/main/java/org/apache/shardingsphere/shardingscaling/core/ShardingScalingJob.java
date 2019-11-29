@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.shardingscaling.core;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 
 import java.util.LinkedList;
@@ -30,9 +32,12 @@ import java.util.UUID;
  * @author yangyi
  */
 @Getter
+@RequiredArgsConstructor
 public class ShardingScalingJob {
     
     private final String jobId = UUID.randomUUID().toString();
     
     private final List<SyncConfiguration> syncConfigurations = new LinkedList<>();
+    
+    private final String jobName;
 }
