@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.shardingscaling.core.config;
 
 import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.spi.database.DataSourceInfo;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import lombok.Data;
@@ -28,7 +30,7 @@ import lombok.Data;
  * @author avalon566
  */
 @Data
-public class JdbcDataSourceConfiguration implements DataSourceConfiguration {
+public final class JdbcDataSourceConfiguration implements DataSourceConfiguration {
 
     private String jdbcUrl;
 
@@ -43,5 +45,10 @@ public class JdbcDataSourceConfiguration implements DataSourceConfiguration {
         this.username = username;
         this.password = password;
         databaseType = DatabaseTypes.getDatabaseTypeByURL(jdbcUrl);
+    }
+    
+    @Override
+    public DataSourceMetaData getDataSourceMetaData() {
+        return databaseType.getDataSourceMetaData(new DataSourceInfo(jdbcUrl, username));
     }
 }

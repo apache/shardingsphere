@@ -33,7 +33,7 @@ import java.util.UUID;
  */
 @Getter
 @RequiredArgsConstructor
-public class ShardingScalingJob {
+public final class ShardingScalingJob {
     
     private final String jobId = UUID.randomUUID().toString();
     
