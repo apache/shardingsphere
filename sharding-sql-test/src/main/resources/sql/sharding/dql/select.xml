@@ -51,4 +51,5 @@
     <sql-case id="select_with_interval_function" value="SELECT INTERVAL(status,1,5) func_status FROM t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL" />
     <sql-case id="select_with_left_function" value="SELECT CONCAT(LEFT(status, 7), 'test') FROM t_order_item WHERE user_id = 10" db-types="MySQL" />
     <sql-case id="select_for_update" value="SELECT * FROM t_order WHERE user_id = ? FOR UPDATE" lock-clause="true"/>
+    <sql-case id="select_database" value="SELECT DATABASE()" db-types="MySQL" />
 </sql-cases>
