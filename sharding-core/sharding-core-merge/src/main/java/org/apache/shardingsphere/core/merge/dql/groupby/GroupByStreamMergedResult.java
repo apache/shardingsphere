@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnit;
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnitFactory;
 import org.apache.shardingsphere.core.merge.dql.orderby.OrderByStreamMergedResult;
+import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 
@@ -82,7 +83,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
                     
                     @Override
                     public AggregationUnit apply(final AggregationProjection input) {
-                        return AggregationUnitFactory.create(input.getType());
+                        return AggregationUnitFactory.create(input.getType(), input instanceof AggregationDistinctProjection);
                     }
                 });
         while (currentGroupByValues.equals(new GroupByValue(getCurrentQueryResult(), selectSQLStatementContext.getGroupByContext().getItems()).getGroupValues())) {

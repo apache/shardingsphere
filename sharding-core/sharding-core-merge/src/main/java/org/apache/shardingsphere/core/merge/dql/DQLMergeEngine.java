@@ -78,7 +78,7 @@ public final class DQLMergeEngine implements MergeEngine {
         this.routeResult = routeResult;
         this.selectSQLStatementContext = (SelectSQLStatementContext) routeResult.getSqlStatementContext();
         relationMetas = getRelationMetas(tableMetas);
-        this.queryResults = getRealQueryResults(queryResults);
+        this.queryResults = queryResults;
         columnLabelIndexMap = getColumnLabelIndexMap(this.queryResults.get(0));
     }
     
