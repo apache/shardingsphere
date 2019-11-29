@@ -41,7 +41,7 @@ import java.util.Set;
 public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private final AggregationDistinctQueryMetaData metaData;
-        
+    
     private AggregationDistinctQueryResult(final QueryResultMetaData queryResultMetaData, final Iterator<QueryRow> resultData, final AggregationDistinctQueryMetaData distinctQueryMetaData) {
         super(queryResultMetaData, resultData);
         metaData = distinctQueryMetaData;
@@ -76,23 +76,6 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         }));
     }
     
-    private Object getValue(final int columnIndex) {
-        if (metaData.isAggregationDistinctColumnIndex(columnIndex)) {
-            return AggregationType.COUNT == metaData.getAggregationType(columnIndex) ? 1 : super.getValue(columnIndex, Object.class);
-        }
-        if (metaData.isDerivedCountColumnIndex(columnIndex)) {
-            return 1;
-        }
-        if (metaData.isDerivedSumColumnIndex(columnIndex)) {
-            return super.getValue(metaData.getAggregationDistinctColumnIndex(columnIndex), Object.class);
-        }
-        return super.getValue(columnIndex, Object.class);
-    }
-    
-    private Object getValue(final String columnLabel) {
-        return getValue(getColumnIndex(columnLabel));
-    }
-    
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) {
         return getValue(columnIndex);
@@ -121,6 +104,23 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) {
         return getInputStream(getValue(columnLabel));
+    }
+    
+    private Object getValue(final int columnIndex) {
+        if (metaData.isAggregationDistinctColumnIndex(columnIndex)) {
+            return AggregationType.COUNT == metaData.getAggregationType(columnIndex) ? 1 : super.getValue(columnIndex, Object.class);
+        }
+        if (metaData.isDerivedCountColumnIndex(columnIndex)) {
+            return 1;
+        }
+        if (metaData.isDerivedSumColumnIndex(columnIndex)) {
+            return super.getValue(metaData.getAggregationDistinctColumnIndex(columnIndex), Object.class);
+        }
+        return super.getValue(columnIndex, Object.class);
+    }
+    
+    private Object getValue(final String columnLabel) {
+        return getValue(getColumnIndex(columnLabel));
     }
     
     @Override
