@@ -124,14 +124,14 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
             int max = rs.getInt(2);
             int step = (max - min) / concurrency;
             for (int i = 0; i < concurrency; i++) {
-                RdbmsConfiguration spilttedReaderConfig = RdbmsConfiguration.clone(readerConfiguration);
+                RdbmsConfiguration splitReaderConfig = RdbmsConfiguration.clone(readerConfiguration);
                 if (i < concurrency - 1) {
-                    spilttedReaderConfig.setWhereCondition(String.format("where id between %d and %d", min, min + step));
+                    splitReaderConfig.setWhereCondition(String.format("where id between %d and %d", min, min + step));
                     min = min + step + 1;
                 } else {
-                    spilttedReaderConfig.setWhereCondition(String.format("where id between %d and %d", min, max));
+                    splitReaderConfig.setWhereCondition(String.format("where id between %d and %d", min, max));
                 }
-                result.add(new SyncConfiguration(concurrency, spilttedReaderConfig, RdbmsConfiguration.clone(syncConfiguration.getWriterConfiguration())));
+                result.add(new SyncConfiguration(concurrency, splitReaderConfig, RdbmsConfiguration.clone(syncConfiguration.getWriterConfiguration())));
             }
         } catch (SQLException e) {
             throw new RuntimeException("getTableNames error", e);

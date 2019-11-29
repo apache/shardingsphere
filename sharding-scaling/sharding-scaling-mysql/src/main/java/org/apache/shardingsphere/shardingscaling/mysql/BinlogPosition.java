@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql;
 
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.LogPosition;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

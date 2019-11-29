@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.writer;
 
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.exception.SyncRunException;
+import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractSyncRunner;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.shardingscaling.core.metadata.ColumnMetaData;
@@ -85,7 +85,7 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
                 channel.ack();
             }
         } catch (SQLException ex) {
-            throw new SyncRunException(ex);
+            throw new SyncTaskExecuteException(ex);
         }
     }
 

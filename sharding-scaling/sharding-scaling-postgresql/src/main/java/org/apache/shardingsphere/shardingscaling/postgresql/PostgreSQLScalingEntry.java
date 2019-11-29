@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.postgresql;
 
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.log.LogManager;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.JdbcReader;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.LogReader;
@@ -41,7 +41,7 @@ public final class PostgreSQLScalingEntry implements ScalingEntry {
     }
 
     @Override
-    public Class<? extends LogManager> getLogManagerClass() {
+    public Class<? extends LogPositionManager> getLogPositionManager() {
         throw new UnsupportedOperationException();
     }
 

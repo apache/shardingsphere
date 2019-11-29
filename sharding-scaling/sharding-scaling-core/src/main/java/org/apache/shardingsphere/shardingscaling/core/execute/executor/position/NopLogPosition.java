@@ -15,22 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute.executor.log;
-
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.LogPosition;
+package org.apache.shardingsphere.shardingscaling.core.execute.executor.position;
 
 /**
- * Database itself data synchronize position manager.
- * Such as mysql binlog, postgresql wal.
+ * Nop log position.
  *
  * @author avalon566
  */
-public interface LogManager {
+public class NopLogPosition implements LogPosition<NopLogPosition> {
 
-    /**
-     * Get current log position.
-     *
-     * @return log position
-     */
-    LogPosition getCurrentPosition();
+    @Override
+    public final int compareTo(final NopLogPosition nopLogPosition) {
+        return 0;
+    }
 }
