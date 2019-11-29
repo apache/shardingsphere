@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.merge.fixture;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
-import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResultMetaData;
 
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -80,11 +79,6 @@ public final class QueryResultBasedQueryResultFixture implements QueryResult {
     @Override
     public boolean isCaseSensitive(final int columnIndex) {
         return false;
-    }
-    
-    @Override
-    public QueryResultMetaData getQueryResultMetaData() {
-        return null;
     }
 
     @Override

@@ -19,12 +19,12 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +41,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -64,18 +63,6 @@ public final class StreamQueryResultTest {
     public void setUp() {
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(tablesContext.getTableNames()).thenReturn(Collections.singleton("order"));
-    }
-
-    @Test
-    public void assertConstructorWithShardingRule() throws SQLException {
-        StreamQueryResult queryResult = new StreamQueryResult(getResultSet(), getShardingRule(), new ShardingProperties(new Properties()), sqlStatementContext);
-        assertThat(queryResult.getQueryResultMetaData().getShardingEncryptor(1), is(Optional.fromNullable(shardingEncryptor)));
-    }
-    
-    @Test
-    public void assertConstructorWithEncryptRule() throws SQLException {
-        StreamQueryResult queryResult = new StreamQueryResult(getResultSet(), getEncryptRule(), new ShardingProperties(new Properties()), sqlStatementContext);
-        assertThat(queryResult.getQueryResultMetaData().getShardingEncryptor(1), is(Optional.fromNullable(shardingEncryptor)));
     }
     
     private ShardingRule getShardingRule() {

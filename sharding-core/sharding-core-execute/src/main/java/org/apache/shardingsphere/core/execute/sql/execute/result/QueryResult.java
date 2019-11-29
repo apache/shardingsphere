@@ -132,11 +132,4 @@ public interface QueryResult {
      * @throws SQLException SQL Exception
      */
     boolean isCaseSensitive(int columnIndex) throws SQLException;
-
-    /**
-     * Get QueryResultMetaData.
-     *
-     * @return QueryResultMetaData
-     */
-    QueryResultMetaData getQueryResultMetaData();
 }
