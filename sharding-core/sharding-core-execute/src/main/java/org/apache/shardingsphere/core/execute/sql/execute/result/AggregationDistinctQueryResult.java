@@ -49,7 +49,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final List<AggregationDistinctProjection> aggregationDistinctProjections) throws SQLException {
         super(queryResults, Lists.transform(aggregationDistinctProjections, new Function<AggregationDistinctProjection, String>() {
-    
+            
             @Override
             public String apply(final AggregationDistinctProjection input) {
                 return input.getDistinctColumnLabel();
@@ -86,6 +86,23 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         return getValue(columnLabel);
     }
     
+    private Object getValue(final int columnIndex) {
+        if (metaData.isAggregationDistinctColumnIndex(columnIndex)) {
+            return AggregationType.COUNT == metaData.getAggregationType(columnIndex) ? 1 : super.getValue(columnIndex, Object.class);
+        }
+        if (metaData.isDerivedCountColumnIndex(columnIndex)) {
+            return 1;
+        }
+        if (metaData.isDerivedSumColumnIndex(columnIndex)) {
+            return super.getValue(metaData.getAggregationDistinctColumnIndex(columnIndex), Object.class);
+        }
+        return super.getValue(columnIndex, Object.class);
+    }
+    
+    private Object getValue(final String columnLabel) {
+        return getValue(getColumnIndex(columnLabel));
+    }
+    
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
         return getValue(columnIndex);
@@ -104,23 +121,6 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) {
         return getInputStream(getValue(columnLabel));
-    }
-    
-    private Object getValue(final int columnIndex) {
-        if (metaData.isAggregationDistinctColumnIndex(columnIndex)) {
-            return AggregationType.COUNT == metaData.getAggregationType(columnIndex) ? 1 : super.getValue(columnIndex, Object.class);
-        }
-        if (metaData.isDerivedCountColumnIndex(columnIndex)) {
-            return 1;
-        }
-        if (metaData.isDerivedSumColumnIndex(columnIndex)) {
-            return super.getValue(metaData.getAggregationDistinctColumnIndex(columnIndex), Object.class);
-        }
-        return super.getValue(columnIndex, Object.class);
-    }
-    
-    private Object getValue(final String columnLabel) {
-        return getValue(getColumnIndex(columnLabel));
     }
     
     @Override
