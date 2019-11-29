@@ -35,13 +35,16 @@ import org.apache.shardingsphere.core.merge.dql.pagination.RowNumberDecoratorMer
 import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetaData;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 import java.sql.SQLException;
@@ -64,6 +67,8 @@ public final class DQLMergeEngine implements MergeEngine {
     
     private final SelectSQLStatementContext selectSQLStatementContext;
     
+    private RelationMetas relationMetas;
+    
     private final List<QueryResult> queryResults;
     
     @Getter
@@ -73,7 +78,8 @@ public final class DQLMergeEngine implements MergeEngine {
         this.databaseType = databaseType;
         this.routeResult = routeResult;
         this.selectSQLStatementContext = (SelectSQLStatementContext) routeResult.getSqlStatementContext();
-        this.queryResults = getRealQueryResults(getRelationMetas(tableMetas), queryResults);
+        relationMetas = getRelationMetas(tableMetas);
+        this.queryResults = getRealQueryResults(queryResults);
         columnLabelIndexMap = getColumnLabelIndexMap(this.queryResults.get(0));
     }
     
@@ -86,7 +92,7 @@ public final class DQLMergeEngine implements MergeEngine {
         return new RelationMetas(result);
     }
     
-    private List<QueryResult> getRealQueryResults(final RelationMetas relationMetas, final List<QueryResult> queryResults) throws SQLException {
+    private List<QueryResult> getRealQueryResults(final List<QueryResult> queryResults) throws SQLException {
         List<QueryResult> result = queryResults;
         if (1 == result.size()) {
             return result;
@@ -94,9 +100,6 @@ public final class DQLMergeEngine implements MergeEngine {
         List<AggregationDistinctProjection> aggregationDistinctProjections = selectSQLStatementContext.getProjectionsContext().getAggregationDistinctProjections();
         if (!aggregationDistinctProjections.isEmpty()) {
             result = getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, aggregationDistinctProjections));
-        }
-        if (isNeedProcessDistinctRow()) {
-            result = getDividedQueryResults(new DistinctQueryResult(queryResults, selectSQLStatementContext.getColumnLabels(relationMetas)));
         }
         return result.isEmpty() ? queryResults : result;
     }
@@ -109,10 +112,6 @@ public final class DQLMergeEngine implements MergeEngine {
                 return input;
             }
         });
-    }
-    
-    private boolean isNeedProcessDistinctRow() {
-        return selectSQLStatementContext.getProjectionsContext().isDistinctRow() && !isNeedProcessGroupBy();
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
@@ -136,6 +135,15 @@ public final class DQLMergeEngine implements MergeEngine {
         if (isNeedProcessGroupBy()) {
             return getGroupByMergedResult();
         }
+        if (isNeedProcessDistinctRow()) {
+            List<String> columnLabels = selectSQLStatementContext.getColumnLabels(relationMetas);
+            for (int index = 1; index <= columnLabels.size(); index++) {
+                OrderByItem orderByItem = new OrderByItem(new IndexOrderByItemSegment(-1, -1, index, OrderDirection.ASC, OrderDirection.ASC));
+                orderByItem.setIndex(index);
+                selectSQLStatementContext.getGroupByContext().getItems().add(orderByItem);
+            }
+            return getGroupByMergedResult();
+        }
         if (isNeedProcessOrderBy()) {
             return new OrderByStreamMergedResult(queryResults, selectSQLStatementContext.getOrderByContext().getItems());
         }
@@ -144,6 +152,10 @@ public final class DQLMergeEngine implements MergeEngine {
     
     private boolean isNeedProcessGroupBy() {
         return !selectSQLStatementContext.getGroupByContext().getItems().isEmpty() || !selectSQLStatementContext.getProjectionsContext().getAggregationProjections().isEmpty();
+    }
+    
+    private boolean isNeedProcessDistinctRow() {
+        return selectSQLStatementContext.getProjectionsContext().isDistinctRow();
     }
     
     private MergedResult getGroupByMergedResult() throws SQLException {
