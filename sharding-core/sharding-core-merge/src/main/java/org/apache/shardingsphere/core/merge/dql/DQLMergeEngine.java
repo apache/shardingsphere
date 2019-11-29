@@ -136,12 +136,7 @@ public final class DQLMergeEngine implements MergeEngine {
             return getGroupByMergedResult();
         }
         if (isNeedProcessDistinctRow()) {
-            List<String> columnLabels = selectSQLStatementContext.getColumnLabels(relationMetas);
-            for (int index = 1; index <= columnLabels.size(); index++) {
-                OrderByItem orderByItem = new OrderByItem(new IndexOrderByItemSegment(-1, -1, index, OrderDirection.ASC, OrderDirection.ASC));
-                orderByItem.setIndex(index);
-                selectSQLStatementContext.getGroupByContext().getItems().add(orderByItem);
-            }
+            setGroupByForDistinctRow();
             return getGroupByMergedResult();
         }
         if (isNeedProcessOrderBy()) {
@@ -156,6 +151,15 @@ public final class DQLMergeEngine implements MergeEngine {
     
     private boolean isNeedProcessDistinctRow() {
         return selectSQLStatementContext.getProjectionsContext().isDistinctRow();
+    }
+    
+    private void setGroupByForDistinctRow() {
+        List<String> columnLabels = selectSQLStatementContext.getColumnLabels(relationMetas);
+        for (int index = 1; index <= columnLabels.size(); index++) {
+            OrderByItem orderByItem = new OrderByItem(new IndexOrderByItemSegment(-1, -1, index, OrderDirection.ASC, OrderDirection.ASC));
+            orderByItem.setIndex(index);
+            selectSQLStatementContext.getGroupByContext().getItems().add(orderByItem);
+        }
     }
     
     private MergedResult getGroupByMergedResult() throws SQLException {
