@@ -32,6 +32,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.Re
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.WriterFactory;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,6 +47,8 @@ import java.util.List;
 public final class RealtimeDataSyncTask implements SyncTask {
 
     private final SyncConfiguration syncConfiguration;
+    
+    private final String syncTaskId;
 
     private LogPositionManager logPositionManager;
 
@@ -53,6 +56,8 @@ public final class RealtimeDataSyncTask implements SyncTask {
     
     public RealtimeDataSyncTask(final SyncConfiguration syncConfiguration) {
         this.syncConfiguration = syncConfiguration;
+        DataSourceMetaData dataSourceMetaData = syncConfiguration.getReaderConfiguration().getDataSourceConfiguration().getDataSourceMetaData();
+        syncTaskId = String.format("realtime-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema());
     }
 
     @Override

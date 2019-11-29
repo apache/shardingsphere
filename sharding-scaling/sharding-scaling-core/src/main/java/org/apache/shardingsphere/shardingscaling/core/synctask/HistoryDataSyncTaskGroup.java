@@ -131,6 +131,7 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
                 } else {
                     splitReaderConfig.setWhereCondition(String.format("where id between %d and %d", min, max));
                 }
+                splitReaderConfig.setSpiltNum(i);
                 result.add(new SyncConfiguration(concurrency, splitReaderConfig, RdbmsConfiguration.clone(syncConfiguration.getWriterConfiguration())));
             }
         } catch (SQLException e) {
