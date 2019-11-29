@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.shardingscaling.core.controller;
 
+import org.apache.shardingsphere.shardingscaling.core.ShardingScalingJob;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Scaling job controller.
@@ -28,32 +31,34 @@ import java.util.List;
  * @author avalon566
  */
 public class ScalingJobController {
-
-    private final List<SyncConfiguration> syncConfigurations;
-
-    private final List<SyncTaskController> syncTaskControllers;
-
-    public ScalingJobController(final List<SyncConfiguration> syncConfigurations) {
-        this.syncConfigurations = syncConfigurations;
-        this.syncTaskControllers = new ArrayList<>(this.syncConfigurations.size());
-    }
+    
+    private final ConcurrentMap<String, List<SyncTaskController>> syncTaskControllerMaps = new ConcurrentHashMap<>();
 
     /**
      * Start data nodes migrate.
+     *
+     * @param shardingScalingJob sharding scaling job
      */
-    public void start() {
-        for (SyncConfiguration syncConfiguration : syncConfigurations) {
+    public void start(final ShardingScalingJob shardingScalingJob) {
+        List<SyncTaskController> syncTaskControllers = new LinkedList<>();
+        for (SyncConfiguration syncConfiguration : shardingScalingJob.getSyncConfigurations()) {
             SyncTaskController syncTaskController = new SyncTaskController(syncConfiguration);
             syncTaskController.start();
             syncTaskControllers.add(syncTaskController);
         }
+        syncTaskControllerMaps.put(shardingScalingJob.getJobId(), syncTaskControllers);
     }
 
     /**
      * Stop data nodes migrate.
+     *
+     * @param shardingScalingJobId sharding scaling job id
      */
-    public void stop() {
-        for (SyncTaskController syncTaskController : syncTaskControllers) {
+    public void stop(final String shardingScalingJobId) {
+        if (!syncTaskControllerMaps.containsKey(shardingScalingJobId)) {
+            return;
+        }
+        for (SyncTaskController syncTaskController : syncTaskControllerMaps.get(shardingScalingJobId)) {
             syncTaskController.stop();
         }
     }
@@ -61,12 +66,15 @@ public class ScalingJobController {
     /**
      * Get data nodes migrate progresses.
      *
+     * @param shardingScalingJobId sharding scaling job id
      * @return data nodes migrate progress
      */
-    public List<SyncProgress> getProgresses() {
-        List<SyncProgress> result = new ArrayList<>(this.syncConfigurations.size());
-        for (SyncTaskController syncTaskController : syncTaskControllers) {
-            result.add(syncTaskController.getProgress());
+    public List<SyncProgress> getProgresses(final String shardingScalingJobId) {
+        List<SyncProgress> result = new LinkedList<>();
+        if (syncTaskControllerMaps.containsKey(shardingScalingJobId)) {
+            for (SyncTaskController syncTaskController : syncTaskControllerMaps.get(shardingScalingJobId)) {
+                result.add(syncTaskController.getProgress());
+            }
         }
         return result;
     }

@@ -15,26 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.config;
+package org.apache.shardingsphere.shardingscaling.core;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
+
 /**
- * Sync configuration.
+ * Sharding scaling out job.
  *
- * @author avalon566
+ * @author yangyi
  */
 @Getter
 @RequiredArgsConstructor
-public class SyncConfiguration {
+public final class ShardingScalingJob {
     
-    /**
-     * The concurrency of writers.
-     */
-    private final int concurrency;
-
-    private final RdbmsConfiguration readerConfiguration;
-
-    private final RdbmsConfiguration writerConfiguration;
+    private final String jobId = UUID.randomUUID().toString();
+    
+    private final List<SyncConfiguration> syncConfigurations = new LinkedList<>();
+    
+    private final String jobName;
 }
