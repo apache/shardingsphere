@@ -71,7 +71,7 @@ public final class RealtimeDataSyncTask implements SyncTask {
         reader = ReaderFactory.newInstanceLogReader(syncConfiguration.getReaderConfiguration(), logPositionManager.getCurrentPosition());
         List<Writer> writers = instanceWriters();
         RealtimeSyncChannel channel = instanceChannel(writers.size());
-        ExecuteUtil.execute(channel, reader, writers, new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncConfiguration, callback));
+        ExecuteUtil.execute(channel, reader, writers, new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncTaskId, callback));
     }
     
     private List<Writer> instanceWriters() {

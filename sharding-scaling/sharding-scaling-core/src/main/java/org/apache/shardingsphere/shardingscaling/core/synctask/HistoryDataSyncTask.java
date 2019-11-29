@@ -66,7 +66,7 @@ public class HistoryDataSyncTask implements SyncTask {
     public final void start(final ReportCallback callback) {
         final Reader reader = ReaderFactory.newInstanceJdbcReader(syncConfiguration.getReaderConfiguration());
         final Writer writer = WriterFactory.newInstance(syncConfiguration.getWriterConfiguration());
-        ExecuteUtil.execute(new MemoryChannel(), reader, Collections.singletonList(writer), new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncConfiguration, callback));
+        ExecuteUtil.execute(new MemoryChannel(), reader, Collections.singletonList(writer), new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncTaskId, callback));
     }
 
     @Override

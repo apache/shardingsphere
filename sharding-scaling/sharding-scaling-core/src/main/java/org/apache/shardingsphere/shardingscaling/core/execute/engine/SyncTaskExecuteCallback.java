@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.engine;
 
-import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.Event;
 import org.apache.shardingsphere.shardingscaling.core.execute.EventType;
@@ -36,19 +35,19 @@ public final class SyncTaskExecuteCallback implements ExecuteCallback {
     
     private final String syncTaskType;
     
-    private final SyncConfiguration syncConfiguration;
+    private final String syncTaskId;
     
     private final ReportCallback reportCallback;
     
     @Override
     public void onSuccess() {
-        log.info("{} {} execute finish", syncTaskType, syncConfiguration.getTaskId());
-        reportCallback.onProcess(new Event(syncConfiguration.getTaskId(), EventType.FINISHED));
+        log.info("{} {} execute finish", syncTaskType, syncTaskId);
+        reportCallback.onProcess(new Event(syncTaskId, EventType.FINISHED));
     }
     
     @Override
     public void onFailure(final Throwable throwable) {
-        log.error("{} {} execute exception exit", syncTaskType, syncConfiguration.getTaskId(), throwable);
-        reportCallback.onProcess(new Event(syncConfiguration.getTaskId(), EventType.EXCEPTION_EXIT));
+        log.error("{} {} execute exception exit", syncTaskType, syncTaskId, throwable);
+        reportCallback.onProcess(new Event(syncTaskId, EventType.EXCEPTION_EXIT));
     }
 }

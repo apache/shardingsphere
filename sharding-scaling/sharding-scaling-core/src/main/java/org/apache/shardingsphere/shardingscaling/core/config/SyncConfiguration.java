@@ -17,22 +17,18 @@
 
 package org.apache.shardingsphere.shardingscaling.core.config;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.UUID;
 
 /**
  * Sync configuration.
  *
  * @author avalon566
  */
-@Data
+@Getter
 @RequiredArgsConstructor
 public class SyncConfiguration {
-
-    private final String taskId = UUID.randomUUID().toString();
-
+    
     /**
      * The concurrency of writers.
      */
