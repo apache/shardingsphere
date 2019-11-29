@@ -79,13 +79,6 @@ public final class DistinctQueryResultTest {
     }
     
     @Test
-    public void assertDivide() throws SQLException {
-        List<DistinctQueryResult> actual = distinctQueryResult.divide();
-        assertThat(actual.size(), is(2));
-        assertThat(actual.iterator().next().getColumnCount(), is((Object) 1));
-    }
-    
-    @Test
     public void assertNext() {
         assertTrue(distinctQueryResult.next());
         assertTrue(distinctQueryResult.next());

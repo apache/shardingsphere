@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Function;
-import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -86,23 +85,6 @@ public class DistinctQueryResult implements QueryResult {
             result.add(new QueryRow(rowData, distinctColumnIndexes));
         }
         return result;
-    }
-    
-    /**
-     * Divide one distinct query result to multiple child ones.
-     *
-     * @return multiple child distinct query results
-     */
-    public List<DistinctQueryResult> divide() {
-        return Lists.newArrayList(Iterators.transform(resultData, new Function<QueryRow, DistinctQueryResult>() {
-            
-            @Override
-            public DistinctQueryResult apply(final QueryRow row) {
-                Collection<QueryRow> resultData = new LinkedHashSet<>();
-                resultData.add(row);
-                return new DistinctQueryResult(queryResultMetaData, resultData.iterator());
-            }
-        }));
     }
     
     @Override

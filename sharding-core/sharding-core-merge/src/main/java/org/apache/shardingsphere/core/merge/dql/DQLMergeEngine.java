@@ -104,7 +104,7 @@ public final class DQLMergeEngine implements MergeEngine {
         return result.isEmpty() ? queryResults : result;
     }
     
-    private List<QueryResult> getDividedQueryResults(final DistinctQueryResult distinctQueryResult) {
+    private List<QueryResult> getDividedQueryResults(final AggregationDistinctQueryResult distinctQueryResult) {
         return Lists.transform(distinctQueryResult.divide(), new Function<DistinctQueryResult, QueryResult>() {
             
             @Override

@@ -63,7 +63,6 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
      *
      * @return multiple child distinct query results
      */
-    @Override
     public List<DistinctQueryResult> divide() {
         return Lists.newArrayList(Iterators.transform(getResultData(), new Function<QueryRow, DistinctQueryResult>() {
             
