@@ -17,11 +17,8 @@
 
 package org.apache.shardingsphere.core.merge.dql;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.execute.sql.execute.result.AggregationDistinctQueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergedResult;
@@ -41,7 +38,6 @@ import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetaData;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
@@ -89,28 +85,6 @@ public final class DQLMergeEngine implements MergeEngine {
             result.put(each, new RelationMetaData(tableMetaData.getColumns().keySet()));
         }
         return new RelationMetas(result);
-    }
-    
-    private List<QueryResult> getRealQueryResults(final List<QueryResult> queryResults) throws SQLException {
-        List<QueryResult> result = queryResults;
-        if (1 == result.size()) {
-            return result;
-        }
-        List<AggregationDistinctProjection> aggregationDistinctProjections = selectSQLStatementContext.getProjectionsContext().getAggregationDistinctProjections();
-        if (!aggregationDistinctProjections.isEmpty()) {
-            result = getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, aggregationDistinctProjections));
-        }
-        return result.isEmpty() ? queryResults : result;
-    }
-    
-    private List<QueryResult> getDividedQueryResults(final AggregationDistinctQueryResult distinctQueryResult) {
-        return Lists.transform(distinctQueryResult.divide(), new Function<AggregationDistinctQueryResult, QueryResult>() {
-            
-            @Override
-            public QueryResult apply(final AggregationDistinctQueryResult input) {
-                return input;
-            }
-        });
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
