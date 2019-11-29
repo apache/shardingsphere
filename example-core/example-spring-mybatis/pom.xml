@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>example-core</artifactId>
-        <version>4.0.0-RC3-SNAPSHOT</version>
+        <version>4.0.0-RC4-SNAPSHOT</version>
     </parent>
     <artifactId>example-spring-mybatis</artifactId>
     <name>common::example-spring-mybatis</name>

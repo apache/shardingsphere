@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>sharding-proxy-example</artifactId>
-        <version>4.0.0-RC3-SNAPSHOT</version>
+        <version>4.0.0-RC4-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-proxy-boot-mybatis-example</artifactId>
     <name>Example::proxy::spring-boot-mybatis</name>

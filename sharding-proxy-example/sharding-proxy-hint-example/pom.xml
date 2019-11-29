@@ -6,7 +6,7 @@
     <parent>
         <artifactId>sharding-proxy-example</artifactId>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <version>4.0.0-RC3-SNAPSHOT</version>
+        <version>4.0.0-RC4-SNAPSHOT</version>
     </parent>
 
     <artifactId>sharding-proxy-hint-example</artifactId>
