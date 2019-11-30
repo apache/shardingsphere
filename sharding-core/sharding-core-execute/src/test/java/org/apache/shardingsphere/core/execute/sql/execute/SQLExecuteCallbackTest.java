@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.execute.StatementExecuteUnit;
+import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;

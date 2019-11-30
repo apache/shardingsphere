@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
+import org.apache.shardingsphere.core.execute.engine.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.core.util.ConfigurationLogger;
 import org.apache.shardingsphere.spi.database.DatabaseType;

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.merge.dql.common.MemoryMergedResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnit;
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnitFactory;
+import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 
@@ -87,7 +88,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
                         
                         @Override
                         public AggregationUnit apply(final AggregationProjection input) {
-                            return AggregationUnitFactory.create(input.getType());
+                            return AggregationUnitFactory.create(input.getType(), input instanceof AggregationDistinctProjection);
                         }
                     });
             aggregationMap.put(groupByValue, map);

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.merge.dql.common;
 
 import org.apache.shardingsphere.core.merge.dql.common.fixture.TestStreamMergedResult;
-import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
+import org.apache.shardingsphere.core.merge.fixture.ResultSetBasedQueryResultFixture;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,7 +59,7 @@ public final class StreamMergedResultTest {
     @Before
     public void setUp() {
         streamMergedResult = new TestStreamMergedResult();
-        streamMergedResult.setCurrentQueryResult(new TestQueryResult(resultSet));
+        streamMergedResult.setCurrentQueryResult(new ResultSetBasedQueryResultFixture(resultSet));
     }
     
     @Test(expected = SQLException.class)

@@ -57,18 +57,6 @@ public final class MemoryQueryResultTest {
     
     private final ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
     
-    @Test
-    public void assertConstructorWithShardingRule() throws SQLException {
-        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet(), getShardingRule(), new ShardingProperties(new Properties()), getSqlStatementContext());
-        assertThat(queryResult.getQueryResultMetaData().getShardingEncryptor(1), is(Optional.fromNullable(shardingEncryptor)));
-    }
-    
-    @Test
-    public void assertConstructorWithEncryptRule() throws SQLException {
-        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet(), getEncryptRule(), new ShardingProperties(new Properties()), getSqlStatementContext());
-        assertThat(queryResult.getQueryResultMetaData().getShardingEncryptor(1), is(Optional.fromNullable(shardingEncryptor)));
-    }
-    
     @Test(expected = SQLException.class)
     @SneakyThrows
     public void assertConstructorWithSqlException() {

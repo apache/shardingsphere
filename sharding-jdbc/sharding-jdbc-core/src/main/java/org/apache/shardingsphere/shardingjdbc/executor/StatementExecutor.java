@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 
 import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
-import org.apache.shardingsphere.core.execute.StatementExecuteUnit;
+import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
+import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback;
 import org.apache.shardingsphere.core.execute.sql.execute.result.MemoryQueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;

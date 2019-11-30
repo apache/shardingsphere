@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execu
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.execute.StatementExecuteUnit;
+import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.sql.prepare.SQLExecutePrepareCallback;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.spi.database.MySQLDatabaseType;

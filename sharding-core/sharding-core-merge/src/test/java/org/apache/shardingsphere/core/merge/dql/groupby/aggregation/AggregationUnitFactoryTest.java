@@ -27,18 +27,33 @@ public final class AggregationUnitFactoryTest {
     
     @Test
     public void assertCreateComparableAggregationUnit() {
-        assertThat(AggregationUnitFactory.create(AggregationType.MIN), instanceOf(ComparableAggregationUnit.class));
-        assertThat(AggregationUnitFactory.create(AggregationType.MAX), instanceOf(ComparableAggregationUnit.class));
+        assertThat(AggregationUnitFactory.create(AggregationType.MIN, false), instanceOf(ComparableAggregationUnit.class));
+        assertThat(AggregationUnitFactory.create(AggregationType.MAX, false), instanceOf(ComparableAggregationUnit.class));
     }
     
     @Test
     public void assertCreateAccumulationAggregationUnit() {
-        assertThat(AggregationUnitFactory.create(AggregationType.SUM), instanceOf(AccumulationAggregationUnit.class));
-        assertThat(AggregationUnitFactory.create(AggregationType.COUNT), instanceOf(AccumulationAggregationUnit.class));
+        assertThat(AggregationUnitFactory.create(AggregationType.SUM, false), instanceOf(AccumulationAggregationUnit.class));
+        assertThat(AggregationUnitFactory.create(AggregationType.COUNT, false), instanceOf(AccumulationAggregationUnit.class));
     }
     
     @Test
     public void assertCreateAverageAggregationUnit() {
-        assertThat(AggregationUnitFactory.create(AggregationType.AVG), instanceOf(AverageAggregationUnit.class));
+        assertThat(AggregationUnitFactory.create(AggregationType.AVG, false), instanceOf(AverageAggregationUnit.class));
+    }
+    
+    @Test
+    public void assertCreateDistinctSumAggregationUnit() {
+        assertThat(AggregationUnitFactory.create(AggregationType.SUM, true), instanceOf(DistinctSumAggregationUnit.class));
+    }
+    
+    @Test
+    public void assertCreateDistinctCountAggregationUnit() {
+        assertThat(AggregationUnitFactory.create(AggregationType.COUNT, true), instanceOf(DistinctCountAggregationUnit.class));
+    }
+    
+    @Test
+    public void assertCreateDistinctAverageAggregationUnit() {
+        assertThat(AggregationUnitFactory.create(AggregationType.AVG, true), instanceOf(DistinctAverageAggregationUnit.class));
     }
 }

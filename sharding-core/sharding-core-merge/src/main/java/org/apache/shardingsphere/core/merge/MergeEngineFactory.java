@@ -55,7 +55,7 @@ public final class MergeEngineFactory {
     public static MergeEngine newInstance(final DatabaseType databaseType, final ShardingRule shardingRule,
                                           final SQLRouteResult routeResult, final TableMetas tableMetas, final List<QueryResult> queryResults) throws SQLException {
         if (routeResult.getSqlStatementContext() instanceof SelectSQLStatementContext) {
-            return new DQLMergeEngine(databaseType, tableMetas, routeResult, queryResults);
+            return new DQLMergeEngine(databaseType, (SelectSQLStatementContext) routeResult.getSqlStatementContext(), queryResults);
         } 
         if (routeResult.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
             return new DALMergeEngine(shardingRule, queryResults, routeResult.getSqlStatementContext(), tableMetas);

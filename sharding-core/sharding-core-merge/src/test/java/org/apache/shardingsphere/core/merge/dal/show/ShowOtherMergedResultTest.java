@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.merge.dal.show;
 
-import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
+import org.apache.shardingsphere.core.merge.fixture.ResultSetBasedQueryResultFixture;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,7 +58,7 @@ public final class ShowOtherMergedResultTest {
     
     @Before
     public void setUp() {
-        showOtherMergedResult = new ShowOtherMergedResult(new TestQueryResult(resultSet));
+        showOtherMergedResult = new ShowOtherMergedResult(new ResultSetBasedQueryResultFixture(resultSet));
     }
     
     @Test

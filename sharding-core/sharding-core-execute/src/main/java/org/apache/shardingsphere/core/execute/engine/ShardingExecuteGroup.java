@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.execute;
+package org.apache.shardingsphere.core.execute.engine;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.route.RouteUnit;
 
-import java.sql.Statement;
+import java.util.List;
 
 /**
- * Execute unit for JDBC statement.
+ * Sharding execute group.
  *
  * @author zhangliang
- * @author panjuan
+ * @param <T> type of inputs value
  */
 @RequiredArgsConstructor
 @Getter
-public final class StatementExecuteUnit {
+public final class ShardingExecuteGroup<T> {
     
-    private final RouteUnit routeUnit;
-    
-    private final Statement statement;
-    
-    private final ConnectionMode connectionMode;
+    private final List<T> inputs;
 }

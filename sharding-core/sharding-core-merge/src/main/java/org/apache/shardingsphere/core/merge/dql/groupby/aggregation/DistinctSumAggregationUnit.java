@@ -15,30 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.segment.dml.item;
+package org.apache.shardingsphere.core.merge.dql.groupby.aggregation;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
+import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.HashSet;
+import java.util.List;
 
 /**
- * Select items segment.
+ * Distinct sum aggregation unit.
  * 
- * @author duhongjun
- * @author panjuan
+ * @author zhangliang
  */
 @RequiredArgsConstructor
-@Getter
-public final class SelectItemsSegment implements SQLSegment {
+public final class DistinctSumAggregationUnit implements AggregationUnit {
     
-    private final int startIndex;
+    private BigDecimal result;
     
-    private final int stopIndex;
+    private Collection<Comparable<?>> values = new HashSet<>();
     
-    private final boolean distinctRow;
+    @Override
+    public void merge(final List<Comparable<?>> values) {
+        if (null == values || null == values.get(0)) {
+            return;
+        }
+        if (this.values.add(values.get(0))) {
+            if (null == result) {
+                result = new BigDecimal("0");
+            }
+            result = result.add(new BigDecimal(values.get(0).toString()));
+        }
+    }
     
-    private final Collection<SelectItemSegment> selectItems = new LinkedList<>();
+    @Override
+    public Comparable<?> getResult() {
+        return result;
+    }
 }

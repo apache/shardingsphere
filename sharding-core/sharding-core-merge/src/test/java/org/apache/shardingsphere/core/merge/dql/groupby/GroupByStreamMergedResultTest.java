@@ -22,8 +22,9 @@ import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
-import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.merge.fixture.ResultSetBasedQueryResultFixture;
+import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
@@ -31,13 +32,7 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.P
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
-import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
-import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.junit.Before;
@@ -69,14 +64,14 @@ public final class GroupByStreamMergedResultTest {
     
     private List<QueryResult> queryResults;
     
-    private SQLRouteResult routeResult;
+    private SelectSQLStatementContext selectSQLStatementContext;
     
     @Before
     public void setUp() throws SQLException {
         resultSets = Lists.newArrayList(mockResultSet(), mockResultSet(), mockResultSet());
         queryResults = new ArrayList<>(resultSets.size());
         for (ResultSet each : resultSets) {
-            queryResults.add(new TestQueryResult(each));
+            queryResults.add(new ResultSetBasedQueryResultFixture(each));
         }
         AggregationProjection aggregationSelectItem1 = new AggregationProjection(AggregationType.COUNT, "(*)", null);
         aggregationSelectItem1.setIndex(1);
@@ -88,12 +83,11 @@ public final class GroupByStreamMergedResultTest {
         AggregationProjection derivedAggregationSelectItem2 = new AggregationProjection(AggregationType.SUM, "(num)", "AVG_DERIVED_SUM_0");
         aggregationSelectItem2.setIndex(6);
         aggregationSelectItem2.getDerivedAggregationProjections().add(derivedAggregationSelectItem2);
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Arrays.<Projection>asList(aggregationSelectItem1, aggregationSelectItem2));
-        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Arrays.<Projection>asList(aggregationSelectItem1, aggregationSelectItem2), Collections.<String>emptyList());
+        selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), false),
                 projectionsContext, new PaginationContext(null, null, Collections.emptyList()));
-        routeResult = new SQLRouteResult(selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
     }
     
     private ResultSet mockResultSet() throws SQLException {
@@ -112,14 +106,14 @@ public final class GroupByStreamMergedResultTest {
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), mock(TableMetas.class), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), mock(TableMetas.class), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
         when(resultSets.get(0).next()).thenReturn(true, false);
         when(resultSets.get(0).getObject(1)).thenReturn(20);
         when(resultSets.get(0).getObject(2)).thenReturn(0);
@@ -161,7 +155,7 @@ public final class GroupByStreamMergedResultTest {
     
     @Test
     public void assertNextForMix() throws SQLException {
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), mock(TableMetas.class), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
         when(resultSets.get(0).next()).thenReturn(true, false);
         when(resultSets.get(0).getObject(1)).thenReturn(20);
         when(resultSets.get(0).getObject(2)).thenReturn(0);

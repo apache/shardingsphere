@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dal.DALMergeEngine;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
-import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
+import org.apache.shardingsphere.core.merge.fixture.ResultSetBasedQueryResultFixture;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
@@ -69,7 +69,7 @@ public final class MergeEngineFactoryTest {
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("label");
         List<ResultSet> resultSets = Lists.newArrayList(resultSet);
         queryResults = new ArrayList<>(resultSets.size());
-        queryResults.add(new TestQueryResult(resultSets.get(0)));
+        queryResults.add(new ResultSetBasedQueryResultFixture(resultSets.get(0)));
     }
     
     @Test
@@ -77,7 +77,7 @@ public final class MergeEngineFactoryTest {
         SQLRouteResult routeResult = new SQLRouteResult(
                 new SelectSQLStatementContext(new SelectStatement(), 
                         new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
-                        new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), new PaginationContext(null, null, Collections.emptyList())), 
+                        new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList())), 
                 new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, mock(TableMetas.class), queryResults), instanceOf(DQLMergeEngine.class));
     }

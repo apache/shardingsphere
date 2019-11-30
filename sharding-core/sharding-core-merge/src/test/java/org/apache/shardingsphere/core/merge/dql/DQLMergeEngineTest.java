@@ -28,26 +28,21 @@ import org.apache.shardingsphere.core.merge.dql.orderby.OrderByStreamMergedResul
 import org.apache.shardingsphere.core.merge.dql.pagination.LimitDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
-import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.merge.fixture.ResultSetBasedQueryResultFixture;
+import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
+import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
-import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -80,11 +75,11 @@ public final class DQLMergeEngineTest {
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("count(*)");
-        singleQueryResult = Collections.<QueryResult>singletonList(new TestQueryResult(resultSet));
+        singleQueryResult = Collections.<QueryResult>singletonList(new ResultSetBasedQueryResultFixture(resultSet));
         List<ResultSet> resultSets = Lists.newArrayList(resultSet, mockResultSet(), mockResultSet(), mockResultSet());
         queryResults = new ArrayList<>(resultSets.size());
         for (ResultSet each : resultSets) {
-            queryResults.add(new TestQueryResult(each));
+            queryResults.add(new ResultSetBasedQueryResultFixture(each));
         }
     }
     
@@ -97,33 +92,30 @@ public final class DQLMergeEngineTest {
     
     @Test
     public void assertBuildIteratorStreamMergedResult() throws SQLException {
-        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
-                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), mock(TableMetas.class), routeResult, queryResults);
+                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
         assertThat(mergeEngine.merge(), instanceOf(IteratorStreamMergedResult.class));
     }
     
     @Test
     public void assertBuildIteratorStreamMergedResultWithLimit() throws SQLException {
-        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
-                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), 
+                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), 
                 new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), mock(TableMetas.class), routeResult, singleQueryResult);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, singleQueryResult);
         assertThat(mergeEngine.merge(), instanceOf(IteratorStreamMergedResult.class));
     }
     
     @Test
     public void assertBuildIteratorStreamMergedResultWithMySQLLimit() throws SQLException {
-        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
-                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), 
+                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), 
                 new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), mock(TableMetas.class), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertThat(actual, instanceOf(LimitDecoratorMergedResult.class));
         assertThat(((LimitDecoratorMergedResult) actual).getMergedResult(), instanceOf(IteratorStreamMergedResult.class));
@@ -131,12 +123,11 @@ public final class DQLMergeEngineTest {
     
     @Test
     public void assertBuildIteratorStreamMergedResultWithOracleLimit() throws SQLException {
-        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
-                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), 
+                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), 
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), mock(TableMetas.class), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), selectSQLStatementContext, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
         assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(IteratorStreamMergedResult.class));
@@ -144,12 +135,11 @@ public final class DQLMergeEngineTest {
     
     @Test
     public void assertBuildIteratorStreamMergedResultWithSQLServerLimit() throws SQLException {
-        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
-                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), 
+                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), 
                 new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("SQLServer"), mock(TableMetas.class), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("SQLServer"), selectSQLStatementContext, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertThat(actual, instanceOf(TopAndRowNumberDecoratorMergedResult.class));
         assertThat(((TopAndRowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(IteratorStreamMergedResult.class));
@@ -157,24 +147,22 @@ public final class DQLMergeEngineTest {
     
     @Test
     public void assertBuildOrderByStreamMergedResult() throws SQLException {
-        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
                 new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
-                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), mock(TableMetas.class), routeResult, queryResults);
+                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
         assertThat(mergeEngine.merge(), instanceOf(OrderByStreamMergedResult.class));
     }
     
     @Test
     public void assertBuildOrderByStreamMergedResultWithMySQLLimit() throws SQLException {
-        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
                 new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
-                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), 
+                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), 
                 new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), mock(TableMetas.class), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertThat(actual, instanceOf(LimitDecoratorMergedResult.class));
         assertThat(((LimitDecoratorMergedResult) actual).getMergedResult(), instanceOf(OrderByStreamMergedResult.class));
@@ -182,13 +170,12 @@ public final class DQLMergeEngineTest {
     
     @Test
     public void assertBuildOrderByStreamMergedResultWithOracleLimit() throws SQLException {
-        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
                 new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
-                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), 
+                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), 
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), mock(TableMetas.class), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), selectSQLStatementContext, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
         assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(OrderByStreamMergedResult.class));
@@ -196,13 +183,12 @@ public final class DQLMergeEngineTest {
     
     @Test
     public void assertBuildOrderByStreamMergedResultWithSQLServerLimit() throws SQLException {
-        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
                 new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
-                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), 
+                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), 
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("SQLServer"), mock(TableMetas.class), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("SQLServer"), selectSQLStatementContext, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertThat(actual, instanceOf(TopAndRowNumberDecoratorMergedResult.class));
         assertThat(((TopAndRowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(OrderByStreamMergedResult.class));
@@ -210,24 +196,22 @@ public final class DQLMergeEngineTest {
     
     @Test
     public void assertBuildGroupByStreamMergedResult() throws SQLException {
-        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(),   
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(),   
                 new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
-                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), mock(TableMetas.class), routeResult, queryResults);
+                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
         assertThat(mergeEngine.merge(), instanceOf(GroupByStreamMergedResult.class));
     }
     
     @Test
     public void assertBuildGroupByStreamMergedResultWithMySQLLimit() throws SQLException {
-        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
-                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), 
+                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), 
                 new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), mock(TableMetas.class), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertThat(actual, instanceOf(LimitDecoratorMergedResult.class));
         assertThat(((LimitDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByStreamMergedResult.class));
@@ -235,13 +219,12 @@ public final class DQLMergeEngineTest {
     
     @Test
     public void assertBuildGroupByStreamMergedResultWithOracleLimit() throws SQLException {
-        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
-                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), 
+                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), 
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), mock(TableMetas.class), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), selectSQLStatementContext, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
         assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByStreamMergedResult.class));
@@ -249,13 +232,12 @@ public final class DQLMergeEngineTest {
     
     @Test
     public void assertBuildGroupByStreamMergedResultWithSQLServerLimit() throws SQLException {
-        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), false),
-                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), 
+                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), 
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("SQLServer"), mock(TableMetas.class), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("SQLServer"), selectSQLStatementContext, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertThat(actual, instanceOf(TopAndRowNumberDecoratorMergedResult.class));
         assertThat(((TopAndRowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByStreamMergedResult.class));
@@ -263,23 +245,21 @@ public final class DQLMergeEngineTest {
     
     @Test
     public void assertBuildGroupByMemoryMergedResult() throws SQLException {
-        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0), 
-                new OrderByContext(Collections.<OrderByItem>emptyList(), false), new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), 
+                new OrderByContext(Collections.<OrderByItem>emptyList(), false), new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), 
                 new PaginationContext(null, null, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), mock(TableMetas.class), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
         assertThat(mergeEngine.merge(), instanceOf(GroupByMemoryMergedResult.class));
     }
     
     @Test
     public void assertBuildGroupByMemoryMergedResultWithMySQLLimit() throws SQLException {
-        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0), 
-                new OrderByContext(Collections.<OrderByItem>emptyList(), false), new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()),
+                new OrderByContext(Collections.<OrderByItem>emptyList(), false), new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()),
                 new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), mock(TableMetas.class), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertThat(actual, instanceOf(LimitDecoratorMergedResult.class));
         assertThat(((LimitDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
@@ -287,13 +267,12 @@ public final class DQLMergeEngineTest {
     
     @Test
     public void assertBuildGroupByMemoryMergedResultWithOracleLimit() throws SQLException {
-        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), false),
-                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), 
+                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), 
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), mock(TableMetas.class), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), selectSQLStatementContext, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
         assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
@@ -301,14 +280,13 @@ public final class DQLMergeEngineTest {
     
     @Test
     public void assertBuildGroupByMemoryMergedResultWithSQLServerLimit() throws SQLException {
-        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupByContext(Arrays.asList(
                         new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)), 
                         new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC))), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
-                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), 
+                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), 
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
-        SQLRouteResult routeResult = new SQLRouteResult(selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("SQLServer"), mock(TableMetas.class), routeResult, queryResults);
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("SQLServer"), selectSQLStatementContext, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertThat(actual, instanceOf(TopAndRowNumberDecoratorMergedResult.class));
         assertThat(((TopAndRowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
@@ -317,24 +295,22 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildGroupByMemoryMergedResultWithAggregationOnly() throws SQLException {
         ProjectionsContext projectionsContext = new ProjectionsContext(
-                0, 0, false, Collections.<Projection>singletonList(new AggregationProjection(AggregationType.COUNT, "(*)", null)));
-        SQLRouteResult routeResult = new SQLRouteResult(
-                new SelectSQLStatementContext(new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false), 
-                        projectionsContext, new PaginationContext(null, null, Collections.emptyList())), 
-                new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), mock(TableMetas.class), routeResult, queryResults);
+                0, 0, false, Collections.<Projection>singletonList(new AggregationProjection(AggregationType.COUNT, "(*)", null)), Collections.<String>emptyList());
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
+                new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
+                projectionsContext, new PaginationContext(null, null, Collections.emptyList()));
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
         assertThat(mergeEngine.merge(), instanceOf(GroupByMemoryMergedResult.class));
     }
     
     @Test
     public void assertBuildGroupByMemoryMergedResultWithAggregationOnlyWithMySQLLimit() throws SQLException {
         ProjectionsContext projectionsContext = new ProjectionsContext(
-                0, 0, false, Collections.<Projection>singletonList(new AggregationProjection(AggregationType.COUNT, "(*)", null)));
-        SQLRouteResult routeResult = new SQLRouteResult(
-                new SelectSQLStatementContext(new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false), 
-                        projectionsContext, new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList())), 
-                new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), mock(TableMetas.class), routeResult, queryResults);
+                0, 0, false, Collections.<Projection>singletonList(new AggregationProjection(AggregationType.COUNT, "(*)", null)), Collections.<String>emptyList());
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
+                new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
+                projectionsContext, new PaginationContext(new NumberLiteralLimitValueSegment(0, 0, 1), null, Collections.emptyList()));
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertThat(actual, instanceOf(LimitDecoratorMergedResult.class));
         assertThat(((LimitDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
@@ -343,12 +319,11 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildGroupByMemoryMergedResultWithAggregationOnlyWithOracleLimit() throws SQLException {
         ProjectionsContext projectionsContext = new ProjectionsContext(
-                0, 0, false, Collections.<Projection>singletonList(new AggregationProjection(AggregationType.COUNT, "(*)", null)));
-        SQLRouteResult routeResult = new SQLRouteResult(
-                new SelectSQLStatementContext(new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false), 
-                        projectionsContext, new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList())), 
-                new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), mock(TableMetas.class), routeResult, queryResults);
+                0, 0, false, Collections.<Projection>singletonList(new AggregationProjection(AggregationType.COUNT, "(*)", null)), Collections.<String>emptyList());
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
+                new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false), 
+                        projectionsContext, new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), selectSQLStatementContext, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
         assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
@@ -357,12 +332,11 @@ public final class DQLMergeEngineTest {
     @Test
     public void assertBuildGroupByMemoryMergedResultWithAggregationOnlyWithSQLServerLimit() throws SQLException {
         ProjectionsContext projectionsContext = new ProjectionsContext(
-                0, 0, false, Collections.<Projection>singletonList(new AggregationProjection(AggregationType.COUNT, "(*)", null)));
-        SQLRouteResult routeResult = new SQLRouteResult(
-                new SelectSQLStatementContext(new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false), 
-                        projectionsContext, new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList())), 
-                new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("SQLServer"), mock(TableMetas.class), routeResult, queryResults);
+                0, 0, false, Collections.<Projection>singletonList(new AggregationProjection(AggregationType.COUNT, "(*)", null)), Collections.<String>emptyList());
+        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
+                new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
+                projectionsContext, new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 1, true), null, Collections.emptyList()));
+        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("SQLServer"), selectSQLStatementContext, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertThat(actual, instanceOf(TopAndRowNumberDecoratorMergedResult.class));
         assertThat(((TopAndRowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));

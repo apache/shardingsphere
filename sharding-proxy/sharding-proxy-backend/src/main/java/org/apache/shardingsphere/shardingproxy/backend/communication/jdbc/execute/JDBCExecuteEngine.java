@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execu
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
-import org.apache.shardingsphere.core.execute.StatementExecuteUnit;
+import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
+import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.core.execute.sql.prepare.SQLExecutePrepareTemplate;

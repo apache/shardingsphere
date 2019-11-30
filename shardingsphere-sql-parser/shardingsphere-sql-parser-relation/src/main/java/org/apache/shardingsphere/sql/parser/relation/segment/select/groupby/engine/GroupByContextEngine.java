@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByIt
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -42,7 +41,7 @@ public final class GroupByContextEngine {
      */
     public GroupByContext createGroupByContext(final SelectStatement selectStatement) {
         if (!selectStatement.getGroupBy().isPresent()) {
-            return new GroupByContext(Collections.<OrderByItem>emptyList(), 0);
+            return new GroupByContext(new LinkedList<OrderByItem>(), 0);
         }
         Collection<OrderByItem> groupByItems = new LinkedList<>();
         for (OrderByItemSegment each : selectStatement.getGroupBy().get().getGroupByItems()) {

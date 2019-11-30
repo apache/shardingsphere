@@ -19,7 +19,7 @@ package org.apache.shardingsphere.opentracing.hook;
 
 import io.opentracing.ActiveSpan;
 import io.opentracing.tag.Tags;
-import org.apache.shardingsphere.core.execute.ShardingExecuteDataMap;
+import org.apache.shardingsphere.core.execute.engine.ShardingExecuteDataMap;
 import org.apache.shardingsphere.core.execute.hook.RootInvokeHook;
 import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.opentracing.constant.ShardingTags;
