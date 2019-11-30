@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.merge.dql;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergeEngine;
@@ -47,6 +48,7 @@ import java.util.TreeMap;
  * @author zhangliang
  * @author panjuan
  */
+@RequiredArgsConstructor
 public final class DQLMergeEngine implements MergeEngine {
     
     private final DatabaseType databaseType;
@@ -55,13 +57,14 @@ public final class DQLMergeEngine implements MergeEngine {
     
     private final List<QueryResult> queryResults;
     
-    private final Map<String, Integer> columnLabelIndexMap;
-    
-    public DQLMergeEngine(final DatabaseType databaseType, final SelectSQLStatementContext selectSQLStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        this.databaseType = databaseType;
-        this.selectSQLStatementContext = selectSQLStatementContext;
-        this.queryResults = queryResults;
-        columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
+    @Override
+    public MergedResult merge() throws SQLException {
+        if (1 == queryResults.size()) {
+            return new IteratorStreamMergedResult(queryResults);
+        }
+        Map<String, Integer> columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
+        selectSQLStatementContext.setIndexes(columnLabelIndexMap);
+        return decorate(build(columnLabelIndexMap));
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
@@ -72,22 +75,13 @@ public final class DQLMergeEngine implements MergeEngine {
         return result;
     }
     
-    @Override
-    public MergedResult merge() throws SQLException {
-        if (1 == queryResults.size()) {
-            return new IteratorStreamMergedResult(queryResults);
-        }
-        selectSQLStatementContext.setIndexes(columnLabelIndexMap);
-        return decorate(build());
-    }
-    
-    private MergedResult build() throws SQLException {
+    private MergedResult build(final Map<String, Integer> columnLabelIndexMap) throws SQLException {
         if (isNeedProcessGroupBy()) {
-            return getGroupByMergedResult();
+            return getGroupByMergedResult(columnLabelIndexMap);
         }
         if (isNeedProcessDistinctRow()) {
             setGroupByForDistinctRow();
-            return getGroupByMergedResult();
+            return getGroupByMergedResult(columnLabelIndexMap);
         }
         if (isNeedProcessOrderBy()) {
             return new OrderByStreamMergedResult(queryResults, selectSQLStatementContext.getOrderByContext().getItems());
@@ -111,7 +105,7 @@ public final class DQLMergeEngine implements MergeEngine {
         }
     }
     
-    private MergedResult getGroupByMergedResult() throws SQLException {
+    private MergedResult getGroupByMergedResult(final Map<String, Integer> columnLabelIndexMap) throws SQLException {
         return selectSQLStatementContext.isSameGroupByAndOrderByItems()
                 ? new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, selectSQLStatementContext)
                 : new GroupByMemoryMergedResult(columnLabelIndexMap, queryResults, selectSQLStatementContext);
