@@ -28,12 +28,9 @@ import org.apache.shardingsphere.core.merge.dql.orderby.OrderByStreamMergedResul
 import org.apache.shardingsphere.core.merge.dql.pagination.LimitDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetaData;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
@@ -41,7 +38,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrde
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -60,8 +56,6 @@ public final class DQLMergeEngine implements MergeEngine {
     
     private final List<QueryResult> queryResults;
     
-    private final RelationMetas relationMetas;
-    
     private final Map<String, Integer> columnLabelIndexMap;
     
     public DQLMergeEngine(final DatabaseType databaseType, final TableMetas tableMetas, 
@@ -69,17 +63,7 @@ public final class DQLMergeEngine implements MergeEngine {
         this.databaseType = databaseType;
         this.selectSQLStatementContext = selectSQLStatementContext;
         this.queryResults = queryResults;
-        relationMetas = getRelationMetas(tableMetas);
         columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
-    }
-    
-    private RelationMetas getRelationMetas(final TableMetas tableMetas) {
-        Map<String, RelationMetaData> result = new HashMap<>(tableMetas.getAllTableNames().size());
-        for (String each : tableMetas.getAllTableNames()) {
-            TableMetaData tableMetaData = tableMetas.get(each);
-            result.put(each, new RelationMetaData(tableMetaData.getColumns().keySet()));
-        }
-        return new RelationMetas(result);
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
@@ -122,8 +106,7 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private void setGroupByForDistinctRow() {
-        List<String> columnLabels = selectSQLStatementContext.getColumnLabels(relationMetas);
-        for (int index = 1; index <= columnLabels.size(); index++) {
+        for (int index = 1; index <= selectSQLStatementContext.getProjectionsContext().getColumnLabels().size(); index++) {
             OrderByItem orderByItem = new OrderByItem(new IndexOrderByItemSegment(-1, -1, index, OrderDirection.ASC, OrderDirection.ASC));
             orderByItem.setIndex(index);
             selectSQLStatementContext.getGroupByContext().getItems().add(orderByItem);

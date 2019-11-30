@@ -37,10 +37,14 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrd
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.TextOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Projections context engine.
@@ -64,13 +68,15 @@ public final class ProjectionsContextEngine {
      * @param orderByContext order by context
      * @return projections context
      */
-    public ProjectionsContext createProjectionsContext(final String sql, final SelectStatement selectStatement, final GroupByContext groupByContext, final OrderByContext orderByContext) {
+    public ProjectionsContext createProjectionsContext(final String sql, final SelectStatement selectStatement, 
+                                                       final GroupByContext groupByContext, final OrderByContext orderByContext) {
         SelectItemsSegment selectItemsSegment = selectStatement.getSelectItems();
-        Collection<Projection> items = getProjections(sql, selectItemsSegment);
-        ProjectionsContext result = new ProjectionsContext(selectItemsSegment.getStartIndex(), selectItemsSegment.getStopIndex(), selectItemsSegment.isDistinctRow(), items);
+        Collection<Projection> projections = getProjections(sql, selectItemsSegment);
+        ProjectionsContext result = new ProjectionsContext(
+                selectItemsSegment.getStartIndex(), selectItemsSegment.getStopIndex(), selectItemsSegment.isDistinctRow(), projections, getColumnLabels(selectStatement.getTables(), projections));
         TablesContext tablesContext = new TablesContext(selectStatement);
-        result.getProjections().addAll(getDerivedGroupByColumns(tablesContext, items, groupByContext));
-        result.getProjections().addAll(getDerivedOrderByColumns(tablesContext, items, orderByContext));
+        result.getProjections().addAll(getDerivedGroupByColumns(tablesContext, projections, groupByContext));
+        result.getProjections().addAll(getDerivedOrderByColumns(tablesContext, projections, orderByContext));
         return result;
     }
     
@@ -81,6 +87,40 @@ public final class ProjectionsContextEngine {
             if (selectItem.isPresent()) {
                 result.add(selectItem.get());
             }
+        }
+        return result;
+    }
+    
+    private List<String> getColumnLabels(final Collection<TableSegment> tables, final Collection<Projection> projections) {
+        List<String> result = new ArrayList<>(projections.size());
+        for (Projection each : projections) {
+            if (each instanceof ShorthandProjection) {
+                result.addAll(getShorthandColumnLabels(tables, (ShorthandProjection) each));
+            } else {
+                result.add(each.getColumnLabel());
+            }
+        }
+        return result;
+    }
+    
+    private Collection<String> getShorthandColumnLabels(final Collection<TableSegment> tables, final ShorthandProjection shorthandProjection) {
+        return shorthandProjection.getOwner().isPresent()
+                ? getQualifiedShorthandColumnLabels(tables, shorthandProjection.getOwner().get()) : getUnqualifiedShorthandColumnLabels(tables);
+    }
+    
+    private Collection<String> getQualifiedShorthandColumnLabels(final Collection<TableSegment> tables, final String owner) {
+        for (TableSegment each : tables) {
+            if (owner.equalsIgnoreCase(each.getAlias().or(each.getTableName()))) {
+                return relationMetas.getAllColumnNames(each.getTableName());
+            }
+        }
+        return Collections.emptyList();
+    }
+    
+    private Collection<String> getUnqualifiedShorthandColumnLabels(final Collection<TableSegment> tables) {
+        Collection<String> result = new LinkedList<>();
+        for (TableSegment each : tables) {
+            result.addAll(relationMetas.getAllColumnNames(each.getTableName()));
         }
         return result;
     }

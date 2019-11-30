@@ -63,7 +63,7 @@ public final class IteratorStreamMergedResultTest {
                 new ResultSetBasedQueryResultFixture(resultSet), new ResultSetBasedQueryResultFixture(mock(ResultSet.class)), new ResultSetBasedQueryResultFixture(mock(ResultSet.class)));
         selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false), 
-                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
+                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
     }
     
     @Test
