@@ -1162,4 +1162,11 @@
             </shorthand-select-items>
         </select-items>
     </parser-result>
+    <parser-result sql-case-id="select_database">
+        <select-items start-index="7" stop-index="16">
+            <expression-items>
+                <expression-item start-index="7" stop-index="16" text="DATABASE()"/>
+            </expression-items>
+        </select-items>
+    </parser-result>
 </parser-result-sets>
