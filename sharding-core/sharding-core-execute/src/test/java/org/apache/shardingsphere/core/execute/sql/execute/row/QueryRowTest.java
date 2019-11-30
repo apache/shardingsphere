@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.row;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -27,15 +26,9 @@ import static org.junit.Assert.assertThat;
 
 public final class QueryRowTest {
     
-    private QueryRow queryRow;
-    
-    @Before
-    public void setUp() {
-        queryRow = new QueryRow(Collections.singletonList((Object) 10));
-    }
-    
     @Test
     public void assertGetValue() {
+        QueryRow queryRow = new QueryRow(Collections.singletonList((Object) 10));
         assertThat(queryRow.getValue(1), is((Object) 10));
     }
 }

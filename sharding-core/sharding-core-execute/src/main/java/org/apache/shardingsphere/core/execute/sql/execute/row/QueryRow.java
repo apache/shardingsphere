@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.row;
 
-import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -28,7 +27,6 @@ import java.util.List;
  * @author panjuan
  */
 @RequiredArgsConstructor
-@EqualsAndHashCode
 public final class QueryRow {
     
     private final List<Object> rowData;
