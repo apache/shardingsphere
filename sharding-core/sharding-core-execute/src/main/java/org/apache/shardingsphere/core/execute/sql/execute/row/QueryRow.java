@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.row;
 
-import lombok.Getter;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -28,7 +28,7 @@ import java.util.List;
  * @author panjuan
  */
 @RequiredArgsConstructor
-@Getter
+@EqualsAndHashCode
 public final class QueryRow {
     
     private final List<Object> rowData;
@@ -41,15 +41,5 @@ public final class QueryRow {
      */
     public Object getValue(final int columnIndex) {
         return rowData.get(columnIndex - 1);
-    }
-    
-    @Override
-    public boolean equals(final Object obj) {
-        return this == obj || null != obj && getClass() == obj.getClass() && rowData.equals(((QueryRow) obj).getRowData());
-    }
-    
-    @Override
-    public int hashCode() {
-        return rowData.hashCode();
     }
 }
