@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Optional;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.execute.sql.execute.row.QueryRow;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -49,44 +47,43 @@ import java.util.List;
  */
 public final class MemoryQueryResult implements QueryResult {
     
-    private final Iterator<QueryRow> resultData;
+    private final Iterator<List<Object>> rows;
     
-    private QueryRow currentRow;
-
-    @Getter
+    private List<Object> currentRow;
+    
     private final QueryResultMetaData queryResultMetaData;
     
     public MemoryQueryResult(final ResultSet resultSet, final ShardingRule shardingRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext) throws SQLException {
-        resultData = getResultData(resultSet);
+        rows = getRows(resultSet);
         queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule, properties, sqlStatementContext);
     }
     
     public MemoryQueryResult(final ResultSet resultSet, final EncryptRule encryptRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext) throws SQLException {
-        resultData = getResultData(resultSet);
+        rows = getRows(resultSet);
         queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule, properties, sqlStatementContext);
     }
     
     public MemoryQueryResult(final ResultSet resultSet) throws SQLException {
-        resultData = getResultData(resultSet);
+        rows = getRows(resultSet);
         queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData());
     }
-        
-    private Iterator<QueryRow> getResultData(final ResultSet resultSet) throws SQLException {
-        Collection<QueryRow> result = new LinkedList<>();
+    
+    private Iterator<List<Object>> getRows(final ResultSet resultSet) throws SQLException {
+        Collection<List<Object>> result = new LinkedList<>();
         while (resultSet.next()) {
             List<Object> rowData = new ArrayList<>(resultSet.getMetaData().getColumnCount());
             for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
                 rowData.add(QueryResultUtil.getValue(resultSet, columnIndex));
             }
-            result.add(new QueryRow(rowData));
+            result.add(rowData);
         }
         return result.iterator();
     }
     
     @Override
     public boolean next() {
-        if (resultData.hasNext()) {
-            currentRow = resultData.next();
+        if (rows.hasNext()) {
+            currentRow = rows.next();
             return true;
         }
         currentRow = null;
@@ -95,32 +92,32 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        return decrypt(columnIndex, currentRow.getValue(columnIndex));
+        return decrypt(columnIndex, currentRow.get(columnIndex - 1));
     }
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
-        return decrypt(columnLabel, currentRow.getValue(queryResultMetaData.getColumnIndex(columnLabel)));
+        return decrypt(columnLabel, currentRow.get(queryResultMetaData.getColumnIndex(columnLabel) - 1));
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
-        return currentRow.getValue(columnIndex);
+        return currentRow.get(columnIndex - 1);
     }
     
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
-        return currentRow.getValue(queryResultMetaData.getColumnIndex(columnLabel));
+        return currentRow.get(queryResultMetaData.getColumnIndex(columnLabel) - 1);
     }
     
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) {
-        return getInputStream(currentRow.getValue(columnIndex));
+        return getInputStream(currentRow.get(columnIndex - 1));
     }
     
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) {
-        return getInputStream(currentRow.getValue(queryResultMetaData.getColumnIndex(columnLabel)));
+        return getInputStream(currentRow.get(queryResultMetaData.getColumnIndex(columnLabel) - 1));
     }
     
     @SneakyThrows
