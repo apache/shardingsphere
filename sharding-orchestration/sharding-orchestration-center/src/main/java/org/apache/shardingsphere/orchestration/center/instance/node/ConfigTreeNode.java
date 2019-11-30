@@ -19,7 +19,6 @@ package org.apache.shardingsphere.orchestration.center.instance.node;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
