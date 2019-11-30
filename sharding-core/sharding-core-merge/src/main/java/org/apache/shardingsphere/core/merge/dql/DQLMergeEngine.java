@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.merge.dql;
 
-import lombok.Getter;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergeEngine;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.core.merge.dql.pagination.RowNumberDecoratorMer
 import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetaData;
@@ -58,23 +56,20 @@ public final class DQLMergeEngine implements MergeEngine {
     
     private final DatabaseType databaseType;
     
-    private final SQLRouteResult routeResult;
-    
     private final SelectSQLStatementContext selectSQLStatementContext;
-    
-    private RelationMetas relationMetas;
     
     private final List<QueryResult> queryResults;
     
-    @Getter
+    private final RelationMetas relationMetas;
+    
     private final Map<String, Integer> columnLabelIndexMap;
     
-    public DQLMergeEngine(final DatabaseType databaseType, final TableMetas tableMetas, final SQLRouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
+    public DQLMergeEngine(final DatabaseType databaseType, final TableMetas tableMetas, 
+                          final SelectSQLStatementContext selectSQLStatementContext, final List<QueryResult> queryResults) throws SQLException {
         this.databaseType = databaseType;
-        relationMetas = getRelationMetas(tableMetas);
-        this.routeResult = routeResult;
-        selectSQLStatementContext = (SelectSQLStatementContext) routeResult.getSqlStatementContext();
+        this.selectSQLStatementContext = selectSQLStatementContext;
         this.queryResults = queryResults;
+        relationMetas = getRelationMetas(tableMetas);
         columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
     }
     
@@ -146,7 +141,7 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private MergedResult decorate(final MergedResult mergedResult) throws SQLException {
-        PaginationContext paginationContext = ((SelectSQLStatementContext) routeResult.getSqlStatementContext()).getPaginationContext();
+        PaginationContext paginationContext = selectSQLStatementContext.getPaginationContext();
         if (!paginationContext.isHasPagination() || 1 == queryResults.size()) {
             return mergedResult;
         }
