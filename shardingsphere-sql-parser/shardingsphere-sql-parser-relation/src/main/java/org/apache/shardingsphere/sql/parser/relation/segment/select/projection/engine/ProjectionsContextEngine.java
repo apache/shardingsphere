@@ -68,8 +68,7 @@ public final class ProjectionsContextEngine {
      * @param orderByContext order by context
      * @return projections context
      */
-    public ProjectionsContext createProjectionsContext(final String sql, final SelectStatement selectStatement, 
-                                                       final GroupByContext groupByContext, final OrderByContext orderByContext) {
+    public ProjectionsContext createProjectionsContext(final String sql, final SelectStatement selectStatement, final GroupByContext groupByContext, final OrderByContext orderByContext) {
         SelectItemsSegment selectItemsSegment = selectStatement.getSelectItems();
         Collection<Projection> projections = getProjections(sql, selectItemsSegment);
         ProjectionsContext result = new ProjectionsContext(
