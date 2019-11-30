@@ -71,11 +71,11 @@ public final class DQLMergeEngine implements MergeEngine {
     
     public DQLMergeEngine(final DatabaseType databaseType, final TableMetas tableMetas, final SQLRouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
         this.databaseType = databaseType;
-        this.routeResult = routeResult;
-        this.selectSQLStatementContext = (SelectSQLStatementContext) routeResult.getSqlStatementContext();
         relationMetas = getRelationMetas(tableMetas);
+        this.routeResult = routeResult;
+        selectSQLStatementContext = (SelectSQLStatementContext) routeResult.getSqlStatementContext();
         this.queryResults = queryResults;
-        columnLabelIndexMap = getColumnLabelIndexMap(this.queryResults.get(0));
+        columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
     }
     
     private RelationMetas getRelationMetas(final TableMetas tableMetas) {
