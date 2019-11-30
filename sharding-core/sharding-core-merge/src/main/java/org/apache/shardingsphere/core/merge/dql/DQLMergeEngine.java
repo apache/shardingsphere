@@ -28,7 +28,6 @@ import org.apache.shardingsphere.core.merge.dql.orderby.OrderByStreamMergedResul
 import org.apache.shardingsphere.core.merge.dql.pagination.LimitDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.core.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
@@ -58,8 +57,7 @@ public final class DQLMergeEngine implements MergeEngine {
     
     private final Map<String, Integer> columnLabelIndexMap;
     
-    public DQLMergeEngine(final DatabaseType databaseType, final TableMetas tableMetas, 
-                          final SelectSQLStatementContext selectSQLStatementContext, final List<QueryResult> queryResults) throws SQLException {
+    public DQLMergeEngine(final DatabaseType databaseType, final SelectSQLStatementContext selectSQLStatementContext, final List<QueryResult> queryResults) throws SQLException {
         this.databaseType = databaseType;
         this.selectSQLStatementContext = selectSQLStatementContext;
         this.queryResults = queryResults;
