@@ -23,7 +23,6 @@ import org.junit.Test;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -33,7 +32,7 @@ public final class QueryRowTest {
     
     @Before
     public void setUp() {
-        queryRow = new QueryRow(Collections.singletonList((Object) 10), Collections.singletonList(1));
+        queryRow = new QueryRow(Collections.singletonList((Object) 10));
     }
     
     @Test
@@ -48,23 +47,6 @@ public final class QueryRowTest {
     }
     
     @Test
-    public void assertEqualPartly() {
-        QueryRow queryRow1 = new QueryRow(Collections.singletonList((Object) 10), Collections.singletonList(1));
-        QueryRow queryRow2 = new QueryRow(Collections.singletonList((Object) 8), Collections.singletonList(1));
-        assertTrue(queryRow.equals(queryRow1));
-        assertFalse(queryRow.equals(queryRow2));
-    }
-
-    @Test
-    public void assertEqualPartlyWithNull() {
-        QueryRow queryRowWithNull = new QueryRow(Collections.singletonList(null), Collections.singletonList(1));
-        QueryRow queryRowWithNull2 = new QueryRow(Collections.singletonList(null), Collections.singletonList(1));
-        QueryRow queryRowWithNonNull = new QueryRow(Collections.singletonList((Object) 8), Collections.singletonList(1));
-        assertTrue(queryRowWithNull.equals(queryRowWithNull2));
-        assertFalse(queryRowWithNull.equals(queryRowWithNonNull));
-    }
-    
-    @Test
     public void assertHashCode() {
         assertThat(queryRow.hashCode(), is(41));
     }
@@ -72,10 +54,5 @@ public final class QueryRowTest {
     @Test
     public void assertGetRowData() {
         assertThat(queryRow.getRowData(), is(Collections.singletonList((Object) 10)));
-    }
-    
-    @Test
-    public void assertGetDistinctColumnIndexes() {
-        assertThat(queryRow.getDistinctColumnIndexes(), is(Collections.singletonList(1)));
     }
 }

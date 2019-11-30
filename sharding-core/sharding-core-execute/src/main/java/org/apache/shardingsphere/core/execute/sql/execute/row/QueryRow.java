@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.row;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,12 +33,6 @@ public final class QueryRow {
     
     private final List<Object> rowData;
     
-    private final List<Integer> distinctColumnIndexes;
-    
-    public QueryRow(final List<Object> rowData) {
-        this(rowData, Collections.<Integer>emptyList());
-    }
-    
     /**
      * Get value.
      *
@@ -54,36 +45,11 @@ public final class QueryRow {
     
     @Override
     public boolean equals(final Object obj) {
-        return this == obj || null != obj && getClass() == obj.getClass() && isEqual((QueryRow) obj);
-    }
-    
-    private boolean isEqual(final QueryRow queryRow) {
-        if (distinctColumnIndexes.isEmpty()) {
-            return rowData.equals(queryRow.getRowData());
-        }
-        return distinctColumnIndexes.equals(queryRow.getDistinctColumnIndexes()) && isEqualPartly(queryRow);
-    }
-    
-    private boolean isEqualPartly(final QueryRow queryRow) {
-        for (int i = 0; i < distinctColumnIndexes.size(); i++) {
-            if (null == rowData.get(i) && null != queryRow.getRowData().get(i)) {
-                return false;
-            }
-            if (null != rowData.get(i) && !rowData.get(i).equals(queryRow.getRowData().get(i))) {
-                return false;
-            }
-        }
-        return true;
+        return this == obj || null != obj && getClass() == obj.getClass() && rowData.equals(((QueryRow) obj).getRowData());
     }
     
     @Override
     public int hashCode() {
-        return distinctColumnIndexes.isEmpty() ? rowData.hashCode() : Lists.transform(distinctColumnIndexes, new Function<Integer, Object>() {
-    
-            @Override
-            public Object apply(final Integer input) {
-                return rowData.get(input - 1);
-            }
-        }).hashCode();
+        return rowData.hashCode();
     }
 }
