@@ -21,6 +21,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashSet;
@@ -37,20 +38,20 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Getter
 @Setter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public final class ConfigTreeNode {
     
     private static final String SHARDING_SPHERE_KEY_ROOT = "/";
     
     private static final String SHARDING_SPHERE_KEY_SEPARATOR = "/";
     
-    private static Map<String, Set<String>> childrenKeyMap = new ConcurrentHashMap<>();
+    private Map<String, Set<String>> childrenKeyMap = new ConcurrentHashMap<>();
     
-    private ConfigTreeNode parentNode;
+    private final ConfigTreeNode parentNode;
     
-    private String absolutePath;
+    private final String absolutePath;
     
-    private Set<ConfigTreeNode> childrenNodes;
+    private final Set<ConfigTreeNode> childrenNodes;
     
     /**
      * init config tree.
@@ -59,6 +60,7 @@ public final class ConfigTreeNode {
      * @param keySeparator key separator
      */
     public void init(final Set<String> instanceKeys, final String keySeparator) {
+        System.out.println(childrenKeyMap.size());
         initKeysRelationships(instanceKeys, keySeparator);
         init(this, SHARDING_SPHERE_KEY_ROOT);
     }
@@ -83,7 +85,7 @@ public final class ConfigTreeNode {
     
     private void initKeysRelationship(final String instanceKey, final String keySeparator) {
         if (!instanceKey.contains(keySeparator)) {
-            addRelationship(SHARDING_SPHERE_KEY_ROOT, Joiner.on(SHARDING_SPHERE_KEY_SEPARATOR).join(instanceKey, ""));
+            addRelationship(SHARDING_SPHERE_KEY_ROOT, Joiner.on("").join(SHARDING_SPHERE_KEY_ROOT, instanceKey));
             return;
         }
         String parentKey = "/";
