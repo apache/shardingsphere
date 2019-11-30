@@ -48,13 +48,15 @@ public final class ApolloInstanceTest {
     public static void init() {
         Config apolloConfig = mock(Config.class);
         when(apolloConfig.getProperty("test.children.1", "")).thenReturn("value1");
+        when(apolloConfig.getProperty("test2", "")).thenReturn("value2");
         FieldSetter.setField(configCenter, ApolloInstance.class.getDeclaredField("apolloConfig"), apolloConfig);
         Set<String> instanceKeys = Sets.newHashSet();
         instanceKeys.add("test.children.1");
         instanceKeys.add("test.children.2");
         instanceKeys.add("test1.children.3");
+        instanceKeys.add("test2");
         ConfigTreeNode root = new ConfigTreeNode(null, "/", Sets.<ConfigTreeNode>newHashSet());
-        root.initTree(instanceKeys, ".");
+        root.init(instanceKeys, ".");
         FieldSetter.setField(configCenter, ApolloInstance.class.getDeclaredField("tree"), root);
         ApolloOpenApiClient client = mock(ApolloOpenApiClient.class);
         FieldSetter.setField(configCenter, ApolloInstance.class.getDeclaredField("client"), client);
@@ -62,11 +64,13 @@ public final class ApolloInstanceTest {
     
     @Test
     public void assertGet() {
+        assertThat(configCenter.get("/test2"), is("value2"));
         assertThat(configCenter.get("/test/children/1"), is("value1"));
     }
     
     @Test
     public void assertGetChildrenKeys() {
+        assertThat(configCenter.getChildrenKeys("/").size(), is(3));
         assertThat(configCenter.getChildrenKeys("/test/children").size(), is(2));
         assertEquals(configCenter.getChildrenKeys("/test1/children"), Lists.newArrayList("/test1/children/3"));
     }
