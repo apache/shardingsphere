@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Optional;
-import lombok.Getter;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.io.InputStream;
 import java.sql.Date;
@@ -42,7 +41,6 @@ import java.util.Calendar;
  */
 public final class StreamQueryResult implements QueryResult {
 
-    @Getter
     private final QueryResultMetaData queryResultMetaData;
     
     private final ResultSet resultSet;
