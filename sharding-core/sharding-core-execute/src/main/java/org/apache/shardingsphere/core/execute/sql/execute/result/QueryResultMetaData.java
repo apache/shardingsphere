@@ -54,8 +54,8 @@ public final class QueryResultMetaData {
     @Getter
     private final boolean queryWithCipherColumn;
     
-    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext)
-            throws SQLException {
+    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, 
+                               final ShardingRule shardingRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext) throws SQLException {
         this.resultSetMetaData = resultSetMetaData;
         this.encryptRule = shardingRule.getEncryptRule();
         columnLabelAndIndexes = getColumnLabelAndIndexMap();
