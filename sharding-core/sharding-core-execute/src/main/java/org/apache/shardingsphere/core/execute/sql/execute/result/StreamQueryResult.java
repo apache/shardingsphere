@@ -46,8 +46,8 @@ public final class StreamQueryResult implements QueryResult {
     private final ResultSet resultSet;
     
     public StreamQueryResult(final ResultSet resultSet, final ShardingRule shardingRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext) throws SQLException {
-        this.resultSet = resultSet;
         queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule, properties, sqlStatementContext);
+        this.resultSet = resultSet;
     }
 
     public StreamQueryResult(final ResultSet resultSet, final EncryptRule encryptRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext) throws SQLException {
