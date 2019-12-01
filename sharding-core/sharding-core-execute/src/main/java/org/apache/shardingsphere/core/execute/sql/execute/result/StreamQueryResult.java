@@ -51,13 +51,13 @@ public final class StreamQueryResult implements QueryResult {
     }
 
     public StreamQueryResult(final ResultSet resultSet, final EncryptRule encryptRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext) throws SQLException {
-        this.resultSet = resultSet;
         queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule, properties, sqlStatementContext);
+        this.resultSet = resultSet;
     }
     
     public StreamQueryResult(final ResultSet resultSet) throws SQLException {
-        this.resultSet = resultSet;
         queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData());
+        this.resultSet = resultSet;
     }
     
     @Override
