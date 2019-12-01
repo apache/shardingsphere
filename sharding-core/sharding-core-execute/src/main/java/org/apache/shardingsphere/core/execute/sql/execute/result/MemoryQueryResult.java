@@ -47,15 +47,15 @@ import java.util.List;
  */
 public final class MemoryQueryResult implements QueryResult {
     
+    private final QueryResultMetaData queryResultMetaData;
+    
     private final Iterator<List<Object>> rows;
     
     private List<Object> currentRow;
     
-    private final QueryResultMetaData queryResultMetaData;
-    
     public MemoryQueryResult(final ResultSet resultSet, final ShardingRule shardingRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext) throws SQLException {
-        rows = getRows(resultSet);
         queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule, properties, sqlStatementContext);
+        rows = getRows(resultSet);
     }
     
     public MemoryQueryResult(final ResultSet resultSet, final EncryptRule encryptRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext) throws SQLException {
