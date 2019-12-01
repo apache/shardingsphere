@@ -59,13 +59,13 @@ public final class MemoryQueryResult implements QueryResult {
     }
     
     public MemoryQueryResult(final ResultSet resultSet, final EncryptRule encryptRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext) throws SQLException {
-        rows = getRows(resultSet);
         queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule, properties, sqlStatementContext);
+        rows = getRows(resultSet);
     }
     
     public MemoryQueryResult(final ResultSet resultSet) throws SQLException {
-        rows = getRows(resultSet);
         queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData());
+        rows = getRows(resultSet);
     }
     
     private Iterator<List<Object>> getRows(final ResultSet resultSet) throws SQLException {
