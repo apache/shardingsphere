@@ -53,6 +53,8 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     private static final long TIMESTAMP_LEFT_SHIFT_BITS = WORKER_ID_LEFT_SHIFT_BITS + WORKER_ID_BITS;
     
     private static final int MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS = 10000;
+
+    private static final int DEFAULT_VIBRATION_VALUE = 1;
     
     private static final String SERVICE_ID_REGULAR_PATTERN = "^((?!/).)*$";
     
@@ -80,7 +82,7 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     
     private RegistryCenter leafRegistryCenter;
     
-    private byte sequenceOffset;
+    private int sequenceOffset = -1;
     
     private long sequence;
     
@@ -91,6 +93,8 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     private long lastUpdateTime;
     
     private long maxTolerateTimeDifference;
+
+    private int maxVibrationOffset;
     
     static {
         Calendar calendar = Calendar.getInstance();
@@ -117,6 +121,7 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     private void initializeLeafSnowflakeKeyGeneratorIfNeed() {
         if (needToBeInitialized()) {
             maxTolerateTimeDifference = initializeMaxTolerateTimeDifference();
+            maxVibrationOffset = initializeMaxVibrationOffset();
             leafRegistryCenter = initializeRegistryCenter();
             initializeTimeNodeIfNeed(maxTolerateTimeDifference, leafRegistryCenter);
             initializeCurrentMaxWorkIdNodeIfNeed(leafRegistryCenter);
@@ -273,13 +278,19 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     }
     
     private void vibrateSequenceOffset() {
-        sequenceOffset = (byte) (~sequenceOffset & 1);
+        sequenceOffset = sequenceOffset >= maxVibrationOffset ? 0 : sequenceOffset + 1;
     }
     
     private long initializeMaxTolerateTimeDifference() {
         String maxTimeDifference = properties.getProperty("maxTimeDifference", String.valueOf(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS));
         long result = Long.valueOf(maxTimeDifference);
         Preconditions.checkArgument(result >= 0L && result < Long.MAX_VALUE);
+        return result;
+    }
+
+    private int initializeMaxVibrationOffset() {
+        int result = Integer.parseInt(properties.getProperty("maxVibrationOffset", String.valueOf(DEFAULT_VIBRATION_VALUE)));
+        Preconditions.checkArgument(result >= 0 && result <= SEQUENCE_MASK, "Illegal max vibration offset");
         return result;
     }
     
