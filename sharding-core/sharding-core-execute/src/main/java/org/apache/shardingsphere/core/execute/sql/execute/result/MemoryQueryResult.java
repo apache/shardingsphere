@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
-import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.io.ByteArrayInputStream;
@@ -91,13 +89,13 @@ public final class MemoryQueryResult implements QueryResult {
     }
     
     @Override
-    public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        return decrypt(columnIndex, currentRow.get(columnIndex - 1));
+    public Object getValue(final int columnIndex, final Class<?> type) {
+        return currentRow.get(columnIndex - 1);
     }
     
     @Override
-    public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
-        return decrypt(columnLabel, currentRow.get(queryResultMetaData.getColumnIndex(columnLabel) - 1));
+    public Object getValue(final String columnLabel, final Class<?> type) {
+        return currentRow.get(queryResultMetaData.getColumnIndex(columnLabel) - 1);
     }
     
     @Override
@@ -148,18 +146,5 @@ public final class MemoryQueryResult implements QueryResult {
     @Override
     public String getColumnLabel(final int columnIndex) throws SQLException {
         return queryResultMetaData.getColumnLabel(columnIndex);
-    }
-    
-    private Object decrypt(final String columnLabel, final Object value) throws SQLException {
-        return decrypt(queryResultMetaData.getColumnIndex(columnLabel), value);
-    }
-    
-    private Object decrypt(final int columnIndex, final Object value) throws SQLException {
-        Optional<ShardingEncryptor> shardingEncryptor = queryResultMetaData.getShardingEncryptor(columnIndex);
-        return queryResultMetaData.isQueryWithCipherColumn() && shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(getCiphertext(value)) : value;
-    }
-    
-    private String getCiphertext(final Object value) {
-        return null == value ? null : value.toString();
     }
 }

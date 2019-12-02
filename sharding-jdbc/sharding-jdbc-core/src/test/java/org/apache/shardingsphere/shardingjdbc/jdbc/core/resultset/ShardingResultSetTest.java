@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResultMetaData;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
@@ -70,7 +71,7 @@ public final class ShardingResultSetTest {
     @Before
     public void setUp() throws SQLException {
         mergeResultSet = mock(MergedResult.class);
-        shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement(), createSQLRouteResult());
+        shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement(), createSQLRouteResult(), mock(QueryResultMetaData.class));
     }
     
     private SQLRouteResult createSQLRouteResult() {

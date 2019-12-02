@@ -17,19 +17,9 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
-import com.google.common.base.Optional;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
-import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.hamcrest.core.Is;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -40,22 +30,16 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class MemoryQueryResultTest {
-    
-    private final ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
     
     @Test(expected = SQLException.class)
     @SneakyThrows
@@ -63,30 +47,6 @@ public final class MemoryQueryResultTest {
         ResultSet resultSet = getResultSet();
         when(resultSet.next()).thenThrow(new SQLException());
         new MemoryQueryResult(resultSet);
-    }
-    
-    private ShardingRule getShardingRule() {
-        ShardingRule result = mock(ShardingRule.class);
-        doReturn(getEncryptRule()).when(result).getEncryptRule();
-        return result;
-    }
-    
-    private EncryptRule getEncryptRule() {
-        EncryptRule result = mock(EncryptRule.class);
-        EncryptTable encryptTable = mock(EncryptTable.class);
-        when(result.findShardingEncryptor("order", "order_id")).thenReturn(Optional.fromNullable(shardingEncryptor));
-        when(result.findEncryptTable("order")).thenReturn(Optional.of(encryptTable));
-        when(result.getLogicColumn(anyString(), anyString())).thenReturn("order_id");
-        when(encryptTable.getCipherColumns()).thenReturn(Collections.singleton("order_id"));
-        return result;
-    }
-    
-    private SQLStatementContext getSqlStatementContext() {
-        SQLStatementContext result = mock(SQLStatementContext.class);
-        TablesContext tablesContext = mock(TablesContext.class);
-        when(result.getTablesContext()).thenReturn(tablesContext);
-        when(tablesContext.getTableNames()).thenReturn(Collections.singleton("order"));
-        return result;
     }
     
     @Test
@@ -108,43 +68,6 @@ public final class MemoryQueryResultTest {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
         assertThat(queryResult.getValue("order_id", Integer.class), Is.<Object>is(1L));
-    }
-    
-    @Test
-    public void assertGetValueWithShardingRule() throws SQLException {
-        when(shardingEncryptor.decrypt("1")).thenReturn("1");
-        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet(), getShardingRule(), new ShardingProperties(new Properties()), getSqlStatementContext());
-        queryResult.next();
-        assertThat(queryResult.getValue("order_id", Integer.class), Is.<Object>is("1"));
-    }
-    
-    @Test(expected = Exception.class)
-    public void assertGetValueWithException() throws SQLException {
-        ResultSet resultSet = getResultSetWithException();
-        MemoryQueryResult queryResult = new MemoryQueryResult(resultSet);
-        queryResult.next();
-        queryResult.getValue("order_id", Integer.class);
-    }
-    
-    @SneakyThrows
-    private ResultSet getResultSetWithException() {
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.next()).thenReturn(true).thenReturn(false);
-        when(resultSet.getInt(1)).thenReturn(1);
-        when(resultSet.wasNull()).thenReturn(false);
-        doReturn(getResultSetMetaDataWithException()).when(resultSet).getMetaData();
-        return resultSet;
-    }
-    
-    @SneakyThrows
-    private ResultSetMetaData getResultSetMetaDataWithException() {
-        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
-        when(metaData.getColumnCount()).thenReturn(1);
-        when(metaData.getColumnLabel(1)).thenReturn("order_id");
-        when(metaData.getColumnName(1)).thenThrow(new SQLException());
-        when(metaData.getColumnType(1)).thenReturn(Types.INTEGER);
-        when(metaData.isSigned(1)).thenReturn(true);
-        return metaData;
     }
     
     @Test

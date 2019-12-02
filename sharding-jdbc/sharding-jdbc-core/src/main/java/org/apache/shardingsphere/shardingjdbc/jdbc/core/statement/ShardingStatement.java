@@ -23,14 +23,12 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.core.SimpleQueryShardingEngine;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
+import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResultMetaData;
 import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergeEngineFactory;
-import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.shardingjdbc.executor.StatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractStatementAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
@@ -38,6 +36,9 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionCon
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSet;
+import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -130,7 +131,9 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private ShardingResultSet getCurrentResultSet(final List<ResultSet> resultSets, final MergeEngine mergeEngine) throws SQLException {
-        return new ShardingResultSet(resultSets, mergeEngine.merge(), this, sqlRouteResult);
+        QueryResultMetaData queryResultMetaData = new QueryResultMetaData(resultSets.iterator().next().getMetaData(),
+                connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getProps(), sqlRouteResult.getSqlStatementContext());
+        return new ShardingResultSet(resultSets, mergeEngine.merge(), this, sqlRouteResult, queryResultMetaData);
     }
     
     @Override
