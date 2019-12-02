@@ -137,11 +137,6 @@ public final class StreamQueryResult implements QueryResult {
     }
     
     @Override
-    public boolean isCaseSensitive(final int columnIndex) throws SQLException {
-        return queryResultMetaData.isCaseSensitive(columnIndex);
-    }
-    
-    @Override
     public int getColumnCount() throws SQLException {
         return queryResultMetaData.getColumnCount();
     }
@@ -149,5 +144,10 @@ public final class StreamQueryResult implements QueryResult {
     @Override
     public String getColumnLabel(final int columnIndex) throws SQLException {
         return queryResultMetaData.getColumnLabel(columnIndex);
+    }
+    
+    @Override
+    public boolean isCaseSensitive(final int columnIndex) throws SQLException {
+        return queryResultMetaData.isCaseSensitive(columnIndex);
     }
 }

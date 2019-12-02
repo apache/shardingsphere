@@ -38,23 +38,6 @@ public interface QueryResult {
     boolean next() throws SQLException;
     
     /**
-     * Get column count.
-     *
-     * @return column count
-     * @throws SQLException SQL Exception
-     */
-    int getColumnCount() throws SQLException;
-    
-    /**
-     * Get column label.
-     *
-     * @param columnIndex column index
-     * @return column label
-     * @throws SQLException SQL Exception
-     */
-    String getColumnLabel(int columnIndex) throws SQLException;
-    
-    /**
      * Get data value.
      *
      * @param columnIndex column index
@@ -123,6 +106,23 @@ public interface QueryResult {
      * @throws SQLException SQL Exception
      */
     boolean wasNull() throws SQLException;
+    
+    /**
+     * Get column count.
+     *
+     * @return column count
+     * @throws SQLException SQL Exception
+     */
+    int getColumnCount() throws SQLException;
+    
+    /**
+     * Get column label.
+     *
+     * @param columnIndex column index
+     * @return column label
+     * @throws SQLException SQL Exception
+     */
+    String getColumnLabel(int columnIndex) throws SQLException;
     
     /**
      * Whether value is case sensitive or not.
