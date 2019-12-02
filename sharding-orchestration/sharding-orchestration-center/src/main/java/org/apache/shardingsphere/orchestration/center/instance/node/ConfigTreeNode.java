@@ -19,6 +19,7 @@ package org.apache.shardingsphere.orchestration.center.instance.node;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -37,7 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Getter
 @Setter
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConfigTreeNode {
     
     private static final String SHARDING_SPHERE_KEY_ROOT = "/";
@@ -53,15 +54,26 @@ public final class ConfigTreeNode {
     private final Set<ConfigTreeNode> childrenNodes;
     
     /**
+     * create new ConfigTreeNode.
+     * 
+     * @return ConfigTreeNode Root
+     */
+    public static ConfigTreeNode newBuilder() {
+        return new ConfigTreeNode(null, "/", Sets.<ConfigTreeNode>newHashSet());
+    }
+    
+    /**
      * init config tree.
      * 
      * @param instanceKeys instance Key set
      * @param keySeparator key separator
+     * @return this
      */
-    public void init(final Set<String> instanceKeys, final String keySeparator) {
+    public ConfigTreeNode init(final Set<String> instanceKeys, final String keySeparator) {
         System.out.println(childrenKeyMap.size());
         initKeysRelationships(instanceKeys, keySeparator);
         init(this, SHARDING_SPHERE_KEY_ROOT);
+        return this;
     }
     
     private void init(final ConfigTreeNode parentNode, final String shardingSphereKey) {

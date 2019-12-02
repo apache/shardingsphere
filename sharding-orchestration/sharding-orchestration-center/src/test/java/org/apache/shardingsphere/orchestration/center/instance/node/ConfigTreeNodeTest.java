@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 
 public final class ConfigTreeNodeTest {
     
-    private static ConfigTreeNode root = new ConfigTreeNode(null, "/", Sets.<ConfigTreeNode>newHashSet());
+    private static ConfigTreeNode root;
     
     @BeforeClass
     public static void init() {
@@ -37,7 +37,7 @@ public final class ConfigTreeNodeTest {
         instanceKeys.add("test.children.1");
         instanceKeys.add("test.children.2");
         instanceKeys.add("test1.children.3");
-        root.init(instanceKeys, ".");
+        root = ConfigTreeNode.newBuilder().init(instanceKeys, ".");
     }
     
     @Test

@@ -80,7 +80,7 @@ public final class ApolloInstance implements ConfigCenter {
     
     private ApolloOpenApiClient client;
     
-    private ConfigTreeNode tree = new ConfigTreeNode(null, "/", Sets.<ConfigTreeNode>newHashSet());
+    private ConfigTreeNode tree;
     
     @Getter
     @Setter
@@ -124,6 +124,7 @@ public final class ApolloInstance implements ConfigCenter {
             keys.add(each.getKey());
         }
         tree.init(keys, APOLLO_KEY_SEPARATOR);
+        tree = ConfigTreeNode.newBuilder().init(keys, ".");
     }
     
     @Override
