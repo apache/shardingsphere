@@ -123,8 +123,7 @@ public final class ApolloInstance implements ConfigCenter {
         for (OpenItemDTO each : items) {
             keys.add(each.getKey());
         }
-        tree.init(keys, APOLLO_KEY_SEPARATOR);
-        tree = ConfigTreeNode.newBuilder().init(keys, ".");
+        tree = ConfigTreeNode.create(keys, ".");
     }
     
     @Override

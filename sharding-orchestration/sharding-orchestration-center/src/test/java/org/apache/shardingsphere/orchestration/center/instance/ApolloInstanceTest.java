@@ -55,7 +55,7 @@ public final class ApolloInstanceTest {
         instanceKeys.add("test.children.2");
         instanceKeys.add("test1.children.3");
         instanceKeys.add("test2");
-        ConfigTreeNode tree = ConfigTreeNode.newBuilder().init(instanceKeys, ".");
+        ConfigTreeNode tree = ConfigTreeNode.create(instanceKeys, ".");
         FieldSetter.setField(configCenter, ApolloInstance.class.getDeclaredField("tree"), tree);
         ApolloOpenApiClient client = mock(ApolloOpenApiClient.class);
         FieldSetter.setField(configCenter, ApolloInstance.class.getDeclaredField("client"), client);

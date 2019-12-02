@@ -58,8 +58,9 @@ public final class ConfigTreeNode {
      * 
      * @return ConfigTreeNode Root
      */
-    public static ConfigTreeNode newBuilder() {
-        return new ConfigTreeNode(null, "/", Sets.<ConfigTreeNode>newHashSet());
+    public static ConfigTreeNode create(final Set<String> instanceKeys, final String keySeparator) {
+        ConfigTreeNode root = new ConfigTreeNode(null, "/", Sets.<ConfigTreeNode>newHashSet());
+        return root.init(instanceKeys, keySeparator);
     }
     
     /**
@@ -70,7 +71,6 @@ public final class ConfigTreeNode {
      * @return this
      */
     public ConfigTreeNode init(final Set<String> instanceKeys, final String keySeparator) {
-        System.out.println(childrenKeyMap.size());
         initKeysRelationships(instanceKeys, keySeparator);
         init(this, SHARDING_SPHERE_KEY_ROOT);
         return this;

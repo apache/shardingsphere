@@ -37,7 +37,7 @@ public final class ConfigTreeNodeTest {
         instanceKeys.add("test.children.1");
         instanceKeys.add("test.children.2");
         instanceKeys.add("test1.children.3");
-        root = ConfigTreeNode.newBuilder().init(instanceKeys, ".");
+        root = ConfigTreeNode.create(instanceKeys, ".");
     }
     
     @Test
