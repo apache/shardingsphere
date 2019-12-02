@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.shardingscaling;
 
 import com.google.gson.Gson;
+
+import org.apache.shardingsphere.shardingscaling.core.ShardingScalingJob;
 import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
@@ -62,8 +64,9 @@ public class Bootstrap {
         log.info("ShardingScaling Startup");
         try {
             initConfig(CONFIG_FILE);
-            List<SyncConfiguration> syncConfigurations = toSyncConfigurations();
-            final ScalingJobController scalingJobController = new ScalingJobController(syncConfigurations);
+            final ScalingJobController scalingJobController = new ScalingJobController();
+            final ShardingScalingJob shardingScalingJob = new ShardingScalingJob("Local Sharding Scaling Job");
+            shardingScalingJob.getSyncConfigurations().addAll(toSyncConfigurations());
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -73,7 +76,7 @@ public class Bootstrap {
                         } catch (InterruptedException ex) {
                             break;
                         }
-                        for (SyncProgress syncProgress : scalingJobController.getProgresses()) {
+                        for (SyncProgress syncProgress : scalingJobController.getProgresses(shardingScalingJob.getJobId())) {
                             if (null != syncProgress) {
                                 log.info(syncProgress.toString());
                             }
@@ -81,7 +84,7 @@ public class Bootstrap {
                     }
                 }
             }).start();
-            scalingJobController.start();
+            scalingJobController.start(shardingScalingJob);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.core.config;
 
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
 /**
@@ -32,4 +33,11 @@ public interface DataSourceConfiguration {
      * @return database type
      */
     DatabaseType getDatabaseType();
+    
+    /**
+     * Get datasource metadata.
+     *
+     * @return datasource metadata.
+     */
+    DataSourceMetaData getDataSourceMetaData();
 }

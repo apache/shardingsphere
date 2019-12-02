@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.shardingscaling.core.config;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 
 /**
@@ -25,7 +27,9 @@ import lombok.SneakyThrows;
  *
  * @author avalon566
  */
-@Data
+@Setter
+@Getter
+@EqualsAndHashCode
 public class RdbmsConfiguration implements Cloneable {
 
     private DataSourceConfiguration dataSourceConfiguration;
@@ -33,6 +37,8 @@ public class RdbmsConfiguration implements Cloneable {
     private String tableName;
 
     private String whereCondition;
+    
+    private int spiltNum;
     
     /**
      * Clone to new rdbms configuration.

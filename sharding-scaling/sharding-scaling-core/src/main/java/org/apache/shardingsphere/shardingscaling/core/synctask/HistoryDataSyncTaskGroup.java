@@ -26,6 +26,8 @@ import org.apache.shardingsphere.shardingscaling.core.execute.EventType;
 import org.apache.shardingsphere.shardingscaling.core.metadata.ColumnMetaData;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 import org.apache.shardingsphere.shardingscaling.core.util.DbMetaDataUtil;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
+
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
@@ -49,9 +51,13 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
     private final SyncConfiguration syncConfiguration;
 
     private final List<SyncTask> syncTasks = new LinkedList<>();
+    
+    private final String syncTaskId;
 
     public HistoryDataSyncTaskGroup(final SyncConfiguration syncConfiguration) {
         this.syncConfiguration = syncConfiguration;
+        DataSourceMetaData dataSourceMetaData = syncConfiguration.getReaderConfiguration().getDataSourceConfiguration().getDataSourceMetaData();
+        syncTaskId = String.format("historyGroup-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema());
     }
 
     @Override
@@ -131,6 +137,7 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
                 } else {
                     splitReaderConfig.setWhereCondition(String.format("where id between %d and %d", min, max));
                 }
+                splitReaderConfig.setSpiltNum(i);
                 result.add(new SyncConfiguration(concurrency, splitReaderConfig, RdbmsConfiguration.clone(syncConfiguration.getWriterConfiguration())));
             }
         } catch (SQLException e) {
@@ -150,7 +157,7 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
                     events.add(event);
                     if (syncTasks.size() == events.size()) {
                         //TODO check error
-                        callback.onProcess(new Event(syncConfiguration.getTaskId(), EventType.FINISHED));
+                        callback.onProcess(new Event(syncTaskId, EventType.FINISHED));
                     }
                 }
             });

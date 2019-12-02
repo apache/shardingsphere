@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.shardingscaling.core.synctask;
 
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
@@ -28,6 +30,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.Re
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.ReaderFactory;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.WriterFactory;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
 import java.util.Collections;
 
@@ -41,11 +44,20 @@ import java.util.Collections;
 public class HistoryDataSyncTask implements SyncTask {
 
     private final SyncConfiguration syncConfiguration;
+    
+    private final String syncTaskId;
 
     public HistoryDataSyncTask(final SyncConfiguration syncConfiguration) {
         this.syncConfiguration = syncConfiguration;
+        syncTaskId = generateSyncTaskId(syncConfiguration.getReaderConfiguration());
     }
-
+    
+    private String generateSyncTaskId(final RdbmsConfiguration readerConfiguration) {
+        DataSourceMetaData dataSourceMetaData = readerConfiguration.getDataSourceConfiguration().getDataSourceMetaData();
+        String result = String.format("history-%s-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema(), readerConfiguration.getTableName());
+        return null == readerConfiguration.getWhereCondition() ? result : result + "#" + readerConfiguration.getSpiltNum();
+    }
+    
     @Override
     public void prepare() {
     }
@@ -54,7 +66,7 @@ public class HistoryDataSyncTask implements SyncTask {
     public final void start(final ReportCallback callback) {
         final Reader reader = ReaderFactory.newInstanceJdbcReader(syncConfiguration.getReaderConfiguration());
         final Writer writer = WriterFactory.newInstance(syncConfiguration.getWriterConfiguration());
-        ExecuteUtil.execute(new MemoryChannel(), reader, Collections.singletonList(writer), new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncConfiguration, callback));
+        ExecuteUtil.execute(new MemoryChannel(), reader, Collections.singletonList(writer), new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncTaskId, callback));
     }
 
     @Override

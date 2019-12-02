@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.shardingscaling.core.controller;
 
+import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.execute.Event;
 import org.apache.shardingsphere.shardingscaling.core.execute.EventType;
 import org.apache.shardingsphere.shardingscaling.core.synctask.DefaultSyncTaskFactory;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTaskFactory;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -36,15 +39,24 @@ public final class SyncTaskController implements Runnable {
     private final SyncTask historyDataSyncTaskGroup;
 
     private final SyncTask realtimeDataSyncTask;
+    
+    private final String syncTaskId;
 
     private SyncTask currentSyncTask;
 
     public SyncTaskController(final SyncConfiguration syncConfiguration) {
         SyncTaskFactory syncTaskFactory = new DefaultSyncTaskFactory();
+        syncTaskId = generateSyncTaskId(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
         this.historyDataSyncTaskGroup = syncTaskFactory.createHistoryDataSyncTaskGroup(syncConfiguration);
         this.realtimeDataSyncTask = syncTaskFactory.createRealtimeDataSyncTask(syncConfiguration);
     }
-
+    
+    private String generateSyncTaskId(final DataSourceConfiguration dataSourceConfiguration) {
+        DataSourceMetaData dataSourceMetaData = dataSourceConfiguration.getDataSourceMetaData();
+        return String.format("%s-%s-%s", dataSourceMetaData.getHostName(), dataSourceMetaData.getPort(),
+            null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema());
+    }
+    
     /**
      * Start synchronize data.
      */
