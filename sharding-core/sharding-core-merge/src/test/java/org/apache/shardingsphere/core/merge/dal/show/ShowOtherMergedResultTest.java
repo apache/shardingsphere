@@ -216,29 +216,6 @@ public final class ShowOtherMergedResultTest {
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetCalendarValueWithColumnLabelWithDate() throws SQLException {
-        Calendar calendar = Calendar.getInstance();
-        assertThat((Date) showOtherMergedResult.getCalendarValue("label", Date.class, calendar), is(new Date(0L)));
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetCalendarValueWithColumnLabelWithTime() throws SQLException {
-        Calendar calendar = Calendar.getInstance();
-        assertThat((Time) showOtherMergedResult.getCalendarValue("label", Time.class, calendar), is(new Time(0L)));
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetCalendarValueWithColumnLabelWithTimestamp() throws SQLException {
-        Calendar calendar = Calendar.getInstance();
-        assertThat((Timestamp) showOtherMergedResult.getCalendarValue("label", Timestamp.class, calendar), is(new Timestamp(0L)));
-    }
-    
-    @Test(expected = SQLException.class)
-    public void assertGetCalendarValueWithColumnLabelWithInvalidType() throws SQLException {
-        showOtherMergedResult.getCalendarValue("label", Object.class, Calendar.getInstance());
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetInputStreamWithColumnIndexWithAscii() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
         assertThat(showOtherMergedResult.getInputStream(1, "Ascii"), is(inputStream));
@@ -260,30 +237,6 @@ public final class ShowOtherMergedResultTest {
     @Test(expected = SQLException.class)
     public void assertGetInputStreamWithColumnIndexWithInvalidType() throws SQLException {
         showOtherMergedResult.getInputStream(1, "Invalid");
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetInputStreamWithColumnLabelWithAscii() throws SQLException {
-        InputStream inputStream = mock(InputStream.class);
-        assertThat(showOtherMergedResult.getInputStream("label", "Ascii"), is(inputStream));
-    }
-    
-    @SuppressWarnings("deprecation")
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetInputStreamWithColumnLabelWithUnicode() throws SQLException {
-        InputStream inputStream = mock(InputStream.class);
-        assertThat(showOtherMergedResult.getInputStream("label", "Unicode"), is(inputStream));
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetInputStreamWithColumnLabelWithBinary() throws SQLException {
-        InputStream inputStream = mock(InputStream.class);
-        assertThat(showOtherMergedResult.getInputStream("label", "Binary"), is(inputStream));
-    }
-    
-    @Test(expected = SQLException.class)
-    public void assertGetInputStreamWithColumnLabelWithInvalidType() throws SQLException {
-        showOtherMergedResult.getInputStream("label", "Invalid");
     }
     
     @Test

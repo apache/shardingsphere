@@ -112,13 +112,10 @@ public final class DescribeTableMergedResultTest {
         DescribeTableMergedResult describeTableMergedResult = new DescribeTableMergedResult(shardingRule, queryResults, sqlStatementContext);
         assertTrue(describeTableMergedResult.next());
         assertThat(describeTableMergedResult.getValue(1, String.class).toString(), is("id"));
-        assertThat(describeTableMergedResult.getValue("Field", String.class).toString(), is("id"));
         assertTrue(describeTableMergedResult.next());
         assertThat(describeTableMergedResult.getValue(1, String.class).toString(), is("logic_name"));
-        assertThat(describeTableMergedResult.getValue("Field", String.class).toString(), is("logic_name"));
         assertTrue(describeTableMergedResult.next());
         assertThat(describeTableMergedResult.getValue(1, String.class).toString(), is("pre_name"));
-        assertThat(describeTableMergedResult.getValue("Field", String.class).toString(), is("pre_name"));
         assertFalse(describeTableMergedResult.next());
     }
     
@@ -128,16 +125,12 @@ public final class DescribeTableMergedResultTest {
         DescribeTableMergedResult describeTableMergedResult = new DescribeTableMergedResult(shardingRule, queryResults, sqlStatementContext);
         assertTrue(describeTableMergedResult.next());
         assertThat(describeTableMergedResult.getValue(1, String.class).toString(), is("id"));
-        assertThat(describeTableMergedResult.getValue("Field", String.class).toString(), is("id"));
         assertTrue(describeTableMergedResult.next());
         assertThat(describeTableMergedResult.getValue(1, String.class).toString(), is("name"));
-        assertThat(describeTableMergedResult.getValue("Field", String.class).toString(), is("name"));
         assertTrue(describeTableMergedResult.next());
         assertThat(describeTableMergedResult.getValue(1, String.class).toString(), is("pre_name"));
-        assertThat(describeTableMergedResult.getValue("Field", String.class).toString(), is("pre_name"));
         assertTrue(describeTableMergedResult.next());
         assertThat(describeTableMergedResult.getValue(1, String.class).toString(), is("name_assisted"));
-        assertThat(describeTableMergedResult.getValue("Field", String.class).toString(), is("name_assisted"));
     }
     
     @Test
@@ -146,17 +139,11 @@ public final class DescribeTableMergedResultTest {
         DescribeTableMergedResult describeTableMergedResult = new DescribeTableMergedResult(shardingRule, queryResults, sqlStatementContext);
         assertTrue(describeTableMergedResult.next());
         assertThat(describeTableMergedResult.getValue(1, String.class).toString(), is("id"));
-        assertThat(describeTableMergedResult.getValue("Field", String.class).toString(), is("id"));
         assertThat(describeTableMergedResult.getValue(2, String.class).toString(), is("int(11) unsigned"));
-        assertThat(describeTableMergedResult.getValue("Type", String.class).toString(), is("int(11) unsigned"));
         assertThat(describeTableMergedResult.getValue(3, String.class).toString(), is("NO"));
-        assertThat(describeTableMergedResult.getValue("Null", String.class).toString(), is("NO"));
         assertThat(describeTableMergedResult.getValue(4, String.class).toString(), is("PRI"));
-        assertThat(describeTableMergedResult.getValue("Key", String.class).toString(), is("PRI"));
         assertThat(describeTableMergedResult.getValue(5, String.class).toString(), is(""));
-        assertThat(describeTableMergedResult.getValue("Default", String.class).toString(), is(""));
         assertThat(describeTableMergedResult.getValue(6, String.class).toString(), is("auto_increment"));
-        assertThat(describeTableMergedResult.getValue("Extra", String.class).toString(), is("auto_increment"));
     }
     
     @Test

@@ -254,7 +254,8 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public Date getDate(final String columnLabel) throws SQLException {
-        return (Date) ResultSetUtil.convertValue(resultSet.getValue(getActualColumnLabel(columnLabel), Date.class), Date.class);
+        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        return (Date) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, Date.class), Date.class);
     }
     
     @Override
@@ -319,7 +320,8 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public InputStream getAsciiStream(final String columnLabel) throws SQLException {
-        return resultSet.getInputStream(columnLabel, "Ascii");
+        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        return resultSet.getInputStream(columnIndex, "Ascii");
     }
     
     @SuppressWarnings("deprecation")
@@ -331,7 +333,8 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     @SuppressWarnings("deprecation")
     @Override
     public InputStream getUnicodeStream(final String columnLabel) throws SQLException {
-        return resultSet.getInputStream(columnLabel, "Unicode");
+        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        return resultSet.getInputStream(columnIndex, "Unicode");
     }
     
     @Override
@@ -341,7 +344,8 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public InputStream getBinaryStream(final String columnLabel) throws SQLException {
-        return resultSet.getInputStream(columnLabel, "Binary");
+        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        return resultSet.getInputStream(columnIndex, "Binary");
     }
     
     @Override
@@ -351,7 +355,8 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public Reader getCharacterStream(final String columnLabel) throws SQLException {
-        return (Reader) resultSet.getValue(getActualColumnLabel(columnLabel), Reader.class);
+        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        return (Reader) resultSet.getValue(columnIndex, Reader.class);
     }
     
     @Override
@@ -361,7 +366,8 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public Blob getBlob(final String columnLabel) throws SQLException {
-        return (Blob) resultSet.getValue(getActualColumnLabel(columnLabel), Blob.class);
+        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        return (Blob) resultSet.getValue(columnIndex, Blob.class);
     }
     
     @Override
@@ -371,7 +377,8 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public Clob getClob(final String columnLabel) throws SQLException {
-        return (Clob) resultSet.getValue(getActualColumnLabel(columnLabel), Clob.class);
+        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        return (Clob) resultSet.getValue(columnIndex, Clob.class);
     }
     
     @Override
@@ -381,7 +388,8 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public URL getURL(final String columnLabel) throws SQLException {
-        return (URL) resultSet.getValue(getActualColumnLabel(columnLabel), URL.class);
+        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        return (URL) resultSet.getValue(columnIndex, URL.class);
     }
     
     @Override
@@ -391,7 +399,8 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public SQLXML getSQLXML(final String columnLabel) throws SQLException {
-        return (SQLXML) resultSet.getValue(getActualColumnLabel(columnLabel), SQLXML.class);
+        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        return (SQLXML) resultSet.getValue(columnIndex, SQLXML.class);
     }
     
     @Override

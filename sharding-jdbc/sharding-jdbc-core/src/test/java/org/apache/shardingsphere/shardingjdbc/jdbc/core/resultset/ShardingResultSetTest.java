@@ -259,7 +259,7 @@ public final class ShardingResultSetTest {
     
     @Test
     public void assertGetDateWithColumnLabel() throws SQLException {
-        when(mergeResultSet.getValue("label", Date.class)).thenReturn(new Date(0L));
+        when(mergeResultSet.getValue(1, Date.class)).thenReturn(new Date(0L));
         assertThat(shardingResultSet.getDate("label"), is(new Date(0L)));
     }
     
@@ -273,7 +273,7 @@ public final class ShardingResultSetTest {
     @Test
     public void assertGetDateAndCalendarWithColumnLabel() throws SQLException {
         Calendar calendar = Calendar.getInstance();
-        when(mergeResultSet.getCalendarValue("label", Date.class, calendar)).thenReturn(new Date(0L));
+        when(mergeResultSet.getCalendarValue(1, Date.class, calendar)).thenReturn(new Date(0L));
         assertThat(shardingResultSet.getDate("label", calendar), is(new Date(0L)));
     }
     
@@ -285,7 +285,7 @@ public final class ShardingResultSetTest {
     
     @Test
     public void assertGetTimeWithColumnLabel() throws SQLException {
-        when(mergeResultSet.getValue("label", Time.class)).thenReturn(new Time(0L));
+        when(mergeResultSet.getValue(1, Time.class)).thenReturn(new Time(0L));
         assertThat(shardingResultSet.getTime("label"), is(new Time(0L)));
     }
     
@@ -299,7 +299,7 @@ public final class ShardingResultSetTest {
     @Test
     public void assertGetTimeAndCalendarWithColumnLabel() throws SQLException {
         Calendar calendar = Calendar.getInstance();
-        when(mergeResultSet.getCalendarValue("label", Time.class, calendar)).thenReturn(new Time(0L));
+        when(mergeResultSet.getCalendarValue(1, Time.class, calendar)).thenReturn(new Time(0L));
         assertThat(shardingResultSet.getTime("label", calendar), is(new Time(0L)));
     }
     
@@ -311,7 +311,7 @@ public final class ShardingResultSetTest {
     
     @Test
     public void assertGetTimestampWithColumnLabel() throws SQLException {
-        when(mergeResultSet.getValue("label", Timestamp.class)).thenReturn(new Timestamp(0L));
+        when(mergeResultSet.getValue(1, Timestamp.class)).thenReturn(new Timestamp(0L));
         assertThat(shardingResultSet.getTimestamp("label"), is(new Timestamp(0L)));
     }
     
@@ -325,7 +325,7 @@ public final class ShardingResultSetTest {
     @Test
     public void assertGetTimestampAndCalendarWithColumnLabel() throws SQLException {
         Calendar calendar = Calendar.getInstance();
-        when(mergeResultSet.getCalendarValue("label", Timestamp.class, calendar)).thenReturn(new Timestamp(0L));
+        when(mergeResultSet.getCalendarValue(1, Timestamp.class, calendar)).thenReturn(new Timestamp(0L));
         assertThat(shardingResultSet.getTimestamp("label", calendar), is(new Timestamp(0L)));
     }
     
@@ -339,7 +339,7 @@ public final class ShardingResultSetTest {
     @Test
     public void assertGetAsciiStreamWithColumnLabel() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
-        when(mergeResultSet.getInputStream("label", "Ascii")).thenReturn(inputStream);
+        when(mergeResultSet.getInputStream(1, "Ascii")).thenReturn(inputStream);
         assertThat(shardingResultSet.getAsciiStream("label"), instanceOf(InputStream.class));
     }
     
@@ -353,7 +353,7 @@ public final class ShardingResultSetTest {
     @Test
     public void assertGetUnicodeStreamWithColumnLabel() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
-        when(mergeResultSet.getInputStream("label", "Unicode")).thenReturn(inputStream);
+        when(mergeResultSet.getInputStream(1, "Unicode")).thenReturn(inputStream);
         assertThat(shardingResultSet.getUnicodeStream("label"), instanceOf(InputStream.class));
     }
     
@@ -367,7 +367,7 @@ public final class ShardingResultSetTest {
     @Test
     public void assertGetBinaryStreamWithColumnLabel() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
-        when(mergeResultSet.getInputStream("label", "Binary")).thenReturn(inputStream);
+        when(mergeResultSet.getInputStream(1, "Binary")).thenReturn(inputStream);
         assertThat(shardingResultSet.getBinaryStream("label"), instanceOf(InputStream.class));
     }
     
@@ -381,7 +381,7 @@ public final class ShardingResultSetTest {
     @Test
     public void assertGetCharacterStreamWithColumnLabel() throws SQLException {
         Reader reader = mock(Reader.class);
-        when(mergeResultSet.getValue("label", Reader.class)).thenReturn(reader);
+        when(mergeResultSet.getValue(1, Reader.class)).thenReturn(reader);
         assertThat(shardingResultSet.getCharacterStream("label"), is(reader));
     }
     
@@ -395,7 +395,7 @@ public final class ShardingResultSetTest {
     @Test
     public void assertGetBlobWithColumnLabel() throws SQLException {
         Blob blob = mock(Blob.class);
-        when(mergeResultSet.getValue("label", Blob.class)).thenReturn(blob);
+        when(mergeResultSet.getValue(1, Blob.class)).thenReturn(blob);
         assertThat(shardingResultSet.getBlob("label"), is(blob));
     }
     
@@ -409,7 +409,7 @@ public final class ShardingResultSetTest {
     @Test
     public void assertGetClobWithColumnLabel() throws SQLException {
         Clob clob = mock(Clob.class);
-        when(mergeResultSet.getValue("label", Clob.class)).thenReturn(clob);
+        when(mergeResultSet.getValue(1, Clob.class)).thenReturn(clob);
         assertThat(shardingResultSet.getClob("label"), is(clob));
     }
     
@@ -421,7 +421,7 @@ public final class ShardingResultSetTest {
     
     @Test
     public void assertGetURLWithColumnLabel() throws SQLException, MalformedURLException {
-        when(mergeResultSet.getValue("label", URL.class)).thenReturn(new URL("http://xxx.xxx"));
+        when(mergeResultSet.getValue(1, URL.class)).thenReturn(new URL("http://xxx.xxx"));
         assertThat(shardingResultSet.getURL("label"), is(new URL("http://xxx.xxx")));
     }
     
@@ -435,7 +435,7 @@ public final class ShardingResultSetTest {
     @Test
     public void assertGetSQLXMLWithColumnLabel() throws SQLException {
         SQLXML sqlxml = mock(SQLXML.class);
-        when(mergeResultSet.getValue("label", SQLXML.class)).thenReturn(sqlxml);
+        when(mergeResultSet.getValue(1, SQLXML.class)).thenReturn(sqlxml);
         assertThat(shardingResultSet.getSQLXML("label"), is(sqlxml));
     }
     

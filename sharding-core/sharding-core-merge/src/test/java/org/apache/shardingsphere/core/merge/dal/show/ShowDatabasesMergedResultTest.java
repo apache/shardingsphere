@@ -66,18 +66,8 @@ public final class ShowDatabasesMergedResultTest {
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetCalendarValueWithColumnLabel() throws SQLException {
-        showDatabasesMergedResult.getCalendarValue("label", Object.class, Calendar.getInstance());
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetInputStreamWithColumnIndex() throws SQLException {
         showDatabasesMergedResult.getInputStream(1, "Ascii");
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetInputStreamWithColumnLabel() throws SQLException {
-        showDatabasesMergedResult.getInputStream("label", "Ascii");
     }
     
     @Test
