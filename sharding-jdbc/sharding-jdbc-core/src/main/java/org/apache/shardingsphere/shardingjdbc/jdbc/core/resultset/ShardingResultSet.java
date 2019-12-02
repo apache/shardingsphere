@@ -32,6 +32,7 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Statement;
@@ -39,6 +40,8 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Result that support sharding.
@@ -52,11 +55,22 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     private final QueryResultMetaData queryResultMetaData;
     
+    private final Map<String, Integer> columnLabelAndIndexMap;
+    
     public ShardingResultSet(final List<ResultSet> resultSets, 
-                             final MergedResult mergeResultSet, final Statement statement, final SQLRouteResult sqlRouteResult, final QueryResultMetaData queryResultMetaData) {
+                             final MergedResult mergeResultSet, final Statement statement, final SQLRouteResult sqlRouteResult, final QueryResultMetaData queryResultMetaData) throws SQLException {
         super(resultSets, statement, sqlRouteResult);
         this.mergeResultSet = mergeResultSet;
         this.queryResultMetaData = queryResultMetaData;
+        columnLabelAndIndexMap = createColumnLabelAndIndexMap(resultSets.get(0).getMetaData());
+    }
+    
+    private Map<String, Integer> createColumnLabelAndIndexMap(final ResultSetMetaData resultSetMetaData) throws SQLException {
+        Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        for (int columnIndex = resultSetMetaData.getColumnCount(); columnIndex > 0; columnIndex--) {
+            result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
+        }
+        return result;
     }
     
     @Override
@@ -76,8 +90,8 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public boolean getBoolean(final String columnLabel) throws SQLException {
-        String actualColumnLabel = getActualColumnLabel(columnLabel);
-        return (boolean) decrypt(actualColumnLabel, ResultSetUtil.convertValue(mergeResultSet.getValue(getActualColumnLabel(columnLabel), boolean.class), boolean.class));
+        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        return (boolean) decrypt(columnIndex, ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, boolean.class), boolean.class));
     }
     
     @Override
@@ -87,8 +101,8 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public byte getByte(final String columnLabel) throws SQLException {
-        String actualColumnLabel = getActualColumnLabel(columnLabel);
-        return (byte) decrypt(actualColumnLabel, ResultSetUtil.convertValue(mergeResultSet.getValue(getActualColumnLabel(columnLabel), byte.class), byte.class));
+        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        return (byte) decrypt(columnIndex, ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, byte.class), byte.class));
     }
     
     @Override
@@ -98,8 +112,8 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public short getShort(final String columnLabel) throws SQLException {
-        String actualColumnLabel = getActualColumnLabel(columnLabel);
-        return (short) decrypt(actualColumnLabel, ResultSetUtil.convertValue(mergeResultSet.getValue(getActualColumnLabel(columnLabel), short.class), short.class));
+        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        return (short) decrypt(columnIndex, ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, short.class), short.class));
     }
     
     @Override
@@ -109,8 +123,8 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public int getInt(final String columnLabel) throws SQLException {
-        String actualColumnLabel = getActualColumnLabel(columnLabel);
-        return (int) decrypt(actualColumnLabel, ResultSetUtil.convertValue(mergeResultSet.getValue(getActualColumnLabel(columnLabel), int.class), int.class));
+        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        return (int) decrypt(columnIndex, ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, int.class), int.class));
     }
     
     @Override
@@ -120,8 +134,8 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public long getLong(final String columnLabel) throws SQLException {
-        String actualColumnLabel = getActualColumnLabel(columnLabel);
-        return (long) decrypt(actualColumnLabel, ResultSetUtil.convertValue(mergeResultSet.getValue(getActualColumnLabel(columnLabel), long.class), long.class));
+        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        return (long) decrypt(columnIndex, ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, long.class), long.class));
     }
     
     @Override
@@ -131,8 +145,8 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public float getFloat(final String columnLabel) throws SQLException {
-        String actualColumnLabel = getActualColumnLabel(columnLabel);
-        return (float) decrypt(actualColumnLabel, ResultSetUtil.convertValue(mergeResultSet.getValue(getActualColumnLabel(columnLabel), float.class), float.class));
+        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        return (float) decrypt(columnIndex, ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, float.class), float.class));
     }
     
     @Override
@@ -142,8 +156,8 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public double getDouble(final String columnLabel) throws SQLException {
-        String actualColumnLabel = getActualColumnLabel(columnLabel);
-        return (double) decrypt(actualColumnLabel, ResultSetUtil.convertValue(mergeResultSet.getValue(getActualColumnLabel(columnLabel), double.class), double.class));
+        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        return (double) decrypt(columnIndex, ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, double.class), double.class));
     }
     
     @Override
@@ -153,8 +167,8 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public String getString(final String columnLabel) throws SQLException {
-        String actualColumnLabel = getActualColumnLabel(columnLabel);
-        return (String) decrypt(actualColumnLabel, ResultSetUtil.convertValue(mergeResultSet.getValue(getActualColumnLabel(columnLabel), String.class), String.class));
+        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        return (String) decrypt(columnIndex, ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, String.class), String.class));
     }
     
     @Override
@@ -164,8 +178,8 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public BigDecimal getBigDecimal(final String columnLabel) throws SQLException {
-        String actualColumnLabel = getActualColumnLabel(columnLabel);
-        return (BigDecimal) decrypt(actualColumnLabel, ResultSetUtil.convertValue(mergeResultSet.getValue(getActualColumnLabel(columnLabel), BigDecimal.class), BigDecimal.class));
+        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        return (BigDecimal) decrypt(columnIndex, ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class));
     }
     
     @SuppressWarnings("deprecation")
@@ -177,8 +191,8 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     @SuppressWarnings("deprecation")
     @Override
     public BigDecimal getBigDecimal(final String columnLabel, final int scale) throws SQLException {
-        String actualColumnLabel = getActualColumnLabel(columnLabel);
-        return (BigDecimal) decrypt(actualColumnLabel, ResultSetUtil.convertValue(mergeResultSet.getValue(getActualColumnLabel(columnLabel), BigDecimal.class), BigDecimal.class));
+        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        return (BigDecimal) decrypt(columnIndex, ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class));
     }
     
     @Override
@@ -188,8 +202,8 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public byte[] getBytes(final String columnLabel) throws SQLException {
-        String actualColumnLabel = getActualColumnLabel(columnLabel);
-        return (byte[]) decrypt(actualColumnLabel, ResultSetUtil.convertValue(mergeResultSet.getValue(getActualColumnLabel(columnLabel), byte[].class), byte[].class));
+        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        return (byte[]) decrypt(columnIndex, ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, byte[].class), byte[].class));
     }
     
     @Override
@@ -341,12 +355,8 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Object getObject(final String columnLabel) throws SQLException {
-        String actualColumnLabel = getActualColumnLabel(columnLabel);
-        return decrypt(actualColumnLabel, mergeResultSet.getValue(getActualColumnLabel(columnLabel), Object.class));
-    }
-    
-    private Object decrypt(final String columnLabel, final Object value) throws SQLException {
-        return decrypt(queryResultMetaData.getColumnIndex(columnLabel), value);
+        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        return decrypt(columnIndex, mergeResultSet.getValue(columnIndex, Object.class));
     }
     
     private Object decrypt(final int columnIndex, final Object value) throws SQLException {

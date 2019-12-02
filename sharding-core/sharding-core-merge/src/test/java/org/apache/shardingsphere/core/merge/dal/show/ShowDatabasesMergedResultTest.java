@@ -60,13 +60,6 @@ public final class ShowDatabasesMergedResultTest {
         assertThat(showDatabasesMergedResult.getValue(1, Object.class).toString(), is(ShardingConstant.LOGIC_SCHEMA_NAME));
     }
     
-    @Test
-    public void assertGetValueWithColumnLabel() throws SQLException {
-        assertTrue(showDatabasesMergedResult.next());
-        assertThat(showDatabasesMergedResult.getValue("label", Object.class).toString(), is(ShardingConstant.LOGIC_SCHEMA_NAME));
-    
-    }
-    
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetCalendarValueWithColumnIndex() throws SQLException {
         showDatabasesMergedResult.getCalendarValue(1, Object.class, Calendar.getInstance());
