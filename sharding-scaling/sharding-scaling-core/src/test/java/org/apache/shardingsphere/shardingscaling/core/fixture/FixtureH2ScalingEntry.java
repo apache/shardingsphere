@@ -42,7 +42,7 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
     
     @Override
     public Class<? extends Writer> getWriterClass() {
-        return null;
+        return FixtureNopWriter.class;
     }
     
     @Override

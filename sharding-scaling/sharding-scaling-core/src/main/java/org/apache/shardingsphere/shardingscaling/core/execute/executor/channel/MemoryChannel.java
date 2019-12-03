@@ -21,6 +21,7 @@ import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -44,6 +45,10 @@ public class MemoryChannel implements Channel {
 
     public MemoryChannel() {
         this(new LinkedList<AckCallback>());
+    }
+
+    public MemoryChannel(final AckCallback ackCallback) {
+        this(Collections.singletonList(ackCallback));
     }
 
     public MemoryChannel(final List<AckCallback> ackCallbacks) {

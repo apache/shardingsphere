@@ -76,7 +76,7 @@ public abstract class AbstractJdbcReader extends AbstractSyncRunner implements J
             Connection conn = dataSource.getConnection();
             String sql = String.format("select * from %s %s", rdbmsConfiguration.getTableName(), rdbmsConfiguration.getWhereCondition());
             PreparedStatement ps = conn.prepareStatement(sql, java.sql.ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            ps.setFetchSize(Integer.MIN_VALUE);
+            ps.setFetchSize(100);
             ps.setFetchDirection(ResultSet.FETCH_REVERSE);
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData metaData = rs.getMetaData();
