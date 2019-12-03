@@ -175,6 +175,10 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
 
     @Override
     public final SyncProgress getProgress() {
-        return new SyncProgress() { };
+        HistoryDataSyncTaskProgressGroup result = new HistoryDataSyncTaskProgressGroup();
+        for (SyncTask each : syncTasks) {
+            result.addSyncProgress(each.getProgress());
+        }
+        return result;
     }
 }
