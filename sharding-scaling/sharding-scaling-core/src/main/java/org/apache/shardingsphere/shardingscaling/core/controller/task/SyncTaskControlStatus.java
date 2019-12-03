@@ -15,15 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute;
+package org.apache.shardingsphere.shardingscaling.core.controller.task;
 
 /**
- * Event type.
+ * Sync task control status.
  *
- * @author avalon566
+ * @author yangyi
  */
-
-public enum EventType {
-    FINISHED,
-    EXCEPTION_EXIT
+public enum SyncTaskControlStatus {
+    
+    PREPARING, MIGRATE_HISTORY_DATA, SYNCHRONIZE_REALTIME_DATA, STOPPING, STOPPED
 }

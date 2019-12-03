@@ -17,19 +17,26 @@
 
 package org.apache.shardingsphere.shardingscaling.core.controller;
 
-import org.apache.shardingsphere.shardingscaling.core.execute.Event;
+import java.util.List;
 
 /**
- * Report callback.
+ * Sync process group.
  *
- * @author avalon566
+ * @author yangyi
  */
-public interface ReportCallback {
-
+public interface SyncProcessGroup extends SyncProgress {
+    
     /**
-     * process report event.
+     * Get all sync progress in group.
      *
-     * @param event report event
+     * @return all sync progress
      */
-    void onProcess(Event event);
+    List<SyncProgress> getSyncProgresses();
+    
+    /**
+     * Add sync progress to group.
+     *
+     * @param syncProgress sync progress
+     */
+    void addSyncProgress(SyncProgress syncProgress);
 }

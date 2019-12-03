@@ -15,15 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute;
+package org.apache.shardingsphere.shardingscaling.core.synctask.history;
+
+import org.apache.shardingsphere.shardingscaling.core.controller.SyncProcessGroup;
+import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Event type.
+ * History data sync task group progress.
  *
- * @author avalon566
+ * @author yangyi
  */
-
-public enum EventType {
-    FINISHED,
-    EXCEPTION_EXIT
+public final class HistoryDataSyncTaskProgressGroup implements SyncProcessGroup {
+    
+    private final List<SyncProgress> historyDataSyncTaskProgresses = new LinkedList<>();
+    
+    @Override
+    public List<SyncProgress> getSyncProgresses() {
+        return historyDataSyncTaskProgresses;
+    }
+    
+    @Override
+    public void addSyncProgress(final SyncProgress syncProgress) {
+        historyDataSyncTaskProgresses.add(syncProgress);
+    }
 }

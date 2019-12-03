@@ -15,15 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute;
+package org.apache.shardingsphere.shardingscaling.core.synctask.realtime;
+
+import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Event type.
+ * Real-time data sync task progress.
  *
- * @author avalon566
+ * @author yangyi
  */
+@Getter
+@RequiredArgsConstructor
+public final class RealTimeDataSyncTaskProgress implements SyncProgress {
 
-public enum EventType {
-    FINISHED,
-    EXCEPTION_EXIT
+    private final String id;
+    
+    private final LogPosition logPosition;
 }

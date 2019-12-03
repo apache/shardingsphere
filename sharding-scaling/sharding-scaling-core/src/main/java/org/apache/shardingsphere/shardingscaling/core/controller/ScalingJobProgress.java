@@ -15,15 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute;
+package org.apache.shardingsphere.shardingscaling.core.controller;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Event type.
+ * Scaling job progress.
  *
- * @author avalon566
+ * @author yangyi
  */
-
-public enum EventType {
-    FINISHED,
-    EXCEPTION_EXIT
+@Getter
+@RequiredArgsConstructor
+public final class ScalingJobProgress implements SyncProgress {
+    
+    private final String id;
+    
+    private final String jobName;
+    
+    private final List<SyncProgress> syncTaskProgress = new LinkedList<>();
+    
+    /**
+     * Add sync task progress.
+     *
+     * @param syncTaskProgress sync task progress
+     */
+    public void addSyncTaskProgress(final SyncProgress syncTaskProgress) {
+        this.syncTaskProgress.add(syncTaskProgress);
+    }
 }

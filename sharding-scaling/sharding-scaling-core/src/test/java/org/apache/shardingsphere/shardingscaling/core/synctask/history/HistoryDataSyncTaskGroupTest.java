@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.synctask;
+package org.apache.shardingsphere.shardingscaling.core.synctask.history;
 
 import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.controller.ReportCallback;
+import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.execute.Event;
+import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 import org.apache.shardingsphere.shardingscaling.core.util.ReflectionUtil;
 import org.junit.Before;
@@ -111,7 +112,7 @@ public class HistoryDataSyncTaskGroupTest {
         historyDataSyncTaskGroup.start(new ReportCallback() {
             
             @Override
-            public void onProcess(final Event event) {
+            public void report(final Event event) {
             }
         });
         verify(syncTask).start(any(ReportCallback.class));

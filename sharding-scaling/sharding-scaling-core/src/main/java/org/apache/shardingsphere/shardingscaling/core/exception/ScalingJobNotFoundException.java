@@ -15,15 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute;
+package org.apache.shardingsphere.shardingscaling.core.exception;
 
 /**
- * Event type.
+ * Scaling job not found exception.
  *
- * @author avalon566
+ * @author yangyi
  */
-
-public enum EventType {
-    FINISHED,
-    EXCEPTION_EXIT
+public final class ScalingJobNotFoundException extends RuntimeException {
+    
+    public ScalingJobNotFoundException(final String message) {
+        super(message);
+    }
+    
+    public ScalingJobNotFoundException(final Throwable cause) {
+        super(cause);
+    }
+    
+    public ScalingJobNotFoundException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+    
 }

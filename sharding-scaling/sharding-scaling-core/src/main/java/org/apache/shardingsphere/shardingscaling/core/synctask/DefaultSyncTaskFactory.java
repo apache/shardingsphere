@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.shardingscaling.core.synctask;
 
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.synctask.history.HistoryDataSyncTask;
+import org.apache.shardingsphere.shardingscaling.core.synctask.history.HistoryDataSyncTaskGroup;
+import org.apache.shardingsphere.shardingscaling.core.synctask.realtime.RealtimeDataSyncTask;
 
 /**
  * Default sync task factory.

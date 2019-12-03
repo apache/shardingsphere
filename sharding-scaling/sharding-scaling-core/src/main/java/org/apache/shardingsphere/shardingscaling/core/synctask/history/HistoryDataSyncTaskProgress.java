@@ -15,15 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute;
+package org.apache.shardingsphere.shardingscaling.core.synctask.history;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 
 /**
- * Event type.
+ * History data sync task progress.
  *
- * @author avalon566
+ * @author avalon556
+ * @author yangyi
  */
+@Getter
+@AllArgsConstructor
+public final class HistoryDataSyncTaskProgress implements SyncProgress {
 
-public enum EventType {
-    FINISHED,
-    EXCEPTION_EXIT
+    private final String id;
+
+    private final long estimatedRows;
+
+    private final long syncedRows;
 }
