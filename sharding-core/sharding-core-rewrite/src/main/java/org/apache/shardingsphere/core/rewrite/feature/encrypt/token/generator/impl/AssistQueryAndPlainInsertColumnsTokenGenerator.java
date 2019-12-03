@@ -30,8 +30,10 @@ import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertColum
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Assist query and plain insert columns token generator.
@@ -52,9 +54,13 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator extends BaseEn
         Collection<InsertColumnsToken> result = new LinkedList<>();
         Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(sqlStatementContext.getTablesContext().getSingleTableName());
         Preconditions.checkState(encryptTable.isPresent());
+        Set<String> columnNames = new HashSet(((InsertStatement) sqlStatementContext.getSqlStatement()).getColumnNames());
         for (ColumnSegment each : ((InsertStatement) sqlStatementContext.getSqlStatement()).getColumns()) {
             List<String> columns = getColumns(encryptTable.get(), each);
             if (!columns.isEmpty()) {
+                if (columnNames.contains(columns.get(0))) {
+                    continue;
+                }
                 result.add(new InsertColumnsToken(each.getStopIndex() + 1, columns));
             }
         }
