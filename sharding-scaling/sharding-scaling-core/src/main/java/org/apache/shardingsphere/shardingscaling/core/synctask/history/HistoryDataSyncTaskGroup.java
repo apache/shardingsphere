@@ -155,11 +155,11 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
             each.start(new ReportCallback() {
 
                 @Override
-                public void onProcess(final Event event) {
+                public void report(final Event event) {
                     events.add(event);
                     if (syncTasks.size() == events.size()) {
                         //TODO check error
-                        callback.onProcess(new Event(syncTaskId, EventType.FINISHED));
+                        callback.report(new Event(syncTaskId, EventType.FINISHED));
                     }
                 }
             });

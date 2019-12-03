@@ -42,12 +42,12 @@ public final class SyncTaskExecuteCallback implements ExecuteCallback {
     @Override
     public void onSuccess() {
         log.info("{} {} execute finish", syncTaskType, syncTaskId);
-        reportCallback.onProcess(new Event(syncTaskId, EventType.FINISHED));
+        reportCallback.report(new Event(syncTaskId, EventType.FINISHED));
     }
     
     @Override
     public void onFailure(final Throwable throwable) {
         log.error("{} {} execute exception exit", syncTaskType, syncTaskId, throwable);
-        reportCallback.onProcess(new Event(syncTaskId, EventType.EXCEPTION_EXIT));
+        reportCallback.report(new Event(syncTaskId, EventType.EXCEPTION_EXIT));
     }
 }

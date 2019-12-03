@@ -89,7 +89,7 @@ public final class SyncTaskController implements Runnable {
         currentSyncTask.start(new ReportCallback() {
 
             @Override
-            public void onProcess(final Event event) {
+            public void report(final Event event) {
                 log.info("history data sync finished, execute result: {}", event.getEventType().name());
                 if (EventType.FINISHED.equals(event.getEventType())) {
                     executeRealTimeSyncTask();
@@ -103,7 +103,7 @@ public final class SyncTaskController implements Runnable {
         currentSyncTask.start(new ReportCallback() {
         
             @Override
-            public void onProcess(final Event event) {
+            public void report(final Event event) {
                 //TODO
             }
         });

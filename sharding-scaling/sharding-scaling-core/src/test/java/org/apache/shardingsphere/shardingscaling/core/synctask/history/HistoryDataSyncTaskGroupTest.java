@@ -112,7 +112,7 @@ public class HistoryDataSyncTaskGroupTest {
         historyDataSyncTaskGroup.start(new ReportCallback() {
             
             @Override
-            public void onProcess(final Event event) {
+            public void report(final Event event) {
             }
         });
         verify(syncTask).start(any(ReportCallback.class));

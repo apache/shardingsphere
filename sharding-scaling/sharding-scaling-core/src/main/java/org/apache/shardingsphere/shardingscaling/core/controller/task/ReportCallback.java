@@ -27,9 +27,9 @@ import org.apache.shardingsphere.shardingscaling.core.execute.Event;
 public interface ReportCallback {
 
     /**
-     * process report event.
+     * process result report.
      *
      * @param event report event
      */
-    void onProcess(Event event);
+    void report(Event event);
 }
