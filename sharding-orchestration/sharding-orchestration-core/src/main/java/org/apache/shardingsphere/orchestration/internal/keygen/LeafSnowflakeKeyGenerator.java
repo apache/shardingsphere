@@ -185,14 +185,14 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     }
     
     private String getTimeDirectoryWithServiceId() {
-        String serviceId = properties.getProperty("serviceId");
+        String serviceId = properties.getProperty("service.id");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(serviceId));
         Preconditions.checkArgument(serviceId.matches(SERVICE_ID_REGULAR_PATTERN));
         return PARENT_NODE + SLANTING_BAR + serviceId + TIME_NODE;
     }
     
     private String getWorkIdDirectoryWithServiceId() {
-        String serviceId = properties.getProperty("serviceId");
+        String serviceId = properties.getProperty("service.id");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(serviceId));
         Preconditions.checkArgument(serviceId.matches(SERVICE_ID_REGULAR_PATTERN));
         return PARENT_NODE + SLANTING_BAR + serviceId + WORK_ID_NODE;
@@ -282,14 +282,14 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     }
     
     private long initializeMaxTolerateTimeDifference() {
-        String maxTimeDifference = properties.getProperty("maxTimeDifference", String.valueOf(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS));
+        String maxTimeDifference = properties.getProperty("max.tolerate.time.difference.milliseconds", String.valueOf(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS));
         long result = Long.valueOf(maxTimeDifference);
         Preconditions.checkArgument(result >= 0L && result < Long.MAX_VALUE);
         return result;
     }
 
     private int initializeMaxVibrationOffset() {
-        int result = Integer.parseInt(properties.getProperty("maxVibrationOffset", String.valueOf(DEFAULT_VIBRATION_VALUE)));
+        int result = Integer.parseInt(properties.getProperty("max.vibration.offset", String.valueOf(DEFAULT_VIBRATION_VALUE)));
         Preconditions.checkArgument(result >= 0 && result <= SEQUENCE_MASK, "Illegal max vibration offset");
         return result;
     }
@@ -302,11 +302,11 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     }
     
     private String getRegistryCenterType() {
-        return properties.getProperty("registryCenterType", DEFAULT_REGISTRY_CENTER);
+        return properties.getProperty("registry.center.type", DEFAULT_REGISTRY_CENTER);
     }
     
     private String getServerList() {
-        String result = properties.getProperty("serverList");
+        String result = properties.getProperty("server.list");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(result));
         return result;
     }

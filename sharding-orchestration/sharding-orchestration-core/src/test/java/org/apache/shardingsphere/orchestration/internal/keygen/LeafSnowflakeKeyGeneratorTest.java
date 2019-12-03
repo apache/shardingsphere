@@ -56,10 +56,10 @@ public final class LeafSnowflakeKeyGeneratorTest {
     @Test
     public void assertGenerateKeyWithSingleThread() {
         Properties properties = new Properties();
-        properties.setProperty("serverList", "127.0.0.1:2181");
-        properties.setProperty("serviceId", "testService1");
-        properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("server.list", "127.0.0.1:2181");
+        properties.setProperty("service.id", "testService1");
+        properties.setProperty("max.tolerate.time.difference.milliseconds", "5000");
+        properties.setProperty("registry.center.type", "ForthTestRegistryCenter");
         leafSnowflakeKeyGenerator.setProperties(properties);
         FieldUtil.setStaticFinalField(leafSnowflakeKeyGenerator, "timeService", new FixedTimeService(1));
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4198400L, 4198401L, 8392705L, 8392706L, 12587008L, 12587009L, 16781313L, 16781314L, 20975616L, 20975617L);
@@ -73,12 +73,12 @@ public final class LeafSnowflakeKeyGeneratorTest {
     @Test
     public void assertLastDigitalOfGenerateKeySameMillisecond() {
         Properties properties = new Properties();
-        properties.setProperty("serverList", "127.0.0.1:2181");
-        properties.setProperty("serviceId", "testService1");
-        properties.setProperty("digest", "name:123456");
-        properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
-        properties.setProperty("maxVibrationOffset", String.valueOf(3));
+        properties.setProperty("server.list", "127.0.0.1:2181");
+        properties.setProperty("service.id", "testService1");
+        properties.setProperty("registry.center.digest", "name:123456");
+        properties.setProperty("max.tolerate.time.difference.milliseconds", "5000");
+        properties.setProperty("registry.center.type", "ForthTestRegistryCenter");
+        properties.setProperty("max.vibration.offset", String.valueOf(3));
         FieldUtil.setStaticFinalField(leafSnowflakeKeyGenerator, "timeService", new FixedTimeService(6));
         leafSnowflakeKeyGenerator.setProperties(properties);
         String actualGenerateKeyBinaryString0 = Long.toBinaryString(Long.parseLong(leafSnowflakeKeyGenerator.generateKey().toString()));
@@ -96,12 +96,12 @@ public final class LeafSnowflakeKeyGeneratorTest {
     @Test
     public void assertLastDigitalOfGenerateKeyDifferentMillisecond() throws InterruptedException {
         Properties properties = new Properties();
-        properties.setProperty("serverList", "127.0.0.1:2181");
-        properties.setProperty("serviceId", "testService1");
-        properties.setProperty("digest", "name:123456");
-        properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
-        properties.setProperty("maxVibrationOffset", String.valueOf(3));
+        properties.setProperty("server.list", "127.0.0.1:2181");
+        properties.setProperty("service.id", "testService1");
+        properties.setProperty("registry.center.digest", "name:123456");
+        properties.setProperty("max.tolerate.time.difference.milliseconds", "5000");
+        properties.setProperty("registry.center.type", "ForthTestRegistryCenter");
+        properties.setProperty("max.vibration.offset", String.valueOf(3));
         FieldUtil.setStaticFinalField(leafSnowflakeKeyGenerator, "timeService", new TimeService());
         leafSnowflakeKeyGenerator.setProperties(properties);
         String actualGenerateKeyBinaryString0 = Long.toBinaryString(Long.parseLong(leafSnowflakeKeyGenerator.generateKey().toString()));
@@ -123,11 +123,11 @@ public final class LeafSnowflakeKeyGeneratorTest {
     @Test
     public void assertGenerateKeyWithDigest() {
         Properties properties = new Properties();
-        properties.setProperty("serverList", "127.0.0.1:2181");
-        properties.setProperty("serviceId", "testService1");
-        properties.setProperty("digest", "name:123456");
-        properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("server.list", "127.0.0.1:2181");
+        properties.setProperty("service.id", "testService1");
+        properties.setProperty("registry.center.digest", "name:123456");
+        properties.setProperty("max.tolerate.time.difference.milliseconds", "5000");
+        properties.setProperty("registry.center.type", "ForthTestRegistryCenter");
         leafSnowflakeKeyGenerator.setProperties(properties);
         FieldUtil.setStaticFinalField(leafSnowflakeKeyGenerator, "timeService", new FixedTimeService(1));
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4198400L, 4198401L, 8392705L, 8392706L, 12587008L, 12587009L, 16781313L, 16781314L, 20975616L, 20975617L);
@@ -141,10 +141,10 @@ public final class LeafSnowflakeKeyGeneratorTest {
     @Test
     public void assertGenerateKeyWithFixedWorkId() {
         Properties properties = new Properties();
-        properties.setProperty("serverList", "127.0.0.1:2181");
-        properties.setProperty("serviceId", "testService1");
-        properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("server.list", "127.0.0.1:2181");
+        properties.setProperty("service.id", "testService1");
+        properties.setProperty("max.tolerate.time.difference.milliseconds", "5000");
+        properties.setProperty("registry.center.type", "ForthTestRegistryCenter");
         leafSnowflakeKeyGenerator.setProperties(properties);
         FieldUtil.setStaticFinalField(leafSnowflakeKeyGenerator, "timeService", new FixedTimeService(1));
         List<Comparable<?>> expected = Collections.<Comparable<?>>singletonList(4198400L);
@@ -156,10 +156,10 @@ public final class LeafSnowflakeKeyGeneratorTest {
     @Test(expected = IllegalStateException.class)
     public void generateKeyFailureWithTimeRollback() {
         Properties properties = new Properties();
-        properties.setProperty("serverList", "127.0.0.1:2181");
-        properties.setProperty("serviceId", "specialService");
-        properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "FifthTestRegistryCenter");
+        properties.setProperty("server.list", "127.0.0.1:2181");
+        properties.setProperty("service.id", "specialService");
+        properties.setProperty("max.tolerate.time.difference.milliseconds", "5000");
+        properties.setProperty("registry.center.type", "FifthTestRegistryCenter");
         leafSnowflakeKeyGenerator.setProperties(properties);
         FieldUtil.setStaticFinalField(leafSnowflakeKeyGenerator, "timeService", new PreviousTimeService(15000));
         leafSnowflakeKeyGenerator.generateKey();
@@ -168,10 +168,10 @@ public final class LeafSnowflakeKeyGeneratorTest {
     @Test
     public void generateKeySuccessWithTimeRollback() {
         Properties properties = new Properties();
-        properties.setProperty("serverList", "127.0.0.1:2181");
-        properties.setProperty("serviceId", "specialService");
-        properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "FifthTestRegistryCenter");
+        properties.setProperty("server.list", "127.0.0.1:2181");
+        properties.setProperty("service.id", "specialService");
+        properties.setProperty("max.tolerate.time.difference.milliseconds", "5000");
+        properties.setProperty("registry.center.type", "FifthTestRegistryCenter");
         leafSnowflakeKeyGenerator.setProperties(properties);
         FieldUtil.setStaticFinalField(leafSnowflakeKeyGenerator, "timeService", new PreviousTimeService(3000));
         leafSnowflakeKeyGenerator.generateKey();
@@ -182,10 +182,10 @@ public final class LeafSnowflakeKeyGeneratorTest {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         Properties properties = new Properties();
-        properties.setProperty("serverList", "127.0.0.1:2181");
-        properties.setProperty("serviceId", "testService1");
-        properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("server.list", "127.0.0.1:2181");
+        properties.setProperty("service.id", "testService1");
+        properties.setProperty("max.tolerate.time.difference.milliseconds", "5000");
+        properties.setProperty("registry.center.type", "ForthTestRegistryCenter");
         leafSnowflakeKeyGenerator.setProperties(properties);
         Set<Comparable<?>> actual = new HashSet<>();
         int taskNumber = threadNumber << 2;
@@ -206,9 +206,9 @@ public final class LeafSnowflakeKeyGeneratorTest {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         Properties properties = new Properties();
-        properties.setProperty("serverList", "127.0.0.1:2181");
-        properties.setProperty("serviceId", "testService1");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("server.list", "127.0.0.1:2181");
+        properties.setProperty("service.id", "testService1");
+        properties.setProperty("registry.center.type", "ForthTestRegistryCenter");
         leafSnowflakeKeyGenerator.setProperties(properties);
         Set<Comparable<?>> actual = new HashSet<>();
         int taskNumber = threadNumber << 2;
@@ -227,9 +227,9 @@ public final class LeafSnowflakeKeyGeneratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertSetServerListFailureWhenNull() {
         Properties properties = new Properties();
-        properties.setProperty("serviceId", "testService1");
-        properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("service.id", "testService1");
+        properties.setProperty("max.tolerate.time.difference.milliseconds", "5000");
+        properties.setProperty("registry.center.type", "ForthTestRegistryCenter");
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
@@ -237,10 +237,10 @@ public final class LeafSnowflakeKeyGeneratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertSetServerListFailureWhenArgumentEmpty() {
         Properties properties = new Properties();
-        properties.setProperty("serverList", "");
-        properties.setProperty("serviceId", "testService1");
-        properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("server.list", "");
+        properties.setProperty("service.id", "testService1");
+        properties.setProperty("max.tolerate.time.difference.milliseconds", "5000");
+        properties.setProperty("registry.center.type", "ForthTestRegistryCenter");
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
@@ -248,9 +248,9 @@ public final class LeafSnowflakeKeyGeneratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertSetServiceIdFailureWhenNull() {
         Properties properties = new Properties();
-        properties.setProperty("serverList", "127.0.0.1:2181");
-        properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("server.list", "127.0.0.1:2181");
+        properties.setProperty("max.tolerate.time.difference.milliseconds", "5000");
+        properties.setProperty("registry.center.type", "ForthTestRegistryCenter");
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
@@ -258,10 +258,10 @@ public final class LeafSnowflakeKeyGeneratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertSetServiceIdFailureWhenArgumentEmpty() {
         Properties properties = new Properties();
-        properties.setProperty("serverList", "127.0.0.1:2181");
-        properties.setProperty("serviceId", "");
-        properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("server.list", "127.0.0.1:2181");
+        properties.setProperty("service.id", "");
+        properties.setProperty("max.tolerate.time.difference.milliseconds", "5000");
+        properties.setProperty("registry.center.type", "ForthTestRegistryCenter");
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
@@ -269,10 +269,10 @@ public final class LeafSnowflakeKeyGeneratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertSetServiceIdFailureWithSlantingBar() {
         Properties properties = new Properties();
-        properties.setProperty("serverList", "127.0.0.1:2181");
-        properties.setProperty("serviceId", "/testService1");
-        properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("server.list", "127.0.0.1:2181");
+        properties.setProperty("service.id", "/testService1");
+        properties.setProperty("max.tolerate.time.difference.milliseconds", "5000");
+        properties.setProperty("registry.center.type", "ForthTestRegistryCenter");
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
@@ -280,10 +280,10 @@ public final class LeafSnowflakeKeyGeneratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertSetMaxTimeDifferenceFailureWhenNegative() {
         Properties properties = new Properties();
-        properties.setProperty("serverList", "127.0.0.1:2181");
-        properties.setProperty("serviceId", "testService1");
-        properties.setProperty("maxTimeDifference", "-5");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("server.list", "127.0.0.1:2181");
+        properties.setProperty("service.id", "testService1");
+        properties.setProperty("max.tolerate.time.difference.milliseconds", "-5");
+        properties.setProperty("registry.center.type", "ForthTestRegistryCenter");
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
@@ -291,10 +291,10 @@ public final class LeafSnowflakeKeyGeneratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertSetMaxTimeDifferenceFailureWhenArgumentEmpty() {
         Properties properties = new Properties();
-        properties.setProperty("serverList", "127.0.0.1:2181");
-        properties.setProperty("serviceId", "testService1");
-        properties.setProperty("maxTimeDifference", "");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("server.list", "127.0.0.1:2181");
+        properties.setProperty("service.id", "testService1");
+        properties.setProperty("max.tolerate.time.difference.milliseconds", "");
+        properties.setProperty("registry.center.type", "ForthTestRegistryCenter");
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
@@ -302,9 +302,9 @@ public final class LeafSnowflakeKeyGeneratorTest {
     @Test
     public void assertSetMaxTimeDifferenceSuccessWhenNull() {
         Properties properties = new Properties();
-        properties.setProperty("serverList", "127.0.0.1:2181");
-        properties.setProperty("serviceId", "testService1");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("server.list", "127.0.0.1:2181");
+        properties.setProperty("service.id", "testService1");
+        properties.setProperty("registry.center.type", "ForthTestRegistryCenter");
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
@@ -312,10 +312,10 @@ public final class LeafSnowflakeKeyGeneratorTest {
     @Test(expected = Exception.class)
     public void assertSetRegistryCenterTypeFailureWhenArgumentWrong() {
         Properties properties = new Properties();
-        properties.setProperty("serverList", "127.0.0.1:2181");
-        properties.setProperty("serviceId", "testService1");
-        properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "FakeTestRegistryCenter");
+        properties.setProperty("server.list", "127.0.0.1:2181");
+        properties.setProperty("service.id", "testService1");
+        properties.setProperty("max.tolerate.time.difference.milliseconds", "5000");
+        properties.setProperty("registry.center.type", "FakeTestRegistryCenter");
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
@@ -323,7 +323,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertSetMaxVibrationOffsetFailureWhenNegative() {
         Properties properties = new Properties();
-        properties.setProperty("maxVibrationOffset", String.valueOf(-1));
+        properties.setProperty("max.vibration.offset", String.valueOf(-1));
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
