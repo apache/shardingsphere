@@ -26,6 +26,7 @@ import java.io.ObjectOutputStream;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -58,11 +59,51 @@ public final class MemoryQueryResult implements QueryResult {
         while (resultSet.next()) {
             List<Object> rowData = new ArrayList<>(resultSet.getMetaData().getColumnCount());
             for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
-                rowData.add(QueryResultUtil.getValue(resultSet, columnIndex));
+                rowData.add(resultSet.wasNull() ? null : getRowValue(resultSet, columnIndex));
             }
             result.add(rowData);
         }
         return result.iterator();
+    }
+    
+    private Object getRowValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+        ResultSetMetaData metaData = resultSet.getMetaData();
+        switch (metaData.getColumnType(columnIndex)) {
+            case Types.BOOLEAN:
+                return resultSet.getBoolean(columnIndex);
+            case Types.TINYINT:
+            case Types.SMALLINT:
+                return resultSet.getInt(columnIndex);
+            case Types.INTEGER:
+                return metaData.isSigned(columnIndex) ? resultSet.getInt(columnIndex) : resultSet.getLong(columnIndex);
+            case Types.BIGINT:
+                return metaData.isSigned(columnIndex) ? resultSet.getLong(columnIndex) : resultSet.getBigDecimal(columnIndex).toBigInteger();
+            case Types.NUMERIC:
+            case Types.DECIMAL:
+                return resultSet.getBigDecimal(columnIndex);
+            case Types.FLOAT:
+            case Types.DOUBLE:
+                return resultSet.getDouble(columnIndex);
+            case Types.CHAR:
+            case Types.VARCHAR:
+            case Types.LONGVARCHAR:
+                return resultSet.getString(columnIndex);
+            case Types.DATE:
+                return resultSet.getDate(columnIndex);
+            case Types.TIME:
+                return resultSet.getTime(columnIndex);
+            case Types.TIMESTAMP:
+                return resultSet.getTimestamp(columnIndex);
+            case Types.CLOB:
+                return resultSet.getClob(columnIndex);
+            case Types.BLOB:
+            case Types.BINARY:
+            case Types.VARBINARY:
+            case Types.LONGVARBINARY:
+                return resultSet.getBlob(columnIndex);
+            default:
+                return resultSet.getObject(columnIndex);
+        }
     }
     
     @Override

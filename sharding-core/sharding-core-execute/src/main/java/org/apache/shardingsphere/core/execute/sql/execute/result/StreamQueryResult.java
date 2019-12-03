@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.sql.Blob;
+import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -51,7 +54,39 @@ public final class StreamQueryResult implements QueryResult {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        return QueryResultUtil.getValue(resultSet, columnIndex, type);
+        if (boolean.class == type) {
+            return resultSet.getBoolean(columnIndex);
+        } else if (byte.class == type) {
+            return resultSet.getByte(columnIndex);
+        } else if (short.class == type) {
+            return resultSet.getShort(columnIndex);
+        } else if (int.class == type) {
+            return resultSet.getInt(columnIndex);
+        } else if (long.class == type) {
+            return resultSet.getLong(columnIndex);
+        } else if (float.class == type) {
+            return resultSet.getFloat(columnIndex);
+        } else if (double.class == type) {
+            return resultSet.getDouble(columnIndex);
+        } else if (String.class == type) {
+            return resultSet.getString(columnIndex);
+        } else if (BigDecimal.class == type) {
+            return resultSet.getBigDecimal(columnIndex);
+        } else if (byte[].class == type) {
+            return resultSet.getBytes(columnIndex);
+        } else if (Date.class == type) {
+            return resultSet.getDate(columnIndex);
+        } else if (Time.class == type) {
+            return resultSet.getTime(columnIndex);
+        } else if (Timestamp.class == type) {
+            return resultSet.getTimestamp(columnIndex);
+        } else if (Blob.class == type) {
+            return resultSet.getBlob(columnIndex);
+        } else if (Clob.class == type) {
+            return resultSet.getClob(columnIndex);
+        } else {
+            return resultSet.getObject(columnIndex);
+        }
     }
     
     @Override
