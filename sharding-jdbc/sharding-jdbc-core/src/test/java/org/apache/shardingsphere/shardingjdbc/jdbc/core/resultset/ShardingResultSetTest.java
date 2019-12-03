@@ -70,7 +70,11 @@ public final class ShardingResultSetTest {
     @Before
     public void setUp() throws SQLException {
         mergeResultSet = mock(MergedResult.class);
-        shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement(), createSQLRouteResult(), mock(QueryResultMetaData.class));
+        QueryResultMetaData queryResultMetaData = mock(QueryResultMetaData.class);
+        when(queryResultMetaData.getShardingEncryptor(1)).thenReturn(Optional.<ShardingEncryptor>absent());
+        ShardingRuntimeContext shardingRuntimeContext = mock(ShardingRuntimeContext.class);
+        when(shardingRuntimeContext.getProps()).thenReturn(new ShardingProperties(new Properties()));
+        shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement(), createSQLRouteResult(), queryResultMetaData, shardingRuntimeContext);
     }
     
     private SQLRouteResult createSQLRouteResult() {

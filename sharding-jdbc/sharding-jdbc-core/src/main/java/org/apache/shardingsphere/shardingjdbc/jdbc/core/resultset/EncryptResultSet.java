@@ -71,6 +71,8 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     private final QueryResultMetaData queryResultMetaData;
     
+    private final boolean queryWithCipherColumn;
+    
     private final Map<String, Integer> columnLabelAndIndexMap;
     
     public EncryptResultSet(final EncryptRuntimeContext encryptRuntimeContext,
@@ -83,6 +85,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
         this.resultSet = new IteratorStreamMergedResult(Collections.singletonList(queryResult));
         logicAndActualColumns = createLogicAndActualColumns(encryptRuntimeContext.getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         queryResultMetaData = new QueryResultMetaData(originalResultSet.getMetaData(), encryptRule, encryptRuntimeContext.getProps(), sqlStatementContext);
+        queryWithCipherColumn = encryptRuntimeContext.getProps().getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         columnLabelAndIndexMap = createColumnLabelAndIndexMap(originalResultSet.getMetaData());
     }
     
@@ -416,7 +419,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     private Object decrypt(final int columnIndex, final Object value) throws SQLException {
         Optional<ShardingEncryptor> shardingEncryptor = queryResultMetaData.getShardingEncryptor(columnIndex);
-        return queryResultMetaData.isQueryWithCipherColumn() && shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(getCiphertext(value)) : value;
+        return queryWithCipherColumn && shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(getCiphertext(value)) : value;
     }
     
     private String getCiphertext(final Object value) {

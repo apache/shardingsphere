@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResultMetaData;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractResultSetAdapter;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.io.InputStream;
@@ -55,13 +57,16 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     private final QueryResultMetaData queryResultMetaData;
     
+    private final boolean queryWithCipherColumn;
+    
     private final Map<String, Integer> columnLabelAndIndexMap;
     
-    public ShardingResultSet(final List<ResultSet> resultSets, 
-                             final MergedResult mergeResultSet, final Statement statement, final SQLRouteResult sqlRouteResult, final QueryResultMetaData queryResultMetaData) throws SQLException {
+    public ShardingResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, 
+                             final SQLRouteResult sqlRouteResult, final QueryResultMetaData queryResultMetaData, final ShardingRuntimeContext runtimeContext) throws SQLException {
         super(resultSets, statement, sqlRouteResult);
         this.mergeResultSet = mergeResultSet;
         this.queryResultMetaData = queryResultMetaData;
+        queryWithCipherColumn = runtimeContext.getProps().getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         columnLabelAndIndexMap = createColumnLabelAndIndexMap(resultSets.get(0).getMetaData());
     }
     
@@ -375,7 +380,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     private Object decrypt(final int columnIndex, final Object value) throws SQLException {
         Optional<ShardingEncryptor> shardingEncryptor = queryResultMetaData.getShardingEncryptor(columnIndex);
-        return queryResultMetaData.isQueryWithCipherColumn() && shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(getCiphertext(value)) : value;
+        return queryWithCipherColumn && shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(getCiphertext(value)) : value;
     }
     
     private String getCiphertext(final Object value) {

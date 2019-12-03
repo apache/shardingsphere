@@ -133,7 +133,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     private ShardingResultSet getCurrentResultSet(final List<ResultSet> resultSets, final MergeEngine mergeEngine) throws SQLException {
         QueryResultMetaData queryResultMetaData = new QueryResultMetaData(resultSets.iterator().next().getMetaData(),
                 connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getProps(), sqlRouteResult.getSqlStatementContext());
-        return new ShardingResultSet(resultSets, mergeEngine.merge(), this, sqlRouteResult, queryResultMetaData);
+        return new ShardingResultSet(resultSets, mergeEngine.merge(), this, sqlRouteResult, queryResultMetaData, connection.getRuntimeContext());
     }
     
     @Override
