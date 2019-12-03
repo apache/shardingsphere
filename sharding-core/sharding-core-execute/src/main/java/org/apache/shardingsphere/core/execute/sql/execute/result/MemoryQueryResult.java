@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -49,16 +46,6 @@ public final class MemoryQueryResult implements QueryResult {
     private final Iterator<List<Object>> rows;
     
     private List<Object> currentRow;
-    
-    public MemoryQueryResult(final ResultSet resultSet, final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext) throws SQLException {
-        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule, sqlStatementContext);
-        rows = getRows(resultSet);
-    }
-    
-    public MemoryQueryResult(final ResultSet resultSet, final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext) throws SQLException {
-        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule, sqlStatementContext);
-        rows = getRows(resultSet);
-    }
     
     public MemoryQueryResult(final ResultSet resultSet) throws SQLException {
         queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData());

@@ -17,15 +17,9 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
-import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.ResultSetMetaData;
@@ -35,17 +29,13 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class QueryResultMetaDataTest {
     
     private QueryResultMetaData queryResultMetaData;
-
-    private ShardingEncryptor shardingEncryptor;
     
     @Before
     public void setUp() throws SQLException {
@@ -53,7 +43,7 @@ public final class QueryResultMetaDataTest {
         TablesContext tablesContext = mock(TablesContext.class);
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(tablesContext.getTableNames()).thenReturn(Collections.singleton("table"));
-        queryResultMetaData = new QueryResultMetaData(getResultMetaData(), getShardingRule(), sqlStatementContext);
+        queryResultMetaData = new QueryResultMetaData(getResultMetaData());
     }
     
     private ResultSetMetaData getResultMetaData() throws SQLException {
@@ -66,19 +56,6 @@ public final class QueryResultMetaDataTest {
         return result;
     }
     
-    private ShardingRule getShardingRule() {
-        shardingEncryptor = mock(ShardingEncryptor.class);
-        ShardingRule result = mock(ShardingRule.class);
-        EncryptRule encryptRule = mock(EncryptRule.class);
-        EncryptTable encryptTable = mock(EncryptTable.class);
-        when(encryptRule.findShardingEncryptor(anyString(), anyString())).thenReturn(Optional.of(shardingEncryptor));
-        when(encryptRule.findEncryptTable(anyString())).thenReturn(Optional.of(encryptTable));
-        when(encryptRule.getLogicColumn(anyString(), anyString())).thenReturn("column");
-        when(encryptTable.getCipherColumns()).thenReturn(Collections.singleton("column"));
-        when(result.getEncryptRule()).thenReturn(encryptRule);
-        return result;
-    }
-
     @Test
     public void assertGetColumnCount() throws SQLException {
         assertThat(queryResultMetaData.getColumnCount(), is(1));
@@ -102,12 +79,5 @@ public final class QueryResultMetaDataTest {
     @Test
     public void assertIsCaseSensitive() throws SQLException {
         assertFalse(queryResultMetaData.isCaseSensitive(1));
-    }
-    
-    @Test
-    @Ignore
-    public void assertGetShardingEncryptor() throws SQLException {
-        assertTrue(queryResultMetaData.getShardingEncryptor(1).isPresent());
-        assertThat(queryResultMetaData.getShardingEncryptor(1).get(), is(shardingEncryptor));
     }
 }

@@ -17,15 +17,8 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -39,31 +32,11 @@ public final class QueryResultMetaData {
     
     private final ResultSetMetaData resultSetMetaData;
     
-    private final EncryptRule encryptRule;
-
     private final Map<String, Integer> columnLabelAndIndexes;
-
-    private final SQLStatementContext sqlStatementContext;
-    
-    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext) throws SQLException {
-        this.resultSetMetaData = resultSetMetaData;
-        this.encryptRule = shardingRule.getEncryptRule();
-        columnLabelAndIndexes = getColumnLabelAndIndexMap();
-        this.sqlStatementContext = sqlStatementContext;
-    }
-    
-    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext) throws SQLException {
-        this.resultSetMetaData = resultSetMetaData;
-        this.encryptRule = encryptRule;
-        columnLabelAndIndexes = getColumnLabelAndIndexMap();
-        this.sqlStatementContext = sqlStatementContext;
-    }
     
     public QueryResultMetaData(final ResultSetMetaData resultSetMetaData) throws SQLException {
         this.resultSetMetaData = resultSetMetaData;
-        this.encryptRule = new EncryptRule();
         columnLabelAndIndexes = getColumnLabelAndIndexMap();
-        this.sqlStatementContext = null;
     }
     
     private Map<String, Integer> getColumnLabelAndIndexMap() throws SQLException {
@@ -125,37 +98,5 @@ public final class QueryResultMetaData {
      */
     public boolean isCaseSensitive(final int columnIndex) throws SQLException {
         return resultSetMetaData.isCaseSensitive(columnIndex);
-    }
-    
-    /**
-     * Get sharding encryptor.
-     * 
-     * @param columnIndex column index
-     * @return sharding encryptor
-     * @throws SQLException SQL exception
-     */
-    public Optional<ShardingEncryptor> getShardingEncryptor(final int columnIndex) throws SQLException {
-        final String actualColumn = resultSetMetaData.getColumnName(columnIndex);
-        if (null == sqlStatementContext) {
-            return Optional.absent();
-        }
-        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
-        for (String each : tableNames) {
-            Optional<ShardingEncryptor> result = findShardingEncryptorWithTable(actualColumn, each);
-            if (result.isPresent()) {
-                return result;
-            }
-        }
-        return Optional.absent();
-    }
-    
-    private Optional<ShardingEncryptor> findShardingEncryptorWithTable(final String actualColumn, final String logicTableName) {
-        if (null == encryptRule) {
-            return Optional.absent();
-        }
-        if (encryptRule.isCipherColumn(logicTableName, actualColumn)) {
-            return encryptRule.findShardingEncryptor(logicTableName, encryptRule.getLogicColumn(logicTableName, actualColumn));
-        }
-        return Optional.absent();
     }
 }

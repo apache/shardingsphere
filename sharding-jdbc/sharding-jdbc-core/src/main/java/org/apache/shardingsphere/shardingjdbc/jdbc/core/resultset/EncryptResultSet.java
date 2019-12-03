@@ -81,10 +81,10 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
         this.sqlStatementContext = sqlStatementContext;
         this.encryptStatement = encryptStatement;
         originalResultSet = resultSet;
-        QueryResult queryResult = new StreamQueryResult(resultSet, encryptRule, sqlStatementContext);
+        QueryResult queryResult = new StreamQueryResult(resultSet);
         this.resultSet = new IteratorStreamMergedResult(Collections.singletonList(queryResult));
         logicAndActualColumns = createLogicAndActualColumns(encryptRuntimeContext.getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
-        queryResultMetaData = new QueryResultMetaData(originalResultSet.getMetaData(), encryptRule, sqlStatementContext);
+        queryResultMetaData = new QueryResultMetaData(originalResultSet.getMetaData());
         queryWithCipherColumn = encryptRuntimeContext.getProps().getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         columnLabelAndIndexMap = createColumnLabelAndIndexMap(originalResultSet.getMetaData());
     }
@@ -418,8 +418,24 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     }
     
     private Object decrypt(final int columnIndex, final Object value) throws SQLException {
-        Optional<ShardingEncryptor> shardingEncryptor = queryResultMetaData.getShardingEncryptor(columnIndex);
+        Optional<ShardingEncryptor> shardingEncryptor = findEncryptor(columnIndex);
         return queryWithCipherColumn && shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(getCiphertext(value)) : value;
+    }
+    
+    private Optional<ShardingEncryptor> findEncryptor(final int columnIndex) throws SQLException {
+        String actualColumnName = originalResultSet.getMetaData().getColumnName(columnIndex);
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
+            Optional<ShardingEncryptor> result = findEncryptor(each, actualColumnName);
+            if (result.isPresent()) {
+                return result;
+            }
+        }
+        return Optional.absent();
+    }
+    
+    private Optional<ShardingEncryptor> findEncryptor(final String logicTableName, final String actualColumnName) {
+        return encryptRule.isCipherColumn(logicTableName, actualColumnName)
+                ? encryptRule.findShardingEncryptor(logicTableName, encryptRule.getLogicColumn(logicTableName, actualColumnName)) : Optional.<ShardingEncryptor>absent();
     }
     
     private String getCiphertext(final Object value) {

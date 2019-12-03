@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResultMetaData;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -70,11 +69,10 @@ public final class ShardingResultSetTest {
     @Before
     public void setUp() throws SQLException {
         mergeResultSet = mock(MergedResult.class);
-        QueryResultMetaData queryResultMetaData = mock(QueryResultMetaData.class);
-        when(queryResultMetaData.getShardingEncryptor(1)).thenReturn(Optional.<ShardingEncryptor>absent());
         ShardingRuntimeContext shardingRuntimeContext = mock(ShardingRuntimeContext.class);
+        when(shardingRuntimeContext.getRule()).thenReturn(mock(ShardingRule.class));
         when(shardingRuntimeContext.getProps()).thenReturn(new ShardingProperties(new Properties()));
-        shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement(), createSQLRouteResult(), queryResultMetaData, shardingRuntimeContext);
+        shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement(), createSQLRouteResult(), shardingRuntimeContext);
     }
     
     private SQLRouteResult createSQLRouteResult() {

@@ -25,7 +25,6 @@ import com.google.common.collect.Collections2;
 import lombok.Getter;
 import org.apache.shardingsphere.core.PreparedQueryShardingEngine;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
-import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResultMetaData;
 import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergeEngineFactory;
@@ -134,8 +133,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         for (Statement each : preparedStatementExecutor.getStatements()) {
             ResultSet resultSet = each.getResultSet();
             resultSets.add(resultSet);
-            if (resultSet != null) {
-                queryResults.add(new StreamQueryResult(resultSet, connection.getRuntimeContext().getRule(), sqlRouteResult.getSqlStatementContext()));
+            if (null != resultSet) {
+                queryResults.add(new StreamQueryResult(resultSet));
             }
         }
         if (sqlRouteResult.getSqlStatementContext() instanceof SelectSQLStatementContext || sqlRouteResult.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
@@ -151,9 +150,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private ShardingResultSet getCurrentResultSet(final List<ResultSet> resultSets, final MergeEngine mergeEngine) throws SQLException {
-        QueryResultMetaData queryResultMetaData = new QueryResultMetaData(
-                resultSets.iterator().next().getMetaData(), connection.getRuntimeContext().getRule(), sqlRouteResult.getSqlStatementContext());
-        return new ShardingResultSet(resultSets, mergeEngine.merge(), this, sqlRouteResult, queryResultMetaData, connection.getRuntimeContext());
+        return new ShardingResultSet(resultSets, mergeEngine.merge(), this, sqlRouteResult, connection.getRuntimeContext());
     }
     
     @Override
