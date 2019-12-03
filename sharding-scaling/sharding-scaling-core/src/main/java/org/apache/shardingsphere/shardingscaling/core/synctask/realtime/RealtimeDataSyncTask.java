@@ -101,7 +101,6 @@ public final class RealtimeDataSyncTask implements SyncTask {
 
     @Override
     public SyncProgress getProgress() {
-        return new SyncProgress() {
-        };
+        return new RealTimeDataSyncTaskProgress(syncTaskId, logPositionManager.getCurrentPosition());
     }
 }
