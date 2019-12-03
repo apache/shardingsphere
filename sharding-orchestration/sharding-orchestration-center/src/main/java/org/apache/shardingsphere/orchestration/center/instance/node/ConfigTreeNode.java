@@ -65,20 +65,13 @@ public final class ConfigTreeNode {
         return root.init(instanceKeys, keySeparator);
     }
     
-    /**
-     * init config tree.
-     * 
-     * @param instanceKeys instance Key set
-     * @param keySeparator key separator
-     * @return this
-     */
-    public ConfigTreeNode init(final Set<String> instanceKeys, final String keySeparator) {
+    private ConfigTreeNode init(final Set<String> instanceKeys, final String keySeparator) {
         initKeysRelationships(instanceKeys, keySeparator);
-        init(this, SHARDING_SPHERE_KEY_ROOT);
+        initTreeNode(this, SHARDING_SPHERE_KEY_ROOT);
         return this;
     }
     
-    private void init(final ConfigTreeNode parentNode, final String shardingSphereKey) {
+    private void initTreeNode(final ConfigTreeNode parentNode, final String shardingSphereKey) {
         Set<String> childrenKeys = childrenKeyMap.get(shardingSphereKey);
         if (childrenKeys == null || childrenKeys.isEmpty()) {
             return;
@@ -86,7 +79,7 @@ public final class ConfigTreeNode {
         for (String each : childrenKeys) {
             ConfigTreeNode child = new ConfigTreeNode(parentNode, each, Sets.<ConfigTreeNode>newHashSet());
             parentNode.getChildrenNodes().add(child);
-            init(child, each);
+            initTreeNode(child, each);
         }
     }
     
@@ -140,6 +133,6 @@ public final class ConfigTreeNode {
     public void refresh(final String instanceKey, final String keySeparator) {
         initKeysRelationship(instanceKey, keySeparator);
         this.getChildrenNodes().clear();
-        init(this, SHARDING_SPHERE_KEY_ROOT);
+        initTreeNode(this, SHARDING_SPHERE_KEY_ROOT);
     }
 }
