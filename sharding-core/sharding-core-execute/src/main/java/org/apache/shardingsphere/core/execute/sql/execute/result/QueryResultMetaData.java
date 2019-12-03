@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -156,16 +153,7 @@ public final class QueryResultMetaData {
         if (null == encryptRule) {
             return Optional.absent();
         }
-        Collection<String> actualColumns = encryptRule.findEncryptTable(logicTableName)
-                .transform(new Function<EncryptTable, Collection<String>>() {
-                    
-                    @Override
-                    public Collection<String> apply(final EncryptTable encryptTable) {
-                        return encryptTable.getCipherColumns();
-                    }
-                })
-                .or(Collections.<String>emptyList());
-        if (actualColumns.contains(actualColumn)) {
+        if (encryptRule.isCipherColumn(logicTableName, actualColumn)) {
             return encryptRule.findShardingEncryptor(logicTableName, encryptRule.getLogicColumn(logicTableName, actualColumn));
         }
         return Optional.absent();
