@@ -43,8 +43,6 @@ import java.util.Map.Entry;
  */
 public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
-    private final Map<String, Integer> labelAndIndexMap;
-    
     private final SelectSQLStatementContext selectSQLStatementContext;
     
     private final List<Object> currentRow;
@@ -54,7 +52,6 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     public GroupByStreamMergedResult(
             final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final SelectSQLStatementContext selectSQLStatementContext) throws SQLException {
         super(queryResults, selectSQLStatementContext.getOrderByContext().getItems());
-        this.labelAndIndexMap = labelAndIndexMap;
         this.selectSQLStatementContext = selectSQLStatementContext;
         currentRow = new ArrayList<>(labelAndIndexMap.size());
         currentGroupByValues = getOrderByValuesQueue().isEmpty()
@@ -136,19 +133,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     }
     
     @Override
-    public Object getValue(final String columnLabel, final Class<?> type) {
-        Preconditions.checkState(labelAndIndexMap.containsKey(columnLabel), "Can't find columnLabel: %s", columnLabel);
-        return currentRow.get(labelAndIndexMap.get(columnLabel) - 1);
-    }
-    
-    @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
         return currentRow.get(columnIndex - 1);
-    }
-    
-    @Override
-    public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
-        Preconditions.checkState(labelAndIndexMap.containsKey(columnLabel), "Can't find columnLabel: %s", columnLabel);
-        return currentRow.get(labelAndIndexMap.get(columnLabel) - 1);
     }
 }

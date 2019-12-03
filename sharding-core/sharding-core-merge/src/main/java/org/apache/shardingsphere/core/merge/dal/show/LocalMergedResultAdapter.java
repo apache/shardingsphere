@@ -32,27 +32,12 @@ import java.util.Calendar;
 public abstract class LocalMergedResultAdapter implements MergedResult {
     
     @Override
-    public final Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
-        return getValue(1, type);
-    }
-    
-    @Override
     public final Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
         throw new SQLFeatureNotSupportedException();
     }
     
     @Override
-    public final Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
     public final InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public final InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
         throw new SQLFeatureNotSupportedException();
     }
     

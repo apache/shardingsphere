@@ -60,31 +60,14 @@ public final class ShowDatabasesMergedResultTest {
         assertThat(showDatabasesMergedResult.getValue(1, Object.class).toString(), is(ShardingConstant.LOGIC_SCHEMA_NAME));
     }
     
-    @Test
-    public void assertGetValueWithColumnLabel() throws SQLException {
-        assertTrue(showDatabasesMergedResult.next());
-        assertThat(showDatabasesMergedResult.getValue("label", Object.class).toString(), is(ShardingConstant.LOGIC_SCHEMA_NAME));
-    
-    }
-    
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetCalendarValueWithColumnIndex() throws SQLException {
         showDatabasesMergedResult.getCalendarValue(1, Object.class, Calendar.getInstance());
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetCalendarValueWithColumnLabel() throws SQLException {
-        showDatabasesMergedResult.getCalendarValue("label", Object.class, Calendar.getInstance());
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetInputStreamWithColumnIndex() throws SQLException {
         showDatabasesMergedResult.getInputStream(1, "Ascii");
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetInputStreamWithColumnLabel() throws SQLException {
-        showDatabasesMergedResult.getInputStream("label", "Ascii");
     }
     
     @Test

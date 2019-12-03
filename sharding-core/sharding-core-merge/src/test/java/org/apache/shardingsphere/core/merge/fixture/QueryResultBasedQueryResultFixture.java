@@ -47,27 +47,12 @@ public final class QueryResultBasedQueryResultFixture implements QueryResult {
     }
     
     @Override
-    public Object getValue(final String columnLabel, final Class<?> type) {
-        return null;
-    }
-    
-    @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
         return null;
     }
     
     @Override
-    public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
-        return null;
-    }
-    
-    @Override
     public InputStream getInputStream(final int columnIndex, final String type) {
-        return null;
-    }
-    
-    @Override
-    public InputStream getInputStream(final String columnLabel, final String type) {
         return null;
     }
     

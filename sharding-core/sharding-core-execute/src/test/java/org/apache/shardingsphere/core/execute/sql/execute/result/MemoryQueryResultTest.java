@@ -17,45 +17,36 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
-import com.google.common.base.Optional;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
-import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.hamcrest.core.Is;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
+import java.math.BigDecimal;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class MemoryQueryResultTest {
-    
-    private final ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
     
     @Test(expected = SQLException.class)
     @SneakyThrows
@@ -63,30 +54,6 @@ public final class MemoryQueryResultTest {
         ResultSet resultSet = getResultSet();
         when(resultSet.next()).thenThrow(new SQLException());
         new MemoryQueryResult(resultSet);
-    }
-    
-    private ShardingRule getShardingRule() {
-        ShardingRule result = mock(ShardingRule.class);
-        doReturn(getEncryptRule()).when(result).getEncryptRule();
-        return result;
-    }
-    
-    private EncryptRule getEncryptRule() {
-        EncryptRule result = mock(EncryptRule.class);
-        EncryptTable encryptTable = mock(EncryptTable.class);
-        when(result.findShardingEncryptor("order", "order_id")).thenReturn(Optional.fromNullable(shardingEncryptor));
-        when(result.findEncryptTable("order")).thenReturn(Optional.of(encryptTable));
-        when(result.getLogicColumn(anyString(), anyString())).thenReturn("order_id");
-        when(encryptTable.getCipherColumns()).thenReturn(Collections.singleton("order_id"));
-        return result;
-    }
-    
-    private SQLStatementContext getSqlStatementContext() {
-        SQLStatementContext result = mock(SQLStatementContext.class);
-        TablesContext tablesContext = mock(TablesContext.class);
-        when(result.getTablesContext()).thenReturn(tablesContext);
-        when(tablesContext.getTableNames()).thenReturn(Collections.singleton("order"));
-        return result;
     }
     
     @Test
@@ -97,85 +64,248 @@ public final class MemoryQueryResultTest {
     }
     
     @Test
-    public void assertGetValueWithColumnIndex() throws SQLException {
-        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
-        queryResult.next();
-        assertThat(queryResult.getValue(1, Integer.class), Is.<Object>is(1L));
-    }
-    
-    @Test
-    public void assertGetValueWithColumnLabel() throws SQLException {
-        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
-        queryResult.next();
-        assertThat(queryResult.getValue("order_id", Integer.class), Is.<Object>is(1L));
-    }
-    
-    @Test
-    public void assertGetValueWithShardingRule() throws SQLException {
-        when(shardingEncryptor.decrypt("1")).thenReturn("1");
-        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet(), getShardingRule(), new ShardingProperties(new Properties()), getSqlStatementContext());
-        queryResult.next();
-        assertThat(queryResult.getValue("order_id", Integer.class), Is.<Object>is("1"));
-    }
-    
-    @Test(expected = Exception.class)
-    public void assertGetValueWithException() throws SQLException {
-        ResultSet resultSet = getResultSetWithException();
-        MemoryQueryResult queryResult = new MemoryQueryResult(resultSet);
-        queryResult.next();
-        queryResult.getValue("order_id", Integer.class);
-    }
-    
-    @SneakyThrows
-    private ResultSet getResultSetWithException() {
+    public void assertGetValueByNull() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.next()).thenReturn(true).thenReturn(false);
+        when(resultSet.next()).thenReturn(true, false);
+        when(resultSet.wasNull()).thenReturn(true);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnCount()).thenReturn(1);
+        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertNull(actual.getValue(1, boolean.class));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueByBoolean() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.BOOLEAN);
+        when(resultSet.getBoolean(1)).thenReturn(true);
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertTrue((boolean) actual.getValue(1, boolean.class));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueByTinyInt() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.TINYINT);
         when(resultSet.getInt(1)).thenReturn(1);
-        when(resultSet.wasNull()).thenReturn(false);
-        doReturn(getResultSetMetaDataWithException()).when(resultSet).getMetaData();
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertThat((Integer) actual.getValue(1, int.class), is(1));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueBySmallInt() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.SMALLINT);
+        when(resultSet.getInt(1)).thenReturn(1);
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertThat((Integer) actual.getValue(1, int.class), is(1));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueBySignedInteger() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.INTEGER);
+        when(resultSet.getInt(1)).thenReturn(1);
+        when(resultSet.getMetaData().isSigned(1)).thenReturn(true);
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, int.class), is((Object) 1L));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueByUnsignedInteger() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.INTEGER);
+        when(resultSet.getLong(1)).thenReturn(1L);
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, int.class), is((Object) 1L));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueByNumeric() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.NUMERIC);
+        when(resultSet.getBigDecimal(1)).thenReturn(new BigDecimal("1"));
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, BigDecimal.class), is((Object) new BigDecimal("1")));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueByDecimal() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.DECIMAL);
+        when(resultSet.getBigDecimal(1)).thenReturn(new BigDecimal("1"));
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, BigDecimal.class), is((Object) new BigDecimal("1")));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueByFloat() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.FLOAT);
+        when(resultSet.getDouble(1)).thenReturn(1D);
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, double.class), is((Object) 1D));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueByDouble() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.DOUBLE);
+        when(resultSet.getDouble(1)).thenReturn(1D);
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, double.class), is((Object) 1D));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueByChar() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.CHAR);
+        when(resultSet.getString(1)).thenReturn("value");
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, String.class), is((Object) "value"));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueByVarchar() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.VARCHAR);
+        when(resultSet.getString(1)).thenReturn("value");
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, String.class), is((Object) "value"));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueByLongVarchar() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.LONGVARCHAR);
+        when(resultSet.getString(1)).thenReturn("value");
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, String.class), is((Object) "value"));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueByDate() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.DATE);
+        when(resultSet.getDate(1)).thenReturn(new Date(0L));
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Date.class), is((Object) new Date(0L)));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueByTime() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.TIME);
+        when(resultSet.getTime(1)).thenReturn(new Time(0L));
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Time.class), is((Object) new Time(0L)));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueByTimestamp() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.TIMESTAMP);
+        when(resultSet.getTimestamp(1)).thenReturn(new Timestamp(0L));
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Timestamp.class), is((Object) new Timestamp(0L)));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueByClob() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.CLOB);
+        Clob value = mock(Clob.class);
+        when(resultSet.getClob(1)).thenReturn(value);
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Clob.class), is((Object) value));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueByBlob() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.BLOB);
+        Blob value = mock(Blob.class);
+        when(resultSet.getBlob(1)).thenReturn(value);
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Blob.class), is((Object) value));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueByBinary() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.BINARY);
+        Blob value = mock(Blob.class);
+        when(resultSet.getBlob(1)).thenReturn(value);
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Blob.class), is((Object) value));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueByVarBinary() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.VARBINARY);
+        Blob value = mock(Blob.class);
+        when(resultSet.getBlob(1)).thenReturn(value);
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Blob.class), is((Object) value));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueByLongVarBinary() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.LONGVARBINARY);
+        Blob value = mock(Blob.class);
+        when(resultSet.getBlob(1)).thenReturn(value);
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Blob.class), is((Object) value));
+        assertFalse(actual.next());
+    }
+    
+    private ResultSet getMockedResultSet(final int columnTypes) throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.next()).thenReturn(true, false);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnCount()).thenReturn(1);
+        when(resultSetMetaData.getColumnType(1)).thenReturn(columnTypes);
+        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         return resultSet;
     }
     
-    @SneakyThrows
-    private ResultSetMetaData getResultSetMetaDataWithException() {
-        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
-        when(metaData.getColumnCount()).thenReturn(1);
-        when(metaData.getColumnLabel(1)).thenReturn("order_id");
-        when(metaData.getColumnName(1)).thenThrow(new SQLException());
-        when(metaData.getColumnType(1)).thenReturn(Types.INTEGER);
-        when(metaData.isSigned(1)).thenReturn(true);
-        return metaData;
-    }
-    
     @Test
-    public void assertGetCalendarValueWithColumnIndex() throws SQLException {
+    public void assertGetCalendarValue() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
         assertThat(queryResult.getCalendarValue(1, Integer.class, Calendar.getInstance()), Is.<Object>is(1L));
     }
     
     @Test
-    public void assertGetCalendarValueWithColumnLabel() throws SQLException {
-        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
-        queryResult.next();
-        assertThat(queryResult.getCalendarValue("order_id", Integer.class, Calendar.getInstance()), Is.<Object>is(1L));
-    }
-    
-    @Test
     @SneakyThrows
-    public void assertGetInputStreamWithColumnIndex() {
+    public void assertGetInputStream() {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
         InputStream inputStream = queryResult.getInputStream(1, "Unicode");
-        assertThat(inputStream.read(), is(getInputStream(1).read()));
-    }
-    
-    @Test
-    @SneakyThrows
-    public void assertGetInputStreamWithColumnLabel() {
-        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
-        queryResult.next();
-        InputStream inputStream = queryResult.getInputStream("order_id", "Unicode");
         assertThat(inputStream.read(), is(getInputStream(1).read()));
     }
     
