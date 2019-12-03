@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingscaling;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.apache.shardingsphere.shardingscaling.core.ShardingScalingJob;
 import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;
@@ -27,7 +28,6 @@ import org.apache.shardingsphere.shardingscaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.controller.ScalingJobController;
 import org.apache.shardingsphere.shardingscaling.utils.RuntimeUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -76,11 +76,9 @@ public class Bootstrap {
                         } catch (InterruptedException ex) {
                             break;
                         }
-                        for (SyncProgress syncProgress : scalingJobController.getProgresses(shardingScalingJob.getJobId())) {
-                            if (null != syncProgress) {
-                                log.info(syncProgress.toString());
-                            }
-                        }
+                        GsonBuilder gsonBuilder = new GsonBuilder();
+                        Gson gson = gsonBuilder.create();
+                        log.info(gson.toJson(scalingJobController.getProgresses(shardingScalingJob.getJobId())));
                     }
                 }
             }).start();
