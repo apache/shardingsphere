@@ -32,6 +32,7 @@ import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfiguration
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.opentracing.ShardingTracer;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.temp.internal.registry.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
@@ -106,7 +107,7 @@ public final class Bootstrap {
     private static void startWithRegistryCenter(final YamlProxyServerConfiguration serverConfig,
                                                 final Collection<String> shardingSchemaNames, final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final int port) {
         try (ShardingOrchestrationFacade shardingOrchestrationFacade = new ShardingOrchestrationFacade(
-                new OrchestrationConfigurationYamlSwapper().swap(serverConfig.getOrchestration()), shardingSchemaNames)) {
+                new OrchestrationConfigurationYamlSwapper().swap(new YamlOrchestrationConfiguration(serverConfig.getOrchestration())), shardingSchemaNames)) {
             initShardingOrchestrationFacade(serverConfig, ruleConfigs, shardingOrchestrationFacade);
             Authentication authentication = shardingOrchestrationFacade.getConfigService().loadAuthentication();
             Properties properties = shardingOrchestrationFacade.getConfigService().loadProperties();

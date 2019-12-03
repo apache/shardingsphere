@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.orchestration.center.yaml.config;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 
 import java.util.Map;
 
@@ -34,7 +35,9 @@ import java.util.Map;
  */
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public final class YamlOrchestrationConfiguration implements YamlConfiguration {
     
-    private Map<String, InstanceConfiguration> instanceConfigurationMap;
+    private Map<String, YamlInstanceConfiguration> instanceConfigurationMap;
 }
