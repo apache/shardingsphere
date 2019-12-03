@@ -42,14 +42,15 @@ public final class SyncTaskController implements Runnable {
     private final SyncTask realtimeDataSyncTask;
     
     private final String syncTaskId;
-
-    private SyncTask currentSyncTask;
+    
+    private SyncTaskControlStatus syncTaskControlStatus;
 
     public SyncTaskController(final SyncConfiguration syncConfiguration) {
         SyncTaskFactory syncTaskFactory = new DefaultSyncTaskFactory();
         syncTaskId = generateSyncTaskId(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
         this.historyDataSyncTaskGroup = syncTaskFactory.createHistoryDataSyncTaskGroup(syncConfiguration);
         this.realtimeDataSyncTask = syncTaskFactory.createRealtimeDataSyncTask(syncConfiguration);
+        syncTaskControlStatus = SyncTaskControlStatus.PREPARING;
     }
     
     private String generateSyncTaskId(final DataSourceConfiguration dataSourceConfiguration) {
@@ -69,7 +70,9 @@ public final class SyncTaskController implements Runnable {
      * Stop synchronize data.
      */
     public void stop() {
-        currentSyncTask.stop();
+        historyDataSyncTaskGroup.stop();
+        realtimeDataSyncTask.stop();
+        syncTaskControlStatus = SyncTaskControlStatus.STOPPING;
     }
 
     /**
@@ -78,15 +81,18 @@ public final class SyncTaskController implements Runnable {
      * @return migrate progress
      */
     public SyncProgress getProgress() {
-        return currentSyncTask.getProgress();
+        SyncTaskProgress result = new SyncTaskProgress(syncTaskId, syncTaskControlStatus.name());
+        result.setHistorySyncTaskProgress(historyDataSyncTaskGroup.getProgress());
+        result.setRealTimeSyncTaskProgress(realtimeDataSyncTask.getProgress());
+        return result;
     }
 
     @Override
     public void run() {
         realtimeDataSyncTask.prepare();
         historyDataSyncTaskGroup.prepare();
-        currentSyncTask = historyDataSyncTaskGroup;
-        currentSyncTask.start(new ReportCallback() {
+        syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_HISTORY_DATA;
+        historyDataSyncTaskGroup.start(new ReportCallback() {
 
             @Override
             public void report(final Event event) {
@@ -99,13 +105,13 @@ public final class SyncTaskController implements Runnable {
     }
     
     private void executeRealTimeSyncTask() {
-        currentSyncTask = realtimeDataSyncTask;
-        currentSyncTask.start(new ReportCallback() {
+        realtimeDataSyncTask.start(new ReportCallback() {
         
             @Override
             public void report(final Event event) {
-                //TODO
+                syncTaskControlStatus = SyncTaskControlStatus.STOPPED;
             }
         });
+        syncTaskControlStatus = SyncTaskControlStatus.SYNCHRONIZE_REALTIME_DATA;
     }
 }
