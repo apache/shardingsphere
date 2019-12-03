@@ -67,34 +67,22 @@ public final class DescribeTableMergedResultTest {
         return queryResults;
     }
     
-    private QueryResult mockQueryResult(final int columnNum, final String field, final String type, final String nullValue, final String key, final String defaultValue,
-                                        final String extra) throws SQLException {
+    private QueryResult mockQueryResult(final int columnNum, final String field, 
+                                        final String type, final String nullValue, final String key, final String defaultValue, final String extra) throws SQLException {
         QueryResult queryResult = mock(QueryResult.class);
         when(queryResult.getColumnCount()).thenReturn(columnNum);
         when(queryResult.getValue(1, String.class)).thenReturn(field);
         when(queryResult.getValue(1, Object.class)).thenReturn(field);
-        when(queryResult.getValue("Field", String.class)).thenReturn(field);
-        when(queryResult.getValue("Field", Object.class)).thenReturn(field);
         when(queryResult.getValue(2, String.class)).thenReturn(type);
         when(queryResult.getValue(2, Object.class)).thenReturn(type);
-        when(queryResult.getValue("Type", String.class)).thenReturn(type);
-        when(queryResult.getValue("Type", Object.class)).thenReturn(type);
         when(queryResult.getValue(3, String.class)).thenReturn(nullValue);
         when(queryResult.getValue(3, Object.class)).thenReturn(nullValue);
-        when(queryResult.getValue("Null", String.class)).thenReturn(nullValue);
-        when(queryResult.getValue("Null", Object.class)).thenReturn(nullValue);
         when(queryResult.getValue(4, String.class)).thenReturn(key);
         when(queryResult.getValue(4, Object.class)).thenReturn(key);
-        when(queryResult.getValue("Key", String.class)).thenReturn(key);
-        when(queryResult.getValue("Key", Object.class)).thenReturn(key);
         when(queryResult.getValue(5, String.class)).thenReturn(defaultValue);
         when(queryResult.getValue(5, Object.class)).thenReturn(defaultValue);
-        when(queryResult.getValue("Default", String.class)).thenReturn(defaultValue);
-        when(queryResult.getValue("Default", Object.class)).thenReturn(defaultValue);
         when(queryResult.getValue(6, String.class)).thenReturn(extra);
         when(queryResult.getValue(6, Object.class)).thenReturn(extra);
-        when(queryResult.getValue("Extra", String.class)).thenReturn(extra);
-        when(queryResult.getValue("Extra", Object.class)).thenReturn(extra);
         return queryResult;
     }
     

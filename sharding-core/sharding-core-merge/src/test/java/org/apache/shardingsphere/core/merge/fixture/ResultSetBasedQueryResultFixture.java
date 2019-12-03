@@ -92,53 +92,6 @@ public final class ResultSetBasedQueryResultFixture implements QueryResult {
     }
     
     @Override
-    public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
-        Object result;
-        if (Object.class == type) {
-            result = resultSet.getObject(columnLabel);
-        } else if (boolean.class == type) {
-            result = resultSet.getBoolean(columnLabel);
-        } else if (byte.class == type) {
-            result = resultSet.getByte(columnLabel);
-        } else if (short.class == type) {
-            result = resultSet.getShort(columnLabel);
-        } else if (int.class == type) {
-            result = resultSet.getInt(columnLabel);
-        } else if (long.class == type) {
-            result = resultSet.getLong(columnLabel);
-        } else if (float.class == type) {
-            result = resultSet.getFloat(columnLabel);
-        } else if (double.class == type) {
-            result = resultSet.getDouble(columnLabel);
-        } else if (String.class == type) {
-            result = resultSet.getString(columnLabel);
-        } else if (BigDecimal.class == type) {
-            result = resultSet.getBigDecimal(columnLabel);
-        } else if (byte[].class == type) {
-            result = resultSet.getBytes(columnLabel);
-        } else if (Date.class == type) {
-            result = resultSet.getDate(columnLabel);
-        } else if (Time.class == type) {
-            result = resultSet.getTime(columnLabel);
-        } else if (Timestamp.class == type) {
-            result = resultSet.getTimestamp(columnLabel);
-        } else if (URL.class == type) {
-            result = resultSet.getURL(columnLabel);
-        } else if (Blob.class == type) {
-            result = resultSet.getBlob(columnLabel);
-        } else if (Clob.class == type) {
-            result = resultSet.getClob(columnLabel);
-        } else if (SQLXML.class == type) {
-            result = resultSet.getSQLXML(columnLabel);
-        } else if (Reader.class == type) {
-            result = resultSet.getCharacterStream(columnLabel);
-        } else {
-            result = resultSet.getObject(columnLabel);
-        }
-        return result;
-    }
-    
-    @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
         if (Date.class == type) {
             return resultSet.getDate(columnIndex, calendar);
@@ -148,20 +101,6 @@ public final class ResultSetBasedQueryResultFixture implements QueryResult {
         }
         if (Timestamp.class == type) {
             return resultSet.getTimestamp(columnIndex, calendar);
-        }
-        throw new SQLException(String.format("Unsupported type: %s", type));
-    }
-    
-    @Override
-    public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) throws SQLException {
-        if (Date.class == type) {
-            return resultSet.getDate(columnLabel, calendar);
-        }
-        if (Time.class == type) {
-            return resultSet.getTime(columnLabel, calendar);
-        }
-        if (Timestamp.class == type) {
-            return resultSet.getTimestamp(columnLabel, calendar);
         }
         throw new SQLException(String.format("Unsupported type: %s", type));
     }
@@ -176,21 +115,6 @@ public final class ResultSetBasedQueryResultFixture implements QueryResult {
                 return resultSet.getUnicodeStream(columnIndex);
             case "Binary":
                 return resultSet.getBinaryStream(columnIndex);
-            default:
-                throw new SQLException(String.format("Unsupported type: %s", type));
-        }
-    }
-    
-    @SuppressWarnings("deprecation")
-    @Override
-    public InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
-        switch (type) {
-            case "Ascii":
-                return resultSet.getAsciiStream(columnLabel);
-            case "Unicode":
-                return resultSet.getUnicodeStream(columnLabel);
-            case "Binary":
-                return resultSet.getBinaryStream(columnLabel);
             default:
                 throw new SQLException(String.format("Unsupported type: %s", type));
         }

@@ -57,48 +57,25 @@ public final class MemoryQueryResultTest {
     }
     
     @Test
-    public void assertGetValueWithColumnIndex() throws SQLException {
+    public void assertGetValue() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
         assertThat(queryResult.getValue(1, Integer.class), Is.<Object>is(1L));
     }
     
     @Test
-    public void assertGetValueWithColumnLabel() throws SQLException {
-        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
-        queryResult.next();
-        assertThat(queryResult.getValue("order_id", Integer.class), Is.<Object>is(1L));
-    }
-    
-    @Test
-    public void assertGetCalendarValueWithColumnIndex() throws SQLException {
+    public void assertGetCalendarValue() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
         assertThat(queryResult.getCalendarValue(1, Integer.class, Calendar.getInstance()), Is.<Object>is(1L));
     }
     
     @Test
-    public void assertGetCalendarValueWithColumnLabel() throws SQLException {
-        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
-        queryResult.next();
-        assertThat(queryResult.getCalendarValue("order_id", Integer.class, Calendar.getInstance()), Is.<Object>is(1L));
-    }
-    
-    @Test
     @SneakyThrows
-    public void assertGetInputStreamWithColumnIndex() {
+    public void assertGetInputStream() {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
         InputStream inputStream = queryResult.getInputStream(1, "Unicode");
-        assertThat(inputStream.read(), is(getInputStream(1).read()));
-    }
-    
-    @Test
-    @SneakyThrows
-    public void assertGetInputStreamWithColumnLabel() {
-        MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
-        queryResult.next();
-        InputStream inputStream = queryResult.getInputStream("order_id", "Unicode");
         assertThat(inputStream.read(), is(getInputStream(1).read()));
     }
     

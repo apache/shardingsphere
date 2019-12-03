@@ -69,11 +69,6 @@ public final class StreamQueryResult implements QueryResult {
     }
     
     @Override
-    public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
-        return QueryResultUtil.getValue(resultSet, queryResultMetaData.getColumnIndex(columnLabel), type);
-    }
-    
-    @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
         if (Date.class == type) {
             return resultSet.getDate(columnIndex, calendar);
@@ -83,20 +78,6 @@ public final class StreamQueryResult implements QueryResult {
         }
         if (Timestamp.class == type) {
             return resultSet.getTimestamp(columnIndex, calendar);
-        }
-        throw new SQLException(String.format("Unsupported type: %s", type));
-    }
-    
-    @Override
-    public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) throws SQLException {
-        if (Date.class == type) {
-            return resultSet.getDate(columnLabel, calendar);
-        }
-        if (Time.class == type) {
-            return resultSet.getTime(columnLabel, calendar);
-        }
-        if (Timestamp.class == type) {
-            return resultSet.getTimestamp(columnLabel, calendar);
         }
         throw new SQLException(String.format("Unsupported type: %s", type));
     }
@@ -111,21 +92,6 @@ public final class StreamQueryResult implements QueryResult {
                 return resultSet.getUnicodeStream(columnIndex);
             case "Binary":
                 return resultSet.getBinaryStream(columnIndex);
-            default:
-                throw new SQLException(String.format("Unsupported type: %s", type));
-        }
-    }
-    
-    @SuppressWarnings("deprecation")
-    @Override
-    public InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
-        switch (type) {
-            case "Ascii":
-                return resultSet.getAsciiStream(columnLabel);
-            case "Unicode":
-                return resultSet.getUnicodeStream(columnLabel);
-            case "Binary":
-                return resultSet.getBinaryStream(columnLabel);
             default:
                 throw new SQLException(String.format("Unsupported type: %s", type));
         }

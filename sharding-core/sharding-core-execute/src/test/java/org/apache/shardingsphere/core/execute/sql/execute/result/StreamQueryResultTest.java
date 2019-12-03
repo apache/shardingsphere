@@ -46,21 +46,14 @@ public final class StreamQueryResultTest {
     }
     
     @Test
-    public void assertGetValueWithColumnIndex() throws SQLException {
+    public void assertGetValue() throws SQLException {
         StreamQueryResult queryResult = new StreamQueryResult(getResultSet());
         queryResult.next();
         assertThat(queryResult.getValue(1, int.class), Is.<Object>is(1));
     }
     
     @Test
-    public void assertGetValueWithColumnLabel() throws SQLException {
-        StreamQueryResult queryResult = new StreamQueryResult(getResultSet());
-        queryResult.next();
-        assertThat(queryResult.getValue("order_id", int.class), Is.<Object>is(1));
-    }
-    
-    @Test
-    public void assertGetCalendarValueWithColumnIndexAndDate() throws SQLException {
+    public void assertGetCalendarValueWithDate() throws SQLException {
         ResultSet result = getResultSet();
         Calendar calendar = Calendar.getInstance();
         StreamQueryResult queryResult = new StreamQueryResult(result);
@@ -70,7 +63,7 @@ public final class StreamQueryResultTest {
     }
     
     @Test
-    public void assertGetCalendarValueWithColumnIndexAndTime() throws SQLException {
+    public void assertGetCalendarValueWithTime() throws SQLException {
         ResultSet resultSet = getResultSet();
         Calendar calendar = Calendar.getInstance();
         StreamQueryResult queryResult = new StreamQueryResult(resultSet);
@@ -80,7 +73,7 @@ public final class StreamQueryResultTest {
     }
     
     @Test
-    public void assertGetCalendarValueWithColumnIndexAndTimestamp() throws SQLException {
+    public void assertGetCalendarValueWithTimestamp() throws SQLException {
         ResultSet resultSet = getResultSet();
         Calendar calendar = Calendar.getInstance();
         StreamQueryResult queryResult = new StreamQueryResult(resultSet);
@@ -90,51 +83,14 @@ public final class StreamQueryResultTest {
     }
     
     @Test(expected = SQLException.class)
-    public void assertGetCalendarValueWithColumnIndexAndUnsupportedType() throws SQLException {
+    public void assertGetCalendarValueWithUnsupportedType() throws SQLException {
         StreamQueryResult queryResult = new StreamQueryResult(getResultSet());
         queryResult.next();
         queryResult.getCalendarValue(1, Object.class, Calendar.getInstance());
     }
     
     @Test
-    public void assertGetCalendarValueWithColumnLabelAndDate() throws SQLException {
-        ResultSet resultSet = getResultSet();
-        Calendar calendar = Calendar.getInstance();
-        StreamQueryResult queryResult = new StreamQueryResult(resultSet);
-        queryResult.next();
-        queryResult.getCalendarValue("order_id", Date.class, calendar);
-        verify(resultSet).getDate("order_id", calendar);
-    }
-    
-    @Test
-    public void assertGetCalendarValueWithColumnLabelAndTime() throws SQLException {
-        ResultSet resultSet = getResultSet();
-        Calendar calendar = Calendar.getInstance();
-        StreamQueryResult queryResult = new StreamQueryResult(resultSet);
-        queryResult.next();
-        queryResult.getCalendarValue("order_id", Time.class, calendar);
-        verify(resultSet).getTime("order_id", calendar);
-    }
-    
-    @Test
-    public void assertGetCalendarValueWithColumnLabelAndTimestamp() throws SQLException {
-        ResultSet resultSet = getResultSet();
-        Calendar calendar = Calendar.getInstance();
-        StreamQueryResult queryResult = new StreamQueryResult(resultSet);
-        queryResult.next();
-        queryResult.getCalendarValue("order_id", Timestamp.class, calendar);
-        verify(resultSet).getTimestamp("order_id", calendar);
-    }
-    
-    @Test(expected = SQLException.class)
-    public void assertGetCalendarValueWithColumnLabelAndUnsupportedType() throws SQLException {
-        StreamQueryResult queryResult = new StreamQueryResult(getResultSet());
-        queryResult.next();
-        queryResult.getCalendarValue("order_id", Object.class, Calendar.getInstance());
-    }
-    
-    @Test
-    public void assertGetInputStreamWithColumnIndexAndAscii() throws SQLException {
+    public void assertGetInputStreamWithAscii() throws SQLException {
         ResultSet resultSet = getResultSet();
         StreamQueryResult queryResult = new StreamQueryResult(resultSet);
         queryResult.next();
@@ -144,7 +100,7 @@ public final class StreamQueryResultTest {
     
     @SuppressWarnings("deprecation")
     @Test
-    public void assertGetInputStreamWithColumnIndexAndUnicode() throws SQLException {
+    public void assertGetInputStreamWithUnicode() throws SQLException {
         ResultSet resultSet = getResultSet();
         StreamQueryResult queryResult = new StreamQueryResult(resultSet);
         queryResult.next();
@@ -153,7 +109,7 @@ public final class StreamQueryResultTest {
     }
     
     @Test
-    public void assertGetInputStreamWithColumnIndexAndBinary() throws SQLException {
+    public void assertGetInputStreamWithBinary() throws SQLException {
         ResultSet resultSet = getResultSet();
         StreamQueryResult queryResult = new StreamQueryResult(resultSet);
         queryResult.next();
@@ -162,45 +118,10 @@ public final class StreamQueryResultTest {
     }
     
     @Test(expected = SQLException.class)
-    public void assertGetInputStreamWithColumnIndexAndUnsupportedType() throws SQLException {
+    public void assertGetInputStreamWithUnsupportedType() throws SQLException {
         StreamQueryResult queryResult = new StreamQueryResult(getResultSet());
         queryResult.next();
         queryResult.getInputStream(1, "Unsupported Type");
-    }
-    
-    @Test
-    public void assertGetInputStreamWithColumnLabelAndAscii() throws SQLException {
-        ResultSet resultSet = getResultSet();
-        StreamQueryResult queryResult = new StreamQueryResult(resultSet);
-        queryResult.next();
-        queryResult.getInputStream("order_id", "Ascii");
-        verify(resultSet).getAsciiStream("order_id");
-    }
-    
-    @SuppressWarnings("deprecation")
-    @Test
-    public void assertGetInputStreamWithColumnLabelAndUnicode() throws SQLException {
-        ResultSet resultSet = getResultSet();
-        StreamQueryResult queryResult = new StreamQueryResult(resultSet);
-        queryResult.next();
-        queryResult.getInputStream("order_id", "Unicode");
-        verify(resultSet).getUnicodeStream("order_id");
-    }
-    
-    @Test
-    public void assertGetInputStreamWithColumnLabelAndBinary() throws SQLException {
-        ResultSet resultSet = getResultSet();
-        StreamQueryResult queryResult = new StreamQueryResult(resultSet);
-        queryResult.next();
-        queryResult.getInputStream("order_id", "Binary");
-        verify(resultSet).getBinaryStream("order_id");
-    }
-    
-    @Test(expected = SQLException.class)
-    public void assertGetInputStreamWithColumnLabelAndUnsupportedType() throws SQLException {
-        StreamQueryResult queryResult = new StreamQueryResult(getResultSet());
-        queryResult.next();
-        queryResult.getInputStream("order_id", "Unsupported Type");
     }
     
     @Test

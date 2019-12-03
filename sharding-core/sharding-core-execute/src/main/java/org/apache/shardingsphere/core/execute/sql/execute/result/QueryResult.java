@@ -48,16 +48,6 @@ public interface QueryResult {
     Object getValue(int columnIndex, Class<?> type) throws SQLException;
     
     /**
-     * Get data value.
-     *
-     * @param columnLabel column label
-     * @param type class type of data value
-     * @return data value
-     * @throws SQLException SQL Exception
-     */
-    Object getValue(String columnLabel, Class<?> type) throws SQLException;
-    
-    /**
      * Get calendar value.
      *
      * @param columnIndex column index
@@ -69,17 +59,6 @@ public interface QueryResult {
     Object getCalendarValue(int columnIndex, Class<?> type, Calendar calendar) throws SQLException;
     
     /**
-     * Get calendar value.
-     *
-     * @param columnLabel column label
-     * @param type class type of data value
-     * @param calendar calendar
-     * @return calendar value
-     * @throws SQLException SQL Exception
-     */
-    Object getCalendarValue(String columnLabel, Class<?> type, Calendar calendar) throws SQLException;
-    
-    /**
      * Get InputStream.
      *
      * @param columnIndex column index
@@ -88,16 +67,6 @@ public interface QueryResult {
      * @throws SQLException SQL Exception
      */
     InputStream getInputStream(int columnIndex, String type) throws SQLException;
-    
-    /**
-     * Get InputStream.
-     *
-     * @param columnLabel column label
-     * @param type class type of data value
-     * @return InputStream
-     * @throws SQLException SQL Exception
-     */
-    InputStream getInputStream(String columnLabel, String type) throws SQLException;
     
     /**
      * Judge ResultSet is null or not.

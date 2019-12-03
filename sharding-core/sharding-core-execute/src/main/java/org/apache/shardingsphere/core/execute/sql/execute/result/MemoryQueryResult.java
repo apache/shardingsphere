@@ -94,28 +94,13 @@ public final class MemoryQueryResult implements QueryResult {
     }
     
     @Override
-    public Object getValue(final String columnLabel, final Class<?> type) {
-        return currentRow.get(queryResultMetaData.getColumnIndex(columnLabel) - 1);
-    }
-    
-    @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
         return currentRow.get(columnIndex - 1);
     }
     
     @Override
-    public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
-        return currentRow.get(queryResultMetaData.getColumnIndex(columnLabel) - 1);
-    }
-    
-    @Override
     public InputStream getInputStream(final int columnIndex, final String type) {
         return getInputStream(currentRow.get(columnIndex - 1));
-    }
-    
-    @Override
-    public InputStream getInputStream(final String columnLabel, final String type) {
-        return getInputStream(currentRow.get(queryResultMetaData.getColumnIndex(columnLabel) - 1));
     }
     
     @SneakyThrows
