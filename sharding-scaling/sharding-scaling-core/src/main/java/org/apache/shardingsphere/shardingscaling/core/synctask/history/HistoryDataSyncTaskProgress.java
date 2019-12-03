@@ -15,21 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.controller;
+package org.apache.shardingsphere.shardingscaling.core.synctask.history;
 
-import org.apache.shardingsphere.shardingscaling.core.execute.Event;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 
 /**
- * Report callback.
+ * History data sync task progress.
  *
- * @author avalon566
+ * @author avalon556
+ * @author yangyi
  */
-public interface ReportCallback {
+@Getter
+@AllArgsConstructor
+public class HistoryDataSyncTaskProgress implements SyncProgress {
 
-    /**
-     * process report event.
-     *
-     * @param event report event
-     */
-    void onProcess(Event event);
+    private final String id;
+
+    private final long estimatedRows;
+
+    private final long syncedRows;
 }

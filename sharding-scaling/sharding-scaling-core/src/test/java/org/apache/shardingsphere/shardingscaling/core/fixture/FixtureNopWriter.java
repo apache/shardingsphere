@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
 
-public class FixtureNopWriter implements Writer {
+public final class FixtureNopWriter implements Writer {
 
     private boolean running;
 

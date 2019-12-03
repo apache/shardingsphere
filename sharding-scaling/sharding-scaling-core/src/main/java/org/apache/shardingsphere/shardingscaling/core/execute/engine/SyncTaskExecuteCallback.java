@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.engine;
 
-import org.apache.shardingsphere.shardingscaling.core.controller.ReportCallback;
+import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.Event;
 import org.apache.shardingsphere.shardingscaling.core.execute.EventType;
 

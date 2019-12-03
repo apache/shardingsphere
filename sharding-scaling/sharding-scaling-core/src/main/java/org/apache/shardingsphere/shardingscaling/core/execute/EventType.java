@@ -24,7 +24,6 @@ package org.apache.shardingsphere.shardingscaling.core.execute;
  */
 
 public enum EventType {
-    REALTIME_SYNC_POSITION,
     FINISHED,
     EXCEPTION_EXIT
 }

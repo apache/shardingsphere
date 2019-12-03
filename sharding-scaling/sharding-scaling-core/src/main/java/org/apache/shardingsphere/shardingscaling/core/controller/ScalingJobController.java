@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingscaling.core.controller;
 
 import org.apache.shardingsphere.shardingscaling.core.ShardingScalingJob;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.controller.task.SyncTaskController;
 
 import java.util.LinkedList;
 import java.util.List;

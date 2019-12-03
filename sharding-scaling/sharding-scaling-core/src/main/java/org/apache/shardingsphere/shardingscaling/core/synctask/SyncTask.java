@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.core.synctask;
 
-import org.apache.shardingsphere.shardingscaling.core.controller.ReportCallback;
+import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 
 /**

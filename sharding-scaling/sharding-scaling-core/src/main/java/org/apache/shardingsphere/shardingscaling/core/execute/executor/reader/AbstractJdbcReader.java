@@ -72,8 +72,7 @@ public abstract class AbstractJdbcReader extends AbstractSyncRunner implements J
     @Override
     public final void read(final Channel channel) {
         DataSource dataSource = DataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
-        try {
-            Connection conn = dataSource.getConnection();
+        try (Connection conn = dataSource.getConnection()) {
             String sql = String.format("select * from %s %s", rdbmsConfiguration.getTableName(), rdbmsConfiguration.getWhereCondition());
             PreparedStatement ps = conn.prepareStatement(sql, java.sql.ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             ps.setFetchSize(100);
