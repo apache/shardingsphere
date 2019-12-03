@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingscaling.core.controller;
 import org.apache.shardingsphere.shardingscaling.core.ShardingScalingJob;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.task.SyncTaskController;
+import org.apache.shardingsphere.shardingscaling.core.exception.ScalingJobNotFoundException;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -32,6 +33,8 @@ import java.util.concurrent.ConcurrentMap;
  * @author avalon566
  */
 public class ScalingJobController {
+    
+    private final ConcurrentMap<String, ShardingScalingJob> scalingJobMap = new ConcurrentHashMap<>();
     
     private final ConcurrentMap<String, List<SyncTaskController>> syncTaskControllerMaps = new ConcurrentHashMap<>();
 
@@ -47,6 +50,7 @@ public class ScalingJobController {
             syncTaskController.start();
             syncTaskControllers.add(syncTaskController);
         }
+        scalingJobMap.put(shardingScalingJob.getJobId(), shardingScalingJob);
         syncTaskControllerMaps.put(shardingScalingJob.getJobId(), syncTaskControllers);
     }
 
@@ -56,7 +60,7 @@ public class ScalingJobController {
      * @param shardingScalingJobId sharding scaling job id
      */
     public void stop(final String shardingScalingJobId) {
-        if (!syncTaskControllerMaps.containsKey(shardingScalingJobId)) {
+        if (!scalingJobMap.containsKey(shardingScalingJobId)) {
             return;
         }
         for (SyncTaskController syncTaskController : syncTaskControllerMaps.get(shardingScalingJobId)) {
@@ -70,11 +74,14 @@ public class ScalingJobController {
      * @param shardingScalingJobId sharding scaling job id
      * @return data nodes migrate progress
      */
-    public List<SyncProgress> getProgresses(final String shardingScalingJobId) {
-        List<SyncProgress> result = new LinkedList<>();
+    public SyncProgress getProgresses(final String shardingScalingJobId) {
+        if (!scalingJobMap.containsKey(shardingScalingJobId)) {
+            throw new ScalingJobNotFoundException(String.format("Can't find scaling job id %s", shardingScalingJobId));
+        }
+        ScalingJobProgress result = new ScalingJobProgress(shardingScalingJobId, scalingJobMap.get(shardingScalingJobId).getJobName());
         if (syncTaskControllerMaps.containsKey(shardingScalingJobId)) {
             for (SyncTaskController syncTaskController : syncTaskControllerMaps.get(shardingScalingJobId)) {
-                result.add(syncTaskController.getProgress());
+                result.addSyncTaskProgress(syncTaskController.getProgress());
             }
         }
         return result;

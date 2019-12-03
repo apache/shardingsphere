@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.synctask.history;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
+package org.apache.shardingsphere.shardingscaling.core.exception;
 
 /**
- * History data sync task progress.
+ * Scaling job not found exception.
  *
- * @author avalon556
  * @author yangyi
  */
-@Getter
-@AllArgsConstructor
-public final class HistoryDataSyncTaskProgress implements SyncProgress {
-
-    private final String id;
-
-    private final long estimatedRows;
-
-    private final long syncedRows;
+public final class ScalingJobNotFoundException extends RuntimeException {
+    
+    public ScalingJobNotFoundException(final String message) {
+        super(message);
+    }
+    
+    public ScalingJobNotFoundException(final Throwable cause) {
+        super(cause);
+    }
+    
+    public ScalingJobNotFoundException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+    
 }

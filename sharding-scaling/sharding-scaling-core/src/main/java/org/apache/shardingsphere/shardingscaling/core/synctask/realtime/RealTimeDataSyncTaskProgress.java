@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public class RealTimeDataSyncTaskProgress implements SyncProgress {
+public final class RealTimeDataSyncTaskProgress implements SyncProgress {
 
     private final String id;
     

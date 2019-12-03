@@ -35,7 +35,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class SyncTaskProgress implements SyncProgress {
+public final class SyncTaskProgress implements SyncProgress {
     
     private final String id;
     

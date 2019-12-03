@@ -15,25 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.synctask.history;
+package org.apache.shardingsphere.shardingscaling.core.controller;
 
-import lombok.AllArgsConstructor;
+import java.util.LinkedList;
+import java.util.List;
+
 import lombok.Getter;
-import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
+import lombok.RequiredArgsConstructor;
 
 /**
- * History data sync task progress.
+ * Scaling job progress.
  *
- * @author avalon556
  * @author yangyi
  */
 @Getter
-@AllArgsConstructor
-public final class HistoryDataSyncTaskProgress implements SyncProgress {
-
+@RequiredArgsConstructor
+public final class ScalingJobProgress implements SyncProgress {
+    
     private final String id;
-
-    private final long estimatedRows;
-
-    private final long syncedRows;
+    
+    private final String jobName;
+    
+    private final List<SyncProgress> syncTaskProgress = new LinkedList<>();
+    
+    /**
+     * Add sync task progress.
+     *
+     * @param syncTaskProgress sync task progress
+     */
+    public void addSyncTaskProgress(final SyncProgress syncTaskProgress) {
+        this.syncTaskProgress.add(syncTaskProgress);
+    }
 }
