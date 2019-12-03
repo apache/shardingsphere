@@ -72,11 +72,6 @@ public final class QueryResultMetaDataTest {
     }
     
     @Test
-    public void assertGetColumnIndex() {
-        assertThat(queryResultMetaData.getColumnIndex("label"), is(1));
-    }
-    
-    @Test
     public void assertIsCaseSensitive() throws SQLException {
         assertFalse(queryResultMetaData.isCaseSensitive(1));
     }

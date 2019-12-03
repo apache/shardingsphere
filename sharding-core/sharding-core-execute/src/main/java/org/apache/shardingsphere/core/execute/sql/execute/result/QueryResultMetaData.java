@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
+import lombok.RequiredArgsConstructor;
+
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Query result meta data.
@@ -28,24 +28,10 @@ import java.util.TreeMap;
  * @author panjuan
  * @author yangyi
  */
+@RequiredArgsConstructor
 public final class QueryResultMetaData {
     
     private final ResultSetMetaData resultSetMetaData;
-    
-    private final Map<String, Integer> columnLabelAndIndexes;
-    
-    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData) throws SQLException {
-        this.resultSetMetaData = resultSetMetaData;
-        columnLabelAndIndexes = getColumnLabelAndIndexMap();
-    }
-    
-    private Map<String, Integer> getColumnLabelAndIndexMap() throws SQLException {
-        Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        for (int columnIndex = resultSetMetaData.getColumnCount(); columnIndex > 0; columnIndex--) {
-            result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
-        }
-        return result;
-    }
     
     /**
      * Get column count.
@@ -77,16 +63,6 @@ public final class QueryResultMetaData {
      */
     public String getColumnName(final int columnIndex) throws SQLException {
         return resultSetMetaData.getColumnName(columnIndex);
-    }
-    
-    /**
-     * Get column index.
-     * 
-     * @param columnLabel column label
-     * @return column name
-     */
-    public Integer getColumnIndex(final String columnLabel) {
-        return columnLabelAndIndexes.get(columnLabel);
     }
     
     /**
