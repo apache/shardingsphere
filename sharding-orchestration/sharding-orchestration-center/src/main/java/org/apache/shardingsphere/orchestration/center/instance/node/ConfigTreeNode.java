@@ -56,6 +56,8 @@ public final class ConfigTreeNode {
     /**
      * create new ConfigTreeNode.
      * 
+     * @param instanceKeys instance Key set
+     * @param keySeparator key separator
      * @return ConfigTreeNode Root
      */
     public static ConfigTreeNode create(final Set<String> instanceKeys, final String keySeparator) {
