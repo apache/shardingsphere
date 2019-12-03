@@ -18,20 +18,18 @@
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -50,17 +48,23 @@ public final class QueryResultMetaDataTest {
     
     @Before
     public void setUp() throws SQLException {
-        final SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        final TablesContext tablesContext = mock(TablesContext.class);
-        final ResultSetMetaData resultSetMetaData = getResultMetaData();
-        final ShardingRule shardingRule = getShardingRule();
-        final ShardingProperties shardingProperties = new ShardingProperties(new Properties());
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        TablesContext tablesContext = mock(TablesContext.class);
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(tablesContext.getTableNames()).thenReturn(Collections.singleton("table"));
-        queryResultMetaData = new QueryResultMetaData(resultSetMetaData, shardingRule, shardingProperties, sqlStatementContext);
+        queryResultMetaData = new QueryResultMetaData(getResultMetaData(), getShardingRule(), sqlStatementContext);
     }
     
-    @SuppressWarnings("unchecked")
+    private ResultSetMetaData getResultMetaData() throws SQLException {
+        ResultSetMetaData result = mock(ResultSetMetaData.class);
+        when(result.getColumnCount()).thenReturn(1);
+        when(result.getColumnName(anyInt())).thenReturn("column");
+        when(result.getColumnLabel(anyInt())).thenReturn("label");
+        when(result.getTableName(anyInt())).thenReturn("table");
+        when(result.isCaseSensitive(anyInt())).thenReturn(false);
+        return result;
+    }
+    
     private ShardingRule getShardingRule() {
         shardingEncryptor = mock(ShardingEncryptor.class);
         ShardingRule result = mock(ShardingRule.class);
@@ -71,16 +75,6 @@ public final class QueryResultMetaDataTest {
         when(encryptRule.getLogicColumn(anyString(), anyString())).thenReturn("column");
         when(encryptTable.getCipherColumns()).thenReturn(Collections.singleton("column"));
         when(result.getEncryptRule()).thenReturn(encryptRule);
-        return result;
-    }
-    
-    private ResultSetMetaData getResultMetaData() throws SQLException {
-        ResultSetMetaData result = mock(ResultSetMetaData.class);
-        when(result.getColumnCount()).thenReturn(1);
-        when(result.getColumnName(anyInt())).thenReturn("column");
-        when(result.getColumnLabel(anyInt())).thenReturn("label");
-        when(result.getTableName(anyInt())).thenReturn("table");
-        when(result.isCaseSensitive(anyInt())).thenReturn(false);
         return result;
     }
 

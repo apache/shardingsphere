@@ -19,14 +19,11 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import lombok.Getter;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -51,25 +48,18 @@ public final class QueryResultMetaData {
 
     private final SQLStatementContext sqlStatementContext;
     
-    @Getter
-    private final boolean queryWithCipherColumn;
-    
-    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, 
-                               final ShardingRule shardingRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext) throws SQLException {
+    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext) throws SQLException {
         this.resultSetMetaData = resultSetMetaData;
         this.encryptRule = shardingRule.getEncryptRule();
         columnLabelAndIndexes = getColumnLabelAndIndexMap();
         this.sqlStatementContext = sqlStatementContext;
-        queryWithCipherColumn = properties.getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
     }
     
-    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final EncryptRule encryptRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext)
-            throws SQLException {
+    public QueryResultMetaData(final ResultSetMetaData resultSetMetaData, final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext) throws SQLException {
         this.resultSetMetaData = resultSetMetaData;
         this.encryptRule = encryptRule;
         columnLabelAndIndexes = getColumnLabelAndIndexMap();
         this.sqlStatementContext = sqlStatementContext;
-        queryWithCipherColumn = properties.getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
     }
     
     public QueryResultMetaData(final ResultSetMetaData resultSetMetaData) throws SQLException {
@@ -77,7 +67,6 @@ public final class QueryResultMetaData {
         this.encryptRule = new EncryptRule();
         columnLabelAndIndexes = getColumnLabelAndIndexMap();
         this.sqlStatementContext = null;
-        queryWithCipherColumn = false;
     }
     
     private Map<String, Integer> getColumnLabelAndIndexMap() throws SQLException {
@@ -153,7 +142,7 @@ public final class QueryResultMetaData {
         if (null == sqlStatementContext) {
             return Optional.absent();
         }
-        final Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         for (String each : tableNames) {
             Optional<ShardingEncryptor> result = findShardingEncryptorWithTable(actualColumn, each);
             if (result.isPresent()) {
@@ -162,14 +151,14 @@ public final class QueryResultMetaData {
         }
         return Optional.absent();
     }
-
+    
     private Optional<ShardingEncryptor> findShardingEncryptorWithTable(final String actualColumn, final String logicTableName) {
         if (null == encryptRule) {
             return Optional.absent();
         }
-        final Collection<String> actualColumns = encryptRule.findEncryptTable(logicTableName)
+        Collection<String> actualColumns = encryptRule.findEncryptTable(logicTableName)
                 .transform(new Function<EncryptTable, Collection<String>>() {
-
+                    
                     @Override
                     public Collection<String> apply(final EncryptTable encryptTable) {
                         return encryptTable.getCipherColumns();

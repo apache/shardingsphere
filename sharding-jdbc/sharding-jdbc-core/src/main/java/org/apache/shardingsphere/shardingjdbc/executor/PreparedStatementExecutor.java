@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback;
@@ -115,10 +114,9 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         PreparedStatement preparedStatement = (PreparedStatement) statement;
         ResultSet resultSet = preparedStatement.executeQuery();
         ShardingRule shardingRule = getConnection().getRuntimeContext().getRule();
-        ShardingProperties properties = getConnection().getRuntimeContext().getProps();
         getResultSets().add(resultSet);
-        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet, shardingRule, properties, getSqlStatementContext())
-                : new MemoryQueryResult(resultSet, shardingRule, properties, getSqlStatementContext());
+        return ConnectionMode.MEMORY_STRICTLY == connectionMode
+                ? new StreamQueryResult(resultSet, shardingRule, getSqlStatementContext()) : new MemoryQueryResult(resultSet, shardingRule, getSqlStatementContext());
     }
     
     /**

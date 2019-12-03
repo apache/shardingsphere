@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
@@ -43,13 +42,13 @@ public final class StreamQueryResult implements QueryResult {
     
     private final ResultSet resultSet;
     
-    public StreamQueryResult(final ResultSet resultSet, final ShardingRule shardingRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext) throws SQLException {
-        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule, properties, sqlStatementContext);
+    public StreamQueryResult(final ResultSet resultSet, final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext) throws SQLException {
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule, sqlStatementContext);
         this.resultSet = resultSet;
     }
     
-    public StreamQueryResult(final ResultSet resultSet, final EncryptRule encryptRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext) throws SQLException {
-        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule, properties, sqlStatementContext);
+    public StreamQueryResult(final ResultSet resultSet, final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext) throws SQLException {
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule, sqlStatementContext);
         this.resultSet = resultSet;
     }
     

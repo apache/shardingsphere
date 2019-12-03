@@ -115,7 +115,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             ResultSet resultSet = each.getResultSet();
             resultSets.add(resultSet);
             if (resultSet != null) {
-                queryResults.add(new StreamQueryResult(resultSet, connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getProps(), sqlRouteResult.getSqlStatementContext()));
+                queryResults.add(new StreamQueryResult(resultSet, connection.getRuntimeContext().getRule(), sqlRouteResult.getSqlStatementContext()));
             }
         }
         if (sqlRouteResult.getSqlStatementContext() instanceof SelectSQLStatementContext || sqlRouteResult.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
@@ -131,8 +131,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private ShardingResultSet getCurrentResultSet(final List<ResultSet> resultSets, final MergeEngine mergeEngine) throws SQLException {
-        QueryResultMetaData queryResultMetaData = new QueryResultMetaData(resultSets.iterator().next().getMetaData(),
-                connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getProps(), sqlRouteResult.getSqlStatementContext());
+        QueryResultMetaData queryResultMetaData = new QueryResultMetaData(
+                resultSets.iterator().next().getMetaData(), connection.getRuntimeContext().getRule(), sqlRouteResult.getSqlStatementContext());
         return new ShardingResultSet(resultSets, mergeEngine.merge(), this, sqlRouteResult, queryResultMetaData, connection.getRuntimeContext());
     }
     
