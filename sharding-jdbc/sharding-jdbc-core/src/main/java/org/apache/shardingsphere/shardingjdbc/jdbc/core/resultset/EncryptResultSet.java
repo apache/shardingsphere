@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
-import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResultMetaData;
 import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.core.merge.dql.iterator.IteratorStreamMergedResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -69,8 +68,6 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     private final Map<String, String> logicAndActualColumns;
     
-    private final QueryResultMetaData queryResultMetaData;
-    
     private final boolean queryWithCipherColumn;
     
     private final Map<String, Integer> columnLabelAndIndexMap;
@@ -84,7 +81,6 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
         QueryResult queryResult = new StreamQueryResult(resultSet);
         this.resultSet = new IteratorStreamMergedResult(Collections.singletonList(queryResult));
         logicAndActualColumns = createLogicAndActualColumns(encryptRuntimeContext.getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
-        queryResultMetaData = new QueryResultMetaData(originalResultSet.getMetaData());
         queryWithCipherColumn = encryptRuntimeContext.getProps().getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         columnLabelAndIndexMap = createColumnLabelAndIndexMap(originalResultSet.getMetaData());
     }

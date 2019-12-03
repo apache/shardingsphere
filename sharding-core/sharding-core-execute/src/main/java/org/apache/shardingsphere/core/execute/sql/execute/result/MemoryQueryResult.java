@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -41,14 +42,14 @@ import java.util.List;
  */
 public final class MemoryQueryResult implements QueryResult {
     
-    private final QueryResultMetaData queryResultMetaData;
+    private final ResultSetMetaData resultSetMetaData;
     
     private final Iterator<List<Object>> rows;
     
     private List<Object> currentRow;
     
     public MemoryQueryResult(final ResultSet resultSet) throws SQLException {
-        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData());
+        resultSetMetaData = resultSet.getMetaData();
         rows = getRows(resultSet);
     }
     
@@ -106,16 +107,16 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public int getColumnCount() throws SQLException {
-        return queryResultMetaData.getColumnCount();
+        return resultSetMetaData.getColumnCount();
     }
     
     @Override
     public String getColumnLabel(final int columnIndex) throws SQLException {
-        return queryResultMetaData.getColumnLabel(columnIndex);
+        return resultSetMetaData.getColumnLabel(columnIndex);
     }
     
     @Override
     public boolean isCaseSensitive(final int columnIndex) throws SQLException {
-        return queryResultMetaData.isCaseSensitive(columnIndex);
+        return resultSetMetaData.isCaseSensitive(columnIndex);
     }
 }

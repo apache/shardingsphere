@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.execute.sql.execute.result;
 import java.io.InputStream;
 import java.sql.Date;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -34,12 +35,12 @@ import java.util.Calendar;
  */
 public final class StreamQueryResult implements QueryResult {
     
-    private final QueryResultMetaData queryResultMetaData;
+    private final ResultSetMetaData resultSetMetaData;
     
     private final ResultSet resultSet;
     
     public StreamQueryResult(final ResultSet resultSet) throws SQLException {
-        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData());
+        resultSetMetaData = resultSet.getMetaData();
         this.resultSet = resultSet;
     }
     
@@ -89,16 +90,16 @@ public final class StreamQueryResult implements QueryResult {
     
     @Override
     public int getColumnCount() throws SQLException {
-        return queryResultMetaData.getColumnCount();
+        return resultSetMetaData.getColumnCount();
     }
     
     @Override
     public String getColumnLabel(final int columnIndex) throws SQLException {
-        return queryResultMetaData.getColumnLabel(columnIndex);
+        return resultSetMetaData.getColumnLabel(columnIndex);
     }
     
     @Override
     public boolean isCaseSensitive(final int columnIndex) throws SQLException {
-        return queryResultMetaData.isCaseSensitive(columnIndex);
+        return resultSetMetaData.isCaseSensitive(columnIndex);
     }
 }
