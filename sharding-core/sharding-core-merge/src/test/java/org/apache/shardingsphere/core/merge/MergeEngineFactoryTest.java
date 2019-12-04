@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.core.merge;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dal.DALMergeEngine;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
-import org.apache.shardingsphere.core.merge.fixture.ResultSetBasedQueryResultFixture;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
+import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
@@ -33,9 +34,6 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.P
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
@@ -44,11 +42,9 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -58,18 +54,14 @@ import static org.mockito.Mockito.when;
 
 public final class MergeEngineFactoryTest {
     
-    private List<QueryResult> queryResults;
+    private final List<QueryResult> queryResults = new LinkedList<>();
     
     @Before
     public void setUp() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        when(resultSetMetaData.getColumnCount()).thenReturn(1);
-        when(resultSetMetaData.getColumnLabel(1)).thenReturn("label");
-        List<ResultSet> resultSets = Lists.newArrayList(resultSet);
-        queryResults = new ArrayList<>(resultSets.size());
-        queryResults.add(new ResultSetBasedQueryResultFixture(resultSets.get(0)));
+        QueryResult queryResult = mock(QueryResult.class);
+        when(queryResult.getColumnCount()).thenReturn(1);
+        when(queryResult.getColumnLabel(1)).thenReturn("label");
+        queryResults.add(queryResult);
     }
     
     @Test
