@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execu
 
 import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
@@ -34,10 +33,10 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -57,9 +56,8 @@ public final class ProxyJDBCExecutePrepareCallbackTest {
         JDBCExecutorWrapper jdbcExecutorWrapper = mock(JDBCExecutorWrapper.class);
         when(jdbcExecutorWrapper.createStatement((Connection) any(), (SQLUnit) any(), anyBoolean())).thenReturn(mock(Statement.class));
         ProxyJDBCExecutePrepareCallback proxyJDBCExecutePrepareCallback = new ProxyJDBCExecutePrepareCallback(mock(BackendConnection.class), jdbcExecutorWrapper, false);
-        RouteUnit routeUnit = mock(RouteUnit.class);
-        when(routeUnit.getSqlUnit()).thenReturn(mock(SQLUnit.class));
-        assertThat(proxyJDBCExecutePrepareCallback.createStatementExecuteUnit(null, routeUnit, ConnectionMode.CONNECTION_STRICTLY), instanceOf(StatementExecuteUnit.class));
+        assertThat(proxyJDBCExecutePrepareCallback.createStatementExecuteUnit(
+                null, "ds", "SELECT 1", Collections.emptyList(), ConnectionMode.CONNECTION_STRICTLY), instanceOf(StatementExecuteUnit.class));
     }
     
     @Test
@@ -67,8 +65,7 @@ public final class ProxyJDBCExecutePrepareCallbackTest {
         JDBCExecutorWrapper jdbcExecutorWrapper = mock(JDBCExecutorWrapper.class);
         when(jdbcExecutorWrapper.createStatement((Connection) any(), (SQLUnit) any(), anyBoolean())).thenReturn(mock(Statement.class));
         ProxyJDBCExecutePrepareCallback proxyJDBCExecutePrepareCallback = new ProxyJDBCExecutePrepareCallback(mock(BackendConnection.class), jdbcExecutorWrapper, false);
-        RouteUnit routeUnit = mock(RouteUnit.class);
-        when(routeUnit.getSqlUnit()).thenReturn(mock(SQLUnit.class));
-        assertThat(proxyJDBCExecutePrepareCallback.createStatementExecuteUnit(null, routeUnit, ConnectionMode.MEMORY_STRICTLY), instanceOf(StatementExecuteUnit.class));
+        assertThat(proxyJDBCExecutePrepareCallback.createStatementExecuteUnit(
+                null, "ds", "SELECT 1", Collections.emptyList(), ConnectionMode.MEMORY_STRICTLY), instanceOf(StatementExecuteUnit.class));
     }
 }

@@ -54,8 +54,8 @@ public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallb
     private final boolean isExceptionThrown;
     
     @Override
-    public final Collection<T> execute(final Collection<StatementExecuteUnit> statementExecuteUnits, final boolean isTrunkThread,
-                                       final Map<String, Object> shardingExecuteDataMap) throws SQLException {
+    public final Collection<T> execute(final Collection<StatementExecuteUnit> statementExecuteUnits, 
+                                       final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) throws SQLException {
         Collection<T> result = new LinkedList<>();
         for (StatementExecuteUnit each : statementExecuteUnits) {
             result.add(execute0(each, isTrunkThread, shardingExecuteDataMap));

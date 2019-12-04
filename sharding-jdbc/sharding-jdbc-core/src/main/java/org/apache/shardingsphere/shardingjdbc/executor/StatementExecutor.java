@@ -74,9 +74,9 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     
             @SuppressWarnings("MagicConstant")
             @Override
-            public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
-                return new StatementExecuteUnit(routeUnit.getDataSourceName(), routeUnit.getSqlUnit().getSql(), 
-                        routeUnit.getSqlUnit().getParameters(), connection.createStatement(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability()), connectionMode);
+            public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final String dataSourceName, final String sql,
+                                                                   final List<Object> parameters, final ConnectionMode connectionMode) throws SQLException {
+                return new StatementExecuteUnit(dataSourceName, sql, parameters, connection.createStatement(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability()), connectionMode);
             }
         });
     }
