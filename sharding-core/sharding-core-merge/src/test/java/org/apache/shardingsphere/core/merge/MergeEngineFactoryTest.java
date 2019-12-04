@@ -73,7 +73,7 @@ public final class MergeEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithSelectStatement() throws SQLException {
+    public void assertNewInstanceWithSelectStatement() {
         SQLRouteResult routeResult = new SQLRouteResult(
                 new SelectSQLStatementContext(new SelectStatement(), 
                         new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
@@ -83,13 +83,13 @@ public final class MergeEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithDALStatement() throws SQLException {
+    public void assertNewInstanceWithDALStatement() {
         SQLRouteResult routeResult = new SQLRouteResult(new CommonSQLStatementContext(new DALStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, mock(TableMetas.class), queryResults), instanceOf(DALMergeEngine.class));
     }
     
     @Test
-    public void assertNewInstanceWithOtherStatement() throws SQLException {
+    public void assertNewInstanceWithOtherStatement() {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "col"));
