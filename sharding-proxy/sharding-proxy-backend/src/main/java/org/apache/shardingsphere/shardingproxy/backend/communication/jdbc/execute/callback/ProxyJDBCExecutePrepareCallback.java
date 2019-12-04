@@ -66,6 +66,6 @@ public final class ProxyJDBCExecutePrepareCallback implements SQLExecutePrepareC
                 statement.setFetchSize(POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME);
             }
         }
-        return new StatementExecuteUnit(routeUnit, statement, connectionMode);
+        return new StatementExecuteUnit(routeUnit.getDataSourceName(), routeUnit.getSqlUnit().getSql(), routeUnit.getSqlUnit().getParameters(), statement, connectionMode);
     }
 }

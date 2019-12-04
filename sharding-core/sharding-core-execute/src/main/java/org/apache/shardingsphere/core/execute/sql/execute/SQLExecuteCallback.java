@@ -20,11 +20,10 @@ package org.apache.shardingsphere.core.execute.sql.execute;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.execute.engine.ShardingGroupExecuteCallback;
-import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.core.execute.hook.SQLExecutionHook;
+import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
-import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
@@ -33,6 +32,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -74,9 +74,11 @@ public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallb
         DataSourceMetaData dataSourceMetaData = getDataSourceMetaData(statementExecuteUnit.getStatement().getConnection().getMetaData());
         SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
         try {
-            RouteUnit routeUnit = statementExecuteUnit.getRouteUnit();
-            sqlExecutionHook.start(routeUnit.getDataSourceName(), routeUnit.getSqlUnit().getSql(), routeUnit.getSqlUnit().getParameters(), dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);
-            T result = executeSQL(routeUnit, statementExecuteUnit.getStatement(), statementExecuteUnit.getConnectionMode());
+            String dataSourceName = statementExecuteUnit.getDataSourceName();
+            String sql = statementExecuteUnit.getSql();
+            List<Object> parameters = statementExecuteUnit.getParameters();
+            sqlExecutionHook.start(dataSourceName, sql, parameters, dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);
+            T result = executeSQL(dataSourceName, sql, parameters, statementExecuteUnit.getStatement(), statementExecuteUnit.getConnectionMode());
             sqlExecutionHook.finishSuccess();
             return result;
         } catch (final SQLException ex) {
@@ -96,5 +98,5 @@ public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallb
         return result;
     }
     
-    protected abstract T executeSQL(RouteUnit routeUnit, Statement statement, ConnectionMode connectionMode) throws SQLException;
+    protected abstract T executeSQL(String dataSourceName, String sql, List<Object> parameters, Statement statement, ConnectionMode connectionMode) throws SQLException;
 }

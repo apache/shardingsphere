@@ -75,7 +75,8 @@ public final class StatementExecutor extends AbstractStatementExecutor {
             @SuppressWarnings("MagicConstant")
             @Override
             public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
-                return new StatementExecuteUnit(routeUnit, connection.createStatement(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability()), connectionMode);
+                return new StatementExecuteUnit(routeUnit.getDataSourceName(), routeUnit.getSqlUnit().getSql(), 
+                        routeUnit.getSqlUnit().getParameters(), connection.createStatement(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability()), connectionMode);
             }
         });
     }
@@ -91,15 +92,16 @@ public final class StatementExecutor extends AbstractStatementExecutor {
         SQLExecuteCallback<QueryResult> executeCallback = new SQLExecuteCallback<QueryResult>(getDatabaseType(), isExceptionThrown) {
             
             @Override
-            protected QueryResult executeSQL(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
-                return getQueryResult(routeUnit, statement, connectionMode);
+            protected QueryResult executeSQL(final String dataSourceName, final String sql, 
+                                             final List<Object> parameters, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+                return getQueryResult(sql, statement, connectionMode);
             }
         };
         return executeCallback(executeCallback);
     }
     
-    private QueryResult getQueryResult(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
-        ResultSet resultSet = statement.executeQuery(routeUnit.getSqlUnit().getSql());
+    private QueryResult getQueryResult(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+        ResultSet resultSet = statement.executeQuery(sql);
         getResultSets().add(resultSet);
         return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
     }
@@ -176,8 +178,9 @@ public final class StatementExecutor extends AbstractStatementExecutor {
         SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(getDatabaseType(), isExceptionThrown) {
             
             @Override
-            protected Integer executeSQL(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
-                return updater.executeUpdate(statement, routeUnit.getSqlUnit().getSql());
+            protected Integer executeSQL(final String dataSourceName, final String sql,
+                                         final List<Object> parameters, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+                return updater.executeUpdate(statement, sql);
             }
         };
         List<Integer> results = executeCallback(executeCallback);
@@ -268,8 +271,9 @@ public final class StatementExecutor extends AbstractStatementExecutor {
         SQLExecuteCallback<Boolean> executeCallback = new SQLExecuteCallback<Boolean>(getDatabaseType(), isExceptionThrown) {
             
             @Override
-            protected Boolean executeSQL(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
-                return executor.execute(statement, routeUnit.getSqlUnit().getSql());
+            protected Boolean executeSQL(final String dataSourceName, final String sql,
+                                         final List<Object> parameters, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+                return executor.execute(statement, sql);
             }
         };
         List<Boolean> result = executeCallback(executeCallback);

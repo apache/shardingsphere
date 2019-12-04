@@ -22,8 +22,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.core.route.RouteUnit;
-import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +37,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -64,9 +63,7 @@ public class SQLExecuteCallbackTest {
         when(preparedStatement.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(metaData);
         when(metaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
-        units = Lists.newArrayList(
-            new StatementExecuteUnit(new RouteUnit("ds", new SQLUnit("SELECT now()", Collections.emptyList())), preparedStatement, ConnectionMode.CONNECTION_STRICTLY)
-        );
+        units = Lists.newArrayList(new StatementExecuteUnit("ds", "SELECT now()", Collections.emptyList(), preparedStatement, ConnectionMode.CONNECTION_STRICTLY));
     }
     
     @Test
@@ -76,7 +73,8 @@ public class SQLExecuteCallbackTest {
         SQLExecuteCallback sqlExecuteCallback = new SQLExecuteCallback<Integer>(DatabaseTypes.getActualDatabaseType("MySQL"), true) {
             
             @Override
-            protected Integer executeSQL(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+            protected Integer executeSQL(
+                    final String dataSourceName, final String sql, final List<Object> parameters, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return ((PreparedStatement) statement).executeUpdate();
             }
         };

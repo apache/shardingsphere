@@ -80,7 +80,8 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
             
             @Override
             public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
-                return new StatementExecuteUnit(routeUnit, createPreparedStatement(connection, routeUnit.getSqlUnit().getSql()), connectionMode);
+                return new StatementExecuteUnit(routeUnit.getDataSourceName(), 
+                        routeUnit.getSqlUnit().getSql(), routeUnit.getSqlUnit().getParameters(), createPreparedStatement(connection, routeUnit.getSqlUnit().getSql()), connectionMode);
             }
         });
     }
@@ -102,7 +103,8 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         SQLExecuteCallback<QueryResult> executeCallback = new SQLExecuteCallback<QueryResult>(getDatabaseType(), isExceptionThrown) {
             
             @Override
-            protected QueryResult executeSQL(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+            protected QueryResult executeSQL(final String dataSourceName, final String sql, 
+                                             final List<Object> parameters, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return getQueryResult(statement, connectionMode);
             }
         };
