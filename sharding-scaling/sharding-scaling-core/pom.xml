@@ -40,6 +40,16 @@
             <artifactId>commons-dbcp2</artifactId>
             <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
     
         <dependency>
             <groupId>com.h2database</groupId>
