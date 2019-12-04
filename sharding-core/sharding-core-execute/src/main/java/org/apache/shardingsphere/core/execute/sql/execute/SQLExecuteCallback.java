@@ -78,7 +78,7 @@ public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallb
             String sql = statementExecuteUnit.getSql();
             List<Object> parameters = statementExecuteUnit.getParameters();
             sqlExecutionHook.start(dataSourceName, sql, parameters, dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);
-            T result = executeSQL(dataSourceName, sql, parameters, statementExecuteUnit.getStatement(), statementExecuteUnit.getConnectionMode());
+            T result = executeSQL(sql, statementExecuteUnit.getStatement(), statementExecuteUnit.getConnectionMode());
             sqlExecutionHook.finishSuccess();
             return result;
         } catch (final SQLException ex) {
@@ -98,5 +98,5 @@ public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallb
         return result;
     }
     
-    protected abstract T executeSQL(String dataSourceName, String sql, List<Object> parameters, Statement statement, ConnectionMode connectionMode) throws SQLException;
+    protected abstract T executeSQL(String sql, Statement statement, ConnectionMode connectionMode) throws SQLException;
 }

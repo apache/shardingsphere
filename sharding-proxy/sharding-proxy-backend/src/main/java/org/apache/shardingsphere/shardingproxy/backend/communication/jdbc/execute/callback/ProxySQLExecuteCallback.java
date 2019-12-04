@@ -64,8 +64,7 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
     }
     
     @Override
-    public ExecuteResponse executeSQL(final String dataSourceName, final String sql, 
-                                      final List<Object> parameters, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+    public ExecuteResponse executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
         boolean withMetaData = false;
         if (fetchMetaData && !hasMetaData) {
             hasMetaData = true;

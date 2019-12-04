@@ -37,7 +37,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -73,8 +72,7 @@ public class SQLExecuteCallbackTest {
         SQLExecuteCallback sqlExecuteCallback = new SQLExecuteCallback<Integer>(DatabaseTypes.getActualDatabaseType("MySQL"), true) {
             
             @Override
-            protected Integer executeSQL(
-                    final String dataSourceName, final String sql, final List<Object> parameters, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+            protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return ((PreparedStatement) statement).executeUpdate();
             }
         };
