@@ -74,8 +74,9 @@ public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallb
         DataSourceMetaData dataSourceMetaData = getDataSourceMetaData(statementExecuteUnit.getStatement().getConnection().getMetaData());
         SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
         try {
-            sqlExecutionHook.start(statementExecuteUnit.getRouteUnit(), dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);
-            T result = executeSQL(statementExecuteUnit.getRouteUnit(), statementExecuteUnit.getStatement(), statementExecuteUnit.getConnectionMode());
+            RouteUnit routeUnit = statementExecuteUnit.getRouteUnit();
+            sqlExecutionHook.start(routeUnit.getDataSourceName(), routeUnit.getSqlUnit().getSql(), routeUnit.getSqlUnit().getParameters(), dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);
+            T result = executeSQL(routeUnit, statementExecuteUnit.getStatement(), statementExecuteUnit.getConnectionMode());
             sqlExecutionHook.finishSuccess();
             return result;
         } catch (final SQLException ex) {
