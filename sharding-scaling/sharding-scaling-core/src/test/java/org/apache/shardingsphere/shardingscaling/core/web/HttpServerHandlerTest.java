@@ -52,7 +52,7 @@ public class HttpServerHandlerTest {
 
     @Test
     public void channelReadStart() {
-        fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/shardingscaling/start");
+        fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/shardingscaling/job/start");
         httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
         ArgumentCaptor argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
@@ -62,7 +62,7 @@ public class HttpServerHandlerTest {
 
     @Test
     public void channelReadProgress() {
-        fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/shardingscaling/progress/1");
+        fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/shardingscaling/job/progress/1");
         httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
         ArgumentCaptor argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
@@ -72,7 +72,7 @@ public class HttpServerHandlerTest {
 
     @Test
     public void channelReadStop() {
-        fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.DELETE, "/shardingscaling/stop/1");
+        fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/shardingscaling/job/stop");
         httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
         ArgumentCaptor argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
@@ -81,8 +81,18 @@ public class HttpServerHandlerTest {
     }
 
     @Test
-    public void channelReadUnsupport() {
+    public void channelReadUnsupport1() {
         fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.DELETE, "/shardingscaling/1");
+        httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
+        ArgumentCaptor argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
+        verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
+        FullHttpResponse fullHttpResponse = (FullHttpResponse) argumentCaptor.getValue();
+        assertEquals("not support request", fullHttpResponse.content().toString(CharsetUtil.UTF_8));
+    }
+
+    @Test
+    public void channelReadUnsupport2() {
+        fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.DELETE, "/shardingscaling/job/stop");
         httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
         ArgumentCaptor argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());

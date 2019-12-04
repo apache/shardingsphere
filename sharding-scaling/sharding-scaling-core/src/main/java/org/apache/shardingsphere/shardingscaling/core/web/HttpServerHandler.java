@@ -47,7 +47,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
-    private static final Pattern URL_PATTERN = Pattern.compile("(^/shardingscaling/start)|(^/shardingscaling/(progress|stop)/\\d+)",
+    private static final Pattern URL_PATTERN = Pattern.compile("(^/shardingscaling/job/(start|stop))|(^/shardingscaling/job/progress/\\d+)",
             Pattern.CASE_INSENSITIVE);
 
     private static final Gson GSON = new Gson();
@@ -63,17 +63,17 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
             response("not support request", channelHandlerContext, HttpResponseStatus.BAD_REQUEST, request);
             return;
         }
-        if ("/shardingscaling/start".equalsIgnoreCase(requestPath) && method.equals(HttpMethod.POST)) {
+        if ("/shardingscaling/job/start".equalsIgnoreCase(requestPath) && method.equals(HttpMethod.POST)) {
             startShardingScalingJob(requestBody);
             response("start", channelHandlerContext, HttpResponseStatus.OK, request);
             return;
         }
-        if (requestPath.contains("/shardingscaling/progress/") && method.equals(HttpMethod.GET)) {
+        if (requestPath.contains("/shardingscaling/job/progress/") && method.equals(HttpMethod.GET)) {
             //TODO
             response("progress", channelHandlerContext, HttpResponseStatus.OK, request);
             return;
         }
-        if (requestPath.contains("/shardingscaling/stop/") && method.equals(HttpMethod.DELETE)) {
+        if ("/shardingscaling/job/stop".equalsIgnoreCase(requestPath) && method.equals(HttpMethod.POST)) {
             //TODO
             response("stop", channelHandlerContext, HttpResponseStatus.OK, request);
             return;
