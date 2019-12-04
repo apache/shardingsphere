@@ -67,13 +67,13 @@ public final class ShowCreateTableMergedResultTest {
     
     @Test
     public void assertNextForEmptyQueryResult() throws SQLException {
-        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(shardingRule, Collections.<QueryResult>emptyList(), tableMetas);
+        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(shardingRule, tableMetas, Collections.<QueryResult>emptyList());
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForTableRuleIsPresent() throws SQLException {
-        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(shardingRule, Collections.singletonList(createQueryResult()), tableMetas);
+        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(shardingRule, tableMetas, Collections.singletonList(createQueryResult()));
         assertTrue(actual.next());
     }
     

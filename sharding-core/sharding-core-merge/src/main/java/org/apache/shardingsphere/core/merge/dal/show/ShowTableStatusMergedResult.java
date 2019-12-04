@@ -55,7 +55,7 @@ public final class ShowTableStatusMergedResult extends LogicTablesMergedResult {
         LABEL_AND_INDEX_MAP.put("Comment", 17);
     }
     
-    public ShowTableStatusMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults, final TableMetas tableMetas) throws SQLException {
-        super(LABEL_AND_INDEX_MAP, shardingRule, queryResults, tableMetas);
+    public ShowTableStatusMergedResult(final ShardingRule shardingRule, final TableMetas tableMetas, final List<QueryResult> queryResults) throws SQLException {
+        super(LABEL_AND_INDEX_MAP, shardingRule, tableMetas, queryResults);
     }
 }

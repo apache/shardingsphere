@@ -76,25 +76,25 @@ public final class ShowTablesMergedResultTest {
     
     @Test
     public void assertNextForEmptyQueryResult() throws SQLException {
-        ShowTablesMergedResult actual = new ShowTablesMergedResult(shardingRule, Collections.<QueryResult>emptyList(), tableMetas);
+        ShowTablesMergedResult actual = new ShowTablesMergedResult(shardingRule, tableMetas, Collections.<QueryResult>emptyList());
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForActualTableNameInTableRule() throws SQLException {
-        ShowTablesMergedResult actual = new ShowTablesMergedResult(shardingRule, Collections.singletonList(createQueryResult("table_0")), tableMetas);
+        ShowTablesMergedResult actual = new ShowTablesMergedResult(shardingRule, tableMetas, Collections.singletonList(createQueryResult("table_0")));
         assertTrue(actual.next());
     }
     
     @Test
     public void assertNextForActualTableNameNotInTableRuleWithDefaultDataSource() throws SQLException {
-        ShowTablesMergedResult actual = new ShowTablesMergedResult(shardingRule, Collections.singletonList(createQueryResult("table")), tableMetas);
+        ShowTablesMergedResult actual = new ShowTablesMergedResult(shardingRule, tableMetas, Collections.singletonList(createQueryResult("table")));
         assertTrue(actual.next());
     }
     
     @Test
     public void assertNextForActualTableNameNotInTableRuleWithoutDefaultDataSource() throws SQLException {
-        ShowTablesMergedResult actual = new ShowTablesMergedResult(shardingRule, Collections.singletonList(createQueryResult("table_3")), tableMetas);
+        ShowTablesMergedResult actual = new ShowTablesMergedResult(shardingRule, tableMetas, Collections.singletonList(createQueryResult("table_3")));
         assertFalse(actual.next());
     }
 }
