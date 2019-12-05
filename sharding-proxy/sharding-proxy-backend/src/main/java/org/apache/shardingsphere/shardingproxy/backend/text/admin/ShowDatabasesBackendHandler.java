@@ -34,7 +34,6 @@ import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Show databases backend handler.
@@ -56,8 +55,8 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
         return new QueryResponse(Collections.singletonList(new QueryHeader("information_schema", "SCHEMATA", "Database", "SCHEMA_NAME", 100, Types.VARCHAR, 0, false, false, false, false)));
     }
     
-    private List<String> getSchemaNames() {
-        List<String> result = new LinkedList<>(LogicSchemas.getInstance().getSchemaNames());
+    private Collection<String> getSchemaNames() {
+        Collection<String> result = new LinkedList<>(LogicSchemas.getInstance().getSchemaNames());
         Collection<String> authorizedSchemas = ShardingProxyContext.getInstance().getAuthentication().getUsers().get(backendConnection.getUserName()).getAuthorizedSchemas();
         if (!authorizedSchemas.isEmpty()) {
             result.retainAll(authorizedSchemas);
