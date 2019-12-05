@@ -60,7 +60,7 @@ public final class DescribeTableMergedResultTest {
     
     @Test
     public void assertFieldWithoutEncryptRule() throws SQLException {
-        ShardingRule shardingRule = createShardingRuleWithoutEncryptRule();
+        ShardingRule shardingRule = mock(ShardingRule.class);
         DescribeTableMergedResult actual = new DescribeTableMergedResult(shardingRule, Collections.singletonList(createQueryResult()), createSQLStatementContext());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, String.class).toString(), is("id"));
@@ -70,11 +70,14 @@ public final class DescribeTableMergedResultTest {
         assertThat(actual.getValue(1, String.class).toString(), is("pre_name"));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, String.class).toString(), is("name_assisted"));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, String.class).toString(), is("name_plain"));
+        assertFalse(actual.next());
     }
     
     @Test
     public void assertAllWithoutEncryptRule() throws SQLException {
-        ShardingRule shardingRule = createShardingRuleWithoutEncryptRule();
+        ShardingRule shardingRule = mock(ShardingRule.class);
         DescribeTableMergedResult actual = new DescribeTableMergedResult(shardingRule, Collections.singletonList(createQueryResult()), createSQLStatementContext());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, String.class).toString(), is("id"));
@@ -98,14 +101,6 @@ public final class DescribeTableMergedResultTest {
         assertThat(actual.getValue(6, String.class).toString(), is("auto_increment"));
     }
     
-    private ShardingRule createShardingRuleWithoutEncryptRule() {
-        ShardingRule result = mock(ShardingRule.class);
-        EncryptRule encryptRule = mock(EncryptRule.class);
-        when(encryptRule.findEncryptTable("user")).thenReturn(Optional.<EncryptTable>absent());
-        when(result.getEncryptRule()).thenReturn(encryptRule);
-        return result;
-    }
-    
     private ShardingRule createShardingRuleWithEncryptRule() {
         ShardingRule result = mock(ShardingRule.class);
         EncryptRule encryptRule = mock(EncryptRule.class);
@@ -113,6 +108,7 @@ public final class DescribeTableMergedResultTest {
         when(result.getEncryptRule()).thenReturn(encryptRule);
         when(encryptRule.findEncryptTable("user")).thenReturn(Optional.of(encryptTable));
         when(encryptTable.getAssistedQueryColumns()).thenReturn(Collections.singletonList("name_assisted"));
+        when(encryptTable.getPlainColumns()).thenReturn(Collections.singletonList("name_plain"));
         when(encryptTable.getCipherColumns()).thenReturn(Collections.singletonList("name"));
         when(encryptTable.getLogicColumn("name")).thenReturn("logic_name");
         return result;
@@ -122,7 +118,7 @@ public final class DescribeTableMergedResultTest {
         QueryResult result = mock(QueryResult.class);
         when(result.getColumnCount()).thenReturn(6);
         when(result.next()).thenReturn(true, true, true, true, true, false);
-        when(result.getValue(1, Object.class)).thenReturn("id", "name", "pre_name", "name_assisted");
+        when(result.getValue(1, Object.class)).thenReturn("id", "name", "pre_name", "name_assisted", "name_plain");
         when(result.getValue(2, Object.class)).thenReturn("int(11) unsigned", "varchar(100)");
         when(result.getValue(3, Object.class)).thenReturn("NO", "YES");
         when(result.getValue(4, Object.class)).thenReturn("PRI", "");
