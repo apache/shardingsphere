@@ -21,9 +21,9 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryMergedResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -81,11 +81,11 @@ public final class DescribeTableMergedResult extends MemoryMergedResult {
     
     private Optional<MemoryQueryResultRow> optimize(final QueryResult queryResult) throws SQLException {
         MemoryQueryResultRow memoryQueryResultRow = new MemoryQueryResultRow(queryResult);
-        String logicTableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        Optional<EncryptTable> encryptTable = shardingRule.getEncryptRule().findEncryptTable(logicTableName);
+        Optional<EncryptTable> encryptTable = null == shardingRule.getEncryptRule()
+                ? Optional.<EncryptTable>absent() : shardingRule.getEncryptRule().findEncryptTable(sqlStatementContext.getTablesContext().getSingleTableName());
         if (encryptTable.isPresent()) {
             String columnName = memoryQueryResultRow.getCell(1).toString();
-            if (encryptTable.get().getAssistedQueryColumns().contains(columnName)) {
+            if (encryptTable.get().getAssistedQueryColumns().contains(columnName) || encryptTable.get().getPlainColumns().contains(columnName)) {
                 return Optional.absent();
             }
             if (encryptTable.get().getCipherColumns().contains(columnName)) {

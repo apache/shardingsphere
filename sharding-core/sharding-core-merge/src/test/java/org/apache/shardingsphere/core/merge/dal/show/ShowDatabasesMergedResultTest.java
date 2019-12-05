@@ -98,7 +98,7 @@ public final class ShowDatabasesMergedResultTest {
     }
 
     private ShowDatabasesMergedResult buildMergedShowDatabasesMergedResult() throws SQLException {
-        return new ShowDatabasesMergedResult(null, Arrays.asList(createQueryResult1(), createQueryResult2()));
+        return new ShowDatabasesMergedResult(Arrays.asList(createQueryResult1(), createQueryResult2()));
     }
     
     private QueryResult createQueryResult1() throws SQLException {
