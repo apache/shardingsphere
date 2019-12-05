@@ -20,9 +20,9 @@ package org.apache.shardingsphere.core.execute.sql.execute;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.execute.engine.ShardingGroupExecuteCallback;
-import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.core.execute.hook.SQLExecutionHook;
+import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
@@ -54,8 +54,8 @@ public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallb
     private final boolean isExceptionThrown;
     
     @Override
-    public final Collection<T> execute(final Collection<StatementExecuteUnit> statementExecuteUnits, final boolean isTrunkThread,
-                                       final Map<String, Object> shardingExecuteDataMap) throws SQLException {
+    public final Collection<T> execute(final Collection<StatementExecuteUnit> statementExecuteUnits, 
+                                       final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) throws SQLException {
         Collection<T> result = new LinkedList<>();
         for (StatementExecuteUnit each : statementExecuteUnits) {
             result.add(execute0(each, isTrunkThread, shardingExecuteDataMap));
@@ -74,8 +74,9 @@ public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallb
         DataSourceMetaData dataSourceMetaData = getDataSourceMetaData(statementExecuteUnit.getStatement().getConnection().getMetaData());
         SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
         try {
-            sqlExecutionHook.start(statementExecuteUnit.getRouteUnit(), dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);
-            T result = executeSQL(statementExecuteUnit.getRouteUnit(), statementExecuteUnit.getStatement(), statementExecuteUnit.getConnectionMode());
+            RouteUnit routeUnit = statementExecuteUnit.getRouteUnit();
+            sqlExecutionHook.start(routeUnit.getDataSourceName(), routeUnit.getSqlUnit().getSql(), routeUnit.getSqlUnit().getParameters(), dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);
+            T result = executeSQL(routeUnit.getSqlUnit().getSql(), statementExecuteUnit.getStatement(), statementExecuteUnit.getConnectionMode());
             sqlExecutionHook.finishSuccess();
             return result;
         } catch (final SQLException ex) {
@@ -95,5 +96,5 @@ public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallb
         return result;
     }
     
-    protected abstract T executeSQL(RouteUnit routeUnit, Statement statement, ConnectionMode connectionMode) throws SQLException;
+    protected abstract T executeSQL(String sql, Statement statement, ConnectionMode connectionMode) throws SQLException;
 }

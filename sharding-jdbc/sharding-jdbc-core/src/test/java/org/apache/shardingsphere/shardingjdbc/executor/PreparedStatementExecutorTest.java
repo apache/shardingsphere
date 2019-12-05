@@ -266,8 +266,8 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         List<StatementExecuteUnit> preparedStatementExecuteUnits = new LinkedList<>();
         executeGroups.add(new ShardingExecuteGroup<>(preparedStatementExecuteUnits));
         for (PreparedStatement each : preparedStatements) {
-            preparedStatementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", 
-                    new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList((Object) 1))), each, ConnectionMode.MEMORY_STRICTLY));
+            preparedStatementExecuteUnits.add(
+                    new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList((Object) 1))), each, ConnectionMode.MEMORY_STRICTLY));
         }
         Field field = PreparedStatementExecutor.class.getSuperclass().getDeclaredField("executeGroups");
         field.setAccessible(true);

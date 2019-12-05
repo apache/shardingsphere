@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.core.execute.hook;
 
-import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,9 +38,10 @@ public final class SPISQLExecutionHook implements SQLExecutionHook {
     }
     
     @Override
-    public void start(final RouteUnit routeUnit, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
+    public void start(final String dataSourceName, final String sql, final List<Object> parameters, 
+                      final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
         for (SQLExecutionHook each : sqlExecutionHooks) {
-            each.start(routeUnit, dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);
+            each.start(dataSourceName, sql, parameters, dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);
         }
     }
     

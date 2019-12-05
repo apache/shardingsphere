@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
@@ -59,9 +58,7 @@ public final class SQLExecuteCallbackFactoryTest {
         when(preparedStatement.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(metaData);
         when(metaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
-        units = Lists.newArrayList(
-            new StatementExecuteUnit(new RouteUnit("ds", new SQLUnit("SELECT now()", Collections.emptyList())), preparedStatement, ConnectionMode.CONNECTION_STRICTLY)
-        );
+        units = Collections.singletonList(new StatementExecuteUnit(new RouteUnit("ds", new SQLUnit("SELECT now()", Collections.emptyList())), preparedStatement, ConnectionMode.CONNECTION_STRICTLY));
     }
     
     @Test
