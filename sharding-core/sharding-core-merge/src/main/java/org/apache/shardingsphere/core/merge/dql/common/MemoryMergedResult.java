@@ -19,7 +19,11 @@ package org.apache.shardingsphere.core.merge.dql.common;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -29,6 +33,8 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
 import java.util.Calendar;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,14 +47,34 @@ public abstract class MemoryMergedResult implements MergedResult {
     
     private final Map<String, Integer> labelAndIndexMap;
     
+    private final Iterator<MemoryQueryResultRow> memoryResultSetRows;
+    
     @Setter
     private MemoryQueryResultRow currentResultSetRow;
     
     private boolean wasNull;
     
+    protected MemoryMergedResult(final Map<String, Integer> labelAndIndexMap, final ShardingRule shardingRule, 
+                                 final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+        this.labelAndIndexMap = labelAndIndexMap;
+        memoryResultSetRows = init(shardingRule, tableMetas, sqlStatementContext, queryResults);
+    }
+    
+    protected abstract Iterator<MemoryQueryResultRow> init(ShardingRule shardingRule, 
+                                                           TableMetas tableMetas, SQLStatementContext sqlStatementContext, List<QueryResult> queryResults) throws SQLException;
+    
     protected final void resetLabelAndIndexMap(final Map<String, Integer> labelAndIndexMap) {
         this.labelAndIndexMap.clear();
         this.labelAndIndexMap.putAll(labelAndIndexMap);
+    }
+    
+    @Override
+    public final boolean next() {
+        if (memoryResultSetRows.hasNext()) {
+            currentResultSetRow = memoryResultSetRows.next();
+            return true;
+        }
+        return false;
     }
     
     @Override

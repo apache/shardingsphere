@@ -17,18 +17,27 @@
 
 package org.apache.shardingsphere.core.merge.dql.common.fixture;
 
+import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryMergedResult;
+import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public final class TestMemoryMergedResult extends MemoryMergedResult {
     
-    public TestMemoryMergedResult(final Map<String, Integer> labelAndIndexMap) {
-        super(labelAndIndexMap);
+    public TestMemoryMergedResult(final Map<String, Integer> labelAndIndexMap) throws SQLException {
+        super(labelAndIndexMap, null, null, null, Collections.<QueryResult>emptyList());
     }
     
     @Override
-    public boolean next() {
-        return false;
+    protected Iterator<MemoryQueryResultRow> init(final ShardingRule shardingRule, final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) {
+        return Collections.emptyIterator();
     }
 }

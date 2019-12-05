@@ -21,6 +21,7 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -41,8 +42,9 @@ public final class ShowCreateTableMergedResult extends LogicTablesMergedResult {
         LABEL_AND_INDEX_MAP.put("Create Table", 2);
     }
     
-    public ShowCreateTableMergedResult(final ShardingRule shardingRule, final TableMetas tableMetas, final List<QueryResult> queryResults) throws SQLException {
-        super(LABEL_AND_INDEX_MAP, shardingRule, tableMetas, queryResults);
+    public ShowCreateTableMergedResult(final ShardingRule shardingRule, 
+                                       final SQLStatementContext sqlStatementContext, final TableMetas tableMetas, final List<QueryResult> queryResults) throws SQLException {
+        super(LABEL_AND_INDEX_MAP, shardingRule, sqlStatementContext, tableMetas, queryResults);
     }
     
     @Override

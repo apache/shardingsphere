@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.merge.dal.show;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -55,7 +56,8 @@ public final class ShowTableStatusMergedResult extends LogicTablesMergedResult {
         LABEL_AND_INDEX_MAP.put("Comment", 17);
     }
     
-    public ShowTableStatusMergedResult(final ShardingRule shardingRule, final TableMetas tableMetas, final List<QueryResult> queryResults) throws SQLException {
-        super(LABEL_AND_INDEX_MAP, shardingRule, tableMetas, queryResults);
+    public ShowTableStatusMergedResult(final ShardingRule shardingRule, 
+                                       final SQLStatementContext sqlStatementContext, final TableMetas tableMetas, final List<QueryResult> queryResults) throws SQLException {
+        super(LABEL_AND_INDEX_MAP, shardingRule, sqlStatementContext, tableMetas, queryResults);
     }
 }

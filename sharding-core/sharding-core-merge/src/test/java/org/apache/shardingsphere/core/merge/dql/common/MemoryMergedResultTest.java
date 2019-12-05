@@ -50,7 +50,7 @@ public final class MemoryMergedResultTest {
     private TestMemoryMergedResult memoryMergedResult;
     
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException {
         Map<String, Integer> labelAndIndexMap = new HashMap<>(1, 1);
         labelAndIndexMap.put("label", 1);
         memoryMergedResult = new TestMemoryMergedResult(labelAndIndexMap);
