@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.execute.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.core.execute.hook.SQLExecutionHook;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
+import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
@@ -32,7 +33,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -74,11 +74,9 @@ public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallb
         DataSourceMetaData dataSourceMetaData = getDataSourceMetaData(statementExecuteUnit.getStatement().getConnection().getMetaData());
         SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
         try {
-            String dataSourceName = statementExecuteUnit.getDataSourceName();
-            String sql = statementExecuteUnit.getSql();
-            List<Object> parameters = statementExecuteUnit.getParameters();
-            sqlExecutionHook.start(dataSourceName, sql, parameters, dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);
-            T result = executeSQL(sql, statementExecuteUnit.getStatement(), statementExecuteUnit.getConnectionMode());
+            RouteUnit routeUnit = statementExecuteUnit.getRouteUnit();
+            sqlExecutionHook.start(routeUnit.getDataSourceName(), routeUnit.getSqlUnit().getSql(), routeUnit.getSqlUnit().getParameters(), dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);
+            T result = executeSQL(routeUnit.getSqlUnit().getSql(), statementExecuteUnit.getStatement(), statementExecuteUnit.getConnectionMode());
             sqlExecutionHook.finishSuccess();
             return result;
         } catch (final SQLException ex) {

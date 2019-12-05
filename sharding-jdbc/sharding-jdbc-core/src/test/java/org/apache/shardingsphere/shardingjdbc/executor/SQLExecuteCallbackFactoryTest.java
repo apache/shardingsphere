@@ -21,6 +21,8 @@ import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback;
+import org.apache.shardingsphere.core.route.RouteUnit;
+import org.apache.shardingsphere.core.route.SQLUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,7 +58,7 @@ public final class SQLExecuteCallbackFactoryTest {
         when(preparedStatement.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(metaData);
         when(metaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
-        units = Collections.singletonList(new StatementExecuteUnit("ds", "SELECT now()", Collections.emptyList(), preparedStatement, ConnectionMode.CONNECTION_STRICTLY));
+        units = Collections.singletonList(new StatementExecuteUnit(new RouteUnit("ds", new SQLUnit("SELECT now()", Collections.emptyList())), preparedStatement, ConnectionMode.CONNECTION_STRICTLY));
     }
     
     @Test

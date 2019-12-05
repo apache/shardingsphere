@@ -95,9 +95,8 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
             }
             
             @Override
-            public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final String dataSourceName, final String sql, 
-                                                                   final List<Object> parameters, final ConnectionMode connectionMode) throws SQLException {
-                return new StatementExecuteUnit(dataSourceName, sql, parameters, createPreparedStatement(connection, sql), connectionMode);
+            public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
+                return new StatementExecuteUnit(routeUnit, createPreparedStatement(connection, routeUnit.getSqlUnit().getSql()), connectionMode);
             }
         });
     }
@@ -185,7 +184,8 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
             for (StatementExecuteUnit eachUnit : each.getInputs()) {
                 Map<Integer, Integer> jdbcAndActualAddBatchCallTimesMap = Collections.emptyMap();
                 for (BatchRouteUnit eachRouteUnit : routeUnits) {
-                    if (eachRouteUnit.getRouteUnit().getDataSourceName().equals(eachUnit.getDataSourceName()) && eachRouteUnit.getRouteUnit().getSqlUnit().getSql().equals(eachUnit.getSql())) {
+                    if (eachRouteUnit.getRouteUnit().getDataSourceName().equals(eachUnit.getRouteUnit().getDataSourceName())
+                            && eachRouteUnit.getRouteUnit().getSqlUnit().getSql().equals(eachUnit.getRouteUnit().getSqlUnit().getSql())) {
                         jdbcAndActualAddBatchCallTimesMap = eachRouteUnit.getJdbcAndActualAddBatchCallTimesMap();
                         break;
                     }
@@ -254,7 +254,8 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
 
             @Override
             public boolean apply(final BatchRouteUnit input) {
-                return input.getRouteUnit().getDataSourceName().equals(executeUnit.getDataSourceName()) && input.getRouteUnit().getSqlUnit().getSql().equals(executeUnit.getSql());
+                return input.getRouteUnit().getDataSourceName().equals(executeUnit.getRouteUnit().getDataSourceName())
+                        && input.getRouteUnit().getSqlUnit().getSql().equals(executeUnit.getRouteUnit().getSqlUnit().getSql());
             }
         }).iterator().next().getParameterSets();
         return result;

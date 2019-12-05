@@ -98,10 +98,8 @@ public final class SQLExecutePrepareTemplate {
                                                                           final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final SQLExecutePrepareCallback callback) throws SQLException {
         List<StatementExecuteUnit> result = new LinkedList<>();
         for (SQLUnit each : sqlUnitGroup) {
-            result.add(callback.createStatementExecuteUnit(connection, dataSourceName, each.getSql(), each.getParameters(), connectionMode));
+            result.add(callback.createStatementExecuteUnit(connection, new RouteUnit(dataSourceName, each), connectionMode));
         }
         return new ShardingExecuteGroup<>(result);
     }
 }
-
-

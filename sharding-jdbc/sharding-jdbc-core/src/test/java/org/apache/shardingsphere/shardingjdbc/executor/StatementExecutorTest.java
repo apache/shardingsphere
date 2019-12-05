@@ -23,6 +23,8 @@ import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
+import org.apache.shardingsphere.core.route.RouteUnit;
+import org.apache.shardingsphere.core.route.SQLUnit;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -334,7 +336,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         List<StatementExecuteUnit> statementExecuteUnits = new LinkedList<>();
         executeGroups.add(new ShardingExecuteGroup<>(statementExecuteUnits));
         for (Statement each : statements) {
-            statementExecuteUnits.add(new StatementExecuteUnit("ds_0", isQuery ? DQL_SQL : DML_SQL, Collections.singletonList((Object) 1), each, ConnectionMode.MEMORY_STRICTLY));
+            statementExecuteUnits.add(
+                    new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList((Object) 1))), each, ConnectionMode.MEMORY_STRICTLY));
         }
         Field field = StatementExecutor.class.getSuperclass().getDeclaredField("executeGroups");
         field.setAccessible(true);

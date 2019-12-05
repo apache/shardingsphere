@@ -20,9 +20,9 @@ package org.apache.shardingsphere.core.execute.sql;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
+import org.apache.shardingsphere.core.route.RouteUnit;
 
 import java.sql.Statement;
-import java.util.List;
 
 /**
  * Execute unit for JDBC statement.
@@ -34,11 +34,7 @@ import java.util.List;
 @Getter
 public final class StatementExecuteUnit {
     
-    private final String dataSourceName;
-    
-    private final String sql;
-    
-    private final List<Object> parameters;
+    private final RouteUnit routeUnit;
     
     private final Statement statement;
     
