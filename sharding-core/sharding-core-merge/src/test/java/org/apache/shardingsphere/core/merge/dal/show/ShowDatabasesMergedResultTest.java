@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -40,7 +41,7 @@ public final class ShowDatabasesMergedResultTest {
     
     @Before
     public void setUp() {
-        showDatabasesMergedResult = new ShowDatabasesMergedResult();
+        showDatabasesMergedResult = new ShowDatabasesMergedResult(Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME));
     }
     
     @Test
