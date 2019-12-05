@@ -18,17 +18,18 @@
 package org.apache.shardingsphere.shardingscaling.core.synctask.realtime;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.execute.engine.ExecuteUtil;
 import org.apache.shardingsphere.shardingscaling.core.execute.engine.SyncTaskExecuteCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.AckCallback;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.RealtimeSyncChannel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManagerFactory;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.Reader;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.ReaderFactory;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.WriterFactory;
@@ -55,10 +56,13 @@ public final class RealtimeDataSyncTask implements SyncTask {
 
     private Reader reader;
     
+    private Heartbeat heartbeat;
+    
     public RealtimeDataSyncTask(final SyncConfiguration syncConfiguration) {
         this.syncConfiguration = syncConfiguration;
         DataSourceMetaData dataSourceMetaData = syncConfiguration.getReaderConfiguration().getDataSourceConfiguration().getDataSourceMetaData();
         syncTaskId = String.format("realtime-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema());
+        heartbeat = new Heartbeat((JdbcDataSourceConfiguration) syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
     }
 
     @Override
@@ -73,6 +77,7 @@ public final class RealtimeDataSyncTask implements SyncTask {
         List<Writer> writers = instanceWriters();
         RealtimeSyncChannel channel = instanceChannel(writers.size());
         ExecuteUtil.execute(channel, reader, writers, new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncTaskId, callback));
+        heartbeat.start();
     }
     
     private List<Writer> instanceWriters() {
@@ -88,6 +93,9 @@ public final class RealtimeDataSyncTask implements SyncTask {
             @Override
             public void onAck(final List<Record> records) {
                 logPositionManager.updateCurrentPosition(records.get(records.size() - 1).getLogPosition());
+                for (Record record : records) {
+                    heartbeat.updateLastUpdateTime((DataRecord) record);
+                }
             }
         }));
     }

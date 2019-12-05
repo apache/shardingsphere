@@ -15,8 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute.executor.channel;
+package org.apache.shardingsphere.shardingscaling.core.synctask.realtime;
 
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.AckCallback;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.MemoryChannel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.FinishedRecord;
