@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.merge.dal.show.ShowCreateTableMergedResult
 import org.apache.shardingsphere.core.merge.dal.show.ShowDatabasesMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowOtherMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowTablesMergedResult;
-import org.apache.shardingsphere.core.merge.fixture.ResultSetBasedQueryResultFixture;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.DescribeStatement;
@@ -34,9 +33,8 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Show
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -46,12 +44,11 @@ import static org.mockito.Mockito.when;
 
 public final class DALMergeEngineTest {
     
-    private List<QueryResult> queryResults;
+    private List<QueryResult> queryResults = new LinkedList<>();
     
     @Before
     public void setUp() {
-        ResultSet resultSet = mock(ResultSet.class);
-        queryResults = Collections.<QueryResult>singletonList(new ResultSetBasedQueryResultFixture(resultSet));
+        queryResults.add(mock(QueryResult.class));
     }
     
     @Test
