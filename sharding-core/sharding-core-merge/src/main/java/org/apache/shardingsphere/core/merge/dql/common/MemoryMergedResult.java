@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -53,11 +54,11 @@ public abstract class MemoryMergedResult implements MergedResult {
     
     protected MemoryMergedResult(final ShardingRule shardingRule, 
                                  final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        memoryResultSetRows = init(shardingRule, tableMetas, sqlStatementContext, queryResults);
+        memoryResultSetRows = init(shardingRule, tableMetas, sqlStatementContext, queryResults).iterator();
     }
     
-    protected abstract Iterator<MemoryQueryResultRow> init(ShardingRule shardingRule, 
-                                                           TableMetas tableMetas, SQLStatementContext sqlStatementContext, List<QueryResult> queryResults) throws SQLException;
+    protected abstract Collection<MemoryQueryResultRow> init(ShardingRule shardingRule, TableMetas tableMetas, 
+                                                             SQLStatementContext sqlStatementContext, List<QueryResult> queryResults) throws SQLException;
     
     @Override
     public final boolean next() {

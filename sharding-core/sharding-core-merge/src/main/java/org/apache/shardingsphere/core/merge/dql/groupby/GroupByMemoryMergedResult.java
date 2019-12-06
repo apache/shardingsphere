@@ -35,9 +35,9 @@ import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLSta
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -55,8 +55,8 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
     }
     
     @Override
-    protected Iterator<MemoryQueryResultRow> init(final ShardingRule shardingRule, 
-                                                  final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+    protected Collection<MemoryQueryResultRow> init(final ShardingRule shardingRule, final TableMetas tableMetas, 
+                                                    final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         SelectSQLStatementContext selectSQLStatementContext = (SelectSQLStatementContext) sqlStatementContext;
         Map<GroupByValue, MemoryQueryResultRow> dataMap = new HashMap<>(1024);
         Map<GroupByValue, Map<AggregationProjection, AggregationUnit>> aggregationMap = new HashMap<>(1024);
@@ -73,7 +73,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
         if (!result.isEmpty()) {
             setCurrentResultSetRow(result.get(0));
         }
-        return result.iterator();
+        return result;
     }
     
     private void initForFirstGroupByValue(final SelectSQLStatementContext selectSQLStatementContext, final QueryResult queryResult, 

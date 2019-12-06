@@ -25,8 +25,8 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 public final class TestMemoryMergedResult extends MemoryMergedResult {
@@ -36,7 +36,8 @@ public final class TestMemoryMergedResult extends MemoryMergedResult {
     }
     
     @Override
-    protected Iterator<MemoryQueryResultRow> init(final ShardingRule shardingRule, final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) {
-        return Collections.emptyIterator();
+    protected Collection<MemoryQueryResultRow> init(final ShardingRule shardingRule, final TableMetas tableMetas, 
+                                                    final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) {
+        return Collections.emptyList();
     }
 }

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.sql.SQLException;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,8 +43,8 @@ public final class DescribeTableMergedResult extends MemoryMergedResult {
     }
     
     @Override
-    protected Iterator<MemoryQueryResultRow> init(final ShardingRule shardingRule, 
-                                                  final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+    protected Collection<MemoryQueryResultRow> init(final ShardingRule shardingRule, final TableMetas tableMetas, 
+                                                    final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         List<MemoryQueryResultRow> result = new LinkedList<>();
         for (QueryResult each : queryResults) {
             while (each.next()) {
@@ -57,7 +57,7 @@ public final class DescribeTableMergedResult extends MemoryMergedResult {
         if (!result.isEmpty()) {
             setCurrentResultSetRow(result.get(0));
         }
-        return result.iterator();
+        return result;
     }
     
     private Optional<MemoryQueryResultRow> optimize(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final QueryResult queryResult) throws SQLException {
