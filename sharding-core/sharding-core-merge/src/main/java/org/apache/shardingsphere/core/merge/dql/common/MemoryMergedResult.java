@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.merge.dql.common;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
@@ -33,7 +32,6 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -47,18 +45,21 @@ public abstract class MemoryMergedResult implements MergedResult {
     
     private final Iterator<MemoryQueryResultRow> memoryResultSetRows;
     
-    @Setter
     private MemoryQueryResultRow currentResultSetRow;
     
     private boolean wasNull;
     
     protected MemoryMergedResult(final ShardingRule shardingRule, 
                                  final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        memoryResultSetRows = init(shardingRule, tableMetas, sqlStatementContext, queryResults).iterator();
+        List<MemoryQueryResultRow> memoryQueryResultRowList = init(shardingRule, tableMetas, sqlStatementContext, queryResults);
+        memoryResultSetRows = memoryQueryResultRowList.iterator();
+        if (!memoryQueryResultRowList.isEmpty()) {
+            currentResultSetRow = memoryQueryResultRowList.get(0);
+        }
     }
     
-    protected abstract Collection<MemoryQueryResultRow> init(ShardingRule shardingRule, TableMetas tableMetas, 
-                                                             SQLStatementContext sqlStatementContext, List<QueryResult> queryResults) throws SQLException;
+    protected abstract List<MemoryQueryResultRow> init(ShardingRule shardingRule, TableMetas tableMetas, 
+                                                       SQLStatementContext sqlStatementContext, List<QueryResult> queryResults) throws SQLException;
     
     @Override
     public final boolean next() {

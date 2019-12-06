@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,7 +45,7 @@ public abstract class LogicTablesMergedResult extends MemoryMergedResult {
     }
     
     @Override
-    protected final Collection<MemoryQueryResultRow> init(final ShardingRule shardingRule, final TableMetas tableMetas, 
+    protected final List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final TableMetas tableMetas, 
                                                           final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         List<MemoryQueryResultRow> result = new LinkedList<>();
         Set<String> tableNames = new HashSet<>();
@@ -65,9 +64,6 @@ public abstract class LogicTablesMergedResult extends MemoryMergedResult {
                     result.add(memoryResultSetRow);
                 }
             }
-        }
-        if (!result.isEmpty()) {
-            setCurrentResultSetRow(result.get(0));
         }
         return result;
     }

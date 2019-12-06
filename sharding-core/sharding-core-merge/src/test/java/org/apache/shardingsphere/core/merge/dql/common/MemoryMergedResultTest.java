@@ -20,9 +20,6 @@ package org.apache.shardingsphere.core.merge.dql.common;
 import org.apache.shardingsphere.core.merge.dql.common.fixture.TestMemoryMergedResult;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -39,18 +36,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class MemoryMergedResultTest {
     
-    @Mock
-    private MemoryQueryResultRow memoryResultSetRow;
-    
     private TestMemoryMergedResult memoryMergedResult;
+    
+    private MemoryQueryResultRow memoryResultSetRow;
     
     @Before
     public void setUp() throws SQLException {
         memoryMergedResult = new TestMemoryMergedResult();
-        memoryMergedResult.setCurrentResultSetRow(memoryResultSetRow);
+        memoryResultSetRow = memoryMergedResult.getMemoryQueryResultRow();
     }
     
     @Test

@@ -35,7 +35,6 @@ import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLSta
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +54,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
     }
     
     @Override
-    protected Collection<MemoryQueryResultRow> init(final ShardingRule shardingRule, final TableMetas tableMetas, 
+    protected List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final TableMetas tableMetas, 
                                                     final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         SelectSQLStatementContext selectSQLStatementContext = (SelectSQLStatementContext) sqlStatementContext;
         Map<GroupByValue, MemoryQueryResultRow> dataMap = new HashMap<>(1024);
@@ -69,11 +68,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult {
         }
         setAggregationValueToMemoryRow(selectSQLStatementContext, dataMap, aggregationMap);
         List<Boolean> valueCaseSensitive = queryResults.isEmpty() ? Collections.<Boolean>emptyList() : getValueCaseSensitive(queryResults.iterator().next());
-        List<MemoryQueryResultRow> result = getMemoryResultSetRows(selectSQLStatementContext, dataMap, valueCaseSensitive);
-        if (!result.isEmpty()) {
-            setCurrentResultSetRow(result.get(0));
-        }
-        return result;
+        return getMemoryResultSetRows(selectSQLStatementContext, dataMap, valueCaseSensitive);
     }
     
     private void initForFirstGroupByValue(final SelectSQLStatementContext selectSQLStatementContext, final QueryResult queryResult, 
