@@ -30,6 +30,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.A
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.MemoryChannel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.Reader;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.ReaderFactory;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.WriterFactory;
@@ -90,7 +91,13 @@ public class HistoryDataSyncTask implements SyncTask {
 
             @Override
             public void onAck(final List<Record> records) {
-                syncedRows.addAndGet(records.size());
+                int count = 0;
+                for (Record record : records) {
+                    if (DataRecord.class.equals(record.getClass())) {
+                        count++;
+                    }
+                }
+                syncedRows.addAndGet(count);
             }
         }), reader, Collections.singletonList(writer), new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncTaskId, callback));
     }

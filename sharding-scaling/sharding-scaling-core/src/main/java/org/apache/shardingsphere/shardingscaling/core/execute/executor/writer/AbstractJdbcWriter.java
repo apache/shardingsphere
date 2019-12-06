@@ -79,6 +79,7 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
                 if (null != records && 0 < records.size()) {
                     flush(dataSource, records);
                     if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
+                        channel.ack();
                         break;
                     }
                 }
