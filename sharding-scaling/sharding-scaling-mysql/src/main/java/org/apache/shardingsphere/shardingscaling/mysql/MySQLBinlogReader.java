@@ -105,7 +105,7 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
             return;
         }
         WriteRowsEvent wred = event;
-        for (Serializable[] each : wred.getAfterColumns()) {
+        for (Serializable[] each : wred.getAfterRows()) {
             DataRecord record = new DataRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId()), each.length);
             record.setFullTableName(wred.getTableName());
             record.setType("insert");
@@ -122,9 +122,9 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
             return;
         }
         UpdateRowsEvent ured = event;
-        for (int i = 0; i < ured.getBeforeColumns().size(); i++) {
-            Serializable[] beforeValues = ured.getBeforeColumns().get(i);
-            Serializable[] afterValues = ured.getAfterColumns().get(i);
+        for (int i = 0; i < ured.getBeforeRows().size(); i++) {
+            Serializable[] beforeValues = ured.getBeforeRows().get(i);
+            Serializable[] afterValues = ured.getAfterRows().get(i);
             DataRecord record = new DataRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId()), beforeValues.length);
             record.setFullTableName(event.getTableName());
             record.setType("update");
@@ -143,7 +143,7 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
             return;
         }
         DeleteRowsEvent dred = event;
-        for (Serializable[] each : dred.getBeforeColumns()) {
+        for (Serializable[] each : dred.getBeforeRows()) {
             DataRecord record = new DataRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId()), each.length);
             record.setFullTableName(dred.getTableName());
             record.setType("delete");

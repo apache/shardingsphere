@@ -32,6 +32,6 @@ public class WriteRowsEvent extends AbstractBinlogEvent {
 
     private String tableName;
 
-    private List<Serializable[]> afterColumns;
+    private List<Serializable[]> afterRows;
 
 }

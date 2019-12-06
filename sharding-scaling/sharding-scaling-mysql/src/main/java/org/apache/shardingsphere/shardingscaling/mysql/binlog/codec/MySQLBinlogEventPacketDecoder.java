@@ -120,7 +120,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         rowsEvent.parsePayload(binlogContext, in);
         DeleteRowsEvent result = new DeleteRowsEvent();
         result.setTableName(binlogContext.getFullTableName(rowsEvent.getTableId()));
-        result.setBeforeColumns(rowsEvent.getColumnValues1());
+        result.setBeforeRows(rowsEvent.getRows1());
         result.setFileName(binlogContext.getFileName());
         result.setPosition(binlogEventHeader.getEndLogPos());
         result.setTimestamp(binlogEventHeader.getTimeStamp());
@@ -134,8 +134,8 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         rowsEvent.parsePayload(binlogContext, in);
         UpdateRowsEvent result = new UpdateRowsEvent();
         result.setTableName(binlogContext.getFullTableName(rowsEvent.getTableId()));
-        result.setBeforeColumns(rowsEvent.getColumnValues1());
-        result.setAfterColumns(rowsEvent.getColumnValues2());
+        result.setBeforeRows(rowsEvent.getRows1());
+        result.setAfterRows(rowsEvent.getRows2());
         result.setFileName(binlogContext.getFileName());
         result.setPosition(binlogEventHeader.getEndLogPos());
         result.setTimestamp(binlogEventHeader.getTimeStamp());
@@ -149,7 +149,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         rowsEvent.parsePayload(binlogContext, in);
         WriteRowsEvent result = new WriteRowsEvent();
         result.setTableName(binlogContext.getFullTableName(rowsEvent.getTableId()));
-        result.setAfterColumns(rowsEvent.getColumnValues1());
+        result.setAfterRows(rowsEvent.getRows1());
         result.setFileName(binlogContext.getFileName());
         result.setPosition(binlogEventHeader.getEndLogPos());
         result.setTimestamp(binlogEventHeader.getTimeStamp());

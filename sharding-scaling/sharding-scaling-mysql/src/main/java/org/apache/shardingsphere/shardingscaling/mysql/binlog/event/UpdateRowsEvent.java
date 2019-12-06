@@ -33,9 +33,9 @@ public class UpdateRowsEvent extends AbstractBinlogEvent {
 
     private String tableName;
 
-    private List<Serializable[]> beforeColumns;
+    private List<Serializable[]> beforeRows;
 
-    private List<Serializable[]> afterColumns;
+    private List<Serializable[]> afterRows;
 
     private BitSet changedBitmap;
 

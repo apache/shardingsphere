@@ -32,6 +32,6 @@ public class DeleteRowsEvent extends AbstractBinlogEvent {
 
     private String tableName;
 
-    private List<Serializable[]> beforeColumns;
+    private List<Serializable[]> beforeRows;
 
 }
