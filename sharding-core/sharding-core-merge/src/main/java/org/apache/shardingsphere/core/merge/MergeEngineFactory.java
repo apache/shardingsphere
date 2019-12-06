@@ -23,13 +23,12 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dal.DALMergeEngine;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -50,10 +49,9 @@ public final class MergeEngineFactory {
      * @param tableMetas sharding table meta Data
      * @param queryResults query results
      * @return merge engine instance
-     * @throws SQLException SQL exception
      */
     public static MergeEngine newInstance(final DatabaseType databaseType, final ShardingRule shardingRule,
-                                          final SQLRouteResult routeResult, final TableMetas tableMetas, final List<QueryResult> queryResults) throws SQLException {
+                                          final SQLRouteResult routeResult, final TableMetas tableMetas, final List<QueryResult> queryResults) {
         if (routeResult.getSqlStatementContext() instanceof SelectSQLStatementContext) {
             return new DQLMergeEngine(databaseType, (SelectSQLStatementContext) routeResult.getSqlStatementContext(), queryResults);
         } 

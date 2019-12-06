@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.core.execute.hook.fixture;
 
 import org.apache.shardingsphere.core.execute.hook.SQLExecutionHook;
-import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public final class SQLExecutionHookFixture implements SQLExecutionHook {
@@ -30,7 +30,8 @@ public final class SQLExecutionHookFixture implements SQLExecutionHook {
     private static final Collection<String> ACTIONS = new LinkedList<>();
     
     @Override
-    public void start(final RouteUnit routeUnit, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
+    public void start(final String dataSourceName, final String sql, final List<Object> parameters, 
+                      final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
         ACTIONS.add("start");
     }
     

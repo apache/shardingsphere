@@ -22,11 +22,11 @@ import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.sql.prepare.SQLExecutePrepareCallback;
 import org.apache.shardingsphere.core.route.RouteUnit;
-import org.apache.shardingsphere.spi.database.MySQLDatabaseType;
-import org.apache.shardingsphere.spi.database.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.spi.database.MySQLDatabaseType;
+import org.apache.shardingsphere.spi.database.PostgreSQLDatabaseType;
 
 import java.sql.Connection;
 import java.sql.SQLException;

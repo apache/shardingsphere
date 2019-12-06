@@ -63,19 +63,19 @@ public final class DALMergeEngine implements MergeEngine {
     public MergedResult merge() throws SQLException {
         SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
         if (dalStatement instanceof ShowDatabasesStatement) {
-            return new ShowDatabasesMergedResult(shardingRule, queryResults);
+            return new ShowDatabasesMergedResult(queryResults);
         }
         if (dalStatement instanceof ShowTableStatusStatement) {
-            return new ShowTableStatusMergedResult(shardingRule, queryResults, tableMetas);
+            return new ShowTableStatusMergedResult(shardingRule, tableMetas, queryResults);
         }
         if (dalStatement instanceof ShowTablesStatement) {
-            return new ShowTablesMergedResult(shardingRule, queryResults, tableMetas);
+            return new ShowTablesMergedResult(shardingRule, tableMetas, queryResults);
         }
         if (dalStatement instanceof ShowCreateTableStatement) {
-            return new ShowCreateTableMergedResult(shardingRule, queryResults, tableMetas);
+            return new ShowCreateTableMergedResult(shardingRule, tableMetas, queryResults);
         }
         if (dalStatement instanceof ShowIndexStatement) {
-            return new ShowIndexMergedResult(shardingRule, queryResults, tableMetas);
+            return new ShowIndexMergedResult(shardingRule, tableMetas, queryResults);
         }
         if (dalStatement instanceof DescribeStatement) {
             return new DescribeTableMergedResult(shardingRule, queryResults, sqlStatementContext);

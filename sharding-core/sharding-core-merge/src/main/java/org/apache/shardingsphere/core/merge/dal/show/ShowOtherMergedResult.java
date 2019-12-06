@@ -47,27 +47,12 @@ public final class ShowOtherMergedResult implements MergedResult {
     }
     
     @Override
-    public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
-        return queryResult.getValue(columnLabel, type);
-    }
-    
-    @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
         throw new SQLFeatureNotSupportedException();
     }
     
     @Override
-    public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
     public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
         throw new SQLFeatureNotSupportedException();
     }
     

@@ -89,7 +89,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(statement.executeQuery(DQL_SQL)).thenReturn(resultSet);
         setExecuteGroups(Collections.singletonList(statement), true);
-        assertThat((String) actual.executeQuery().iterator().next().getValue(1, String.class), is("decryptValue"));
+        assertThat((String) actual.executeQuery().iterator().next().getValue(1, String.class), is("value"));
         verify(statement).executeQuery(DQL_SQL);
     }
     
@@ -113,9 +113,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement2.executeQuery(DQL_SQL)).thenReturn(resultSet2);
         setExecuteGroups(Arrays.asList(statement1, statement2), true);
         List<QueryResult> result = actual.executeQuery();
-        for (QueryResult each : result) {
-            assertThat(String.valueOf(each.getValue(1, int.class)), is("decryptValue"));
-        }
+        assertThat(String.valueOf(result.get(0).getValue(1, int.class)), is("1"));
+        assertThat(String.valueOf(result.get(1).getValue(1, int.class)), is("2"));
         verify(statement1).executeQuery(DQL_SQL);
         verify(statement2).executeQuery(DQL_SQL);
     }
@@ -337,8 +336,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         List<StatementExecuteUnit> statementExecuteUnits = new LinkedList<>();
         executeGroups.add(new ShardingExecuteGroup<>(statementExecuteUnits));
         for (Statement each : statements) {
-            statementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", 
-                    new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList((Object) 1))), each, ConnectionMode.MEMORY_STRICTLY));
+            statementExecuteUnits.add(
+                    new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList((Object) 1))), each, ConnectionMode.MEMORY_STRICTLY));
         }
         Field field = StatementExecutor.class.getSuperclass().getDeclaredField("executeGroups");
         field.setAccessible(true);

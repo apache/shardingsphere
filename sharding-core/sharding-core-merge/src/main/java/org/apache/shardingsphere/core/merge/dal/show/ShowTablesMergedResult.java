@@ -41,8 +41,8 @@ public final class ShowTablesMergedResult extends LogicTablesMergedResult {
         LABEL_AND_INDEX_MAP.put("Tables_in_" + ShardingConstant.LOGIC_SCHEMA_NAME, 1);
     }
     
-    public ShowTablesMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults, final TableMetas tableMetas) throws SQLException {
-        super(LABEL_AND_INDEX_MAP, shardingRule, queryResults, tableMetas);
+    public ShowTablesMergedResult(final ShardingRule shardingRule, final TableMetas tableMetas, final List<QueryResult> queryResults) throws SQLException {
+        super(LABEL_AND_INDEX_MAP, shardingRule, tableMetas, queryResults);
     }
     
     /**

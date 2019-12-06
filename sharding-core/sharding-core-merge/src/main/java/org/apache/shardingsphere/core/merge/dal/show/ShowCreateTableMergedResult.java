@@ -41,8 +41,8 @@ public final class ShowCreateTableMergedResult extends LogicTablesMergedResult {
         LABEL_AND_INDEX_MAP.put("Create Table", 2);
     }
     
-    public ShowCreateTableMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults, final TableMetas tableMetas) throws SQLException {
-        super(LABEL_AND_INDEX_MAP, shardingRule, queryResults, tableMetas);
+    public ShowCreateTableMergedResult(final ShardingRule shardingRule, final TableMetas tableMetas, final List<QueryResult> queryResults) throws SQLException {
+        super(LABEL_AND_INDEX_MAP, shardingRule, tableMetas, queryResults);
     }
     
     @Override

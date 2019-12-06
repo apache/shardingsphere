@@ -42,14 +42,14 @@ public abstract class LogicTablesMergedResult extends MemoryMergedResult {
     
     private final ShardingRule shardingRule;
     
+    private final TableMetas tableMetas;
+    
     private final Iterator<MemoryQueryResultRow> memoryResultSetRows;
     
     private final Set<String> tableNames = new HashSet<>();
     
-    private final TableMetas tableMetas;
-    
     public LogicTablesMergedResult(final Map<String, Integer> labelAndIndexMap, 
-                                   final ShardingRule shardingRule, final List<QueryResult> queryResults, final TableMetas tableMetas) throws SQLException {
+                                   final ShardingRule shardingRule, final TableMetas tableMetas, final List<QueryResult> queryResults) throws SQLException {
         super(labelAndIndexMap);
         this.shardingRule = shardingRule;
         this.tableMetas = tableMetas;

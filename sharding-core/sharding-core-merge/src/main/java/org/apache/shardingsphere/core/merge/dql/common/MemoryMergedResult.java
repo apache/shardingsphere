@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.merge.dql.common;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.merge.MergedResult;
-import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -63,16 +62,6 @@ public abstract class MemoryMergedResult implements MergedResult {
     }
     
     @Override
-    public final Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
-        if (Blob.class == type || Clob.class == type || Reader.class == type || InputStream.class == type || SQLXML.class == type) {
-            throw new SQLFeatureNotSupportedException();
-        }
-        Object result = currentResultSetRow.getCell(labelAndIndexMap.containsKey(columnLabel) ? labelAndIndexMap.get(columnLabel) : labelAndIndexMap.get(SQLUtil.getExactlyValue(columnLabel)));
-        wasNull = null == result;
-        return result;
-    }
-    
-    @Override
     public final Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
         // TODO implement with calendar
         Object result = currentResultSetRow.getCell(columnIndex);
@@ -81,20 +70,7 @@ public abstract class MemoryMergedResult implements MergedResult {
     }
     
     @Override
-    public final Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
-        // TODO implement with calendar
-        Object result = currentResultSetRow.getCell(labelAndIndexMap.get(columnLabel));
-        wasNull = null == result;
-        return result;
-    }
-    
-    @Override
     public final InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public final InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
         throw new SQLFeatureNotSupportedException();
     }
     

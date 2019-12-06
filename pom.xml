@@ -94,7 +94,7 @@
         <commons-pool.version>1.6</commons-pool.version>
         <h2.version>1.4.196</h2.version>
         <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
-        <postgresql.version>42.2.5</postgresql.version>
+        <postgresql.version>42.2.5.jre7</postgresql.version>
         <mssql.version>6.1.7.jre7-preview</mssql.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
 
