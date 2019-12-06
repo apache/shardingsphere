@@ -37,7 +37,7 @@ import java.util.Set;
  *
  * @author zhangliang
  */
-public abstract class LogicTablesMergedResult extends MemoryMergedResult {
+public class LogicTablesMergedResult extends MemoryMergedResult {
     
     public LogicTablesMergedResult(final ShardingRule shardingRule, 
                                    final SQLStatementContext sqlStatementContext, final TableMetas tableMetas, final List<QueryResult> queryResults) throws SQLException {
@@ -46,7 +46,7 @@ public abstract class LogicTablesMergedResult extends MemoryMergedResult {
     
     @Override
     protected final List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final TableMetas tableMetas, 
-                                                          final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+                                                    final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         List<MemoryQueryResultRow> result = new LinkedList<>();
         Set<String> tableNames = new HashSet<>();
         for (QueryResult each : queryResults) {
