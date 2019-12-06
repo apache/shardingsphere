@@ -45,7 +45,7 @@ public class MySQLLogPositionManagerTest {
     
     private static final long LOG_POSITION = 4L;
     
-    private static final String SERVER_ID = "555555";
+    private static final long SERVER_ID = 555555;
     
     @Mock
     private DataSource dataSource;
@@ -85,7 +85,7 @@ public class MySQLLogPositionManagerTest {
     @Test
     public void assertUpdateCurrentPosition() {
         MySQLLogPositionManager mySQLLogManager = new MySQLLogPositionManager(rdbmsConfiguration);
-        BinlogPosition expected = new BinlogPosition(SERVER_ID, LOG_FILE_NAME, LOG_POSITION);
+        BinlogPosition expected = new BinlogPosition(LOG_FILE_NAME, LOG_POSITION, SERVER_ID);
         mySQLLogManager.updateCurrentPosition(expected);
         assertThat(mySQLLogManager.getCurrentPosition(), is(expected));
     }
@@ -107,7 +107,7 @@ public class MySQLLogPositionManagerTest {
         ResultSet resultSet = mock(ResultSet.class);
         when(result.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getString(2)).thenReturn(SERVER_ID);
+        when(resultSet.getLong(2)).thenReturn(SERVER_ID);
         return result;
     }
 }

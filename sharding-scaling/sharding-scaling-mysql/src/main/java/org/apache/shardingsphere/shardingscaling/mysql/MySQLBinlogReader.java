@@ -101,14 +101,15 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
     }
 
     private void handleWriteRowsEvent(final Channel channel, final JdbcUri uri, final WriteRowsEvent event) {
+        if (filter(uri.getDatabase(), event.getTableName())) {
+            return;
+        }
         WriteRowsEvent wred = event;
         for (Serializable[] each : wred.getAfterColumns()) {
-            if (filter(uri.getDatabase(), wred.getTableName())) {
-                continue;
-            }
-            DataRecord record = new DataRecord(new BinlogPosition("1", wred.getFileName(), wred.getPosition()), each.length);
+            DataRecord record = new DataRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId()), each.length);
             record.setFullTableName(wred.getTableName());
             record.setType("insert");
+            record.setCommitTime(wred.getTimestamp());
             for (int i = 0; i < each.length; i++) {
                 record.addColumn(new Column(getColumnValue(record.getTableName(), i, each[i]), true));
             }
@@ -117,16 +118,17 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
     }
 
     private void handleUpdateRowsEvent(final Channel channel, final JdbcUri uri, final UpdateRowsEvent event) {
+        if (filter(uri.getDatabase(), event.getTableName())) {
+            return;
+        }
         UpdateRowsEvent ured = event;
         for (int i = 0; i < ured.getBeforeColumns().size(); i++) {
-            if (filter(uri.getDatabase(), event.getTableName())) {
-                continue;
-            }
             Serializable[] beforeValues = ured.getBeforeColumns().get(i);
             Serializable[] afterValues = ured.getAfterColumns().get(i);
-            DataRecord record = new DataRecord(new BinlogPosition("1", ured.getFileName(), ured.getPosition()), beforeValues.length);
+            DataRecord record = new DataRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId()), beforeValues.length);
             record.setFullTableName(event.getTableName());
             record.setType("update");
+            record.setCommitTime(ured.getTimestamp());
             for (int j = 0; j < beforeValues.length; j++) {
                 Object oldValue = getColumnValue(record.getTableName(), j, beforeValues[j]);
                 Object newValue = getColumnValue(record.getTableName(), j, afterValues[j]);
@@ -137,14 +139,15 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
     }
 
     private void handleDeleteRowsEvent(final Channel channel, final JdbcUri uri, final DeleteRowsEvent event) {
+        if (filter(uri.getDatabase(), event.getTableName())) {
+            return;
+        }
         DeleteRowsEvent dred = event;
         for (Serializable[] each : dred.getBeforeColumns()) {
-            if (filter(uri.getDatabase(), dred.getTableName())) {
-                continue;
-            }
-            DataRecord record = new DataRecord(new BinlogPosition("1", dred.getFileName(), dred.getPosition()), each.length);
+            DataRecord record = new DataRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId()), each.length);
             record.setFullTableName(dred.getTableName());
             record.setType("delete");
+            record.setCommitTime(dred.getTimestamp());
             for (int i = 0; i < each.length; i++) {
                 record.addColumn(new Column(getColumnValue(record.getTableName(), i, each[i]), true));
             }
@@ -153,7 +156,7 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
     }
 
     private void handlePlaceholderEvent(final Channel channel, final PlaceholderEvent event) {
-        PlaceholderRecord record = new PlaceholderRecord(new BinlogPosition("1", event.getFileName(), event.getPosition()));
+        PlaceholderRecord record = new PlaceholderRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId()));
         pushRecord(channel, record);
     }
 
