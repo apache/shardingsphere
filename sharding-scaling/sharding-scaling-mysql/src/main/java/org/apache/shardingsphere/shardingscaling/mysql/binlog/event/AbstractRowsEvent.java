@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.synctask.realtime;
-
-import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
+package org.apache.shardingsphere.shardingscaling.mysql.binlog.event;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
- * Real-time data sync task progress.
+ * Abstract rows event.
  *
  * @author yangyi
  */
 @Getter
-@RequiredArgsConstructor
-public final class RealTimeDataSyncTaskProgress implements SyncProgress {
-
-    private final String id;
+@Setter
+public class AbstractRowsEvent extends AbstractBinlogEvent {
     
-    private final long delayMillisecond;
-    
-    private final LogPosition logPosition;
+    private String tableName;
 }

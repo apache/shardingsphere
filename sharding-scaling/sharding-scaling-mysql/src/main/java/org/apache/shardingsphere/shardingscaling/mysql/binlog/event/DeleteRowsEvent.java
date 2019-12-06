@@ -28,10 +28,7 @@ import java.util.List;
  * @author avalon566
  */
 @Data
-public class DeleteRowsEvent extends AbstractBinlogEvent {
+public final class DeleteRowsEvent extends AbstractRowsEvent {
 
-    private String tableName;
-
-    private List<Serializable[]> beforeColumns;
-
+    private List<Serializable[]> beforeRows;
 }

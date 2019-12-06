@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.shardingscaling.mysql;
 
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Binlog Position.
@@ -28,15 +30,16 @@ import lombok.Data;
  * @author yangyi
  */
 @Data
+@RequiredArgsConstructor
 @AllArgsConstructor
 public class BinlogPosition implements LogPosition<BinlogPosition> {
-
-    private String serverId;
-
-    private String filename;
-
-    private long position;
-
+    
+    private final String filename;
+    
+    private final long position;
+    
+    private long serverId;
+    
     @Override
     public final int compareTo(final BinlogPosition binlogPosition) {
         if (null == binlogPosition) {

@@ -50,9 +50,9 @@ public class RowsEvent {
 
     private BitSet columnsPresentBitmap2;
 
-    private List<Serializable[]> columnValues1 = new ArrayList<>();
+    private List<Serializable[]> rows1 = new ArrayList<>();
 
-    private List<Serializable[]> columnValues2 = new ArrayList<>();
+    private List<Serializable[]> rows2 = new ArrayList<>();
 
     public RowsEvent(final BinlogEventHeader binlogEventHeader) {
         this.binlogEventHeader = binlogEventHeader;
@@ -92,32 +92,32 @@ public class RowsEvent {
         while (in.isReadable()) {
             //TODO support minimal binlog row image
             BitSet nullBitmap = DataTypesCodec.readBitmap(columnsLength, in);
-            Serializable[] columnValues = new Serializable[columnsLength];
+            Serializable[] row = new Serializable[columnsLength];
             for (int i = 0; i < columnsLength; i++) {
                 if (!nullBitmap.get(i)) {
-                    columnValues[i] = decodeValue(columnDefs[i], in);
+                    row[i] = decodeColumnValue(columnDefs[i], in);
                 } else {
-                    columnValues[i] = null;
+                    row[i] = null;
                 }
             }
-            columnValues1.add(columnValues);
+            rows1.add(row);
             if (EventTypes.UPDATE_ROWS_EVENT_V1 == binlogEventHeader.getTypeCode()
                     || EventTypes.UPDATE_ROWS_EVENT_V2 == binlogEventHeader.getTypeCode()) {
                 nullBitmap = DataTypesCodec.readBitmap(columnsLength, in);
-                columnValues = new Serializable[columnsLength];
+                row = new Serializable[columnsLength];
                 for (int i = 0; i < columnsLength; i++) {
                     if (!nullBitmap.get(i)) {
-                        columnValues[i] = decodeValue(columnDefs[i], in);
+                        row[i] = decodeColumnValue(columnDefs[i], in);
                     } else {
-                        columnValues[i] = null;
+                        row[i] = null;
                     }
                 }
-                columnValues2.add(columnValues);
+                rows2.add(row);
             }
         }
     }
 
-    private Serializable decodeValue(final ColumnDef columnDef, final ByteBuf in) {
+    private Serializable decodeColumnValue(final ColumnDef columnDef, final ByteBuf in) {
         switch (columnDef.getType()) {
             case ColumnTypes.MYSQL_TYPE_LONG:
                 return decodeLong(columnDef.getMeta(), in);

@@ -28,10 +28,7 @@ import java.util.List;
  * @author avalon566
  */
 @Data
-public class WriteRowsEvent extends AbstractBinlogEvent {
-
-    private String tableName;
-
-    private List<Serializable[]> afterColumns;
-
+public final class WriteRowsEvent extends AbstractRowsEvent {
+    
+    private List<Serializable[]> afterRows;
 }

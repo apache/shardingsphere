@@ -22,5 +22,5 @@ package org.apache.shardingsphere.shardingscaling.mysql.binlog.event;
  *
  * @author avalon566
  */
-public class PlaceholderEvent extends AbstractBinlogEvent {
+public final class PlaceholderEvent extends AbstractBinlogEvent {
 }

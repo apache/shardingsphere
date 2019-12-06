@@ -32,13 +32,13 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Re
 import org.apache.shardingsphere.shardingscaling.core.metadata.JdbcUri;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.MySQLConnector;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.AbstractBinlogEvent;
+import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.AbstractRowsEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.DeleteRowsEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.PlaceholderEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.WriteRowsEvent;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
 import java.io.Serializable;
 
 /**
@@ -101,35 +101,31 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
     }
 
     private void handleWriteRowsEvent(final Channel channel, final JdbcUri uri, final WriteRowsEvent event) {
-        WriteRowsEvent wred = event;
-        for (Serializable[] each : wred.getAfterColumns()) {
-            if (filter(uri.getDatabase(), wred.getTableName())) {
-                continue;
-            }
-            DataRecord record = new DataRecord(new BinlogPosition("1", wred.getFileName(), wred.getPosition()), each.length);
-            record.setFullTableName(wred.getTableName());
+        if (filter(uri.getDatabase(), event.getTableName())) {
+            return;
+        }
+        for (Serializable[] each : event.getAfterRows()) {
+            DataRecord record = createDataRecord(event, each.length);
             record.setType("insert");
-            for (int i = 0; i < each.length; i++) {
-                record.addColumn(new Column(getColumnValue(record.getTableName(), i, each[i]), true));
+            for (Serializable eachColumnValue : each) {
+                record.addColumn(new Column(eachColumnValue, true));
             }
             pushRecord(channel, record);
         }
     }
 
     private void handleUpdateRowsEvent(final Channel channel, final JdbcUri uri, final UpdateRowsEvent event) {
-        UpdateRowsEvent ured = event;
-        for (int i = 0; i < ured.getBeforeColumns().size(); i++) {
-            if (filter(uri.getDatabase(), event.getTableName())) {
-                continue;
-            }
-            Serializable[] beforeValues = ured.getBeforeColumns().get(i);
-            Serializable[] afterValues = ured.getAfterColumns().get(i);
-            DataRecord record = new DataRecord(new BinlogPosition("1", ured.getFileName(), ured.getPosition()), beforeValues.length);
-            record.setFullTableName(event.getTableName());
+        if (filter(uri.getDatabase(), event.getTableName())) {
+            return;
+        }
+        for (int i = 0; i < event.getBeforeRows().size(); i++) {
+            Serializable[] beforeValues = event.getBeforeRows().get(i);
+            Serializable[] afterValues = event.getAfterRows().get(i);
+            DataRecord record = createDataRecord(event, beforeValues.length);
             record.setType("update");
             for (int j = 0; j < beforeValues.length; j++) {
-                Object oldValue = getColumnValue(record.getTableName(), j, beforeValues[j]);
-                Object newValue = getColumnValue(record.getTableName(), j, afterValues[j]);
+                Object oldValue = beforeValues[j];
+                Object newValue = afterValues[j];
                 record.addColumn(new Column(newValue, !newValue.equals(oldValue)));
             }
             pushRecord(channel, record);
@@ -137,23 +133,28 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
     }
 
     private void handleDeleteRowsEvent(final Channel channel, final JdbcUri uri, final DeleteRowsEvent event) {
-        DeleteRowsEvent dred = event;
-        for (Serializable[] each : dred.getBeforeColumns()) {
-            if (filter(uri.getDatabase(), dred.getTableName())) {
-                continue;
-            }
-            DataRecord record = new DataRecord(new BinlogPosition("1", dred.getFileName(), dred.getPosition()), each.length);
-            record.setFullTableName(dred.getTableName());
+        if (filter(uri.getDatabase(), event.getTableName())) {
+            return;
+        }
+        for (Serializable[] each : event.getBeforeRows()) {
+            DataRecord record = createDataRecord(event, each.length);
             record.setType("delete");
-            for (int i = 0; i < each.length; i++) {
-                record.addColumn(new Column(getColumnValue(record.getTableName(), i, each[i]), true));
+            for (Serializable eachColumnValue : each) {
+                record.addColumn(new Column(eachColumnValue, true));
             }
             pushRecord(channel, record);
         }
     }
+    
+    private DataRecord createDataRecord(final AbstractRowsEvent rowsEvent, final int columnCount) {
+        DataRecord result = new DataRecord(new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition(), rowsEvent.getServerId()), columnCount);
+        result.setFullTableName(rowsEvent.getTableName());
+        result.setCommitTime(rowsEvent.getTimestamp());
+        return result;
+    }
 
     private void handlePlaceholderEvent(final Channel channel, final PlaceholderEvent event) {
-        PlaceholderRecord record = new PlaceholderRecord(new BinlogPosition("1", event.getFileName(), event.getPosition()));
+        PlaceholderRecord record = new PlaceholderRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId()));
         pushRecord(channel, record);
     }
 
@@ -166,10 +167,5 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
 
     private boolean filter(final String database, final String fullTableName) {
         return !fullTableName.startsWith(database + ".");
-    }
-
-    private Object getColumnValue(final String tableName, final int index, final Serializable data) {
-        //var columns = dbMetaDataUtil.getColumnNames(tableName);
-        return data;
     }
 }

@@ -28,14 +28,14 @@ public class BinlogPositionTest {
     @Test
     public void assertCompareTo() {
         int position = 10;
-        BinlogPosition binlogPosition = new BinlogPosition(null, "mysql-bin.000002", position);
-        assertThat(binlogPosition.compareTo(new BinlogPosition(null, "mysql-bin.000002", position)), is(0));
-        assertThat(binlogPosition.compareTo(new BinlogPosition(null, "mysql-bin.000001", position)), is(1));
-        assertThat(binlogPosition.compareTo(new BinlogPosition(null, "mysql-bin.000003", position)), is(-1));
+        BinlogPosition binlogPosition = new BinlogPosition("mysql-bin.000002", position);
+        assertThat(binlogPosition.compareTo(new BinlogPosition("mysql-bin.000002", position)), is(0));
+        assertThat(binlogPosition.compareTo(new BinlogPosition("mysql-bin.000001", position)), is(1));
+        assertThat(binlogPosition.compareTo(new BinlogPosition("mysql-bin.000003", position)), is(-1));
         String fileName = "mysql-bin.000001";
-        binlogPosition = new BinlogPosition(null, fileName, 10);
-        assertThat(binlogPosition.compareTo(new BinlogPosition(null, fileName, 10)), is(0));
-        assertThat(binlogPosition.compareTo(new BinlogPosition(null, fileName, 9)), is(1));
-        assertThat(binlogPosition.compareTo(new BinlogPosition(null, fileName, 11)), is(-1));
+        binlogPosition = new BinlogPosition(fileName, 10);
+        assertThat(binlogPosition.compareTo(new BinlogPosition(fileName, 10)), is(0));
+        assertThat(binlogPosition.compareTo(new BinlogPosition(fileName, 9)), is(1));
+        assertThat(binlogPosition.compareTo(new BinlogPosition(fileName, 11)), is(-1));
     }
 }

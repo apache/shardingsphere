@@ -79,7 +79,7 @@ public class RowsEventTest {
         BitSet expectedBitSet = new BitSet(1);
         expectedBitSet.set(0);
         assertThat(actual.getColumnsPresentBitmap(), is(expectedBitSet));
-        assertColumnValue(actual.getColumnValues1(), null);
+        assertColumnValue(actual.getRows1(), null);
     }
 
     @Test
@@ -93,8 +93,8 @@ public class RowsEventTest {
         expectedBitSet.set(0);
         assertThat(actual.getColumnsPresentBitmap(), is(expectedBitSet));
         assertThat(actual.getColumnsPresentBitmap2(), is(expectedBitSet));
-        assertColumnValue(actual.getColumnValues1(), null);
-        assertColumnValue(actual.getColumnValues2(), null);
+        assertColumnValue(actual.getRows1(), null);
+        assertColumnValue(actual.getRows2(), null);
     }
 
     @Test
@@ -106,7 +106,7 @@ public class RowsEventTest {
         byteBuf.writeIntLE(Integer.MIN_VALUE);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), Integer.MIN_VALUE);
+        assertColumnValue(actual.getRows1(), Integer.MIN_VALUE);
     }
 
     @Test
@@ -120,8 +120,8 @@ public class RowsEventTest {
         byteBuf.writeIntLE(Integer.MIN_VALUE);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), Integer.MAX_VALUE);
-        assertColumnValue(actual.getColumnValues2(), Integer.MIN_VALUE);
+        assertColumnValue(actual.getRows1(), Integer.MAX_VALUE);
+        assertColumnValue(actual.getRows2(), Integer.MIN_VALUE);
     }
 
     @Test
@@ -133,7 +133,7 @@ public class RowsEventTest {
         byteBuf.writeByte(0x80);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), (byte) 0x80);
+        assertColumnValue(actual.getRows1(), (byte) 0x80);
     }
 
     @Test
@@ -147,8 +147,8 @@ public class RowsEventTest {
         byteBuf.writeByte(0x80);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), (byte) 0x79);
-        assertColumnValue(actual.getColumnValues2(), (byte) 0x80);
+        assertColumnValue(actual.getRows1(), (byte) 0x79);
+        assertColumnValue(actual.getRows2(), (byte) 0x80);
     }
 
     @Test
@@ -160,7 +160,7 @@ public class RowsEventTest {
         byteBuf.writeShortLE(Short.MIN_VALUE);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), Short.MIN_VALUE);
+        assertColumnValue(actual.getRows1(), Short.MIN_VALUE);
     }
 
     @Test
@@ -174,8 +174,8 @@ public class RowsEventTest {
         byteBuf.writeShortLE(Short.MIN_VALUE);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), Short.MAX_VALUE);
-        assertColumnValue(actual.getColumnValues2(), Short.MIN_VALUE);
+        assertColumnValue(actual.getRows1(), Short.MAX_VALUE);
+        assertColumnValue(actual.getRows2(), Short.MIN_VALUE);
     }
 
     @Test
@@ -187,7 +187,7 @@ public class RowsEventTest {
         byteBuf.writeMediumLE(0x800000);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), -0x800000);
+        assertColumnValue(actual.getRows1(), -0x800000);
     }
 
     @Test
@@ -201,8 +201,8 @@ public class RowsEventTest {
         byteBuf.writeMediumLE(0x800000);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), 0x7f0000);
-        assertColumnValue(actual.getColumnValues2(), -0x800000);
+        assertColumnValue(actual.getRows1(), 0x7f0000);
+        assertColumnValue(actual.getRows2(), -0x800000);
     }
 
     @Test
@@ -214,7 +214,7 @@ public class RowsEventTest {
         byteBuf.writeLongLE(Long.MIN_VALUE);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), Long.MIN_VALUE);
+        assertColumnValue(actual.getRows1(), Long.MIN_VALUE);
     }
 
     @Test
@@ -228,8 +228,8 @@ public class RowsEventTest {
         byteBuf.writeLongLE(Long.MIN_VALUE);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), Long.MAX_VALUE);
-        assertColumnValue(actual.getColumnValues2(), Long.MIN_VALUE);
+        assertColumnValue(actual.getRows1(), Long.MAX_VALUE);
+        assertColumnValue(actual.getRows2(), Long.MIN_VALUE);
     }
 
     @Test
@@ -241,7 +241,7 @@ public class RowsEventTest {
         byteBuf.writeFloatLE(Float.MIN_VALUE);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), Float.MIN_VALUE);
+        assertColumnValue(actual.getRows1(), Float.MIN_VALUE);
     }
 
     @Test
@@ -255,8 +255,8 @@ public class RowsEventTest {
         byteBuf.writeFloatLE(Float.MIN_VALUE);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), Float.MAX_VALUE);
-        assertColumnValue(actual.getColumnValues2(), Float.MIN_VALUE);
+        assertColumnValue(actual.getRows1(), Float.MAX_VALUE);
+        assertColumnValue(actual.getRows2(), Float.MIN_VALUE);
     }
 
     @Test
@@ -268,7 +268,7 @@ public class RowsEventTest {
         byteBuf.writeBytes(ByteBufUtil.decodeHexDump("7EF204C72DFB2D"));
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), new BigDecimal("-1234567890.1234"));
+        assertColumnValue(actual.getRows1(), new BigDecimal("-1234567890.1234"));
     }
 
     @Test
@@ -282,8 +282,8 @@ public class RowsEventTest {
         byteBuf.writeBytes(ByteBufUtil.decodeHexDump("7EF204C72DFB2D"));
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), new BigDecimal("1234567890.1234"));
-        assertColumnValue(actual.getColumnValues2(), new BigDecimal("-1234567890.1234"));
+        assertColumnValue(actual.getRows1(), new BigDecimal("1234567890.1234"));
+        assertColumnValue(actual.getRows2(), new BigDecimal("-1234567890.1234"));
     }
 
     @Test
@@ -295,7 +295,7 @@ public class RowsEventTest {
         byteBuf.writeDoubleLE(Double.MIN_VALUE);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), Double.MIN_VALUE);
+        assertColumnValue(actual.getRows1(), Double.MIN_VALUE);
     }
 
     @Test
@@ -309,8 +309,8 @@ public class RowsEventTest {
         byteBuf.writeDoubleLE(Double.MIN_VALUE);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), Double.MAX_VALUE);
-        assertColumnValue(actual.getColumnValues2(), Double.MIN_VALUE);
+        assertColumnValue(actual.getRows1(), Double.MAX_VALUE);
+        assertColumnValue(actual.getRows2(), Double.MIN_VALUE);
     }
 
     @Test
@@ -322,7 +322,7 @@ public class RowsEventTest {
         byteBuf.writeIntLE(0);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), "0000-00-00 00:00:00");
+        assertColumnValue(actual.getRows1(), "0000-00-00 00:00:00");
     }
 
     @Test
@@ -336,8 +336,8 @@ public class RowsEventTest {
         byteBuf.writeIntLE(0);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), "2019-10-16 08:32:13");
-        assertColumnValue(actual.getColumnValues2(), "0000-00-00 00:00:00");
+        assertColumnValue(actual.getRows1(), "2019-10-16 08:32:13");
+        assertColumnValue(actual.getRows2(), "0000-00-00 00:00:00");
     }
 
     @Test
@@ -349,7 +349,7 @@ public class RowsEventTest {
         byteBuf.writeInt(0);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), "0000-00-00 00:00:00");
+        assertColumnValue(actual.getRows1(), "0000-00-00 00:00:00");
     }
 
     @Test
@@ -363,8 +363,8 @@ public class RowsEventTest {
         byteBuf.writeInt(0);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), "2019-10-16 08:32:13");
-        assertColumnValue(actual.getColumnValues2(), "0000-00-00 00:00:00");
+        assertColumnValue(actual.getRows1(), "2019-10-16 08:32:13");
+        assertColumnValue(actual.getRows2(), "0000-00-00 00:00:00");
     }
 
     @Test
@@ -376,7 +376,7 @@ public class RowsEventTest {
         byteBuf.writeLongLE(0);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), "0000-00-00 00:00:00");
+        assertColumnValue(actual.getRows1(), "0000-00-00 00:00:00");
     }
 
     @Test
@@ -390,8 +390,8 @@ public class RowsEventTest {
         byteBuf.writeLongLE(0);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), "2019-10-17 11:15:00");
-        assertColumnValue(actual.getColumnValues2(), "0000-00-00 00:00:00");
+        assertColumnValue(actual.getRows1(), "2019-10-17 11:15:00");
+        assertColumnValue(actual.getRows2(), "0000-00-00 00:00:00");
     }
 
     @Test
@@ -403,7 +403,7 @@ public class RowsEventTest {
         DataTypesCodec.writeInt5(0x8000000000L, byteBuf);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), "0000-00-00 00:00:00");
+        assertColumnValue(actual.getRows1(), "0000-00-00 00:00:00");
     }
 
     @Test
@@ -417,8 +417,8 @@ public class RowsEventTest {
         DataTypesCodec.writeInt5(0x8000000000L, byteBuf);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), "2019-10-16 16:48:37");
-        assertColumnValue(actual.getColumnValues2(), "0000-00-00 00:00:00");
+        assertColumnValue(actual.getRows1(), "2019-10-16 16:48:37");
+        assertColumnValue(actual.getRows2(), "0000-00-00 00:00:00");
     }
 
     @Test
@@ -430,7 +430,7 @@ public class RowsEventTest {
         byteBuf.writeMediumLE(0);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), "00:00:00");
+        assertColumnValue(actual.getRows1(), "00:00:00");
     }
 
     @Test
@@ -444,8 +444,8 @@ public class RowsEventTest {
         byteBuf.writeMediumLE(0);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), "10:15:31");
-        assertColumnValue(actual.getColumnValues2(), "00:00:00");
+        assertColumnValue(actual.getRows1(), "10:15:31");
+        assertColumnValue(actual.getRows2(), "00:00:00");
     }
 
     @Test
@@ -457,7 +457,7 @@ public class RowsEventTest {
         byteBuf.writeMedium(0x800000);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), "00:00:00");
+        assertColumnValue(actual.getRows1(), "00:00:00");
     }
 
     @Test
@@ -471,8 +471,8 @@ public class RowsEventTest {
         byteBuf.writeMedium(0x800000);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), "10:43:23");
-        assertColumnValue(actual.getColumnValues2(), "00:00:00");
+        assertColumnValue(actual.getRows1(), "10:43:23");
+        assertColumnValue(actual.getRows2(), "00:00:00");
     }
 
     @Test
@@ -484,7 +484,7 @@ public class RowsEventTest {
         byteBuf.writeMediumLE(0);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), "0000-00-00");
+        assertColumnValue(actual.getRows1(), "0000-00-00");
     }
 
     @Test
@@ -498,8 +498,8 @@ public class RowsEventTest {
         byteBuf.writeMediumLE(0);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), "2019-10-17");
-        assertColumnValue(actual.getColumnValues2(), "0000-00-00");
+        assertColumnValue(actual.getRows1(), "2019-10-17");
+        assertColumnValue(actual.getRows2(), "0000-00-00");
     }
 
     @Test
@@ -511,7 +511,7 @@ public class RowsEventTest {
         byteBuf.writeByte(0);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), "0000");
+        assertColumnValue(actual.getRows1(), "0000");
     }
 
     @Test
@@ -525,8 +525,8 @@ public class RowsEventTest {
         byteBuf.writeByte(0);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), "2155");
-        assertColumnValue(actual.getColumnValues2(), "0000");
+        assertColumnValue(actual.getRows1(), "2155");
+        assertColumnValue(actual.getRows2(), "0000");
     }
 
     @Test
@@ -538,7 +538,7 @@ public class RowsEventTest {
         byteBuf.writeByte(0);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), new byte[0]);
+        assertColumnValue(actual.getRows1(), new byte[0]);
     }
 
     @Test
@@ -554,8 +554,8 @@ public class RowsEventTest {
         byteBuf.writeByte(0);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), value1);
-        assertColumnValue(actual.getColumnValues2(), new byte[0]);
+        assertColumnValue(actual.getRows1(), value1);
+        assertColumnValue(actual.getRows2(), new byte[0]);
     }
 
     @Test
@@ -569,7 +569,7 @@ public class RowsEventTest {
         byteBuf.writeBytes(value.getBytes());
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), value);
+        assertColumnValue(actual.getRows1(), value);
     }
 
     @Test
@@ -585,8 +585,8 @@ public class RowsEventTest {
         byteBuf.writeShortLE(0);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), value1);
-        assertColumnValue(actual.getColumnValues2(), "");
+        assertColumnValue(actual.getRows1(), value1);
+        assertColumnValue(actual.getRows2(), "");
     }
 
     @Test
@@ -600,7 +600,7 @@ public class RowsEventTest {
         byteBuf.writeBytes(value.getBytes());
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), value);
+        assertColumnValue(actual.getRows1(), value);
     }
 
     @Test
@@ -616,8 +616,8 @@ public class RowsEventTest {
         byteBuf.writeShortLE(0);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), value1);
-        assertColumnValue(actual.getColumnValues2(), "");
+        assertColumnValue(actual.getRows1(), value1);
+        assertColumnValue(actual.getRows2(), "");
     }
 
     @Test
@@ -629,7 +629,7 @@ public class RowsEventTest {
         byteBuf.writeByte(0);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), (short) 0);
+        assertColumnValue(actual.getRows1(), (short) 0);
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
         mockTableMapEvent((ColumnTypes.MYSQL_TYPE_ENUM << 8) | 2, ColumnTypes.MYSQL_TYPE_STRING);
         byteBuf = Unpooled.buffer();
@@ -637,7 +637,7 @@ public class RowsEventTest {
         byteBuf.writeShortLE(256);
         actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), 256);
+        assertColumnValue(actual.getRows1(), 256);
     }
 
     @Test
@@ -651,8 +651,8 @@ public class RowsEventTest {
         byteBuf.writeByte(0);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), (short) 255);
-        assertColumnValue(actual.getColumnValues2(), (short) 0);
+        assertColumnValue(actual.getRows1(), (short) 255);
+        assertColumnValue(actual.getRows2(), (short) 0);
     }
 
     @Test
@@ -664,7 +664,7 @@ public class RowsEventTest {
         byteBuf.writeByte(-128);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), (byte) -128);
+        assertColumnValue(actual.getRows1(), (byte) -128);
     }
 
     @Test
@@ -678,8 +678,8 @@ public class RowsEventTest {
         byteBuf.writeByte(-128);
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), (byte) 127);
-        assertColumnValue(actual.getColumnValues2(), (byte) -128);
+        assertColumnValue(actual.getRows1(), (byte) 127);
+        assertColumnValue(actual.getRows2(), (byte) -128);
     }
 
     @Test
@@ -693,7 +693,7 @@ public class RowsEventTest {
         byteBuf.writeBytes(value.getBytes());
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), value);
+        assertColumnValue(actual.getRows1(), value);
     }
 
     @Test
@@ -711,8 +711,8 @@ public class RowsEventTest {
         byteBuf.writeBytes(value2.getBytes());
         RowsEvent actual = new RowsEvent(binlogEventHeader);
         actual.parsePayload(binlogContext, byteBuf);
-        assertColumnValue(actual.getColumnValues1(), value1);
-        assertColumnValue(actual.getColumnValues2(), value2);
+        assertColumnValue(actual.getRows1(), value1);
+        assertColumnValue(actual.getRows2(), value2);
     }
 
     private void assertColumnValue(final List<Serializable[]> actual, final Serializable value) {

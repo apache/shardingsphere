@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingscaling.mysql.binlog.codec;
 
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.BinlogContext;
+import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.AbstractRowsEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.DeleteRowsEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.PlaceholderEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.UpdateRowsEvent;
@@ -119,10 +120,8 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         rowsEvent.parsePostHeader(in);
         rowsEvent.parsePayload(binlogContext, in);
         DeleteRowsEvent result = new DeleteRowsEvent();
-        result.setTableName(binlogContext.getFullTableName(rowsEvent.getTableId()));
-        result.setBeforeColumns(rowsEvent.getColumnValues1());
-        result.setFileName(binlogContext.getFileName());
-        result.setPosition(binlogEventHeader.getEndLogPos());
+        initRowsEvent(result, binlogEventHeader, rowsEvent.getTableId());
+        result.setBeforeRows(rowsEvent.getRows1());
         return result;
     }
 
@@ -131,11 +130,9 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         rowsEvent.parsePostHeader(in);
         rowsEvent.parsePayload(binlogContext, in);
         UpdateRowsEvent result = new UpdateRowsEvent();
-        result.setTableName(binlogContext.getFullTableName(rowsEvent.getTableId()));
-        result.setBeforeColumns(rowsEvent.getColumnValues1());
-        result.setAfterColumns(rowsEvent.getColumnValues2());
-        result.setFileName(binlogContext.getFileName());
-        result.setPosition(binlogEventHeader.getEndLogPos());
+        initRowsEvent(result, binlogEventHeader, rowsEvent.getTableId());
+        result.setBeforeRows(rowsEvent.getRows1());
+        result.setAfterRows(rowsEvent.getRows2());
         return result;
     }
 
@@ -144,13 +141,19 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         rowsEvent.parsePostHeader(in);
         rowsEvent.parsePayload(binlogContext, in);
         WriteRowsEvent result = new WriteRowsEvent();
-        result.setTableName(binlogContext.getFullTableName(rowsEvent.getTableId()));
-        result.setAfterColumns(rowsEvent.getColumnValues1());
-        result.setFileName(binlogContext.getFileName());
-        result.setPosition(binlogEventHeader.getEndLogPos());
+        initRowsEvent(result, binlogEventHeader, rowsEvent.getTableId());
+        result.setAfterRows(rowsEvent.getRows1());
         return result;
     }
 
+    private void initRowsEvent(final AbstractRowsEvent rowsEvent, final BinlogEventHeader binlogEventHeader, final long tableId) {
+        rowsEvent.setTableName(binlogContext.getFullTableName(tableId));
+        rowsEvent.setFileName(binlogContext.getFileName());
+        rowsEvent.setPosition(binlogEventHeader.getEndLogPos());
+        rowsEvent.setTimestamp(binlogEventHeader.getTimeStamp());
+        rowsEvent.setServerId(binlogEventHeader.getServerId());
+    }
+    
     private PlaceholderEvent createPlaceholderEvent(final BinlogEventHeader binlogEventHeader) {
         PlaceholderEvent result = new PlaceholderEvent();
         result.setFileName(binlogContext.getFileName());

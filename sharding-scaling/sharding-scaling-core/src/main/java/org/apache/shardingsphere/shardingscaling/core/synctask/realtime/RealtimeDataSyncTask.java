@@ -55,6 +55,8 @@ public final class RealtimeDataSyncTask implements SyncTask {
 
     private Reader reader;
     
+    private long delayMillisecond;
+    
     public RealtimeDataSyncTask(final SyncConfiguration syncConfiguration) {
         this.syncConfiguration = syncConfiguration;
         DataSourceMetaData dataSourceMetaData = syncConfiguration.getReaderConfiguration().getDataSourceConfiguration().getDataSourceMetaData();
@@ -87,7 +89,9 @@ public final class RealtimeDataSyncTask implements SyncTask {
         return new RealtimeSyncChannel(channelSize, Collections.<AckCallback>singletonList(new AckCallback() {
             @Override
             public void onAck(final List<Record> records) {
-                logPositionManager.updateCurrentPosition(records.get(records.size() - 1).getLogPosition());
+                Record lastHandledRecord = records.get(records.size() - 1);
+                logPositionManager.updateCurrentPosition(lastHandledRecord.getLogPosition());
+                delayMillisecond = System.currentTimeMillis() - lastHandledRecord.getCommitTime();
             }
         }));
     }
@@ -101,6 +105,6 @@ public final class RealtimeDataSyncTask implements SyncTask {
 
     @Override
     public SyncProgress getProgress() {
-        return new RealTimeDataSyncTaskProgress(syncTaskId, logPositionManager.getCurrentPosition());
+        return new RealTimeDataSyncTaskProgress(syncTaskId, delayMillisecond, logPositionManager.getCurrentPosition());
     }
 }

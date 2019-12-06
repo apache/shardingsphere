@@ -27,7 +27,7 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
-public class Column {
+public final class Column {
     
     private Object value;
 
