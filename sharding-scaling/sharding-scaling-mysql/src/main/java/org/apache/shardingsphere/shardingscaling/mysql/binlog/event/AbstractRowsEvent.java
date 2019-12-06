@@ -17,10 +17,17 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql.binlog.event;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
- * Placeholder binlog event, unsupported binlog event will replace it into this class.
+ * Abstract rows event.
  *
- * @author avalon566
+ * @author yangyi
  */
-public final class PlaceholderEvent extends AbstractBinlogEvent {
+@Getter
+@Setter
+public class AbstractRowsEvent extends AbstractBinlogEvent {
+    
+    private String tableName;
 }

@@ -29,7 +29,7 @@ import java.util.List;
  * @author avalon566
  */
 @Data
-public class DataRecord extends Record {
+public final class DataRecord extends Record {
 
     private String type;
 

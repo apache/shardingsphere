@@ -29,14 +29,11 @@ import java.util.List;
  * @author avalon566
  */
 @Data
-public class UpdateRowsEvent extends AbstractBinlogEvent {
-
-    private String tableName;
-
+public final class UpdateRowsEvent extends AbstractRowsEvent {
+    
     private List<Serializable[]> beforeRows;
 
     private List<Serializable[]> afterRows;
 
     private BitSet changedBitmap;
-
 }

@@ -32,13 +32,13 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Re
 import org.apache.shardingsphere.shardingscaling.core.metadata.JdbcUri;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.MySQLConnector;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.AbstractBinlogEvent;
+import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.AbstractRowsEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.DeleteRowsEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.PlaceholderEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.WriteRowsEvent;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
 import java.io.Serializable;
 
 /**
@@ -104,14 +104,11 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
         if (filter(uri.getDatabase(), event.getTableName())) {
             return;
         }
-        WriteRowsEvent wred = event;
-        for (Serializable[] each : wred.getAfterRows()) {
-            DataRecord record = new DataRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId()), each.length);
-            record.setFullTableName(wred.getTableName());
+        for (Serializable[] each : event.getAfterRows()) {
+            DataRecord record = createDataRecord(event, each.length);
             record.setType("insert");
-            record.setCommitTime(wred.getTimestamp());
-            for (int i = 0; i < each.length; i++) {
-                record.addColumn(new Column(getColumnValue(record.getTableName(), i, each[i]), true));
+            for (Serializable eachColumnValue : each) {
+                record.addColumn(new Column(eachColumnValue, true));
             }
             pushRecord(channel, record);
         }
@@ -121,17 +118,14 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
         if (filter(uri.getDatabase(), event.getTableName())) {
             return;
         }
-        UpdateRowsEvent ured = event;
-        for (int i = 0; i < ured.getBeforeRows().size(); i++) {
-            Serializable[] beforeValues = ured.getBeforeRows().get(i);
-            Serializable[] afterValues = ured.getAfterRows().get(i);
-            DataRecord record = new DataRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId()), beforeValues.length);
-            record.setFullTableName(event.getTableName());
+        for (int i = 0; i < event.getBeforeRows().size(); i++) {
+            Serializable[] beforeValues = event.getBeforeRows().get(i);
+            Serializable[] afterValues = event.getAfterRows().get(i);
+            DataRecord record = createDataRecord(event, beforeValues.length);
             record.setType("update");
-            record.setCommitTime(ured.getTimestamp());
             for (int j = 0; j < beforeValues.length; j++) {
-                Object oldValue = getColumnValue(record.getTableName(), j, beforeValues[j]);
-                Object newValue = getColumnValue(record.getTableName(), j, afterValues[j]);
+                Object oldValue = beforeValues[j];
+                Object newValue = afterValues[j];
                 record.addColumn(new Column(newValue, !newValue.equals(oldValue)));
             }
             pushRecord(channel, record);
@@ -142,17 +136,21 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
         if (filter(uri.getDatabase(), event.getTableName())) {
             return;
         }
-        DeleteRowsEvent dred = event;
-        for (Serializable[] each : dred.getBeforeRows()) {
-            DataRecord record = new DataRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId()), each.length);
-            record.setFullTableName(dred.getTableName());
+        for (Serializable[] each : event.getBeforeRows()) {
+            DataRecord record = createDataRecord(event, each.length);
             record.setType("delete");
-            record.setCommitTime(dred.getTimestamp());
-            for (int i = 0; i < each.length; i++) {
-                record.addColumn(new Column(getColumnValue(record.getTableName(), i, each[i]), true));
+            for (Serializable eachColumnValue : each) {
+                record.addColumn(new Column(eachColumnValue, true));
             }
             pushRecord(channel, record);
         }
+    }
+    
+    private DataRecord createDataRecord(final AbstractRowsEvent rowsEvent, final int columnCount) {
+        DataRecord result = new DataRecord(new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition(), rowsEvent.getServerId()), columnCount);
+        result.setFullTableName(rowsEvent.getTableName());
+        result.setCommitTime(rowsEvent.getTimestamp());
+        return result;
     }
 
     private void handlePlaceholderEvent(final Channel channel, final PlaceholderEvent event) {
@@ -169,10 +167,5 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
 
     private boolean filter(final String database, final String fullTableName) {
         return !fullTableName.startsWith(database + ".");
-    }
-
-    private Object getColumnValue(final String tableName, final int index, final Serializable data) {
-        //var columns = dbMetaDataUtil.getColumnNames(tableName);
-        return data;
     }
 }
