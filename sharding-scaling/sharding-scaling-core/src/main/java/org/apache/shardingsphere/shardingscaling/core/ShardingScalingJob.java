@@ -19,12 +19,11 @@ package org.apache.shardingsphere.shardingscaling.core;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Sharding scaling out job.
@@ -35,7 +34,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public final class ShardingScalingJob {
     
-    private final String jobId = UUID.randomUUID().toString();
+    private static final AtomicInteger ID_AUTO_INCREASE_GENERATOR = new AtomicInteger();
+    
+    private final int jobId = ID_AUTO_INCREASE_GENERATOR.incrementAndGet();
     
     private final List<SyncConfiguration> syncConfigurations = new LinkedList<>();
     

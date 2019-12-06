@@ -32,7 +32,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class ScalingJobProgress implements SyncProgress {
     
-    private final String id;
+    private final int id;
     
     private final String jobName;
     

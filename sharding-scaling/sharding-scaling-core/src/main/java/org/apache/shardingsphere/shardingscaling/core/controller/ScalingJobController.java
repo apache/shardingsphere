@@ -34,9 +34,9 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class ScalingJobController {
     
-    private final ConcurrentMap<String, ShardingScalingJob> scalingJobMap = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Integer, ShardingScalingJob> scalingJobMap = new ConcurrentHashMap<>();
     
-    private final ConcurrentMap<String, List<SyncTaskController>> syncTaskControllerMaps = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Integer, List<SyncTaskController>> syncTaskControllerMaps = new ConcurrentHashMap<>();
 
     /**
      * Start data nodes migrate.
@@ -59,7 +59,7 @@ public class ScalingJobController {
      *
      * @param shardingScalingJobId sharding scaling job id
      */
-    public void stop(final String shardingScalingJobId) {
+    public void stop(final int shardingScalingJobId) {
         if (!scalingJobMap.containsKey(shardingScalingJobId)) {
             return;
         }
@@ -74,7 +74,7 @@ public class ScalingJobController {
      * @param shardingScalingJobId sharding scaling job id
      * @return data nodes migrate progress
      */
-    public SyncProgress getProgresses(final String shardingScalingJobId) {
+    public SyncProgress getProgresses(final int shardingScalingJobId) {
         if (!scalingJobMap.containsKey(shardingScalingJobId)) {
             throw new ScalingJobNotFoundException(String.format("Can't find scaling job id %s", shardingScalingJobId));
         }
