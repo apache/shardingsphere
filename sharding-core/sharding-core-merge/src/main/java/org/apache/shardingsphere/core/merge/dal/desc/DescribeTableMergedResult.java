@@ -27,11 +27,9 @@ import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Merged result for desc table.
@@ -40,19 +38,8 @@ import java.util.Map;
  */
 public final class DescribeTableMergedResult extends MemoryMergedResult {
     
-    private static final Map<String, Integer> LABEL_AND_INDEX_MAP = new HashMap<>(6, 1);
-    
-    static {
-        LABEL_AND_INDEX_MAP.put("Field", 1);
-        LABEL_AND_INDEX_MAP.put("Type", 2);
-        LABEL_AND_INDEX_MAP.put("Null", 3);
-        LABEL_AND_INDEX_MAP.put("Key", 4);
-        LABEL_AND_INDEX_MAP.put("Default", 5);
-        LABEL_AND_INDEX_MAP.put("Extra", 6);
-    }
-    
     public DescribeTableMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
-        super(LABEL_AND_INDEX_MAP, shardingRule, null, sqlStatementContext, queryResults);
+        super(shardingRule, null, sqlStatementContext, queryResults);
     }
     
     @Override

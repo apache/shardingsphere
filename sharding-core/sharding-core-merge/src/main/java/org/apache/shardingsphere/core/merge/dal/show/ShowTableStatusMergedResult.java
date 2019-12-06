@@ -23,9 +23,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Merged result for show table status.
@@ -34,30 +32,8 @@ import java.util.Map;
  */
 public final class ShowTableStatusMergedResult extends LogicTablesMergedResult {
     
-    private static final Map<String, Integer> LABEL_AND_INDEX_MAP = new HashMap<>(17, 1);
-    
-    static {
-        LABEL_AND_INDEX_MAP.put("Name", 1);
-        LABEL_AND_INDEX_MAP.put("Engine", 2);
-        LABEL_AND_INDEX_MAP.put("Version", 3);
-        LABEL_AND_INDEX_MAP.put("Row_format", 4);
-        LABEL_AND_INDEX_MAP.put("Rows", 5);
-        LABEL_AND_INDEX_MAP.put("Avg_row_length", 6);
-        LABEL_AND_INDEX_MAP.put("Data_length", 7);
-        LABEL_AND_INDEX_MAP.put("Max_data_length", 8);
-        LABEL_AND_INDEX_MAP.put("Data_free", 9);
-        LABEL_AND_INDEX_MAP.put("Auto_increment", 10);
-        LABEL_AND_INDEX_MAP.put("Create_time", 11);
-        LABEL_AND_INDEX_MAP.put("Update_time", 12);
-        LABEL_AND_INDEX_MAP.put("Check_time", 13);
-        LABEL_AND_INDEX_MAP.put("Collation", 14);
-        LABEL_AND_INDEX_MAP.put("Checksum", 15);
-        LABEL_AND_INDEX_MAP.put("Create_options", 16);
-        LABEL_AND_INDEX_MAP.put("Comment", 17);
-    }
-    
     public ShowTableStatusMergedResult(final ShardingRule shardingRule, 
                                        final SQLStatementContext sqlStatementContext, final TableMetas tableMetas, final List<QueryResult> queryResults) throws SQLException {
-        super(LABEL_AND_INDEX_MAP, shardingRule, sqlStatementContext, tableMetas, queryResults);
+        super(shardingRule, sqlStatementContext, tableMetas, queryResults);
     }
 }

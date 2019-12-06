@@ -31,7 +31,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -41,9 +40,9 @@ import java.util.Set;
  */
 public abstract class LogicTablesMergedResult extends MemoryMergedResult {
     
-    public LogicTablesMergedResult(final Map<String, Integer> labelAndIndexMap, final ShardingRule shardingRule, 
+    public LogicTablesMergedResult(final ShardingRule shardingRule, 
                                    final SQLStatementContext sqlStatementContext, final TableMetas tableMetas, final List<QueryResult> queryResults) throws SQLException {
-        super(labelAndIndexMap, shardingRule, tableMetas, sqlStatementContext, queryResults);
+        super(shardingRule, tableMetas, sqlStatementContext, queryResults);
     }
     
     @Override

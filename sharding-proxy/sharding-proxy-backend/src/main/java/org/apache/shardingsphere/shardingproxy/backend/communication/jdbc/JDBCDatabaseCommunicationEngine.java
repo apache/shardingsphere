@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.merge.MergeEngineFactory;
 import org.apache.shardingsphere.core.merge.MergedResult;
-import org.apache.shardingsphere.core.merge.dal.show.ShowTablesMergedResult;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
@@ -112,7 +111,6 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             return response;
         }
         setMergedResult(routeResult);
-        resetColumnLabelForShowTablesMergedResult();
         handleColumnsForQueryHeader(routeResult);
         return response;
     }
@@ -130,12 +128,6 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     private void setMergedResult(final SQLRouteResult routeResult) throws SQLException {
         mergedResult = MergeEngineFactory.newInstance(LogicSchemas.getInstance().getDatabaseType(),
                 logicSchema.getShardingRule(), routeResult, logicSchema.getMetaData().getTables(), ((QueryResponse) response).getQueryResults()).merge();
-    }
-    
-    private void resetColumnLabelForShowTablesMergedResult() {
-        if (mergedResult instanceof ShowTablesMergedResult) {
-            ((ShowTablesMergedResult) mergedResult).resetColumnLabel(logicSchema.getName());
-        }
     }
     
     private void handleColumnsForQueryHeader(final SQLRouteResult routeResult) {

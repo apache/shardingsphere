@@ -35,7 +35,6 @@ import java.sql.SQLXML;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Memory merged result.
@@ -45,8 +44,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public abstract class MemoryMergedResult implements MergedResult {
     
-    private final Map<String, Integer> labelAndIndexMap;
-    
     private final Iterator<MemoryQueryResultRow> memoryResultSetRows;
     
     @Setter
@@ -54,19 +51,13 @@ public abstract class MemoryMergedResult implements MergedResult {
     
     private boolean wasNull;
     
-    protected MemoryMergedResult(final Map<String, Integer> labelAndIndexMap, final ShardingRule shardingRule, 
+    protected MemoryMergedResult(final ShardingRule shardingRule, 
                                  final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        this.labelAndIndexMap = labelAndIndexMap;
         memoryResultSetRows = init(shardingRule, tableMetas, sqlStatementContext, queryResults);
     }
     
     protected abstract Iterator<MemoryQueryResultRow> init(ShardingRule shardingRule, 
                                                            TableMetas tableMetas, SQLStatementContext sqlStatementContext, List<QueryResult> queryResults) throws SQLException;
-    
-    protected final void resetLabelAndIndexMap(final Map<String, Integer> labelAndIndexMap) {
-        this.labelAndIndexMap.clear();
-        this.labelAndIndexMap.putAll(labelAndIndexMap);
-    }
     
     @Override
     public final boolean next() {

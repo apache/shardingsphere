@@ -28,12 +28,11 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 public final class TestMemoryMergedResult extends MemoryMergedResult {
     
-    public TestMemoryMergedResult(final Map<String, Integer> labelAndIndexMap) throws SQLException {
-        super(labelAndIndexMap, null, null, null, Collections.<QueryResult>emptyList());
+    public TestMemoryMergedResult() throws SQLException {
+        super(null, null, null, Collections.<QueryResult>emptyList());
     }
     
     @Override

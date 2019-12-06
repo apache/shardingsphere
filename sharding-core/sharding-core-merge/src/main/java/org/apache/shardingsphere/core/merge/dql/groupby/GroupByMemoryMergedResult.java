@@ -50,9 +50,8 @@ import java.util.Map.Entry;
  */
 public final class GroupByMemoryMergedResult extends MemoryMergedResult {
     
-    public GroupByMemoryMergedResult(final Map<String, Integer> labelAndIndexMap, 
-                                     final List<QueryResult> queryResults, final SelectSQLStatementContext selectSQLStatementContext) throws SQLException {
-        super(labelAndIndexMap, null, null, selectSQLStatementContext, queryResults);
+    public GroupByMemoryMergedResult(final List<QueryResult> queryResults, final SelectSQLStatementContext selectSQLStatementContext) throws SQLException {
+        super(null, null, selectSQLStatementContext, queryResults);
     }
     
     @Override

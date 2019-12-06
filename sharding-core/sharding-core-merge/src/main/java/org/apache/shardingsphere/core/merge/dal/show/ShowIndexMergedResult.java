@@ -23,9 +23,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Merged result for show index.
@@ -34,26 +32,8 @@ import java.util.Map;
  */
 public final class ShowIndexMergedResult extends LogicTablesMergedResult {
     
-    private static final Map<String, Integer> LABEL_AND_INDEX_MAP = new HashMap<>(13, 1);
-    
-    static {
-        LABEL_AND_INDEX_MAP.put("Table", 1);
-        LABEL_AND_INDEX_MAP.put("Non_unique", 2);
-        LABEL_AND_INDEX_MAP.put("Key_name", 3);
-        LABEL_AND_INDEX_MAP.put("Seq_in_index", 4);
-        LABEL_AND_INDEX_MAP.put("Column_name", 5);
-        LABEL_AND_INDEX_MAP.put("Collation", 6);
-        LABEL_AND_INDEX_MAP.put("Cardinality", 7);
-        LABEL_AND_INDEX_MAP.put("Sub_part", 8);
-        LABEL_AND_INDEX_MAP.put("Packed", 9);
-        LABEL_AND_INDEX_MAP.put("Null", 10);
-        LABEL_AND_INDEX_MAP.put("Index_type", 11);
-        LABEL_AND_INDEX_MAP.put("Comment", 12);
-        LABEL_AND_INDEX_MAP.put("Index_comment", 13);
-    }
-    
     public ShowIndexMergedResult(final ShardingRule shardingRule, 
                                  final SQLStatementContext sqlStatementContext, final TableMetas tableMetas, final List<QueryResult> queryResults) throws SQLException {
-        super(LABEL_AND_INDEX_MAP, shardingRule, sqlStatementContext, tableMetas, queryResults);
+        super(shardingRule, sqlStatementContext, tableMetas, queryResults);
     }
 }

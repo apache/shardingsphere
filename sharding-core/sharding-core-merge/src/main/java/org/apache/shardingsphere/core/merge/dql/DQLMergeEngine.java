@@ -108,7 +108,7 @@ public final class DQLMergeEngine implements MergeEngine {
     private MergedResult getGroupByMergedResult(final Map<String, Integer> columnLabelIndexMap) throws SQLException {
         return selectSQLStatementContext.isSameGroupByAndOrderByItems()
                 ? new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, selectSQLStatementContext)
-                : new GroupByMemoryMergedResult(columnLabelIndexMap, queryResults, selectSQLStatementContext);
+                : new GroupByMemoryMergedResult(queryResults, selectSQLStatementContext);
     }
     
     private boolean isNeedProcessOrderBy() {

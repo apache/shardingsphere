@@ -33,8 +33,6 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -51,9 +49,7 @@ public final class MemoryMergedResultTest {
     
     @Before
     public void setUp() throws SQLException {
-        Map<String, Integer> labelAndIndexMap = new HashMap<>(1, 1);
-        labelAndIndexMap.put("label", 1);
-        memoryMergedResult = new TestMemoryMergedResult(labelAndIndexMap);
+        memoryMergedResult = new TestMemoryMergedResult();
         memoryMergedResult.setCurrentResultSetRow(memoryResultSetRow);
     }
     
