@@ -151,9 +151,9 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
     
     private void addAssistedQueryColumn(final InsertValueToken insertValueToken, final ShardingEncryptor encryptor, final int columnIndex, 
                                         final String tableName, final String columnName, final InsertValueContext insertValueContext, final Object originalValue, final Set<String> columnNames) {
-        Optional<String> assistedColumnName = getEncryptRule().findAssistedQueryColumn(tableName, columnName);
-        if (assistedColumnName.isPresent()) {
-            if (columnNames.contains(assistedColumnName.get())) {
+        Optional<String> assistedQueryColumn = getEncryptRule().findAssistedQueryColumn(tableName, columnName);
+        if (assistedQueryColumn.isPresent()) {
+            if (columnNames.contains(assistedQueryColumn.get())) {
                 return;
             }
             DerivedSimpleExpressionSegment derivedExpressionSegment = insertValueContext.getParameters().isEmpty()
