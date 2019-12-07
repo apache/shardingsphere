@@ -95,10 +95,9 @@ public final class TableMetaDataLoader {
             
             @Override
             public Collection<TableMetaData> execute(final Collection<DataNode> dataNodes, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) throws SQLException {
-                String dataSourceName = dataNodes.iterator().next().getDataSourceName();
-                DataSourceMetaData dataSourceMetaData = TableMetaDataLoader.this.dataSourceMetas.getDataSourceMetaData(dataSourceName);
-                return load(shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(dataSourceName), 
-                        dataSourceMetaData, logicTableName, dataNodes, generateKeyColumnName, shardingRule.getEncryptRule());
+                String masterDataSourceName = shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(dataNodes.iterator().next().getDataSourceName());
+                DataSourceMetaData dataSourceMetaData = TableMetaDataLoader.this.dataSourceMetas.getDataSourceMetaData(masterDataSourceName);
+                return load(masterDataSourceName, dataSourceMetaData, logicTableName, dataNodes, generateKeyColumnName, shardingRule.getEncryptRule());
             }
         });
     }
