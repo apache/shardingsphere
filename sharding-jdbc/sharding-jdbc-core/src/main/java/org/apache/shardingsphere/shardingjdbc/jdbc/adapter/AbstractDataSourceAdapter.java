@@ -42,13 +42,13 @@ import java.util.logging.Logger;
  * @author zhaojun
  */
 @Getter
-@Setter
 public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
     private final Map<String, DataSource> dataSourceMap;
     
     private final DatabaseType databaseType;
     
+    @Setter
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
