@@ -72,7 +72,7 @@ public final class OrchestrationShardingDataSourceTest {
         instanceConfiguration.setOrchestrationType(orchestrationType);
         instanceConfiguration.setNamespace("test_sharding");
         instanceConfiguration.setServerLists("localhost:3181");
-        Map<String, InstanceConfiguration> instanceConfigurationMap = Collections.singletonMap("test", instanceConfiguration);
+        Map<String, InstanceConfiguration> instanceConfigurationMap = Collections.singletonMap("test_sharding", instanceConfiguration);
         return new OrchestrationConfiguration(instanceConfigurationMap);
     }
     

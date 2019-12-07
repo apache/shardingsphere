@@ -17,19 +17,20 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
-
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.api.DistributedLockManagement;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 
-public final class TestRegistryCenter implements RegistryCenter {
+public final class TestRegistryCenter implements RegistryCenter, ConfigCenter, DistributedLockManagement {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
@@ -38,22 +39,12 @@ public final class TestRegistryCenter implements RegistryCenter {
     private Properties properties;
     
     @Override
-    public void init(final RegistryCenterConfiguration config) {
+    public void init(final InstanceConfiguration config) {
     }
     
     @Override
     public String get(final String key) {
         return REGISTRY_DATA.get(key);
-    }
-    
-    @Override
-    public String getDirectly(final String key) {
-        return REGISTRY_DATA.get(key);
-    }
-    
-    @Override
-    public boolean isExisted(final String key) {
-        return REGISTRY_DATA.containsKey(key);
     }
     
     @Override
@@ -63,11 +54,6 @@ public final class TestRegistryCenter implements RegistryCenter {
     
     @Override
     public void persist(final String key, final String value) {
-        REGISTRY_DATA.put(key, value);
-    }
-    
-    @Override
-    public void update(final String key, final String value) {
         REGISTRY_DATA.put(key, value);
     }
     
