@@ -20,9 +20,6 @@ package org.apache.shardingsphere.core.merge.dql.common;
 import org.apache.shardingsphere.core.merge.dql.common.fixture.TestMemoryMergedResult;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -33,28 +30,22 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class MemoryMergedResultTest {
-    
-    @Mock
-    private MemoryQueryResultRow memoryResultSetRow;
     
     private TestMemoryMergedResult memoryMergedResult;
     
+    private MemoryQueryResultRow memoryResultSetRow;
+    
     @Before
-    public void setUp() {
-        Map<String, Integer> labelAndIndexMap = new HashMap<>(1, 1);
-        labelAndIndexMap.put("label", 1);
-        memoryMergedResult = new TestMemoryMergedResult(labelAndIndexMap);
-        memoryMergedResult.setCurrentResultSetRow(memoryResultSetRow);
+    public void setUp() throws SQLException {
+        memoryMergedResult = new TestMemoryMergedResult();
+        memoryResultSetRow = memoryMergedResult.getMemoryQueryResultRow();
     }
     
     @Test

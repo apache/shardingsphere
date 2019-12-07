@@ -21,16 +21,14 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryMergedResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Merged result for desc table.
@@ -39,47 +37,26 @@ import java.util.Map;
  */
 public final class DescribeTableMergedResult extends MemoryMergedResult {
     
-    private static final Map<String, Integer> LABEL_AND_INDEX_MAP = new HashMap<>(6, 1);
-    
-    static {
-        LABEL_AND_INDEX_MAP.put("Field", 1);
-        LABEL_AND_INDEX_MAP.put("Type", 2);
-        LABEL_AND_INDEX_MAP.put("Null", 3);
-        LABEL_AND_INDEX_MAP.put("Key", 4);
-        LABEL_AND_INDEX_MAP.put("Default", 5);
-        LABEL_AND_INDEX_MAP.put("Extra", 6);
-    }
-    
-    private final ShardingRule shardingRule;
-    
-    private final SQLStatementContext sqlStatementContext;
-    
-    private final Iterator<MemoryQueryResultRow> memoryResultSetRows;
-    
     public DescribeTableMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
-        super(LABEL_AND_INDEX_MAP);
-        this.shardingRule = shardingRule;
-        this.sqlStatementContext = sqlStatementContext;
-        this.memoryResultSetRows = init(queryResults);
+        super(shardingRule, null, sqlStatementContext, queryResults);
     }
     
-    private Iterator<MemoryQueryResultRow> init(final List<QueryResult> queryResults) throws SQLException {
+    @Override
+    protected List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final TableMetas tableMetas, 
+                                              final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         List<MemoryQueryResultRow> result = new LinkedList<>();
         for (QueryResult each : queryResults) {
             while (each.next()) {
-                Optional<MemoryQueryResultRow> memoryQueryResultRow = optimize(each);
+                Optional<MemoryQueryResultRow> memoryQueryResultRow = optimize(shardingRule, sqlStatementContext, each);
                 if (memoryQueryResultRow.isPresent()) {
                     result.add(memoryQueryResultRow.get());
                 }
             }
         }
-        if (!result.isEmpty()) {
-            setCurrentResultSetRow(result.get(0));
-        }
-        return result.iterator();
+        return result;
     }
     
-    private Optional<MemoryQueryResultRow> optimize(final QueryResult queryResult) throws SQLException {
+    private Optional<MemoryQueryResultRow> optimize(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final QueryResult queryResult) throws SQLException {
         MemoryQueryResultRow memoryQueryResultRow = new MemoryQueryResultRow(queryResult);
         Optional<EncryptTable> encryptTable = null == shardingRule.getEncryptRule()
                 ? Optional.<EncryptTable>absent() : shardingRule.getEncryptRule().findEncryptTable(sqlStatementContext.getTablesContext().getSingleTableName());
@@ -93,14 +70,5 @@ public final class DescribeTableMergedResult extends MemoryMergedResult {
             }
         }
         return Optional.of(memoryQueryResultRow);
-    }
-    
-    @Override
-    public boolean next() {
-        if (memoryResultSetRows.hasNext()) {
-            setCurrentResultSetRow(memoryResultSetRows.next());
-            return true;
-        }
-        return false;
     }
 }

@@ -18,8 +18,11 @@
 package org.apache.shardingsphere.core.merge.dql.common;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -29,7 +32,8 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
 import java.util.Calendar;
-import java.util.Map;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Memory merged result.
@@ -39,16 +43,31 @@ import java.util.Map;
 @RequiredArgsConstructor
 public abstract class MemoryMergedResult implements MergedResult {
     
-    private final Map<String, Integer> labelAndIndexMap;
+    private final Iterator<MemoryQueryResultRow> memoryResultSetRows;
     
-    @Setter
     private MemoryQueryResultRow currentResultSetRow;
     
     private boolean wasNull;
     
-    protected final void resetLabelAndIndexMap(final Map<String, Integer> labelAndIndexMap) {
-        this.labelAndIndexMap.clear();
-        this.labelAndIndexMap.putAll(labelAndIndexMap);
+    protected MemoryMergedResult(final ShardingRule shardingRule, 
+                                 final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+        List<MemoryQueryResultRow> memoryQueryResultRowList = init(shardingRule, tableMetas, sqlStatementContext, queryResults);
+        memoryResultSetRows = memoryQueryResultRowList.iterator();
+        if (!memoryQueryResultRowList.isEmpty()) {
+            currentResultSetRow = memoryQueryResultRowList.get(0);
+        }
+    }
+    
+    protected abstract List<MemoryQueryResultRow> init(ShardingRule shardingRule, TableMetas tableMetas, 
+                                                       SQLStatementContext sqlStatementContext, List<QueryResult> queryResults) throws SQLException;
+    
+    @Override
+    public final boolean next() {
+        if (memoryResultSetRows.hasNext()) {
+            currentResultSetRow = memoryResultSetRows.next();
+            return true;
+        }
+        return false;
     }
     
     @Override

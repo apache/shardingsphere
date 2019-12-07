@@ -45,5 +45,4 @@ public abstract class LocalMergedResultAdapter implements MergedResult {
     public final boolean wasNull() {
         return false;
     }
-    
 }

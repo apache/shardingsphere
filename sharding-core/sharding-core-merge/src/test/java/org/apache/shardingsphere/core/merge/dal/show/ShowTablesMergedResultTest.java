@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -76,25 +77,25 @@ public final class ShowTablesMergedResultTest {
     
     @Test
     public void assertNextForEmptyQueryResult() throws SQLException {
-        ShowTablesMergedResult actual = new ShowTablesMergedResult(shardingRule, tableMetas, Collections.<QueryResult>emptyList());
+        LogicTablesMergedResult actual = new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), tableMetas, Collections.<QueryResult>emptyList());
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForActualTableNameInTableRule() throws SQLException {
-        ShowTablesMergedResult actual = new ShowTablesMergedResult(shardingRule, tableMetas, Collections.singletonList(createQueryResult("table_0")));
+        LogicTablesMergedResult actual = new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), tableMetas, Collections.singletonList(createQueryResult("table_0")));
         assertTrue(actual.next());
     }
     
     @Test
     public void assertNextForActualTableNameNotInTableRuleWithDefaultDataSource() throws SQLException {
-        ShowTablesMergedResult actual = new ShowTablesMergedResult(shardingRule, tableMetas, Collections.singletonList(createQueryResult("table")));
+        LogicTablesMergedResult actual = new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), tableMetas, Collections.singletonList(createQueryResult("table")));
         assertTrue(actual.next());
     }
     
     @Test
     public void assertNextForActualTableNameNotInTableRuleWithoutDefaultDataSource() throws SQLException {
-        ShowTablesMergedResult actual = new ShowTablesMergedResult(shardingRule, tableMetas, Collections.singletonList(createQueryResult("table_3")));
+        LogicTablesMergedResult actual = new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), tableMetas, Collections.singletonList(createQueryResult("table_3")));
         assertFalse(actual.next());
     }
 }

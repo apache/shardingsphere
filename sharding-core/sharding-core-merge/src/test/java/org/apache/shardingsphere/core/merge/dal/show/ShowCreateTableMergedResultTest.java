@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -67,13 +68,13 @@ public final class ShowCreateTableMergedResultTest {
     
     @Test
     public void assertNextForEmptyQueryResult() throws SQLException {
-        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(shardingRule, tableMetas, Collections.<QueryResult>emptyList());
+        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(shardingRule, mock(SQLStatementContext.class), tableMetas, Collections.<QueryResult>emptyList());
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForTableRuleIsPresent() throws SQLException {
-        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(shardingRule, tableMetas, Collections.singletonList(createQueryResult()));
+        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(shardingRule, mock(SQLStatementContext.class), tableMetas, Collections.singletonList(createQueryResult()));
         assertTrue(actual.next());
     }
     
