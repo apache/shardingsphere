@@ -413,7 +413,7 @@ shardingRule:
       keyGenerator: 
         column: #自增列名称，缺省表示不使用自增主键生成器
         type: #自增列值生成器类型，缺省表示使用默认自增列值生成器。可使用用户自定义的列值生成器或选择内置类型：SNOWFLAKE/UUID/LEAF_SEGMENT
-        props: #属性配置, 注意：使用SNOWFLAKE算法，需要配置worker.id与max.tolerate.time.difference.milliseconds属性
+        props: #属性配置, 注意：使用SNOWFLAKE算法，需要配置worker.id与max.tolerate.time.difference.milliseconds属性。若使用此算法生成值作分片值，建议配置max.vibration.offset属性
           <property-name>: 属性名称
       
   bindingTables: #绑定表规则列表

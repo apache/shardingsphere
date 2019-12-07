@@ -562,11 +562,43 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 
 #### \<sharding:key-generator />
 
-| *Name*    | *Type*    | *Explanation*                                                |
-| --------- | --------- | ------------------------------------------------------------ |
-| column    | Attribute | Auto-increment column name                                   |
-| type      | Attribute | Auto-increment key generator `Type`; self-defined generator or internal Type generator (SNOWFLAKE or UUID) can both be selected |
-| props-ref | Attribute | Property configuration, note:<br>To use the SNOWFLAKE algorithm, you need to configure the `worker.id` and `max.tolerate.time.difference.milliseconds` properties<br> To use the LEAF_SEGMENT algorithm, you need to configure: required `serverList`, `leafKey` and optional `initialValue`, `step`, `digest`, `registryCenterType`<br> To use the LEAF_SNOWFLAKE algorithm, you need to configure: required `serverList`, `serviceId` and optional `maxTimeDifference`, `digest`, `registryCenterType` |
+| *Name*    | *Type*    | *Explanation*                                                                                                                   |
+| --------- | --------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| column    | Attribute | Auto-increment column name                                                                                                      |
+| type      | Attribute | Auto-increment key generator `Type`; self-defined generator or internal Type generator (SNOWFLAKE/UUID/LEAF_SEGMENT/LEAF_SNOWFLAKE) can both be selected |
+| props-ref | Attribute | The Property configuration reference of key generators                                |
+
+Property configuration that can include these properties of these key generators.
+
+###### SNOWFLAKE
+  
+  | *Name*                                              | *DataType* | *Explanation*                                                                                                                                                                                                                   |
+  | --------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | worker.id (?)                                        |   long     | The unique id for working machine, the default value is `0`                                                                                                                                                                    |
+  | max.tolerate.time.difference.milliseconds (?)        |   long     | The max tolerate time for different server's time difference in milliseconds, the default value is `10`                                                                                                                         |
+  | max.vibration.offset (?)                             |    int     | The max upper limit value of vibrate number, range `[0, 4096)`, the default value is `1`. Notice: To use the generated value of this algorithm as sharding value, it is recommended to configure this property. The algorithm generates key mod `2^n` (`2^n` is usually the sharding amount of tables or databases) in different milliseconds and the result is always `0` or `1`. To prevent the above sharding problem, it is recommended to configure this property, its value is `(2^n)-1` |
+  
+###### LEAF_SEGMENT
+  
+  | *Name*                                | *DataType* | *Explanation*                                                                                                                                                                                |
+  | ------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | server.list                           | String     | The server list to connect to registry Center which includes the ip address and port number. To split them with the comma when there are multiple addresses. e.g: `host1:2181,host2:2181` |
+  | leaf.key                              | String     | The key which can be used to get the max segment id of table on which `leaf_segment` depends                                                                                                 |
+  | leaf.segment.id.initial.value (?)      | long       | The initial value of segment id, the default value is `1`                                                                                                                                   |
+  | leaf.segment.step (?)                  | long       | The step size of the segment assigned every time, the default value is `10000`                                                                                                               |
+  | registry.center.digest (?)             | String     | Connect to authority tokens in registry center; default indicates no need for authority                                                                                         |
+  | registry.center.type (?)               | String     | The type of registry center, the default value is `zookeeper`                                                                                                                               |
+  
+###### LEAF_SNOWFLAKE
+  
+  | *Name*                                            | *DataType* | *Explanation*                                                                                                                                                                                                                   |
+  | ------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | server.list                                       | String     | The server list to connect to registry Center which includes the ip address and port number. To split them with the comma when there are multiple addresses. e.g: `host1:2181,host2:2181`                                    |
+  | service.id                                        | String     | The service id of `leaf_snowflake` in registry center                                                                                                                                                                            |
+  | max.tolerate.time.difference.milliseconds (?)      | long       | The max time difference between native and registry center in milliseconds, the default value is `10000`. An exception is thrown when the job starts if threshold exceeded                                                     |
+  | registry.center.digest (?)                         | String     | Connect to authority tokens in registry center; default indicates no need for authority                                                                                                                                         |
+  | registry.center.type (?)                           | String     | The type of registry center, the default value is `zookeeper`                                                                                                                                                                  |
+  | max.vibration.offset (?)                           | int        | The max upper limit value of vibrate number, range `[0, 4096)`, the default value is `1`. Notice: To use the generated value of this algorithm as sharding value, it is recommended to configure this property. The algorithm generates key mod `2^n` (`2^n` is usually the sharding amount of tables or databases) in different milliseconds and the result is always `0` or `1`. To prevent the above sharding problem, it is recommended to configure this property, its value is `(2^n)-1` |
 
 #### \<sharding:encrypt-rules />
 
