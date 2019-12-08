@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.core.util;
 
-import org.apache.commons.dbcp2.BasicDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
 
@@ -39,11 +39,11 @@ public final class DataSourceFactory {
     public static DataSource getDataSource(final DataSourceConfiguration dataSourceConfiguration) {
         if (JdbcDataSourceConfiguration.class.equals(dataSourceConfiguration.getClass())) {
             JdbcDataSourceConfiguration jdbcDataSourceConfiguration = (JdbcDataSourceConfiguration) dataSourceConfiguration;
-            BasicDataSource basicDataSource = new BasicDataSource();
-            basicDataSource.setUrl(jdbcDataSourceConfiguration.getJdbcUrl());
-            basicDataSource.setUsername(jdbcDataSourceConfiguration.getUsername());
-            basicDataSource.setPassword(jdbcDataSourceConfiguration.getPassword());
-            return basicDataSource;
+            HikariDataSource hikariDataSource = new HikariDataSource();
+            hikariDataSource.setJdbcUrl(jdbcDataSourceConfiguration.getJdbcUrl());
+            hikariDataSource.setUsername(jdbcDataSourceConfiguration.getUsername());
+            hikariDataSource.setPassword(jdbcDataSourceConfiguration.getPassword());
+            return hikariDataSource;
         }
         throw new UnsupportedOperationException();
     }
