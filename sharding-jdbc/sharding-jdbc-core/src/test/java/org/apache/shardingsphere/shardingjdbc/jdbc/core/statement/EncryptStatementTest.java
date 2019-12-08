@@ -37,23 +37,23 @@ import static org.junit.Assert.assertTrue;
 
 public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTableTest {
     
-    private static final String INSERT_SQL = "insert into t_encrypt(id, pwd) values(2,'b')";
+    private static final String INSERT_SQL = "INSERT INTO t_encrypt(id, pwd) VALUES (2,'b')";
     
-    private static final String INSERT_GENERATED_KEY_SQL = "insert into t_encrypt(pwd) values('b')";
+    private static final String INSERT_GENERATED_KEY_SQL = "INSERT INTO t_encrypt(pwd) VALUES ('b')";
     
-    private static final String DELETE_SQL = "delete from t_encrypt where pwd = 'a' and id = 1";
+    private static final String DELETE_SQL = "DELETE FROM t_encrypt WHERE pwd = 'a' AND id = 1";
     
-    private static final String UPDATE_SQL = "update t_encrypt set pwd ='f' where pwd = 'a'";
+    private static final String UPDATE_SQL = "UPDATE t_encrypt SET pwd ='f' WHERE pwd = 'a'";
     
-    private static final String SELECT_SQL = "select id, pwd from t_encrypt where pwd = 'a'";
+    private static final String SELECT_SQL = "SELECT id, pwd FROM t_encrypt WHERE pwd = 'a'";
     
-    private static final String SELECT_SQL_WITH_STAR = "select * from t_encrypt where pwd = 'a'";
+    private static final String SELECT_SQL_WITH_STAR = "SELECT * FROM t_encrypt WHERE pwd = 'a'";
     
-    private static final String SELECT_SQL_WITH_PLAIN = "select id, pwd from t_encrypt where pwd = 'plainValue'";
+    private static final String SELECT_SQL_WITH_PLAIN = "SELECT id, pwd FROM t_encrypt WHERE pwd = 'plainValue'";
     
-    private static final String SELECT_SQL_WITH_CIPHER = "select id, pwd from t_encrypt where pwd = 'plainValue'";
+    private static final String SELECT_SQL_WITH_CIPHER = "SELECT id, pwd FROM t_encrypt WHERE pwd = 'plainValue'";
     
-    private static final String SELECT_SQL_TO_ASSERT = "select id, cipher_pwd, plain_pwd from t_encrypt";
+    private static final String SELECT_SQL_TO_ASSERT = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt";
     
     @Test
     public void assertSqlShow() throws SQLException {

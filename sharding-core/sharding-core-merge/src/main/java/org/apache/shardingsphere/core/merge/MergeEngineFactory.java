@@ -46,7 +46,7 @@ public final class MergeEngineFactory {
      * @param databaseType database type
      * @param shardingRule sharding rule
      * @param routeResult SQL route result
-     * @param tableMetas sharding table meta Data
+     * @param tableMetas sharding table meta data
      * @param queryResults query results
      * @return merge engine instance
      */
