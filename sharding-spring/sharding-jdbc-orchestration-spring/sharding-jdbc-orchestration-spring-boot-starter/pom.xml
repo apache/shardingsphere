@@ -29,6 +29,11 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-jdbc-orchestration</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-spring-boot-util</artifactId>
             <version>${project.version}</version>
         </dependency>
