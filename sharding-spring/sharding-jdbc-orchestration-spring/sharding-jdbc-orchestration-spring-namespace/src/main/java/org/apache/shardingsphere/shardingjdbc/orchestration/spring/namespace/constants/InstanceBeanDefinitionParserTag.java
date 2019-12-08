@@ -21,30 +21,23 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Registry center parser tag constants.
+ * Orchestration instance parser tag constants.
  *
  * @author caohao
+ * @author sunbufu
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RegistryCenterBeanDefinitionParserTag {
+public final class InstanceBeanDefinitionParserTag {
     
-    public static final String TYPE_TAG = "type";
+    public static final String TYPE_TAG = "instance-type";
     
-    public static final String ROOT_TAG = "registry-center";
+    public static final String ROOT_TAG = "instance";
+    
+    public static final String ORCHESTRATION_TYPE_TAG = "orchestration-type";
     
     public static final String SERVER_LISTS_TAG = "server-lists";
     
     public static final String NAMESPACE_TAG = "namespace";
-    
-    public static final String DIGEST_TAG = "digest";
-    
-    public static final String OPERATION_TIMEOUT_MILLISECONDS_TAG = "operation-timeout-milliseconds";
-    
-    public static final String MAX_RETRIES_TAG = "max-retries";
-    
-    public static final String RETRY_INTERVAL_MILLISECONDS_TAG = "retry-interval-milliseconds";
-    
-    public static final String TIME_TO_LIVE_SECONDS_TAG = "time-to-live-seconds";
     
     public static final String PROPERTY_REF_TAG = "props-ref";
 }

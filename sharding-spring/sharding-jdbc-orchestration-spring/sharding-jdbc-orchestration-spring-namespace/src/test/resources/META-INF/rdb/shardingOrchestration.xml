@@ -18,22 +18,27 @@
 
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:orchestraion="http://shardingsphere.apache.org/schema/shardingsphere/orchestration"
-       xmlns="http://www.springframework.org/schema/beans"
+       xmlns="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration
-                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd">
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd">
     <import resource="namespace/shardingDataSourceNamespace.xml" />
 
-    <orchestraion:registry-center type="TestRegistry" id="regCenter" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" operation-timeout-milliseconds="1000" max-retries="3" />
+    <util:properties id="instance-props">
+        <prop key="max-retries">3</prop>
+        <prop key="operation-timeout-milliseconds">1000</prop>
+    </util:properties>
 
-    <orchestraion:sharding-data-source id="simpleShardingOrchestration" data-source-ref="simpleShardingDataSource" registry-center-ref="regCenter" />
-    <orchestraion:sharding-data-source id="shardingRuleWithAttributesDataSourceOrchestration" data-source-ref="shardingRuleWithAttributesDataSource" registry-center-ref="regCenter" />
-    <orchestraion:sharding-data-source id="multiTableRulesDataSourceOrchestration" data-source-ref="multiTableRulesDataSource" registry-center-ref="regCenter" />
-    <orchestraion:sharding-data-source id="propsDataSourceOrchestration" data-source-ref="propsDataSource" registry-center-ref="regCenter" />
-    <orchestraion:sharding-data-source id="tableRuleWithAttributesDataSourceOrchestration" data-source-ref="tableRuleWithAttributesDataSource" registry-center-ref="regCenter" />
-    <orchestraion:sharding-data-source id="bindingTableRuleDatasourceOrchestration" data-source-ref="bindingTableRuleDatasource" registry-center-ref="regCenter" />
-    <orchestraion:sharding-data-source id="multiBindingTableRulesDatasourceOrchestration" data-source-ref="multiBindingTableRulesDatasource" registry-center-ref="regCenter" />
-    <orchestraion:sharding-data-source id="broadcastTableRuleDatasourceOrchestration" data-source-ref="broadcastTableRuleDatasource" registry-center-ref="regCenter" />
-    <orchestraion:sharding-data-source id="multiBroadcastTableRulesDatasourceOrchestration" data-source-ref="multiBroadcastTableRulesDatasource" registry-center-ref="regCenter" />
+    <orchestraion:instance id="regCenter" orchestration-type="registry_center,config_center" instance-type="TestRegistry" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" props-ref="instance-props"/>
+
+    <orchestraion:sharding-data-source id="simpleShardingOrchestration" data-source-ref="simpleShardingDataSource" instance-ref="regCenter" />
+    <orchestraion:sharding-data-source id="shardingRuleWithAttributesDataSourceOrchestration" data-source-ref="shardingRuleWithAttributesDataSource" instance-ref="regCenter" />
+    <orchestraion:sharding-data-source id="multiTableRulesDataSourceOrchestration" data-source-ref="multiTableRulesDataSource" instance-ref="regCenter" />
+    <orchestraion:sharding-data-source id="propsDataSourceOrchestration" data-source-ref="propsDataSource" instance-ref="regCenter" />
+    <orchestraion:sharding-data-source id="tableRuleWithAttributesDataSourceOrchestration" data-source-ref="tableRuleWithAttributesDataSource" instance-ref="regCenter" />
+    <orchestraion:sharding-data-source id="bindingTableRuleDatasourceOrchestration" data-source-ref="bindingTableRuleDatasource" instance-ref="regCenter" />
+    <orchestraion:sharding-data-source id="multiBindingTableRulesDatasourceOrchestration" data-source-ref="multiBindingTableRulesDatasource" instance-ref="regCenter" />
+    <orchestraion:sharding-data-source id="broadcastTableRuleDatasourceOrchestration" data-source-ref="broadcastTableRuleDatasource" instance-ref="regCenter" />
+    <orchestraion:sharding-data-source id="multiBroadcastTableRulesDatasourceOrchestration" data-source-ref="multiBroadcastTableRulesDatasource" instance-ref="regCenter" />
 </beans>

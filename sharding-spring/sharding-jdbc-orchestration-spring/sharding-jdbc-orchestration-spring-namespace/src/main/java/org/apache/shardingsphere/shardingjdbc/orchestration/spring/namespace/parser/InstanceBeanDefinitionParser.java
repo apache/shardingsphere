@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.parser;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.RegistryCenterBeanDefinitionParserTag;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.InstanceBeanDefinitionParserTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -27,24 +27,21 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
 /**
- * Registry parser for spring namespace.
- * 
+ * Orchestration instance parser for spring namespace.
+ *
  * @author panjuan
+ * @author sunbufu
  */
-public final class RegBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class InstanceBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(RegistryCenterConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(RegistryCenterBeanDefinitionParserTag.TYPE_TAG));
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(InstanceConfiguration.class);
+        factory.addConstructorArgValue(element.getAttribute(InstanceBeanDefinitionParserTag.TYPE_TAG));
         addPropertiesArgReferenceIfNotEmpty(element, factory);
-        addPropertyValueIfNotEmpty(RegistryCenterBeanDefinitionParserTag.SERVER_LISTS_TAG, "serverLists", element, factory);
-        addPropertyValueIfNotEmpty(RegistryCenterBeanDefinitionParserTag.NAMESPACE_TAG, "namespace", element, factory);
-        addPropertyValueIfNotEmpty(RegistryCenterBeanDefinitionParserTag.DIGEST_TAG, "digest", element, factory);
-        addPropertyValueIfNotEmpty(RegistryCenterBeanDefinitionParserTag.OPERATION_TIMEOUT_MILLISECONDS_TAG, "operationTimeoutMilliseconds", element, factory);
-        addPropertyValueIfNotEmpty(RegistryCenterBeanDefinitionParserTag.MAX_RETRIES_TAG, "maxRetries", element, factory);
-        addPropertyValueIfNotEmpty(RegistryCenterBeanDefinitionParserTag.RETRY_INTERVAL_MILLISECONDS_TAG, "retryIntervalMilliseconds", element, factory);
-        addPropertyValueIfNotEmpty(RegistryCenterBeanDefinitionParserTag.TIME_TO_LIVE_SECONDS_TAG, "timeToLiveSeconds", element, factory);
+        addPropertyValueIfNotEmpty(InstanceBeanDefinitionParserTag.ORCHESTRATION_TYPE_TAG, "orchestrationType", element, factory);
+        addPropertyValueIfNotEmpty(InstanceBeanDefinitionParserTag.SERVER_LISTS_TAG, "serverLists", element, factory);
+        addPropertyValueIfNotEmpty(InstanceBeanDefinitionParserTag.NAMESPACE_TAG, "namespace", element, factory);
         return factory.getBeanDefinition();
     }
     
@@ -56,7 +53,7 @@ public final class RegBeanDefinitionParser extends AbstractBeanDefinitionParser 
     }
     
     private void addPropertiesArgReferenceIfNotEmpty(final Element element, final BeanDefinitionBuilder factory) {
-        String properties = element.getAttribute(RegistryCenterBeanDefinitionParserTag.PROPERTY_REF_TAG);
+        String properties = element.getAttribute(InstanceBeanDefinitionParserTag.PROPERTY_REF_TAG);
         if (!Strings.isNullOrEmpty(properties)) {
             factory.addConstructorArgReference(properties);
         }
