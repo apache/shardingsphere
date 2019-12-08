@@ -47,9 +47,9 @@ public final class OrchestrationConfigurationYamlSwapper implements YamlSwapper<
     public YamlOrchestrationConfiguration swap(final OrchestrationConfiguration data) {
         Map<String, YamlInstanceConfiguration> yamlInstanceConfigurationMap = new HashMap();
         Map<String, InstanceConfiguration> instanceConfigurationMap = data.getInstanceConfigurationMap();
-        for (Entry<String, InstanceConfiguration> entry : instanceConfigurationMap.entrySet()) {
+        for (Entry<String, InstanceConfiguration> each : instanceConfigurationMap.entrySet()) {
             InstanceConfigurationYamlSwapper swapper = new InstanceConfigurationYamlSwapper();
-            yamlInstanceConfigurationMap.put(entry.getKey(), swapper.swap(entry.getValue()));
+            yamlInstanceConfigurationMap.put(each.getKey(), swapper.swap(each.getValue()));
         }
         YamlOrchestrationConfiguration result = new YamlOrchestrationConfiguration();
         result.setInstanceConfigurationMap(yamlInstanceConfigurationMap);
@@ -66,9 +66,9 @@ public final class OrchestrationConfigurationYamlSwapper implements YamlSwapper<
     public OrchestrationConfiguration swap(final YamlOrchestrationConfiguration yamlConfiguration) {
         Map<String, InstanceConfiguration> instanceConfigurationMap = new HashMap();
         Map<String, YamlInstanceConfiguration> yamlInstanceConfigurationMap = yamlConfiguration.getInstanceConfigurationMap();
-        for (Entry<String, YamlInstanceConfiguration> entry : yamlInstanceConfigurationMap.entrySet()) {
+        for (Entry<String, YamlInstanceConfiguration> each : yamlInstanceConfigurationMap.entrySet()) {
             InstanceConfigurationYamlSwapper swapper = new InstanceConfigurationYamlSwapper();
-            instanceConfigurationMap.put(entry.getKey(), swapper.swap(entry.getValue()));
+            instanceConfigurationMap.put(each.getKey(), swapper.swap(each.getValue()));
         }
         OrchestrationConfiguration result = new OrchestrationConfiguration(instanceConfigurationMap);
         return result;
