@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.core.config;
 
+import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
@@ -30,12 +31,13 @@ import lombok.Data;
  * @author avalon566
  */
 @Data
+@EqualsAndHashCode(exclude = {"databaseType"})
 public final class JdbcDataSourceConfiguration implements DataSourceConfiguration {
-
+    
     private String jdbcUrl;
-
+    
     private String username;
-
+    
     private String password;
     
     private DatabaseType databaseType;

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfigura
 import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
 
 import javax.sql.DataSource;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Data source factory.
@@ -29,6 +30,8 @@ import javax.sql.DataSource;
  * @author avalon566
  */
 public final class DataSourceFactory {
+    
+    private static final ConcurrentHashMap<JdbcDataSourceConfiguration, HikariDataSource> CACHED_DATA_SOURCES = new ConcurrentHashMap<>();
 
     /**
      * Get data source by {@code DataSourceConfiguration}.
@@ -39,11 +42,20 @@ public final class DataSourceFactory {
     public static DataSource getDataSource(final DataSourceConfiguration dataSourceConfiguration) {
         if (JdbcDataSourceConfiguration.class.equals(dataSourceConfiguration.getClass())) {
             JdbcDataSourceConfiguration jdbcDataSourceConfiguration = (JdbcDataSourceConfiguration) dataSourceConfiguration;
-            HikariDataSource hikariDataSource = new HikariDataSource();
-            hikariDataSource.setJdbcUrl(jdbcDataSourceConfiguration.getJdbcUrl());
-            hikariDataSource.setUsername(jdbcDataSourceConfiguration.getUsername());
-            hikariDataSource.setPassword(jdbcDataSourceConfiguration.getPassword());
-            return hikariDataSource;
+            if (CACHED_DATA_SOURCES.containsKey(jdbcDataSourceConfiguration)) {
+                return CACHED_DATA_SOURCES.get(jdbcDataSourceConfiguration);
+            }
+            synchronized (CACHED_DATA_SOURCES) {
+                if (CACHED_DATA_SOURCES.containsKey(jdbcDataSourceConfiguration)) {
+                    return CACHED_DATA_SOURCES.get(jdbcDataSourceConfiguration);
+                }
+                HikariDataSource hikariDataSource = new HikariDataSource();
+                hikariDataSource.setJdbcUrl(jdbcDataSourceConfiguration.getJdbcUrl());
+                hikariDataSource.setUsername(jdbcDataSourceConfiguration.getUsername());
+                hikariDataSource.setPassword(jdbcDataSourceConfiguration.getPassword());
+                CACHED_DATA_SOURCES.put(jdbcDataSourceConfiguration, hikariDataSource);
+                return hikariDataSource;
+            }
         }
         throw new UnsupportedOperationException();
     }
