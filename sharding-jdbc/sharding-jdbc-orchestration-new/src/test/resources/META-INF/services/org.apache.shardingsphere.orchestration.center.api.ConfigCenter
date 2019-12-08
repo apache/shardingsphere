@@ -16,3 +16,6 @@
 #
 
 org.apache.shardingsphere.shardingjdbc.orchestration.temp.util.TestRegistryCenter
+org.apache.shardingsphere.shardingjdbc.orchestration.temp.util.TestRegistryCenter1
+org.apache.shardingsphere.shardingjdbc.orchestration.temp.util.TestRegistryCenter2
+org.apache.shardingsphere.shardingjdbc.orchestration.temp.util.TestRegistryCenter3
