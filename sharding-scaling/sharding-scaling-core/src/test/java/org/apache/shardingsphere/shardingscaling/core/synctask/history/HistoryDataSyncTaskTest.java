@@ -21,8 +21,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
-import org.apache.shardingsphere.shardingscaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.Event;
@@ -51,7 +49,6 @@ public class HistoryDataSyncTaskTest {
     public void setUp() {
         RdbmsConfiguration readerConfig = mockReaderConfig();
         RdbmsConfiguration writerConfig = mockWriterConfig();
-        ScalingContext.getInstance().init(null, new ServerConfiguration(100, 1000, 3));
         syncConfiguration = new SyncConfiguration(3, readerConfig, writerConfig);
     }
 
