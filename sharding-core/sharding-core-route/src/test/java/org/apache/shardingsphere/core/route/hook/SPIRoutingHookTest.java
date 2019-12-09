@@ -33,11 +33,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SPIRoutingHookTest {
+public final class SPIRoutingHookTest {
     
-    private SPIRoutingHook spiRoutingHook = new SPIRoutingHook();
-    
-    private String sql = "select * from table";
+    private final SPIRoutingHook spiRoutingHook = new SPIRoutingHook();
     
     @Mock
     private SQLRouteResult sqlRouteResult;
@@ -50,6 +48,7 @@ public class SPIRoutingHookTest {
     
     @Test
     public void assertStart() {
+        String sql = "SELECT * FROM table";
         spiRoutingHook.start(sql);
         RoutingHook routingHook = getFixtureHook();
         assertThat(routingHook, instanceOf(RoutingHookFixture.class));
@@ -73,6 +72,7 @@ public class SPIRoutingHookTest {
         assertThat(((RoutingHookFixture) routingHook).getCause(), is(exception));
     }
     
+    @SuppressWarnings("unchecked")
     @SneakyThrows
     private RoutingHook getFixtureHook() {
         Field routingHooksField = SPIRoutingHook.class.getDeclaredField("routingHooks");

@@ -120,7 +120,7 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
     
     private void encryptToken(final InsertValueToken insertValueToken, final String tableName, final InsertSQLStatementContext sqlStatementContext, final InsertValueContext insertValueContext) {
         Optional<SQLToken> useDefaultInsertColumnsToken = findPreviousSQLToken(UseDefaultInsertColumnsToken.class);
-        Set<String> columnNames = new HashSet(sqlStatementContext.getColumnNames());
+        Set<String> columnNames = new HashSet<>(sqlStatementContext.getColumnNames());
         Iterator<String> descendingColumnNames = sqlStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
