@@ -19,11 +19,10 @@ package org.apache.shardingsphere.core.merge.dal;
 
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dal.desc.DescribeTableMergedResult;
+import org.apache.shardingsphere.core.merge.dal.show.LogicTablesMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowCreateTableMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowDatabasesMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowOtherMergedResult;
-import org.apache.shardingsphere.core.merge.dal.show.ShowTablesMergedResult;
-import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.DescribeStatement;
@@ -34,9 +33,8 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Show
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -46,12 +44,11 @@ import static org.mockito.Mockito.when;
 
 public final class DALMergeEngineTest {
     
-    private List<QueryResult> queryResults;
+    private List<QueryResult> queryResults = new LinkedList<>();
     
     @Before
     public void setUp() {
-        ResultSet resultSet = mock(ResultSet.class);
-        queryResults = Collections.<QueryResult>singletonList(new TestQueryResult(resultSet));
+        queryResults.add(mock(QueryResult.class));
     }
     
     @Test
@@ -67,7 +64,7 @@ public final class DALMergeEngineTest {
         DALStatement dalStatement = new ShowTablesStatement();
         SQLStatementContext sqlStatementContext = mockSQLStatementContext(dalStatement);
         DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, sqlStatementContext, null);
-        assertThat(dalMergeEngine.merge(), instanceOf(ShowTablesMergedResult.class));
+        assertThat(dalMergeEngine.merge(), instanceOf(LogicTablesMergedResult.class));
     }
     
     @Test

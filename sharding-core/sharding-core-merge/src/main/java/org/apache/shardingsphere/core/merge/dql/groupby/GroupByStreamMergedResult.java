@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnit;
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnitFactory;
 import org.apache.shardingsphere.core.merge.dql.orderby.OrderByStreamMergedResult;
+import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 
@@ -42,8 +43,6 @@ import java.util.Map.Entry;
  */
 public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
-    private final Map<String, Integer> labelAndIndexMap;
-    
     private final SelectSQLStatementContext selectSQLStatementContext;
     
     private final List<Object> currentRow;
@@ -53,7 +52,6 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     public GroupByStreamMergedResult(
             final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final SelectSQLStatementContext selectSQLStatementContext) throws SQLException {
         super(queryResults, selectSQLStatementContext.getOrderByContext().getItems());
-        this.labelAndIndexMap = labelAndIndexMap;
         this.selectSQLStatementContext = selectSQLStatementContext;
         currentRow = new ArrayList<>(labelAndIndexMap.size());
         currentGroupByValues = getOrderByValuesQueue().isEmpty()
@@ -82,7 +80,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
                     
                     @Override
                     public AggregationUnit apply(final AggregationProjection input) {
-                        return AggregationUnitFactory.create(input.getType());
+                        return AggregationUnitFactory.create(input.getType(), input instanceof AggregationDistinctProjection);
                     }
                 });
         while (currentGroupByValues.equals(new GroupByValue(getCurrentQueryResult(), selectSQLStatementContext.getGroupByContext().getItems()).getGroupValues())) {
@@ -135,19 +133,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     }
     
     @Override
-    public Object getValue(final String columnLabel, final Class<?> type) {
-        Preconditions.checkState(labelAndIndexMap.containsKey(columnLabel), "Can't find columnLabel: %s", columnLabel);
-        return currentRow.get(labelAndIndexMap.get(columnLabel) - 1);
-    }
-    
-    @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
         return currentRow.get(columnIndex - 1);
-    }
-    
-    @Override
-    public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
-        Preconditions.checkState(labelAndIndexMap.containsKey(columnLabel), "Can't find columnLabel: %s", columnLabel);
-        return currentRow.get(labelAndIndexMap.get(columnLabel) - 1);
     }
 }

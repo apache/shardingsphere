@@ -19,23 +19,19 @@ package org.apache.shardingsphere.core.merge.dal.show;
 
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
-import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -45,7 +41,7 @@ public final class ShowDatabasesMergedResultTest {
     
     @Before
     public void setUp() {
-        showDatabasesMergedResult = new ShowDatabasesMergedResult();
+        showDatabasesMergedResult = new ShowDatabasesMergedResult(Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME));
     }
     
     @Test
@@ -60,31 +56,14 @@ public final class ShowDatabasesMergedResultTest {
         assertThat(showDatabasesMergedResult.getValue(1, Object.class).toString(), is(ShardingConstant.LOGIC_SCHEMA_NAME));
     }
     
-    @Test
-    public void assertGetValueWithColumnLabel() throws SQLException {
-        assertTrue(showDatabasesMergedResult.next());
-        assertThat(showDatabasesMergedResult.getValue("label", Object.class).toString(), is(ShardingConstant.LOGIC_SCHEMA_NAME));
-    
-    }
-    
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetCalendarValueWithColumnIndex() throws SQLException {
         showDatabasesMergedResult.getCalendarValue(1, Object.class, Calendar.getInstance());
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetCalendarValueWithColumnLabel() throws SQLException {
-        showDatabasesMergedResult.getCalendarValue("label", Object.class, Calendar.getInstance());
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetInputStreamWithColumnIndex() throws SQLException {
         showDatabasesMergedResult.getInputStream(1, "Ascii");
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetInputStreamWithColumnLabel() throws SQLException {
-        showDatabasesMergedResult.getInputStream("label", "Ascii");
     }
     
     @Test
@@ -94,50 +73,49 @@ public final class ShowDatabasesMergedResultTest {
 
     @Test
     public void assertMergeNext() throws SQLException {
-        ShowDatabasesMergedResult showDatabasesMergedResult = buildMergedShowDatabasesMergedResult();
-        assertTrue(showDatabasesMergedResult.next());
-        assertTrue(showDatabasesMergedResult.next());
-        assertTrue(showDatabasesMergedResult.next());
-        assertTrue(showDatabasesMergedResult.next());
-        assertTrue(showDatabasesMergedResult.next());
-        assertFalse(showDatabasesMergedResult.next());
+        ShowDatabasesMergedResult actual = buildMergedShowDatabasesMergedResult();
+        assertTrue(actual.next());
+        assertTrue(actual.next());
+        assertTrue(actual.next());
+        assertTrue(actual.next());
+        assertTrue(actual.next());
+        assertFalse(actual.next());
     }
 
     @Test
     public void assertSchemes() throws SQLException {
-        ShowDatabasesMergedResult showDatabasesMergedResult = buildMergedShowDatabasesMergedResult();
-        showDatabasesMergedResult.next();
-        assertThat(showDatabasesMergedResult.getValue(1, String.class).toString(), is("A"));
-        showDatabasesMergedResult.next();
-        assertThat(showDatabasesMergedResult.getValue(1, String.class).toString(), is("B"));
-        showDatabasesMergedResult.next();
-        assertThat(showDatabasesMergedResult.getValue(1, String.class).toString(), is("C"));
-        showDatabasesMergedResult.next();
-        assertThat(showDatabasesMergedResult.getValue(1, String.class).toString(), is("D"));
-        showDatabasesMergedResult.next();
-        assertThat(showDatabasesMergedResult.getValue(1, String.class).toString(), is("E"));
+        ShowDatabasesMergedResult actual = buildMergedShowDatabasesMergedResult();
+        actual.next();
+        assertThat(actual.getValue(1, String.class).toString(), is("A"));
+        actual.next();
+        assertThat(actual.getValue(1, String.class).toString(), is("B"));
+        actual.next();
+        assertThat(actual.getValue(1, String.class).toString(), is("C"));
+        actual.next();
+        assertThat(actual.getValue(1, String.class).toString(), is("D"));
+        actual.next();
+        assertThat(actual.getValue(1, String.class).toString(), is("E"));
     }
 
     private ShowDatabasesMergedResult buildMergedShowDatabasesMergedResult() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.next()).thenReturn(true, true, true, false);
-        when(resultSet.getString(anyInt())).thenReturn("A", "B", "C");
-        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        when(resultSetMetaData.getColumnCount()).thenReturn(1);
-        when(resultSetMetaData.getColumnLabel(1)).thenReturn("SCHEMA_NAME");
-
-        ResultSet resultSet2 = mock(ResultSet.class);
-        when(resultSet2.next()).thenReturn(true, true, false);
-        when(resultSet2.getString(anyInt())).thenReturn("D", "E");
-        ResultSetMetaData resultSetMetaData2 = mock(ResultSetMetaData.class);
-        when(resultSet2.getMetaData()).thenReturn(resultSetMetaData);
-        when(resultSetMetaData2.getColumnCount()).thenReturn(1);
-        when(resultSetMetaData2.getColumnLabel(1)).thenReturn("SCHEMA_NAME");
-
-        List<QueryResult> queryResults = new ArrayList<>();
-        queryResults.add(new TestQueryResult(resultSet));
-        queryResults.add(new TestQueryResult(resultSet2));
-        return new ShowDatabasesMergedResult(null, queryResults);
+        return new ShowDatabasesMergedResult(Arrays.asList(createQueryResult1(), createQueryResult2()));
+    }
+    
+    private QueryResult createQueryResult1() throws SQLException {
+        QueryResult result = mock(QueryResult.class);
+        when(result.next()).thenReturn(true, true, true, false);
+        when(result.getValue(1, String.class)).thenReturn("A", "B", "C");
+        when(result.getColumnCount()).thenReturn(1);
+        when(result.getColumnLabel(1)).thenReturn("SCHEMA_NAME");
+        return result;
+    }
+    
+    private QueryResult createQueryResult2() throws SQLException {
+        QueryResult result = mock(QueryResult.class);
+        when(result.next()).thenReturn(true, true, false);
+        when(result.getValue(1, String.class)).thenReturn("D", "E");
+        when(result.getColumnCount()).thenReturn(1);
+        when(result.getColumnLabel(1)).thenReturn("SCHEMA_NAME");
+        return result;
     }
 }

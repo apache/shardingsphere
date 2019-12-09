@@ -42,8 +42,10 @@ import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Insert values token generator for encrypt.
@@ -118,6 +120,7 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
     
     private void encryptToken(final InsertValueToken insertValueToken, final String tableName, final InsertSQLStatementContext sqlStatementContext, final InsertValueContext insertValueContext) {
         Optional<SQLToken> useDefaultInsertColumnsToken = findPreviousSQLToken(UseDefaultInsertColumnsToken.class);
+        Set<String> columnNames = new HashSet(sqlStatementContext.getColumnNames());
         Iterator<String> descendingColumnNames = sqlStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
@@ -126,16 +129,20 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
                 int columnIndex = useDefaultInsertColumnsToken.isPresent()
                         ? ((UseDefaultInsertColumnsToken) useDefaultInsertColumnsToken.get()).getColumns().indexOf(columnName) : sqlStatementContext.getColumnNames().indexOf(columnName);
                 Object originalValue = insertValueContext.getValue(columnIndex);
-                addPlainColumn(insertValueToken, columnIndex, tableName, columnName, insertValueContext, originalValue);
-                addAssistedQueryColumn(insertValueToken, encryptor.get(), columnIndex, tableName, columnName, insertValueContext, originalValue);
+                addPlainColumn(insertValueToken, columnIndex, tableName, columnName, insertValueContext, originalValue, columnNames);
+                addAssistedQueryColumn(insertValueToken, encryptor.get(), columnIndex, tableName, columnName, insertValueContext, originalValue, columnNames);
                 setCipherColumn(insertValueToken, encryptor.get(), columnIndex, insertValueContext.getValueExpressions().get(columnIndex), originalValue);
             }
         }
     }
     
     private void addPlainColumn(final InsertValueToken insertValueToken, final int columnIndex,
-                                final String tableName, final String columnName, final InsertValueContext insertValueContext, final Object originalValue) {
-        if (getEncryptRule().findPlainColumn(tableName, columnName).isPresent()) {
+                                final String tableName, final String columnName, final InsertValueContext insertValueContext, final Object originalValue, final Set<String> columnNames) {
+        Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, columnName);
+        if (plainColumn.isPresent()) {
+            if (columnNames.contains(plainColumn.get())) {
+                return;
+            }
             DerivedSimpleExpressionSegment derivedExpressionSegment = insertValueContext.getParameters().isEmpty()
                     ? new DerivedLiteralExpressionSegment(originalValue) : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
             insertValueToken.getValues().add(columnIndex + 1, derivedExpressionSegment);
@@ -143,8 +150,12 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
     }
     
     private void addAssistedQueryColumn(final InsertValueToken insertValueToken, final ShardingEncryptor encryptor, final int columnIndex, 
-                                        final String tableName, final String columnName, final InsertValueContext insertValueContext, final Object originalValue) {
-        if (getEncryptRule().findAssistedQueryColumn(tableName, columnName).isPresent()) {
+                                        final String tableName, final String columnName, final InsertValueContext insertValueContext, final Object originalValue, final Set<String> columnNames) {
+        Optional<String> assistedQueryColumn = getEncryptRule().findAssistedQueryColumn(tableName, columnName);
+        if (assistedQueryColumn.isPresent()) {
+            if (columnNames.contains(assistedQueryColumn.get())) {
+                return;
+            }
             DerivedSimpleExpressionSegment derivedExpressionSegment = insertValueContext.getParameters().isEmpty()
                     ? new DerivedLiteralExpressionSegment(((ShardingQueryAssistedEncryptor) encryptor).queryAssistedEncrypt(null == originalValue ? null : originalValue.toString()))
                     : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));

@@ -15,22 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.execute;
+package org.apache.shardingsphere.core.execute.engine;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.List;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Map;
 
 /**
- * Sharding execute group.
- *
+ * Sharding group execute callback.
+ * 
  * @author zhangliang
- * @param <T> type of inputs value
+ * 
+ * @param <I> type of inputs value
+ * @param <O> type of outputs value
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShardingExecuteGroup<T> {
+public interface ShardingGroupExecuteCallback<I, O> {
     
-    private final List<T> inputs;
+    /**
+     * Execute callback.
+     * 
+     * @param inputs input values
+     * @param isTrunkThread is execution in trunk thread
+     * @param shardingExecuteDataMap sharding execute data map
+     * @return execute result
+     * @throws SQLException throw when execute failure
+     */
+    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread, Map<String, Object> shardingExecuteDataMap) throws SQLException;
 }

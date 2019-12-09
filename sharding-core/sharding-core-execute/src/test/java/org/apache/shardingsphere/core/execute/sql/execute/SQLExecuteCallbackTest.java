@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute;
 
-import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.execute.StatementExecuteUnit;
+import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
@@ -46,7 +45,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SQLExecuteCallbackTest {
+public final class SQLExecuteCallbackTest {
     
     @Mock
     private PreparedStatement preparedStatement;
@@ -64,9 +63,7 @@ public class SQLExecuteCallbackTest {
         when(preparedStatement.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(metaData);
         when(metaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
-        units = Lists.newArrayList(
-            new StatementExecuteUnit(new RouteUnit("ds", new SQLUnit("SELECT now()", Collections.emptyList())), preparedStatement, ConnectionMode.CONNECTION_STRICTLY)
-        );
+        units = Collections.singletonList(new StatementExecuteUnit(new RouteUnit("ds", new SQLUnit("SELECT now()", Collections.emptyList())), preparedStatement, ConnectionMode.CONNECTION_STRICTLY));
     }
     
     @Test
@@ -76,7 +73,7 @@ public class SQLExecuteCallbackTest {
         SQLExecuteCallback sqlExecuteCallback = new SQLExecuteCallback<Integer>(DatabaseTypes.getActualDatabaseType("MySQL"), true) {
             
             @Override
-            protected Integer executeSQL(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+            protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return ((PreparedStatement) statement).executeUpdate();
             }
         };

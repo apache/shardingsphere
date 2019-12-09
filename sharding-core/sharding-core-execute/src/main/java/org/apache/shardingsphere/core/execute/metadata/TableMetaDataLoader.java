@@ -21,9 +21,9 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
-import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
-import org.apache.shardingsphere.core.execute.ShardingGroupExecuteCallback;
+import org.apache.shardingsphere.core.execute.engine.ShardingExecuteEngine;
+import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
+import org.apache.shardingsphere.core.execute.engine.ShardingGroupExecuteCallback;
 import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.column.EncryptColumnMetaData;
 import org.apache.shardingsphere.core.metadata.column.ShardingGeneratedKeyColumnMetaData;
@@ -95,10 +95,9 @@ public final class TableMetaDataLoader {
             
             @Override
             public Collection<TableMetaData> execute(final Collection<DataNode> dataNodes, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) throws SQLException {
-                String dataSourceName = dataNodes.iterator().next().getDataSourceName();
-                DataSourceMetaData dataSourceMetaData = TableMetaDataLoader.this.dataSourceMetas.getDataSourceMetaData(dataSourceName);
-                return load(shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(dataSourceName), 
-                        dataSourceMetaData, logicTableName, dataNodes, generateKeyColumnName, shardingRule.getEncryptRule());
+                String masterDataSourceName = shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(dataNodes.iterator().next().getDataSourceName());
+                DataSourceMetaData dataSourceMetaData = TableMetaDataLoader.this.dataSourceMetas.getDataSourceMetaData(masterDataSourceName);
+                return load(masterDataSourceName, dataSourceMetaData, logicTableName, dataNodes, generateKeyColumnName, shardingRule.getEncryptRule());
             }
         });
     }

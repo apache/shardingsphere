@@ -55,12 +55,6 @@ public final class DecoratorMergedResultTest {
     }
     
     @Test
-    public void assertGetValueWithColumnLabel() throws SQLException {
-        when(mergedResult.getValue("label", Object.class)).thenReturn("1");
-        assertThat(decoratorMergedResult.getValue("label", Object.class).toString(), is("1"));
-    }
-    
-    @Test
     public void assertGetCalenderValueWithColumnIndex() throws SQLException {
         Calendar calendar = Calendar.getInstance();
         when(mergedResult.getCalendarValue(1, Date.class, calendar)).thenReturn(new Date(0L));
@@ -68,22 +62,9 @@ public final class DecoratorMergedResultTest {
     }
     
     @Test
-    public void assertGetCalenderValueWithColumnLabel() throws SQLException {
-        Calendar calendar = Calendar.getInstance();
-        when(mergedResult.getCalendarValue("label", Date.class, calendar)).thenReturn(new Date(0L));
-        assertThat((Date) decoratorMergedResult.getCalendarValue("label", Date.class, calendar), is(new Date(0L)));
-    }
-    
-    @Test
     public void assertGetInputStreamWithColumnIndex() throws SQLException {
         when(mergedResult.getInputStream(1, "ascii")).thenReturn(null);
         assertNull(decoratorMergedResult.getInputStream(1, "ascii"));
-    }
-    
-    @Test
-    public void assertGetInputStreamWithColumnLabel() throws SQLException {
-        when(mergedResult.getInputStream("label", "ascii")).thenReturn(null);
-        assertNull(decoratorMergedResult.getInputStream("label", "ascii"));
     }
     
     @Test

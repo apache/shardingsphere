@@ -60,7 +60,7 @@ public final class MySQLTextResultSetRowPacket implements MySQLPacket {
             } else {
                 if (each instanceof byte[]) {
                     payload.writeBytesLenenc((byte[]) each);
-                } else if (each instanceof Timestamp) {
+                } else if ((each instanceof Timestamp) && (0 == ((Timestamp) each).getNanos())) {
                     payload.writeStringLenenc(each.toString().split("\\.")[0]);
                 } else if (each instanceof BigDecimal) {
                     payload.writeStringLenenc(((BigDecimal) each).toPlainString());

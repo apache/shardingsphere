@@ -15,30 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.execute;
+package org.apache.shardingsphere.core.execute.sql;
 
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Map;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.constant.ConnectionMode;
+import org.apache.shardingsphere.core.route.RouteUnit;
+
+import java.sql.Statement;
 
 /**
- * Sharding group execute callback.
- * 
+ * Execute unit for JDBC statement.
+ *
  * @author zhangliang
- * 
- * @param <I> type of inputs value
- * @param <O> type of outputs value
+ * @author panjuan
  */
-public interface ShardingGroupExecuteCallback<I, O> {
+@RequiredArgsConstructor
+@Getter
+public final class StatementExecuteUnit {
     
-    /**
-     * Execute callback.
-     * 
-     * @param inputs input values
-     * @param isTrunkThread is execution in trunk thread
-     * @param shardingExecuteDataMap sharding execute data map
-     * @return execute result
-     * @throws SQLException throw when execute failure
-     */
-    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread, Map<String, Object> shardingExecuteDataMap) throws SQLException;
+    private final RouteUnit routeUnit;
+    
+    private final Statement statement;
+    
+    private final ConnectionMode connectionMode;
 }

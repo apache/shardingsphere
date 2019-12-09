@@ -19,22 +19,15 @@ package org.apache.shardingsphere.sql.parser.relation.segment.select.projection;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetaData;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.DerivedProjection;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.ShorthandProjection;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -45,46 +38,46 @@ public final class ProjectionsContextTest {
     
     @Test
     public void assertUnqualifiedShorthandProjectionWithEmptyItems() {
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.<Projection>emptySet());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.<Projection>emptySet(), Collections.<String>emptyList());
         assertFalse(projectionsContext.isUnqualifiedShorthandProjection());
     }
     
     @Test
     public void assertUnqualifiedShorthandProjectionWithWrongSelectItem() {
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton((Projection) getColumnProjection()));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton((Projection) getColumnProjection()), Collections.<String>emptyList());
         assertFalse(projectionsContext.isUnqualifiedShorthandProjection());
     }
     
     @Test
     public void assertUnqualifiedShorthandProjectionWithWrongShortSelectItem() {
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton((Projection) getShorthandProjection()));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton((Projection) getShorthandProjection()), Collections.<String>emptyList());
         assertFalse(projectionsContext.isUnqualifiedShorthandProjection());
     }
     
     @Test
     public void assertUnqualifiedShorthandProjection() {
         Projection projection = new ShorthandProjection(null);
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection), Collections.<String>emptyList());
         assertTrue(projectionsContext.isUnqualifiedShorthandProjection());
     }
     
     @Test
     public void assertFindAliasWithOutAlias() {
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.<Projection>emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.<Projection>emptyList(), Collections.<String>emptyList());
         assertFalse(projectionsContext.findAlias("").isPresent());
     }
     
     @Test
     public void assertFindAlias() {
         Projection projection = getColumnProjectionWithAlias();
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection), Collections.<String>emptyList());
         assertTrue(projectionsContext.findAlias(projection.getExpression()).isPresent());
     }
     
     @Test
     public void assertFindProjectionIndex() {
         Projection projection = getColumnProjection();
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection), Collections.<String>emptyList());
         Optional<Integer> actual = projectionsContext.findProjectionIndex(projection.getExpression());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(1));
@@ -93,7 +86,7 @@ public final class ProjectionsContextTest {
     @Test
     public void assertFindProjectionIndexFailure() {
         Projection projection = getColumnProjection();
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection), Collections.<String>emptyList());
         Optional<Integer> actual = projectionsContext.findProjectionIndex("");
         assertFalse(actual.isPresent());
     }
@@ -101,7 +94,7 @@ public final class ProjectionsContextTest {
     @Test
     public void assertGetAggregationProjections() {
         Projection projection = getAggregationProjection();
-        List<AggregationProjection> items = new ProjectionsContext(0, 0, true, Arrays.asList(projection, getColumnProjection())).getAggregationProjections();
+        List<AggregationProjection> items = new ProjectionsContext(0, 0, true, Arrays.asList(projection, getColumnProjection()), Collections.<String>emptyList()).getAggregationProjections();
         assertTrue(items.contains(projection));
         assertThat(items.size(), is(1));
     }
@@ -109,95 +102,14 @@ public final class ProjectionsContextTest {
     @Test
     public void assertGetAggregationDistinctProjections() {
         Projection projection = getAggregationDistinctProjection();
-        List<AggregationDistinctProjection> items = new ProjectionsContext(0, 0, true, Arrays.asList(projection, getColumnProjection())).getAggregationDistinctProjections();
+        List<AggregationDistinctProjection> items = new ProjectionsContext(
+                0, 0, true, Arrays.asList(projection, getColumnProjection()), Collections.<String>emptyList()).getAggregationDistinctProjections();
         assertTrue(items.contains(projection));
         assertThat(items.size(), is(1));
     }
     
-    @Test
-    public void assertGetColumnLabelWithShorthandProjection() {
-        Projection projection = getShorthandProjection();
-        List<String> columnLabels = new ProjectionsContext(
-                0, 0, true, Collections.singletonList(projection)).getColumnLabels(createRelationMetas(), Collections.singletonList(new TableSegment(0, 0, "table")));
-        assertThat(columnLabels, is(Arrays.asList("id", "name")));
-    }
-    
-    @Test
-    public void assertGetColumnLabelWithShorthandProjectionWithoutOwner() {
-        Projection projection = getShorthandProjectionWithoutOwner();
-        List<String> columnLabels = new ProjectionsContext(
-                0, 0, true, Collections.singletonList(projection)).getColumnLabels(createRelationMetas(), Collections.singletonList(new TableSegment(0, 0, "table")));
-        assertThat(columnLabels, is(Arrays.asList("id", "name")));
-    }
-    
-    @Test
-    public void assertGetColumnLabelsWithCommonProjection() {
-        Projection projection = getColumnProjection();
-        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createRelationMetas(), Collections.<TableSegment>emptyList());
-        assertTrue(columnLabels.contains(projection.getColumnLabel()));
-    }
-    
-    @Test
-    public void assertGetColumnLabelsWithCommonProjectionAlias() {
-        Projection projection = getColumnProjectionWithAlias();
-        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createRelationMetas(), Collections.<TableSegment>emptyList());
-        assertTrue(columnLabels.contains(projection.getAlias().or("")));
-    }
-    
-    @Test
-    public void assertGetColumnLabelsWithExpressionProjection() {
-        Projection projection = getExpressionProjection();
-        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createRelationMetas(), Collections.<TableSegment>emptyList());
-        assertTrue(columnLabels.contains(projection.getColumnLabel()));
-    }
-    
-    @Test
-    public void assertGetColumnLabelsWithExpressionProjectionAlias() {
-        Projection projection = getExpressionSelectProjectionWithAlias();
-        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createRelationMetas(), Collections.<TableSegment>emptyList());
-        assertTrue(columnLabels.contains(projection.getAlias().or("")));
-    }
-    
-    @Test
-    public void assertGetColumnLabelsWithDerivedProjection() {
-        Projection projection = getDerivedProjection();
-        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createRelationMetas(), Collections.<TableSegment>emptyList());
-        assertTrue(columnLabels.contains(projection.getColumnLabel()));
-    }
-    
-    @Test
-    public void assertGetColumnLabelsWithDerivedProjectionAlias() {
-        Projection projection = getDerivedProjectionWithAlias();
-        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createRelationMetas(), Collections.<TableSegment>emptyList());
-        assertTrue(columnLabels.contains(projection.getAlias().or("")));
-    }
-    
-    @Test
-    public void assertGetColumnLabelsWithAggregationProjection() {
-        Projection projection = getAggregationProjection();
-        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createRelationMetas(), Collections.<TableSegment>emptyList());
-        assertTrue(columnLabels.contains(projection.getColumnLabel()));
-    }
-    
-    @Test
-    public void assertGetColumnLabelsWithAggregationDistinctProjection() {
-        Projection projection = getAggregationDistinctProjection();
-        List<String> columnLabels = new ProjectionsContext(0, 0, true, Collections.singletonList(projection)).getColumnLabels(createRelationMetas(), Collections.<TableSegment>emptyList());
-        assertTrue(columnLabels.contains(projection.getColumnLabel()));
-    }
-    
-    private RelationMetas createRelationMetas() {
-        Map<String, RelationMetaData> relations = new HashMap<>(1, 1);
-        relations.put("table", new RelationMetaData(Arrays.asList("id", "name")));
-        return new RelationMetas(relations);
-    }
-    
     private ShorthandProjection getShorthandProjection() {
         return new ShorthandProjection("table");
-    }
-    
-    private ShorthandProjection getShorthandProjectionWithoutOwner() {
-        return new ShorthandProjection(null);
     }
     
     private ColumnProjection getColumnProjection() {
@@ -206,22 +118,6 @@ public final class ProjectionsContextTest {
     
     private ColumnProjection getColumnProjectionWithAlias() {
         return new ColumnProjection("table", "name", "n");
-    }
-    
-    private ExpressionProjection getExpressionProjection() {
-        return new ExpressionProjection("table.name", null);
-    }
-    
-    private ExpressionProjection getExpressionSelectProjectionWithAlias() {
-        return new ExpressionProjection("table.name", "n");
-    }
-    
-    private DerivedProjection getDerivedProjection() {
-        return new DerivedProjection("table.name", null);
-    }
-    
-    private DerivedProjection getDerivedProjectionWithAlias() {
-        return new DerivedProjection("table.name", "n");
     }
     
     private AggregationProjection getAggregationProjection() {

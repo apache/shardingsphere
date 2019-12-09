@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction.base.seata.at;
 
 import io.seata.core.context.RootContext;
-import org.apache.shardingsphere.core.execute.ShardingExecuteDataMap;
+import org.apache.shardingsphere.core.execute.engine.ShardingExecuteDataMap;
 
 import java.util.Map;
 

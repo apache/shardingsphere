@@ -25,8 +25,8 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
-import org.apache.shardingsphere.core.execute.StatementExecuteUnit;
+import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
+import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback;
 import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.core.execute.sql.prepare.SQLExecutePrepareCallback;
@@ -41,6 +41,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -164,7 +165,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
         SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(getDatabaseType(), isExceptionThrown) {
             
             @Override
-            protected int[] executeSQL(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+            protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return statement.executeBatch();
             }
         };
@@ -181,9 +182,10 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
         int count = 0;
         for (ShardingExecuteGroup<StatementExecuteUnit> each : getExecuteGroups()) {
             for (StatementExecuteUnit eachUnit : each.getInputs()) {
-                Map<Integer, Integer> jdbcAndActualAddBatchCallTimesMap = null;
+                Map<Integer, Integer> jdbcAndActualAddBatchCallTimesMap = Collections.emptyMap();
                 for (BatchRouteUnit eachRouteUnit : routeUnits) {
-                    if (eachRouteUnit.getRouteUnit().equals(eachUnit.getRouteUnit())) {
+                    if (eachRouteUnit.getRouteUnit().getDataSourceName().equals(eachUnit.getRouteUnit().getDataSourceName())
+                            && eachRouteUnit.getRouteUnit().getSqlUnit().getSql().equals(eachUnit.getRouteUnit().getSqlUnit().getSql())) {
                         jdbcAndActualAddBatchCallTimesMap = eachRouteUnit.getJdbcAndActualAddBatchCallTimesMap();
                         break;
                     }
@@ -252,7 +254,8 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
 
             @Override
             public boolean apply(final BatchRouteUnit input) {
-                return input.getRouteUnit().equals(executeUnit.getRouteUnit());
+                return input.getRouteUnit().getDataSourceName().equals(executeUnit.getRouteUnit().getDataSourceName())
+                        && input.getRouteUnit().getSqlUnit().getSql().equals(executeUnit.getRouteUnit().getSqlUnit().getSql());
             }
         }).iterator().next().getParameterSets();
         return result;
