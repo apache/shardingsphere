@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.merge.dal.show;
 
-import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 
 import java.io.InputStream;
@@ -29,8 +28,6 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Merged result for show databases.
@@ -46,20 +43,6 @@ public final class ShowDatabasesMergedResult extends LocalMergedResultAdapter im
     
     public ShowDatabasesMergedResult(final Collection<String> schemas) {
         this.schemas = schemas.iterator();
-    }
-    
-    public ShowDatabasesMergedResult(final List<QueryResult> queryResults)throws SQLException {
-        this(convertToScheme(queryResults));
-    }
-    
-    private static Collection<String> convertToScheme(final List<QueryResult> queryResults) throws SQLException {
-        Collection<String> result = new LinkedList<>();
-        for (QueryResult queryResult : queryResults) {
-            while (queryResult.next()) {
-                result.add((String) queryResult.getValue(1, String.class));
-            }
-        }
-        return result;
     }
     
     @Override

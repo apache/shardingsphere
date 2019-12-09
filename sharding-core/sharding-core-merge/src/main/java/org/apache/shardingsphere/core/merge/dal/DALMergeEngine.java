@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.merge.dal;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergedResult;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Show
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTablesStatement;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -61,7 +63,7 @@ public final class DALMergeEngine implements MergeEngine {
     public MergedResult merge() throws SQLException {
         SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
         if (dalStatement instanceof ShowDatabasesStatement) {
-            return new ShowDatabasesMergedResult(queryResults);
+            return new ShowDatabasesMergedResult(Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME));
         }
         if (dalStatement instanceof ShowTablesStatement || dalStatement instanceof ShowTableStatusStatement || dalStatement instanceof ShowIndexStatement) {
             return new LogicTablesMergedResult(shardingRule, sqlStatementContext, tableMetas, queryResults);
