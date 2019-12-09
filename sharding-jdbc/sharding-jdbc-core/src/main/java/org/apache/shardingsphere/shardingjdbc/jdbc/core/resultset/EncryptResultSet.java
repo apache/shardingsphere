@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.merge.dql.iterator.IteratorStreamMergedRes
 import org.apache.shardingsphere.core.merge.encrypt.EncryptMergeEngine;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ResultSetMergedResultMetaData;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ResultSetEncryptorMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
@@ -79,7 +79,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
         originalResultSet = resultSet;
         QueryResult queryResult = new StreamQueryResult(resultSet);
         MergedResult mergedResult = new IteratorStreamMergedResult(Collections.singletonList(queryResult));
-        ResultSetMergedResultMetaData metaData = new ResultSetMergedResultMetaData(encryptRule, originalResultSet.getMetaData(), sqlStatementContext);
+        ResultSetEncryptorMetaData metaData = new ResultSetEncryptorMetaData(encryptRule, originalResultSet.getMetaData(), sqlStatementContext);
         boolean queryWithCipherColumn = encryptRuntimeContext.getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         this.resultSet = new EncryptMergeEngine(metaData, mergedResult, queryWithCipherColumn).merge();
         logicAndActualColumns = createLogicAndActualColumns(queryWithCipherColumn);

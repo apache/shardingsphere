@@ -134,7 +134,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private ShardingResultSet getCurrentResultSet(final List<ResultSet> resultSets, final MergeEngine mergeEngine) throws SQLException {
         MergedResult mergedResult = mergeEngine.merge();
-        ResultSetMergedResultMetaData metaData = new ResultSetMergedResultMetaData(
+        ResultSetEncryptorMetaData metaData = new ResultSetEncryptorMetaData(
                 connection.getRuntimeContext().getRule().getEncryptRule(), resultSets.get(0).getMetaData(), sqlRouteResult.getSqlStatementContext());
         boolean queryWithCipherColumn = connection.getRuntimeContext().getProps().getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         return new ShardingResultSet(resultSets, new EncryptMergeEngine(metaData, mergedResult, queryWithCipherColumn).merge(), this, sqlRouteResult);

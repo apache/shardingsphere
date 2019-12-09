@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.merge.encrypt;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergedResult;
-import org.apache.shardingsphere.core.merge.MergedResultMetaData;
 
 /**
  * Encrypt result set merge engine.
@@ -30,7 +29,7 @@ import org.apache.shardingsphere.core.merge.MergedResultMetaData;
 @RequiredArgsConstructor
 public final class EncryptMergeEngine implements MergeEngine {
     
-    private final MergedResultMetaData metaData;
+    private final EncryptorMetaData metaData;
     
     private final MergedResult mergedResult;
     

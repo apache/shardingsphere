@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.merge.encrypt;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.merge.MergedResult;
-import org.apache.shardingsphere.core.merge.MergedResultMetaData;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.io.InputStream;
@@ -35,7 +34,7 @@ import java.util.Calendar;
 @RequiredArgsConstructor
 public final class EncryptMergedResult implements MergedResult {
     
-    private final MergedResultMetaData metaData;
+    private final EncryptorMetaData metaData;
     
     private final MergedResult mergedResult;
     

@@ -131,7 +131,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         MergedResult mergedResult = MergeEngineFactory.newInstance(LogicSchemas.getInstance().getDatabaseType(),
                 logicSchema.getShardingRule(), routeResult, logicSchema.getMetaData().getTables(), ((QueryResponse) response).getQueryResults()).merge();
         EncryptMergeEngine mergeEngine = new EncryptMergeEngine(
-                new QueryHeaderMergedResultMetaData(getEncryptRule(), ((QueryResponse) response).getQueryHeaders()), mergedResult, queryWithCipherColumn);
+                new QueryHeaderEncryptorMetaData(getEncryptRule(), ((QueryResponse) response).getQueryHeaders()), mergedResult, queryWithCipherColumn);
         this.mergedResult = mergeEngine.merge();
     }
     
