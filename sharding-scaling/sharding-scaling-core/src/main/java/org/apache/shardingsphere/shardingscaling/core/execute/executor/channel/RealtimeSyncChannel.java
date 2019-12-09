@@ -90,7 +90,7 @@ public class RealtimeSyncChannel implements Channel {
             }
             // hash by table name
             DataRecord dataRecord = (DataRecord) record;
-            String index = Integer.toString(dataRecord.getTableName().hashCode() % channelNumber);
+            String index = Integer.toString(Math.abs(dataRecord.getTableName().hashCode()) % channelNumber);
             channels.get(index).pushRecord(dataRecord);
         } else if (PlaceholderRecord.class.equals(record.getClass())) {
             if (0 < ackCallbacks.size()) {
