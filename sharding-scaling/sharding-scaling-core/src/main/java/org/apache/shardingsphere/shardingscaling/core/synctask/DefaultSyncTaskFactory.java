@@ -21,6 +21,7 @@ import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.synctask.history.HistoryDataSyncTask;
 import org.apache.shardingsphere.shardingscaling.core.synctask.history.HistoryDataSyncTaskGroup;
 import org.apache.shardingsphere.shardingscaling.core.synctask.realtime.RealtimeDataSyncTask;
+import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 
 /**
  * Default sync task factory.
@@ -30,17 +31,17 @@ import org.apache.shardingsphere.shardingscaling.core.synctask.realtime.Realtime
 public final class DefaultSyncTaskFactory implements SyncTaskFactory {
 
     @Override
-    public HistoryDataSyncTaskGroup createHistoryDataSyncTaskGroup(final SyncConfiguration syncConfiguration) {
-        return new HistoryDataSyncTaskGroup(syncConfiguration);
+    public HistoryDataSyncTaskGroup createHistoryDataSyncTaskGroup(final SyncConfiguration syncConfiguration, final DataSourceFactory dataSourceFactory) {
+        return new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceFactory);
     }
 
     @Override
-    public HistoryDataSyncTask createHistoryDataSyncTask(final SyncConfiguration syncConfiguration) {
-        return new HistoryDataSyncTask(syncConfiguration);
+    public HistoryDataSyncTask createHistoryDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceFactory dataSourceFactory) {
+        return new HistoryDataSyncTask(syncConfiguration, dataSourceFactory);
     }
 
     @Override
-    public RealtimeDataSyncTask createRealtimeDataSyncTask(final SyncConfiguration syncConfiguration) {
-        return new RealtimeDataSyncTask(syncConfiguration);
+    public RealtimeDataSyncTask createRealtimeDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceFactory dataSourceFactory) {
+        return new RealtimeDataSyncTask(syncConfiguration, dataSourceFactory);
     }
 }

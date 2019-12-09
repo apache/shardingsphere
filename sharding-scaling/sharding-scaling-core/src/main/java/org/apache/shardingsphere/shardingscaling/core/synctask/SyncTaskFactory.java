@@ -21,6 +21,7 @@ import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.synctask.history.HistoryDataSyncTask;
 import org.apache.shardingsphere.shardingscaling.core.synctask.history.HistoryDataSyncTaskGroup;
 import org.apache.shardingsphere.shardingscaling.core.synctask.realtime.RealtimeDataSyncTask;
+import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 
 /**
  * Sync task factory.
@@ -33,23 +34,26 @@ public interface SyncTaskFactory {
      * Create history data sync task group.
      *
      * @param syncConfiguration sync configuration
+     * @param dataSourceFactory  data source factory
      * @return history data sync task group
      */
-    HistoryDataSyncTaskGroup createHistoryDataSyncTaskGroup(SyncConfiguration syncConfiguration);
+    HistoryDataSyncTaskGroup createHistoryDataSyncTaskGroup(SyncConfiguration syncConfiguration, DataSourceFactory dataSourceFactory);
 
     /**
      * Create history data sync task.
      *
      * @param syncConfiguration sync configuration
+     * @param dataSourceFactory  data source factory
      * @return history data sync task
      */
-    HistoryDataSyncTask createHistoryDataSyncTask(SyncConfiguration syncConfiguration);
+    HistoryDataSyncTask createHistoryDataSyncTask(SyncConfiguration syncConfiguration, DataSourceFactory dataSourceFactory);
 
     /**
      * Create realtime data sync task.
      *
      * @param syncConfiguration sync configuration
+     * @param dataSourceFactory  data source factory
      * @return realtime data sync task
      */
-    RealtimeDataSyncTask createRealtimeDataSyncTask(SyncConfiguration syncConfiguration);
+    RealtimeDataSyncTask createRealtimeDataSyncTask(SyncConfiguration syncConfiguration, DataSourceFactory dataSourceFactory);
 }

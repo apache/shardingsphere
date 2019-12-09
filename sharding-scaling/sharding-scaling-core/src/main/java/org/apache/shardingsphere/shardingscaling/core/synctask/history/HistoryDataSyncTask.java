@@ -57,14 +57,17 @@ public class HistoryDataSyncTask implements SyncTask {
 
     private final SyncConfiguration syncConfiguration;
     
+    private final DataSourceFactory dataSourceFactory;
+    
     private final String syncTaskId;
 
     private long estimatedRows;
 
     private AtomicLong syncedRows = new AtomicLong();
 
-    public HistoryDataSyncTask(final SyncConfiguration syncConfiguration) {
+    public HistoryDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceFactory dataSourceFactory) {
         this.syncConfiguration = syncConfiguration;
+        this.dataSourceFactory = dataSourceFactory;
         syncTaskId = generateSyncTaskId(syncConfiguration.getReaderConfiguration());
     }
     
@@ -85,8 +88,8 @@ public class HistoryDataSyncTask implements SyncTask {
         } catch (SQLException e) {
             throw new SyncTaskExecuteException("get estimated rows error.", e);
         }
-        final Reader reader = ReaderFactory.newInstanceJdbcReader(syncConfiguration.getReaderConfiguration());
-        final Writer writer = WriterFactory.newInstance(syncConfiguration.getWriterConfiguration());
+        final Reader reader = ReaderFactory.newInstanceJdbcReader(syncConfiguration.getReaderConfiguration(), dataSourceFactory);
+        final Writer writer = WriterFactory.newInstance(syncConfiguration.getWriterConfiguration(), dataSourceFactory);
         ExecuteUtil.execute(new MemoryChannel(new AckCallback() {
 
             @Override
@@ -103,7 +106,7 @@ public class HistoryDataSyncTask implements SyncTask {
     }
 
     private int getEstimatedRows() throws SQLException {
-        DataSource dataSource = DataSourceFactory.getDataSource(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
+        DataSource dataSource = dataSourceFactory.getDataSource(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection()) {
             ResultSet resultSet = connection.prepareStatement(String.format("select count(*) from %s %s",
                     syncConfiguration.getReaderConfiguration().getTableName(),

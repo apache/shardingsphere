@@ -39,8 +39,8 @@ public final class MySQLLogPositionManager implements LogPositionManager<BinlogP
     
     private BinlogPosition currentPosition;
     
-    public MySQLLogPositionManager(final RdbmsConfiguration rdbmsConfiguration) {
-        dataSource = DataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
+    public MySQLLogPositionManager(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
+        this.dataSource = dataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
     }
 
     @Override

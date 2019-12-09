@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.writer;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntryLoader;
-
-import lombok.SneakyThrows;
+import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 
 /**
  * Write factory.
@@ -34,10 +34,11 @@ public final class WriterFactory {
      * New instance of writer.
      *
      * @param rdbmsConfiguration rdbms configuration
+     * @param dataSourceFactory data source factory
      * @return writer
      */
-    public static Writer newInstance(final RdbmsConfiguration rdbmsConfiguration) {
-        return newInstance(rdbmsConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), rdbmsConfiguration);
+    public static Writer newInstance(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
+        return newInstance(rdbmsConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), rdbmsConfiguration, dataSourceFactory);
     }
     
     /**
@@ -45,11 +46,12 @@ public final class WriterFactory {
      *
      * @param databaseType database type
      * @param rdbmsConfiguration rdbms configuration
+     * @param dataSourceFactory data source factory
      * @return writer
      */
     @SneakyThrows
-    public static Writer newInstance(final String databaseType, final RdbmsConfiguration rdbmsConfiguration) {
+    public static Writer newInstance(final String databaseType, final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
-        return scalingEntry.getWriterClass().getConstructor(RdbmsConfiguration.class).newInstance(rdbmsConfiguration);
+        return scalingEntry.getWriterClass().getConstructor(RdbmsConfiguration.class, DataSourceFactory.class).newInstance(rdbmsConfiguration, dataSourceFactory);
     }
 }

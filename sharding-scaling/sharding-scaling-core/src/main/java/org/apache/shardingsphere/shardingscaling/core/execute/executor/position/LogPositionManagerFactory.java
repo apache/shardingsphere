@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.position;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntryLoader;
-
-import lombok.SneakyThrows;
+import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 
 /**
  * Log manager factory.
@@ -34,11 +34,12 @@ public class LogPositionManagerFactory {
      * New instance of log manager.
      *
      * @param rdbmsConfiguration rdbms configuration
+     * @param dataSourceFactory data source factory
      * @return log manager
      */
     @SneakyThrows
-    public static LogPositionManager newInstanceLogManager(final RdbmsConfiguration rdbmsConfiguration) {
-        return newInstanceLogManager(rdbmsConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), rdbmsConfiguration);
+    public static LogPositionManager newInstanceLogManager(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
+        return newInstanceLogManager(rdbmsConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), rdbmsConfiguration, dataSourceFactory);
     }
 
     /**
@@ -46,11 +47,12 @@ public class LogPositionManagerFactory {
      *
      * @param databaseType database type
      * @param rdbmsConfiguration rdbms configuration
+     * @param dataSourceFactory data source factory
      * @return log manager
      */
     @SneakyThrows
-    public static LogPositionManager newInstanceLogManager(final String databaseType, final RdbmsConfiguration rdbmsConfiguration) {
+    public static LogPositionManager newInstanceLogManager(final String databaseType, final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
-        return scalingEntry.getLogPositionManager().getConstructor(RdbmsConfiguration.class).newInstance(rdbmsConfiguration);
+        return scalingEntry.getLogPositionManager().getConstructor(RdbmsConfiguration.class, DataSourceFactory.class).newInstance(rdbmsConfiguration, dataSourceFactory);
     }
 }

@@ -39,7 +39,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
-import javax.sql.DataSource;
 
 /**
  * generic jdbc reader implement.
@@ -52,15 +51,18 @@ public abstract class AbstractJdbcReader extends AbstractSyncRunner implements J
 
     @Getter(AccessLevel.PROTECTED)
     private final RdbmsConfiguration rdbmsConfiguration;
+    
+    private final DataSourceFactory dataSourceFactory;
 
     @Setter
     private Channel channel;
 
-    public AbstractJdbcReader(final RdbmsConfiguration rdbmsConfiguration) {
+    public AbstractJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
         if (!JdbcDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
             throw new UnsupportedOperationException("AbstractJdbcReader only support JdbcDataSourceConfiguration");
         }
         this.rdbmsConfiguration = rdbmsConfiguration;
+        this.dataSourceFactory = dataSourceFactory;
     }
 
     @Override
@@ -71,8 +73,7 @@ public abstract class AbstractJdbcReader extends AbstractSyncRunner implements J
 
     @Override
     public final void read(final Channel channel) {
-        DataSource dataSource = DataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
-        try (Connection conn = dataSource.getConnection()) {
+        try (Connection conn = dataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()).getConnection()) {
             String sql = String.format("select * from %s %s", rdbmsConfiguration.getTableName(), rdbmsConfiguration.getWhereCondition());
             PreparedStatement ps = conn.prepareStatement(sql, java.sql.ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             ps.setFetchSize(100);

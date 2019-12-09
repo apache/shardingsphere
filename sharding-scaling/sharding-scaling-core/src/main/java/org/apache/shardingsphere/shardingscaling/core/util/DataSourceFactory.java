@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.shardingscaling.core.util;
 
-import org.apache.commons.dbcp2.BasicDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
 
 import javax.sql.DataSource;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Data source factory.
@@ -29,6 +30,8 @@ import javax.sql.DataSource;
  * @author avalon566
  */
 public final class DataSourceFactory {
+    
+    private final ConcurrentHashMap<JdbcDataSourceConfiguration, HikariDataSource> cachedDataSources = new ConcurrentHashMap<>();
 
     /**
      * Get data source by {@code DataSourceConfiguration}.
@@ -36,15 +39,35 @@ public final class DataSourceFactory {
      * @param dataSourceConfiguration data source configuration
      * @return data source
      */
-    public static DataSource getDataSource(final DataSourceConfiguration dataSourceConfiguration) {
+    public DataSource getDataSource(final DataSourceConfiguration dataSourceConfiguration) {
         if (JdbcDataSourceConfiguration.class.equals(dataSourceConfiguration.getClass())) {
             JdbcDataSourceConfiguration jdbcDataSourceConfiguration = (JdbcDataSourceConfiguration) dataSourceConfiguration;
-            BasicDataSource basicDataSource = new BasicDataSource();
-            basicDataSource.setUrl(jdbcDataSourceConfiguration.getJdbcUrl());
-            basicDataSource.setUsername(jdbcDataSourceConfiguration.getUsername());
-            basicDataSource.setPassword(jdbcDataSourceConfiguration.getPassword());
-            return basicDataSource;
+            if (cachedDataSources.containsKey(jdbcDataSourceConfiguration)) {
+                return cachedDataSources.get(jdbcDataSourceConfiguration);
+            }
+            synchronized (cachedDataSources) {
+                if (cachedDataSources.containsKey(jdbcDataSourceConfiguration)) {
+                    return cachedDataSources.get(jdbcDataSourceConfiguration);
+                }
+                HikariDataSource hikariDataSource = new HikariDataSource();
+                hikariDataSource.setJdbcUrl(jdbcDataSourceConfiguration.getJdbcUrl());
+                hikariDataSource.setUsername(jdbcDataSourceConfiguration.getUsername());
+                hikariDataSource.setPassword(jdbcDataSourceConfiguration.getPassword());
+                cachedDataSources.put(jdbcDataSourceConfiguration, hikariDataSource);
+                return hikariDataSource;
+            }
         }
         throw new UnsupportedOperationException();
+    }
+    
+    /**
+     * Close, close cached data source.
+     */
+    public void close() {
+        for (HikariDataSource each : cachedDataSources.values()) {
+            if (!each.isClosed()) {
+                each.close();
+            }
+        }
     }
 }

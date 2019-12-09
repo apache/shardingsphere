@@ -21,7 +21,9 @@ import lombok.SneakyThrows;
 
 import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 import org.apache.shardingsphere.shardingscaling.utils.ReflectionUtil;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,6 +57,8 @@ public class MySQLLogPositionManagerTest {
     
     private RdbmsConfiguration rdbmsConfiguration;
     
+    private DataSourceFactory dataSourceFactory;
+    
     @Before
     public void setUp() throws Exception {
         when(dataSource.getConnection()).thenReturn(connection);
@@ -64,11 +68,17 @@ public class MySQLLogPositionManagerTest {
         when(connection.prepareStatement("show variables like 'server_id'")).thenReturn(serverIdStatement);
         rdbmsConfiguration = new RdbmsConfiguration();
         rdbmsConfiguration.setDataSourceConfiguration(new JdbcDataSourceConfiguration("", "", ""));
+        this.dataSourceFactory = new DataSourceFactory();
+    }
+    
+    @After
+    public void setDown() {
+        dataSourceFactory.close();
     }
     
     @Test
     public void assertGetCurrentPosition() throws NoSuchFieldException, IllegalAccessException {
-        MySQLLogPositionManager mySQLLogManager = new MySQLLogPositionManager(rdbmsConfiguration);
+        MySQLLogPositionManager mySQLLogManager = new MySQLLogPositionManager(rdbmsConfiguration, dataSourceFactory);
         ReflectionUtil.setFieldValueToClass(mySQLLogManager, "dataSource", dataSource);
         BinlogPosition actual = mySQLLogManager.getCurrentPosition();
         assertThat(actual.getServerId(), is(SERVER_ID));
@@ -78,13 +88,13 @@ public class MySQLLogPositionManagerTest {
     
     @Test(expected = RuntimeException.class)
     public void assertGetCurrentPositionInitFailed() {
-        MySQLLogPositionManager mySQLLogManager = new MySQLLogPositionManager(rdbmsConfiguration);
+        MySQLLogPositionManager mySQLLogManager = new MySQLLogPositionManager(rdbmsConfiguration, dataSourceFactory);
         BinlogPosition actual = mySQLLogManager.getCurrentPosition();
     }
     
     @Test
     public void assertUpdateCurrentPosition() {
-        MySQLLogPositionManager mySQLLogManager = new MySQLLogPositionManager(rdbmsConfiguration);
+        MySQLLogPositionManager mySQLLogManager = new MySQLLogPositionManager(rdbmsConfiguration, dataSourceFactory);
         BinlogPosition expected = new BinlogPosition(LOG_FILE_NAME, LOG_POSITION, SERVER_ID);
         mySQLLogManager.updateCurrentPosition(expected);
         assertThat(mySQLLogManager.getCurrentPosition(), is(expected));

@@ -33,6 +33,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Re
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.WriterFactory;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
+import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
 import java.util.ArrayList;
@@ -49,6 +50,8 @@ public final class RealtimeDataSyncTask implements SyncTask {
 
     private final SyncConfiguration syncConfiguration;
     
+    private final DataSourceFactory dataSourceFactory;
+    
     private final String syncTaskId;
 
     private LogPositionManager logPositionManager;
@@ -57,15 +60,16 @@ public final class RealtimeDataSyncTask implements SyncTask {
     
     private long delayMillisecond;
     
-    public RealtimeDataSyncTask(final SyncConfiguration syncConfiguration) {
+    public RealtimeDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceFactory dataSourceFactory) {
         this.syncConfiguration = syncConfiguration;
+        this.dataSourceFactory = dataSourceFactory;
         DataSourceMetaData dataSourceMetaData = syncConfiguration.getReaderConfiguration().getDataSourceConfiguration().getDataSourceMetaData();
         syncTaskId = String.format("realtime-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema());
     }
 
     @Override
     public void prepare() {
-        this.logPositionManager = LogPositionManagerFactory.newInstanceLogManager(syncConfiguration.getReaderConfiguration());
+        this.logPositionManager = LogPositionManagerFactory.newInstanceLogManager(syncConfiguration.getReaderConfiguration(), dataSourceFactory);
         logPositionManager.getCurrentPosition();
     }
 
@@ -80,7 +84,7 @@ public final class RealtimeDataSyncTask implements SyncTask {
     private List<Writer> instanceWriters() {
         List<Writer> result = new ArrayList<>(syncConfiguration.getConcurrency());
         for (int i = 0; i < syncConfiguration.getConcurrency(); i++) {
-            result.add(WriterFactory.newInstance(syncConfiguration.getWriterConfiguration()));
+            result.add(WriterFactory.newInstance(syncConfiguration.getWriterConfiguration(), dataSourceFactory));
         }
         return result;
     }
