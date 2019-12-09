@@ -67,7 +67,7 @@ public final class OrchestrationShardingDataSourceTest {
     }
     
     private static OrchestrationConfiguration getOrchestrationConfiguration() {
-        InstanceConfiguration instanceConfiguration = new InstanceConfiguration("TestRegistryCenter");
+        InstanceConfiguration instanceConfiguration = new InstanceConfiguration("TestRegistryCenter3");
         String orchestrationType = OrchestrationType.REGISTRY_CENTER.getValue() + "," + OrchestrationType.CONFIG_CENTER.getValue();
         instanceConfiguration.setOrchestrationType(orchestrationType);
         instanceConfiguration.setNamespace("test_sharding");

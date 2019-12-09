@@ -65,7 +65,7 @@ public final class OrchestrationEncryptDataSourceTest {
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
-        InstanceConfiguration instanceConfiguration = new InstanceConfiguration("TestRegistryCenter");
+        InstanceConfiguration instanceConfiguration = new InstanceConfiguration("TestRegistryCenter1");
         String orchestrationType = OrchestrationType.REGISTRY_CENTER.getValue() + "," + OrchestrationType.CONFIG_CENTER.getValue();
         instanceConfiguration.setOrchestrationType(orchestrationType);
         instanceConfiguration.setNamespace("test_encrypt");
