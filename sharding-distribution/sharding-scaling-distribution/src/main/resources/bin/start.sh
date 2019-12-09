@@ -20,8 +20,10 @@ cd `dirname $0`
 cd ..
 DEPLOY_DIR=`pwd`
 
+JAVA_OPTS=" -Dport=8080 "
+
 CLASS_PATH=.:${DEPLOY_DIR}/conf:${DEPLOY_DIR}/lib/*
 
 MAIN_CLASS=org.apache.shardingsphere.shardingscaling.Bootstrap
 
-java -classpath ${CLASS_PATH} ${MAIN_CLASS}
+java -classpath ${JAVA_OPTS} ${CLASS_PATH} ${MAIN_CLASS}

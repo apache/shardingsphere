@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.shardingscaling.core.web;
 
+import com.google.gson.Gson;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -24,6 +27,8 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
+import org.apache.shardingsphere.shardingscaling.core.config.ScalingConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.web.entity.ResponseMessage;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,12 +36,19 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertEquals;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HttpServerHandlerTest {
+
+    private static final Gson GSON = new Gson();
 
     @Mock
     private ChannelHandlerContext channelHandlerContext;
@@ -45,19 +57,23 @@ public class HttpServerHandlerTest {
 
     private HttpServerHandler httpServerHandler;
 
+    private ScalingConfiguration scalingConfiguration;
+
     @Before
     public void setUp() {
+        initConfig("/config.json");
         httpServerHandler = new HttpServerHandler();
     }
 
     @Test
     public void channelReadStart() {
-        fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/shardingscaling/job/start");
+        ByteBuf byteBuf = Unpooled.copiedBuffer(GSON.toJson(scalingConfiguration), CharsetUtil.UTF_8);
+        fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/shardingscaling/job/start", byteBuf);
         httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
         ArgumentCaptor argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
         FullHttpResponse fullHttpResponse = (FullHttpResponse) argumentCaptor.getValue();
-        assertEquals("start", fullHttpResponse.content().toString(CharsetUtil.UTF_8));
+        assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains(ResponseMessage.START_SUCCESS));
     }
 
     @Test
@@ -67,37 +83,32 @@ public class HttpServerHandlerTest {
         ArgumentCaptor argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
         FullHttpResponse fullHttpResponse = (FullHttpResponse) argumentCaptor.getValue();
-        assertEquals("progress", fullHttpResponse.content().toString(CharsetUtil.UTF_8));
+        assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains(ResponseMessage.GET_PROGRESS_ERROR));
     }
 
     @Test
     public void channelReadStop() {
-        fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/shardingscaling/job/stop");
+        Map<String, Integer> map = new HashMap<>();
+        map.put("id", 1);
+        ByteBuf byteBuf = Unpooled.copiedBuffer(GSON.toJson(map), CharsetUtil.UTF_8);
+        fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/shardingscaling/job/stop", byteBuf);
         httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
         ArgumentCaptor argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
         FullHttpResponse fullHttpResponse = (FullHttpResponse) argumentCaptor.getValue();
-        assertEquals("stop", fullHttpResponse.content().toString(CharsetUtil.UTF_8));
+        assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains(ResponseMessage.STOP_SUCCESS));
     }
 
-    @Test
+    @Test(expected = RuntimeException.class)
     public void channelReadUnsupport1() {
         fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.DELETE, "/shardingscaling/1");
         httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
-        ArgumentCaptor argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
-        verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
-        FullHttpResponse fullHttpResponse = (FullHttpResponse) argumentCaptor.getValue();
-        assertEquals("not support request", fullHttpResponse.content().toString(CharsetUtil.UTF_8));
     }
 
-    @Test
+    @Test(expected = RuntimeException.class)
     public void channelReadUnsupport2() {
         fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.DELETE, "/shardingscaling/job/stop");
         httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
-        ArgumentCaptor argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
-        verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
-        FullHttpResponse fullHttpResponse = (FullHttpResponse) argumentCaptor.getValue();
-        assertEquals("not support request", fullHttpResponse.content().toString(CharsetUtil.UTF_8));
     }
 
     @Test
@@ -105,5 +116,11 @@ public class HttpServerHandlerTest {
         Throwable throwable = mock(Throwable.class);
         httpServerHandler.exceptionCaught(channelHandlerContext, throwable);
         verify(channelHandlerContext).close();
+    }
+
+    private void initConfig(final String configFile) {
+        InputStream fileInputStream = HttpServerHandlerTest.class.getResourceAsStream(configFile);
+        InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+        scalingConfiguration = GSON.fromJson(inputStreamReader, ScalingConfiguration.class);
     }
 }

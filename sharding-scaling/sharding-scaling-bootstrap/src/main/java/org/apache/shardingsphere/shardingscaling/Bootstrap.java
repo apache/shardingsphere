@@ -17,29 +17,21 @@
 
 package org.apache.shardingsphere.shardingscaling;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import org.apache.shardingsphere.shardingscaling.core.ShardingScalingJob;
-import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.config.RuleConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.config.ScalingConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
-import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.controller.ScalingJobController;
-import org.apache.shardingsphere.shardingscaling.utils.RuntimeUtil;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.shardingsphere.shardingscaling.core.web.HttpServerInitializer;
+import org.apache.shardingsphere.shardingscaling.utils.RuntimeUtil;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Bootstrap of ShardingScaling.
@@ -49,72 +41,36 @@ import java.util.List;
 @Slf4j
 public class Bootstrap {
 
+    private static final int PORT = Integer.parseInt(System.getProperty("port", "8080"));
+
     static {
         PropertyConfigurator.configure(RuntimeUtil.getBasePath() + "conf" + File.separator + "log4j.properties");
     }
-
-    private static final String CONFIG_FILE = "/conf/config.json";
 
     /**
      * Main entry.
      *
      * @param args running args
      */
+    @SneakyThrows
     public static void main(final String[] args) {
         log.info("ShardingScaling Startup");
+        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
-            initConfig(CONFIG_FILE);
-            final ScalingJobController scalingJobController = new ScalingJobController();
-            final ShardingScalingJob shardingScalingJob = new ShardingScalingJob("Local Sharding Scaling Job");
-            shardingScalingJob.getSyncConfigurations().addAll(toSyncConfigurations());
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while (true) {
-                        try {
-                            Thread.sleep(10 * 1000);
-                        } catch (InterruptedException ex) {
-                            break;
-                        }
-                        GsonBuilder gsonBuilder = new GsonBuilder();
-                        Gson gson = gsonBuilder.create();
-                        log.info(gson.toJson(scalingJobController.getProgresses(shardingScalingJob.getJobId())));
-                    }
-                }
-            }).start();
-            scalingJobController.start(shardingScalingJob);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            ServerBootstrap bootstrap =
+                    new ServerBootstrap();
+            bootstrap.option(ChannelOption.SO_BACKLOG, 1024);
+            bootstrap.group(bossGroup, workerGroup)
+                    .channel(NioServerSocketChannel.class)
+                    .handler(new LoggingHandler(LogLevel.INFO))
+                    .childHandler(new HttpServerInitializer());
+            Channel channel = bootstrap.bind(PORT).sync().channel();
+            log.info("Shardingscaling is server on http://127.0.0.1:" + PORT + '/');
+            channel.closeFuture().sync();
+        } finally {
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
         }
-    }
-
-    private static void initConfig(final String configFile) throws IOException {
-        Gson gson = new Gson();
-        InputStream fileInputStream = Bootstrap.class.getResourceAsStream(configFile);
-        InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-        ScalingConfiguration scalingConfiguration = gson.fromJson(inputStreamReader, ScalingConfiguration.class);
-        log.info(gson.toJson(scalingConfiguration));
-        ScalingContext.getInstance().init(scalingConfiguration.getRuleConfiguration(), scalingConfiguration.getServerConfiguration());
-    }
-
-    private static List<SyncConfiguration> toSyncConfigurations() throws FileNotFoundException {
-        RuleConfiguration ruleConfig = ScalingContext.getInstance().getRuleConfiguration();
-        List<SyncConfiguration> syncConfigurations = new ArrayList<SyncConfiguration>(ruleConfig.getDataSources().size());
-        for (RuleConfiguration.YamlDataSourceParameter entry : ruleConfig.getDataSources()) {
-            RdbmsConfiguration readerConfiguration = new RdbmsConfiguration();
-            DataSourceConfiguration readerDataSourceConfiguration = new JdbcDataSourceConfiguration(
-                    entry.getUrl(),
-                    entry.getUsername(),
-                    entry.getPassword());
-            readerConfiguration.setDataSourceConfiguration(readerDataSourceConfiguration);
-            RdbmsConfiguration writerConfiguration = new RdbmsConfiguration();
-            DataSourceConfiguration writerDataSourceConfiguration = new JdbcDataSourceConfiguration(
-                    ruleConfig.getDestinationDataSources().getUrl(),
-                    ruleConfig.getDestinationDataSources().getUsername(),
-                    ruleConfig.getDestinationDataSources().getPassword());
-            writerConfiguration.setDataSourceConfiguration(writerDataSourceConfiguration);
-            syncConfigurations.add(new SyncConfiguration(ScalingContext.getInstance().getServerConfiguration().getConcurrency(), readerConfiguration, writerConfiguration));
-        }
-        return syncConfigurations;
     }
 }
