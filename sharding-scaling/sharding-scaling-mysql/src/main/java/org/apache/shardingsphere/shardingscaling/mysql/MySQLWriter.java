@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingscaling.mysql;
 
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.AbstractJdbcWriter;
+import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 
 /**
  * MySQL writer.
@@ -28,7 +29,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Ab
  */
 public class MySQLWriter extends AbstractJdbcWriter {
 
-    public MySQLWriter(final RdbmsConfiguration rdbmsConfiguration) {
-        super(rdbmsConfiguration);
+    public MySQLWriter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
+        super(rdbmsConfiguration, dataSourceFactory);
     }
 }

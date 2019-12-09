@@ -27,6 +27,7 @@ import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.Event;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -46,6 +47,8 @@ public class HistoryDataSyncTaskTest {
     private static String password = "password";
 
     private SyncConfiguration syncConfiguration;
+    
+    private DataSourceFactory dataSourceFactory;
 
     @Before
     public void setUp() {
@@ -53,12 +56,18 @@ public class HistoryDataSyncTaskTest {
         RdbmsConfiguration writerConfig = mockWriterConfig();
         ScalingContext.getInstance().init(null, new ServerConfiguration(100, 1000, 3));
         syncConfiguration = new SyncConfiguration(3, readerConfig, writerConfig);
+        dataSourceFactory = new DataSourceFactory();
+    }
+    
+    @After
+    public void setDown() {
+        dataSourceFactory.close();
     }
 
     @Test
     public void assertGetProgress() {
         initTableData(syncConfiguration.getReaderConfiguration());
-        HistoryDataSyncTask historyDataSyncTask = new HistoryDataSyncTask(syncConfiguration);
+        HistoryDataSyncTask historyDataSyncTask = new HistoryDataSyncTask(syncConfiguration, dataSourceFactory);
         historyDataSyncTask.start(new ReportCallback() {
 
             @Override
@@ -71,7 +80,7 @@ public class HistoryDataSyncTaskTest {
 
     @SneakyThrows
     private void initTableData(final RdbmsConfiguration readerConfig) {
-        DataSource dataSource = DataSourceFactory.getDataSource(readerConfig.getDataSourceConfiguration());
+        DataSource dataSource = dataSourceFactory.getDataSource(readerConfig.getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");

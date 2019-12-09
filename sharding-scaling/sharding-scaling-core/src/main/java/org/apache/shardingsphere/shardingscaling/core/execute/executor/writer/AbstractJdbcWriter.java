@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.writer;
 
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractSyncRunner;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
-import org.apache.shardingsphere.shardingscaling.core.metadata.ColumnMetaData;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
+import org.apache.shardingsphere.shardingscaling.core.metadata.ColumnMetaData;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 import org.apache.shardingsphere.shardingscaling.core.util.DbMetaDataUtil;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -49,6 +49,8 @@ import java.util.List;
 public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements Writer {
 
     private final RdbmsConfiguration rdbmsConfiguration;
+    
+    private final DataSourceFactory dataSourceFactory;
 
     private final SqlBuilder sqlBuilder;
 
@@ -57,11 +59,11 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
     @Setter
     private Channel channel;
 
-    public AbstractJdbcWriter(final RdbmsConfiguration rdbmsConfiguration) {
+    public AbstractJdbcWriter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
         this.rdbmsConfiguration = rdbmsConfiguration;
-        DataSource dataSource = DataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
-        this.dbMetaDataUtil = new DbMetaDataUtil(dataSource);
-        this.sqlBuilder = new SqlBuilder(dataSource);
+        this.dataSourceFactory = dataSourceFactory;
+        this.dbMetaDataUtil = new DbMetaDataUtil(dataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()));
+        this.sqlBuilder = new SqlBuilder(dataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()));
     }
 
     @Override
@@ -72,12 +74,11 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
 
     @Override
     public final void write(final Channel channel) {
-        DataSource dataSource = DataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
         try {
             while (isRunning()) {
                 List<Record> records = channel.fetchRecords(100, 3);
                 if (null != records && 0 < records.size()) {
-                    flush(dataSource, records);
+                    flush(dataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()), records);
                     if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
                         channel.ack();
                         break;

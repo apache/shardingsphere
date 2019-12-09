@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.reader;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntryLoader;
-
-import lombok.SneakyThrows;
+import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 
 /**
  * reader factory.
@@ -35,11 +35,12 @@ public final class ReaderFactory {
      * New instance of JDBC reader.
      *
      * @param rdbmsConfiguration rdbms configuration
+     * @param dataSourceFactory data source factory
      * @return JDBC reader
      */
     @SneakyThrows
-    public static JdbcReader newInstanceJdbcReader(final RdbmsConfiguration rdbmsConfiguration) {
-        return newInstanceJdbcReader(rdbmsConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), rdbmsConfiguration);
+    public static JdbcReader newInstanceJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
+        return newInstanceJdbcReader(rdbmsConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), rdbmsConfiguration, dataSourceFactory);
     }
     
     /**
@@ -47,12 +48,13 @@ public final class ReaderFactory {
      *
      * @param databaseType database type
      * @param rdbmsConfiguration rdbms configuration
+     * @param dataSourceFactory data source factory
      * @return JDBC reader
      */
     @SneakyThrows
-    public static JdbcReader newInstanceJdbcReader(final String databaseType, final RdbmsConfiguration rdbmsConfiguration) {
+    public static JdbcReader newInstanceJdbcReader(final String databaseType, final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
-        return scalingEntry.getJdbcReaderClass().getConstructor(RdbmsConfiguration.class).newInstance(rdbmsConfiguration);
+        return scalingEntry.getJdbcReaderClass().getConstructor(RdbmsConfiguration.class, DataSourceFactory.class).newInstance(rdbmsConfiguration, dataSourceFactory);
     }
     
     /**

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.EventType;
 import org.apache.shardingsphere.shardingscaling.core.synctask.DefaultSyncTaskFactory;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTaskFactory;
+import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,8 @@ public final class SyncTaskController implements Runnable {
 
     private final SyncTask realtimeDataSyncTask;
     
+    private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
+    
     private final String syncTaskId;
     
     private SyncTaskControlStatus syncTaskControlStatus;
@@ -48,8 +51,8 @@ public final class SyncTaskController implements Runnable {
     public SyncTaskController(final SyncConfiguration syncConfiguration) {
         SyncTaskFactory syncTaskFactory = new DefaultSyncTaskFactory();
         syncTaskId = generateSyncTaskId(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
-        this.historyDataSyncTaskGroup = syncTaskFactory.createHistoryDataSyncTaskGroup(syncConfiguration);
-        this.realtimeDataSyncTask = syncTaskFactory.createRealtimeDataSyncTask(syncConfiguration);
+        this.historyDataSyncTaskGroup = syncTaskFactory.createHistoryDataSyncTaskGroup(syncConfiguration, dataSourceFactory);
+        this.realtimeDataSyncTask = syncTaskFactory.createRealtimeDataSyncTask(syncConfiguration, dataSourceFactory);
         syncTaskControlStatus = SyncTaskControlStatus.PREPARING;
     }
     
@@ -72,6 +75,7 @@ public final class SyncTaskController implements Runnable {
     public void stop() {
         historyDataSyncTaskGroup.stop();
         realtimeDataSyncTask.stop();
+        dataSourceFactory.close();
         syncTaskControlStatus = SyncTaskControlStatus.STOPPING;
     }
 

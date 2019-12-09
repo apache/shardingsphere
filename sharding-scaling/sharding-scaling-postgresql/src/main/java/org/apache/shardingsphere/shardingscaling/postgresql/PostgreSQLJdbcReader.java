@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingscaling.postgresql;
 
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.AbstractJdbcReader;
+import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 
 /**
  * PostgreSQL JDBC reader.
@@ -27,7 +28,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.Ab
  */
 public final class PostgreSQLJdbcReader extends AbstractJdbcReader {
 
-    public PostgreSQLJdbcReader(final RdbmsConfiguration rdbmsConfiguration) {
-        super(rdbmsConfiguration);
+    public PostgreSQLJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
+        super(rdbmsConfiguration, dataSourceFactory);
     }
 }

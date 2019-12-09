@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingscaling.postgresql;
 
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.AbstractJdbcWriter;
+import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 
 /**
  * postgreSQL writer.
@@ -27,8 +28,8 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Ab
  */
 public class PostgreSQLWriter extends AbstractJdbcWriter {
 
-    public PostgreSQLWriter(final RdbmsConfiguration rdbmsConfiguration) {
-        super(rdbmsConfiguration);
+    public PostgreSQLWriter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
+        super(rdbmsConfiguration, dataSourceFactory);
     }
 }
 
