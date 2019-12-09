@@ -140,8 +140,8 @@ public final class TableMetaDataLoader {
     
     private TableMetaData createTableMetaData(final Connection connection, final DataSourceMetaData dataSourceMetaData,
             final String logicTableName, final String actualTableName, final String generateKeyColumnName, final EncryptRule encryptRule) throws SQLException {
-        String catalog = dataSourceMetaData == null ? null : dataSourceMetaData.getCatalog();
-        String schema = dataSourceMetaData == null ? null : dataSourceMetaData.getSchema();
+        String catalog = dataSourceMetaData.getCatalog();
+        String schema = dataSourceMetaData.getSchema();
         if (isTableExist(connection, catalog, actualTableName)) {
             return new TableMetaData(
                     getColumnMetaDataList(connection, catalog, logicTableName, actualTableName, generateKeyColumnName, encryptRule), 
