@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.
 
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.merge.MergedResult;
-import org.apache.shardingsphere.core.merge.dal.show.ShowShardingCTLMergedResult;
+import org.apache.shardingsphere.core.merge.dal.common.LocalDataMergedResult;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintShardingType;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintShowStatusCommand;
@@ -48,7 +48,7 @@ public final class HintShowStatusExecutor extends AbstractHintQueryExecutor<Hint
     protected MergedResult createMergedResult() {
         HintShardingType shardingType = HintManager.isDatabaseShardingOnly() ? HintShardingType.DATABASES_ONLY : HintShardingType.DATABASES_TABLES;
         List<Object> row = createRow(HintManager.isMasterRouteOnly(), shardingType);
-        return new ShowShardingCTLMergedResult(Collections.singletonList(row));
+        return new LocalDataMergedResult(Collections.singletonList(row).iterator());
     }
     
     private List<Object> createRow(final boolean masterOnly, final HintShardingType shardingType) {

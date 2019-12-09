@@ -15,33 +15,56 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.dal.show;
+package org.apache.shardingsphere.core.merge.dal.common;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.merge.MergedResult;
 
+import java.io.InputStream;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 
 /**
- * Show sharding CTL merged result.
+ * Merged result for local data.
  *
- * @author zhaojun
- * @author liya
+ * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ShowShardingCTLMergedResult extends LocalMergedResultAdapter implements MergedResult {
+public final class LocalDataMergedResult implements MergedResult {
     
-    private int currentIndex;
+    private final Iterator<List<Object>> rows;
     
-    private final List<List<Object>> values;
+    private List<Object> currentRow;
     
     @Override
     public boolean next() {
-        return currentIndex++ < values.size();
+        if (rows.hasNext()) {
+            currentRow = rows.next();
+            return true;
+        }
+        return false;
     }
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) {
-        return values.get(currentIndex - 1).get(columnIndex - 1);
+        return currentRow.get(columnIndex - 1);
+    }
+    
+    @Override
+    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
+        return currentRow.get(columnIndex - 1);
+    }
+    
+    @Override
+    public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
+        throw new SQLFeatureNotSupportedException();
+    }
+    
+    @Override
+    public boolean wasNull() {
+        return null == currentRow;
     }
 }
