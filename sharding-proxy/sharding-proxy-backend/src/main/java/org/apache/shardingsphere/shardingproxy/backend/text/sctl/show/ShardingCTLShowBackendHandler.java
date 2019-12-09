@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.show;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.merge.MergedResult;
-import org.apache.shardingsphere.core.merge.dal.common.LocalDataMergedResult;
+import org.apache.shardingsphere.core.merge.dal.common.MultipleLocalDataMergedResult;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
@@ -70,7 +70,7 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
     }
     
     private BackendResponse createResponsePackets(final String columnName, final Object... values) {
-        mergedResult = new LocalDataMergedResult(Collections.singletonList(Arrays.asList(values)));
+        mergedResult = new MultipleLocalDataMergedResult(Collections.singletonList(Arrays.asList(values)));
         return new QueryResponse(Collections.singletonList(new QueryHeader("", "", columnName, columnName, 100, Types.VARCHAR, 0, false, false, false, false)));
     }
     

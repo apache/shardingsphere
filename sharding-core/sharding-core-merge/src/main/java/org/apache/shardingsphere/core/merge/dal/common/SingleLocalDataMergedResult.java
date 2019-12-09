@@ -15,50 +15,58 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.dal.show;
+package org.apache.shardingsphere.core.merge.dal.common;
 
 import org.apache.shardingsphere.core.merge.MergedResult;
 
 import java.io.InputStream;
-import java.io.Reader;
-import java.sql.Blob;
-import java.sql.Clob;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.sql.SQLXML;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * Merged result for show databases.
+ * Merged result for single local data.
  *
- * @author chenqingyang
- * @author xiayan
+ * @author zhangliang
  */
-public final class ShowDatabasesMergedResult extends LocalMergedResultAdapter implements MergedResult {
+public final class SingleLocalDataMergedResult implements MergedResult {
     
-    private final Iterator<String> schemas;
+    private final Iterator<Object> values;
     
-    private String currentSchema;
+    private Object currentValue;
     
-    public ShowDatabasesMergedResult(final Collection<String> schemas) {
-        this.schemas = schemas.iterator();
+    public SingleLocalDataMergedResult(final Collection<Object> values) {
+        this.values = values.iterator();
     }
     
     @Override
     public boolean next() {
-        if (schemas.hasNext()) {
-            currentSchema = schemas.next();
+        if (values.hasNext()) {
+            currentValue = values.next();
             return true;
         }
         return false;
     }
     
     @Override
-    public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        if (Blob.class == type || Clob.class == type || Reader.class == type || InputStream.class == type || SQLXML.class == type) {
-            throw new SQLFeatureNotSupportedException();
-        }
-        return currentSchema;
+    public Object getValue(final int columnIndex, final Class<?> type) {
+        return currentValue;
+    }
+    
+    @Override
+    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
+        return currentValue;
+    }
+    
+    @Override
+    public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
+        throw new SQLFeatureNotSupportedException();
+    }
+    
+    @Override
+    public boolean wasNull() {
+        return null == currentValue;
     }
 }

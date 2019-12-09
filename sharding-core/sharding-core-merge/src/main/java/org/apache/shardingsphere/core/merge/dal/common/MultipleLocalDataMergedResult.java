@@ -28,17 +28,17 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Merged result for local data.
+ * Merged result for multiple local data.
  *
  * @author zhangliang
  */
-public final class LocalDataMergedResult implements MergedResult {
+public final class MultipleLocalDataMergedResult implements MergedResult {
     
     private final Iterator<List<Object>> rows;
     
     private List<Object> currentRow;
     
-    public LocalDataMergedResult(final Collection<List<Object>> rows) {
+    public MultipleLocalDataMergedResult(final Collection<List<Object>> rows) {
         this.rows = rows.iterator();
     }
     

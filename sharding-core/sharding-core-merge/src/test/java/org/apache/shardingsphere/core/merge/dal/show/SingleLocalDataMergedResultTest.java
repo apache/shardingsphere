@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.core.merge.dal.show;
 
-import org.apache.shardingsphere.core.constant.ShardingConstant;
-import org.junit.Before;
+import org.apache.shardingsphere.core.merge.dal.common.SingleLocalDataMergedResult;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -26,51 +25,52 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class ShowDatabasesMergedResultTest {
-    
-    private ShowDatabasesMergedResult showDatabasesMergedResult;
-    
-    @Before
-    public void setUp() {
-        showDatabasesMergedResult = new ShowDatabasesMergedResult(Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME));
-    }
+public final class SingleLocalDataMergedResultTest {
     
     @Test
     public void assertNext() {
-        assertTrue(showDatabasesMergedResult.next());
-        assertFalse(showDatabasesMergedResult.next());
+        SingleLocalDataMergedResult actual = new SingleLocalDataMergedResult(Collections.<Object>singleton("value"));
+        assertTrue(actual.next());
+        assertFalse(actual.next());
     }
     
     @Test
-    public void assertGetValueWithColumnIndex() throws SQLException {
-        assertTrue(showDatabasesMergedResult.next());
-        assertThat(showDatabasesMergedResult.getValue(1, Object.class).toString(), is(ShardingConstant.LOGIC_SCHEMA_NAME));
+    public void assertGetValueWithColumnIndex() {
+        SingleLocalDataMergedResult actual = new SingleLocalDataMergedResult(Collections.<Object>singleton("value"));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class).toString(), is("value"));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetCalendarValueWithColumnIndex() throws SQLException {
-        showDatabasesMergedResult.getCalendarValue(1, Object.class, Calendar.getInstance());
+    @Test
+    public void assertGetCalendarValueWithColumnIndex() {
+        SingleLocalDataMergedResult actual = new SingleLocalDataMergedResult(Collections.<Object>singleton(new Date(0L)));
+        assertTrue(actual.next());
+        assertThat(actual.getCalendarValue(1, Object.class, Calendar.getInstance()), is((Object) new Date(0L)));
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetInputStreamWithColumnIndex() throws SQLException {
-        showDatabasesMergedResult.getInputStream(1, "Ascii");
+        SingleLocalDataMergedResult actual = new SingleLocalDataMergedResult(Collections.<Object>singleton("value"));
+        actual.getInputStream(1, "Ascii");
     }
     
     @Test
     public void assertWasNull() {
-        assertFalse(showDatabasesMergedResult.wasNull());
+        SingleLocalDataMergedResult actual = new SingleLocalDataMergedResult(Collections.<Object>singleton("value"));
+        assertTrue(actual.next());
+        assertFalse(actual.wasNull());
     }
     
     @Test
     public void assertMergeNext() {
-        ShowDatabasesMergedResult actual = new ShowDatabasesMergedResult(Arrays.asList("A", "B", "C", "D", "E"));
+        SingleLocalDataMergedResult actual = new SingleLocalDataMergedResult(Arrays.<Object>asList("A", "B", "C", "D", "E"));
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -80,8 +80,8 @@ public final class ShowDatabasesMergedResultTest {
     }
     
     @Test
-    public void assertSchemes() throws SQLException {
-        ShowDatabasesMergedResult actual = new ShowDatabasesMergedResult(Arrays.asList("A", "B", "C", "D", "E"));
+    public void assertSchemes() {
+        SingleLocalDataMergedResult actual = new SingleLocalDataMergedResult(Arrays.<Object>asList("A", "B", "C", "D", "E"));
         actual.next();
         assertThat(actual.getValue(1, String.class).toString(), is("A"));
         actual.next();
