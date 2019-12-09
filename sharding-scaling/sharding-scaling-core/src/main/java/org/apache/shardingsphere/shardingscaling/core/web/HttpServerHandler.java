@@ -66,7 +66,8 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
         String requestBody = request.content().toString(CharsetUtil.UTF_8);
         HttpMethod method = request.method();
         if (!URL_PATTERN.matcher(requestPath).matches()) {
-            throw new RuntimeException(ResponseMessage.BAD_REQUEST);
+            response(ResponseMessage.BAD_REQUEST, channelHandlerContext, HttpResponseStatus.BAD_REQUEST);
+            return;
         }
         if ("/shardingscaling/job/start".equalsIgnoreCase(requestPath) && method.equals(HttpMethod.POST)) {
             ScalingConfiguration scalingConfiguration = GSON.fromJson(requestBody, ScalingConfiguration.class);
@@ -99,7 +100,7 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
             response(GSON.toJson(responseContent), channelHandlerContext, HttpResponseStatus.OK);
             return;
         }
-        throw new RuntimeException(ResponseMessage.BAD_REQUEST);
+        response(ResponseMessage.BAD_REQUEST, channelHandlerContext, HttpResponseStatus.BAD_REQUEST);
     }
 
     /**
@@ -120,7 +121,7 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     @Override
     public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
         log.error("request error", cause);
-        response(ResponseMessage.BAD_REQUEST, ctx, HttpResponseStatus.BAD_REQUEST);
+        response(ResponseMessage.INTERNAL_SERVER_ERROR, ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR);
         ctx.close();
     }
 

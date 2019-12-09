@@ -32,6 +32,8 @@ public final class ResponseMessage {
 
     public static final String STOP_SUCCESS = "Stop job success!";
 
-    public static final String BAD_REQUEST = "Not support request";
+    public static final String BAD_REQUEST = "Not support request!";
+
+    public static final String INTERNAL_SERVER_ERROR = "Internal server error!";
 
 }

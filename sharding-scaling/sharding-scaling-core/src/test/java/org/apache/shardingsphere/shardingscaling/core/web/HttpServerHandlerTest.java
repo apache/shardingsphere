@@ -99,16 +99,24 @@ public class HttpServerHandlerTest {
         assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains(ResponseMessage.STOP_SUCCESS));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void channelReadUnsupport1() {
         fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.DELETE, "/shardingscaling/1");
         httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
+        ArgumentCaptor argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
+        verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
+        FullHttpResponse fullHttpResponse = (FullHttpResponse) argumentCaptor.getValue();
+        assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains(ResponseMessage.BAD_REQUEST));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void channelReadUnsupport2() {
         fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.DELETE, "/shardingscaling/job/stop");
         httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
+        ArgumentCaptor argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
+        verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
+        FullHttpResponse fullHttpResponse = (FullHttpResponse) argumentCaptor.getValue();
+        assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains(ResponseMessage.BAD_REQUEST));
     }
 
     @Test
