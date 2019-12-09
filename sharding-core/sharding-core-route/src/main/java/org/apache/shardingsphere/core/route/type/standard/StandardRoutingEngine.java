@@ -90,13 +90,17 @@ public final class StandardRoutingEngine implements RoutingEngine {
     }
     
     private Collection<DataNode> getDataNodes(final TableRule tableRule) {
-        if (shardingRule.isRoutingByHint(tableRule)) {
+        if (isRoutingByHint(tableRule)) {
             return routeByHint(tableRule);
         }
         if (isRoutingByShardingConditions(tableRule)) {
             return routeByShardingConditions(tableRule);
         }
         return routeByMixedConditions(tableRule);
+    }
+    
+    private boolean isRoutingByHint(final TableRule tableRule) {
+        return shardingRule.getDatabaseShardingStrategy(tableRule) instanceof HintShardingStrategy && shardingRule.getTableShardingStrategy(tableRule) instanceof HintShardingStrategy;
     }
     
     private Collection<DataNode> routeByHint(final TableRule tableRule) {
