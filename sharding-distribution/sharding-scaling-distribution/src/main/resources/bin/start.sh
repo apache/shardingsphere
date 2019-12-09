@@ -26,4 +26,4 @@ CLASS_PATH=.:${DEPLOY_DIR}/conf:${DEPLOY_DIR}/lib/*
 
 MAIN_CLASS=org.apache.shardingsphere.shardingscaling.Bootstrap
 
-java -classpath ${JAVA_OPTS} ${CLASS_PATH} ${MAIN_CLASS}
+java ${JAVA_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS}
