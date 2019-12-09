@@ -48,7 +48,7 @@ public final class HintShowStatusExecutor extends AbstractHintQueryExecutor<Hint
     protected MergedResult createMergedResult() {
         HintShardingType shardingType = HintManager.isDatabaseShardingOnly() ? HintShardingType.DATABASES_ONLY : HintShardingType.DATABASES_TABLES;
         List<Object> row = createRow(HintManager.isMasterRouteOnly(), shardingType);
-        return new LocalDataMergedResult(Collections.singletonList(row).iterator());
+        return new LocalDataMergedResult(Collections.singletonList(row));
     }
     
     private List<Object> createRow(final boolean masterOnly, final HintShardingType shardingType) {

@@ -92,11 +92,11 @@ public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor
     }
     
     private MergedResult convert2MergedResult(final Collection<HintShowTableStatusResult> hintShowTableStatusResults) {
-        List<List<Object>> values = new ArrayList<>(hintShowTableStatusResults.size());
+        Collection<List<Object>> values = new ArrayList<>(hintShowTableStatusResults.size());
         for (HintShowTableStatusResult each : hintShowTableStatusResults) {
             values.add(createRow(each));
         }
-        return new LocalDataMergedResult(values.iterator());
+        return new LocalDataMergedResult(values);
     }
     
     private List<Object> createRow(final HintShowTableStatusResult hintShowTableStatusResult) {

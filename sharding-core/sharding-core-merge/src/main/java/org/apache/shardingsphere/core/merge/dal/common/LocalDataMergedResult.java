@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.core.merge.dal.common;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.merge.MergedResult;
 
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -32,12 +32,15 @@ import java.util.List;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 public final class LocalDataMergedResult implements MergedResult {
     
     private final Iterator<List<Object>> rows;
     
     private List<Object> currentRow;
+    
+    public LocalDataMergedResult(final Collection<List<Object>> rows) {
+        this.rows = rows.iterator();
+    }
     
     @Override
     public boolean next() {
