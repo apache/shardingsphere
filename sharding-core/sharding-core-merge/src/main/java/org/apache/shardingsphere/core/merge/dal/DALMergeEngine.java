@@ -23,15 +23,13 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dal.common.SingleLocalDataMergedResult;
-import org.apache.shardingsphere.core.merge.encrypt.dal.DescribeTableMergedResult;
+import org.apache.shardingsphere.core.merge.dal.common.TransparentMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.LogicTablesMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowCreateTableMergedResult;
-import org.apache.shardingsphere.core.merge.dal.common.TransparentMergedResult;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.DescribeStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowIndexStatement;
@@ -70,9 +68,6 @@ public final class DALMergeEngine implements MergeEngine {
         }
         if (dalStatement instanceof ShowCreateTableStatement) {
             return new ShowCreateTableMergedResult(shardingRule, sqlStatementContext, tableMetas, queryResults);
-        }
-        if (dalStatement instanceof DescribeStatement && null != shardingRule.getEncryptRule()) {
-            return new DescribeTableMergedResult(shardingRule.getEncryptRule(), queryResults, sqlStatementContext);
         }
         return new TransparentMergedResult(queryResults.get(0));
     }
