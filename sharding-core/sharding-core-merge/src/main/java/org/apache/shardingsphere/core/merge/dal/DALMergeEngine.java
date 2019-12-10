@@ -71,8 +71,8 @@ public final class DALMergeEngine implements MergeEngine {
         if (dalStatement instanceof ShowCreateTableStatement) {
             return new ShowCreateTableMergedResult(shardingRule, sqlStatementContext, tableMetas, queryResults);
         }
-        if (dalStatement instanceof DescribeStatement) {
-            return new DescribeTableMergedResult(shardingRule, queryResults, sqlStatementContext);
+        if (dalStatement instanceof DescribeStatement && null != shardingRule.getEncryptRule()) {
+            return new DescribeTableMergedResult(shardingRule.getEncryptRule(), queryResults, sqlStatementContext);
         }
         return new TransparentMergedResult(queryResults.get(0));
     }
