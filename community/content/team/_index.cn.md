@@ -37,6 +37,7 @@ chapter = true
 | 孙海生           | sunbufu                 |
 | 李亚             | betterjava              |
 | 颜志一           | yanyzy              |
+| 欧阳文           | avalon566              |
 
 ## 导师
 
