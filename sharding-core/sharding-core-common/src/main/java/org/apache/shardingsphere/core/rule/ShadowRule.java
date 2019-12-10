@@ -29,13 +29,10 @@ import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 @Getter
 public class ShadowRule implements BaseRule {
     
-    @Getter
     private ShadowRuleConfiguration ruleConfiguration;
     
-    @Getter
     private String column;
     
-    @Getter
     private Comparable value;
     
     public ShadowRule(final ShadowRuleConfiguration shadowRuleConfiguration) {
