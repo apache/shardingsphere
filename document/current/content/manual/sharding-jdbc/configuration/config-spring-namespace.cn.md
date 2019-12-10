@@ -552,13 +552,49 @@ weight = 4
 | id    | 属性    | Spring Bean Id |
 
 #### \<sharding:key-generator />
+
 | *名称*             | *类型*                       | *说明*                                                                           |
 | ----------------- | ---------------------------- | ------------------------------------------------------------------------------- |
 | column            | 属性                          | 自增列名称                                                                       |
-| type              | 属性                          | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID/LEAF_SEGMENT                            |
-| props-ref         | 属性                          |属性配置, 注意：<br>使用SNOWFLAKE算法，需要配置worker.id与max.tolerate.time.difference.milliseconds属性<br>使用LEAF_SEGMENT算法，需要配置：必填项serverList，leafKey和选填项initialValue，step，digest，registryCenterType<br>使用LEAF_SNOWFLAKE算法，需要配置：必填项serverList，serviceId和选填项maxTimeDifference，digest，registryCenterType| 
+| type              | 属性                          | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID/LEAF_SEGMENT/LEAF_SNOWFLAKE             |
+| props-ref         | 属性                          | 自增列值生成器的属性配置引用 | 
+
+#### PropertiesConstant
+
+属性配置项，可以为以下自增列值生成器的属性。
+
+##### SNOWFLAKE
+  
+| *名称*                                              | *数据类型*  | *说明*                                                                                                   |
+| --------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------- |
+| worker.id (?)                                        | long       | 工作机器唯一id，默认为0                                                                                  |
+| max.tolerate.time.difference.milliseconds (?)        | long       | 最大容忍时钟回退时间，单位：毫秒。默认为10毫秒                                                               |
+| max.vibration.offset (?)                             | int        | 最大抖动上限值，范围[0, 4096)，默认为1。注：若使用此算法生成值作分片值，建议配置此属性。此算法在不同毫秒内所生成的key取模2^n (2^n一般为分库或分表数) 之后结果总为0或1。为防止上述分片问题，建议将此属性值配置为(2^n)-1 |
+  
+##### LEAF_SEGMENT
+  
+| *名称*                                | *数据类型*      | *说明*                                                                               |
+| ------------------------------------ | --------------  | ------------------------------------------------------------------------------------ |
+| server.list                          | String          | 连接注册中心服务器的列表，包括IP地址和端口号，多个地址用逗号分隔。如: host1:2181,host2:2181 |
+| leaf.key                             | String          | 用于标识leaf_segment所对应表里面的最大号段id                                           |
+| leaf.segment.id.initial.value (?)     | long            | 号段id初始值，默认为1                                                                 |
+| leaf.segment.step (?)                 | long            | 每次分配的号段步长，默认为10000                                                        |
+| registry.center.digest (?)            | String          | 连接注册中心的权限令牌。缺省为不需要权限验证                                             |
+| registry.center.type (?)              | String          | 注册中心类型，默认为`zookeeper`                                                         |
+  
+##### LEAF_SNOWFLAKE
+  
+| *名称*                                            | *数据类型*     | *说明*                                                                                                |
+| ------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------------- |
+| server.list                                       | String        | 连接注册中心服务器的列表，包括IP地址和端口号，多个地址用逗号分隔。如: host1:2181,host2:2181                   |
+| service.id                                        | String        | leaf_snowflake位于注册中心上的服务标识                                                                   |
+| max.tolerate.time.difference.milliseconds (?)      | long          | 最大允许的本机与注册中心的时间误差毫秒数，默认为10000毫秒。如果时间误差超过配置时间则作业启动时将抛异常         |
+| registry.center.digest (?)                         | String        | 连接注册中心的权限令牌。缺省为不需要权限验证                                                              |
+| registry.center.type (?)                           | String        | 注册中心类型，默认为`zookeeper`                                                                           |
+| max.vibration.offset (?)                           | int           | 最大抖动上限，范围[0, 4096)，默认为1。注：若使用此算法生成值作分片值，建议配置此属性。此算法在不同毫秒内所生成的key取模2^n (2^n一般为分库或分表数) 之后结果总为0或1。为防止上述分片问题，建议将此属性值配置为(2^n)-1 |
 
 #### \<sharding:encrypt-rule />
+
 | *名称*                     | *类型*                 | *说明*                                  |
 | ------------------------- | ---------------------- | -------------------------------------- |
 | encrypt:encrypt-rule(?)    | 标签                   | 加解密规则                              |
@@ -598,12 +634,13 @@ weight = 4
 | check.table.metadata.enabled (?)   | 属性   | 是否在启动时检查分表元数据一致性，默认值: false       |
 
 #### \<master-slave:load-balance-algorithm />
+
 4.0.0-RC2 版本 添加
 
 | *名称*                             |  *类型* | *说明*                                         |
 | -----------------------------------| ------ | ---------------------------------------------- |
 | id                                 |  属性  | Spring Bean Id                                  |
-| type                               |  属性  | 负载均衡算法类型，'RANDOM'或'ROUND_ROBIN' ，支持自定义拓展|
+| type                               |  属性  | 负载均衡算法类型，'RANDOM'或'ROUND_ROBIN'，支持自定义拓展|
 | props-ref (?)                      |  属性  | 负载均衡算法配置参数                               |
 
 ### 数据脱敏
@@ -671,7 +708,7 @@ weight = 4
 | id                  | 属性   | ID                                                                       |
 | data-source-ref (?) | 属性   | 被治理的数据库id                                                           |
 | registry-center-ref | 属性   | 注册中心id                                                                |
-| overwrite           | 属性   | 本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准。  缺省为不覆盖 |
+| overwrite           | 属性   | 本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准。缺省为不覆盖 |
 
 ### 读写分离 + 治理
 
@@ -709,7 +746,7 @@ weight = 4
 | ----------------------------------- | ----- | ------------------------------------------------------------------------------------------|
 | id                                  | 属性  | 注册中心的Spring Bean Id                                                                   |
 | type                                | 属性  | 注册中心类型。如：zookeeper                                                                |
-| server-lists                        | 属性  | 连接注册中心服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181   |
+| server-lists                        | 属性  | 连接注册中心服务器的列表，包括IP地址和端口号，多个地址用逗号分隔。如: host1:2181,host2:2181   |
 | namespace (?)                       | 属性  | 注册中心的命名空间                                                                         |
 | digest (?)                          | 属性  | 连接注册中心的权限令牌。缺省为不需要权限验证                                                 |
 | operation-timeout-milliseconds (?)  | 属性  | 操作超时的毫秒数，默认500毫秒                                                               |

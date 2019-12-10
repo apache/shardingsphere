@@ -18,3 +18,9 @@ the SQL to be asserted in file `/sharding-sql-test/src/main/resources/sql/shardi
 ```
 
 Developer setup the SQL for assertion and database type during on the configuration file. And these SQLs could share in different test engine, that's why we extract the `sharding-sql-test` as a stand alone module.
+
+### Process
+
+Following is the data handling process in SQL case :
+
+![](https://shardingsphere.apache.org/document/current/img/test-engine/sql-case.jpg)

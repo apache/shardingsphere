@@ -18,3 +18,9 @@ weight = 1
 ```
 
 开发者通过该文件指定待断言的 SQL 以及该 SQL 所适配的数据库类型。将 `sharding-sql-test` 提取为单独的模块，以保证每个 SQL 用例可以在不同模块的测试引擎中共享。
+
+### 流程
+
+如下图为 SQL 测试用例的数据流程：
+
+![](https://shardingsphere.apache.org/document/current/img/test-engine/sql-case.jpg)

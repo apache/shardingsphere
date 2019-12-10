@@ -36,6 +36,8 @@ The List in alphabet order.
 | Qi Wang         | wqzwh                   |
 | Ya Li           | betterjava              |
 | Yanan Zhao      | nancyzrh                |
+| Zhiyi Yan       | yanyzy                  |
+| YangWen Ou      | avalon566               |
 
 ## Mentors
 

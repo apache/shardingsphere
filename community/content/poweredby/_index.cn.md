@@ -90,6 +90,7 @@ chapter = true
 1. 汽车之家  https://www.autohome.com.cn/ 
 1. 权大师 https://www.quandashi.com/ 
 1. 赛特斯CertusNet http://www.certusnet.com.cn/ 
+1. 三只松鼠 http://www.3songshu.com/
 1. 视觉中国 https://500px.me/ 
 1. 首汽约车 https://www.01zhuanche.com/
 1. 搜好货 https://www.912688.com/

@@ -69,9 +69,9 @@ b, strong, label, th {
     font-weight: 600;
 }
 .default-animation, #header #logo-svg, #header #logo-svg path, #sidebar, #sidebar ul, #body, #body .padding, #body .nav {
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    transition: all 0.5s ease;
+    -webkit-transition: backgroud-color  0.2s ease;
+    -moz-transition: backgroud-color  0.2s ease;
+    transition: backgroud-color 0.2s ease;
 }
 #grav-logo {
     max-width: 60%;

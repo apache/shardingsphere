@@ -94,7 +94,7 @@ jQuery(document).ready(function(){
 		event.stopPropagation();
 		var that=$(this);
     that.toggle().siblings('svg').toggle()
-		that.closest("li").children("ul").toggle();
+		that.closest("li").children("ul").slideToggle('fast',"linear");
 	});
 })
 
