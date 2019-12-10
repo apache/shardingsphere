@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.core.merge.dal.common;
 
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.io.InputStream;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.util.Calendar;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -54,20 +54,25 @@ public final class TransparentMergedResultTest {
         assertThat(actual.getValue(1, Object.class).toString(), is("1"));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetCalendarValue() throws SQLException {
-        TransparentMergedResult actual = new TransparentMergedResult(mock(QueryResult.class));
-        actual.getCalendarValue(1, Date.class, Calendar.getInstance());
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetInputStream() throws SQLException {
-        TransparentMergedResult actual = new TransparentMergedResult(mock(QueryResult.class));
-        actual.getInputStream(1, "Ascii");
+        QueryResult queryResult = mock(QueryResult.class);
+        when(queryResult.getCalendarValue(1, Date.class, null)).thenReturn(new Date(0L));
+        TransparentMergedResult actual = new TransparentMergedResult(queryResult);
+        assertThat(actual.getCalendarValue(1, Date.class, null), CoreMatchers.<Object>is(new Date(0L)));
     }
     
     @Test
-    public void assertWasNull() {
+    public void assertGetInputStream() throws SQLException {
+        QueryResult queryResult = mock(QueryResult.class);
+        InputStream value = mock(InputStream.class);
+        when(queryResult.getInputStream(1, "Ascii")).thenReturn(value);
+        TransparentMergedResult actual = new TransparentMergedResult(queryResult);
+        assertThat(actual.getInputStream(1, "Ascii"), is(value));
+    }
+    
+    @Test
+    public void assertWasNull() throws SQLException {
         TransparentMergedResult actual = new TransparentMergedResult(mock(QueryResult.class));
         assertFalse(actual.wasNull());
     }
