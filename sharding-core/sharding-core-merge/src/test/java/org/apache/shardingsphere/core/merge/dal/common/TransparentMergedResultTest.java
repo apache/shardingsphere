@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.dal.show;
+package org.apache.shardingsphere.core.merge.dal.common;
 
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.junit.Test;
@@ -35,13 +35,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ShowOtherMergedResultTest {
+public final class TransparentMergedResultTest {
     
     @Test
     public void assertNext() throws SQLException {
         QueryResult queryResult = mock(QueryResult.class);
         when(queryResult.next()).thenReturn(true, false);
-        ShowOtherMergedResult actual = new ShowOtherMergedResult(queryResult);
+        TransparentMergedResult actual = new TransparentMergedResult(queryResult);
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
@@ -50,25 +50,25 @@ public final class ShowOtherMergedResultTest {
     public void assertGetValue() throws SQLException {
         QueryResult queryResult = mock(QueryResult.class);
         when(queryResult.getValue(1, Object.class)).thenReturn("1");
-        ShowOtherMergedResult actual = new ShowOtherMergedResult(queryResult);
+        TransparentMergedResult actual = new TransparentMergedResult(queryResult);
         assertThat(actual.getValue(1, Object.class).toString(), is("1"));
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetCalendarValue() throws SQLException {
-        ShowOtherMergedResult actual = new ShowOtherMergedResult(mock(QueryResult.class));
+        TransparentMergedResult actual = new TransparentMergedResult(mock(QueryResult.class));
         actual.getCalendarValue(1, Date.class, Calendar.getInstance());
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetInputStream() throws SQLException {
-        ShowOtherMergedResult actual = new ShowOtherMergedResult(mock(QueryResult.class));
+        TransparentMergedResult actual = new TransparentMergedResult(mock(QueryResult.class));
         actual.getInputStream(1, "Ascii");
     }
     
     @Test
     public void assertWasNull() {
-        ShowOtherMergedResult actual = new ShowOtherMergedResult(mock(QueryResult.class));
+        TransparentMergedResult actual = new TransparentMergedResult(mock(QueryResult.class));
         assertFalse(actual.wasNull());
     }
 }

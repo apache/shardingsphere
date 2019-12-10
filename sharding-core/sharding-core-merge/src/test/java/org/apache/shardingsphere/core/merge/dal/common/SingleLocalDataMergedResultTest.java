@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.dal.show;
+package org.apache.shardingsphere.core.merge.dal.common;
 
-import org.apache.shardingsphere.core.merge.dal.common.SingleLocalDataMergedResult;
 import org.junit.Test;
 
 import java.sql.SQLException;

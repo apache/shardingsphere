@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.dal.show;
+package org.apache.shardingsphere.core.merge.dal.common;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
@@ -27,12 +27,12 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Calendar;
 
 /**
- * Merged result for show others.
+ * Transparent merged result.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ShowOtherMergedResult implements MergedResult {
+public final class TransparentMergedResult implements MergedResult {
     
     private final QueryResult queryResult;
     

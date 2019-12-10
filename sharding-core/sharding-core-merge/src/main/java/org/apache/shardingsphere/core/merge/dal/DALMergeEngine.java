@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.merge.dal.common.SingleLocalDataMergedResu
 import org.apache.shardingsphere.core.merge.dal.desc.DescribeTableMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.LogicTablesMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowCreateTableMergedResult;
-import org.apache.shardingsphere.core.merge.dal.show.ShowOtherMergedResult;
+import org.apache.shardingsphere.core.merge.dal.common.TransparentMergedResult;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
@@ -74,6 +74,6 @@ public final class DALMergeEngine implements MergeEngine {
         if (dalStatement instanceof DescribeStatement) {
             return new DescribeTableMergedResult(shardingRule, queryResults, sqlStatementContext);
         }
-        return new ShowOtherMergedResult(queryResults.get(0));
+        return new TransparentMergedResult(queryResults.get(0));
     }
 }

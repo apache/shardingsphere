@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.merge.dal.common.SingleLocalDataMergedResu
 import org.apache.shardingsphere.core.merge.dal.desc.DescribeTableMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.LogicTablesMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowCreateTableMergedResult;
-import org.apache.shardingsphere.core.merge.dal.show.ShowOtherMergedResult;
+import org.apache.shardingsphere.core.merge.dal.common.TransparentMergedResult;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.DescribeStatement;
@@ -80,7 +80,7 @@ public final class DALMergeEngineTest {
         DALStatement dalStatement = new ShowOtherStatement();
         SQLStatementContext sqlStatementContext = mockSQLStatementContext(dalStatement);
         DALMergeEngine dalMergeEngine = new DALMergeEngine(null, queryResults, sqlStatementContext, null);
-        assertThat(dalMergeEngine.merge(), instanceOf(ShowOtherMergedResult.class));
+        assertThat(dalMergeEngine.merge(), instanceOf(TransparentMergedResult.class));
     }
     
     @Test
