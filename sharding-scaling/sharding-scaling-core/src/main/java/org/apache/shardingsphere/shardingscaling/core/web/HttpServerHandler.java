@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingscaling.core.web;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -37,7 +38,6 @@ import org.apache.shardingsphere.shardingscaling.core.config.ScalingConfiguratio
 import org.apache.shardingsphere.shardingscaling.core.controller.ScalingJobController;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.exception.ScalingJobNotFoundException;
-import org.apache.shardingsphere.shardingscaling.core.web.entity.Job;
 import org.apache.shardingsphere.shardingscaling.core.web.entity.ResponseContent;
 import org.apache.shardingsphere.shardingscaling.core.web.entity.ResponseMessage;
 import org.apache.shardingsphere.shardingscaling.core.web.util.SyncConfigurationUtil;
@@ -56,7 +56,7 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     private static final Pattern URL_PATTERN = Pattern.compile("(^/shardingscaling/job/(start|stop))|(^/shardingscaling/job/progress/\\d+)",
             Pattern.CASE_INSENSITIVE);
 
-    private static final Gson GSON = new Gson();
+    private static final Gson GSON = new GsonBuilder().create();
 
     private static final ScalingJobController SCALING_JOB_CONTROLLER = new ScalingJobController();
 
@@ -76,7 +76,7 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
             log.info("start job : {}", requestBody);
             //TODO, Exception handling
             SCALING_JOB_CONTROLLER.start(shardingScalingJob);
-            ResponseContent<Job> responseContent = new ResponseContent<>(ResponseMessage.START_SUCCESS, new Job(shardingScalingJob.getJobId()));
+            ResponseContent<ShardingScalingJob> responseContent = new ResponseContent<>(ResponseMessage.START_SUCCESS, shardingScalingJob);
             response(GSON.toJson(responseContent), channelHandlerContext, HttpResponseStatus.OK);
             return;
         }
@@ -93,9 +93,9 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
             return;
         }
         if ("/shardingscaling/job/stop".equalsIgnoreCase(requestPath) && method.equals(HttpMethod.POST)) {
-            Job job = GSON.fromJson(requestBody, Job.class);
+            ShardingScalingJob shardingScalingJob = GSON.fromJson(requestBody, ShardingScalingJob.class);
             //TODO, Exception handling
-            SCALING_JOB_CONTROLLER.stop(job.getId());
+            SCALING_JOB_CONTROLLER.stop(shardingScalingJob.getJobId());
             ResponseContent<String> responseContent = new ResponseContent<>(ResponseMessage.STOP_SUCCESS, "");
             response(GSON.toJson(responseContent), channelHandlerContext, HttpResponseStatus.OK);
             return;

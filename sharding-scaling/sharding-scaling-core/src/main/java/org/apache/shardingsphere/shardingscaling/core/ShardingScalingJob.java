@@ -35,10 +35,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class ShardingScalingJob {
     
     private static final AtomicInteger ID_AUTO_INCREASE_GENERATOR = new AtomicInteger();
-    
+
     private final int jobId = ID_AUTO_INCREASE_GENERATOR.incrementAndGet();
     
-    private final List<SyncConfiguration> syncConfigurations = new LinkedList<>();
+    private final transient List<SyncConfiguration> syncConfigurations = new LinkedList<>();
     
-    private final String jobName;
+    private final transient String jobName;
 }
