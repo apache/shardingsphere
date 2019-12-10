@@ -15,30 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+package org.apache.shardingsphere.shardingscaling.core.web.entity;
 
 /**
- * Sharding scaling out job.
+ * Http response message.
  *
- * @author yangyi
+ * @author ssxlulu
  */
-@Getter
-@RequiredArgsConstructor
-public final class ShardingScalingJob {
-    
-    private static final AtomicInteger ID_AUTO_INCREASE_GENERATOR = new AtomicInteger();
+public final class ResponseMessage {
 
-    private final int jobId = ID_AUTO_INCREASE_GENERATOR.incrementAndGet();
-    
-    private final transient List<SyncConfiguration> syncConfigurations = new LinkedList<>();
-    
-    private final transient String jobName;
+    public static final String START_SUCCESS = "Strat job success!";
+
+    public static final String GET_PROGRESS_SUCCESS = "Get progress of the job success!";
+
+    public static final String GET_PROGRESS_ERROR = "Get progress of the job failed!";
+
+    public static final String STOP_SUCCESS = "Stop job success!";
+
+    public static final String BAD_REQUEST = "Not support request!";
+
+    public static final String INTERNAL_SERVER_ERROR = "Internal server error!";
+
 }

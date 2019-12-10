@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core;
+package org.apache.shardingsphere.shardingscaling.core.web.entity;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 /**
- * Sharding scaling out job.
+ * Http response content.
  *
- * @author yangyi
+ * @author ssxlulu
  */
-@Getter
-@RequiredArgsConstructor
-public final class ShardingScalingJob {
-    
-    private static final AtomicInteger ID_AUTO_INCREASE_GENERATOR = new AtomicInteger();
+@AllArgsConstructor
+@Data
+public class ResponseContent<T> {
 
-    private final int jobId = ID_AUTO_INCREASE_GENERATOR.incrementAndGet();
-    
-    private final transient List<SyncConfiguration> syncConfigurations = new LinkedList<>();
-    
-    private final transient String jobName;
+    private String message;
+
+    private T content;
 }
