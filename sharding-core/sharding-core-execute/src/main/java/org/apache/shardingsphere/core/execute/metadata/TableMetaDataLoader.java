@@ -91,10 +91,9 @@ public final class TableMetaDataLoader {
             
             @Override
             public Collection<TableMetaData> execute(final Collection<DataNode> dataNodes, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) throws SQLException {
-                String dataSourceName = dataNodes.iterator().next().getDataSourceName();
-                DataSourceMetaData dataSourceMetaData = TableMetaDataLoader.this.dataSourceMetas.getDataSourceMetaData(dataSourceName);
-                return load(shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(dataSourceName), 
-                        dataSourceMetaData, logicTableName, dataNodes, generateKeyColumnName, shardingRule.getEncryptRule());
+                String masterDataSourceName = shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(dataNodes.iterator().next().getDataSourceName());
+                DataSourceMetaData dataSourceMetaData = TableMetaDataLoader.this.dataSourceMetas.getDataSourceMetaData(masterDataSourceName);
+                return load(masterDataSourceName, dataSourceMetaData, logicTableName, dataNodes, generateKeyColumnName, shardingRule.getEncryptRule());
             }
         });
     }
@@ -137,8 +136,8 @@ public final class TableMetaDataLoader {
     
     private TableMetaData createTableMetaData(final Connection connection, final DataSourceMetaData dataSourceMetaData,
             final String logicTableName, final String actualTableName, final String generateKeyColumnName, final EncryptRule encryptRule) throws SQLException {
-        String catalog = dataSourceMetaData == null ? null : dataSourceMetaData.getCatalog();
-        String schema = dataSourceMetaData == null ? null : dataSourceMetaData.getSchema();
+        String catalog = dataSourceMetaData.getCatalog();
+        String schema = dataSourceMetaData.getSchema();
         if (isTableExist(connection, catalog, actualTableName)) {
             return new TableMetaData(
                     getColumnMetaDataList(connection, catalog, logicTableName, actualTableName, generateKeyColumnName, encryptRule), 

@@ -72,7 +72,7 @@ public final class ShardingResultSetTest {
         ShardingRuntimeContext shardingRuntimeContext = mock(ShardingRuntimeContext.class);
         when(shardingRuntimeContext.getRule()).thenReturn(mock(ShardingRule.class));
         when(shardingRuntimeContext.getProps()).thenReturn(new ShardingProperties(new Properties()));
-        shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement(), createSQLRouteResult(), shardingRuntimeContext);
+        shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement(), createSQLRouteResult());
     }
     
     private SQLRouteResult createSQLRouteResult() {

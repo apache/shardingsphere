@@ -24,10 +24,13 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 import lombok.Getter;
 import org.apache.shardingsphere.core.PreparedQueryShardingEngine;
+import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergeEngineFactory;
+import org.apache.shardingsphere.core.merge.MergedResult;
+import org.apache.shardingsphere.core.merge.encrypt.EncryptMergeEngine;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.shardingjdbc.executor.BatchPreparedStatementExecutor;
@@ -150,7 +153,11 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private ShardingResultSet getCurrentResultSet(final List<ResultSet> resultSets, final MergeEngine mergeEngine) throws SQLException {
-        return new ShardingResultSet(resultSets, mergeEngine.merge(), this, sqlRouteResult, connection.getRuntimeContext());
+        MergedResult mergedResult = mergeEngine.merge();
+        ResultSetMergedResultMetaData metaData = new ResultSetMergedResultMetaData(
+                connection.getRuntimeContext().getRule().getEncryptRule(), resultSets.get(0).getMetaData(), sqlRouteResult.getSqlStatementContext());
+        boolean queryWithCipherColumn = connection.getRuntimeContext().getProps().getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
+        return new ShardingResultSet(resultSets, new EncryptMergeEngine(metaData, mergedResult, queryWithCipherColumn).merge(), this, sqlRouteResult);
     }
     
     @Override
