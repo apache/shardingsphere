@@ -41,21 +41,21 @@ public final class SingleLocalDataMergedResultTest {
     }
     
     @Test
-    public void assertGetValueWithColumnIndex() {
+    public void assertGetValue() {
         SingleLocalDataMergedResult actual = new SingleLocalDataMergedResult(Collections.<Object>singleton("value"));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("value"));
     }
     
     @Test
-    public void assertGetCalendarValueWithColumnIndex() {
+    public void assertGetCalendarValue() {
         SingleLocalDataMergedResult actual = new SingleLocalDataMergedResult(Collections.<Object>singleton(new Date(0L)));
         assertTrue(actual.next());
         assertThat(actual.getCalendarValue(1, Object.class, Calendar.getInstance()), is((Object) new Date(0L)));
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetInputStreamWithColumnIndex() throws SQLException {
+    public void assertGetInputStream() throws SQLException {
         SingleLocalDataMergedResult actual = new SingleLocalDataMergedResult(Collections.<Object>singleton("value"));
         actual.getInputStream(1, "Ascii");
     }
