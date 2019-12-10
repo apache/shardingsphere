@@ -30,7 +30,7 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResu
 import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergeEngineFactory;
 import org.apache.shardingsphere.core.merge.MergedResult;
-import org.apache.shardingsphere.core.merge.encrypt.EncryptMergeEngine;
+import org.apache.shardingsphere.core.merge.encrypt.dql.EncryptMergeEngine;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.shardingjdbc.executor.BatchPreparedStatementExecutor;

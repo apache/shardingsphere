@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.merge.MergeEngineFactory;
 import org.apache.shardingsphere.core.merge.MergedResult;
-import org.apache.shardingsphere.core.merge.encrypt.EncryptMergeEngine;
+import org.apache.shardingsphere.core.merge.encrypt.dql.EncryptMergeEngine;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;

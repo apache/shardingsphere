@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dal.common.SingleLocalDataMergedResult;
-import org.apache.shardingsphere.core.merge.dal.desc.DescribeTableMergedResult;
+import org.apache.shardingsphere.core.merge.encrypt.dal.DescribeTableMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.LogicTablesMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowCreateTableMergedResult;
 import org.apache.shardingsphere.core.merge.dal.common.TransparentMergedResult;

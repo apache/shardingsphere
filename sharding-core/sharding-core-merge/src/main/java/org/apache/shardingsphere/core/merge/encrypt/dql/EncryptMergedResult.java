@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.encrypt;
+package org.apache.shardingsphere.core.merge.encrypt.dql;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;

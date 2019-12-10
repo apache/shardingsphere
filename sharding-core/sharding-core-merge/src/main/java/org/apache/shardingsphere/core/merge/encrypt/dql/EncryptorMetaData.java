@@ -15,28 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.encrypt;
+package org.apache.shardingsphere.core.merge.encrypt.dql;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.merge.MergeEngine;
-import org.apache.shardingsphere.core.merge.MergedResult;
+import com.google.common.base.Optional;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+
+import java.sql.SQLException;
 
 /**
- * Encrypt result set merge engine.
+ * Encryptor meta data.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-public final class EncryptMergeEngine implements MergeEngine {
+public interface EncryptorMetaData {
     
-    private final EncryptorMetaData metaData;
-    
-    private final MergedResult mergedResult;
-    
-    private final boolean queryWithCipherColumn;
-    
-    @Override
-    public MergedResult merge() {
-        return new EncryptMergedResult(metaData, mergedResult, queryWithCipherColumn);
-    }
+    /**
+     * Find encryptor.
+     * 
+     * @param columnIndex column index
+     * @return encryptor
+     * @throws SQLException SQL exception
+     */
+    Optional<ShardingEncryptor> findEncryptor(int columnIndex) throws SQLException;
 }

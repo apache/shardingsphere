@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.iterator.IteratorStreamMergedResult;
-import org.apache.shardingsphere.core.merge.encrypt.EncryptMergeEngine;
+import org.apache.shardingsphere.core.merge.encrypt.dql.EncryptMergeEngine;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ResultSetEncryptorMetaData;
