@@ -22,12 +22,12 @@ import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergedResult;
 
 /**
- * Encrypt result set merge engine.
+ * DQL result set merge engine for encrypt.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class EncryptMergeEngine implements MergeEngine {
+public final class DQLEncryptMergeEngine implements MergeEngine {
     
     private final EncryptorMetaData metaData;
     

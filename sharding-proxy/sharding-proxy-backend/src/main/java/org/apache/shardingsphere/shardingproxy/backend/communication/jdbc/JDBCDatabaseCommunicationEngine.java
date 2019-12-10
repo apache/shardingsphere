@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.merge.MergeEngineFactory;
 import org.apache.shardingsphere.core.merge.MergedResult;
-import org.apache.shardingsphere.core.merge.encrypt.dql.EncryptMergeEngine;
+import org.apache.shardingsphere.core.merge.encrypt.dql.DQLEncryptMergeEngine;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
@@ -130,7 +130,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         boolean queryWithCipherColumn = ShardingProxyContext.getInstance().getShardingProperties().getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         MergedResult mergedResult = MergeEngineFactory.newInstance(LogicSchemas.getInstance().getDatabaseType(),
                 logicSchema.getShardingRule(), routeResult, logicSchema.getMetaData().getTables(), ((QueryResponse) response).getQueryResults()).merge();
-        EncryptMergeEngine mergeEngine = new EncryptMergeEngine(
+        DQLEncryptMergeEngine mergeEngine = new DQLEncryptMergeEngine(
                 new QueryHeaderEncryptorMetaData(getEncryptRule(), ((QueryResponse) response).getQueryHeaders()), mergedResult, queryWithCipherColumn);
         this.mergedResult = mergeEngine.merge();
     }

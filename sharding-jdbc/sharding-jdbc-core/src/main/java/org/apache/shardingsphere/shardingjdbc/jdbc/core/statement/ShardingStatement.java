@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResu
 import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergeEngineFactory;
 import org.apache.shardingsphere.core.merge.MergedResult;
-import org.apache.shardingsphere.core.merge.encrypt.dql.EncryptMergeEngine;
+import org.apache.shardingsphere.core.merge.encrypt.dql.DQLEncryptMergeEngine;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.shardingjdbc.executor.StatementExecutor;
@@ -137,7 +137,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         ResultSetEncryptorMetaData metaData = new ResultSetEncryptorMetaData(
                 connection.getRuntimeContext().getRule().getEncryptRule(), resultSets.get(0).getMetaData(), sqlRouteResult.getSqlStatementContext());
         boolean queryWithCipherColumn = connection.getRuntimeContext().getProps().getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
-        return new ShardingResultSet(resultSets, new EncryptMergeEngine(metaData, mergedResult, queryWithCipherColumn).merge(), this, sqlRouteResult);
+        return new ShardingResultSet(resultSets, new DQLEncryptMergeEngine(metaData, mergedResult, queryWithCipherColumn).merge(), this, sqlRouteResult);
     }
     
     @Override
