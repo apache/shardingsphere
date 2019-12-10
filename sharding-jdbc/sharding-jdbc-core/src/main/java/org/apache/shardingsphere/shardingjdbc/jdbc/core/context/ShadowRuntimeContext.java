@@ -32,6 +32,7 @@ import java.util.Properties;
  * Runtime context for shadow.
  *
  * @author zhyee
+ * @author xiayan
  */
 @Getter
 public class ShadowRuntimeContext extends AbstractRuntimeContext<ShadowRule> {

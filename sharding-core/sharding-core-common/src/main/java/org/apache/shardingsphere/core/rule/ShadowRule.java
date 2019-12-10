@@ -24,6 +24,7 @@ import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
  * Databases shadow rule.
  *
  * @author zhyee
+ * @author xiayan
  */
 @Getter
 public class ShadowRule implements BaseRule {

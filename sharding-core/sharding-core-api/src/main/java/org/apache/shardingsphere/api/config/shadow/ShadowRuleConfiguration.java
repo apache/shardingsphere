@@ -23,9 +23,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
 
 /**
- * Encrypt rule configuration.
+ * Shadow rule configuration.
  *
- * @author panjuan
+ * @author xiayan
  */
 @RequiredArgsConstructor
 @Getter
