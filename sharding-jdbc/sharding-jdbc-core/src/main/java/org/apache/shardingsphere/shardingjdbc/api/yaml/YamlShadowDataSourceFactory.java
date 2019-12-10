@@ -88,13 +88,13 @@ public final class YamlShadowDataSourceFactory {
         Properties props = config.getShadowRule().getProps();
         if (config.isEncrypt()) {
             return EncryptDataSourceFactory.createDataSource(config.getShadowRule().getDataSource(),
-                    new EncryptRuleConfigurationYamlSwapper().swap(config.getShardingRule().getEncryptRule()), props);
+                    new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()), props);
         } else if (config.isSharding()) {
             return ShardingDataSourceFactory.createDataSource(config.getShadowRule().getDataSources(),
-                    new ShardingRuleConfigurationYamlSwapper().swap(config.getShadowRule().getShardingRule()), props);
+                    new ShardingRuleConfigurationYamlSwapper().swap(config.getShardingRule()), props);
         } else if (config.isMasterSlave()) {
             return MasterSlaveDataSourceFactory.createDataSource(config.getShadowRule().getDataSources(),
-                    new MasterSlaveRuleConfigurationYamlSwapper().swap(config.getShadowRule().getMasterSlaveRule()), props);
+                    new MasterSlaveRuleConfigurationYamlSwapper().swap(config.getMasterSlaveRule()), props);
         } else {
             throw new UnsupportedOperationException("unsupported datasource");
         }
