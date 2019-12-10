@@ -15,30 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rule;
+package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.shadow;
 
-import lombok.Getter;
-import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.shadow.YamlShadowRuleConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Databases shadow rule.
+ * Shadow rule configuration properties.
  *
- * @author zhyee
  * @author xiayan
  */
-@Getter
-public class ShadowRule implements BaseRule {
-    
-    private ShadowRuleConfiguration ruleConfiguration;
-    
-    private String column;
-    
-    private Comparable value;
-    
-    public ShadowRule(final ShadowRuleConfiguration shadowRuleConfiguration) {
-        column = shadowRuleConfiguration.getColumn();
-        value = shadowRuleConfiguration.getValue();
-        ruleConfiguration = shadowRuleConfiguration;
-    }
-    
+@ConfigurationProperties(prefix = "spring.shardingsphere.shadow")
+public class SpringBootShadowRuleConfigurationProperties extends YamlShadowRuleConfiguration {
 }
