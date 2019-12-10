@@ -31,7 +31,7 @@ import MAuthentication from './module/authentication'
 import MProps from './module/props'
 
 export default {
-  name: 'ConfigManage',
+  name: 'RuleConfig',
   components: {
     MSchema,
     MAuthentication,

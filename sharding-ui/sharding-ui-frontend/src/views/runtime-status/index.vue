@@ -28,7 +28,7 @@
 import MDataSource from './module/dataSource'
 import MInstance from './module/instance'
 export default {
-  name: 'Orchestration',
+  name: 'RuntimeStatus',
   components: {
     MDataSource,
     MInstance
