@@ -32,9 +32,7 @@
         "username": "root"
       }
   },
-  "serverConfiguration": {
-    "blockQueueSize": 10000,
-    "pushTimeout": 1000,
+  "jobConfiguration": {
     "concurrency": 3
   }
 }
