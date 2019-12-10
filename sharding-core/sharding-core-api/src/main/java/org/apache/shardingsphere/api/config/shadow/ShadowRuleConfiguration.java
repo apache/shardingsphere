@@ -15,32 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rule;
+package org.apache.shardingsphere.api.config.shadow;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.api.config.RuleConfiguration;
 
 /**
- * Databases shadow rule.
+ * Encrypt rule configuration.
  *
- * @author zhyee
+ * @author panjuan
  */
+@RequiredArgsConstructor
 @Getter
-public class ShadowRule implements BaseRule {
+public final class ShadowRuleConfiguration implements RuleConfiguration {
     
-    @Getter
-    private ShadowRuleConfiguration ruleConfiguration;
+    private final String column;
     
-    @Getter
-    private String column;
+    private final Comparable value;
     
-    @Getter
-    private Comparable value;
-    
-    public ShadowRule(final ShadowRuleConfiguration shadowRuleConfiguration) {
-        column = shadowRuleConfiguration.getColumn();
-        value = shadowRuleConfiguration.getValue();
-        ruleConfiguration = shadowRuleConfiguration;
+    public ShadowRuleConfiguration(final String column, final Object value) {
+        Preconditions.checkArgument(null != column, "Column is Required.");
+        Preconditions.checkArgument(value.getClass().isAssignableFrom(Comparable.class), "Value is need Comparable.");
+        this.column = column;
+        this.value = (Comparable) value;
     }
-    
 }

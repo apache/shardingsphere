@@ -15,32 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rule;
+package org.apache.shardingsphere.core.yaml.config.shadow;
 
 import lombok.Getter;
-import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
+import lombok.Setter;
+import org.apache.shardingsphere.core.yaml.config.common.YamlRootRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
+
+import javax.sql.DataSource;
 
 /**
- * Databases shadow rule.
+ * Shadow rule configuration.
  *
- * @author zhyee
+ * @author xiayan
  */
 @Getter
-public class ShadowRule implements BaseRule {
+@Setter
+public class YamlShadowRuleConfiguration extends YamlRootRuleConfiguration {
     
-    @Getter
-    private ShadowRuleConfiguration ruleConfiguration;
-    
-    @Getter
     private String column;
     
-    @Getter
-    private Comparable value;
+    private Object value;
     
-    public ShadowRule(final ShadowRuleConfiguration shadowRuleConfiguration) {
-        column = shadowRuleConfiguration.getColumn();
-        value = shadowRuleConfiguration.getValue();
-        ruleConfiguration = shadowRuleConfiguration;
-    }
+    private DataSource dataSource;
     
+    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
+    
+    private YamlEncryptRuleConfiguration encryptRule;
+    
+    private YamlShardingRuleConfiguration shardingRule;
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
@@ -34,14 +35,14 @@ import java.util.Properties;
  */
 @Getter
 public class ShadowDataSource extends AbstractDataSourceAdapter {
-
+    
     private final ShadowRuntimeContext runtimeContext;
-
-    public ShadowDataSource(final DataSource dataSource, final ShadowRule shadowRule, final Properties props) throws SQLException {
-        super(dataSource);
-        runtimeContext = new ShadowRuntimeContext(dataSource, shadowRule, props, getDatabaseType());
+    
+    public ShadowDataSource(final DataSource actualDataSource, final DataSource shadowDataSource, final ShadowRule shadowRule, final Properties props) throws SQLException {
+        super(ImmutableMap.of("actual", actualDataSource, "shadow", shadowDataSource));
+        runtimeContext = new ShadowRuntimeContext(actualDataSource, shadowDataSource, shadowRule, props, getDatabaseType());
     }
-
+    
     @Override
     public final Connection getConnection() throws SQLException {
         //TODO
