@@ -13,24 +13,29 @@ To achieve the result better, these tests are performed based on 200w data with 
 ## Test Scenarios
 
 #### Single Route
+
 Four databases that each contains 1024 tables with id used for database sharding and k used for table sharding are designed for this scenario.
 Single route select sql statement is chosen here.
 
 #### Master Slave
+
 One master database and one slave database is designed for this scene. 
 Single route select sql statement is chosen here.
 
 #### Master Slave & Encrypt & Sharding
+
 Four databases that each contains 1024 tables with id used for database sharding, k used for table sharding, c encrypted with aes and  pad encrypted with md5 are designed for this scene.
 Single route select sql statement is chosen here.
 
 #### Full Route
+
 Four databases that each contains one table are designed for this scene, field 'id' is used for database sharding and 'k' is used for table sharding.
 Full route select sql statement is chosen here.
 
 ## Testing Environment
 
 #### Table Structure of Database
+
 ```shell
 +-------+------------+------+-----+---------+----------------+
 | Field | Type       | Null | Key | Default | Extra          |
@@ -41,11 +46,14 @@ Full route select sql statement is chosen here.
 | pad   | char(60)   | NO   |     |         |                |
 +-------+------------+------+-----+---------+----------------+
 ```
+
 #### Test Scenarios Configuration
+
 The same configurations are used for Sharding-Jdbc and Sharding-Proxy, while Mysql with one database connected is designed for comparision loss/promotion test.
 The details for these scenarios are shown as fellows.
 
 ##### Single Route Configuration
+
 ```yaml
 schemaName: sharding_db
 
@@ -100,7 +108,9 @@ shardingRule:
     defaultTableStrategy:
       none:
 ```
+
 ##### Master Slave Configuration
+
 ```yaml
 schemaName: sharding_db
 
@@ -127,7 +137,9 @@ masterSlaveRule:
   slaveDataSourceNames:
     - slave_ds_0
 ```
+
 ##### Master Slave & Encrypt & Sharding configuration
+
 ```yaml
 schemaName: sharding_db
 
@@ -256,7 +268,9 @@ encryptRule:
           cipherColumn: pad_cipher
           encryptor: encryptor_md5    
 ```
+
 ##### Full Route Configuration
+
 ```yaml
 schemaName: sharding_db
 
@@ -311,8 +325,11 @@ shardingRule:
   defaultTableStrategy:
     none:  
 ```
+
 ## Test Result Verification
-#### SQL Statement 
+
+#### SQL Statement
+ 
 ```shell
 Insert+Update+Delete sql statements:
 Insert into press_test(k,c,pad) values (1,"###","###")
@@ -323,23 +340,31 @@ select max(id) from test where id%4=1
 select sql statement for single route:
 select id,k from test where id=1 and k=1
 ```
+
 #### Jmeter Class
+
 ```shell
 See: https://github.com/apache/incubator-shardingsphere-benchmark/tree/master/shardingsphere-benchmark
 ```
+
 #### Compile & Build
+
 ```shell
 git clone https://github.com/apache/incubator-shardingsphere-benchmark.git
 cd incubator-shardingsphere-benchmark/shardingsphere-benchmark
 maven clean install
 ```
+
 #### perform Test
+
 ```shell
 cp target/shardingsphere-benchmark-1.0-SNAPSHOT-jar-with-dependencies.jar apache-jmeter-4.0/lib/ext
 jmeter –n –t test_plan/test.jmx
 test.jmx example:https://github.com/apache/incubator-shardingsphere-benchmark/tree/master/report/script/test_plan/test.jmx
 ```
+
 #### Process Result Data
+
 Make sure the location of result.jtl file is correct.
 ```shell
 sh shardingsphere-benchmark/report/script/gen_report.sh
