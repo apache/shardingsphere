@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.MergedResultMetaData;
+import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 /**
  * Encrypt result set merge engine.
@@ -33,11 +35,15 @@ public final class EncryptMergeEngine implements MergeEngine {
     private final MergedResultMetaData metaData;
     
     private final MergedResult mergedResult;
+
+    private final EncryptRule encryptRule;
+
+    private final SQLStatementContext sqlStatementContext;
     
     private final boolean queryWithCipherColumn;
     
     @Override
     public MergedResult merge() {
-        return new EncryptMergedResult(metaData, mergedResult, queryWithCipherColumn);
+        return new EncryptMergedResult(metaData, mergedResult, encryptRule, sqlStatementContext, queryWithCipherColumn);
     }
 }

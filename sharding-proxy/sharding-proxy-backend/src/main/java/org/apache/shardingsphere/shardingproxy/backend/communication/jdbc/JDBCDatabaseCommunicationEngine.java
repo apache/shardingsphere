@@ -130,8 +130,9 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         boolean queryWithCipherColumn = ShardingProxyContext.getInstance().getShardingProperties().getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         MergedResult mergedResult = MergeEngineFactory.newInstance(LogicSchemas.getInstance().getDatabaseType(),
                 logicSchema.getShardingRule(), routeResult, logicSchema.getMetaData().getTables(), ((QueryResponse) response).getQueryResults()).merge();
+        EncryptRule encryptRule = getEncryptRule();
         EncryptMergeEngine mergeEngine = new EncryptMergeEngine(
-                new QueryHeaderMergedResultMetaData(getEncryptRule(), ((QueryResponse) response).getQueryHeaders()), mergedResult, queryWithCipherColumn);
+                new QueryHeaderMergedResultMetaData(encryptRule, ((QueryResponse) response).getQueryHeaders()), mergedResult, encryptRule, routeResult.getSqlStatementContext(), queryWithCipherColumn);
         this.mergedResult = mergeEngine.merge();
     }
     
@@ -182,7 +183,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         EncryptRule encryptRule = getEncryptRule();
         for (QueryHeader each : queryHeaders) {
             if (encryptRule.isCipherColumn(each.getTable(), each.getColumnName())) {
-                each.setColumnLabelAndName(encryptRule.getLogicColumn(each.getTable(), each.getColumnName()));
+                each.setColumnLabelAndName(encryptRule.getLogicColumnOfCipher(each.getTable(), each.getColumnName()));
             }
         }
     }

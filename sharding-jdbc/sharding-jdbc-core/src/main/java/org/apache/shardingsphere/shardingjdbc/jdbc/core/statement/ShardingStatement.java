@@ -31,6 +31,7 @@ import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.encrypt.EncryptMergeEngine;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.executor.StatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractStatementAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
@@ -134,10 +135,11 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private ShardingResultSet getCurrentResultSet(final List<ResultSet> resultSets, final MergeEngine mergeEngine) throws SQLException {
         MergedResult mergedResult = mergeEngine.merge();
-        ResultSetMergedResultMetaData metaData = new ResultSetMergedResultMetaData(
-                connection.getRuntimeContext().getRule().getEncryptRule(), resultSets.get(0).getMetaData(), sqlRouteResult.getSqlStatementContext());
+        EncryptRule encryptRule = connection.getRuntimeContext().getRule().getEncryptRule();
+        ResultSetMergedResultMetaData metaData = new ResultSetMergedResultMetaData(encryptRule, resultSets.get(0).getMetaData(), sqlRouteResult.getSqlStatementContext());
         boolean queryWithCipherColumn = connection.getRuntimeContext().getProps().getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
-        return new ShardingResultSet(resultSets, new EncryptMergeEngine(metaData, mergedResult, queryWithCipherColumn).merge(), this, sqlRouteResult);
+        return new ShardingResultSet(resultSets, new EncryptMergeEngine(metaData, mergedResult, encryptRule, sqlRouteResult.getSqlStatementContext(), queryWithCipherColumn).merge(),
+                this, sqlRouteResult);
     }
     
     @Override

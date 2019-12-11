@@ -81,7 +81,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
         MergedResult mergedResult = new IteratorStreamMergedResult(Collections.singletonList(queryResult));
         ResultSetMergedResultMetaData metaData = new ResultSetMergedResultMetaData(encryptRule, originalResultSet.getMetaData(), sqlStatementContext);
         boolean queryWithCipherColumn = encryptRuntimeContext.getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
-        this.resultSet = new EncryptMergeEngine(metaData, mergedResult, queryWithCipherColumn).merge();
+        this.resultSet = new EncryptMergeEngine(metaData, mergedResult, encryptRule, sqlStatementContext, queryWithCipherColumn).merge();
         logicAndActualColumns = createLogicAndActualColumns(queryWithCipherColumn);
         columnLabelAndIndexMap = createColumnLabelAndIndexMap(originalResultSet.getMetaData());
     }

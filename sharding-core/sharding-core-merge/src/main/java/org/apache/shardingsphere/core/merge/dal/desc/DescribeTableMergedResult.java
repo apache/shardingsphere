@@ -66,7 +66,7 @@ public final class DescribeTableMergedResult extends MemoryMergedResult {
                 return Optional.absent();
             }
             if (encryptTable.get().getCipherColumns().contains(columnName)) {
-                memoryQueryResultRow.setCell(1, encryptTable.get().getLogicColumn(columnName));
+                memoryQueryResultRow.setCell(1, encryptTable.get().getLogicColumnOfCipher(columnName));
             }
         }
         return Optional.of(memoryQueryResultRow);

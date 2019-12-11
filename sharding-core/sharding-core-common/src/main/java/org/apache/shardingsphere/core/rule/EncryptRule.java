@@ -114,14 +114,25 @@ public final class EncryptRule implements BaseRule {
     }
     
     /**
-     * Get logic column.
+     * Get logic column of cipher column.
      *
      * @param logicTable logic table
      * @param cipherColumn cipher column
      * @return logic column
      */
-    public String getLogicColumn(final String logicTable, final String cipherColumn) {
-        return tables.get(logicTable).getLogicColumn(cipherColumn);
+    public String getLogicColumnOfCipher(final String logicTable, final String cipherColumn) {
+        return tables.get(logicTable).getLogicColumnOfCipher(cipherColumn);
+    }
+
+    /**
+     * Get logic column of plain column.
+     *
+     * @param logicTable logic table
+     * @param plainColumn plain column
+     * @return logic column
+     */
+    public String getLogicColumnOfPlain(final String logicTable, final String plainColumn) {
+        return tables.get(logicTable).getLogicColumnOfPlain(plainColumn);
     }
     
     /**
@@ -190,8 +201,24 @@ public final class EncryptRule implements BaseRule {
         result.addAll(getPlainColumns(logicTable));
         return result;
     }
-    
-    private Collection<String> getPlainColumns(final String logicTable) {
+
+    /**
+     * Get cipher columns.
+     *
+     * @param logicTable logic table name
+     * @return cipher columns
+     */
+    public Collection<String> getCipherColumns(final String logicTable) {
+        return tables.containsKey(logicTable) ? tables.get(logicTable).getCipherColumns() : Collections.<String>emptyList();
+    }
+
+    /**
+     * Get plain columns.
+     *
+     * @param logicTable logic table name
+     * @return plain columns
+     */
+    public Collection<String> getPlainColumns(final String logicTable) {
         return tables.containsKey(logicTable) ? tables.get(logicTable).getPlainColumns() : Collections.<String>emptyList();
     }
     

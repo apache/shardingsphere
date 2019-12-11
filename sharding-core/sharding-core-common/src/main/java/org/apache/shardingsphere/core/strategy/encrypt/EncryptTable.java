@@ -50,18 +50,34 @@ public final class EncryptTable {
     }
     
     /**
-     * Get logic column.
+     * Get logic column of cipher column.
      * 
      * @param cipherColumn cipher column
      * @return logic column
      */
-    public String getLogicColumn(final String cipherColumn) {
+    public String getLogicColumnOfCipher(final String cipherColumn) {
         for (Entry<String, EncryptColumn> entry : columns.entrySet()) {
             if (entry.getValue().getCipherColumn().equals(cipherColumn)) {
                 return entry.getKey();
             }
         }
         throw new ShardingException("Can not find logic column by %s.", cipherColumn);
+    }
+
+    /**
+     * Get logic column of plain column.
+     *
+     * @param plainColumn plain column
+     * @return logic column
+     */
+    public String getLogicColumnOfPlain(final String plainColumn) {
+        for (Entry<String, EncryptColumn> entry : columns.entrySet()) {
+            if (entry.getValue().getPlainColumn().isPresent()
+                    && entry.getValue().getPlainColumn().get().equals(plainColumn)) {
+                return entry.getKey();
+            }
+        }
+        throw new ShardingException("Can not find logic column by %s.", plainColumn);
     }
     
     /**
@@ -80,7 +96,7 @@ public final class EncryptTable {
      * @return plain column
      */
     public Optional<String> findPlainColumn(final String logicColumn) {
-        return columns.keySet().contains(logicColumn) ? columns.get(logicColumn).getPlainColumn() : Optional.<String>absent();
+        return columns.containsKey(logicColumn) ? columns.get(logicColumn).getPlainColumn() : Optional.<String>absent();
     }
     
     /**
