@@ -326,13 +326,13 @@ shardingRule:
 
 ```shell
 Insert+Update+Delete语句：
-Insert into press_test(k,c,pad) values (1,"###","###")
-Update press_test set c="###-#",pad="###-#" where id=**
+Insert into press_test(k, c, pad) values (1, "###", "###")
+Update press_test set c="###-#", pad="###-#" where id=**
 Delete from press_test where id=**
 全路由查询语句：
 select max(id) from test where id%4=1
 单路由查询语句：
-select id,k from test where id=1 and k=1
+select id, k from test where id=1 and k=1
 ```
 
 #### 压测类
@@ -346,7 +346,7 @@ select id,k from test where id=1 and k=1
 ```shell
 git clone https://github.com/apache/incubator-shardingsphere-benchmark.git
 cd incubator-shardingsphere-benchmark/shardingsphere-benchmark
-maven clean install
+mvn clean install
 ```
 
 #### 压测执行

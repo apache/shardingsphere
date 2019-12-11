@@ -332,13 +332,13 @@ shardingRule:
  
 ```shell
 Insert+Update+Delete sql statements:
-Insert into press_test(k,c,pad) values (1,"###","###")
-Update press_test set c="###-#",pad="###-#" where id=**
+Insert into press_test(k, c, pad) values (1, "###", "###")
+Update press_test set c="###-#", pad="###-#" where id=**
 Delete from press_test where id=**
 select sql statement for full route:
 select max(id) from test where id%4=1
 select sql statement for single route:
-select id,k from test where id=1 and k=1
+select id, k from test where id=1 and k=1
 ```
 
 #### Jmeter Class
@@ -352,7 +352,7 @@ See: https://github.com/apache/incubator-shardingsphere-benchmark/tree/master/sh
 ```shell
 git clone https://github.com/apache/incubator-shardingsphere-benchmark.git
 cd incubator-shardingsphere-benchmark/shardingsphere-benchmark
-maven clean install
+mvn clean install
 ```
 
 #### perform Test
