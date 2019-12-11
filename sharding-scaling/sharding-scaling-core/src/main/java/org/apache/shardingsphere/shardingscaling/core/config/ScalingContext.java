@@ -27,8 +27,6 @@ public final class ScalingContext {
 
     private static final ScalingContext INSTANCE = new ScalingContext();
 
-    private RuleConfiguration ruleConfiguration;
-
     private ServerConfiguration serverConfiguration;
 
     /**
@@ -43,11 +41,9 @@ public final class ScalingContext {
     /**
      * Initialize  Scaling context.
      *
-     * @param ruleConfiguration ruleConfiguration
      * @param serverConfiguration serverConfiguration
      */
-    public void init(final RuleConfiguration ruleConfiguration, final ServerConfiguration serverConfiguration) {
-        this.ruleConfiguration = ruleConfiguration;
+    public void init(final ServerConfiguration serverConfiguration) {
         this.serverConfiguration = serverConfiguration;
     }
 

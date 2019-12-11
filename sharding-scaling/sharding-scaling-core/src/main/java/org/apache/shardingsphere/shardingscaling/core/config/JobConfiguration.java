@@ -19,12 +19,12 @@ package org.apache.shardingsphere.shardingscaling.core.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
-public class ScalingConfiguration {
+public class JobConfiguration {
 
-    private RuleConfiguration ruleConfiguration;
-
-    private JobConfiguration jobConfiguration;
+    private int concurrency = 3;
 }

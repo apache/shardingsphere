@@ -17,19 +17,24 @@
 
 package org.apache.shardingsphere.shardingscaling.core.config;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
-@AllArgsConstructor
+/**
+ * Global server configuration.
+ *
+ * @author ssxlulu
+ */
 @NoArgsConstructor
 @Data
-public class ServerConfiguration {
+public class ServerConfiguration implements YamlConfiguration {
 
-    private Integer blockQueueSize;
+    private int port = 8080;
 
-    private Integer pushTimeout;
+    private int blockQueueSize = 10000;
 
-    private Integer concurrency;
+    private int pushTimeout = 1000;
 
+    private int workerThread = 30;
 }

@@ -1,4 +1,3 @@
-#!/bin/bash
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -16,12 +15,7 @@
 # limitations under the License.
 #
 
-cd `dirname $0`
-cd ..
-DEPLOY_DIR=`pwd`
-
-CLASS_PATH=.:${DEPLOY_DIR}/conf:${DEPLOY_DIR}/lib/*
-
-MAIN_CLASS=org.apache.shardingsphere.shardingscaling.Bootstrap
-
-java -classpath ${CLASS_PATH} ${MAIN_CLASS}
+# port: 8888
+# blockQueueSize: 10000
+# pushTimeout: 1000
+# workerThread: 30

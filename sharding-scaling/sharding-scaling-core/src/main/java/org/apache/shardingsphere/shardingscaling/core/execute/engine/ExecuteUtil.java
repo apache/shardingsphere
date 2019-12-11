@@ -21,6 +21,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncRunner;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.Reader;
@@ -37,7 +38,7 @@ import java.util.List;
 @Slf4j
 public class ExecuteUtil {
 
-    private static final SyncTaskExecuteEngine EXECUTE_ENGINE = new DefaultSyncTaskExecuteEngine(30);
+    private static final SyncTaskExecuteEngine EXECUTE_ENGINE = new DefaultSyncTaskExecuteEngine(ScalingContext.getInstance().getServerConfiguration().getWorkerThread());
 
     /**
      * Execute.

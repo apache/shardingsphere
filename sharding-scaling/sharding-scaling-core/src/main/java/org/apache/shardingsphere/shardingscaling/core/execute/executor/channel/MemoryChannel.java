@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.channel;
 
+import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 
 import java.util.ArrayList;
@@ -34,9 +35,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class MemoryChannel implements Channel {
 
-    private static final int PUSH_TIMEOUT = 1000;
+    private static final int PUSH_TIMEOUT = ScalingContext.getInstance().getServerConfiguration().getPushTimeout();
 
-    private final BlockingQueue<Record> queue = new ArrayBlockingQueue<>(10000);
+    private final BlockingQueue<Record> queue = new ArrayBlockingQueue<>(ScalingContext.getInstance().getServerConfiguration().getBlockQueueSize());
 
     private final List<AckCallback> ackCallbacks;
 

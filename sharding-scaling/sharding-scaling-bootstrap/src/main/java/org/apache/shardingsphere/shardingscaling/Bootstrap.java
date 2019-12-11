@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling;
 
+import com.google.common.base.Preconditions;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -28,10 +29,14 @@ import io.netty.handler.logging.LoggingHandler;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
+import org.apache.shardingsphere.shardingscaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.web.HttpServerInitializer;
 import org.apache.shardingsphere.shardingscaling.utils.RuntimeUtil;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Bootstrap of ShardingScaling.
@@ -41,7 +46,7 @@ import java.io.File;
 @Slf4j
 public class Bootstrap {
 
-    private static final int PORT = Integer.parseInt(System.getProperty("port", "8080"));
+    private static final String SERVER_CONFIG_FILE = "/conf/server.yaml";
 
     static {
         PropertyConfigurator.configure(RuntimeUtil.getBasePath() + "conf" + File.separator + "log4j.properties");
@@ -54,6 +59,8 @@ public class Bootstrap {
      */
     @SneakyThrows
     public static void main(final String[] args) {
+        log.info("Init server config");
+        initServerConfig();
         log.info("ShardingScaling Startup");
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -65,12 +72,20 @@ public class Bootstrap {
                     .channel(NioServerSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new HttpServerInitializer());
-            Channel channel = bootstrap.bind(PORT).sync().channel();
-            log.info("Shardingscaling is server on http://127.0.0.1:" + PORT + '/');
+            int port = ScalingContext.getInstance().getServerConfiguration().getPort();
+            Channel channel = bootstrap.bind(port).sync().channel();
+            log.info("Shardingscaling is server on http://127.0.0.1:" + port + '/');
             channel.closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
+    }
+
+    private static void initServerConfig() throws IOException {
+        File yamlFile = new File(Bootstrap.class.getResource(SERVER_CONFIG_FILE).getFile());
+        ServerConfiguration serverConfiguration = YamlEngine.unmarshal(yamlFile, ServerConfiguration.class);
+        Preconditions.checkNotNull(serverConfiguration, "Server configuration file `%s` is invalid.", yamlFile.getName());
+        ScalingContext.getInstance().init(serverConfiguration);
     }
 }

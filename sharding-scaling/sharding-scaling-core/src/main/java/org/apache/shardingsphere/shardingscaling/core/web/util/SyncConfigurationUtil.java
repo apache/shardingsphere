@@ -56,7 +56,7 @@ public class SyncConfigurationUtil {
                     ruleConfig.getDestinationDataSources().getUsername(),
                     ruleConfig.getDestinationDataSources().getPassword());
             writerConfiguration.setDataSourceConfiguration(writerDataSourceConfiguration);
-            syncConfigurations.add(new SyncConfiguration(scalingConfiguration.getServerConfiguration().getConcurrency(), readerConfiguration, writerConfiguration));
+            syncConfigurations.add(new SyncConfiguration(scalingConfiguration.getJobConfiguration().getConcurrency(), readerConfiguration, writerConfiguration));
         }
         return syncConfigurations;
     }
