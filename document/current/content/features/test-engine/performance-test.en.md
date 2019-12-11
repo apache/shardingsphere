@@ -37,20 +37,19 @@ Full route select sql statement is chosen here.
 #### Table Structure of Database
 
 ```shell
-+-------+------------+------+-----+---------+----------------+
-| Field | Type       | Null | Key | Default | Extra          |
-+-------+------------+------+-----+---------+----------------+
-| id    | bigint(20) | NO   | PRI | NULL    | auto_increment |
-| k     | int(11)    | NO   |     | 0       |                |
-| c     | char(120)  | NO   |     |         |                |
-| pad   | char(60)   | NO   |     |         |                |
-+-------+------------+------+-----+---------+----------------+
+CREATE TABLE `press_test` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `k` int(11) NOT NULL DEFAULT 0,
+  `c` char(120) NOT NULL DEFAULT '',
+  `pad` char(60) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+);
 ```
 
 #### Test Scenarios Configuration
 
-The same configurations are used for Sharding-Jdbc and Sharding-Proxy, while Mysql with one database connected is designed for comparision loss/promotion test.
-The details for these scenarios are shown as fellows.
+The same configurations are used for Sharding-JDBC and Sharding-Proxy, while MySQL with one database connected is designed for comparision loss/promotion test.
+The details for these scenarios are shown as follows.
 
 ##### Single Route Configuration
 
@@ -138,7 +137,7 @@ masterSlaveRule:
     - slave_ds_0
 ```
 
-##### Master Slave & Encrypt & Sharding configuration
+##### Master Slave & Encrypt & Sharding Configuration
 
 ```yaml
 schemaName: sharding_db
@@ -355,7 +354,7 @@ cd incubator-shardingsphere-benchmark/shardingsphere-benchmark
 mvn clean install
 ```
 
-#### perform Test
+#### Perform Test
 
 ```shell
 cp target/shardingsphere-benchmark-1.0-SNAPSHOT-jar-with-dependencies.jar apache-jmeter-4.0/lib/ext

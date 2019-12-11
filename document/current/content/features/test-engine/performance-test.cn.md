@@ -32,19 +32,18 @@ weight = 5
 #### 数据库表结构
 
 ```shell
-+-------+------------+------+-----+---------+----------------+
-| Field | Type       | Null | Key | Default | Extra          |
-+-------+------------+------+-----+---------+----------------+
-| id    | bigint(20) | NO   | PRI | NULL    | auto_increment |
-| k     | int(11)    | NO   |     | 0       |                |
-| c     | char(120)  | NO   |     |         |                |
-| pad   | char(60)   | NO   |     |         |                |
-+-------+------------+------+-----+---------+----------------+
+CREATE TABLE `press_test` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `k` int(11) NOT NULL DEFAULT 0,
+  `c` char(120) NOT NULL DEFAULT '',
+  `pad` char(60) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+);
 ```
 
 #### 测试场景配置
 
-Sharding-Jdbc使用与Sharding-Proxy一致的配置，Mysql直连一个库用做损耗/提升对比，下面为四个场景的具体配置：
+Sharding-JDBC使用与Sharding-Proxy一致的配置，MySQL直连一个库用做损耗/提升对比，下面为四个场景的具体配置：
 
 ##### 单路由配置
 
