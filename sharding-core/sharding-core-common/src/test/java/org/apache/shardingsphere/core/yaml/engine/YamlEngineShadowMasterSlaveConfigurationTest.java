@@ -64,7 +64,6 @@ public final class YamlEngineShadowMasterSlaveConfigurationTest {
         assertMasterSlaveRule(actual);
         assertThat(actual.getShadowRule().getColumn(), is("is_shadow"));
         assertThat(actual.getShadowRule().getValue().toString(), is("shadow_db"));
-        assertShadowMasterSlaveRule(actual);
         assertShadowDataSourceMap(actual);
     }
     
@@ -87,12 +86,5 @@ public final class YamlEngineShadowMasterSlaveConfigurationTest {
         assertTrue(actual.getShadowRule().getDataSources().containsKey("master_ds"));
         assertTrue(actual.getShadowRule().getDataSources().containsKey("slave_ds_0"));
         assertTrue(actual.getShadowRule().getDataSources().containsKey("slave_ds_1"));
-    }
-    
-    private void assertShadowMasterSlaveRule(final YamlRootShadowConfiguration actual) {
-        assertThat(actual.getShadowRule().getMasterSlaveRule().getName(), is("master-slave-ds"));
-        assertThat(actual.getShadowRule().getMasterSlaveRule().getMasterDataSourceName(), is("master_ds"));
-        assertThat(actual.getShadowRule().getMasterSlaveRule().getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Arrays.asList("slave_ds_0", "slave_ds_1")));
-        assertThat(actual.getShadowRule().getMasterSlaveRule().getLoadBalanceAlgorithmType(), is("ROUND_ROBIN"));
     }
 }
