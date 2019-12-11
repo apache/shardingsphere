@@ -67,7 +67,7 @@ public class HistoryDataSyncTaskGroupTest {
     }
     
     @After
-    public void setDown() {
+    public void tearDown() {
         dataSourceFactory.close();
     }
     

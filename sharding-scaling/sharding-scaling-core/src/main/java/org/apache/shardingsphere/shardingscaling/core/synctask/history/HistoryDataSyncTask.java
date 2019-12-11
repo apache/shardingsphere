@@ -20,15 +20,16 @@ package org.apache.shardingsphere.shardingscaling.core.synctask.history;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
-import org.apache.shardingsphere.shardingscaling.core.execute.engine.ExecuteUtil;
 import org.apache.shardingsphere.shardingscaling.core.execute.engine.SyncTaskExecuteCallback;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncRunnerGroup;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.AckCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.MemoryChannel;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.Reader;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.JdbcReader;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.ReaderFactory;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
@@ -42,7 +43,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -53,7 +53,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author yangyi
  */
 @Slf4j
-public class HistoryDataSyncTask implements SyncTask {
+public final class HistoryDataSyncTask implements SyncTask {
 
     private final SyncConfiguration syncConfiguration;
     
@@ -64,6 +64,10 @@ public class HistoryDataSyncTask implements SyncTask {
     private long estimatedRows;
 
     private AtomicLong syncedRows = new AtomicLong();
+    
+    private JdbcReader reader;
+    
+    private Writer writer;
 
     public HistoryDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceFactory dataSourceFactory) {
         this.syncConfiguration = syncConfiguration;
@@ -82,16 +86,35 @@ public class HistoryDataSyncTask implements SyncTask {
     }
 
     @Override
-    public final void start(final ReportCallback callback) {
-        try {
-            estimatedRows = getEstimatedRows();
+    public void start(final ReportCallback callback) {
+        getEstimatedRows();
+        instanceSyncRunner();
+        instanceChannel();
+        ScalingContext.getInstance().getSyncTaskExecuteEngine().submitGroup(groupSyncRunner(callback));
+    }
+    
+    private void getEstimatedRows() {
+        DataSource dataSource = dataSourceFactory.getDataSource(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
+        try (Connection connection = dataSource.getConnection()) {
+            ResultSet resultSet = connection.prepareStatement(String.format("select count(*) from %s %s",
+                    syncConfiguration.getReaderConfiguration().getTableName(),
+                    syncConfiguration.getReaderConfiguration().getWhereCondition()))
+                    .executeQuery();
+            resultSet.next();
+            estimatedRows = resultSet.getInt(1);
         } catch (SQLException e) {
             throw new SyncTaskExecuteException("get estimated rows error.", e);
         }
-        final Reader reader = ReaderFactory.newInstanceJdbcReader(syncConfiguration.getReaderConfiguration(), dataSourceFactory);
-        final Writer writer = WriterFactory.newInstance(syncConfiguration.getWriterConfiguration(), dataSourceFactory);
-        ExecuteUtil.execute(new MemoryChannel(new AckCallback() {
-
+    }
+    
+    private void instanceSyncRunner() {
+        reader = ReaderFactory.newInstanceJdbcReader(syncConfiguration.getReaderConfiguration(), dataSourceFactory);
+        writer = WriterFactory.newInstance(syncConfiguration.getWriterConfiguration(), dataSourceFactory);
+    }
+    
+    private void instanceChannel() {
+        MemoryChannel channel = new MemoryChannel(new AckCallback() {
+    
             @Override
             public void onAck(final List<Record> records) {
                 int count = 0;
@@ -102,28 +125,27 @@ public class HistoryDataSyncTask implements SyncTask {
                 }
                 syncedRows.addAndGet(count);
             }
-        }), reader, Collections.singletonList(writer), new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncTaskId, callback));
+        });
+        reader.setChannel(channel);
+        writer.setChannel(channel);
+    }
+    
+    private SyncRunnerGroup groupSyncRunner(final ReportCallback callback) {
+        SyncRunnerGroup result = new SyncRunnerGroup(new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncTaskId, callback));
+        result.addSyncRunner(reader);
+        result.addSyncRunner(writer);
+        return result;
     }
 
-    private int getEstimatedRows() throws SQLException {
-        DataSource dataSource = dataSourceFactory.getDataSource(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
-        try (Connection connection = dataSource.getConnection()) {
-            ResultSet resultSet = connection.prepareStatement(String.format("select count(*) from %s %s",
-                    syncConfiguration.getReaderConfiguration().getTableName(),
-                    syncConfiguration.getReaderConfiguration().getWhereCondition()))
-                    .executeQuery();
-            resultSet.next();
-            return resultSet.getInt(1);
+    @Override
+    public void stop() {
+        if (null != reader) {
+            reader.stop();
         }
     }
 
     @Override
-    public final void stop() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public final SyncProgress getProgress() {
+    public SyncProgress getProgress() {
         return new HistoryDataSyncTaskProgress(syncTaskId, estimatedRows, syncedRows.get());
     }
 }
