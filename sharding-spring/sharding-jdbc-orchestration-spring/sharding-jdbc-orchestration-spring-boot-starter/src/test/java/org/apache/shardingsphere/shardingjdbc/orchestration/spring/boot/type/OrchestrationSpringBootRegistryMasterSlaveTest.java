@@ -23,7 +23,7 @@ import javax.sql.DataSource;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestRegistryCenter;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenter;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
 import org.apache.shardingsphere.shardingjdbc.orchestration.temp.internal.datasource.OrchestrationMasterSlaveDataSource;
 import org.junit.BeforeClass;
@@ -50,8 +50,8 @@ public class OrchestrationSpringBootRegistryMasterSlaveTest {
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
-        TestRegistryCenter testRegistryCenter = new TestRegistryCenter();
-        testRegistryCenter.persist("/demo_spring_boot_ds_registry/config/schema/logic_db/datasource",
+        TestCenter testCenter = new TestCenter();
+        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource",
             "ds_master: !!org.apache.shardingsphere.orchestration.temp.yaml.config.YamlDataSourceConfiguration\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
             + "  properties:\n"
@@ -73,14 +73,14 @@ public class OrchestrationSpringBootRegistryMasterSlaveTest {
             + "    maxTotal: 16\n"
             + "    password: ''\n"
             + "    username: root\n");
-        testRegistryCenter.persist("/demo_spring_boot_ds_registry/config/schema/logic_db/rule", "loadBalanceAlgorithmType: ROUND_ROBIN\n"
+        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", "loadBalanceAlgorithmType: ROUND_ROBIN\n"
             + "masterDataSourceName: ds_master\n"
             + "name: ds_ms\n"
             + "slaveDataSourceNames: !!set\n"
             + "  ds_slave_0: null\n"
             + "  ds_slave_1: null\n");
-        testRegistryCenter.persist("/demo_spring_boot_ds_registry/config/props", "{}\n");
-        testRegistryCenter.persist("/demo_spring_boot_ds_registry/state/datasources", "");
+        testCenter.persist("/demo_spring_boot_ds_center/config/props", "{}\n");
+        testCenter.persist("/demo_spring_boot_ds_center/state/datasources", "");
     }
     
     @Test

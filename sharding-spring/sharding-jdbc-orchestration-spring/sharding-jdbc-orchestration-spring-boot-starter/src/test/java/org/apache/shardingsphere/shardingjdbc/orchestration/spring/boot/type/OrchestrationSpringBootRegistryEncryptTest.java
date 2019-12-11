@@ -24,7 +24,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestRegistryCenter;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenter;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
 import org.apache.shardingsphere.shardingjdbc.orchestration.temp.internal.datasource.OrchestrationEncryptDataSource;
 import org.junit.BeforeClass;
@@ -51,8 +51,8 @@ public class OrchestrationSpringBootRegistryEncryptTest {
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
-        TestRegistryCenter testRegistryCenter = new TestRegistryCenter();
-        testRegistryCenter.persist("/demo_spring_boot_ds_registry/config/schema/logic_db/datasource",
+        TestCenter testCenter = new TestCenter();
+        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource",
             "dataSource: !!org.apache.shardingsphere.orchestration.temp.yaml.config.YamlDataSourceConfiguration\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
             + "  properties:\n"
@@ -60,7 +60,7 @@ public class OrchestrationSpringBootRegistryEncryptTest {
             + "    maxTotal: 100\n"
             + "    password: ''\n"
             + "    username: sa\n");
-        testRegistryCenter.persist("/demo_spring_boot_ds_registry/config/schema/logic_db/rule", "encryptors:\n"
+        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", "encryptors:\n"
             + "  order_encrypt:\n"
             + "    props:\n"
             + "      aes.key.value: '123456'\n"
@@ -71,8 +71,8 @@ public class OrchestrationSpringBootRegistryEncryptTest {
             + "       user_id:\n"
             + "         cipherColumn: user_id\n"
             + "         encryptor: order_encrypt\n");
-        testRegistryCenter.persist("/demo_spring_boot_ds_registry/config/props", "sql.show: 'true'\n");
-        testRegistryCenter.persist("/demo_spring_boot_ds_registry/state/datasources", "");
+        testCenter.persist("/demo_spring_boot_ds_center/config/props", "sql.show: 'true'\n");
+        testCenter.persist("/demo_spring_boot_ds_center/state/datasources", "");
     }
     
     @Test

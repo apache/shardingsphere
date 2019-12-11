@@ -124,9 +124,9 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         if (null == map || 0 == map.size() || null == type) {
             return Optional.absent();
         }
-        for (Entry<String, InstanceConfiguration> each : map.entrySet()) {
-            if (contains(each.getValue().getOrchestrationType(), type)) {
-                return Optional.of(each.getKey());
+        for (Entry<String, InstanceConfiguration> entry : map.entrySet()) {
+            if (contains(entry.getValue().getOrchestrationType(), type)) {
+                return Optional.of(entry.getKey());
             }
         }
         return Optional.absent();
@@ -137,7 +137,7 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
             return false;
         }
         for (String each : Splitter.on(",").split(collection)) {
-            if (element.equals(each)) {
+            if (element.equals(each.trim())) {
                 return true;
             }
         }

@@ -108,8 +108,8 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     public OrchestrationConfiguration orchestrationConfiguration() {
         Preconditions.checkState(isValidOrchestrationConfiguration(), "The orchestration configuration is invalid, please configure orchestration");
         Map<String, InstanceConfiguration> instanceConfigurationMap = Maps.newHashMapWithExpectedSize(root.getOrchestration().size());
-        for (Map.Entry<String, YamlInstanceConfiguration> each : root.getOrchestration().entrySet()) {
-            instanceConfigurationMap.put(each.getKey(), instanceConfigurationYamlSwapper.swap(each.getValue()));
+        for (Map.Entry<String, YamlInstanceConfiguration> entry : root.getOrchestration().entrySet()) {
+            instanceConfigurationMap.put(entry.getKey(), instanceConfigurationYamlSwapper.swap(entry.getValue()));
         }
         return new OrchestrationConfiguration(instanceConfigurationMap);
     }
