@@ -1515,3 +1515,7 @@ LOWER
 UPPER
     : U P P E R
     ;
+
+STR_TO_DATE
+    : S T R UL_ T O UL_ D A T E
+    ;
