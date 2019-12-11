@@ -44,7 +44,7 @@ weight = 5
 
 #### 测试场景配置
 
-Sharding-Jdbc使用与Sharding-Proxy一致的配置，Mysql直连一个库用做损耗/提升对比，下图为四个场景的具体配置。
+Sharding-Jdbc使用与Sharding-Proxy一致的配置，Mysql直连一个库用做损耗/提升对比，下面为四个场景的具体配置：
 
 ##### 单路由配置
 
