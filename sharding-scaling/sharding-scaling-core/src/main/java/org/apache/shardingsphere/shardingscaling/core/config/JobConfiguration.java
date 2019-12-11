@@ -26,6 +26,5 @@ import lombok.NoArgsConstructor;
 @Data
 public class JobConfiguration {
 
-    private Integer concurrency = 3;
-
+    private int concurrency = 3;
 }
