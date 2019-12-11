@@ -72,7 +72,7 @@ public class MySQLLogPositionManagerTest {
     }
     
     @After
-    public void setDown() {
+    public void tearDown() {
         dataSourceFactory.close();
     }
     

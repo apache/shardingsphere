@@ -23,8 +23,10 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncRunner;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncRunnerGroup;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
@@ -36,20 +38,40 @@ import java.util.concurrent.TimeUnit;
  * Default implement for sync task execute engine.
  *
  * @author avalon566
+ * @author yangyi
  */
-public class DefaultSyncTaskExecuteEngine implements SyncTaskExecuteEngine {
+public final class DefaultSyncTaskExecuteEngine implements SyncTaskExecuteEngine {
 
     private final ListeningExecutorService executorService;
 
     private int availableWorkerThread;
 
     public DefaultSyncTaskExecuteEngine(final int maxWorkerThread) {
-        executorService = MoreExecutors.listeningDecorator(new ThreadPoolExecutor(maxWorkerThread, maxWorkerThread, 0, TimeUnit.SECONDS, new SynchronousQueue(), new ThreadPoolExecutor.AbortPolicy()));
+        executorService = MoreExecutors.listeningDecorator(
+            new ThreadPoolExecutor(maxWorkerThread, maxWorkerThread, 0, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), new ThreadPoolExecutor.AbortPolicy()));
         availableWorkerThread = maxWorkerThread;
+    }
+    
+    @Override
+    public void submitGroup(final SyncRunnerGroup syncRunnerGroup) {
+        Iterable<ListenableFuture<Object>> listenableFutures = submit(syncRunnerGroup.getSyncRunners());
+        ListenableFuture allListenableFuture = Futures.allAsList(listenableFutures);
+        Futures.addCallback(allListenableFuture, new FutureCallback<List<Object>>() {
+        
+            @Override
+            public void onSuccess(final List<Object> result) {
+                syncRunnerGroup.onSuccess();
+            }
+        
+            @Override
+            public void onFailure(final Throwable t) {
+                syncRunnerGroup.onFailure(t);
+            }
+        });
     }
 
     @Override
-    public final synchronized List<ListenableFuture<Object>> submit(final List<SyncRunner> syncRunners) {
+    public synchronized List<ListenableFuture<Object>> submit(final Collection<SyncRunner> syncRunners) {
         if (null == syncRunners || 0 == syncRunners.size()) {
             return Collections.emptyList();
         }
@@ -60,18 +82,7 @@ public class DefaultSyncTaskExecuteEngine implements SyncTaskExecuteEngine {
         availableWorkerThread -= syncRunners.size();
         for (SyncRunner syncRunner : syncRunners) {
             ListenableFuture listenableFuture = executorService.submit(syncRunner);
-            Futures.addCallback(listenableFuture, new FutureCallback() {
-
-                @Override
-                public void onSuccess(final Object r) {
-                    releaseWorkerThread();
-                }
-
-                @Override
-                public void onFailure(final Throwable t) {
-                    releaseWorkerThread();
-                }
-            });
+            addReleaseWorkerThreadCallback(listenableFuture);
             result.add(listenableFuture);
         }
         return result;
@@ -79,5 +90,20 @@ public class DefaultSyncTaskExecuteEngine implements SyncTaskExecuteEngine {
 
     private synchronized void releaseWorkerThread() {
         availableWorkerThread++;
+    }
+    
+    private void addReleaseWorkerThreadCallback(final ListenableFuture listenableFuture) {
+        Futures.addCallback(listenableFuture, new FutureCallback() {
+        
+            @Override
+            public void onSuccess(final Object r) {
+                releaseWorkerThread();
+            }
+        
+            @Override
+            public void onFailure(final Throwable t) {
+                releaseWorkerThread();
+            }
+        });
     }
 }

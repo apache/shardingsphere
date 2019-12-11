@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.shardingscaling.core.synctask.realtime;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
-import org.apache.shardingsphere.shardingscaling.core.execute.engine.ExecuteUtil;
 import org.apache.shardingsphere.shardingscaling.core.execute.engine.SyncTaskExecuteCallback;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncRunnerGroup;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.AckCallback;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.RealtimeSyncChannel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManagerFactory;
@@ -44,6 +46,7 @@ import java.util.List;
  * Realtime data execute task.
  *
  * @author avalon566
+ * @author yangyi 
  */
 @Slf4j
 public final class RealtimeDataSyncTask implements SyncTask {
@@ -77,8 +80,8 @@ public final class RealtimeDataSyncTask implements SyncTask {
     public void start(final ReportCallback callback) {
         reader = ReaderFactory.newInstanceLogReader(syncConfiguration.getReaderConfiguration(), logPositionManager.getCurrentPosition());
         List<Writer> writers = instanceWriters();
-        RealtimeSyncChannel channel = instanceChannel(writers.size());
-        ExecuteUtil.execute(channel, reader, writers, new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncTaskId, callback));
+        instanceChannel(writers);
+        ScalingContext.getInstance().getSyncTaskExecuteEngine().submitGroup(groupSyncRunner(callback, writers));
     }
     
     private List<Writer> instanceWriters() {
@@ -89,8 +92,8 @@ public final class RealtimeDataSyncTask implements SyncTask {
         return result;
     }
     
-    private RealtimeSyncChannel instanceChannel(final int channelSize) {
-        return new RealtimeSyncChannel(channelSize, Collections.<AckCallback>singletonList(new AckCallback() {
+    private void instanceChannel(final List<Writer> writers) {
+        Channel channel = new RealtimeSyncChannel(writers.size(), Collections.<AckCallback>singletonList(new AckCallback() {
             @Override
             public void onAck(final List<Record> records) {
                 Record lastHandledRecord = records.get(records.size() - 1);
@@ -98,6 +101,17 @@ public final class RealtimeDataSyncTask implements SyncTask {
                 delayMillisecond = System.currentTimeMillis() - lastHandledRecord.getCommitTime();
             }
         }));
+        reader.setChannel(channel);
+        for (Writer each : writers) {
+            each.setChannel(channel);
+        }
+    }
+    
+    private SyncRunnerGroup groupSyncRunner(final ReportCallback callback, final List<Writer> writers) {
+        SyncRunnerGroup result = new SyncRunnerGroup(new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncTaskId, callback));
+        result.addSyncRunner(reader);
+        result.addAllSyncRunner(writers);
+        return result;
     }
 
     @Override
