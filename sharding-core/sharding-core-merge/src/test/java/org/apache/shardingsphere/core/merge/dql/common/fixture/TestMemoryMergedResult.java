@@ -32,7 +32,7 @@ import java.util.List;
 import static org.mockito.Mockito.mock;
 
 @Getter
-public final class TestMemoryMergedResult extends MemoryMergedResult {
+public final class TestMemoryMergedResult extends MemoryMergedResult<ShardingRule> {
     
     private MemoryQueryResultRow memoryQueryResultRow;
     
@@ -42,7 +42,7 @@ public final class TestMemoryMergedResult extends MemoryMergedResult {
     
     @Override
     protected List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final TableMetas tableMetas, 
-                                                    final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) {
+                                              final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) {
         memoryQueryResultRow = mock(MemoryQueryResultRow.class);
         return Collections.singletonList(memoryQueryResultRow);
     }

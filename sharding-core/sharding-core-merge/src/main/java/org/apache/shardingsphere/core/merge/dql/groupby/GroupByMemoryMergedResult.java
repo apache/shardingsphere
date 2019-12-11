@@ -47,7 +47,7 @@ import java.util.Map.Entry;
  * @author zhangliang
  * @author yangyi
  */
-public final class GroupByMemoryMergedResult extends MemoryMergedResult {
+public final class GroupByMemoryMergedResult extends MemoryMergedResult<ShardingRule> {
     
     public GroupByMemoryMergedResult(final List<QueryResult> queryResults, final SelectSQLStatementContext selectSQLStatementContext) throws SQLException {
         super(null, null, selectSQLStatementContext, queryResults);

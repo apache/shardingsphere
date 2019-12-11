@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.encrypt;
+package org.apache.shardingsphere.core.merge.encrypt.dql;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergedResult;
-import org.apache.shardingsphere.core.merge.MergedResultMetaData;
 
 /**
- * Encrypt result set merge engine.
+ * DQL result set merge engine for encrypt.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class EncryptMergeEngine implements MergeEngine {
+public final class DQLEncryptMergeEngine implements MergeEngine {
     
-    private final MergedResultMetaData metaData;
+    private final EncryptorMetaData metaData;
     
     private final MergedResult mergedResult;
     

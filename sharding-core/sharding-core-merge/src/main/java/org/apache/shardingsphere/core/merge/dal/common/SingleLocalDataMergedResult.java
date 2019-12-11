@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.dal.show;
+package org.apache.shardingsphere.core.merge.dal.common;
 
 import org.apache.shardingsphere.core.merge.MergedResult;
 
@@ -23,26 +23,50 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
- * Show local merged result adapter.
+ * Merged result for single local data.
  *
- * @author zhaojun
+ * @author zhangliang
  */
-public abstract class LocalMergedResultAdapter implements MergedResult {
+public final class SingleLocalDataMergedResult implements MergedResult {
     
-    @Override
-    public final Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+    private final Iterator<Object> values;
+    
+    private Object currentValue;
+    
+    public SingleLocalDataMergedResult(final Collection<Object> values) {
+        this.values = values.iterator();
     }
     
     @Override
-    public final InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public final boolean wasNull() {
+    public boolean next() {
+        if (values.hasNext()) {
+            currentValue = values.next();
+            return true;
+        }
         return false;
+    }
+    
+    @Override
+    public Object getValue(final int columnIndex, final Class<?> type) {
+        return currentValue;
+    }
+    
+    @Override
+    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
+        return currentValue;
+    }
+    
+    @Override
+    public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
+        throw new SQLFeatureNotSupportedException();
+    }
+    
+    @Override
+    public boolean wasNull() {
+        return null == currentValue;
     }
 }

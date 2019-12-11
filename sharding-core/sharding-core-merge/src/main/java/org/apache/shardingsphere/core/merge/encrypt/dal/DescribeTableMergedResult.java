@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.dal.desc;
+package org.apache.shardingsphere.core.merge.encrypt.dal;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryMergedResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
@@ -35,19 +35,19 @@ import java.util.List;
  *
  * @author liya
  */
-public final class DescribeTableMergedResult extends MemoryMergedResult {
+public final class DescribeTableMergedResult extends MemoryMergedResult<EncryptRule> {
     
-    public DescribeTableMergedResult(final ShardingRule shardingRule, final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
-        super(shardingRule, null, sqlStatementContext, queryResults);
+    public DescribeTableMergedResult(final EncryptRule encryptRule, final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
+        super(encryptRule, null, sqlStatementContext, queryResults);
     }
     
     @Override
-    protected List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final TableMetas tableMetas, 
+    protected List<MemoryQueryResultRow> init(final EncryptRule encryptRule, final TableMetas tableMetas, 
                                               final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         List<MemoryQueryResultRow> result = new LinkedList<>();
         for (QueryResult each : queryResults) {
             while (each.next()) {
-                Optional<MemoryQueryResultRow> memoryQueryResultRow = optimize(shardingRule, sqlStatementContext, each);
+                Optional<MemoryQueryResultRow> memoryQueryResultRow = optimize(encryptRule, sqlStatementContext, each);
                 if (memoryQueryResultRow.isPresent()) {
                     result.add(memoryQueryResultRow.get());
                 }
@@ -56,10 +56,9 @@ public final class DescribeTableMergedResult extends MemoryMergedResult {
         return result;
     }
     
-    private Optional<MemoryQueryResultRow> optimize(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final QueryResult queryResult) throws SQLException {
+    private Optional<MemoryQueryResultRow> optimize(final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext, final QueryResult queryResult) throws SQLException {
         MemoryQueryResultRow memoryQueryResultRow = new MemoryQueryResultRow(queryResult);
-        Optional<EncryptTable> encryptTable = null == shardingRule.getEncryptRule()
-                ? Optional.<EncryptTable>absent() : shardingRule.getEncryptRule().findEncryptTable(sqlStatementContext.getTablesContext().getSingleTableName());
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(sqlStatementContext.getTablesContext().getSingleTableName());
         if (encryptTable.isPresent()) {
             String columnName = memoryQueryResultRow.getCell(1).toString();
             if (encryptTable.get().getAssistedQueryColumns().contains(columnName) || encryptTable.get().getPlainColumns().contains(columnName)) {

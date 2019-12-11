@@ -15,59 +15,48 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.encrypt;
+package org.apache.shardingsphere.core.merge.dal.common;
 
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
-import org.apache.shardingsphere.core.merge.MergedResultMetaData;
-import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Calendar;
 
 /**
- * Merged result for encrypt.
+ * Transparent merged result.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class EncryptMergedResult implements MergedResult {
+public final class TransparentMergedResult implements MergedResult {
     
-    private final MergedResultMetaData metaData;
-    
-    private final MergedResult mergedResult;
-    
-    private final boolean queryWithCipherColumn;
+    private final QueryResult queryResult;
     
     @Override
     public boolean next() throws SQLException {
-        return mergedResult.next();
+        return queryResult.next();
     }
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        Object value = mergedResult.getValue(columnIndex, type);
-        if (null == value || !queryWithCipherColumn) {
-            return value;
-        }
-        Optional<ShardingEncryptor> encryptor = metaData.findEncryptor(columnIndex);
-        return encryptor.isPresent() ? encryptor.get().decrypt(value.toString()) : value;
+        return queryResult.getValue(columnIndex, type);
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
-        return mergedResult.getCalendarValue(columnIndex, type, calendar);
+        return queryResult.getCalendarValue(columnIndex, type, calendar);
     }
     
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        return mergedResult.getInputStream(columnIndex, type);
+        return queryResult.getInputStream(columnIndex, type);
     }
     
     @Override
     public boolean wasNull() throws SQLException {
-        return mergedResult.wasNull();
+        return queryResult.wasNull();
     }
 }

@@ -15,40 +15,50 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.dal.show;
+package org.apache.shardingsphere.core.merge.dal.common;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
- * Merged result for show others.
+ * Merged result for multiple local data.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-public final class ShowOtherMergedResult implements MergedResult {
+public final class MultipleLocalDataMergedResult implements MergedResult {
     
-    private final QueryResult queryResult;
+    private final Iterator<List<Object>> rows;
     
-    @Override
-    public boolean next() throws SQLException {
-        return queryResult.next();
+    private List<Object> currentRow;
+    
+    public MultipleLocalDataMergedResult(final Collection<List<Object>> rows) {
+        this.rows = rows.iterator();
     }
     
     @Override
-    public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        return queryResult.getValue(columnIndex, type);
+    public boolean next() {
+        if (rows.hasNext()) {
+            currentRow = rows.next();
+            return true;
+        }
+        return false;
     }
     
     @Override
-    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+    public Object getValue(final int columnIndex, final Class<?> type) {
+        return currentRow.get(columnIndex - 1);
+    }
+    
+    @Override
+    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
+        return currentRow.get(columnIndex - 1);
     }
     
     @Override
@@ -58,6 +68,6 @@ public final class ShowOtherMergedResult implements MergedResult {
     
     @Override
     public boolean wasNull() {
-        return false;
+        return null == currentRow;
     }
 }

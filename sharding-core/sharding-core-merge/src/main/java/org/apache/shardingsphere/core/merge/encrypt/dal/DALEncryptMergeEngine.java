@@ -15,42 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
+package org.apache.shardingsphere.core.merge.encrypt.dal;
 
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.merge.MergedResultMetaData;
+import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
+import org.apache.shardingsphere.core.merge.MergeEngine;
+import org.apache.shardingsphere.core.merge.MergedResult;
+import org.apache.shardingsphere.core.merge.dal.common.TransparentMergedResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.DescribeStatement;
 
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
- * Merged result meta data for query header.
+ * DAL result set merge engine for encrypt.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ResultSetMergedResultMetaData implements MergedResultMetaData {
+public final class DALEncryptMergeEngine implements MergeEngine {
     
     private final EncryptRule encryptRule;
     
-    private final ResultSetMetaData resultSetMetaData;
+    private final List<QueryResult> queryResults;
     
     private final SQLStatementContext sqlStatementContext;
     
     @Override
-    public Optional<ShardingEncryptor> findEncryptor(final int columnIndex) throws SQLException {
-        String columnName = resultSetMetaData.getColumnName(columnIndex);
-        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            Optional<ShardingEncryptor> result = encryptRule.isCipherColumn(each, columnName)
-                    ? encryptRule.findShardingEncryptor(each, encryptRule.getLogicColumn(each, columnName)) : Optional.<ShardingEncryptor>absent();
-            if (result.isPresent()) {
-                return result;
-            }
+    public MergedResult merge() throws SQLException {
+        SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
+        if (dalStatement instanceof DescribeStatement) {
+            return new DescribeTableMergedResult(encryptRule, queryResults, sqlStatementContext);
         }
-        return Optional.absent();
+        return new TransparentMergedResult(queryResults.get(0));
     }
 }

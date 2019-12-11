@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.dal.desc;
+package org.apache.shardingsphere.core.merge.encrypt.dal;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
@@ -40,15 +39,15 @@ public final class DescribeTableMergedResultTest {
     
     @Test
     public void assertNextForEmptyQueryResult() throws SQLException {
-        ShardingRule shardingRule = mock(ShardingRule.class);
-        DescribeTableMergedResult actual = new DescribeTableMergedResult(shardingRule, Collections.<QueryResult>emptyList(), createSQLStatementContext());
+        EncryptRule encryptRule = mock(EncryptRule.class);
+        DescribeTableMergedResult actual = new DescribeTableMergedResult(encryptRule, Collections.<QueryResult>emptyList(), createSQLStatementContext());
         assertFalse(actual.next());
     }
     
     @Test
     public void assertFieldWithEncryptRule() throws SQLException {
-        ShardingRule shardingRule = createShardingRuleWithEncryptRule();
-        DescribeTableMergedResult actual = new DescribeTableMergedResult(shardingRule, Collections.singletonList(createQueryResult()), createSQLStatementContext());
+        EncryptRule encryptRule = createEncryptRule();
+        DescribeTableMergedResult actual = new DescribeTableMergedResult(encryptRule, Collections.singletonList(createQueryResult()), createSQLStatementContext());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, String.class).toString(), is("id"));
         assertTrue(actual.next());
@@ -59,39 +58,9 @@ public final class DescribeTableMergedResultTest {
     }
     
     @Test
-    public void assertFieldWithoutEncryptRule() throws SQLException {
-        ShardingRule shardingRule = mock(ShardingRule.class);
-        DescribeTableMergedResult actual = new DescribeTableMergedResult(shardingRule, Collections.singletonList(createQueryResult()), createSQLStatementContext());
-        assertTrue(actual.next());
-        assertThat(actual.getValue(1, String.class).toString(), is("id"));
-        assertTrue(actual.next());
-        assertThat(actual.getValue(1, String.class).toString(), is("name"));
-        assertTrue(actual.next());
-        assertThat(actual.getValue(1, String.class).toString(), is("pre_name"));
-        assertTrue(actual.next());
-        assertThat(actual.getValue(1, String.class).toString(), is("name_assisted"));
-        assertTrue(actual.next());
-        assertThat(actual.getValue(1, String.class).toString(), is("name_plain"));
-        assertFalse(actual.next());
-    }
-    
-    @Test
-    public void assertAllWithoutEncryptRule() throws SQLException {
-        ShardingRule shardingRule = mock(ShardingRule.class);
-        DescribeTableMergedResult actual = new DescribeTableMergedResult(shardingRule, Collections.singletonList(createQueryResult()), createSQLStatementContext());
-        assertTrue(actual.next());
-        assertThat(actual.getValue(1, String.class).toString(), is("id"));
-        assertThat(actual.getValue(2, String.class).toString(), is("int(11) unsigned"));
-        assertThat(actual.getValue(3, String.class).toString(), is("NO"));
-        assertThat(actual.getValue(4, String.class).toString(), is("PRI"));
-        assertThat(actual.getValue(5, String.class).toString(), is(""));
-        assertThat(actual.getValue(6, String.class).toString(), is("auto_increment"));
-    }
-    
-    @Test
     public void assertAllWithEncryptRule() throws SQLException {
-        ShardingRule shardingRule = createShardingRuleWithEncryptRule();
-        DescribeTableMergedResult actual = new DescribeTableMergedResult(shardingRule, Collections.singletonList(createQueryResult()), createSQLStatementContext());
+        EncryptRule encryptRule = createEncryptRule();
+        DescribeTableMergedResult actual = new DescribeTableMergedResult(encryptRule, Collections.singletonList(createQueryResult()), createSQLStatementContext());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, String.class).toString(), is("id"));
         assertThat(actual.getValue(2, String.class).toString(), is("int(11) unsigned"));
@@ -101,12 +70,10 @@ public final class DescribeTableMergedResultTest {
         assertThat(actual.getValue(6, String.class).toString(), is("auto_increment"));
     }
     
-    private ShardingRule createShardingRuleWithEncryptRule() {
-        ShardingRule result = mock(ShardingRule.class);
-        EncryptRule encryptRule = mock(EncryptRule.class);
+    private EncryptRule createEncryptRule() {
+        EncryptRule result = mock(EncryptRule.class);
         EncryptTable encryptTable = mock(EncryptTable.class);
-        when(result.getEncryptRule()).thenReturn(encryptRule);
-        when(encryptRule.findEncryptTable("user")).thenReturn(Optional.of(encryptTable));
+        when(result.findEncryptTable("user")).thenReturn(Optional.of(encryptTable));
         when(encryptTable.getAssistedQueryColumns()).thenReturn(Collections.singletonList("name_assisted"));
         when(encryptTable.getPlainColumns()).thenReturn(Collections.singletonList("name_plain"));
         when(encryptTable.getCipherColumns()).thenReturn(Collections.singletonList("name"));

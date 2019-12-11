@@ -37,7 +37,7 @@ import java.util.Set;
  *
  * @author zhangliang
  */
-public class LogicTablesMergedResult extends MemoryMergedResult {
+public class LogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
     
     public LogicTablesMergedResult(final ShardingRule shardingRule, 
                                    final SQLStatementContext sqlStatementContext, final TableMetas tableMetas, final List<QueryResult> queryResults) throws SQLException {
