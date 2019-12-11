@@ -32,6 +32,7 @@ The list here will be shown in the alphabetical order.
 1. BBGame https://www.bbgameonline.com/
 1. Bilibili https://www.bilibili.com/
 1. CertusNet http://www.certusnet.com.cn/
+1. CHINA MINSHENG BANK http://www.cmbc.com.cn/
 1. China Telecom Best Pay(Orange Finance) https://www.bestpay.com.cn/
 1. ChaoJiLanLing https://www.chaojilanling.cn/
 1. ChinaRoad https://660pp.com/

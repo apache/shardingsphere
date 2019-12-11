@@ -120,6 +120,7 @@ chapter = true
 1. 中策车空间 http://www.zcckj.com/ 
 1. 中辰软件 http://jszcrj.com/ 
 1. 中国电信翼支付（甜橙金融） https://www.bestpay.com.cn/
+1. 中国民生银行股份有限公司 http://www.cmbc.com.cn/
 1. 中通快递 https://www.zto.com/
 1. 转转 https://www.zhuanzhuan.com/ 
 1. 啄木鸟网络科技 https://www.zmn.cn/ 
