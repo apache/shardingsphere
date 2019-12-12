@@ -33,11 +33,8 @@ public class ShadowRule implements BaseRule {
     
     private String column;
     
-    private Comparable value;
-    
     public ShadowRule(final ShadowRuleConfiguration shadowRuleConfiguration) {
         column = shadowRuleConfiguration.getColumn();
-        value = shadowRuleConfiguration.getValue();
         ruleConfiguration = shadowRuleConfiguration;
     }
     

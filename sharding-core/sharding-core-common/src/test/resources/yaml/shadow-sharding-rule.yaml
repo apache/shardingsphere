@@ -116,7 +116,6 @@ shardingRule:
       loadBalanceAlgorithmType: RANDOM
 shadowRule:
   column: is_shadow
-  value: true
   dataSources:
     master_ds_0: !!com.zaxxer.hikari.HikariDataSource
       driverClassName: org.h2.Driver

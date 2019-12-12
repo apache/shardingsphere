@@ -19,7 +19,6 @@ package org.apache.shardingsphere.api.config.shadow;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
 
 /**
@@ -27,18 +26,13 @@ import org.apache.shardingsphere.api.config.RuleConfiguration;
  *
  * @author xiayan
  */
-@RequiredArgsConstructor
 @Getter
 public final class ShadowRuleConfiguration implements RuleConfiguration {
     
     private final String column;
     
-    private final Comparable value;
-    
-    public ShadowRuleConfiguration(final String column, final Object value) {
+    public ShadowRuleConfiguration(final String column) {
         Preconditions.checkArgument(null != column, "Column is Required.");
-        Preconditions.checkArgument(value.getClass().isAssignableFrom(Comparable.class), "Value is need Comparable.");
         this.column = column;
-        this.value = (Comparable) value;
     }
 }

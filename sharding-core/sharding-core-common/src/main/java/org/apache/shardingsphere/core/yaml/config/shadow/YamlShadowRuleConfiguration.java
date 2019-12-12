@@ -34,7 +34,5 @@ public class YamlShadowRuleConfiguration extends YamlRootRuleConfiguration {
     
     private String column;
     
-    private Object value;
-    
     private DataSource dataSource;
 }
