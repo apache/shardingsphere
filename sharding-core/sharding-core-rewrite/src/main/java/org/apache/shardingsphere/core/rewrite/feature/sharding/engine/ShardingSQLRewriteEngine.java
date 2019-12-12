@@ -34,7 +34,6 @@ import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -93,11 +92,8 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     }
     
     private List<Object> getParameters(final ParameterBuilder parameterBuilder) {
-        if (parameterBuilder instanceof StandardParameterBuilder || shardingConditions.getConditions().isEmpty()) {
+        if (parameterBuilder instanceof StandardParameterBuilder || shardingConditions.getConditions().isEmpty() || parameterBuilder.getParameters().isEmpty()) {
             return parameterBuilder.getParameters();
-        }
-        if (parameterBuilder.getParameters().isEmpty()) {
-            return Collections.emptyList();
         }
         List<Object> result = new LinkedList<>();
         int count = 0;
