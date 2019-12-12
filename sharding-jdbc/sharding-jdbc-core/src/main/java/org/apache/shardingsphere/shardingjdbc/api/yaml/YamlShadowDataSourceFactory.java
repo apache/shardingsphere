@@ -52,7 +52,7 @@ public final class YamlShadowDataSourceFactory {
     @SneakyThrows
     public static DataSource createDataSource(final File yamlFile) {
         YamlRootShadowConfiguration config = YamlEngine.unmarshal(yamlFile, YamlRootShadowConfiguration.class);
-        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration(config.getShadowRule().getColumn(), config.getShadowRule().getValue());
+        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration(config.getShadowRule().getColumn());
         return ShadowDataSourceFactory.createDataSource(createActualDataSource(config), createShadowDataSource(config), shadowRuleConfiguration, config.getProps());
     }
     
@@ -65,7 +65,7 @@ public final class YamlShadowDataSourceFactory {
     @SneakyThrows
     public static DataSource createDataSource(final byte[] yamlBytes) {
         YamlRootShadowConfiguration config = YamlEngine.unmarshal(yamlBytes, YamlRootShadowConfiguration.class);
-        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration(config.getShadowRule().getColumn(), config.getShadowRule().getValue());
+        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration(config.getShadowRule().getColumn());
         return ShadowDataSourceFactory.createDataSource(createActualDataSource(config), createShadowDataSource(config), shadowRuleConfiguration, config.getProps());
     }
     
@@ -78,6 +78,8 @@ public final class YamlShadowDataSourceFactory {
             return ShardingDataSourceFactory.createDataSource(config.getDataSources(), new ShardingRuleConfigurationYamlSwapper().swap(config.getShardingRule()), props);
         } else if (config.isMasterSlave()) {
             return MasterSlaveDataSourceFactory.createDataSource(config.getDataSources(), new MasterSlaveRuleConfigurationYamlSwapper().swap(config.getMasterSlaveRule()), props);
+        } else if (null != config.getDataSource()) {
+            return config.getDataSource();
         } else {
             throw new UnsupportedOperationException("unsupported datasource");
         }
@@ -95,6 +97,8 @@ public final class YamlShadowDataSourceFactory {
         } else if (config.isMasterSlave()) {
             return MasterSlaveDataSourceFactory.createDataSource(config.getShadowRule().getDataSources(),
                     new MasterSlaveRuleConfigurationYamlSwapper().swap(config.getMasterSlaveRule()), props);
+        } else if (null != config.getDataSource()) {
+            return config.getDataSource();
         } else {
             throw new UnsupportedOperationException("unsupported datasource");
         }

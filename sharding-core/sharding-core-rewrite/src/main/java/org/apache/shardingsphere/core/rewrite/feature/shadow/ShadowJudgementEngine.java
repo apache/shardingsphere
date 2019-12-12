@@ -43,13 +43,13 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 public class ShadowJudgementEngine {
-
+    
     private final ShadowRule shadowRule;
-
+    
     private final SQLStatementContext sqlStatementContext;
-
+    
     private final List<Object> parameters;
-
+    
     /**
      * Judge if the sql should route to shadow table.
      *
@@ -60,8 +60,9 @@ public class ShadowJudgementEngine {
         if (sqlStatement instanceof InsertStatement) {
             LinkedList<ColumnSegment> columnSegments = (LinkedList<ColumnSegment>) ((InsertStatement) sqlStatement).getColumns();
             for (int i = 0; i < columnSegments.size(); i++) {
-                if (columnSegments.get(i).getName().equals(shadowRule.getColumn()) && shadowRule.getValue().equals(parameters.get(i))) {
-                    return true;
+                if (columnSegments.get(i).getName().equals(shadowRule.getColumn())) {
+                    final Object value = parameters.get(i);
+                    return value instanceof Boolean && (Boolean) value;
                 }
             }
             return false;
@@ -80,19 +81,16 @@ public class ShadowJudgementEngine {
         }
         return false;
     }
-
+    
     private boolean judgePredicateSegments(final Collection<PredicateSegment> predicates) {
         for (PredicateSegment each : predicates) {
             if (each.getColumn().getName().equals(shadowRule.getColumn())) {
-                Preconditions.checkArgument(each.getRightValue() instanceof PredicateCompareRightValue, "must be ");
+                Preconditions.checkArgument(each.getRightValue() instanceof PredicateCompareRightValue, "must be PredicateCompareRightValue");
                 PredicateCompareRightValue rightValue = (PredicateCompareRightValue) each.getRightValue();
-                Preconditions.checkArgument(rightValue.getExpression() instanceof LiteralExpressionSegment, "must be ");
+                Preconditions.checkArgument(rightValue.getExpression() instanceof LiteralExpressionSegment, "must be LiteralExpressionSegment");
                 LiteralExpressionSegment expressionSegment = (LiteralExpressionSegment) rightValue.getExpression();
-                Preconditions.checkArgument(expressionSegment.getLiterals().getClass().isAssignableFrom(Comparable.class), "must be ");
-                Comparable comparableValue = (Comparable) expressionSegment.getLiterals();
-                if (comparableValue.equals(shadowRule.getValue())) {
-                    return true;
-                }
+                Preconditions.checkArgument(expressionSegment.getLiterals().getClass() == Boolean.class, "must be boolean type");
+                return (Boolean) expressionSegment.getLiterals();
             }
         }
         return false;

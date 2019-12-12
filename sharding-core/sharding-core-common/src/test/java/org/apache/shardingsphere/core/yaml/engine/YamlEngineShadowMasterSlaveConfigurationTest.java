@@ -63,7 +63,6 @@ public final class YamlEngineShadowMasterSlaveConfigurationTest {
         assertDataSourceMap(actual);
         assertMasterSlaveRule(actual);
         assertThat(actual.getShadowRule().getColumn(), is("is_shadow"));
-        assertThat(actual.getShadowRule().getValue().toString(), is("shadow_db"));
         assertShadowDataSourceMap(actual);
     }
     

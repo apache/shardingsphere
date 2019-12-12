@@ -63,7 +63,6 @@ public final class YamlEngineShadowShardingConfigurationTest {
         assertDataSourceMap(actual);
         assertThat(actual.getShardingRule().getTables().size(), is(4));
         assertThat(actual.getShadowRule().getColumn(), is("is_shadow"));
-        assertTrue((Boolean) actual.getShadowRule().getValue());
         assertTUser(actual);
         assertTStock(actual);
         assertTOrder(actual);

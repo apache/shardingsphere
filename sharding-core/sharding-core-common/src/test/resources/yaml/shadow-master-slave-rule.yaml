@@ -42,7 +42,6 @@ masterSlaveRule:
 
 shadowRule:
   column: is_shadow
-  value: shadow_db
   dataSources:
     master_ds: !!com.zaxxer.hikari.HikariDataSource
       driverClassName: org.h2.Driver
