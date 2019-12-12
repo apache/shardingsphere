@@ -27,10 +27,8 @@ import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.sql.SQLException;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Merged result for desc table.
@@ -47,16 +45,11 @@ public final class DescribeTableMergedResult extends MemoryMergedResult<EncryptR
     protected List<MemoryQueryResultRow> init(final EncryptRule encryptRule, final TableMetas tableMetas, 
                                               final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         List<MemoryQueryResultRow> result = new LinkedList<>();
-        Set<String> columnNames = new LinkedHashSet<>();
         for (QueryResult each : queryResults) {
             while (each.next()) {
                 Optional<MemoryQueryResultRow> memoryQueryResultRow = optimize(encryptRule, sqlStatementContext, each);
                 if (memoryQueryResultRow.isPresent()) {
-                    String columnName = String.valueOf(memoryQueryResultRow.get().getCell(1));
-                    if (!columnNames.contains(columnName)) {
-                        result.add(memoryQueryResultRow.get());
-                        columnNames.add(columnName);
-                    }
+                    result.add(memoryQueryResultRow.get());
                 }
             }
         }
@@ -68,11 +61,11 @@ public final class DescribeTableMergedResult extends MemoryMergedResult<EncryptR
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(sqlStatementContext.getTablesContext().getSingleTableName());
         if (encryptTable.isPresent()) {
             String columnName = memoryQueryResultRow.getCell(1).toString();
+            if (encryptTable.get().getAssistedQueryColumns().contains(columnName) || encryptTable.get().getPlainColumns().contains(columnName)) {
+                return Optional.absent();
+            }
             if (encryptTable.get().getCipherColumns().contains(columnName)) {
                 memoryQueryResultRow.setCell(1, encryptTable.get().getLogicColumnOfCipher(columnName));
-            }
-            if (encryptTable.get().getPlainColumns().contains(columnName)) {
-                memoryQueryResultRow.setCell(1, encryptTable.get().getLogicColumnOfPlain(columnName));
             }
         }
         return Optional.of(memoryQueryResultRow);
