@@ -202,13 +202,14 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     public void assertShowColumnsTable() throws SQLException {
         try (Statement statement = getEncryptConnection().createStatement()) {
             ResultSet resultSet = statement.executeQuery(SHOW_COLUMNS_SQL);
-            int pwdCount = 0;
+            int count = 0;
             while (resultSet.next()) {
-                if (resultSet.getObject("FIELD").equals("pwd")) {
-                    pwdCount++;
+                System.out.println(resultSet.getString("FIELD"));
+                if (resultSet.getString("FIELD").equals("pwd")) {
+                    count++;
                 }
             }
-            assertThat(pwdCount, is(2));
+            assertThat(count, is(1));
         }
     }
 }

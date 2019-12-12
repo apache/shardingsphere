@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.DescribeStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowColumnsStatement;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -47,7 +48,7 @@ public final class DALEncryptMergeEngine implements MergeEngine {
     @Override
     public MergedResult merge() throws SQLException {
         SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
-        if (dalStatement instanceof DescribeStatement) {
+        if (dalStatement instanceof DescribeStatement || dalStatement instanceof ShowColumnsStatement) {
             return new DescribeTableMergedResult(encryptRule, queryResults, sqlStatementContext);
         }
         return new TransparentMergedResult(queryResults.get(0));
