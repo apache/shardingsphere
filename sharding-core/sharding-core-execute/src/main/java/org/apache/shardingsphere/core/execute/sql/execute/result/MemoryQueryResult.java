@@ -75,9 +75,15 @@ public final class MemoryQueryResult implements QueryResult {
             case Types.SMALLINT:
                 return resultSet.getInt(columnIndex);
             case Types.INTEGER:
-                return metaData.isSigned(columnIndex) ? resultSet.getInt(columnIndex) : resultSet.getLong(columnIndex);
+                if (metaData.isSigned(columnIndex)) {
+                    return resultSet.getInt(columnIndex);
+                }
+                return resultSet.getLong(columnIndex);
             case Types.BIGINT:
-                return metaData.isSigned(columnIndex) ? resultSet.getLong(columnIndex) : resultSet.getBigDecimal(columnIndex).toBigInteger();
+                if (metaData.isSigned(columnIndex)) {
+                    return resultSet.getLong(columnIndex);
+                }
+                return resultSet.getBigDecimal(columnIndex).toBigInteger();
             case Types.NUMERIC:
             case Types.DECIMAL:
                 return resultSet.getBigDecimal(columnIndex);
