@@ -52,9 +52,15 @@ public class BinlogContextTest {
     }
 
     @Test
-    public void assertGetFullTableName() {
+    public void assertGetTableName() {
         binlogContext.putTableMapEvent(TEST_TABLE_ID, tableMapEvent);
-        assertThat(binlogContext.getFullTableName(TEST_TABLE_ID), is(TEST_SCHEMA + "." + TEST_TABLE));
+        assertThat(binlogContext.getTableName(TEST_TABLE_ID), is(TEST_TABLE));
+    }
+    
+    @Test
+    public void assertGetSchemaName() {
+        binlogContext.putTableMapEvent(TEST_TABLE_ID, tableMapEvent);
+        assertThat(binlogContext.getSchemaName(TEST_TABLE_ID), is(TEST_SCHEMA));
     }
     
     @Test
