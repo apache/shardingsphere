@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShadowConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShadowRuntimeContext;
 
 import javax.sql.DataSource;
@@ -35,6 +36,10 @@ import java.util.Properties;
  */
 @Getter
 public class ShadowDataSource extends AbstractDataSourceAdapter {
+
+    private static final String ACTUAL_DATABASE = "actual";
+
+    private static final String SHADOW_DATABASE = "shadow";
     
     private final ShadowRuntimeContext runtimeContext;
     
@@ -45,7 +50,6 @@ public class ShadowDataSource extends AbstractDataSourceAdapter {
     
     @Override
     public final Connection getConnection() throws SQLException {
-        //TODO
-        return null;
+        return new ShadowConnection(getDataSourceMap().get(ACTUAL_DATABASE).getConnection(), getDataSourceMap().get(SHADOW_DATABASE).getConnection(), runtimeContext);
     }
 }
