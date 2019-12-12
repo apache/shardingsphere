@@ -732,29 +732,7 @@
         </sharding-conditions>
     </parser-result>
 
-    <parser-result sql-case-id="insert_on_duplicate_key_update_with_base64_aesencrypt" parameters="2019-12-10, 1, 1">
-        <tables>
-            <table name="t_order" />
-        </tables>
-        <tokens>
-            <table-token start-index="12" table-name="t_order" length="7" />
-        </tokens>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="current_date" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="2019-12-10" type="varchar" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="1" literal="1" type="int" />
-                </condition>
-                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="2" literal="1" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
-    </parser-result>
-
-    <parser-result sql-case-id="insert_on_duplicate_key_update_with_base_encrypt" parameters="1, 1, 'init'">
+    <parser-result sql-case-id="insert_on_duplicate_key_update_with_base64_aesencrypt" parameters="1, 1, 'init'">
         <tables>
             <table name="t_order" />
         </tables>
