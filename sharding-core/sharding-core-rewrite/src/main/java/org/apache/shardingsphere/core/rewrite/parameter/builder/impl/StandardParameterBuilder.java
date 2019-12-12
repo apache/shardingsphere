@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -43,6 +44,8 @@ public final class StandardParameterBuilder implements ParameterBuilder {
     private final Map<Integer, Collection<Object>> addedIndexAndParameters = new TreeMap<>();
     
     private final Map<Integer, Object> replacedIndexAndParameters = new LinkedHashMap<>();
+
+    private final List<Integer> removeIndexAndParameters = new ArrayList<>();
     
     /**
      * Add added parameters.
@@ -63,6 +66,15 @@ public final class StandardParameterBuilder implements ParameterBuilder {
     public void addReplacedParameters(final int index, final Object parameter) {
         replacedIndexAndParameters.put(index, parameter);
     }
+
+    /**
+     * Add removed parameter.
+     *
+     * @param index parameter index to be removed
+     */
+    public void addRemovedParameters(final int index) {
+        removeIndexAndParameters.add(index);
+    }
     
     @Override
     public List<Object> getParameters() {
@@ -76,6 +88,9 @@ public final class StandardParameterBuilder implements ParameterBuilder {
             } else {
                 result.addAll(entry.getKey(), entry.getValue());
             }
+        }
+        for (int index : removeIndexAndParameters) {
+            result.remove(index);
         }
         return result;
     }

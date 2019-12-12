@@ -17,23 +17,52 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
-import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationStatement;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractStatementAdapter;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShadowConnection;
+import org.apache.shardingsphere.sql.parser.relation.SQLStatementContextFactory;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetaData;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLWarning;
+import java.sql.Statement;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Shadow statement.
  *
  * @author zhyee
  */
-public final class ShadowStatement extends AbstractUnsupportedOperationStatement {
+public final class ShadowStatement extends AbstractStatementAdapter {
+
+    private final ShadowConnection shadowConnection;
+
+    private SQLStatementContext sqlStatementContext;
+
+    public ShadowStatement(final ShadowConnection shadowConnection) {
+        this(shadowConnection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
+    }
+
+    public ShadowStatement(final ShadowConnection shadowConnection, final int resultSetType, final int resultSetConcurrency) {
+        this(shadowConnection, resultSetType, resultSetConcurrency, ResultSet.HOLD_CURSORS_OVER_COMMIT);
+    }
+
+    public ShadowStatement(final ShadowConnection shadowConnection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
+        super(Statement.class);
+        this.shadowConnection = shadowConnection;
+    }
 
     @Override
     public ResultSet executeQuery(final String sql) throws SQLException {
-        return null;
+        return getStatementAndReplay(sql).executeQuery(rewriteSql(sql));
     }
 
     @Override
@@ -62,61 +91,6 @@ public final class ShadowStatement extends AbstractUnsupportedOperationStatement
     }
 
     @Override
-    public void close() throws SQLException {
-
-    }
-
-    @Override
-    public int getMaxFieldSize() throws SQLException {
-        return 0;
-    }
-
-    @Override
-    public void setMaxFieldSize(final int max) throws SQLException {
-
-    }
-
-    @Override
-    public int getMaxRows() throws SQLException {
-        return 0;
-    }
-
-    @Override
-    public void setMaxRows(final int max) throws SQLException {
-
-    }
-
-    @Override
-    public void setEscapeProcessing(final boolean enable) throws SQLException {
-
-    }
-
-    @Override
-    public int getQueryTimeout() throws SQLException {
-        return 0;
-    }
-
-    @Override
-    public void setQueryTimeout(final int seconds) throws SQLException {
-
-    }
-
-    @Override
-    public void cancel() throws SQLException {
-
-    }
-
-    @Override
-    public SQLWarning getWarnings() throws SQLException {
-        return null;
-    }
-
-    @Override
-    public void clearWarnings() throws SQLException {
-
-    }
-
-    @Override
     public boolean execute(final String sql) throws SQLException {
         return false;
     }
@@ -142,31 +116,6 @@ public final class ShadowStatement extends AbstractUnsupportedOperationStatement
     }
 
     @Override
-    public int getUpdateCount() throws SQLException {
-        return 0;
-    }
-
-    @Override
-    public boolean getMoreResults() throws SQLException {
-        return false;
-    }
-
-    @Override
-    public boolean getMoreResults(final int current) throws SQLException {
-        return false;
-    }
-
-    @Override
-    public void setFetchSize(final int rows) throws SQLException {
-
-    }
-
-    @Override
-    public int getFetchSize() throws SQLException {
-        return 0;
-    }
-
-    @Override
     public int getResultSetConcurrency() throws SQLException {
         return 0;
     }
@@ -187,17 +136,33 @@ public final class ShadowStatement extends AbstractUnsupportedOperationStatement
     }
 
     @Override
-    public boolean isClosed() throws SQLException {
+    protected boolean isAccumulate() {
         return false;
     }
 
     @Override
-    public void setPoolable(final boolean poolable) throws SQLException {
-
+    protected Collection<? extends Statement> getRoutedStatements() {
+        return null;
     }
 
-    @Override
-    public boolean isPoolable() throws SQLException {
-        return false;
+    private Statement getStatementAndReplay(final String sql) {
+        SQLStatement sqlStatement = shadowConnection.getRuntimeContext().getParseEngine().parse(sql, false);
+        sqlStatementContext = SQLStatementContextFactory.newInstance(getRelationMetas(shadowConnection.getRuntimeContext().getTableMetas()), sql, Collections.emptyList(), sqlStatement);
+//        replayMethodsInvocation(statement);
+        return null;
     }
+
+    private RelationMetas getRelationMetas(final TableMetas tableMetas) {
+        Map<String, RelationMetaData> result = new HashMap<>(tableMetas.getAllTableNames().size());
+        for (String each : tableMetas.getAllTableNames()) {
+            TableMetaData tableMetaData = tableMetas.get(each);
+            result.put(each, new RelationMetaData(tableMetaData.getColumns().keySet()));
+        }
+        return new RelationMetas(result);
+    }
+
+    private String rewriteSql(final String sql) {
+        return null;
+    }
+
 }

@@ -20,6 +20,9 @@ package org.apache.shardingsphere.core.rewrite.feature.shadow.context;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContextDecorator;
+import org.apache.shardingsphere.core.rewrite.feature.shadow.parameter.ShadowParameterRewriterBuilder;
+import org.apache.shardingsphere.core.rewrite.feature.shadow.token.ShadowTokenGenerateBuilder;
+import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 
 /**
@@ -28,12 +31,17 @@ import org.apache.shardingsphere.core.rule.ShadowRule;
  * @author zhyee
  */
 @RequiredArgsConstructor
-public class ShadowSQLRewriteContextDecorator implements SQLRewriteContextDecorator {
+public final class ShadowSQLRewriteContextDecorator implements SQLRewriteContextDecorator {
 
     private final ShadowRule shadowRule;
 
     @Override
     public void decorate(final SQLRewriteContext sqlRewriteContext) {
-        //TODO
+        for (ParameterRewriter each : new ShadowParameterRewriterBuilder(shadowRule).getParameterRewriters(sqlRewriteContext.getTableMetas())) {
+            if (!sqlRewriteContext.getParameters().isEmpty() && each.isNeedRewrite(sqlRewriteContext.getSqlStatementContext())) {
+                each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());
+            }
+        }
+        sqlRewriteContext.addSQLTokenGenerators(new ShadowTokenGenerateBuilder(shadowRule).getSQLTokenGenerators());
     }
 }
