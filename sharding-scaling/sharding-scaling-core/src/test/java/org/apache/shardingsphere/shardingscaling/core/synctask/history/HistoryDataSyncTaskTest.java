@@ -55,7 +55,8 @@ public class HistoryDataSyncTaskTest {
         RdbmsConfiguration readerConfig = mockReaderConfig();
         RdbmsConfiguration writerConfig = mockWriterConfig();
         ScalingContext.getInstance().init(new ServerConfiguration());
-        syncConfiguration = new SyncConfiguration(3, readerConfig, writerConfig);
+        syncConfiguration = new SyncConfiguration(3, null,
+                readerConfig, writerConfig);
         dataSourceFactory = new DataSourceFactory();
     }
     

@@ -34,8 +34,10 @@ import lombok.SneakyThrows;
 
 import java.sql.Connection;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.sql.DataSource;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -62,7 +64,10 @@ public class HistoryDataSyncTaskGroupTest {
     public void setUp() {
         RdbmsConfiguration readerConfig = mockReaderConfig();
         RdbmsConfiguration writerConfig = new RdbmsConfiguration();
-        syncConfiguration = new SyncConfiguration(3, readerConfig, writerConfig);
+        Map<String, String> tableMap = new HashMap<>();
+        tableMap.put("t_order", "t_order");
+        syncConfiguration = new SyncConfiguration(3, tableMap,
+                readerConfig, writerConfig);
         dataSourceFactory = new DataSourceFactory();
     }
     

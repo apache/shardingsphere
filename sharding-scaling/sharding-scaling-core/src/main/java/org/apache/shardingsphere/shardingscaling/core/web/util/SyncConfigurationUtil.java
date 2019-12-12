@@ -25,7 +25,9 @@ import org.apache.shardingsphere.shardingscaling.core.config.ScalingConfiguratio
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * SyncConfiguration Util.
@@ -56,7 +58,8 @@ public class SyncConfigurationUtil {
                     ruleConfig.getDestinationDataSources().getUsername(),
                     ruleConfig.getDestinationDataSources().getPassword());
             writerConfiguration.setDataSourceConfiguration(writerDataSourceConfiguration);
-            syncConfigurations.add(new SyncConfiguration(scalingConfiguration.getJobConfiguration().getConcurrency(), readerConfiguration, writerConfiguration));
+            syncConfigurations.add(new SyncConfiguration(scalingConfiguration.getJobConfiguration().getConcurrency(), new HashMap<String, String>(),
+                    readerConfiguration, writerConfiguration));
         }
         return syncConfigurations;
     }

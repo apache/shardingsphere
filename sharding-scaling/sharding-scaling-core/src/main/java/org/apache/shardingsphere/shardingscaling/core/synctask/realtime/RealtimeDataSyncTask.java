@@ -78,6 +78,7 @@ public final class RealtimeDataSyncTask implements SyncTask {
 
     @Override
     public void start(final ReportCallback callback) {
+        syncConfiguration.getReaderConfiguration().setTableNameMap(syncConfiguration.getTableNameMap());
         reader = ReaderFactory.newInstanceLogReader(syncConfiguration.getReaderConfiguration(), logPositionManager.getCurrentPosition());
         List<Writer> writers = instanceWriters();
         instanceChannel(writers);

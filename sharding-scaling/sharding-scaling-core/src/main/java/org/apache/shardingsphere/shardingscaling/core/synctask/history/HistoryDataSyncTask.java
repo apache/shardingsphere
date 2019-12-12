@@ -108,6 +108,7 @@ public final class HistoryDataSyncTask implements SyncTask {
     }
     
     private void instanceSyncRunner() {
+        syncConfiguration.getReaderConfiguration().setTableNameMap(syncConfiguration.getTableNameMap());
         reader = ReaderFactory.newInstanceJdbcReader(syncConfiguration.getReaderConfiguration(), dataSourceFactory);
         writer = WriterFactory.newInstance(syncConfiguration.getWriterConfiguration(), dataSourceFactory);
     }

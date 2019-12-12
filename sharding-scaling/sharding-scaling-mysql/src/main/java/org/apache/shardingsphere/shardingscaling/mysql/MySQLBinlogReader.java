@@ -101,7 +101,7 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
     }
 
     private void handleWriteRowsEvent(final Channel channel, final JdbcUri uri, final WriteRowsEvent event) {
-        if (filter(uri.getDatabase(), event.getTableName())) {
+        if (filter(uri.getDatabase(), event.getSchemaName(), event.getTableName())) {
             createPlaceholderRecord(channel, event);
             return;
         }
@@ -116,7 +116,7 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
     }
 
     private void handleUpdateRowsEvent(final Channel channel, final JdbcUri uri, final UpdateRowsEvent event) {
-        if (filter(uri.getDatabase(), event.getTableName())) {
+        if (filter(uri.getDatabase(), event.getSchemaName(), event.getTableName())) {
             createPlaceholderRecord(channel, event);
             return;
         }
@@ -135,7 +135,7 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
     }
 
     private void handleDeleteRowsEvent(final Channel channel, final JdbcUri uri, final DeleteRowsEvent event) {
-        if (filter(uri.getDatabase(), event.getSchemaName())) {
+        if (filter(uri.getDatabase(), event.getSchemaName(), event.getTableName())) {
             createPlaceholderRecord(channel, event);
             return;
         }
@@ -151,7 +151,7 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
     
     private DataRecord createDataRecord(final AbstractRowsEvent rowsEvent, final int columnCount) {
         DataRecord result = new DataRecord(new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition(), rowsEvent.getServerId()), columnCount);
-        result.setTableName(rowsEvent.getTableName());
+        result.setTableName(rdbmsConfiguration.getTableNameMap().get(rowsEvent.getTableName()));
         result.setCommitTime(rowsEvent.getTimestamp());
         return result;
     }
@@ -168,7 +168,7 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
         }
     }
 
-    private boolean filter(final String database, final String schemaName) {
-        return !schemaName.equals(database);
+    private boolean filter(final String database, final String schemaName, final String tableName) {
+        return !schemaName.equals(database) || !rdbmsConfiguration.getTableNameMap().containsKey(tableName);
     }
 }
