@@ -15,35 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.encrypt;
+package org.apache.shardingsphere.core.merge.encrypt.dal;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergedResult;
-import org.apache.shardingsphere.core.merge.MergedResultMetaData;
+import org.apache.shardingsphere.core.merge.dal.common.TransparentMergedResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.DescribeStatement;
+
+import java.sql.SQLException;
+import java.util.List;
 
 /**
- * Encrypt result set merge engine.
+ * DAL result set merge engine for encrypt.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class EncryptMergeEngine implements MergeEngine {
+public final class DALEncryptMergeEngine implements MergeEngine {
     
-    private final MergedResultMetaData metaData;
-    
-    private final MergedResult mergedResult;
-
     private final EncryptRule encryptRule;
-
+    
+    private final List<QueryResult> queryResults;
+    
     private final SQLStatementContext sqlStatementContext;
     
-    private final boolean queryWithCipherColumn;
-    
     @Override
-    public MergedResult merge() {
-        return new EncryptMergedResult(metaData, mergedResult, encryptRule, sqlStatementContext, queryWithCipherColumn);
+    public MergedResult merge() throws SQLException {
+        SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
+        if (dalStatement instanceof DescribeStatement) {
+            return new DescribeTableMergedResult(encryptRule, queryResults, sqlStatementContext);
+        }
+        return new TransparentMergedResult(queryResults.get(0));
     }
 }

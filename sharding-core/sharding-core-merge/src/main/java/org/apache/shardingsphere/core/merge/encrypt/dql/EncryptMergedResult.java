@@ -15,17 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.encrypt;
+package org.apache.shardingsphere.core.merge.encrypt.dql;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.merge.MergedResult;
-import org.apache.shardingsphere.core.merge.MergedResultMetaData;
-import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.DescribeStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowColumnsStatement;
 
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -39,13 +34,9 @@ import java.util.Calendar;
 @RequiredArgsConstructor
 public final class EncryptMergedResult implements MergedResult {
     
-    private final MergedResultMetaData metaData;
+    private final EncryptorMetaData metaData;
     
     private final MergedResult mergedResult;
-
-    private final EncryptRule encryptRule;
-
-    private final SQLStatementContext sqlStatementContext;
     
     private final boolean queryWithCipherColumn;
     
@@ -58,17 +49,6 @@ public final class EncryptMergedResult implements MergedResult {
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         Object value = mergedResult.getValue(columnIndex, type);
         if (null == value || !queryWithCipherColumn) {
-            return value;
-        }
-        if (sqlStatementContext.getSqlStatement() instanceof ShowColumnsStatement
-                || sqlStatementContext.getSqlStatement() instanceof DescribeStatement) {
-            String logicTable = sqlStatementContext.getTablesContext().getSingleTableName();
-            if (encryptRule.getCipherColumns(logicTable).contains(String.valueOf(value))) {
-                return encryptRule.getLogicColumnOfCipher(logicTable, String.valueOf(value));
-            }
-            if (encryptRule.getPlainColumns(logicTable).contains(String.valueOf(value))) {
-                return encryptRule.getLogicColumnOfPlain(logicTable, String.valueOf(value));
-            }
             return value;
         }
         Optional<ShardingEncryptor> encryptor = metaData.findEncryptor(columnIndex);

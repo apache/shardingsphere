@@ -22,12 +22,14 @@ import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.iterator.IteratorStreamMergedResult;
-import org.apache.shardingsphere.core.merge.encrypt.EncryptMergeEngine;
+import org.apache.shardingsphere.core.merge.encrypt.dal.DALEncryptMergeEngine;
+import org.apache.shardingsphere.core.merge.encrypt.dql.DQLEncryptMergeEngine;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ResultSetMergedResultMetaData;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ResultSetEncryptorMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -47,6 +49,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -63,9 +66,9 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     private final Statement encryptStatement;
     
-    private ResultSet originalResultSet;
+    private final ResultSet originalResultSet;
     
-    private MergedResult resultSet;
+    private final MergedResult mergedResult;
     
     private final Map<String, String> logicAndActualColumns;
     
@@ -77,13 +80,19 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
         this.sqlStatementContext = sqlStatementContext;
         this.encryptStatement = encryptStatement;
         originalResultSet = resultSet;
-        QueryResult queryResult = new StreamQueryResult(resultSet);
-        MergedResult mergedResult = new IteratorStreamMergedResult(Collections.singletonList(queryResult));
-        ResultSetMergedResultMetaData metaData = new ResultSetMergedResultMetaData(encryptRule, originalResultSet.getMetaData(), sqlStatementContext);
         boolean queryWithCipherColumn = encryptRuntimeContext.getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
-        this.resultSet = new EncryptMergeEngine(metaData, mergedResult, encryptRule, sqlStatementContext, queryWithCipherColumn).merge();
+        mergedResult = createMergedResult(queryWithCipherColumn, resultSet);
         logicAndActualColumns = createLogicAndActualColumns(queryWithCipherColumn);
         columnLabelAndIndexMap = createColumnLabelAndIndexMap(originalResultSet.getMetaData());
+    }
+    
+    private MergedResult createMergedResult(final boolean queryWithCipherColumn, final ResultSet resultSet) throws SQLException {
+        List<QueryResult> queryResults = Collections.<QueryResult>singletonList(new StreamQueryResult(resultSet));
+        if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
+            return new DALEncryptMergeEngine(encryptRule, queryResults, sqlStatementContext).merge();
+        }
+        ResultSetEncryptorMetaData metaData = new ResultSetEncryptorMetaData(encryptRule, originalResultSet.getMetaData(), sqlStatementContext);
+        return new DQLEncryptMergeEngine(metaData, new IteratorStreamMergedResult(queryResults), queryWithCipherColumn).merge();
     }
     
     private Map<String, String> createLogicAndActualColumns(final boolean isQueryWithCipherColumn) {
@@ -116,302 +125,302 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public boolean next() throws SQLException {
-        return resultSet.next();
+        return mergedResult.next();
     }
     
     @Override
     public boolean wasNull() throws SQLException {
-        return resultSet.wasNull();
+        return mergedResult.wasNull();
     }
     
     @Override
     public boolean getBoolean(final int columnIndex) throws SQLException {
-        return (boolean) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, boolean.class), boolean.class);
+        return (boolean) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, boolean.class), boolean.class);
     }
     
     @Override
     public boolean getBoolean(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return (boolean) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, boolean.class), boolean.class);
+        return (boolean) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, boolean.class), boolean.class);
     }
     
     @Override
     public byte getByte(final int columnIndex) throws SQLException {
-        return (byte) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, byte.class), byte.class);
+        return (byte) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, byte.class), byte.class);
     }
     
     @Override
     public byte getByte(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return (byte) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, byte.class), byte.class);
+        return (byte) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, byte.class), byte.class);
     }
     
     @Override
     public short getShort(final int columnIndex) throws SQLException {
-        return (short) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, short.class), short.class);
+        return (short) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, short.class), short.class);
     }
     
     @Override
     public short getShort(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return (short) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, short.class), short.class);
+        return (short) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, short.class), short.class);
     }
     
     @Override
     public int getInt(final int columnIndex) throws SQLException {
-        return (int) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, int.class), int.class);
+        return (int) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, int.class), int.class);
     }
     
     @Override
     public int getInt(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return (int) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, int.class), int.class);
+        return (int) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, int.class), int.class);
     }
     
     @Override
     public long getLong(final int columnIndex) throws SQLException {
-        return (long) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, long.class), long.class);
+        return (long) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, long.class), long.class);
     }
     
     @Override
     public long getLong(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return (long) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, long.class), long.class);
+        return (long) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, long.class), long.class);
     }
     
     @Override
     public float getFloat(final int columnIndex) throws SQLException {
-        return (float) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, float.class), float.class);
+        return (float) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, float.class), float.class);
     }
     
     @Override
     public float getFloat(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return (float) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, float.class), float.class);
+        return (float) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, float.class), float.class);
     }
     
     @Override
     public double getDouble(final int columnIndex) throws SQLException {
-        return (double) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, double.class), double.class);
+        return (double) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, double.class), double.class);
     }
     
     @Override
     public double getDouble(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return (double) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, double.class), double.class);
+        return (double) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, double.class), double.class);
     }
     
     @Override
     public String getString(final int columnIndex) throws SQLException {
-        return (String) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, String.class), String.class);
+        return (String) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, String.class), String.class);
     }
     
     @Override
     public String getString(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return (String) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, String.class), String.class);
+        return (String) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, String.class), String.class);
     }
     
     @Override
     public BigDecimal getBigDecimal(final int columnIndex) throws SQLException {
-        return (BigDecimal) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
+        return (BigDecimal) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
     }
     
     @Override
     public BigDecimal getBigDecimal(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return (BigDecimal) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
+        return (BigDecimal) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
     }
     
     @SuppressWarnings("deprecation")
     @Override
     public BigDecimal getBigDecimal(final int columnIndex, final int scale) throws SQLException {
-        return (BigDecimal) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
+        return (BigDecimal) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
     }
     
     @SuppressWarnings("deprecation")
     @Override
     public BigDecimal getBigDecimal(final String columnLabel, final int scale) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return (BigDecimal) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
+        return (BigDecimal) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
     }
     
     @Override
     public byte[] getBytes(final int columnIndex) throws SQLException {
-        return (byte[]) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, byte[].class), byte[].class);
+        return (byte[]) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, byte[].class), byte[].class);
     }
     
     @Override
     public byte[] getBytes(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return (byte[]) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, byte[].class), byte[].class);
+        return (byte[]) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, byte[].class), byte[].class);
     }
     
     @Override
     public Date getDate(final int columnIndex) throws SQLException {
-        return (Date) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, Date.class), Date.class);
+        return (Date) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, Date.class), Date.class);
     }
     
     @Override
     public Date getDate(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return (Date) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, Date.class), Date.class);
+        return (Date) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, Date.class), Date.class);
     }
     
     @Override
     public Date getDate(final int columnIndex, final Calendar cal) throws SQLException {
-        return (Date) ResultSetUtil.convertValue(resultSet.getCalendarValue(columnIndex, Date.class, cal), Date.class);
+        return (Date) ResultSetUtil.convertValue(mergedResult.getCalendarValue(columnIndex, Date.class, cal), Date.class);
     }
     
     @Override
     public Date getDate(final String columnLabel, final Calendar cal) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return (Date) ResultSetUtil.convertValue(resultSet.getCalendarValue(columnIndex, Date.class, cal), Date.class);
+        return (Date) ResultSetUtil.convertValue(mergedResult.getCalendarValue(columnIndex, Date.class, cal), Date.class);
     }
     
     @Override
     public Time getTime(final int columnIndex) throws SQLException {
-        return (Time) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, Time.class), Time.class);
+        return (Time) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, Time.class), Time.class);
     }
     
     @Override
     public Time getTime(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return (Time) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, Time.class), Time.class);
+        return (Time) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, Time.class), Time.class);
     }
     
     @Override
     public Time getTime(final int columnIndex, final Calendar cal) throws SQLException {
-        return (Time) ResultSetUtil.convertValue(resultSet.getCalendarValue(columnIndex, Time.class, cal), Time.class);
+        return (Time) ResultSetUtil.convertValue(mergedResult.getCalendarValue(columnIndex, Time.class, cal), Time.class);
     }
     
     @Override
     public Time getTime(final String columnLabel, final Calendar cal) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return (Time) ResultSetUtil.convertValue(resultSet.getCalendarValue(columnIndex, Time.class, cal), Time.class);
+        return (Time) ResultSetUtil.convertValue(mergedResult.getCalendarValue(columnIndex, Time.class, cal), Time.class);
     }
     
     @Override
     public Timestamp getTimestamp(final int columnIndex) throws SQLException {
-        return (Timestamp) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, Timestamp.class), Timestamp.class);
+        return (Timestamp) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, Timestamp.class), Timestamp.class);
     }
     
     @Override
     public Timestamp getTimestamp(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return (Timestamp) ResultSetUtil.convertValue(resultSet.getValue(columnIndex, Timestamp.class), Timestamp.class);
+        return (Timestamp) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, Timestamp.class), Timestamp.class);
     }
     
     @Override
     public Timestamp getTimestamp(final int columnIndex, final Calendar cal) throws SQLException {
-        return (Timestamp) ResultSetUtil.convertValue(resultSet.getCalendarValue(columnIndex, Timestamp.class, cal), Timestamp.class);
+        return (Timestamp) ResultSetUtil.convertValue(mergedResult.getCalendarValue(columnIndex, Timestamp.class, cal), Timestamp.class);
     }
     
     @Override
     public Timestamp getTimestamp(final String columnLabel, final Calendar cal) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return (Timestamp) ResultSetUtil.convertValue(resultSet.getCalendarValue(columnIndex, Timestamp.class, cal), Timestamp.class);
+        return (Timestamp) ResultSetUtil.convertValue(mergedResult.getCalendarValue(columnIndex, Timestamp.class, cal), Timestamp.class);
     }
     
     @Override
     public InputStream getAsciiStream(final int columnIndex) throws SQLException {
-        return resultSet.getInputStream(columnIndex, "Ascii");
+        return mergedResult.getInputStream(columnIndex, "Ascii");
     }
     
     @Override
     public InputStream getAsciiStream(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return resultSet.getInputStream(columnIndex, "Ascii");
+        return mergedResult.getInputStream(columnIndex, "Ascii");
     }
     
     @SuppressWarnings("deprecation")
     @Override
     public InputStream getUnicodeStream(final int columnIndex) throws SQLException {
-        return resultSet.getInputStream(columnIndex, "Unicode");
+        return mergedResult.getInputStream(columnIndex, "Unicode");
     }
     
     @SuppressWarnings("deprecation")
     @Override
     public InputStream getUnicodeStream(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return resultSet.getInputStream(columnIndex, "Unicode");
+        return mergedResult.getInputStream(columnIndex, "Unicode");
     }
     
     @Override
     public InputStream getBinaryStream(final int columnIndex) throws SQLException {
-        return resultSet.getInputStream(columnIndex, "Binary");
+        return mergedResult.getInputStream(columnIndex, "Binary");
     }
     
     @Override
     public InputStream getBinaryStream(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return resultSet.getInputStream(columnIndex, "Binary");
+        return mergedResult.getInputStream(columnIndex, "Binary");
     }
     
     @Override
     public Reader getCharacterStream(final int columnIndex) throws SQLException {
-        return (Reader) resultSet.getValue(columnIndex, Reader.class);
+        return (Reader) mergedResult.getValue(columnIndex, Reader.class);
     }
     
     @Override
     public Reader getCharacterStream(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return (Reader) resultSet.getValue(columnIndex, Reader.class);
+        return (Reader) mergedResult.getValue(columnIndex, Reader.class);
     }
     
     @Override
     public Blob getBlob(final int columnIndex) throws SQLException {
-        return (Blob) resultSet.getValue(columnIndex, Blob.class);
+        return (Blob) mergedResult.getValue(columnIndex, Blob.class);
     }
     
     @Override
     public Blob getBlob(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return (Blob) resultSet.getValue(columnIndex, Blob.class);
+        return (Blob) mergedResult.getValue(columnIndex, Blob.class);
     }
     
     @Override
     public Clob getClob(final int columnIndex) throws SQLException {
-        return (Clob) resultSet.getValue(columnIndex, Clob.class);
+        return (Clob) mergedResult.getValue(columnIndex, Clob.class);
     }
     
     @Override
     public Clob getClob(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return (Clob) resultSet.getValue(columnIndex, Clob.class);
+        return (Clob) mergedResult.getValue(columnIndex, Clob.class);
     }
     
     @Override
     public URL getURL(final int columnIndex) throws SQLException {
-        return (URL) resultSet.getValue(columnIndex, URL.class);
+        return (URL) mergedResult.getValue(columnIndex, URL.class);
     }
     
     @Override
     public URL getURL(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return (URL) resultSet.getValue(columnIndex, URL.class);
+        return (URL) mergedResult.getValue(columnIndex, URL.class);
     }
     
     @Override
     public SQLXML getSQLXML(final int columnIndex) throws SQLException {
-        return (SQLXML) resultSet.getValue(columnIndex, SQLXML.class);
+        return (SQLXML) mergedResult.getValue(columnIndex, SQLXML.class);
     }
     
     @Override
     public SQLXML getSQLXML(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return (SQLXML) resultSet.getValue(columnIndex, SQLXML.class);
+        return (SQLXML) mergedResult.getValue(columnIndex, SQLXML.class);
     }
     
     @Override
     public Object getObject(final int columnIndex) throws SQLException {
-        return resultSet.getValue(columnIndex, Object.class);
+        return mergedResult.getValue(columnIndex, Object.class);
     }
     
     @Override
     public Object getObject(final String columnLabel) throws SQLException {
         int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
-        return resultSet.getValue(columnIndex, Object.class);
+        return mergedResult.getValue(columnIndex, Object.class);
     }
     
     @Override

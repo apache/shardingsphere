@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.io.InputStream;
@@ -39,9 +39,11 @@ import java.util.List;
  * Memory merged result.
  *
  * @author zhangliang
+ * 
+ * @param <T> type of rule
  */
 @RequiredArgsConstructor
-public abstract class MemoryMergedResult implements MergedResult {
+public abstract class MemoryMergedResult<T extends BaseRule> implements MergedResult {
     
     private final Iterator<MemoryQueryResultRow> memoryResultSetRows;
     
@@ -49,17 +51,15 @@ public abstract class MemoryMergedResult implements MergedResult {
     
     private boolean wasNull;
     
-    protected MemoryMergedResult(final ShardingRule shardingRule, 
-                                 final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        List<MemoryQueryResultRow> memoryQueryResultRowList = init(shardingRule, tableMetas, sqlStatementContext, queryResults);
+    protected MemoryMergedResult(final T rule, final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+        List<MemoryQueryResultRow> memoryQueryResultRowList = init(rule, tableMetas, sqlStatementContext, queryResults);
         memoryResultSetRows = memoryQueryResultRowList.iterator();
         if (!memoryQueryResultRowList.isEmpty()) {
             currentResultSetRow = memoryQueryResultRowList.get(0);
         }
     }
     
-    protected abstract List<MemoryQueryResultRow> init(ShardingRule shardingRule, TableMetas tableMetas, 
-                                                       SQLStatementContext sqlStatementContext, List<QueryResult> queryResults) throws SQLException;
+    protected abstract List<MemoryQueryResultRow> init(T rule, TableMetas tableMetas, SQLStatementContext sqlStatementContext, List<QueryResult> queryResults) throws SQLException;
     
     @Override
     public final boolean next() {

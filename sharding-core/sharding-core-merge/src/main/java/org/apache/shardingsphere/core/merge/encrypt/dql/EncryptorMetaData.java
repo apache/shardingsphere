@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge;
+package org.apache.shardingsphere.core.merge.encrypt.dql;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
@@ -23,11 +23,11 @@ import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import java.sql.SQLException;
 
 /**
- * Merged result meta data.
+ * Encryptor meta data.
  *
  * @author zhangliang
  */
-public interface MergedResultMetaData {
+public interface EncryptorMetaData {
     
     /**
      * Find encryptor.

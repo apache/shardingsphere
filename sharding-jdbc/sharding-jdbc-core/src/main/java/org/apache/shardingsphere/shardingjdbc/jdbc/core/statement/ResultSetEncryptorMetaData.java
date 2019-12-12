@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.merge.MergedResultMetaData;
+import org.apache.shardingsphere.core.merge.encrypt.dql.EncryptorMetaData;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
@@ -28,12 +28,12 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 /**
- * Merged result meta data for query header.
+ * Encryptor meta data for query header.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ResultSetMergedResultMetaData implements MergedResultMetaData {
+public final class ResultSetEncryptorMetaData implements EncryptorMetaData {
     
     private final EncryptRule encryptRule;
     

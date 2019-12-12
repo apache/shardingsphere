@@ -21,7 +21,7 @@ import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.merge.MergedResult;
-import org.apache.shardingsphere.core.merge.dal.show.ShowShardingCTLMergedResult;
+import org.apache.shardingsphere.core.merge.dal.common.MultipleLocalDataMergedResult;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
@@ -92,11 +92,11 @@ public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor
     }
     
     private MergedResult convert2MergedResult(final Collection<HintShowTableStatusResult> hintShowTableStatusResults) {
-        List<List<Object>> values = new ArrayList<>(hintShowTableStatusResults.size());
+        Collection<List<Object>> values = new ArrayList<>(hintShowTableStatusResults.size());
         for (HintShowTableStatusResult each : hintShowTableStatusResults) {
             values.add(createRow(each));
         }
-        return new ShowShardingCTLMergedResult(values);
+        return new MultipleLocalDataMergedResult(values);
     }
     
     private List<Object> createRow(final HintShowTableStatusResult hintShowTableStatusResult) {

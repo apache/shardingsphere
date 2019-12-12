@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.dal.show;
+package org.apache.shardingsphere.core.merge.dal.common;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
@@ -23,16 +23,15 @@ import org.apache.shardingsphere.core.merge.MergedResult;
 
 import java.io.InputStream;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.Calendar;
 
 /**
- * Merged result for show others.
+ * Transparent merged result.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ShowOtherMergedResult implements MergedResult {
+public final class TransparentMergedResult implements MergedResult {
     
     private final QueryResult queryResult;
     
@@ -48,16 +47,16 @@ public final class ShowOtherMergedResult implements MergedResult {
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return queryResult.getCalendarValue(columnIndex, type, calendar);
     }
     
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return queryResult.getInputStream(columnIndex, type);
     }
     
     @Override
-    public boolean wasNull() {
-        return false;
+    public boolean wasNull() throws SQLException {
+        return queryResult.wasNull();
     }
 }

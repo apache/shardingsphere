@@ -15,33 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.dal.show;
+package org.apache.shardingsphere.core.merge.encrypt.dql;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.merge.MergeEngine;
 import org.apache.shardingsphere.core.merge.MergedResult;
 
-import java.util.List;
-
 /**
- * Show sharding CTL merged result.
+ * DQL result set merge engine for encrypt.
  *
- * @author zhaojun
- * @author liya
+ * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ShowShardingCTLMergedResult extends LocalMergedResultAdapter implements MergedResult {
+public final class DQLEncryptMergeEngine implements MergeEngine {
     
-    private int currentIndex;
+    private final EncryptorMetaData metaData;
     
-    private final List<List<Object>> values;
+    private final MergedResult mergedResult;
     
-    @Override
-    public boolean next() {
-        return currentIndex++ < values.size();
-    }
+    private final boolean queryWithCipherColumn;
     
     @Override
-    public Object getValue(final int columnIndex, final Class<?> type) {
-        return values.get(currentIndex - 1).get(columnIndex - 1);
+    public MergedResult merge() {
+        return new EncryptMergedResult(metaData, mergedResult, queryWithCipherColumn);
     }
 }
