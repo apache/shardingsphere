@@ -37,7 +37,7 @@ public abstract class ShadowParameterRewriter implements ParameterRewriter, Shad
 
     @Override
     public final boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
-        return false;
+        return isNeedRewriteForShadow(sqlStatementContext);
     }
 
     protected abstract boolean isNeedRewriteForShadow(SQLStatementContext sqlStatementContext);
