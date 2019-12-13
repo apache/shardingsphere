@@ -39,7 +39,7 @@ public final class EncryptPredicateRightValueToken extends SQLToken implements S
     private final Map<Integer, Object> indexValues;
     
     private final Collection<Integer> parameterMarkerIndexes;
-
+    
     @Getter
     private final ShardingOperator operator;
     
