@@ -40,7 +40,6 @@ public final class EncryptPredicateRightValueToken extends SQLToken implements S
     
     private final Collection<Integer> parameterMarkerIndexes;
 
-    @Getter
     private final ShardingOperator operator;
     
     public EncryptPredicateRightValueToken(final int startIndex, final int stopIndex,
