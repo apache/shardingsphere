@@ -54,7 +54,7 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
     
     private static final String SELECT_FULL_SQL = "select id, cipher_pwd, plain_pwd, assist_pwd from t_query_and_plain_encrypt";
 
-    private static final String SELECT_SQL_WITH_PARENTHESES = "select * from t_query_encrypt where pwd IN (?)";
+    private static final String SELECT_SQL_WITH_IN_OPERATOR = "select * from t_query_encrypt where pwd IN (?)";
 
     @Test
     public void assertSqlShow() throws SQLException {
@@ -224,8 +224,8 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
     }
 
     @Test
-    public void assertSelectWithParentheses() throws SQLException {
-        try (PreparedStatement statement = getEncryptConnection().prepareStatement(SELECT_SQL_WITH_PARENTHESES)) {
+    public void assertSelectWithInOperator() throws SQLException {
+        try (PreparedStatement statement = getEncryptConnection().prepareStatement(SELECT_SQL_WITH_IN_OPERATOR)) {
             statement.setObject(1, 'a');
             ResultSetMetaData metaData = statement.executeQuery().getMetaData();
             assertThat(metaData.getColumnCount(), is(2));

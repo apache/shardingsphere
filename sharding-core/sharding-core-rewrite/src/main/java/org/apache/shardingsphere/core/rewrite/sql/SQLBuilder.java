@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.core.rewrite.sql;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.constant.ShardingOperator;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptPredicateRightValueToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Alterable;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
@@ -84,9 +86,19 @@ public final class SQLBuilder {
         int startIndex = sqlToken instanceof Substitutable ? ((Substitutable) sqlToken).getStopIndex() + 1 : sqlToken.getStartIndex();
         return Math.min(startIndex, logicSQL.length());
     }
-    
+
     private int getStopIndex(final SQLToken sqlToken) {
         int currentSQLTokenIndex = sqlTokens.indexOf(sqlToken);
-        return sqlTokens.size() - 1 == currentSQLTokenIndex ? logicSQL.length() : sqlTokens.get(currentSQLTokenIndex + 1).getStartIndex();
+        if (sqlTokens.size() - 1 == currentSQLTokenIndex) {
+            return logicSQL.length();
+        } else {
+            SQLToken nextSQLToken = sqlTokens.get(currentSQLTokenIndex + 1);
+            if (nextSQLToken instanceof EncryptPredicateRightValueToken
+                    && ((EncryptPredicateRightValueToken) nextSQLToken).getOperator().equals(ShardingOperator.IN)) {
+                return nextSQLToken.getStartIndex() - 1;
+            } else {
+                return nextSQLToken.getStartIndex();
+            }
+        }
     }
 }
