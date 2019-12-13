@@ -75,12 +75,12 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     
     private EncryptPredicateRightValueToken generateSQLToken(final EncryptCondition encryptCondition) {
         List<Object> originalValues = encryptCondition.getValues(parameters);
-        return queryWithCipherColumn ? generateSQLTokenForQueryWithCipherColumn(encryptCondition, originalValues) : generateSQLTokenForQueryWithoutCipherColumn(encryptCondition, originalValues);
+        int startIndex = encryptCondition.getOperator().equals(ShardingOperator.IN) ? encryptCondition.getStartIndex() - 1 : encryptCondition.getStartIndex();
+        return queryWithCipherColumn ? generateSQLTokenForQueryWithCipherColumn(encryptCondition, originalValues, startIndex) : generateSQLTokenForQueryWithoutCipherColumn(encryptCondition, originalValues, startIndex);
     }
     
-    private EncryptPredicateRightValueToken generateSQLTokenForQueryWithCipherColumn(final EncryptCondition encryptCondition, final List<Object> originalValues) {
+    private EncryptPredicateRightValueToken generateSQLTokenForQueryWithCipherColumn(final EncryptCondition encryptCondition, final List<Object> originalValues, final int startIndex) {
         List<Object> encryptedValues = getEncryptedValues(encryptCondition, originalValues);
-        int startIndex = encryptCondition.getOperator().equals(ShardingOperator.IN) ? encryptCondition.getStartIndex() - 1 : encryptCondition.getStartIndex();
         return new EncryptPredicateRightValueToken(startIndex, encryptCondition.getStopIndex(), getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptedValues),
                 encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
@@ -92,8 +92,8 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
                 : getEncryptRule().getEncryptValues(encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
     }
     
-    private EncryptPredicateRightValueToken generateSQLTokenForQueryWithoutCipherColumn(final EncryptCondition encryptCondition, final List<Object> originalValues) {
-        return new EncryptPredicateRightValueToken(encryptCondition.getStartIndex(), encryptCondition.getStopIndex(),  
+    private EncryptPredicateRightValueToken generateSQLTokenForQueryWithoutCipherColumn(final EncryptCondition encryptCondition, final List<Object> originalValues, final int startIndex) {
+        return new EncryptPredicateRightValueToken(startIndex, encryptCondition.getStopIndex(),
                 getPositionValues(encryptCondition.getPositionValueMap().keySet(), originalValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
     
