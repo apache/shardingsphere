@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.i
 
 import com.google.common.base.Optional;
 import lombok.Setter;
+import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
@@ -79,8 +80,8 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     
     private EncryptPredicateRightValueToken generateSQLTokenForQueryWithCipherColumn(final EncryptCondition encryptCondition, final List<Object> originalValues) {
         List<Object> encryptedValues = getEncryptedValues(encryptCondition, originalValues);
-        return new EncryptPredicateRightValueToken(encryptCondition.getStartIndex(), encryptCondition.getStopIndex(),  
-                getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptedValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
+        int startIndex = encryptCondition.getOperator().equals(ShardingOperator.IN)? encryptCondition.getStartIndex() - 1 : encryptCondition.getStartIndex();
+        return new EncryptPredicateRightValueToken(startIndex, encryptCondition.getStopIndex(), getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptedValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
     
     private List<Object> getEncryptedValues(final EncryptCondition encryptCondition, final List<Object> originalValues) {
