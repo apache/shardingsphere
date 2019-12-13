@@ -80,8 +80,9 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     
     private EncryptPredicateRightValueToken generateSQLTokenForQueryWithCipherColumn(final EncryptCondition encryptCondition, final List<Object> originalValues) {
         List<Object> encryptedValues = getEncryptedValues(encryptCondition, originalValues);
-        int startIndex = encryptCondition.getOperator().equals(ShardingOperator.IN)? encryptCondition.getStartIndex() - 1 : encryptCondition.getStartIndex();
-        return new EncryptPredicateRightValueToken(startIndex, encryptCondition.getStopIndex(), getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptedValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
+        int startIndex = encryptCondition.getOperator().equals(ShardingOperator.IN) ? encryptCondition.getStartIndex() - 1 : encryptCondition.getStartIndex();
+        return new EncryptPredicateRightValueToken(startIndex, encryptCondition.getStopIndex(), getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptedValues),
+                encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
     
     private List<Object> getEncryptedValues(final EncryptCondition encryptCondition, final List<Object> originalValues) {
