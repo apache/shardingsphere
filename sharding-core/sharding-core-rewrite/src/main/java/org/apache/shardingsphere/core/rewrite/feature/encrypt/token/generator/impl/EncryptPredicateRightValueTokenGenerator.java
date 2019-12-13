@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.i
 
 import com.google.common.base.Optional;
 import lombok.Setter;
+import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
@@ -74,13 +75,15 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     
     private EncryptPredicateRightValueToken generateSQLToken(final EncryptCondition encryptCondition) {
         List<Object> originalValues = encryptCondition.getValues(parameters);
-        return queryWithCipherColumn ? generateSQLTokenForQueryWithCipherColumn(encryptCondition, originalValues) : generateSQLTokenForQueryWithoutCipherColumn(encryptCondition, originalValues);
+        int startIndex = encryptCondition.getOperator().equals(ShardingOperator.IN) ? encryptCondition.getStartIndex() - 1 : encryptCondition.getStartIndex();
+        return queryWithCipherColumn ? generateSQLTokenForQueryWithCipherColumn(encryptCondition, originalValues, startIndex)
+                : generateSQLTokenForQueryWithoutCipherColumn(encryptCondition, originalValues, startIndex);
     }
     
-    private EncryptPredicateRightValueToken generateSQLTokenForQueryWithCipherColumn(final EncryptCondition encryptCondition, final List<Object> originalValues) {
+    private EncryptPredicateRightValueToken generateSQLTokenForQueryWithCipherColumn(final EncryptCondition encryptCondition, final List<Object> originalValues, final int startIndex) {
         List<Object> encryptedValues = getEncryptedValues(encryptCondition, originalValues);
-        return new EncryptPredicateRightValueToken(encryptCondition.getStartIndex(), encryptCondition.getStopIndex(),  
-                getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptedValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
+        return new EncryptPredicateRightValueToken(startIndex, encryptCondition.getStopIndex(), getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptedValues),
+                encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
     
     private List<Object> getEncryptedValues(final EncryptCondition encryptCondition, final List<Object> originalValues) {
@@ -90,8 +93,8 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
                 : getEncryptRule().getEncryptValues(encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
     }
     
-    private EncryptPredicateRightValueToken generateSQLTokenForQueryWithoutCipherColumn(final EncryptCondition encryptCondition, final List<Object> originalValues) {
-        return new EncryptPredicateRightValueToken(encryptCondition.getStartIndex(), encryptCondition.getStopIndex(),  
+    private EncryptPredicateRightValueToken generateSQLTokenForQueryWithoutCipherColumn(final EncryptCondition encryptCondition, final List<Object> originalValues, final int startIndex) {
+        return new EncryptPredicateRightValueToken(startIndex, encryptCondition.getStopIndex(),
                 getPositionValues(encryptCondition.getPositionValueMap().keySet(), originalValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
     }
     
