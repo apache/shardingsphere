@@ -204,7 +204,6 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
             ResultSet resultSet = statement.executeQuery(SHOW_COLUMNS_SQL);
             int count = 0;
             while (resultSet.next()) {
-                System.out.println(resultSet.getString("FIELD"));
                 if (resultSet.getString("FIELD").equals("pwd")) {
                     count++;
                 }
