@@ -72,7 +72,6 @@ public final class EncryptPredicateRightValueToken extends SQLToken implements S
     
     private String toStringForIn() {
         StringBuilder result = new StringBuilder();
-        result.append("(");
         for (int i = 0; i < indexValues.size() + parameterMarkerIndexes.size(); i++) {
             if (parameterMarkerIndexes.contains(i)) {
                 result.append("?");
