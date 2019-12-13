@@ -50,12 +50,12 @@ public final class EncryptPredicateTokenTest {
         indexValues.put(0, "a");
         indexValues.put(1, "b");
         EncryptPredicateRightValueToken actual = new EncryptPredicateRightValueToken(0, 0, indexValues, Collections.<Integer>emptyList(), ShardingOperator.IN);
-        assertThat(actual.toString(), is("('a', 'b')"));
+        assertThat(actual.toString(), is("'a', 'b')"));
     }
 
     @Test
     public void assertToStringWithPlaceholderWithoutTableOwnerWithIn() {
         EncryptPredicateRightValueToken actual = new EncryptPredicateRightValueToken(0, 0, Collections.<Integer, Object>emptyMap(), Collections.singletonList(0), ShardingOperator.IN);
-        assertThat(actual.toString(), is("(?)"));
+        assertThat(actual.toString(), is("?)"));
     }
 }
