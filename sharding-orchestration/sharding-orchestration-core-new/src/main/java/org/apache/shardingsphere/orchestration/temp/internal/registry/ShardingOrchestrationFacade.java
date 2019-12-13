@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.orchestration.temp.internal.registry;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
@@ -46,7 +46,8 @@ import org.apache.shardingsphere.orchestration.temp.internal.registry.state.serv
  * @author zhangliang
  * @author caohao
  * @author panjuan
- * @author wangguangyuan 
+ * @author wangguangyuan
+ * @author sunbufu
  */
 @Slf4j
 public final class ShardingOrchestrationFacade implements AutoCloseable {
@@ -65,20 +66,20 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
     private final ShardingOrchestrationListenerManager listenerManager;
     
     public ShardingOrchestrationFacade(final OrchestrationConfiguration orchestrationConfig, final Collection<String> shardingSchemaNames) {
-        InstanceConfiguration registryCenterConfiguration = getConfigurationByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(),
-                OrchestrationType.REGISTRY_CENTER.getValue());
+        Optional<String> registryCenterName = getInstanceNameByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(), OrchestrationType.REGISTRY_CENTER.getValue());
+        Preconditions.checkArgument(registryCenterName.isPresent(), "Can not find instance configuration with registry center orchestration type.");
+        InstanceConfiguration registryCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(registryCenterName.get());
         regCenter = new RegistryCenterServiceLoader().load(registryCenterConfiguration);
-        isOverwrite = Boolean.valueOf(registryCenterConfiguration.getProperties().getProperty("isOverwrite"));
-        stateService = new StateService(registryCenterConfiguration.getNamespace(), regCenter);
-        InstanceConfiguration configCenterConfiguration = getConfigurationByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(),
-                OrchestrationType.CONFIG_CENTER.getValue());
+        isOverwrite = Boolean.parseBoolean(registryCenterConfiguration.getProperties().getProperty("isOverwrite"));
+        stateService = new StateService(registryCenterName.get(), regCenter);
+        Optional<String> configCenterName = getInstanceNameByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(), OrchestrationType.CONFIG_CENTER.getValue());
+        Preconditions.checkArgument(configCenterName.isPresent(), "Can not find instance configuration with config center orchestration type.");
+        InstanceConfiguration configCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(configCenterName.get());
         configCenter = new ConfigCenterServiceLoader().load(configCenterConfiguration);
-        configService = new ConfigurationService(configCenterConfiguration.getNamespace(), configCenter);
-        listenerManager = shardingSchemaNames.isEmpty() 
-                ? new ShardingOrchestrationListenerManager(registryCenterConfiguration.getNamespace(), regCenter,
-                        configCenterConfiguration.getNamespace(), configCenter, configService.getAllShardingSchemaNames())
-                : new ShardingOrchestrationListenerManager(registryCenterConfiguration.getNamespace(), regCenter, 
-                configCenterConfiguration.getNamespace(), configCenter, shardingSchemaNames);        
+        configService = new ConfigurationService(configCenterName.get(), configCenter);
+        listenerManager = shardingSchemaNames.isEmpty()
+                ? new ShardingOrchestrationListenerManager(registryCenterName.get(), regCenter, configCenterName.get(), configCenter, configService.getAllShardingSchemaNames())
+                : new ShardingOrchestrationListenerManager(registryCenterName.get(), regCenter, configCenterName.get(), configCenter, shardingSchemaNames);
     }
     
     /**
@@ -119,26 +120,24 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         }
     }
     
-    private InstanceConfiguration getConfigurationByOrchestrationType(final Map<String, InstanceConfiguration> map, final String type) {
-        if (null == map || null == type) {
-            return null;
+    private Optional<String> getInstanceNameByOrchestrationType(final Map<String, InstanceConfiguration> map, final String type) {
+        if (null == map || 0 == map.size() || null == type) {
+            return Optional.absent();
         }
-        for (Entry<String, InstanceConfiguration> entry: map.entrySet()) {
-            InstanceConfiguration configuration = entry.getValue();
-            if (contains(configuration.getOrchestrationType(), type)) {
-                return configuration;
+        for (Entry<String, InstanceConfiguration> entry : map.entrySet()) {
+            if (contains(entry.getValue().getOrchestrationType(), type)) {
+                return Optional.of(entry.getKey());
             }
         }
-        return null;
+        return Optional.absent();
     }
     
     private boolean contains(final String collection, final String element) {
         if (Strings.isNullOrEmpty(collection)) {
             return false;
         }
-        Iterator<String> iterator = Splitter.on(",").split(collection).iterator();
-        while (iterator.hasNext()) {
-            if (element.equals(iterator.next())) {
+        for (String each : Splitter.on(",").split(collection)) {
+            if (element.equals(each.trim())) {
                 return true;
             }
         }

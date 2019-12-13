@@ -17,21 +17,25 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.common;
 
+import java.util.Map;
+import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.Properties;
-
 /**
- * Properties configuration properties.
+ * Root configuration properties.
  *
  * @author zhangliang
+ * @author sunbufu
  */
 @ConfigurationProperties(prefix = "spring.shardingsphere")
 @Getter
 @Setter
-public class SpringBootPropertiesConfigurationProperties {
+public class SpringBootRootConfigurationProperties {
     
     private Properties props = new Properties();
+    
+    private Map<String, YamlInstanceConfiguration> orchestration;
 }

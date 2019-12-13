@@ -71,7 +71,7 @@ public final class OrchestrationMasterSlaveDataSourceTest {
         instanceConfiguration.setOrchestrationType(orchestrationType);
         instanceConfiguration.setNamespace("test_ms");
         instanceConfiguration.setServerLists("localhost:3181");
-        Map<String, InstanceConfiguration> instanceConfigurationMap = Collections.singletonMap("test", instanceConfiguration);
+        Map<String, InstanceConfiguration> instanceConfigurationMap = Collections.singletonMap("test_ms", instanceConfiguration);
         return new OrchestrationConfiguration(instanceConfigurationMap);
     }
     

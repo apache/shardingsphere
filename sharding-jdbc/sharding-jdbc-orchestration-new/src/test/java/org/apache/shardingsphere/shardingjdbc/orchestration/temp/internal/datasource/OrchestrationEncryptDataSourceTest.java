@@ -70,7 +70,7 @@ public final class OrchestrationEncryptDataSourceTest {
         instanceConfiguration.setOrchestrationType(orchestrationType);
         instanceConfiguration.setNamespace("test_encrypt");
         instanceConfiguration.setServerLists("localhost:3181");
-        Map<String, InstanceConfiguration> instanceConfigurationMap = Collections.singletonMap("test", instanceConfiguration);
+        Map<String, InstanceConfiguration> instanceConfigurationMap = Collections.singletonMap("test_encrypt", instanceConfiguration);
         return new OrchestrationConfiguration(instanceConfigurationMap);
     }
     
