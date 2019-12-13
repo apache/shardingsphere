@@ -110,7 +110,15 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
 
     @Override
     public int executeUpdate() throws SQLException {
-        return 0;
+        try {
+            SQLUnit sqlUnit = getSQLUnit(sql);
+            preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
+            replayMethodsInvocation(preparedStatement);
+            replaySetParameter(preparedStatement, sqlUnit.getParameters());
+            return preparedStatement.executeUpdate();
+        } finally {
+            clearParameters();
+        }
     }
 
     @Override
