@@ -149,7 +149,8 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
     private void showSQL(final String sql) {
         boolean showSQL = preparedStatementGenerator.connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW);
         if (showSQL) {
-            SQLLogger.logSQL(sql);
+            //todo
+            SQLLogger.logShadowSQL(sql, "");
         }
     }
 

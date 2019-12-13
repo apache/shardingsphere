@@ -24,8 +24,7 @@ import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import javax.sql.DataSource;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collections;
 import java.util.Properties;
 
 /**
@@ -45,15 +44,8 @@ public class ShadowRuntimeContext extends AbstractRuntimeContext<ShadowRule> {
     
     public ShadowRuntimeContext(final DataSource actualDataSource, final DataSource shadowDataSource, final ShadowRule rule, final Properties props, final DatabaseType databaseType) {
         super(rule, props, databaseType);
-        //TODO
-        tableMetas = null;
+        tableMetas = new TableMetas(Collections.<String, TableMetaData>emptyMap());
         this.actualDataSource = actualDataSource;
         this.shadowDataSource = shadowDataSource;
-    }
-    
-    private TableMetas createShadowTableMetas(final DataSource dataSource, final ShadowRule shadowRule) {
-        Map<String, TableMetaData> tables = new LinkedHashMap<>();
-        //TODO
-        return new TableMetas(tables);
     }
 }

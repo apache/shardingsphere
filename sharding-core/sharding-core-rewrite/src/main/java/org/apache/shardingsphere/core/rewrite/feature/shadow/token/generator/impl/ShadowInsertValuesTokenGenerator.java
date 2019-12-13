@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.Previous
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValuesToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValuesToken.InsertValueToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.UseDefaultInsertColumnsToken;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.sql.parser.relation.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
@@ -77,9 +76,8 @@ public final class ShadowInsertValuesTokenGenerator extends BaseShadowSQLTokenGe
     }
 
     private void removeValueToken(final InsertValueToken insertValueToken, final InsertSQLStatementContext sqlStatementContext, final String columnName) {
-        Optional<SQLToken> useDefaultInsertColumnsToken = findPreviousSQLToken(UseDefaultInsertColumnsToken.class);
-        int columnIndex = useDefaultInsertColumnsToken.isPresent()
-                ? ((UseDefaultInsertColumnsToken) useDefaultInsertColumnsToken.get()).getColumns().indexOf(columnName) : sqlStatementContext.getColumnNames().indexOf(columnName);
+//        Optional<SQLToken> useDefaultInsertColumnsToken = findPreviousSQLToken(UseDefaultInsertColumnsToken.class);
+        int columnIndex = sqlStatementContext.getColumnNames().indexOf(columnName);
         insertValueToken.getValues().remove(columnIndex);
     }
 

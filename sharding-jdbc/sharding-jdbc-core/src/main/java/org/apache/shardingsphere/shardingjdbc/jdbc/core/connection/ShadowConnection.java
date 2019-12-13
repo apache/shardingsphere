@@ -123,7 +123,7 @@ public final class ShadowConnection extends AbstractUnsupportedOperationConnecti
 
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        return null;
+        return actualConnection.getMetaData();
     }
 
     @Override
