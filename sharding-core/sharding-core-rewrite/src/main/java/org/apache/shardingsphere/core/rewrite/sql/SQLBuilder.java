@@ -86,7 +86,7 @@ public final class SQLBuilder {
         int startIndex = sqlToken instanceof Substitutable ? ((Substitutable) sqlToken).getStopIndex() + 1 : sqlToken.getStartIndex();
         return Math.min(startIndex, logicSQL.length());
     }
-
+    
     private int getStopIndex(final SQLToken sqlToken) {
         int currentSQLTokenIndex = sqlTokens.indexOf(sqlToken);
         if (sqlTokens.size() - 1 == currentSQLTokenIndex) {
