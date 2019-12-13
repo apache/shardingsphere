@@ -77,7 +77,7 @@ public final class DescribeTableMergedResultTest {
         when(encryptTable.getAssistedQueryColumns()).thenReturn(Collections.singletonList("name_assisted"));
         when(encryptTable.getPlainColumns()).thenReturn(Collections.singletonList("name_plain"));
         when(encryptTable.getCipherColumns()).thenReturn(Collections.singletonList("name"));
-        when(encryptTable.getLogicColumn("name")).thenReturn("logic_name");
+        when(encryptTable.getLogicColumnOfCipher("name")).thenReturn("logic_name");
         return result;
     }
     

@@ -114,14 +114,14 @@ public final class EncryptRule implements BaseRule {
     }
     
     /**
-     * Get logic column.
+     * Get logic column of cipher column.
      *
      * @param logicTable logic table
      * @param cipherColumn cipher column
      * @return logic column
      */
-    public String getLogicColumn(final String logicTable, final String cipherColumn) {
-        return tables.get(logicTable).getLogicColumn(cipherColumn);
+    public String getLogicColumnOfCipher(final String logicTable, final String cipherColumn) {
+        return tables.get(logicTable).getLogicColumnOfCipher(cipherColumn);
     }
     
     /**

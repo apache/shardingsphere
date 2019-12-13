@@ -54,6 +54,8 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     private static final String SELECT_SQL_WITH_CIPHER = "SELECT id, pwd FROM t_encrypt WHERE pwd = 'plainValue'";
     
     private static final String SELECT_SQL_TO_ASSERT = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt";
+
+    private static final String SHOW_COLUMNS_SQL = "SHOW columns from t_encrypt";
     
     @Test
     public void assertSqlShow() throws SQLException {
@@ -193,6 +195,20 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     public void assertQueryWithEmptyString() throws SQLException {
         try (Statement statement = getEncryptConnection().createStatement()) {
             statement.executeQuery("");
+        }
+    }
+
+    @Test
+    public void assertShowColumnsTable() throws SQLException {
+        try (Statement statement = getEncryptConnection().createStatement()) {
+            ResultSet resultSet = statement.executeQuery(SHOW_COLUMNS_SQL);
+            int count = 0;
+            while (resultSet.next()) {
+                if (resultSet.getString("FIELD").equals("pwd")) {
+                    count++;
+                }
+            }
+            assertThat(count, is(1));
         }
     }
 }

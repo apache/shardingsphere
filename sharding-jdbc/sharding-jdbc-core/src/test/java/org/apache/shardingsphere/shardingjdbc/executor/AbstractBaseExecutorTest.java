@@ -91,7 +91,7 @@ public abstract class AbstractBaseExecutorTest {
         EncryptRule encryptRule = mock(EncryptRule.class);
         EncryptTable encryptTable = mock(EncryptTable.class);
         when(encryptRule.findShardingEncryptor(anyString(), anyString())).thenReturn(Optional.of(shardingEncryptor));
-        when(encryptRule.getLogicColumn(anyString(), anyString())).thenReturn("column");
+        when(encryptRule.getLogicColumnOfCipher(anyString(), anyString())).thenReturn("column");
         when(encryptRule.findEncryptTable("table_x")).thenReturn(Optional.of(encryptTable));
         when(encryptTable.getCipherColumns()).thenReturn(Collections.singleton("column"));
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);

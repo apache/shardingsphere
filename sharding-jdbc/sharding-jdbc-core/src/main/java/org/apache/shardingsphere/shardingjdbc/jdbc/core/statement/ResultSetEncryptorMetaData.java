@@ -46,7 +46,7 @@ public final class ResultSetEncryptorMetaData implements EncryptorMetaData {
         String columnName = resultSetMetaData.getColumnName(columnIndex);
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             Optional<ShardingEncryptor> result = encryptRule.isCipherColumn(each, columnName)
-                    ? encryptRule.findShardingEncryptor(each, encryptRule.getLogicColumn(each, columnName)) : Optional.<ShardingEncryptor>absent();
+                    ? encryptRule.findShardingEncryptor(each, encryptRule.getLogicColumnOfCipher(each, columnName)) : Optional.<ShardingEncryptor>absent();
             if (result.isPresent()) {
                 return result;
             }

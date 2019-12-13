@@ -191,7 +191,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         EncryptRule encryptRule = getEncryptRule();
         for (QueryHeader each : queryHeaders) {
             if (encryptRule.isCipherColumn(each.getTable(), each.getColumnName())) {
-                each.setColumnLabelAndName(encryptRule.getLogicColumn(each.getTable(), each.getColumnName()));
+                each.setColumnLabelAndName(encryptRule.getLogicColumnOfCipher(each.getTable(), each.getColumnName()));
             }
         }
     }
