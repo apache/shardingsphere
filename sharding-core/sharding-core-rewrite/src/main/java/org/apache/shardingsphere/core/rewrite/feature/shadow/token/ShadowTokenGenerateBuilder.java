@@ -18,11 +18,15 @@
 package org.apache.shardingsphere.core.rewrite.feature.shadow.token;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.rewrite.feature.shadow.aware.ShadowRuleAware;
+import org.apache.shardingsphere.core.rewrite.feature.shadow.token.generator.impl.RemoveShadowColumnTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.feature.shadow.token.generator.impl.ShadowInsertValuesTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.builder.SQLTokenGeneratorBuilder;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * SQL token generator builder for shadow.
@@ -36,6 +40,18 @@ public final class ShadowTokenGenerateBuilder implements SQLTokenGeneratorBuilde
 
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
-        return null;
+        Collection<SQLTokenGenerator> result = buildSQLTokenGenerators();
+        for (SQLTokenGenerator each : result) {
+            ((ShadowRuleAware) each).setShadowRule(shadowRule);
+        }
+        return result;
+    }
+
+    private Collection<SQLTokenGenerator> buildSQLTokenGenerators() {
+        Collection<SQLTokenGenerator> result = new LinkedList<>();
+        //todo
+        result.add(new ShadowInsertValuesTokenGenerator());
+        result.add(new RemoveShadowColumnTokenGenerator());
+        return result;
     }
 }

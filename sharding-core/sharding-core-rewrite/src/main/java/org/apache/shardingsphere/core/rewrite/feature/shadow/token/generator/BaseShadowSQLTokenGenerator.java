@@ -15,30 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.shadow.parameter;
+package org.apache.shardingsphere.core.rewrite.feature.shadow.token.generator;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.rewrite.feature.shadow.aware.ShadowRuleAware;
-import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.core.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 /**
- * Parameter rewriter for shadow.
+ * Base SQL token generator for shadow.
  *
  * @author zhyee
  */
 @Getter
 @Setter
-public abstract class ShadowParameterRewriter implements ParameterRewriter, ShadowRuleAware {
+public abstract class BaseShadowSQLTokenGenerator implements SQLTokenGenerator, ShadowRuleAware {
 
     private ShadowRule shadowRule;
 
     @Override
-    public final boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
-        return isNeedRewriteForShadow(sqlStatementContext);
+    public final boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+        return isGenerateSQLTokenForShadow(sqlStatementContext);
     }
 
-    protected abstract boolean isNeedRewriteForShadow(SQLStatementContext sqlStatementContext);
+    protected abstract boolean isGenerateSQLTokenForShadow(SQLStatementContext sqlStatementContext);
 }

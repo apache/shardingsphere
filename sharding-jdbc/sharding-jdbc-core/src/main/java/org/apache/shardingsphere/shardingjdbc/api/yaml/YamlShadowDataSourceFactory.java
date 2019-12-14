@@ -98,7 +98,7 @@ public final class YamlShadowDataSourceFactory {
             return MasterSlaveDataSourceFactory.createDataSource(config.getShadowRule().getDataSources(),
                     new MasterSlaveRuleConfigurationYamlSwapper().swap(config.getMasterSlaveRule()), props);
         } else if (null != config.getDataSource()) {
-            return config.getDataSource();
+            return config.getShadowRule().getDataSource();
         } else {
             throw new UnsupportedOperationException("unsupported datasource");
         }
