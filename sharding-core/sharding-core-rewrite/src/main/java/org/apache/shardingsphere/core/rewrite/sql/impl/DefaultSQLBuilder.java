@@ -17,57 +17,22 @@
 
 package org.apache.shardingsphere.core.rewrite.sql.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.core.rewrite.sql.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
-
-import java.util.Collections;
 
 /**
  * Default SQL builder.
  *
- * @author gaohongtao
  * @author zhangliang
- * @author maxiaoguang
- * @author panjuan
  */
-@RequiredArgsConstructor
-public final class DefaultSQLBuilder implements SQLBuilder {
+public final class DefaultSQLBuilder extends AbstractSQLBuilder {
     
-    private final SQLRewriteContext context;
+    public DefaultSQLBuilder(final SQLRewriteContext context) {
+        super(context);
+    }
     
     @Override
-    public String toSQL() {
-        if (context.getSqlTokens().isEmpty()) {
-            return context.getSql();
-        }
-        Collections.sort(context.getSqlTokens());
-        StringBuilder result = new StringBuilder();
-        result.append(context.getSql().substring(0, context.getSqlTokens().get(0).getStartIndex()));
-        for (SQLToken each : context.getSqlTokens()) {
-            result.append(getSQLTokenText(each));
-            result.append(getConjunctionText(each));
-        }
-        return result.toString();
-    }
-    
-    private String getSQLTokenText(final SQLToken sqlToken) {
+    protected String getSQLTokenText(final SQLToken sqlToken) {
         return sqlToken.toString();
-    }
-    
-    private String getConjunctionText(final SQLToken sqlToken) {
-        return context.getSql().substring(getStartIndex(sqlToken), getStopIndex(sqlToken));
-    }
-    
-    private int getStartIndex(final SQLToken sqlToken) {
-        int startIndex = sqlToken instanceof Substitutable ? ((Substitutable) sqlToken).getStopIndex() + 1 : sqlToken.getStartIndex();
-        return Math.min(startIndex, context.getSql().length());
-    }
-    
-    private int getStopIndex(final SQLToken sqlToken) {
-        int currentSQLTokenIndex = context.getSqlTokens().indexOf(sqlToken);
-        return context.getSqlTokens().size() - 1 == currentSQLTokenIndex ? context.getSql().length() : context.getSqlTokens().get(currentSQLTokenIndex + 1).getStartIndex();
     }
 }

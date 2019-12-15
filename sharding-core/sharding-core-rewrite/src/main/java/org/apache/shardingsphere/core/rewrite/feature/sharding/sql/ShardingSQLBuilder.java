@@ -18,19 +18,16 @@
 package org.apache.shardingsphere.core.rewrite.feature.sharding.sql;
 
 import com.google.common.base.Optional;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.core.rewrite.sql.SQLBuilder;
+import org.apache.shardingsphere.core.rewrite.sql.impl.AbstractSQLBuilder;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Alterable;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -38,38 +35,28 @@ import java.util.Map;
 /**
  * SQL builder for sharding.
  *
- * @author gaohongtao
  * @author zhangliang
- * @author maxiaoguang
- * @author panjuan
  */
-@RequiredArgsConstructor
-public final class ShardingSQLBuilder implements SQLBuilder {
-    
-    private final SQLRewriteContext context;
+public final class ShardingSQLBuilder extends AbstractSQLBuilder {
     
     private final ShardingRule shardingRule;
     
     private final RoutingUnit routingUnit;
     
+    public ShardingSQLBuilder(final SQLRewriteContext context, final ShardingRule shardingRule, final RoutingUnit routingUnit) {
+        super(context);
+        this.shardingRule = shardingRule;
+        this.routingUnit = routingUnit;
+    }
+    
     @Override
-    public String toSQL() {
-        if (context.getSqlTokens().isEmpty()) {
-            return context.getSql();
-        }
-        Collections.sort(context.getSqlTokens());
-        StringBuilder result = new StringBuilder();
-        result.append(context.getSql().substring(0, context.getSqlTokens().get(0).getStartIndex()));
-        for (SQLToken each : context.getSqlTokens()) {
-            result.append(getSQLTokenText(each, routingUnit, getLogicAndActualTables()));
-            result.append(getConjunctionText(each));
-        }
-        return result.toString();
+    protected String getSQLTokenText(final SQLToken sqlToken) {
+        return sqlToken instanceof Alterable ? ((Alterable) sqlToken).toString(routingUnit, getLogicAndActualTables()) : sqlToken.toString();
     }
     
     private Map<String, String> getLogicAndActualTables() {
         Map<String, String> result = new HashMap<>();
-        Collection<String> tableNames = context.getSqlStatementContext().getTablesContext().getTableNames();
+        Collection<String> tableNames = getContext().getSqlStatementContext().getTablesContext().getTableNames();
         for (TableUnit each : routingUnit.getTableUnits()) {
             String logicTableName = each.getLogicTableName().toLowerCase();
             result.put(logicTableName, each.getActualTableName());
@@ -97,23 +84,5 @@ public final class ShardingSQLBuilder implements SQLBuilder {
             }
         }
         return result;
-    }
-    
-    private String getSQLTokenText(final SQLToken sqlToken, final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
-        return sqlToken instanceof Alterable ? ((Alterable) sqlToken).toString(routingUnit, logicAndActualTables) : sqlToken.toString();
-    }
-    
-    private String getConjunctionText(final SQLToken sqlToken) {
-        return context.getSql().substring(getStartIndex(sqlToken), getStopIndex(sqlToken));
-    }
-    
-    private int getStartIndex(final SQLToken sqlToken) {
-        int startIndex = sqlToken instanceof Substitutable ? ((Substitutable) sqlToken).getStopIndex() + 1 : sqlToken.getStartIndex();
-        return Math.min(startIndex, context.getSql().length());
-    }
-    
-    private int getStopIndex(final SQLToken sqlToken) {
-        int currentSQLTokenIndex = context.getSqlTokens().indexOf(sqlToken);
-        return context.getSqlTokens().size() - 1 == currentSQLTokenIndex ? context.getSql().length() : context.getSqlTokens().get(currentSQLTokenIndex + 1).getStartIndex();
     }
 }
