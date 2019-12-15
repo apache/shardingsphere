@@ -17,33 +17,20 @@
 
 package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
 
-import lombok.Getter;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
+import java.util.Map;
 
 /**
- * Aggregation distinct token.
+ * Logic and actual tables aware.
  *
- * @author panjuan
+ * @author zhangliang
  */
-public final class AggregationDistinctToken extends SQLToken implements Substitutable {
+public interface LogicAndActualTablesAware {
     
-    private final String columnName;
-    
-    private final String derivedAlias;
-    
-    @Getter
-    private final int stopIndex;
-    
-    public AggregationDistinctToken(final int startIndex, final int stopIndex, final String columnName, final String derivedAlias) {
-        super(startIndex);
-        this.columnName = columnName;
-        this.derivedAlias = derivedAlias;
-        this.stopIndex = stopIndex;
-    }
-    
-    @Override
-    public String toString() {
-        return null == derivedAlias ? columnName : columnName + " AS " + derivedAlias;
-    }
+    /**
+     * To string.
+     * 
+     * @param logicAndActualTables logic and actual tables
+     * @return literal
+     */
+    String toString(Map<String, String> logicAndActualTables);
 }

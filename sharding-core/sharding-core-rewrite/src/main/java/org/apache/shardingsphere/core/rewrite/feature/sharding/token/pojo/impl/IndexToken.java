@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.impl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Alterable;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.LogicAndActualTablesAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 
 import java.util.Map;
 
@@ -32,7 +31,7 @@ import java.util.Map;
  * @author caohao
  * @author panjuan
  */
-public final class IndexToken extends SQLToken implements Substitutable, Alterable {
+public final class IndexToken extends SQLToken implements Substitutable, LogicAndActualTablesAware {
     
     @Getter
     private final int stopIndex;
@@ -54,7 +53,7 @@ public final class IndexToken extends SQLToken implements Substitutable, Alterab
     }
     
     @Override
-    public String toString(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
+    public String toString(final Map<String, String> logicAndActualTables) {
         StringBuilder result = new StringBuilder();
         result.append(quoteCharacter.getStartDelimiter()).append(indexName);
         if (!logicAndActualTables.isEmpty()) {

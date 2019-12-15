@@ -20,7 +20,8 @@ package org.apache.shardingsphere.core.rewrite.feature.sharding.sql;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.core.rewrite.sql.impl.AbstractSQLBuilder;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Alterable;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.LogicAndActualTablesAware;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.RoutingUnitAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
@@ -51,7 +52,13 @@ public final class ShardingSQLBuilder extends AbstractSQLBuilder {
     
     @Override
     protected String getSQLTokenText(final SQLToken sqlToken) {
-        return sqlToken instanceof Alterable ? ((Alterable) sqlToken).toString(routingUnit, getLogicAndActualTables()) : sqlToken.toString();
+        if (sqlToken instanceof RoutingUnitAware) {
+            return ((RoutingUnitAware) sqlToken).toString(routingUnit);
+        }
+        if (sqlToken instanceof LogicAndActualTablesAware) {
+            return ((LogicAndActualTablesAware) sqlToken).toString(getLogicAndActualTables());
+        }
+        return sqlToken.toString();
     }
     
     private Map<String, String> getLogicAndActualTables() {

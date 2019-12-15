@@ -19,20 +19,19 @@ package org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.ComplexExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Alterable;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.RoutingUnitAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.ComplexExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Insert values token.
@@ -41,7 +40,7 @@ import java.util.Map;
  * @author panjuan
  */
 @Getter
-public final class InsertValuesToken extends SQLToken implements Substitutable, Alterable {
+public final class InsertValuesToken extends SQLToken implements Substitutable, RoutingUnitAware {
     
     private final int stopIndex;
     
@@ -64,7 +63,7 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
     }
     
     @Override
-    public String toString(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
+    public String toString(final RoutingUnit routingUnit) {
         StringBuilder result = new StringBuilder();
         appendInsertValue(routingUnit, result);
         result.delete(result.length() - 2, result.length());

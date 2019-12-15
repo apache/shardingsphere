@@ -15,33 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
-
-import lombok.Getter;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.impl;
 
 /**
- * Offset token.
+ * Generated key assignment token for parameter marker.
  *
- * @author zhangliang
  * @author panjuan
  */
-public final class OffsetToken extends SQLToken implements Substitutable {
+public final class ParameterMarkerGeneratedKeyAssignmentToken extends GeneratedKeyAssignmentToken {
     
-    @Getter
-    private final int stopIndex;
-    
-    private final long revisedOffset;
-    
-    public OffsetToken(final int startIndex, final int stopIndex, final long revisedOffset) {
-        super(startIndex);
-        this.stopIndex = stopIndex;
-        this.revisedOffset = revisedOffset;
+    public ParameterMarkerGeneratedKeyAssignmentToken(final int startIndex, final String columnName) {
+        super(startIndex, columnName);
     }
     
     @Override
-    public String toString() {
-        return String.valueOf(revisedOffset);
+    protected String getRightValue() {
+        return "?";
     }
 }

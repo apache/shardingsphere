@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.sharding.token;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.builder.SQLTokenGeneratorBuilder;

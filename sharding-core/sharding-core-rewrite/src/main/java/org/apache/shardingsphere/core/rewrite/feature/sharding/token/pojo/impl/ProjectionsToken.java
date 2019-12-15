@@ -15,24 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.impl;
+
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
+
+import java.util.Collection;
 
 /**
- * Generated key assignment token for literal.
+ * Projections token.
  *
+ * @author zhangliang
  * @author panjuan
  */
-public final class LiteralGeneratedKeyAssignmentToken extends GeneratedKeyAssignmentToken {
+public final class ProjectionsToken extends SQLToken implements Attachable {
     
-    private final Object value;
+    private final Collection<String> projections;
     
-    public LiteralGeneratedKeyAssignmentToken(final int startIndex, final String columnName, final Object value) {
-        super(startIndex, columnName);
-        this.value = value;
+    public ProjectionsToken(final int startIndex, final Collection<String> projections) {
+        super(startIndex);
+        this.projections = projections;
     }
     
     @Override
-    protected String getRightValue() {
-        return value instanceof String ? String.format("'%s'", value) : value.toString();
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        for (String each : projections) {
+            result.append(", ");
+            result.append(each);
+        }
+        return result.toString();
     }
 }
