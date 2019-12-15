@@ -19,17 +19,8 @@ package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.i
 
 import com.google.common.base.Optional;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.relation.segment.insert.InsertValueContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.insert.expression.DerivedLiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.relation.segment.insert.expression.DerivedParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.relation.segment.insert.expression.DerivedSimpleExpressionSegment;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.generator.BaseEncryptSQLTokenGenerator;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptInsertValuesToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
@@ -39,6 +30,16 @@ import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.UseDefaultI
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
+import org.apache.shardingsphere.sql.parser.relation.segment.insert.InsertValueContext;
+import org.apache.shardingsphere.sql.parser.relation.segment.insert.expression.DerivedLiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.relation.segment.insert.expression.DerivedParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.relation.segment.insert.expression.DerivedSimpleExpressionSegment;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -74,7 +75,7 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
     
     private Optional<SQLToken> findPreviousSQLToken(final Class<?> sqlToken) {
         for (SQLToken each : previousSQLTokens) {
-            if (each.getClass().equals(sqlToken)) {
+            if (sqlToken.isAssignableFrom(each.getClass())) {
                 return Optional.of(each);
             }
         }
@@ -93,7 +94,7 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
     private InsertValuesToken generateNewSQLToken(final InsertSQLStatementContext sqlStatementContext) {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         Collection<InsertValuesSegment> insertValuesSegments = sqlStatementContext.getSqlStatement().findSQLSegments(InsertValuesSegment.class);
-        InsertValuesToken result = new InsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
+        InsertValuesToken result = new EncryptInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
         for (InsertValueContext each : sqlStatementContext.getInsertValueContexts()) {
             InsertValueToken insertValueToken = new InsertValueToken(each.getValueExpressions(), Collections.<DataNode>emptyList());
             encryptToken(insertValueToken, tableName, sqlStatementContext, each);
