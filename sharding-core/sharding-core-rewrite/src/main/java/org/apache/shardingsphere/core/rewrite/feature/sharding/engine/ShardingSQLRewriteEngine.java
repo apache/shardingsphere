@@ -22,9 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteResult;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.sql.ShardingSQLBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.StandardParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.sql.SQLBuilder;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -56,8 +58,9 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     
     @Override
     public SQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
-        return new SQLRewriteResult(sqlRewriteContext.getSQLBuilder().toSQL(
-                routingUnit, getLogicAndActualTables(sqlRewriteContext.getSqlStatementContext().getTablesContext().getTableNames())), getParameters(sqlRewriteContext.getParameterBuilder()));
+        SQLBuilder sqlBuilder = new ShardingSQLBuilder(
+                sqlRewriteContext.getSql(), sqlRewriteContext.getSqlTokens(), routingUnit, getLogicAndActualTables(sqlRewriteContext.getSqlStatementContext().getTablesContext().getTableNames()));
+        return new SQLRewriteResult(sqlBuilder.toSQL(), getParameters(sqlRewriteContext.getParameterBuilder()));
     }
     
     private Map<String, String> getLogicAndActualTables(final Collection<String> parsedTableNames) {

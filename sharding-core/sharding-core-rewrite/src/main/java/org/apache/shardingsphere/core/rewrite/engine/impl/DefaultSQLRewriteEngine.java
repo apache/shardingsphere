@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.rewrite.engine.impl;
 import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteEngine;
 import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteResult;
+import org.apache.shardingsphere.core.rewrite.sql.impl.DefaultSQLBuilder;
 
 /**
  * Default SQL rewrite engine.
@@ -30,6 +31,6 @@ public final class DefaultSQLRewriteEngine implements SQLRewriteEngine {
     
     @Override
     public SQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
-        return new SQLRewriteResult(sqlRewriteContext.getSQLBuilder().toSQL(), sqlRewriteContext.getParameterBuilder().getParameters());
+        return new SQLRewriteResult(new DefaultSQLBuilder(sqlRewriteContext.getSql(), sqlRewriteContext.getSqlTokens()).toSQL(), sqlRewriteContext.getParameterBuilder().getParameters());
     }
 }

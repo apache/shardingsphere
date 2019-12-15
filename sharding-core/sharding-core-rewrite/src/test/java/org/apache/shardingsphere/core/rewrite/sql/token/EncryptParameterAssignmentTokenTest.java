@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql;
+package org.apache.shardingsphere.core.rewrite.sql.token;
 
-/**
- * SQL builder.
- *
- * @author zhangliang
- */
-public interface SQLBuilder {
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptParameterAssignmentToken;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class EncryptParameterAssignmentTokenTest {
     
-    /**
-     * Build SQL.
-     *
-     * @return SQL
-     */
-    String toSQL();
+    @Test
+    public void assertToString() {
+        EncryptParameterAssignmentToken actual = new EncryptParameterAssignmentToken(0, 1);
+        actual.addColumnName("c1");
+        actual.addColumnName("c2");
+        assertThat(actual.toString(), is("c1 = ?, c2 = ?"));
+    }
 }

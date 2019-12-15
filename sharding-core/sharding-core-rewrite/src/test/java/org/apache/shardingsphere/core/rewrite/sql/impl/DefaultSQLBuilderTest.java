@@ -17,19 +17,20 @@
 
 package org.apache.shardingsphere.core.rewrite.sql.impl;
 
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptLiteralAssignmentToken;
+import org.apache.shardingsphere.core.rewrite.sql.SQLBuilder;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.junit.Test;
+
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class EncryptLiteralAssignmentTokenTest {
+public final class DefaultSQLBuilderTest {
     
     @Test
-    public void assertToString() {
-        EncryptLiteralAssignmentToken actual = new EncryptLiteralAssignmentToken(0, 1);
-        actual.addAssignment("c1", "c1");
-        actual.addAssignment("c2", 1);
-        assertThat(actual.toString(), is("c1 = 'c1', c2 = 1"));
+    public void assertToSQLWithoutTokens() {
+        SQLBuilder sqlBuilderWithoutTokens = new DefaultSQLBuilder("SELECT * FROM t_config", Collections.<SQLToken>emptyList());
+        assertThat(sqlBuilderWithoutTokens.toSQL(), is("SELECT * FROM t_config"));
     }
 }

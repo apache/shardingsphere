@@ -54,6 +54,16 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
     }
     
     @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        for (InsertValueToken each : insertValueTokens) {
+            result.append(each).append(", ");
+        }
+        result.delete(result.length() - 2, result.length());
+        return result.toString();
+    }
+    
+    @Override
     public String toString(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
         StringBuilder result = new StringBuilder();
         appendInsertValue(routingUnit, result);

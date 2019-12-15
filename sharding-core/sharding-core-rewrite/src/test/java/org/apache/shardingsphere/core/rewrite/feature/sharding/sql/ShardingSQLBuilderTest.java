@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.sql;
 
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.TableToken;
+import org.apache.shardingsphere.core.rewrite.sql.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -27,17 +28,12 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class SQLBuilderTest {
-    
-    @Test
-    public void assertToSQLWithoutTokens() {
-        SQLBuilder sqlBuilderWithoutTokens = new SQLBuilder("SELECT * FROM t_config", Collections.<SQLToken>emptyList());
-        assertThat(sqlBuilderWithoutTokens.toSQL(), is("SELECT * FROM t_config"));
-    }
+public final class ShardingSQLBuilderTest {
     
     @Test
     public void assertToSQLWithTokens() {
-        SQLBuilder sqlBuilderWithTokens = new SQLBuilder("SELECT * FROM t_order WHERE order_id > 1", Collections.<SQLToken>singletonList(new TableToken(14, 20, "t_order", QuoteCharacter.NONE)));
-        assertThat(sqlBuilderWithTokens.toSQL(null, Collections.singletonMap("t_order", "t_order_0")), is("SELECT * FROM t_order_0 WHERE order_id > 1"));
+        SQLBuilder sqlBuilderWithTokens = new ShardingSQLBuilder("SELECT * FROM t_order WHERE order_id > 1", 
+                Collections.<SQLToken>singletonList(new TableToken(14, 20, "t_order", QuoteCharacter.NONE)), null, Collections.singletonMap("t_order", "t_order_0"));
+        assertThat(sqlBuilderWithTokens.toSQL(), is("SELECT * FROM t_order_0 WHERE order_id > 1"));
     }
 }

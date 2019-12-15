@@ -49,6 +49,11 @@ public final class IndexToken extends SQLToken implements Substitutable, Alterab
     }
     
     @Override
+    public String toString() {
+        return quoteCharacter.getStartDelimiter() + indexName + quoteCharacter.getEndDelimiter();
+    }
+    
+    @Override
     public String toString(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
         StringBuilder result = new StringBuilder();
         result.append(quoteCharacter.getStartDelimiter()).append(indexName);

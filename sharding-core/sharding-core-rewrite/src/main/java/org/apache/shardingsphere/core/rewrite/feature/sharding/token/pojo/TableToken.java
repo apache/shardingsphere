@@ -51,6 +51,11 @@ public final class TableToken extends SQLToken implements Substitutable, Alterab
     }
     
     @Override
+    public String toString() {
+        return Joiner.on("").join(quoteCharacter.getStartDelimiter(), tableName.toLowerCase(), quoteCharacter.getEndDelimiter());
+    }
+    
+    @Override
     public String toString(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
         String actualTableName = logicAndActualTables.get(tableName.toLowerCase());
         actualTableName = null == actualTableName ? tableName.toLowerCase() : actualTableName;
