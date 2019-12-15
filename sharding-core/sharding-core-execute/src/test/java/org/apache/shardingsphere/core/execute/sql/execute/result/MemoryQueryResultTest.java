@@ -114,7 +114,7 @@ public final class MemoryQueryResultTest {
         when(resultSet.getMetaData().isSigned(1)).thenReturn(true);
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, int.class), is((Object) 1L));
+        assertThat(actual.getValue(1, int.class), is((Object) 1));
         assertFalse(actual.next());
     }
     
@@ -122,9 +122,32 @@ public final class MemoryQueryResultTest {
     public void assertGetValueByUnsignedInteger() throws SQLException {
         ResultSet resultSet = getMockedResultSet(Types.INTEGER);
         when(resultSet.getLong(1)).thenReturn(1L);
+        when(resultSet.getMetaData().isSigned(1)).thenReturn(false);
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, int.class), is((Object) 1L));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueBySignedBigInt() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.BIGINT);
+        when(resultSet.getLong(1)).thenReturn(1L);
+        when(resultSet.getMetaData().isSigned(1)).thenReturn(true);
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, long.class), is((Object) 1L));
+        assertFalse(actual.next());
+    }
+    
+    @Test
+    public void assertGetValueByUnsignedBigInt() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.BIGINT);
+        when(resultSet.getBigDecimal(1)).thenReturn(new BigDecimal("1"));
+        when(resultSet.getMetaData().isSigned(1)).thenReturn(false);
+        MemoryQueryResult actual = new MemoryQueryResult(resultSet);
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, long.class), is((Object) new BigDecimal("1").toBigInteger()));
         assertFalse(actual.next());
     }
     
@@ -297,7 +320,7 @@ public final class MemoryQueryResultTest {
     public void assertGetCalendarValue() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
-        assertThat(queryResult.getCalendarValue(1, Integer.class, Calendar.getInstance()), Is.<Object>is(1L));
+        assertThat(queryResult.getCalendarValue(1, Integer.class, Calendar.getInstance()), Is.<Object>is(1));
     }
     
     @Test
