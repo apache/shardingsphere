@@ -17,20 +17,24 @@
 
 package org.apache.shardingsphere.core.rewrite.sql.impl;
 
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.core.rewrite.sql.SQLBuilder;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.junit.Test;
 
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class DefaultSQLBuilderTest {
     
     @Test
-    public void assertToSQLWithoutTokens() {
-        SQLBuilder sqlBuilderWithoutTokens = new DefaultSQLBuilder("SELECT * FROM t_config", Collections.<SQLToken>emptyList());
+    public void assertToSQL() {
+        SQLRewriteContext context = new SQLRewriteContext(mock(TableMetas.class), mock(SQLStatementContext.class), "SELECT * FROM t_config", Collections.emptyList());
+        SQLBuilder sqlBuilderWithoutTokens = new DefaultSQLBuilder(context);
         assertThat(sqlBuilderWithoutTokens.toSQL(), is("SELECT * FROM t_config"));
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rewrite.feature.sharding.engine;
 
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteEngine;
@@ -26,21 +25,14 @@ import org.apache.shardingsphere.core.rewrite.feature.sharding.sql.ShardingSQLBu
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.StandardParameterBuilder;
-import org.apache.shardingsphere.core.rewrite.sql.SQLBuilder;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
-import org.apache.shardingsphere.core.route.type.TableUnit;
-import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * SQL rewrite engine for sharding.
@@ -58,40 +50,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     
     @Override
     public SQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
-        SQLBuilder sqlBuilder = new ShardingSQLBuilder(
-                sqlRewriteContext.getSql(), sqlRewriteContext.getSqlTokens(), routingUnit, getLogicAndActualTables(sqlRewriteContext.getSqlStatementContext().getTablesContext().getTableNames()));
-        return new SQLRewriteResult(sqlBuilder.toSQL(), getParameters(sqlRewriteContext.getParameterBuilder()));
-    }
-    
-    private Map<String, String> getLogicAndActualTables(final Collection<String> parsedTableNames) {
-        Map<String, String> result = new HashMap<>();
-        for (TableUnit each : routingUnit.getTableUnits()) {
-            String logicTableName = each.getLogicTableName().toLowerCase();
-            result.put(logicTableName, each.getActualTableName());
-            result.putAll(getLogicAndActualTablesFromBindingTable(routingUnit.getMasterSlaveLogicDataSourceName(), each, parsedTableNames));
-        }
-        return result;
-    }
-    
-    private Map<String, String> getLogicAndActualTablesFromBindingTable(final String dataSourceName, final TableUnit tableUnit, final Collection<String> parsedTableNames) {
-        Map<String, String> result = new LinkedHashMap<>();
-        Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(tableUnit.getLogicTableName());
-        if (bindingTableRule.isPresent()) {
-            result.putAll(getLogicAndActualTablesFromBindingTable(dataSourceName, tableUnit, parsedTableNames, bindingTableRule.get()));
-        }
-        return result;
-    }
-    
-    private Map<String, String> getLogicAndActualTablesFromBindingTable(
-            final String dataSourceName, final TableUnit tableUnit, final Collection<String> parsedTableNames, final BindingTableRule bindingTableRule) {
-        Map<String, String> result = new LinkedHashMap<>();
-        for (String each : parsedTableNames) {
-            String tableName = each.toLowerCase();
-            if (!tableName.equals(tableUnit.getLogicTableName().toLowerCase()) && bindingTableRule.hasLogicTable(tableName)) {
-                result.put(tableName, bindingTableRule.getBindingActualTable(dataSourceName, tableName, tableUnit.getActualTableName()));
-            }
-        }
-        return result;
+        return new SQLRewriteResult(new ShardingSQLBuilder(sqlRewriteContext, shardingRule, routingUnit).toSQL(), getParameters(sqlRewriteContext.getParameterBuilder()));
     }
     
     private List<Object> getParameters(final ParameterBuilder parameterBuilder) {

@@ -17,15 +17,22 @@
 
 package org.apache.shardingsphere.core.rewrite.feature.sharding.sql;
 
+import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.core.rewrite.sql.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Alterable;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import org.apache.shardingsphere.core.route.type.TableUnit;
+import org.apache.shardingsphere.core.rule.BindingTableRule;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -39,27 +46,57 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class ShardingSQLBuilder implements SQLBuilder {
     
-    private final String logicSQL;
+    private final SQLRewriteContext context;
     
-    private final List<SQLToken> sqlTokens;
+    private final ShardingRule shardingRule;
     
     private final RoutingUnit routingUnit;
     
-    private final Map<String, String> logicAndActualTables;
-    
     @Override
     public String toSQL() {
-        if (sqlTokens.isEmpty()) {
-            return logicSQL;
+        if (context.getSqlTokens().isEmpty()) {
+            return context.getSql();
         }
-        Collections.sort(sqlTokens);
+        Collections.sort(context.getSqlTokens());
         StringBuilder result = new StringBuilder();
-        result.append(logicSQL.substring(0, sqlTokens.get(0).getStartIndex()));
-        for (SQLToken each : sqlTokens) {
-            result.append(getSQLTokenText(each, routingUnit, logicAndActualTables));
+        result.append(context.getSql().substring(0, context.getSqlTokens().get(0).getStartIndex()));
+        for (SQLToken each : context.getSqlTokens()) {
+            result.append(getSQLTokenText(each, routingUnit, getLogicAndActualTables()));
             result.append(getConjunctionText(each));
         }
         return result.toString();
+    }
+    
+    private Map<String, String> getLogicAndActualTables() {
+        Map<String, String> result = new HashMap<>();
+        Collection<String> tableNames = context.getSqlStatementContext().getTablesContext().getTableNames();
+        for (TableUnit each : routingUnit.getTableUnits()) {
+            String logicTableName = each.getLogicTableName().toLowerCase();
+            result.put(logicTableName, each.getActualTableName());
+            result.putAll(getLogicAndActualTablesFromBindingTable(routingUnit.getMasterSlaveLogicDataSourceName(), each, tableNames));
+        }
+        return result;
+    }
+    
+    private Map<String, String> getLogicAndActualTablesFromBindingTable(final String dataSourceName, final TableUnit tableUnit, final Collection<String> tableNames) {
+        Map<String, String> result = new LinkedHashMap<>();
+        Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(tableUnit.getLogicTableName());
+        if (bindingTableRule.isPresent()) {
+            result.putAll(getLogicAndActualTablesFromBindingTable(dataSourceName, tableUnit, tableNames, bindingTableRule.get()));
+        }
+        return result;
+    }
+    
+    private Map<String, String> getLogicAndActualTablesFromBindingTable(
+            final String dataSourceName, final TableUnit tableUnit, final Collection<String> parsedTableNames, final BindingTableRule bindingTableRule) {
+        Map<String, String> result = new LinkedHashMap<>();
+        for (String each : parsedTableNames) {
+            String tableName = each.toLowerCase();
+            if (!tableName.equals(tableUnit.getLogicTableName().toLowerCase()) && bindingTableRule.hasLogicTable(tableName)) {
+                result.put(tableName, bindingTableRule.getBindingActualTable(dataSourceName, tableName, tableUnit.getActualTableName()));
+            }
+        }
+        return result;
     }
     
     private String getSQLTokenText(final SQLToken sqlToken, final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
@@ -67,16 +104,16 @@ public final class ShardingSQLBuilder implements SQLBuilder {
     }
     
     private String getConjunctionText(final SQLToken sqlToken) {
-        return logicSQL.substring(getStartIndex(sqlToken), getStopIndex(sqlToken));
+        return context.getSql().substring(getStartIndex(sqlToken), getStopIndex(sqlToken));
     }
     
     private int getStartIndex(final SQLToken sqlToken) {
         int startIndex = sqlToken instanceof Substitutable ? ((Substitutable) sqlToken).getStopIndex() + 1 : sqlToken.getStartIndex();
-        return Math.min(startIndex, logicSQL.length());
+        return Math.min(startIndex, context.getSql().length());
     }
     
     private int getStopIndex(final SQLToken sqlToken) {
-        int currentSQLTokenIndex = sqlTokens.indexOf(sqlToken);
-        return sqlTokens.size() - 1 == currentSQLTokenIndex ? logicSQL.length() : sqlTokens.get(currentSQLTokenIndex + 1).getStartIndex();
+        int currentSQLTokenIndex = context.getSqlTokens().indexOf(sqlToken);
+        return context.getSqlTokens().size() - 1 == currentSQLTokenIndex ? context.getSql().length() : context.getSqlTokens().get(currentSQLTokenIndex + 1).getStartIndex();
     }
 }
