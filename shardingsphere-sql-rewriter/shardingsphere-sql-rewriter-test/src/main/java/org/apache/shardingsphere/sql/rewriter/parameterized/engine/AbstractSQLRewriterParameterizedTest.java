@@ -32,7 +32,7 @@ import java.util.Collection;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public abstract class AbstractSQLRewriteEngineParameterizedTest {
+public abstract class AbstractSQLRewriterParameterizedTest {
     
     private final String type;
     

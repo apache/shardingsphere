@@ -55,17 +55,17 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MixSQLRewriteEngineParameterizedTest extends AbstractSQLRewriteEngineParameterizedTest {
+public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterParameterizedTest {
     
     private static final String PATH = "mix";
     
-    public MixSQLRewriteEngineParameterizedTest(final String type, final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
+    public MixSQLRewriterParameterizedTest(final String type, final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
         super(type, name, fileName, testParameters);
     }
     
     @Parameters(name = "{0}: {1} -> {2}")
     public static Collection<Object[]> loadTestParameters() {
-        return SQLRewriteEngineTestParametersBuilder.loadTestParameters(PATH.toUpperCase(), PATH, MixSQLRewriteEngineParameterizedTest.class);
+        return SQLRewriteEngineTestParametersBuilder.loadTestParameters(PATH.toUpperCase(), PATH, MixSQLRewriterParameterizedTest.class);
     }
     
     @Override
@@ -90,7 +90,7 @@ public final class MixSQLRewriteEngineParameterizedTest extends AbstractSQLRewri
     }
     
     private YamlRootShardingConfiguration createRuleConfiguration() throws IOException {
-        URL url = MixSQLRewriteEngineParameterizedTest.class.getClassLoader().getResource(getTestParameters().getRuleFile());
+        URL url = MixSQLRewriterParameterizedTest.class.getClassLoader().getResource(getTestParameters().getRuleFile());
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class);
     }

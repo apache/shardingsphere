@@ -46,17 +46,17 @@ import java.util.Collections;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class EncryptSQLRewriteEngineParameterizedTest extends AbstractSQLRewriteEngineParameterizedTest {
+public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewriterParameterizedTest {
     
     private static final String PATH = "encrypt";
     
-    public EncryptSQLRewriteEngineParameterizedTest(final String type, final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
+    public EncryptSQLRewriterParameterizedTest(final String type, final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
         super(type, name, fileName, testParameters);
     }
     
     @Parameters(name = "{0}: {1} -> {2}")
     public static Collection<Object[]> loadTestParameters() {
-        return SQLRewriteEngineTestParametersBuilder.loadTestParameters(PATH.toUpperCase(), PATH, EncryptSQLRewriteEngineParameterizedTest.class);
+        return SQLRewriteEngineTestParametersBuilder.loadTestParameters(PATH.toUpperCase(), PATH, EncryptSQLRewriterParameterizedTest.class);
     }
     
     @Override
@@ -86,7 +86,7 @@ public final class EncryptSQLRewriteEngineParameterizedTest extends AbstractSQLR
     }
     
     private YamlRootEncryptRuleConfiguration createRuleConfiguration() throws IOException {
-        URL url = EncryptSQLRewriteEngineParameterizedTest.class.getClassLoader().getResource(getTestParameters().getRuleFile());
+        URL url = EncryptSQLRewriterParameterizedTest.class.getClassLoader().getResource(getTestParameters().getRuleFile());
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootEncryptRuleConfiguration.class);
     }

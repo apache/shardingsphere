@@ -54,17 +54,17 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingSQLRewriteEngineParameterizedTest extends AbstractSQLRewriteEngineParameterizedTest {
+public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewriterParameterizedTest {
     
     private static final String PATH = "sharding";
     
-    public ShardingSQLRewriteEngineParameterizedTest(final String type, final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
+    public ShardingSQLRewriterParameterizedTest(final String type, final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
         super(type, name, fileName, testParameters);
     }
     
     @Parameters(name = "{0}: {1} -> {2}")
     public static Collection<Object[]> loadTestParameters() {
-        return SQLRewriteEngineTestParametersBuilder.loadTestParameters(PATH.toUpperCase(), PATH, ShardingSQLRewriteEngineParameterizedTest.class);
+        return SQLRewriteEngineTestParametersBuilder.loadTestParameters(PATH.toUpperCase(), PATH, ShardingSQLRewriterParameterizedTest.class);
     }
     
     @Override
@@ -87,7 +87,7 @@ public final class ShardingSQLRewriteEngineParameterizedTest extends AbstractSQL
     }
     
     private YamlRootShardingConfiguration createRuleConfiguration() throws IOException {
-        URL url = ShardingSQLRewriteEngineParameterizedTest.class.getClassLoader().getResource(getTestParameters().getRuleFile());
+        URL url = ShardingSQLRewriterParameterizedTest.class.getClassLoader().getResource(getTestParameters().getRuleFile());
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class);
     }
