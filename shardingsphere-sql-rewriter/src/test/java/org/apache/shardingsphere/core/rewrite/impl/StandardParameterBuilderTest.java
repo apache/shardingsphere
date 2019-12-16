@@ -15,29 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.parameter.builder.impl;
+package org.apache.shardingsphere.core.rewrite.impl;
 
+import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.StandardParameterBuilder;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class GroupedParameterBuilderTest {
+public final class StandardParameterBuilderTest {
+    
+    private final List<Object> parameters = Arrays.<Object>asList(1, 2, 1, 5);
+    
+    private StandardParameterBuilder parameterBuilder;
+    
+    @Before
+    public void setUp() {
+        parameterBuilder = new StandardParameterBuilder(parameters);
+        parameterBuilder.addAddedParameters(4, Collections.<Object>singleton(7));
+    }
     
     @Test
     public void assertGetParameters() {
-        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters());
-        assertThat(actual.getParameters(), is(Arrays.<Object>asList(3, 4, 5, 6)));
-    }
-    
-    private List<List<Object>> createGroupedParameters() {
-        List<List<Object>> result = new LinkedList<>();
-        result.add(Arrays.<Object>asList(3, 4));
-        result.add(Arrays.<Object>asList(5, 6));
-        return result;
+        assertThat(parameterBuilder.getParameters(), is(Arrays.<Object>asList(1, 2, 1, 5, 7)));
     }
 }

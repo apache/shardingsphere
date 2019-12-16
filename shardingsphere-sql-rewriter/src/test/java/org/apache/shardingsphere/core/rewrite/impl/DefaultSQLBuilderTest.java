@@ -15,32 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.parameter.builder.impl;
+package org.apache.shardingsphere.core.rewrite.impl;
 
-import org.junit.Before;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.core.rewrite.sql.SQLBuilder;
+import org.apache.shardingsphere.core.rewrite.sql.impl.DefaultSQLBuilder;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
-public final class StandardParameterBuilderTest {
-    
-    private final List<Object> parameters = Arrays.<Object>asList(1, 2, 1, 5);
-    
-    private StandardParameterBuilder parameterBuilder;
-    
-    @Before
-    public void setUp() {
-        parameterBuilder = new StandardParameterBuilder(parameters);
-        parameterBuilder.addAddedParameters(4, Collections.<Object>singleton(7));
-    }
+public final class DefaultSQLBuilderTest {
     
     @Test
-    public void assertGetParameters() {
-        assertThat(parameterBuilder.getParameters(), is(Arrays.<Object>asList(1, 2, 1, 5, 7)));
+    public void assertToSQL() {
+        SQLRewriteContext context = new SQLRewriteContext(mock(TableMetas.class), mock(SQLStatementContext.class), "SELECT * FROM t_config", Collections.emptyList());
+        SQLBuilder sqlBuilderWithoutTokens = new DefaultSQLBuilder(context);
+        assertThat(sqlBuilderWithoutTokens.toSQL(), is("SELECT * FROM t_config"));
     }
 }

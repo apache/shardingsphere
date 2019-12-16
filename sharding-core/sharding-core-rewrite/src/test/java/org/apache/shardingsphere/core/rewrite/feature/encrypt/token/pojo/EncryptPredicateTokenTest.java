@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token;
+package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo;
 
 import org.apache.shardingsphere.core.constant.ShardingOperator;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptPredicateRightValueToken;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -37,13 +36,13 @@ public final class EncryptPredicateTokenTest {
         EncryptPredicateRightValueToken actual = new EncryptPredicateRightValueToken(0, 0, indexValues, Collections.<Integer>emptyList(), ShardingOperator.EQUAL);
         assertThat(actual.toString(), is("'a'"));
     }
-
+    
     @Test
     public void assertToStringWithPlaceholderWithoutTableOwnerWithEqual() {
         EncryptPredicateRightValueToken actual = new EncryptPredicateRightValueToken(0, 0, Collections.<Integer, Object>emptyMap(), Collections.singletonList(0), ShardingOperator.EQUAL);
         assertThat(actual.toString(), is("?"));
     }
-
+    
     @Test
     public void assertToStringWithoutPlaceholderWithoutTableOwnerWithIn() {
         Map<Integer, Object> indexValues = new LinkedHashMap<>();
@@ -52,7 +51,7 @@ public final class EncryptPredicateTokenTest {
         EncryptPredicateRightValueToken actual = new EncryptPredicateRightValueToken(0, 0, indexValues, Collections.<Integer>emptyList(), ShardingOperator.IN);
         assertThat(actual.toString(), is("('a', 'b')"));
     }
-
+    
     @Test
     public void assertToStringWithPlaceholderWithoutTableOwnerWithIn() {
         EncryptPredicateRightValueToken actual = new EncryptPredicateRightValueToken(0, 0, Collections.<Integer, Object>emptyMap(), Collections.singletonList(0), ShardingOperator.IN);

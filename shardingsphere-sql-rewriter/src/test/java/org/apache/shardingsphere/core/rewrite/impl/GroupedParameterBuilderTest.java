@@ -15,26 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.impl;
+package org.apache.shardingsphere.core.rewrite.impl;
 
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.core.rewrite.sql.SQLBuilder;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.junit.Test;
 
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
-public final class DefaultSQLBuilderTest {
+public final class GroupedParameterBuilderTest {
     
     @Test
-    public void assertToSQL() {
-        SQLRewriteContext context = new SQLRewriteContext(mock(TableMetas.class), mock(SQLStatementContext.class), "SELECT * FROM t_config", Collections.emptyList());
-        SQLBuilder sqlBuilderWithoutTokens = new DefaultSQLBuilder(context);
-        assertThat(sqlBuilderWithoutTokens.toSQL(), is("SELECT * FROM t_config"));
+    public void assertGetParameters() {
+        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters());
+        assertThat(actual.getParameters(), is(Arrays.<Object>asList(3, 4, 5, 6)));
+    }
+    
+    private List<List<Object>> createGroupedParameters() {
+        List<List<Object>> result = new LinkedList<>();
+        result.add(Arrays.<Object>asList(3, 4));
+        result.add(Arrays.<Object>asList(5, 6));
+        return result;
     }
 }

@@ -33,6 +33,7 @@
         <module>shardingsphere-spi</module>
         
         <module>shardingsphere-sql-parser</module>
+        <module>shardingsphere-sql-rewriter</module>
         
         <module>sharding-core</module>
         

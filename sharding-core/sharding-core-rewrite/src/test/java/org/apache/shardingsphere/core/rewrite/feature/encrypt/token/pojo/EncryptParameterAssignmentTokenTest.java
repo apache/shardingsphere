@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token;
+package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo;
 
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptParameterAssignmentToken;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

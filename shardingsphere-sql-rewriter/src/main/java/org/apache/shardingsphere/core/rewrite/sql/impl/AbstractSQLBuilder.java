@@ -38,7 +38,7 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
     private final SQLRewriteContext context;
     
     @Override
-    public String toSQL() {
+    public final String toSQL() {
         if (context.getSqlTokens().isEmpty()) {
             return context.getSql();
         }
