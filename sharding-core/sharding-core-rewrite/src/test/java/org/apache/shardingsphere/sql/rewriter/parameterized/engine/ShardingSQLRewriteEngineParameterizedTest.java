@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.rewriter.parameterized.engine;
 
 import com.google.common.base.Preconditions;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
@@ -38,10 +37,7 @@ import org.apache.shardingsphere.sql.rewriter.context.SQLRewriteContext;
 import org.apache.shardingsphere.sql.rewriter.engine.SQLRewriteResult;
 import org.apache.shardingsphere.sql.rewriter.feature.sharding.context.ShardingSQLRewriteContextDecorator;
 import org.apache.shardingsphere.sql.rewriter.feature.sharding.engine.ShardingSQLRewriteEngine;
-import org.apache.shardingsphere.sql.rewriter.parameterized.jaxb.engine.SQLRewriteEngineTestParametersBuilder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.apache.shardingsphere.sql.rewriter.parameterized.engine.parameter.SQLRewriteEngineTestParametersBuilder;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.io.File;
@@ -54,62 +50,33 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(Parameterized.class)
-@RequiredArgsConstructor
-public final class ShardingSQLRewriteEngineParameterizedTest {
+public final class ShardingSQLRewriteEngineParameterizedTest extends AbstractSQLRewriteEngineParameterizedTest {
     
     private static final String PATH = "sharding";
     
-    private final String fileName;
-    
-    private final String ruleFile;
-    
-    private final String name;
-    
-    private final String inputSQL;
-    
-    private final List<Object> inputParameters;
-    
-    private final List<String> outputSQLs;
-    
-    private final List<List<Object>> outputGroupedParameters;
-    
-    private final String databaseType;
+    public ShardingSQLRewriteEngineParameterizedTest(final String fileName, final String ruleFile, final String name, final String inputSQL,
+                                                final List<Object> inputParameters, final List<String> outputSQLs, final List<List<Object>> outputGroupedParameters, final String databaseType) {
+        super(fileName, ruleFile, name, inputSQL, inputParameters, outputSQLs, outputGroupedParameters, databaseType);
+    }
     
     @Parameters(name = "SHARDING: {2} -> {0}")
     public static Collection<Object[]> getTestParameters() {
         return SQLRewriteEngineTestParametersBuilder.loadTestParameters(PATH, ShardingSQLRewriteEngineParameterizedTest.class);
     }
     
-    @Test
-    public void assertRewrite() throws IOException {
-        Collection<SQLRewriteResult> actual = getSQLRewriteResults();
-        assertThat(actual.size(), is(outputSQLs.size()));
-        int count = 0;
-        for (SQLRewriteResult each : actual) {
-            assertThat(each.getSql(), is(outputSQLs.get(count)));
-            assertThat(each.getParameters().size(), is(outputGroupedParameters.get(count).size()));
-            for (int i = 0; i < each.getParameters().size(); i++) {
-                assertThat(each.getParameters().get(i).toString(), is(outputGroupedParameters.get(count).get(i).toString()));
-            }
-            count++;
-        }
-    }
-    
-    private Collection<SQLRewriteResult> getSQLRewriteResults() throws IOException {
+    @Override
+    protected Collection<SQLRewriteResult> getSQLRewriteResults() throws IOException {
         YamlRootShardingConfiguration ruleConfiguration = createRuleConfiguration();
         ShardingRule shardingRule = new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(ruleConfiguration.getShardingRule()), ruleConfiguration.getDataSources().keySet());
-        SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine(null == databaseType ? "SQL92" : databaseType);
+        SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine(null == getDatabaseType() ? "SQL92" : getDatabaseType());
         ShardingRouter shardingRouter = new ShardingRouter(shardingRule, createShardingSphereMetaData(), parseEngine);
-        SQLStatement sqlStatement = shardingRouter.parse(inputSQL, false);
-        SQLRouteResult sqlRouteResult = shardingRouter.route(inputSQL, inputParameters, sqlStatement);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(TableMetas.class), sqlRouteResult.getSqlStatementContext(), inputSQL, inputParameters);
+        SQLStatement sqlStatement = shardingRouter.parse(getInputSQL(), false);
+        SQLRouteResult sqlRouteResult = shardingRouter.route(getInputSQL(), getInputParameters(), sqlStatement);
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(mock(TableMetas.class), sqlRouteResult.getSqlStatementContext(), getInputSQL(), getInputParameters());
         new ShardingSQLRewriteContextDecorator(shardingRule, sqlRouteResult).decorate(sqlRewriteContext);
         sqlRewriteContext.generateSQLTokens();
         Collection<SQLRewriteResult> result = new LinkedList<>();
@@ -120,7 +87,7 @@ public final class ShardingSQLRewriteEngineParameterizedTest {
     }
     
     private YamlRootShardingConfiguration createRuleConfiguration() throws IOException {
-        URL url = ShardingSQLRewriteEngineParameterizedTest.class.getClassLoader().getResource(ruleFile);
+        URL url = ShardingSQLRewriteEngineParameterizedTest.class.getClassLoader().getResource(getRuleFile());
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class);
     }

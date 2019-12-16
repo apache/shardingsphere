@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.rewriter.parameterized.jaxb.entity;
+package org.apache.shardingsphere.sql.rewriter.parameterized.entity;
 
 import lombok.Getter;
 

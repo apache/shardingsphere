@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.rewriter.parameterized.jaxb.loader;
+package org.apache.shardingsphere.sql.rewriter.parameterized.loader;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.sql.rewriter.parameterized.jaxb.entity.RewriteAssertionsRootEntity;
+import org.apache.shardingsphere.sql.rewriter.parameterized.entity.RewriteAssertionsRootEntity;
 
 import javax.xml.bind.JAXBContext;
 import java.io.InputStream;

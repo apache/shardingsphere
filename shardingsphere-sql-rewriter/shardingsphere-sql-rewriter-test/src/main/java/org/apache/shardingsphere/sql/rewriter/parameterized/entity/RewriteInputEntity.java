@@ -15,28 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.rewriter.parameterized.jaxb.entity;
+package org.apache.shardingsphere.sql.rewriter.parameterized.entity;
 
 import lombok.Getter;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * Rewrite assertions root entity for JAXB.
+ * Rewrite input entity for JAXB.
  *
  * @author zhangliang
  */
-@XmlRootElement(name = "rewrite-assertions")
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-public final class RewriteAssertionsRootEntity {
+public final class RewriteInputEntity {
     
-    @XmlAttribute(name = "yaml-rule", required = true)
-    private String yamlRule;
+    @XmlAttribute(required = true)
+    private String sql;
     
-    @XmlElement(name = "rewrite-assertion")
-    private Collection<RewriteAssertionEntity> assertions = new LinkedList<>();
+    @XmlAttribute
+    private String parameters;
 }
