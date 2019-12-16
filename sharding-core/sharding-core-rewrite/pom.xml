@@ -40,7 +40,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-rewriter</artifactId>
+            <artifactId>shardingsphere-sql-rewriter-engine</artifactId>
             <version>${project.version}</version>
         </dependency>
         
