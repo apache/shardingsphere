@@ -76,9 +76,9 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
     
     private final List<Object> inputParameters;
     
-    private final String outputSQL;
+    private final List<String> outputSQLs;
     
-    private final List<Object> outputParameters;
+    private final List<List<Object>> outputGroupedParameters;
     
     private final String databaseType;
     
@@ -106,8 +106,9 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
         result[2] = assertion.getId();
         result[3] = assertion.getInput().getSql();
         result[4] = null == assertion.getInput().getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getInput().getParameters());
-        result[5] = assertion.getOutputs().get(0).getSql();
-        result[6] = null == assertion.getOutputs().get(0).getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getOutputs().get(0).getParameters());
+        result[5] = Collections.singletonList(assertion.getOutputs().get(0).getSql());
+        result[6] = null == assertion.getOutputs().get(0).getParameters()
+                ? Collections.singletonList(Collections.emptyList()) : Collections.singletonList(Splitter.on(",").trimResults().splitToList(assertion.getOutputs().get(0).getParameters()));
         result[7] = assertion.getDatabaseType();
         return result;
     }
@@ -126,8 +127,8 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
     @Test
     public void assertRewrite() throws IOException {
         SQLRewriteResult actual = getSQLRewriteResult();
-        assertThat(actual.getSql(), is(outputSQL));
-        assertThat(actual.getParameters(), is(outputParameters));
+        assertThat(actual.getSql(), is(outputSQLs.get(0)));
+        assertThat(actual.getParameters(), is(outputGroupedParameters.get(0)));
     }
     
     private SQLRewriteResult getSQLRewriteResult() throws IOException {
