@@ -31,11 +31,13 @@ import java.util.List;
 @Getter
 public final class SQLRewriteEngineTestParameters {
     
+    private final String type;
+            
+    private final String name;
+    
     private final String fileName;
     
     private final String ruleFile;
-    
-    private final String name;
     
     private final String inputSQL;
     
@@ -53,10 +55,11 @@ public final class SQLRewriteEngineTestParameters {
      * @return array value of test parameters
      */
     public Object[] toArray() {
-        Object[] result = new Object[3];
-        result[0] = name;
-        result[1] = fileName;
-        result[2] = this;
+        Object[] result = new Object[4];
+        result[0] = type;
+        result[1] = name;
+        result[2] = fileName;
+        result[3] = this;
         return result;
     }
 }

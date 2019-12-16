@@ -35,6 +35,8 @@ import java.util.Collection;
 @Getter
 public abstract class AbstractSQLRewriteEngineParameterizedTest {
     
+    private final String type;
+    
     private final String name;
     
     private final String fileName;

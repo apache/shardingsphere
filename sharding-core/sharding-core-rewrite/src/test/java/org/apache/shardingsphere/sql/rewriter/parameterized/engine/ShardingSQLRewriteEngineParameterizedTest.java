@@ -58,13 +58,13 @@ public final class ShardingSQLRewriteEngineParameterizedTest extends AbstractSQL
     
     private static final String PATH = "sharding";
     
-    public ShardingSQLRewriteEngineParameterizedTest(final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
-        super(name, fileName, testParameters);
+    public ShardingSQLRewriteEngineParameterizedTest(final String type, final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
+        super(type, name, fileName, testParameters);
     }
     
-    @Parameters(name = "SHARDING: {0} -> {1}")
+    @Parameters(name = "{0}: {1} -> {2}")
     public static Collection<Object[]> loadTestParameters() {
-        return SQLRewriteEngineTestParametersBuilder.loadTestParameters(PATH, ShardingSQLRewriteEngineParameterizedTest.class);
+        return SQLRewriteEngineTestParametersBuilder.loadTestParameters(PATH.toUpperCase(), PATH, ShardingSQLRewriteEngineParameterizedTest.class);
     }
     
     @Override

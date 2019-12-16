@@ -59,13 +59,13 @@ public final class MixSQLRewriteEngineParameterizedTest extends AbstractSQLRewri
     
     private static final String PATH = "mix";
     
-    public MixSQLRewriteEngineParameterizedTest(final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
-        super(name, fileName, testParameters);
+    public MixSQLRewriteEngineParameterizedTest(final String type, final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
+        super(type, name, fileName, testParameters);
     }
     
-    @Parameters(name = "MIX: {0} -> {1}")
+    @Parameters(name = "{0}: {1} -> {2}")
     public static Collection<Object[]> loadTestParameters() {
-        return SQLRewriteEngineTestParametersBuilder.loadTestParameters(PATH, MixSQLRewriteEngineParameterizedTest.class);
+        return SQLRewriteEngineTestParametersBuilder.loadTestParameters(PATH.toUpperCase(), PATH, MixSQLRewriteEngineParameterizedTest.class);
     }
     
     @Override

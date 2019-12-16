@@ -50,14 +50,15 @@ public final class SQLRewriteEngineTestParametersBuilder {
     /**
      * Load test parameters.
      * 
+     * @param type type
      * @param path path
      * @param targetClass target class
      * @return Test parameters list for SQL rewrite engine
      */
-    public static Collection<Object[]> loadTestParameters(final String path, final Class<?> targetClass) {
+    public static Collection<Object[]> loadTestParameters(final String type, final String path, final Class<?> targetClass) {
         Collection<Object[]> result = new LinkedList<>();
         for (Entry<String, RewriteAssertionsRootEntity> entry : loadAllRewriteAssertionsRootEntities(path, targetClass).entrySet()) {
-            result.addAll(createTestParameters(entry.getKey(), entry.getValue()));
+            result.addAll(createTestParameters(type, entry.getKey(), entry.getValue()));
         }
         return result;
     }
@@ -73,10 +74,10 @@ public final class SQLRewriteEngineTestParametersBuilder {
         return result;
     }
     
-    private static Collection<Object[]> createTestParameters(final String fileName, final RewriteAssertionsRootEntity rootAssertions) {
+    private static Collection<Object[]> createTestParameters(final String type, final String fileName, final RewriteAssertionsRootEntity rootAssertions) {
         Collection<Object[]> result = new LinkedList<>();
         for (RewriteAssertionEntity each : rootAssertions.getAssertions()) {
-            result.add(new SQLRewriteEngineTestParameters(fileName, rootAssertions.getYamlRule(), each.getId(), each.getInput().getSql(), 
+            result.add(new SQLRewriteEngineTestParameters(type, each.getId(), fileName, rootAssertions.getYamlRule(), each.getInput().getSql(), 
                     createInputParameters(each.getInput().getParameters()), createOutputSQLs(each.getOutputs()), createOutputGroupedParameters(each.getOutputs()), each.getDatabaseType()).toArray());
         }
         return result;

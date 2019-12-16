@@ -50,13 +50,13 @@ public final class EncryptSQLRewriteEngineParameterizedTest extends AbstractSQLR
     
     private static final String PATH = "encrypt";
     
-    public EncryptSQLRewriteEngineParameterizedTest(final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
-        super(name, fileName, testParameters);
+    public EncryptSQLRewriteEngineParameterizedTest(final String type, final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
+        super(type, name, fileName, testParameters);
     }
     
-    @Parameters(name = "ENCRYPT: {0} -> {1}")
+    @Parameters(name = "{0}: {1} -> {2}")
     public static Collection<Object[]> loadTestParameters() {
-        return SQLRewriteEngineTestParametersBuilder.loadTestParameters(PATH, EncryptSQLRewriteEngineParameterizedTest.class);
+        return SQLRewriteEngineTestParametersBuilder.loadTestParameters(PATH.toUpperCase(), PATH, EncryptSQLRewriteEngineParameterizedTest.class);
     }
     
     @Override
