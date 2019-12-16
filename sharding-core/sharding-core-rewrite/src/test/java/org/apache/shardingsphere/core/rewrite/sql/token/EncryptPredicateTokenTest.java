@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.impl;
+package org.apache.shardingsphere.core.rewrite.sql.token;
 
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptPredicateRightValueToken;

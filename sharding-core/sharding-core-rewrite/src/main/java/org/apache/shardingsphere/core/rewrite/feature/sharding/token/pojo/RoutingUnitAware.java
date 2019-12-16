@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.token.pojo;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
 
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 
-import java.util.Map;
-
 /**
- * Alter available.
+ * Routing unit aware.
  *
- * @author panjuan
+ * @author zhangliang
  */
-public interface Alterable {
+public interface RoutingUnitAware {
     
     /**
      * To string.
      * 
      * @param routingUnit routing unit
-     * @param logicAndActualTables logic and actual tables
      * @return literal
      */
-    String toString(RoutingUnit routingUnit, Map<String, String> logicAndActualTables);
+    String toString(RoutingUnit routingUnit);
 }

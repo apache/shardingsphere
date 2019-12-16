@@ -15,33 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.impl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
 
 /**
- * Row count token.
+ * Aggregation distinct token.
  *
- * @author zhangliang
  * @author panjuan
  */
-public final class RowCountToken extends SQLToken implements Substitutable {
+public final class AggregationDistinctToken extends SQLToken implements Substitutable {
+    
+    private final String columnName;
+    
+    private final String derivedAlias;
     
     @Getter
     private final int stopIndex;
     
-    private final long revisedRowCount;
-    
-    public RowCountToken(final int startIndex, final int stopIndex, final long revisedRowCount) {
+    public AggregationDistinctToken(final int startIndex, final int stopIndex, final String columnName, final String derivedAlias) {
         super(startIndex);
+        this.columnName = columnName;
+        this.derivedAlias = derivedAlias;
         this.stopIndex = stopIndex;
-        this.revisedRowCount = revisedRowCount;
     }
     
     @Override
     public String toString() {
-        return String.valueOf(revisedRowCount);
+        return null == derivedAlias ? columnName : columnName + " AS " + derivedAlias;
     }
 }

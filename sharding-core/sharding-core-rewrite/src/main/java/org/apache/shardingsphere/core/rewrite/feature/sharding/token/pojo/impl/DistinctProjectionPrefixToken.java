@@ -15,35 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.impl;
 
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 
-import java.util.Collection;
-
 /**
- * Projections token.
+ * Distinct projection prefix token.
  *
- * @author zhangliang
  * @author panjuan
  */
-public final class ProjectionsToken extends SQLToken implements Attachable {
+public final class DistinctProjectionPrefixToken extends SQLToken implements Attachable {
     
-    private final Collection<String> projections;
-    
-    public ProjectionsToken(final int startIndex, final Collection<String> projections) {
+    public DistinctProjectionPrefixToken(final int startIndex) {
         super(startIndex);
-        this.projections = projections;
     }
     
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
-        for (String each : projections) {
-            result.append(", ");
-            result.append(each);
-        }
-        return result.toString();
+        return "DISTINCT ";
     }
 }

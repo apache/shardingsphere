@@ -15,24 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
+package org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo;
 
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValuesToken;
 
 /**
- * Distinct projection prefix token.
+ * Insert values token for encrypt.
  *
- * @author panjuan
+ * @author zhangliang
  */
-public final class DistinctProjectionPrefixToken extends SQLToken implements Attachable {
+public final class EncryptInsertValuesToken extends InsertValuesToken {
     
-    public DistinctProjectionPrefixToken(final int startIndex) {
-        super(startIndex);
+    public EncryptInsertValuesToken(final int startIndex, final int stopIndex) {
+        super(startIndex, stopIndex);
     }
     
     @Override
     public String toString() {
-        return "DISTINCT ";
+        StringBuilder result = new StringBuilder();
+        for (InsertValueToken each : getInsertValueTokens()) {
+            result.append(each).append(", ");
+        }
+        result.delete(result.length() - 2, result.length());
+        return result.toString();
     }
 }

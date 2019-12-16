@@ -15,27 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
-
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.impl;
 
 /**
- * Generated key insert column token.
+ * Generated key assignment token for parameter marker.
  *
- * @author zhangliang
+ * @author panjuan
  */
-public final class GeneratedKeyInsertColumnToken extends SQLToken implements Attachable {
+public final class ParameterMarkerGeneratedKeyAssignmentToken extends GeneratedKeyAssignmentToken {
     
-    private final String column;
-    
-    public GeneratedKeyInsertColumnToken(final int startIndex, final String column) {
-        super(startIndex);
-        this.column = column;
+    public ParameterMarkerGeneratedKeyAssignmentToken(final int startIndex, final String columnName) {
+        super(startIndex, columnName);
     }
     
     @Override
-    public String toString() {
-        return String.format(", %s", column);
+    protected String getRightValue() {
+        return "?";
     }
 }

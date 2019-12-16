@@ -19,20 +19,17 @@ package org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
+import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Alterable;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
-import org.apache.shardingsphere.core.rule.DataNode;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Insert values token.
@@ -41,7 +38,7 @@ import java.util.Map;
  * @author panjuan
  */
 @Getter
-public final class InsertValuesToken extends SQLToken implements Substitutable, Alterable {
+public abstract class InsertValuesToken extends SQLToken implements Substitutable {
     
     private final int stopIndex;
     
@@ -51,34 +48,6 @@ public final class InsertValuesToken extends SQLToken implements Substitutable, 
         super(startIndex);
         this.stopIndex = stopIndex;
         insertValueTokens = new LinkedList<>();
-    }
-    
-    @Override
-    public String toString(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
-        StringBuilder result = new StringBuilder();
-        appendInsertValue(routingUnit, result);
-        result.delete(result.length() - 2, result.length());
-        return result.toString();
-    }
-    
-    private void appendInsertValue(final RoutingUnit routingUnit, final StringBuilder stringBuilder) {
-        for (InsertValueToken each : insertValueTokens) {
-            if (isAppend(routingUnit, each)) {
-                stringBuilder.append(each).append(", ");
-            }
-        }
-    }
-    
-    private boolean isAppend(final RoutingUnit routingUnit, final InsertValueToken insertValueToken) {
-        if (insertValueToken.getDataNodes().isEmpty() || null == routingUnit) {
-            return true;
-        }
-        for (DataNode each : insertValueToken.getDataNodes()) {
-            if (routingUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
-                return true;
-            }
-        }
-        return false;
     }
     
     @RequiredArgsConstructor

@@ -15,45 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.impl;
 
-import com.google.common.base.Joiner;
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
-import org.apache.shardingsphere.sql.parser.util.SQLUtil;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Alterable;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.LogicAndActualTablesAware;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 
 import java.util.Map;
 
 /**
- * Table token.
+ * Index token.
  *
- * @author zhangliang
+ * @author caohao
  * @author panjuan
  */
-public final class TableToken extends SQLToken implements Substitutable, Alterable {
+public final class IndexToken extends SQLToken implements Substitutable, LogicAndActualTablesAware {
     
     @Getter
     private final int stopIndex;
     
-    private final String tableName;
+    private final String indexName;
     
     private final QuoteCharacter quoteCharacter;
     
-    public TableToken(final int startIndex, final int stopIndex, final String tableName, final QuoteCharacter quoteCharacter) {
+    public IndexToken(final int startIndex, final int stopIndex, final String indexName, final QuoteCharacter quoteCharacter) {
         super(startIndex);
-        this.tableName = SQLUtil.getExactlyValue(tableName);
-        this.quoteCharacter = quoteCharacter;
         this.stopIndex = stopIndex;
+        this.indexName = indexName;
+        this.quoteCharacter = quoteCharacter;
     }
     
     @Override
-    public String toString(final RoutingUnit routingUnit, final Map<String, String> logicAndActualTables) {
-        String actualTableName = logicAndActualTables.get(tableName.toLowerCase());
-        actualTableName = null == actualTableName ? tableName.toLowerCase() : actualTableName;
-        return Joiner.on("").join(quoteCharacter.getStartDelimiter(), actualTableName, quoteCharacter.getEndDelimiter());
+    public String toString(final Map<String, String> logicAndActualTables) {
+        StringBuilder result = new StringBuilder();
+        result.append(quoteCharacter.getStartDelimiter()).append(indexName);
+        if (!logicAndActualTables.isEmpty()) {
+            result.append("_").append(logicAndActualTables.values().iterator().next());
+        }
+        result.append(quoteCharacter.getEndDelimiter());
+        return result.toString();
     }
 }

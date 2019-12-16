@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.engine.impl;
+package org.apache.shardingsphere.core.rewrite.sql.impl;
 
 import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteEngine;
-import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteResult;
-import org.apache.shardingsphere.core.rewrite.sql.impl.DefaultSQLBuilder;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 
 /**
- * Default SQL rewrite engine.
- * 
+ * Default SQL builder.
+ *
  * @author zhangliang
  */
-public final class DefaultSQLRewriteEngine implements SQLRewriteEngine {
+public final class DefaultSQLBuilder extends AbstractSQLBuilder {
+    
+    public DefaultSQLBuilder(final SQLRewriteContext context) {
+        super(context);
+    }
     
     @Override
-    public SQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
-        return new SQLRewriteResult(new DefaultSQLBuilder(sqlRewriteContext).toSQL(), sqlRewriteContext.getParameterBuilder().getParameters());
+    protected String getSQLTokenText(final SQLToken sqlToken) {
+        return sqlToken.toString();
     }
 }

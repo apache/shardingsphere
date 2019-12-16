@@ -15,29 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.impl;
 
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
+import lombok.Getter;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
 
 /**
- * Generated key assignment token.
+ * Offset token.
  *
  * @author zhangliang
+ * @author panjuan
  */
-public abstract class GeneratedKeyAssignmentToken extends SQLToken implements Attachable {
+public final class OffsetToken extends SQLToken implements Substitutable {
     
-    private final String columnName;
+    @Getter
+    private final int stopIndex;
     
-    public GeneratedKeyAssignmentToken(final int startIndex, final String columnName) {
+    private final long revisedOffset;
+    
+    public OffsetToken(final int startIndex, final int stopIndex, final long revisedOffset) {
         super(startIndex);
-        this.columnName = columnName;
+        this.stopIndex = stopIndex;
+        this.revisedOffset = revisedOffset;
     }
     
     @Override
-    public final String toString() {
-        return String.format(", %s = %s", columnName, getRightValue());
+    public String toString() {
+        return String.valueOf(revisedOffset);
     }
-    
-    protected abstract String getRightValue();
 }

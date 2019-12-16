@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.engine.impl;
-
-import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteEngine;
-import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteResult;
-import org.apache.shardingsphere.core.rewrite.sql.impl.DefaultSQLBuilder;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.impl;
 
 /**
- * Default SQL rewrite engine.
- * 
- * @author zhangliang
+ * Generated key assignment token for literal.
+ *
+ * @author panjuan
  */
-public final class DefaultSQLRewriteEngine implements SQLRewriteEngine {
+public final class LiteralGeneratedKeyAssignmentToken extends GeneratedKeyAssignmentToken {
+    
+    private final Object value;
+    
+    public LiteralGeneratedKeyAssignmentToken(final int startIndex, final String columnName, final Object value) {
+        super(startIndex, columnName);
+        this.value = value;
+    }
     
     @Override
-    public SQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
-        return new SQLRewriteResult(new DefaultSQLBuilder(sqlRewriteContext).toSQL(), sqlRewriteContext.getParameterBuilder().getParameters());
+    protected String getRightValue() {
+        return value instanceof String ? String.format("'%s'", value) : value.toString();
     }
 }

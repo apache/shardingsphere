@@ -15,21 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.impl;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.impl;
 
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptParameterAssignmentToken;
-import org.junit.Test;
+import lombok.Getter;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class EncryptParameterAssignmentTokenTest {
+/**
+ * Row count token.
+ *
+ * @author zhangliang
+ * @author panjuan
+ */
+public final class RowCountToken extends SQLToken implements Substitutable {
     
-    @Test
-    public void assertToString() {
-        EncryptParameterAssignmentToken actual = new EncryptParameterAssignmentToken(0, 1);
-        actual.addColumnName("c1");
-        actual.addColumnName("c2");
-        assertThat(actual.toString(), is("c1 = ?, c2 = ?"));
+    @Getter
+    private final int stopIndex;
+    
+    private final long revisedRowCount;
+    
+    public RowCountToken(final int startIndex, final int stopIndex, final long revisedRowCount) {
+        super(startIndex);
+        this.stopIndex = stopIndex;
+        this.revisedRowCount = revisedRowCount;
+    }
+    
+    @Override
+    public String toString() {
+        return String.valueOf(revisedRowCount);
     }
 }

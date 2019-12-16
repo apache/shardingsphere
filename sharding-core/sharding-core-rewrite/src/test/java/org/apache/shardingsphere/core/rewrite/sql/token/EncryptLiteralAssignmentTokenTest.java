@@ -15,33 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
+package org.apache.shardingsphere.core.rewrite.sql.token;
 
-import lombok.Getter;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptLiteralAssignmentToken;
+import org.junit.Test;
 
-/**
- * Offset token.
- *
- * @author zhangliang
- * @author panjuan
- */
-public final class OffsetToken extends SQLToken implements Substitutable {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class EncryptLiteralAssignmentTokenTest {
     
-    @Getter
-    private final int stopIndex;
-    
-    private final long revisedOffset;
-    
-    public OffsetToken(final int startIndex, final int stopIndex, final long revisedOffset) {
-        super(startIndex);
-        this.stopIndex = stopIndex;
-        this.revisedOffset = revisedOffset;
-    }
-    
-    @Override
-    public String toString() {
-        return String.valueOf(revisedOffset);
+    @Test
+    public void assertToString() {
+        EncryptLiteralAssignmentToken actual = new EncryptLiteralAssignmentToken(0, 1);
+        actual.addAssignment("c1", "c1");
+        actual.addAssignment("c2", 1);
+        assertThat(actual.toString(), is("c1 = 'c1', c2 = 1"));
     }
 }

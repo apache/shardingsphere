@@ -15,35 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.impl;
 
-import lombok.Getter;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Substitutable;
+
+import java.util.Collection;
 
 /**
- * Aggregation distinct token.
+ * Projections token.
  *
+ * @author zhangliang
  * @author panjuan
  */
-public final class AggregationDistinctToken extends SQLToken implements Substitutable {
+public final class ProjectionsToken extends SQLToken implements Attachable {
     
-    private final String columnName;
+    private final Collection<String> projections;
     
-    private final String derivedAlias;
-    
-    @Getter
-    private final int stopIndex;
-    
-    public AggregationDistinctToken(final int startIndex, final int stopIndex, final String columnName, final String derivedAlias) {
+    public ProjectionsToken(final int startIndex, final Collection<String> projections) {
         super(startIndex);
-        this.columnName = columnName;
-        this.derivedAlias = derivedAlias;
-        this.stopIndex = stopIndex;
+        this.projections = projections;
     }
     
     @Override
     public String toString() {
-        return null == derivedAlias ? columnName : columnName + " AS " + derivedAlias;
+        StringBuilder result = new StringBuilder();
+        for (String each : projections) {
+            result.append(", ");
+            result.append(each);
+        }
+        return result.toString();
     }
 }

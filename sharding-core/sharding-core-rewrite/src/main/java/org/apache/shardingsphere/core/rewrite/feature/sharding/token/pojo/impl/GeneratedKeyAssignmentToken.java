@@ -15,21 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.sql.impl;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.impl;
 
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptLiteralAssignmentToken;
-import org.junit.Test;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.Attachable;
+import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class EncryptLiteralAssignmentTokenTest {
+/**
+ * Generated key assignment token.
+ *
+ * @author zhangliang
+ */
+public abstract class GeneratedKeyAssignmentToken extends SQLToken implements Attachable {
     
-    @Test
-    public void assertToString() {
-        EncryptLiteralAssignmentToken actual = new EncryptLiteralAssignmentToken(0, 1);
-        actual.addAssignment("c1", "c1");
-        actual.addAssignment("c2", 1);
-        assertThat(actual.toString(), is("c1 = 'c1', c2 = 1"));
+    private final String columnName;
+    
+    public GeneratedKeyAssignmentToken(final int startIndex, final String columnName) {
+        super(startIndex);
+        this.columnName = columnName;
     }
+    
+    @Override
+    public final String toString() {
+        return String.format(", %s = %s", columnName, getRightValue());
+    }
+    
+    protected abstract String getRightValue();
 }

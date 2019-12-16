@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.engine.impl;
+package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
 
-import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteEngine;
-import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteResult;
-import org.apache.shardingsphere.core.rewrite.sql.impl.DefaultSQLBuilder;
+import java.util.Map;
 
 /**
- * Default SQL rewrite engine.
- * 
+ * Logic and actual tables aware.
+ *
  * @author zhangliang
  */
-public final class DefaultSQLRewriteEngine implements SQLRewriteEngine {
+public interface LogicAndActualTablesAware {
     
-    @Override
-    public SQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
-        return new SQLRewriteResult(new DefaultSQLBuilder(sqlRewriteContext).toSQL(), sqlRewriteContext.getParameterBuilder().getParameters());
-    }
+    /**
+     * To string.
+     * 
+     * @param logicAndActualTables logic and actual tables
+     * @return literal
+     */
+    String toString(Map<String, String> logicAndActualTables);
 }

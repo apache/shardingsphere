@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo;
+package org.apache.shardingsphere.core.rewrite.sql.token;
 
-/**
- * Generated key assignment token for literal.
- *
- * @author panjuan
- */
-public final class LiteralGeneratedKeyAssignmentToken extends GeneratedKeyAssignmentToken {
+import org.apache.shardingsphere.core.rewrite.feature.encrypt.token.pojo.EncryptParameterAssignmentToken;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class EncryptParameterAssignmentTokenTest {
     
-    private final Object value;
-    
-    public LiteralGeneratedKeyAssignmentToken(final int startIndex, final String columnName, final Object value) {
-        super(startIndex, columnName);
-        this.value = value;
-    }
-    
-    @Override
-    protected String getRightValue() {
-        return value instanceof String ? String.format("'%s'", value) : value.toString();
+    @Test
+    public void assertToString() {
+        EncryptParameterAssignmentToken actual = new EncryptParameterAssignmentToken(0, 1);
+        actual.addColumnName("c1");
+        actual.addColumnName("c2");
+        assertThat(actual.toString(), is("c1 = ?, c2 = ?"));
     }
 }

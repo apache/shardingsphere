@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.core.rewrite.feature.sharding.parameter.ShardingParameterRewriterBuilder;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.core.rewrite.feature.sharding.token.ShardingTokenGenerateBuilder;
+import org.apache.shardingsphere.core.rewrite.feature.sharding.token.pojo.impl.ShardingTokenGenerateBuilder;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
