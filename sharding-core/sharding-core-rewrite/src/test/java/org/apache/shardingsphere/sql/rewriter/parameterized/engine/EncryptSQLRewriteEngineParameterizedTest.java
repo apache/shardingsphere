@@ -17,26 +17,30 @@
 
 package org.apache.shardingsphere.sql.rewriter.parameterized.engine;
 
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import com.google.common.primitives.Ints;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlRootEncryptRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
 import org.apache.shardingsphere.sql.parser.relation.SQLStatementContextFactory;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.rewriter.context.SQLRewriteContext;
 import org.apache.shardingsphere.sql.rewriter.engine.SQLRewriteResult;
 import org.apache.shardingsphere.sql.rewriter.engine.impl.DefaultSQLRewriteEngine;
 import org.apache.shardingsphere.sql.rewriter.feature.encrypt.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.sql.rewriter.parameterized.jaxb.entity.RewriteAssertionEntity;
 import org.apache.shardingsphere.sql.rewriter.parameterized.jaxb.entity.RewriteAssertionsRootEntity;
+import org.apache.shardingsphere.sql.rewriter.parameterized.jaxb.entity.RewriteOutputEntity;
 import org.apache.shardingsphere.sql.rewriter.parameterized.jaxb.loader.RewriteAssertionsRootEntityLoader;
-import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlRootEncryptRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -45,6 +49,7 @@ import org.junit.runners.Parameterized.Parameters;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -105,10 +110,27 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
         result[1] = rootAssertions.getYamlRule();
         result[2] = assertion.getId();
         result[3] = assertion.getInput().getSql();
-        result[4] = null == assertion.getInput().getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(assertion.getInput().getParameters());
-        result[5] = Collections.singletonList(assertion.getOutputs().get(0).getSql());
-        result[6] = null == assertion.getOutputs().get(0).getParameters()
-                ? Collections.singletonList(Collections.emptyList()) : Collections.singletonList(Splitter.on(",").trimResults().splitToList(assertion.getOutputs().get(0).getParameters()));
+        if (null == assertion.getInput().getParameters()) {
+            result[4] = Collections.emptyList();
+        } else {
+            result[4] = Lists.transform(Splitter.on(",").trimResults().splitToList(assertion.getInput().getParameters()), new Function<String, Object>() {
+            
+                @Override
+                public Object apply(final String input) {
+                    Object result = Ints.tryParse(input);
+                    return result == null ? input : result;
+                }
+            });
+        }
+        List<RewriteOutputEntity> outputs = assertion.getOutputs();
+        List<String> outputSQLs = new ArrayList<>(outputs.size());
+        List<Object> outputGroupedParameters = new ArrayList<>(outputs.size());
+        for (RewriteOutputEntity each : outputs) {
+            outputSQLs.add(each.getSql());
+            outputGroupedParameters.add(null == each.getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(each.getParameters()));
+        }
+        result[5] = outputSQLs;
+        result[6] = outputGroupedParameters;
         result[7] = assertion.getDatabaseType();
         return result;
     }
@@ -126,19 +148,27 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
     
     @Test
     public void assertRewrite() throws IOException {
-        SQLRewriteResult actual = getSQLRewriteResult();
-        assertThat(actual.getSql(), is(outputSQLs.get(0)));
-        assertThat(actual.getParameters(), is(outputGroupedParameters.get(0)));
+        Collection<SQLRewriteResult> actual = getSQLRewriteResults();
+        assertThat(actual.size(), is(outputSQLs.size()));
+        int count = 0;
+        for (SQLRewriteResult each : actual) {
+            assertThat(each.getSql(), is(outputSQLs.get(count)));
+            assertThat(each.getParameters().size(), is(outputGroupedParameters.get(count).size()));
+            for (int i = 0; i < each.getParameters().size(); i++) {
+                assertThat(each.getParameters().get(i).toString(), is(outputGroupedParameters.get(count).get(i).toString()));
+            }
+            count++;
+        }
     }
     
-    private SQLRewriteResult getSQLRewriteResult() throws IOException {
+    private Collection<SQLRewriteResult> getSQLRewriteResults() throws IOException {
         SQLRewriteContext sqlRewriteContext = getSQLRewriteContext();
         YamlRootEncryptRuleConfiguration ruleConfiguration = createRuleConfiguration();
         EncryptRule encryptRule = new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(ruleConfiguration.getEncryptRule()));
         boolean isQueryWithCipherColumn = (boolean) ruleConfiguration.getProps().get("query.with.cipher.column");
         new EncryptSQLRewriteContextDecorator(encryptRule, isQueryWithCipherColumn).decorate(sqlRewriteContext);
         sqlRewriteContext.generateSQLTokens();
-        return new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
+        return Collections.singletonList(new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext));
     }
     
     private SQLRewriteContext getSQLRewriteContext() {
