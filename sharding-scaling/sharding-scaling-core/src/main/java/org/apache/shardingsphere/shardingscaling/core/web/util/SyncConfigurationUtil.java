@@ -17,20 +17,15 @@
 
 package org.apache.shardingsphere.shardingscaling.core.web.util;
 
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.config.yaml.YamlDataSourceParameter;
-import org.apache.shardingsphere.shardingscaling.core.config.yaml.YamlProxyRuleConfiguration;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -51,11 +46,13 @@ public class SyncConfigurationUtil {
      */
     public static Collection<SyncConfiguration> toSyncConfigurations(final ScalingConfiguration scalingConfiguration) {
         Collection<SyncConfiguration> result = new LinkedList<>();
-        YamlProxyRuleConfiguration ruleConfiguration = loadTestYamlProxyRuleConfiguration();
-        Map<String, YamlDataSourceParameter> dataSources = getDataSources(ruleConfiguration);
-        Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(ruleConfiguration);
+        Map<String, org.apache.shardingsphere.core.config.DataSourceConfiguration> sourceDatasource = ConfigurationYamlConverter.loadDataSourceConfigurations(
+                scalingConfiguration.getRuleConfiguration().getSourceDatasource());
+        ShardingRuleConfiguration sourceRule = ConfigurationYamlConverter.loadShardingRuleConfiguration(
+                scalingConfiguration.getRuleConfiguration().getSourceRule());
+        Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(sourceRule, sourceDatasource.keySet());
         for (String each : dataSourceTableNameMap.keySet()) {
-            RdbmsConfiguration readerConfiguration = createReaderConfiguration(dataSources.get(each));
+            RdbmsConfiguration readerConfiguration = createReaderConfiguration(sourceDatasource.get(each));
             RdbmsConfiguration writerConfiguration = createWriterConfiguration(scalingConfiguration);
             Map<String, String> tableNameMap = dataSourceTableNameMap.get(each);
             if (null == tableNameMap) {
@@ -67,19 +64,19 @@ public class SyncConfigurationUtil {
         return result;
     }
     
-    private static RdbmsConfiguration createReaderConfiguration(final YamlDataSourceParameter dataSource) {
+    private static RdbmsConfiguration createReaderConfiguration(final DataSourceConfiguration dataSource) {
         RdbmsConfiguration result = new RdbmsConfiguration();
-        DataSourceConfiguration readerDataSourceConfiguration = new JdbcDataSourceConfiguration(
-                dataSource.getUrl(),
-                dataSource.getUsername(),
-                dataSource.getPassword());
+        JdbcDataSourceConfiguration readerDataSourceConfiguration = new JdbcDataSourceConfiguration(
+                dataSource.getProperties().get("jdbcUrl").toString(),
+                dataSource.getProperties().get("username").toString(),
+                dataSource.getProperties().get("password").toString());
         result.setDataSourceConfiguration(readerDataSourceConfiguration);
         return result;
     }
     
     private static RdbmsConfiguration createWriterConfiguration(final ScalingConfiguration scalingConfiguration) {
         RdbmsConfiguration writerConfiguration = new RdbmsConfiguration();
-        DataSourceConfiguration writerDataSourceConfiguration = new JdbcDataSourceConfiguration(
+        JdbcDataSourceConfiguration writerDataSourceConfiguration = new JdbcDataSourceConfiguration(
                 scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getUrl(),
                 scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getUsername(),
                 scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getPassword());
@@ -87,25 +84,12 @@ public class SyncConfigurationUtil {
         return writerConfiguration;
     }
     
-    private static YamlProxyRuleConfiguration loadTestYamlProxyRuleConfiguration() {
-        try {
-            return YamlEngine.unmarshal(new File(SyncConfigurationUtil.class.getResource("/conf/config-sharding.yaml").getFile()),
-                    YamlProxyRuleConfiguration.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    private static ShardingRule getShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
+        return new ShardingRule(shardingRuleConfig, dataSourceNames);
     }
     
-    private static Map<String, YamlDataSourceParameter> getDataSources(final YamlProxyRuleConfiguration ruleConfiguration) {
-        return ruleConfiguration.getDataSources();
-    }
-    
-    private static ShardingRule getShardingRule(final YamlProxyRuleConfiguration ruleConfiguration) {
-        return new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(ruleConfiguration.getShardingRule()), getDataSources(ruleConfiguration).keySet());
-    }
-    
-    private static Map<String, Map<String, String>> toDataSourceTableNameMap(final YamlProxyRuleConfiguration ruleConfiguration) {
-        ShardingRule shardingRule = getShardingRule(ruleConfiguration);
+    private static Map<String, Map<String, String>> toDataSourceTableNameMap(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
+        ShardingRule shardingRule = getShardingRule(shardingRuleConfig, dataSourceNames);
         Map<String, Map<String, String>> result = new HashMap<>();
         for (TableRule each : shardingRule.getTableRules()) {
             mergeDataSourceTableNameMap(result, toDataSourceTableNameMap(each));
