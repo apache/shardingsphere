@@ -46,7 +46,7 @@ public class SyncConfigurationUtil {
      */
     public static Collection<SyncConfiguration> toSyncConfigurations(final ScalingConfiguration scalingConfiguration) {
         Collection<SyncConfiguration> result = new LinkedList<>();
-        Map<String, org.apache.shardingsphere.core.config.DataSourceConfiguration> sourceDatasource = ConfigurationYamlConverter.loadDataSourceConfigurations(
+        Map<String, DataSourceConfiguration> sourceDatasource = ConfigurationYamlConverter.loadDataSourceConfigurations(
                 scalingConfiguration.getRuleConfiguration().getSourceDatasource());
         ShardingRuleConfiguration sourceRule = ConfigurationYamlConverter.loadShardingRuleConfiguration(
                 scalingConfiguration.getRuleConfiguration().getSourceRule());
