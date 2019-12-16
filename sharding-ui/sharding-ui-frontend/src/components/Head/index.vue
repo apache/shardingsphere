@@ -33,9 +33,16 @@
             </el-dropdown-menu>
           </el-dropdown>
         </div>
-        <!-- <div class="lang-more">
-          <el-tag>English</el-tag>
-        </div> -->
+        <div class="lang-more">
+          <el-dropdown @command="handleCommand">
+            <span class="el-dropdown-link">
+              {{ dropdownTitle }}<i class="el-icon-arrow-down el-icon--right" />
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item v-for="(item, index) in dropdownList" :key="index" :command="item.command">{{ item.title }}</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
       </div>
       <el-breadcrumb separator="/" class="bread-nav">
         <el-breadcrumb-item>
@@ -54,7 +61,9 @@ export default {
     return {
       isCollapse: false,
       username: '',
-      breadcrumbTxt: ''
+      breadcrumbTxt: '',
+      dropdownList: this.$t('common').dropdownList,
+      dropdownTitle: localStorage.getItem('language') === 'zh-CN' ? this.$t('common').dropdownList[0].title : this.$t('common').dropdownList[1].title
     }
   },
   computed: {
@@ -71,21 +80,15 @@ export default {
   created() {
     const store = window.localStorage
     this.username = store.getItem('username')
-    // this.showBreadcrumbTxt()
   },
   methods: {
-    // showBreadcrumbTxt() {
-    //   const menuData = this.$t('common').menuData
-    //   const hash = location.hash.split('#')[1]
-    //   for (const v of menuData) {
-    //     for (const vv of v.child) {
-    //       if (vv.href.includes(hash)) {
-    //         this.breadcrumbTxt = vv.title
-    //         break
-    //       }
-    //     }
-    //   }
-    // },
+    handleCommand(command) {
+      this.$i18n.locale = command
+      const ls = this.$t('common').dropdownList
+      this.dropdownTitle = command === 'zh-CN' ? ls[0].title : ls[1].title
+      localStorage.setItem('language', command)
+      location.reload()
+    },
     togger() {
       this.isCollapse = !this.isCollapse
       this.$emit('on-togger', this.isCollapse)

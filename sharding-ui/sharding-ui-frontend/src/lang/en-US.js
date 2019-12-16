@@ -17,6 +17,7 @@
 
 export default {
   common: {
+    home: 'Home',
     menuData: [
       {
         title: 'Data governance',
@@ -48,7 +49,17 @@ export default {
       updateCompletedMessage: 'Update Completed',
       updateFaildMessage: 'Update Faild'
     },
-    loginOut: 'Sign Out'
+    loginOut: 'Sign Out',
+    dropdownList: [
+      {
+        title: '中文',
+        command: 'zh-CN'
+      },
+      {
+        title: 'English',
+        command: 'en-US'
+      }
+    ]
   },
   login: {
     btnTxt: 'Login',
@@ -64,7 +75,7 @@ export default {
     pUserName: 'Please enter user name',
     pPaasword: 'Please enter your password'
   },
-  index: {
+  registryCenter: {
     btnTxt: 'ADD',
     registDialog: {
       title: 'Add a registry',
@@ -92,7 +103,7 @@ export default {
       digest: 'Please enter a digest'
     }
   },
-  orchestration: {
+  runtimeStatus: {
     serviceNode: 'Service Node',
     slaveDataSourceName: 'Slave DataSource Info',
     dataSource: {
@@ -105,7 +116,10 @@ export default {
       serverIp: 'Server Ip'
     }
   },
-  configManage: {
+  ruleConfig: {
+    form: {
+      inputPlaceholder: 'Please enter content'
+    },
     schema: {
       name: 'Name',
       ruleConfig: 'Rule Config',
@@ -115,6 +129,11 @@ export default {
       name: 'Please enter the name of the schema',
       ruleConfig: 'Please enter the rule config of the schema',
       dataSourceConfig: 'Please enter the data source config of the schema'
+    },
+    radioBtn: {
+      schema: 'Schema',
+      authentication: 'Authentication',
+      props: 'Props'
     }
   }
 }
