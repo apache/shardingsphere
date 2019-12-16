@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.rewriter.parameterized.engine;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.rewriter.engine.SQLRewriteResult;
+import org.apache.shardingsphere.sql.rewriter.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -28,39 +29,28 @@ import org.junit.runners.Parameterized;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
 @Getter
 public abstract class AbstractSQLRewriteEngineParameterizedTest {
     
-    private final String fileName;
-    
-    private final String ruleFile;
-    
     private final String name;
     
-    private final String inputSQL;
+    private final String fileName;
     
-    private final List<Object> inputParameters;
-    
-    private final List<String> outputSQLs;
-    
-    private final List<List<Object>> outputGroupedParameters;
-    
-    private final String databaseType;
+    private final SQLRewriteEngineTestParameters testParameters;
     
     @Test
     public void assertRewrite() throws IOException {
         Collection<SQLRewriteResult> actual = getSQLRewriteResults();
-        Assert.assertThat(actual.size(), CoreMatchers.is(outputSQLs.size()));
+        Assert.assertThat(actual.size(), CoreMatchers.is(testParameters.getOutputSQLs().size()));
         int count = 0;
         for (SQLRewriteResult each : actual) {
-            Assert.assertThat(each.getSql(), CoreMatchers.is(outputSQLs.get(count)));
-            Assert.assertThat(each.getParameters().size(), CoreMatchers.is(outputGroupedParameters.get(count).size()));
+            Assert.assertThat(each.getSql(), CoreMatchers.is(testParameters.getOutputSQLs().get(count)));
+            Assert.assertThat(each.getParameters().size(), CoreMatchers.is(testParameters.getOutputGroupedParameters().get(count).size()));
             for (int i = 0; i < each.getParameters().size(); i++) {
-                Assert.assertThat(each.getParameters().get(i).toString(), CoreMatchers.is(outputGroupedParameters.get(count).get(i).toString()));
+                Assert.assertThat(each.getParameters().get(i).toString(), CoreMatchers.is(testParameters.getOutputGroupedParameters().get(count).get(i)));
             }
             count++;
         }

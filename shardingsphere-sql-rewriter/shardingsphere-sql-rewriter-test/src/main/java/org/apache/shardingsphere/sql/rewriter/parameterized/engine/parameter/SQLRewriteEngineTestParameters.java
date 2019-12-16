@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.rewriter.parameterized.engine.parameter;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.List;
  * @author zhangliang
  */
 @RequiredArgsConstructor
+@Getter
 public final class SQLRewriteEngineTestParameters {
     
     private final String fileName;
@@ -51,15 +53,10 @@ public final class SQLRewriteEngineTestParameters {
      * @return array value of test parameters
      */
     public Object[] toArray() {
-        Object[] result = new Object[8];
-        result[0] = fileName;
-        result[1] = ruleFile;
-        result[2] = name;
-        result[3] = inputSQL;
-        result[4] = inputParameters;
-        result[5] = outputSQLs;
-        result[6] = outputGroupedParameters;
-        result[7] = databaseType;
+        Object[] result = new Object[3];
+        result[0] = name;
+        result[1] = fileName;
+        result[2] = this;
         return result;
     }
 }

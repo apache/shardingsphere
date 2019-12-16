@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.rewriter.context.SQLRewriteContext;
 import org.apache.shardingsphere.sql.rewriter.engine.SQLRewriteResult;
 import org.apache.shardingsphere.sql.rewriter.engine.impl.DefaultSQLRewriteEngine;
 import org.apache.shardingsphere.sql.rewriter.feature.encrypt.context.EncryptSQLRewriteContextDecorator;
+import org.apache.shardingsphere.sql.rewriter.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
 import org.apache.shardingsphere.sql.rewriter.parameterized.engine.parameter.SQLRewriteEngineTestParametersBuilder;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -41,7 +42,6 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -50,13 +50,12 @@ public final class EncryptSQLRewriteEngineParameterizedTest extends AbstractSQLR
     
     private static final String PATH = "encrypt";
     
-    public EncryptSQLRewriteEngineParameterizedTest(final String fileName, final String ruleFile, final String name, final String inputSQL, 
-                                                    final List<Object> inputParameters, final List<String> outputSQLs, final List<List<Object>> outputGroupedParameters, final String databaseType) {
-        super(fileName, ruleFile, name, inputSQL, inputParameters, outputSQLs, outputGroupedParameters, databaseType);
+    public EncryptSQLRewriteEngineParameterizedTest(final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
+        super(name, fileName, testParameters);
     }
     
-    @Parameters(name = "ENCRYPT: {2} -> {0}")
-    public static Collection<Object[]> getTestParameters() {
+    @Parameters(name = "ENCRYPT: {0} -> {1}")
+    public static Collection<Object[]> loadTestParameters() {
         return SQLRewriteEngineTestParametersBuilder.loadTestParameters(PATH, EncryptSQLRewriteEngineParameterizedTest.class);
     }
     
@@ -72,9 +71,11 @@ public final class EncryptSQLRewriteEngineParameterizedTest extends AbstractSQLR
     }
     
     private SQLRewriteContext getSQLRewriteContext() {
-        SQLStatement sqlStatement = SQLParseEngineFactory.getSQLParseEngine(null == getDatabaseType() ? "SQL92" : getDatabaseType()).parse(getInputSQL(), false);
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(createRelationMetas(), getInputSQL(), getInputParameters(), sqlStatement);
-        return new SQLRewriteContext(mock(TableMetas.class), sqlStatementContext, getInputSQL(), getInputParameters());
+        SQLStatement sqlStatement = SQLParseEngineFactory.getSQLParseEngine(
+                null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType()).parse(getTestParameters().getInputSQL(), false);
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(
+                createRelationMetas(), getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatement);
+        return new SQLRewriteContext(mock(TableMetas.class), sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
     }
     
     private RelationMetas createRelationMetas() {
@@ -85,7 +86,7 @@ public final class EncryptSQLRewriteEngineParameterizedTest extends AbstractSQLR
     }
     
     private YamlRootEncryptRuleConfiguration createRuleConfiguration() throws IOException {
-        URL url = EncryptSQLRewriteEngineParameterizedTest.class.getClassLoader().getResource(getRuleFile());
+        URL url = EncryptSQLRewriteEngineParameterizedTest.class.getClassLoader().getResource(getTestParameters().getRuleFile());
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootEncryptRuleConfiguration.class);
     }
