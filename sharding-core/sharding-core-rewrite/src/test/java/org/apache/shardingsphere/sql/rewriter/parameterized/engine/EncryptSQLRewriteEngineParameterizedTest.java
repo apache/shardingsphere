@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.rewriter.engine.impl.DefaultSQLRewriteEngin
 import org.apache.shardingsphere.sql.rewriter.feature.encrypt.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.sql.rewriter.parameterized.jaxb.entity.RewriteAssertionEntity;
 import org.apache.shardingsphere.sql.rewriter.parameterized.jaxb.entity.RewriteAssertionsRootEntity;
-import org.apache.shardingsphere.sql.rewriter.parameterized.jaxb.loader.EncryptRewriteAssertionsRootEntityLoader;
+import org.apache.shardingsphere.sql.rewriter.parameterized.jaxb.loader.RewriteAssertionsRootEntityLoader;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlRootEncryptRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
@@ -117,7 +117,7 @@ public final class EncryptSQLRewriteEngineParameterizedTest {
         File file = new File(EncryptSQLRewriteEngineParameterizedTest.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "/" + PATH);
         for (File each : Objects.requireNonNull(file.listFiles())) {
             if (each.getName().endsWith(".xml")) {
-                result.put(each.getName(), new EncryptRewriteAssertionsRootEntityLoader().load(PATH + "/" + each.getName()));
+                result.put(each.getName(), new RewriteAssertionsRootEntityLoader().load(PATH + "/" + each.getName()));
             }
         }
         return result;

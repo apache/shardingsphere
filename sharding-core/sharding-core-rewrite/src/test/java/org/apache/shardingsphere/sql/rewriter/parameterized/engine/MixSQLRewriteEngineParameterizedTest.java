@@ -36,7 +36,7 @@ import org.apache.shardingsphere.sql.rewriter.feature.sharding.engine.ShardingSQ
 import org.apache.shardingsphere.sql.rewriter.parameterized.jaxb.entity.RewriteAssertionEntity;
 import org.apache.shardingsphere.sql.rewriter.parameterized.jaxb.entity.RewriteAssertionsRootEntity;
 import org.apache.shardingsphere.sql.rewriter.parameterized.jaxb.entity.RewriteOutputEntity;
-import org.apache.shardingsphere.sql.rewriter.parameterized.jaxb.loader.EncryptRewriteAssertionsRootEntityLoader;
+import org.apache.shardingsphere.sql.rewriter.parameterized.jaxb.loader.RewriteAssertionsRootEntityLoader;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.ShardingRouter;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -147,7 +147,7 @@ public final class MixSQLRewriteEngineParameterizedTest {
         File file = new File(MixSQLRewriteEngineParameterizedTest.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "/" + PATH);
         for (File each : Objects.requireNonNull(file.listFiles())) {
             if (each.getName().endsWith(".xml")) {
-                result.put(each.getName(), new EncryptRewriteAssertionsRootEntityLoader().load(PATH + "/" + each.getName()));
+                result.put(each.getName(), new RewriteAssertionsRootEntityLoader().load(PATH + "/" + each.getName()));
             }
         }
         return result;

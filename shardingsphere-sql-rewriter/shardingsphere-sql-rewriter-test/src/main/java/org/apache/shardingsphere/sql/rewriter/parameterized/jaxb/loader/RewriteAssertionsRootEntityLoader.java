@@ -24,11 +24,11 @@ import javax.xml.bind.JAXBContext;
 import java.io.InputStream;
 
 /**
- * Encrypt rewrite assertions root entity loader for JAXB.
+ * Rewrite assertions root entity loader for JAXB.
  *
  * @author zhangliang
  */
-public final class EncryptRewriteAssertionsRootEntityLoader {
+public final class RewriteAssertionsRootEntityLoader {
     
     /**
      * Load rewrite assertions from XML.
@@ -38,7 +38,7 @@ public final class EncryptRewriteAssertionsRootEntityLoader {
      */
     @SneakyThrows
     public RewriteAssertionsRootEntity load(final String file) {
-        InputStream inputStream = EncryptRewriteAssertionsRootEntityLoader.class.getClassLoader().getResourceAsStream(file);
+        InputStream inputStream = RewriteAssertionsRootEntityLoader.class.getClassLoader().getResourceAsStream(file);
         return null == inputStream ? new RewriteAssertionsRootEntity()
                 : (RewriteAssertionsRootEntity) JAXBContext.newInstance(RewriteAssertionsRootEntity.class).createUnmarshaller().unmarshal(inputStream);
     }
