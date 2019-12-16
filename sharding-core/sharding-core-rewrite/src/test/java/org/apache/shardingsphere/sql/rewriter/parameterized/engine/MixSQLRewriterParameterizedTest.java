@@ -69,7 +69,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     }
     
     @Override
-    protected Collection<SQLRewriteResult> getSQLRewriteResults() throws IOException {
+    protected Collection<SQLRewriteResult> createSQLRewriteResults() throws IOException {
         YamlRootShardingConfiguration ruleConfiguration = createRuleConfiguration();
         ShardingRule shardingRule = new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(ruleConfiguration.getShardingRule()), ruleConfiguration.getDataSources().keySet());
         SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());

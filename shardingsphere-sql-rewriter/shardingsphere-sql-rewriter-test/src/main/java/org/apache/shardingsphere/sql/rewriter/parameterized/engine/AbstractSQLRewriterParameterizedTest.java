@@ -39,7 +39,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
     
     @Test
     public void assertRewrite() throws IOException {
-        Collection<SQLRewriteResult> actual = getSQLRewriteResults();
+        Collection<SQLRewriteResult> actual = createSQLRewriteResults();
         Assert.assertThat(actual.size(), CoreMatchers.is(testParameters.getOutputSQLs().size()));
         int count = 0;
         for (SQLRewriteResult each : actual) {
@@ -52,5 +52,5 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         }
     }
     
-    protected abstract Collection<SQLRewriteResult> getSQLRewriteResults() throws IOException;
+    protected abstract Collection<SQLRewriteResult> createSQLRewriteResults() throws IOException;
 }

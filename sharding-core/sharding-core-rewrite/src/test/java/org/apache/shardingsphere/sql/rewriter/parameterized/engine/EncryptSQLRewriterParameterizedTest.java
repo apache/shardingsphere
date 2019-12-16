@@ -60,8 +60,8 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
     }
     
     @Override
-    protected Collection<SQLRewriteResult> getSQLRewriteResults() throws IOException {
-        SQLRewriteContext sqlRewriteContext = getSQLRewriteContext();
+    protected Collection<SQLRewriteResult> createSQLRewriteResults() throws IOException {
+        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext();
         YamlRootEncryptRuleConfiguration ruleConfiguration = createRuleConfiguration();
         EncryptRule encryptRule = new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(ruleConfiguration.getEncryptRule()));
         boolean isQueryWithCipherColumn = (boolean) ruleConfiguration.getProps().get("query.with.cipher.column");
@@ -70,7 +70,7 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
         return Collections.singletonList(new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext));
     }
     
-    private SQLRewriteContext getSQLRewriteContext() {
+    private SQLRewriteContext createSQLRewriteContext() {
         SQLStatement sqlStatement = SQLParseEngineFactory.getSQLParseEngine(
                 null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType()).parse(getTestParameters().getInputSQL(), false);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(
