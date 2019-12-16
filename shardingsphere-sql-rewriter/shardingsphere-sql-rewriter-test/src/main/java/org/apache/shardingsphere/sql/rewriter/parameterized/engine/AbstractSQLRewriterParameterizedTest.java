@@ -32,15 +32,9 @@ import java.util.Collection;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
+@Getter
 public abstract class AbstractSQLRewriterParameterizedTest {
     
-    private final String type;
-    
-    private final String name;
-    
-    private final String fileName;
-    
-    @Getter
     private final SQLRewriteEngineTestParameters testParameters;
     
     @Test

@@ -51,7 +51,7 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
     private static final String PATH = "encrypt";
     
     public EncryptSQLRewriterParameterizedTest(final String type, final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
-        super(type, name, fileName, testParameters);
+        super(testParameters);
     }
     
     @Parameters(name = "{0}: {1} -> {2}")

@@ -60,7 +60,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     private static final String PATH = "mix";
     
     public MixSQLRewriterParameterizedTest(final String type, final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
-        super(type, name, fileName, testParameters);
+        super(testParameters);
     }
     
     @Parameters(name = "{0}: {1} -> {2}")

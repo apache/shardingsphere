@@ -59,7 +59,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     private static final String PATH = "sharding";
     
     public ShardingSQLRewriterParameterizedTest(final String type, final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
-        super(type, name, fileName, testParameters);
+        super(testParameters);
     }
     
     @Parameters(name = "{0}: {1} -> {2}")
