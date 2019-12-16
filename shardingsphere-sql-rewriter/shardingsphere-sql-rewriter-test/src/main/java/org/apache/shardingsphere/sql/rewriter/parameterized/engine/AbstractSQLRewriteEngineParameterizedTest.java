@@ -32,7 +32,6 @@ import java.util.Collection;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-@Getter
 public abstract class AbstractSQLRewriteEngineParameterizedTest {
     
     private final String type;
@@ -41,6 +40,7 @@ public abstract class AbstractSQLRewriteEngineParameterizedTest {
     
     private final String fileName;
     
+    @Getter
     private final SQLRewriteEngineTestParameters testParameters;
     
     @Test
