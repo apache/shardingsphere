@@ -32,8 +32,8 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.rewriter.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.sql.rewriter.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.InsertValue;
 import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.InsertValuesToken;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.InsertValuesToken.InsertValueToken;
 
 import java.util.Iterator;
 import java.util.List;
@@ -60,7 +60,7 @@ public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedK
         Iterator<Comparable<?>> generatedValues = generatedKey.getGeneratedValues().descendingIterator();
         int count = 0;
         for (InsertValueContext each : ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts()) {
-            InsertValueToken insertValueToken = result.get().getInsertValueTokens().get(count);
+            InsertValue insertValueToken = result.get().getInsertValues().get(count);
             DerivedSimpleExpressionSegment expressionSegment = isToAddDerivedLiteralExpression((InsertSQLStatementContext) sqlStatementContext, count)
                     ? new DerivedLiteralExpressionSegment(generatedValues.next()) : new DerivedParameterMarkerExpressionSegment(each.getParametersCount());
             insertValueToken.getValues().add(expressionSegment);

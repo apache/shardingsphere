@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.rewriter.feature.encrypt.token.pojo;
 
+import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.InsertValue;
 import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.InsertValuesToken;
 
 /**
@@ -33,7 +34,7 @@ public final class EncryptInsertValuesToken extends InsertValuesToken {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        for (InsertValueToken each : getInsertValueTokens()) {
+        for (InsertValue each : getInsertValues()) {
             result.append(each).append(", ");
         }
         result.delete(result.length() - 2, result.length());

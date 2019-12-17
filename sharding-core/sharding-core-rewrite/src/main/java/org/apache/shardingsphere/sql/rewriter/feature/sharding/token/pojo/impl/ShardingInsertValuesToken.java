@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.rewriter.feature.sharding.token.pojo.impl;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.sql.rewriter.feature.sharding.token.pojo.RoutingUnitAware;
+import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.InsertValue;
 import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.InsertValuesToken;
 
 /**
@@ -42,14 +43,14 @@ public final class ShardingInsertValuesToken extends InsertValuesToken implement
     }
     
     private void appendInsertValue(final RoutingUnit routingUnit, final StringBuilder stringBuilder) {
-        for (InsertValueToken each : getInsertValueTokens()) {
+        for (InsertValue each : getInsertValues()) {
             if (isAppend(routingUnit, each)) {
                 stringBuilder.append(each).append(", ");
             }
         }
     }
     
-    private boolean isAppend(final RoutingUnit routingUnit, final InsertValueToken insertValueToken) {
+    private boolean isAppend(final RoutingUnit routingUnit, final InsertValue insertValueToken) {
         if (insertValueToken.getDataNodes().isEmpty() || null == routingUnit) {
             return true;
         }

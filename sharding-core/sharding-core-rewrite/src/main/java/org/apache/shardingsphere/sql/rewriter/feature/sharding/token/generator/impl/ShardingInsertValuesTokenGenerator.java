@@ -18,11 +18,6 @@
 package org.apache.shardingsphere.sql.rewriter.feature.sharding.token.generator.impl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.sql.rewriter.feature.sharding.aware.SQLRouteResultAware;
-import org.apache.shardingsphere.sql.rewriter.feature.sharding.token.pojo.impl.ShardingInsertValuesToken;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.InsertValuesToken;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.InsertValuesToken.InsertValueToken;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.rule.DataNode;
@@ -32,6 +27,11 @@ import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLSta
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.rewriter.feature.sharding.aware.SQLRouteResultAware;
+import org.apache.shardingsphere.sql.rewriter.feature.sharding.token.pojo.impl.ShardingInsertValuesToken;
+import org.apache.shardingsphere.sql.rewriter.sql.token.generator.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.InsertValue;
+import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.InsertValuesToken;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -63,7 +63,7 @@ public final class ShardingInsertValuesTokenGenerator implements OptionalSQLToke
         for (InsertValueContext each : ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts()) {
             List<ExpressionSegment> expressionSegments = each.getValueExpressions();
             Collection<DataNode> dataNodes = null == shardingConditionIterator ? Collections.<DataNode>emptyList() : shardingConditionIterator.next().getDataNodes();
-            result.getInsertValueTokens().add(new InsertValueToken(expressionSegments, dataNodes));
+            result.getInsertValues().add(new InsertValue(expressionSegments, dataNodes));
         }
         return result;
     }
