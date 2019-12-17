@@ -70,6 +70,12 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
         return Collections.singletonList(new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext));
     }
     
+    private YamlRootEncryptRuleConfiguration createRuleConfiguration() throws IOException {
+        URL url = EncryptSQLRewriterParameterizedTest.class.getClassLoader().getResource(getTestParameters().getRuleFile());
+        Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
+        return YamlEngine.unmarshal(new File(url.getFile()), YamlRootEncryptRuleConfiguration.class);
+    }
+    
     private SQLRewriteContext createSQLRewriteContext() {
         SQLStatement sqlStatement = SQLParseEngineFactory.getSQLParseEngine(
                 null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType()).parse(getTestParameters().getInputSQL(), false);
@@ -83,11 +89,5 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
         when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         return result;
-    }
-    
-    private YamlRootEncryptRuleConfiguration createRuleConfiguration() throws IOException {
-        URL url = EncryptSQLRewriterParameterizedTest.class.getClassLoader().getResource(getTestParameters().getRuleFile());
-        Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
-        return YamlEngine.unmarshal(new File(url.getFile()), YamlRootEncryptRuleConfiguration.class);
     }
 }
