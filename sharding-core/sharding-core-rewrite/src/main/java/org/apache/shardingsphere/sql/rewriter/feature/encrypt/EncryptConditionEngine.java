@@ -20,13 +20,10 @@ package org.apache.shardingsphere.sql.rewriter.feature.encrypt;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetaData;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
@@ -40,11 +37,9 @@ import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAv
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Encrypt condition engine.
@@ -56,7 +51,7 @@ public final class EncryptConditionEngine {
     
     private final EncryptRule encryptRule;
     
-    private final TableMetas tableMetas;
+    private final RelationMetas relationMetas;
     
     /**
      * Create encrypt conditions.
@@ -99,7 +94,7 @@ public final class EncryptConditionEngine {
     }
     
     private Optional<EncryptCondition> createEncryptCondition(final PredicateSegment predicateSegment, final TablesContext tablesContext) {
-        Optional<String> tableName = tablesContext.findTableName(predicateSegment.getColumn(), getRelationMetas(tableMetas));
+        Optional<String> tableName = tablesContext.findTableName(predicateSegment.getColumn(), relationMetas);
         return tableName.isPresent() && encryptRule.findShardingEncryptor(tableName.get(), predicateSegment.getColumn().getName()).isPresent()
                 ? createEncryptCondition(predicateSegment, tableName.get()) : Optional.<EncryptCondition>absent();
     }
@@ -139,14 +134,5 @@ public final class EncryptConditionEngine {
     
     private boolean isSupportedOperator(final String operator) {
         return "=".equals(operator) || "<>".equals(operator) || "!=".equals(operator);
-    }
-    
-    private RelationMetas getRelationMetas(final TableMetas tableMetas) {
-        Map<String, RelationMetaData> result = new HashMap<>(tableMetas.getAllTableNames().size());
-        for (String each : tableMetas.getAllTableNames()) {
-            TableMetaData tableMetaData = tableMetas.get(each);
-            result.put(each, new RelationMetaData(tableMetaData.getColumns().keySet()));
-        }
-        return new RelationMetas(result);
     }
 }

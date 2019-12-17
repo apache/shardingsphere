@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.sql.rewriter.sql.token.generator.aware;
 
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 
 /**
- * Table metas aware.
+ * Relation metas aware.
  *
  * @author zhangliang
  */
-public interface TableMetasAware {
+public interface RelationMetasAware {
     
     /**
-     * Set table metas.
+     * Set relation metas.
      * 
-     * @param tableMetas table metas
+     * @param relationMetas relation metas
      */
-    void setTableMetas(TableMetas tableMetas);
+    void setRelationMetas(RelationMetas relationMetas);
 }

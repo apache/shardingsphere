@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.rewriter.feature.encrypt.parameter.impl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.rewriter.feature.encrypt.EncryptCondition;
 import org.apache.shardingsphere.sql.rewriter.feature.encrypt.EncryptConditionEngine;
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.rewriter.feature.encrypt.aware.QueryWithCip
 import org.apache.shardingsphere.sql.rewriter.feature.encrypt.parameter.EncryptParameterRewriter;
 import org.apache.shardingsphere.sql.rewriter.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.sql.rewriter.parameter.builder.impl.StandardParameterBuilder;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.aware.TableMetasAware;
+import org.apache.shardingsphere.sql.rewriter.sql.token.generator.aware.RelationMetasAware;
 
 import java.util.List;
 import java.util.Map;
@@ -38,9 +38,9 @@ import java.util.Map.Entry;
  * @author zhangliang
  */
 @Setter
-public final class EncryptPredicateParameterRewriter extends EncryptParameterRewriter implements TableMetasAware, QueryWithCipherColumnAware {
+public final class EncryptPredicateParameterRewriter extends EncryptParameterRewriter implements RelationMetasAware, QueryWithCipherColumnAware {
     
-    private TableMetas tableMetas;
+    private RelationMetas relationMetas;
     
     private boolean queryWithCipherColumn;
     
@@ -51,7 +51,7 @@ public final class EncryptPredicateParameterRewriter extends EncryptParameterRew
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        List<EncryptCondition> encryptConditions = new EncryptConditionEngine(getEncryptRule(), tableMetas).createEncryptConditions(sqlStatementContext);
+        List<EncryptCondition> encryptConditions = new EncryptConditionEngine(getEncryptRule(), relationMetas).createEncryptConditions(sqlStatementContext);
         if (encryptConditions.isEmpty()) {
             return;
         }

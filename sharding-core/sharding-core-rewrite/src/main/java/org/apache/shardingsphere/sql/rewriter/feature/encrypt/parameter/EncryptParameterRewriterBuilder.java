@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sql.rewriter.feature.encrypt.parameter;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.rewriter.feature.encrypt.aware.EncryptRuleAware;
 import org.apache.shardingsphere.sql.rewriter.feature.encrypt.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.sql.rewriter.feature.encrypt.parameter.impl.EncryptAssignmentParameterRewriter;
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.rewriter.feature.encrypt.parameter.impl.Enc
 import org.apache.shardingsphere.sql.rewriter.feature.encrypt.parameter.impl.EncryptPredicateParameterRewriter;
 import org.apache.shardingsphere.sql.rewriter.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.sql.rewriter.parameter.rewriter.ParameterRewriterBuilder;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.aware.TableMetasAware;
+import org.apache.shardingsphere.sql.rewriter.sql.token.generator.aware.RelationMetasAware;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -45,10 +45,10 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
     private final boolean queryWithCipherColumn;
     
     @Override
-    public Collection<ParameterRewriter> getParameterRewriters(final TableMetas tableMetas) {
+    public Collection<ParameterRewriter> getParameterRewriters(final RelationMetas relationMetas) {
         Collection<ParameterRewriter> result = getParameterRewriters();
         for (ParameterRewriter each : result) {
-            setUpParameterRewriters(each, tableMetas);
+            setUpParameterRewriters(each, relationMetas);
         }
         return result;
     }
@@ -61,9 +61,9 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
         return result;
     }
     
-    private void setUpParameterRewriters(final ParameterRewriter parameterRewriter, final TableMetas tableMetas) {
-        if (parameterRewriter instanceof TableMetasAware) {
-            ((TableMetasAware) parameterRewriter).setTableMetas(tableMetas);
+    private void setUpParameterRewriters(final ParameterRewriter parameterRewriter, final RelationMetas relationMetas) {
+        if (parameterRewriter instanceof RelationMetasAware) {
+            ((RelationMetasAware) parameterRewriter).setRelationMetas(relationMetas);
         }
         if (parameterRewriter instanceof EncryptRuleAware) {
             ((EncryptRuleAware) parameterRewriter).setEncryptRule(encryptRule);

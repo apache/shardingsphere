@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.rewriter.parameterized.engine;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlRootEncryptRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
@@ -81,7 +80,7 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
                 null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType()).parse(getTestParameters().getInputSQL(), false);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(
                 createRelationMetas(), getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatement);
-        return new SQLRewriteContext(mock(TableMetas.class), sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
+        return new SQLRewriteContext(mock(RelationMetas.class), sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
     }
     
     private RelationMetas createRelationMetas() {
