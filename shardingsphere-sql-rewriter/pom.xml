@@ -33,18 +33,4 @@
         <module>shardingsphere-sql-rewriter-engine</module>
         <module>shardingsphere-sql-rewriter-test</module>
     </modules>
-    
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-parser-relation</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
 </project>
