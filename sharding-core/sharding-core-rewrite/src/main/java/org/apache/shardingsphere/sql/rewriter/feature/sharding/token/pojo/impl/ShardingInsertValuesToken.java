@@ -44,13 +44,13 @@ public final class ShardingInsertValuesToken extends InsertValuesToken implement
     
     private void appendInsertValue(final RoutingUnit routingUnit, final StringBuilder stringBuilder) {
         for (InsertValue each : getInsertValues()) {
-            if (isAppend(routingUnit, each)) {
+            if (isAppend(routingUnit, (ShardingInsertValue) each)) {
                 stringBuilder.append(each).append(", ");
             }
         }
     }
     
-    private boolean isAppend(final RoutingUnit routingUnit, final InsertValue insertValueToken) {
+    private boolean isAppend(final RoutingUnit routingUnit, final ShardingInsertValue insertValueToken) {
         if (insertValueToken.getDataNodes().isEmpty() || null == routingUnit) {
             return true;
         }

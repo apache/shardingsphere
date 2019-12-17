@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.rewriter.feature.encrypt.token.generator.i
 
 import com.google.common.base.Optional;
 import lombok.Setter;
-import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 import org.apache.shardingsphere.sql.parser.relation.segment.insert.InsertValueContext;
@@ -42,7 +41,6 @@ import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.InsertValue
 import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.UseDefaultInsertColumnsToken;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -96,7 +94,7 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
         Collection<InsertValuesSegment> insertValuesSegments = sqlStatementContext.getSqlStatement().findSQLSegments(InsertValuesSegment.class);
         InsertValuesToken result = new EncryptInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
         for (InsertValueContext each : sqlStatementContext.getInsertValueContexts()) {
-            InsertValue insertValueToken = new InsertValue(each.getValueExpressions(), Collections.<DataNode>emptyList());
+            InsertValue insertValueToken = new InsertValue(each.getValueExpressions());
             encryptToken(insertValueToken, tableName, sqlStatementContext, each);
             result.getInsertValues().add(insertValueToken);
         }

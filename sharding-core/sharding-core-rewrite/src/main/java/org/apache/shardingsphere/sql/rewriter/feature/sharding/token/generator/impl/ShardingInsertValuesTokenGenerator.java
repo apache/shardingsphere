@@ -28,9 +28,9 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertVal
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.rewriter.feature.sharding.aware.SQLRouteResultAware;
+import org.apache.shardingsphere.sql.rewriter.feature.sharding.token.pojo.impl.ShardingInsertValue;
 import org.apache.shardingsphere.sql.rewriter.feature.sharding.token.pojo.impl.ShardingInsertValuesToken;
 import org.apache.shardingsphere.sql.rewriter.sql.token.generator.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.InsertValue;
 import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.InsertValuesToken;
 
 import java.util.Collection;
@@ -63,7 +63,7 @@ public final class ShardingInsertValuesTokenGenerator implements OptionalSQLToke
         for (InsertValueContext each : ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts()) {
             List<ExpressionSegment> expressionSegments = each.getValueExpressions();
             Collection<DataNode> dataNodes = null == shardingConditionIterator ? Collections.<DataNode>emptyList() : shardingConditionIterator.next().getDataNodes();
-            result.getInsertValues().add(new InsertValue(expressionSegments, dataNodes));
+            result.getInsertValues().add(new ShardingInsertValue(expressionSegments, dataNodes));
         }
         return result;
     }
