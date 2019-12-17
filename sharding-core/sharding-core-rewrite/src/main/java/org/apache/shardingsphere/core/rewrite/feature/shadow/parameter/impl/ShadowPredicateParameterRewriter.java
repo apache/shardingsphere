@@ -17,11 +17,16 @@
 
 package org.apache.shardingsphere.core.rewrite.feature.shadow.parameter.impl;
 
+import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.rewrite.feature.shadow.ShadowCondition;
+import org.apache.shardingsphere.core.rewrite.feature.shadow.ShadowConditionEngine;
 import org.apache.shardingsphere.core.rewrite.feature.shadow.parameter.ShadowParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.parameter.builder.ParameterBuilder;
+import org.apache.shardingsphere.core.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Predicate parameter rewriter for shadow.
@@ -32,11 +37,22 @@ public final class ShadowPredicateParameterRewriter extends ShadowParameterRewri
 
     @Override
     protected boolean isNeedRewriteForShadow(final SQLStatementContext sqlStatementContext) {
-        return false;
+        return true;
     }
 
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
+        Optional<ShadowCondition> shadowCondition = new ShadowConditionEngine(getShadowRule()).createShadowCondition(sqlStatementContext);
+        if (shadowCondition.isPresent()) {
+            replaceShadowParameter(parameterBuilder, shadowCondition.get().getPositionIndexMap());
+        }
+    }
 
+    private void replaceShadowParameter(final ParameterBuilder parameterBuilder, final Map<Integer, Integer> positionIndexes) {
+        if (!positionIndexes.isEmpty()) {
+            for (Map.Entry<Integer, Integer> entry : positionIndexes.entrySet()) {
+                ((StandardParameterBuilder) parameterBuilder).addRemovedParameters(entry.getValue());
+            }
+        }
     }
 }

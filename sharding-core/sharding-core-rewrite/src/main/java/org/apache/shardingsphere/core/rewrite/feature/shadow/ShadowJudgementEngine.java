@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
@@ -87,10 +87,9 @@ public class ShadowJudgementEngine {
             if (each.getColumn().getName().equals(shadowRule.getColumn())) {
                 Preconditions.checkArgument(each.getRightValue() instanceof PredicateCompareRightValue, "must be PredicateCompareRightValue");
                 PredicateCompareRightValue rightValue = (PredicateCompareRightValue) each.getRightValue();
-                Preconditions.checkArgument(rightValue.getExpression() instanceof LiteralExpressionSegment, "must be LiteralExpressionSegment");
-                LiteralExpressionSegment expressionSegment = (LiteralExpressionSegment) rightValue.getExpression();
-                Preconditions.checkArgument(expressionSegment.getLiterals().getClass() == Boolean.class, "must be boolean type");
-                return (Boolean) expressionSegment.getLiterals();
+                int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) rightValue.getExpression()).getParameterMarkerIndex();
+                final Object value = parameters.get(parameterMarkerIndex);
+                return value instanceof Boolean && (Boolean) value;
             }
         }
         return false;

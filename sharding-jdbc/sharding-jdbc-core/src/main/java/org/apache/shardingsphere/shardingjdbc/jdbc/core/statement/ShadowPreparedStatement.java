@@ -101,7 +101,7 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
             preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
             replayMethodsInvocation(preparedStatement);
             replaySetParameter(preparedStatement, sqlUnit.getParameters());
-            this.resultSet = getResultSet();
+            this.resultSet = preparedStatement.executeQuery();
             return resultSet;
         } finally {
             clearParameters();
@@ -123,7 +123,15 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
 
     @Override
     public boolean execute() throws SQLException {
-        return false;
+        try {
+            SQLUnit sqlUnit = getSQLUnit(sql);
+            preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
+            replayMethodsInvocation(preparedStatement);
+            replaySetParameter(preparedStatement, sqlUnit.getParameters());
+            return preparedStatement.execute();
+        } finally {
+            clearParameters();
+        }
     }
 
     @Override
@@ -174,7 +182,7 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
 
     @Override
     public ResultSet getResultSet() throws SQLException {
-        return null;
+        return resultSet;
     }
 
     @Override

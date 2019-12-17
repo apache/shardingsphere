@@ -81,11 +81,11 @@ public final class SQLLogger {
      * Print SQL log for shadow rule.
      *
      * @param shadowSQL shadow SQL
-     * @param dataSourceNames data source names
+     * @param dataSourceName data source name
      */
-    public static void logShadowSQL(final String shadowSQL, final String dataSourceNames) {
+    public static void logShadowSQL(final String shadowSQL, final String dataSourceName) {
         log("Rule Type: shadow");
-        log("SQL: {} ::: DataSources: {}", shadowSQL, dataSourceNames);
+        log("SQL: {} ::: DataSources: {}", shadowSQL, dataSourceName);
     }
     
     private static void logSimpleMode(final Collection<RouteUnit> routeUnits) {
