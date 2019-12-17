@@ -32,6 +32,7 @@ chapter = true
 1. 百姓网 https://www.baixing.com/ 
 1. 百畅科技 http://www.sdbaichang.com/ 
 1. 北京环球网校 http://www.hqwx.com/ 
+1. 北京千丁互联科技有限公司 http://caas.com.cn/
 1. 哔哩哔哩弹幕网 https://www.bilibili.com/ 
 1. 策赢平台 https://www.cypfintech.com/ 
 1. 超级蓝领 https://www.chaojilanling.cn/ 
@@ -53,6 +54,7 @@ chapter = true
 1. 瓜子二手车 https://www.guazi.com/ 
 1. 光云科技 https://www.raycloud.com/ 
 1. 广西壮族自治区国土资源信息中心 http://z.gxdlr.gov.cn/ 
+1. 广州理德物联网科技有限公司 http://www.iotlead.com/
 1. 海典软件 http://www.hydee.cn/ 
 1. 海尔消费金融 https://www.haiercash.com/ 
 1. 海康威视 https://www.hikvision.com/ 
@@ -77,6 +79,7 @@ chapter = true
 1. 康帕斯科技 http://www.compasshz.com/ 
 1. 科大讯飞 https://www.iflytek.com/ 
 1. 客如云 https://www.keruyun.com/
+1. 快捷通支付服务有限公司 https://www.kjtpay.com/
 1. 丽人丽妆 https://www.lrlz.com/ 
 1. 马蜂窝 https://www.mafengwo.cn/ 
 1. 每日优鲜便利购 https://www.missfresh.cn/ 
@@ -99,6 +102,7 @@ chapter = true
 1. 随手记 https://www.sui.com/ 
 1. 特微智能 https://www.trawe.cn/
 1. 天涯社区 https://www.tianya.cn/
+1. 途家民宿 https://www.tujia.com/
 1. 兔展 https://www.rabbitpre.com/ 
 1. 团贷网 https://www.tuandai.com/ 
 1. 微脉 https://www.myweimai.com/
