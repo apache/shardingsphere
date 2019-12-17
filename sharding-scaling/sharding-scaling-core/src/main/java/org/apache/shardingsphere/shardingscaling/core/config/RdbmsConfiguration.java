@@ -22,6 +22,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 
+import java.util.Map;
+
 /**
  * Relational database management system configuration.
  *
@@ -39,6 +41,8 @@ public class RdbmsConfiguration implements Cloneable {
     private String whereCondition;
     
     private int spiltNum;
+    
+    private Map<String, String> tableNameMap;
     
     /**
      * Clone to new rdbms configuration.

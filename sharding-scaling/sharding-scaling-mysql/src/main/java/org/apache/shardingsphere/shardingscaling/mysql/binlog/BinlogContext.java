@@ -48,14 +48,23 @@ public class BinlogContext {
     }
     
     /**
-     * Get full table name by table id.
+     * Get table name by table id.
      *
      * @param tableId table id
-     * @return full table name
+     * @return table name
      */
-    public String getFullTableName(final long tableId) {
-        TableMapEvent tableMapEvent = tableMap.get(tableId);
-        return String.format("%s.%s", tableMapEvent.getSchemaName(), tableMapEvent.getTableName());
+    public String getTableName(final long tableId) {
+        return tableMap.get(tableId).getTableName();
+    }
+    
+    /**
+     * Get schema name by table id.
+     *
+     * @param tableId table id
+     * @return schema name
+     */
+    public String getSchemaName(final long tableId) {
+        return tableMap.get(tableId).getSchemaName();
     }
     
     /**

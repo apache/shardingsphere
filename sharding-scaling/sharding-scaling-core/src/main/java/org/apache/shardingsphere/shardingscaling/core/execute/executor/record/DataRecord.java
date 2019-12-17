@@ -34,9 +34,7 @@ public final class DataRecord extends Record {
     private String type;
 
     private String tableName;
-
-    private String fullTableName;
-
+    
     private final List<Column> columns;
 
     public DataRecord(final LogPosition logPosition, final int columnCount) {
@@ -70,14 +68,5 @@ public final class DataRecord extends Record {
      */
     public Column getColumn(final int index) {
         return columns.get(index);
-    }
-
-    /**
-     * Get table name.
-     *
-     * @return tableName
-     */
-    public String getTableName() {
-        return fullTableName.split("\\.")[1];
     }
 }

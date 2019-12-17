@@ -81,7 +81,7 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
         List<SyncConfiguration> result = new LinkedList<>();
         DataSource dataSource = dataSourceFactory.getDataSource(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
         DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil(dataSource);
-        for (SyncConfiguration each : splitByTable(syncConfiguration, dbMetaDataUtil)) {
+        for (SyncConfiguration each : splitByTable(syncConfiguration)) {
             if (isSpiltByPrimaryKeyRange(each.getReaderConfiguration(), dbMetaDataUtil)) {
                 result.addAll(splitByPrimaryKeyRange(each, dbMetaDataUtil, dataSource));
             } else {
@@ -91,12 +91,13 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
         return result;
     }
     
-    private Collection<SyncConfiguration> splitByTable(final SyncConfiguration syncConfiguration, final DbMetaDataUtil dbMetaDataUtil) {
+    private Collection<SyncConfiguration> splitByTable(final SyncConfiguration syncConfiguration) {
         Collection<SyncConfiguration> result = new LinkedList<>();
-        for (String each : dbMetaDataUtil.getTableNames()) {
+        for (String each : syncConfiguration.getTableNameMap().keySet()) {
             RdbmsConfiguration readerConfig = RdbmsConfiguration.clone(syncConfiguration.getReaderConfiguration());
             readerConfig.setTableName(each);
-            result.add(new SyncConfiguration(syncConfiguration.getConcurrency(), readerConfig, RdbmsConfiguration.clone(syncConfiguration.getWriterConfiguration())));
+            result.add(new SyncConfiguration(syncConfiguration.getConcurrency(), syncConfiguration.getTableNameMap(),
+                    readerConfig, RdbmsConfiguration.clone(syncConfiguration.getWriterConfiguration())));
         }
         return result;
     }
@@ -145,7 +146,8 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
                     splitReaderConfig.setWhereCondition(String.format("where id between %d and %d", min, max));
                 }
                 splitReaderConfig.setSpiltNum(i);
-                result.add(new SyncConfiguration(concurrency, splitReaderConfig, RdbmsConfiguration.clone(syncConfiguration.getWriterConfiguration())));
+                result.add(new SyncConfiguration(concurrency, syncConfiguration.getTableNameMap(),
+                        splitReaderConfig, RdbmsConfiguration.clone(syncConfiguration.getWriterConfiguration())));
             }
         } catch (SQLException e) {
             throw new RuntimeException("getTableNames error", e);

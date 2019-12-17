@@ -20,8 +20,6 @@ package org.apache.shardingsphere.shardingscaling.core.config;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * Rule configuration.
  *
@@ -30,7 +28,9 @@ import java.util.List;
 @Data
 public class RuleConfiguration {
 
-    private List<YamlDataSourceParameter> dataSources;
+    private String sourceDatasource;
+    
+    private String sourceRule;
 
     private YamlDataSourceParameter destinationDataSources;
 

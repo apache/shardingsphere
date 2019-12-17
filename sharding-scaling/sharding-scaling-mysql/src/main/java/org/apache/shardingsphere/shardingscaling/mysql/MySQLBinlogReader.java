@@ -94,14 +94,15 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
             } else if (event instanceof DeleteRowsEvent) {
                 handleDeleteRowsEvent(channel, uri, (DeleteRowsEvent) event);
             } else if (event instanceof PlaceholderEvent) {
-                handlePlaceholderEvent(channel, (PlaceholderEvent) event);
+                createPlaceholderRecord(channel, event);
             }
         }
         pushRecord(channel, new FinishedRecord(new NopLogPosition()));
     }
 
     private void handleWriteRowsEvent(final Channel channel, final JdbcUri uri, final WriteRowsEvent event) {
-        if (filter(uri.getDatabase(), event.getTableName())) {
+        if (filter(uri.getDatabase(), event.getSchemaName(), event.getTableName())) {
+            createPlaceholderRecord(channel, event);
             return;
         }
         for (Serializable[] each : event.getAfterRows()) {
@@ -115,7 +116,8 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
     }
 
     private void handleUpdateRowsEvent(final Channel channel, final JdbcUri uri, final UpdateRowsEvent event) {
-        if (filter(uri.getDatabase(), event.getTableName())) {
+        if (filter(uri.getDatabase(), event.getSchemaName(), event.getTableName())) {
+            createPlaceholderRecord(channel, event);
             return;
         }
         for (int i = 0; i < event.getBeforeRows().size(); i++) {
@@ -133,7 +135,8 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
     }
 
     private void handleDeleteRowsEvent(final Channel channel, final JdbcUri uri, final DeleteRowsEvent event) {
-        if (filter(uri.getDatabase(), event.getTableName())) {
+        if (filter(uri.getDatabase(), event.getSchemaName(), event.getTableName())) {
+            createPlaceholderRecord(channel, event);
             return;
         }
         for (Serializable[] each : event.getBeforeRows()) {
@@ -148,12 +151,12 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
     
     private DataRecord createDataRecord(final AbstractRowsEvent rowsEvent, final int columnCount) {
         DataRecord result = new DataRecord(new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition(), rowsEvent.getServerId()), columnCount);
-        result.setFullTableName(rowsEvent.getTableName());
+        result.setTableName(rdbmsConfiguration.getTableNameMap().get(rowsEvent.getTableName()));
         result.setCommitTime(rowsEvent.getTimestamp());
         return result;
     }
 
-    private void handlePlaceholderEvent(final Channel channel, final PlaceholderEvent event) {
+    private void createPlaceholderRecord(final Channel channel, final AbstractBinlogEvent event) {
         PlaceholderRecord record = new PlaceholderRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId()));
         pushRecord(channel, record);
     }
@@ -165,7 +168,7 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
         }
     }
 
-    private boolean filter(final String database, final String fullTableName) {
-        return !fullTableName.startsWith(database + ".");
+    private boolean filter(final String database, final String schemaName, final String tableName) {
+        return !schemaName.equals(database) || !rdbmsConfiguration.getTableNameMap().containsKey(tableName);
     }
 }

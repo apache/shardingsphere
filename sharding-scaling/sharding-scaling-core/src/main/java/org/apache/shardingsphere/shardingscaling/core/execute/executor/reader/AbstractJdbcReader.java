@@ -83,7 +83,7 @@ public abstract class AbstractJdbcReader extends AbstractSyncRunner implements J
             while (isRunning() && rs.next()) {
                 DataRecord record = new DataRecord(new NopLogPosition(), metaData.getColumnCount());
                 record.setType("bootstrap-insert");
-                record.setFullTableName(String.format("%s.%s", conn.getCatalog(), rdbmsConfiguration.getTableName()));
+                record.setTableName(rdbmsConfiguration.getTableNameMap().get(rdbmsConfiguration.getTableName()));
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
                     if (Types.TIME == rs.getMetaData().getColumnType(i)
                             || Types.DATE == rs.getMetaData().getColumnType(i)
