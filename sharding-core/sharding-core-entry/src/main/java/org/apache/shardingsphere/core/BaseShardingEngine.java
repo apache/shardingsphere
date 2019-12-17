@@ -35,9 +35,9 @@ import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetaData;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.rewriter.context.SQLRewriteContext;
 import org.apache.shardingsphere.sql.rewriter.engine.SQLRewriteResult;
-import org.apache.shardingsphere.sql.rewriter.feature.encrypt.context.EncryptSQLRewriteContextDecorator;
-import org.apache.shardingsphere.sql.rewriter.feature.sharding.context.ShardingSQLRewriteContextDecorator;
-import org.apache.shardingsphere.sql.rewriter.feature.sharding.engine.ShardingSQLRewriteEngine;
+import org.apache.shardingsphere.sql.rewriter.encrypt.context.EncryptSQLRewriteContextDecorator;
+import org.apache.shardingsphere.sql.rewriter.sharding.context.ShardingSQLRewriteContextDecorator;
+import org.apache.shardingsphere.sql.rewriter.sharding.engine.ShardingSQLRewriteEngine;
 
 import java.util.Collection;
 import java.util.HashMap;
