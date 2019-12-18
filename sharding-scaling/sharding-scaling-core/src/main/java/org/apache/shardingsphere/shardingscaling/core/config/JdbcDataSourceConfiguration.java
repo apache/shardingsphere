@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingscaling.core.config;
 
 import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
@@ -51,6 +50,6 @@ public final class JdbcDataSourceConfiguration implements DataSourceConfiguratio
     
     @Override
     public DataSourceMetaData getDataSourceMetaData() {
-        return databaseType.getDataSourceMetaData(new DataSourceInfo(jdbcUrl, username));
+        return databaseType.getDataSourceMetaData(jdbcUrl, username);
     }
 }
