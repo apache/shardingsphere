@@ -21,8 +21,6 @@ import org.apache.shardingsphere.core.execute.hook.fixture.SQLExecutionHookFixtu
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
-
 import static org.junit.Assert.assertTrue;
 
 public final class SPISQLExecutionHookTest {
@@ -37,7 +35,7 @@ public final class SPISQLExecutionHookTest {
     
     @Test
     public void assertStart() {
-        spiSQLExecutionHook.start("ds", "SELECT 1", Collections.emptyList(), null, true, null);
+        spiSQLExecutionHook.start(null, null, true, null);
         assertTrue(SQLExecutionHookFixture.containsAction("start"));
     }
     

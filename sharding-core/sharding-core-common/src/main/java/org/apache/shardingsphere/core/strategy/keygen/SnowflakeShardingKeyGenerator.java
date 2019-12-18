@@ -69,8 +69,6 @@ public final class SnowflakeShardingKeyGenerator implements ShardingKeyGenerator
     
     private static final long WORKER_ID = 0;
     
-    private static final int DEFAULT_VIBRATION_VALUE = 1;
-    
     private static final int MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS = 10;
     
     @Setter
@@ -80,7 +78,7 @@ public final class SnowflakeShardingKeyGenerator implements ShardingKeyGenerator
     @Setter
     private Properties properties = new Properties();
     
-    private int sequenceOffset = -1;
+    private byte sequenceOffset;
     
     private long sequence;
     
@@ -137,12 +135,6 @@ public final class SnowflakeShardingKeyGenerator implements ShardingKeyGenerator
         return result;
     }
     
-    private int getMaxVibrationOffset() {
-        int result = Integer.parseInt(properties.getProperty("max.vibration.offset", String.valueOf(DEFAULT_VIBRATION_VALUE)));
-        Preconditions.checkArgument(result >= 0 && result <= SEQUENCE_MASK, "Illegal max vibration offset");
-        return result;
-    }
-    
     private int getMaxTolerateTimeDifferenceMilliseconds() {
         return Integer.valueOf(properties.getProperty("max.tolerate.time.difference.milliseconds", String.valueOf(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS)));
     }
@@ -156,6 +148,6 @@ public final class SnowflakeShardingKeyGenerator implements ShardingKeyGenerator
     }
     
     private void vibrateSequenceOffset() {
-        sequenceOffset = sequenceOffset >= getMaxVibrationOffset() ? 0 : sequenceOffset + 1;
+        sequenceOffset = (byte) (~sequenceOffset & 1);
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.execute.metadata;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.execute.engine.ShardingExecuteEngine;
+import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -28,6 +28,7 @@ import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -101,10 +102,9 @@ public final class TableMetaDataInitializer {
     private Collection<String> getAllTableNames(final String dataSourceName) throws SQLException {
         Collection<String> result = new LinkedHashSet<>();
         DataSourceMetaData dataSourceMetaData = this.dataSourceMetas.getDataSourceMetaData(dataSourceName);
-        String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getCatalog();
-        String schemaName = null == dataSourceMetaData ? null : dataSourceMetaData.getSchema();
+        String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchema();
         try (Connection connection = connectionManager.getConnection(dataSourceName);
-                ResultSet resultSet = connection.getMetaData().getTables(catalog, schemaName, null, new String[]{"TABLE"})) {
+             ResultSet resultSet = connection.getMetaData().getTables(catalog, getCurrentSchemaName(connection), null, new String[]{"TABLE"})) {
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
                 if (!tableName.contains("$") && !tableName.contains("/")) {
@@ -113,5 +113,13 @@ public final class TableMetaDataInitializer {
             }
         }
         return result;
+    }
+    
+    private String getCurrentSchemaName(final Connection connection) throws SQLException {
+        try {
+            return connection.getSchema();
+        } catch (final AbstractMethodError | SQLFeatureNotSupportedException ignore) {
+            return null;
+        }
     }
 }

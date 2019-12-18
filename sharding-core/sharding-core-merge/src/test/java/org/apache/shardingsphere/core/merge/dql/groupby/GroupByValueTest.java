@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.core.merge.dql.groupby;
 
-import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
-import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
+import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -39,17 +40,18 @@ import static org.mockito.Mockito.when;
 public final class GroupByValueTest {
     
     @Mock
-    private QueryResult queryResult;
+    private ResultSet resultSet;
     
     @Before
     public void setUp() throws SQLException {
-        when(queryResult.getValue(1, Object.class)).thenReturn("1");
-        when(queryResult.getValue(3, Object.class)).thenReturn("3");
+        when(resultSet.getObject(1)).thenReturn("1");
+        when(resultSet.getObject(3)).thenReturn("3");
     }
     
     @Test
     public void assertGetGroupByValues() throws SQLException {
-        List<?> actual = new GroupByValue(queryResult, Arrays.asList(
+        List<?> actual = new GroupByValue(new TestQueryResult(resultSet), 
+                Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC)))).getGroupValues();
         List<?> expected = Arrays.asList("1", "3");
@@ -58,10 +60,12 @@ public final class GroupByValueTest {
     
     @Test
     public void assertGroupByValueEquals() throws SQLException {
-        GroupByValue groupByValue1 = new GroupByValue(queryResult, Arrays.asList(
+        GroupByValue groupByValue1 = new GroupByValue(new TestQueryResult(resultSet), 
+                Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)), 
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC))));
-        GroupByValue groupByValue2 = new GroupByValue(queryResult, Arrays.asList(
+        GroupByValue groupByValue2 = new GroupByValue(new TestQueryResult(resultSet), 
+                Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)), 
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC))));
         assertTrue(groupByValue1.equals(groupByValue2));
@@ -71,10 +75,12 @@ public final class GroupByValueTest {
     
     @Test
     public void assertGroupByValueNotEquals() throws SQLException {
-        GroupByValue groupByValue1 = new GroupByValue(queryResult, Arrays.asList(
+        GroupByValue groupByValue1 = new GroupByValue(new TestQueryResult(resultSet), 
+                Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)), 
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC))));
-        GroupByValue groupByValue2 = new GroupByValue(queryResult, Arrays.asList(
+        GroupByValue groupByValue2 = new GroupByValue(new TestQueryResult(resultSet), 
+                Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC)), 
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))));
         assertFalse(groupByValue1.equals(groupByValue2));

@@ -55,7 +55,7 @@ public final class IntegrateTestEnvironment {
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
-        runAdditionalTestCases = Boolean.parseBoolean(prop.getProperty("run.additional.cases"));
+        runAdditionalTestCases = Boolean.valueOf(prop.getProperty("run.additional.cases"));
         shardingRuleTypes = Splitter.on(",").trimResults().splitToList(prop.getProperty("sharding.rule.type"));
         databaseTypes = new LinkedList<>();
         for (String each : prop.getProperty("databases", "H2").split(",")) {

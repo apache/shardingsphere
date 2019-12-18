@@ -46,8 +46,6 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     
     private static EncryptDataSource encryptDataSourceWithProps;
     
-    private static EncryptDataSource encryptDataSourceWithFullColumns;
-    
     private static final List<String> ENCRYPT_DB_NAMES = Collections.singletonList("encrypt");
     
     @BeforeClass
@@ -58,7 +56,6 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
         Map<String, DataSource> dataSources = getDataSources();
         encryptDataSource = new EncryptDataSource(dataSources.values().iterator().next(), new EncryptRule(createEncryptRuleConfiguration()), new Properties());
         encryptDataSourceWithProps = new EncryptDataSource(dataSources.values().iterator().next(), new EncryptRule(createEncryptRuleConfiguration()), createProperties());
-        encryptDataSourceWithFullColumns = new EncryptDataSource(dataSources.values().iterator().next(), new EncryptRule(createEncryptRuleConfigurationWithFullColumns()), createProperties());
     }
     
     private static Properties createProperties() {
@@ -93,16 +90,6 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
         return result;
     }
     
-    private static EncryptRuleConfiguration createEncryptRuleConfigurationWithFullColumns() {
-        EncryptorRuleConfiguration encryptorQueryConfig = new EncryptorRuleConfiguration("assistedTest", new Properties());
-        EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration("plain_pwd", "cipher_pwd", "assist_pwd", "assistedTest");
-        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(Collections.singletonMap("pwd", columnConfig));
-        EncryptRuleConfiguration result = new EncryptRuleConfiguration();
-        result.getEncryptors().put("assistedTest", encryptorQueryConfig);
-        result.getTables().put("t_query_and_plain_encrypt", tableConfig);
-        return result;
-    }
-    
     @Before
     public void initTable() {
         try {
@@ -120,10 +107,6 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     
     protected final EncryptConnection getEncryptConnectionWithProps() throws SQLException {
         return encryptDataSourceWithProps.getConnection();
-    }
-    
-    protected final EncryptConnection getEncryptConnectionWithFullColumns() throws SQLException {
-        return encryptDataSourceWithFullColumns.getConnection();
     }
     
     @AfterClass

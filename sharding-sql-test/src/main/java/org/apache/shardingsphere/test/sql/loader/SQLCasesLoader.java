@@ -152,8 +152,7 @@ public final class SQLCasesLoader {
         if (null == parameters || parameters.isEmpty()) {
             return sql;
         }
-        return String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%")
-                .replace("%%", "%").replace("'%'", "'%%'");
+        return String.format(sql.replace("?", "%s"), parameters.toArray()).replace("%%", "%").replace("'%'", "'%%'");
     }
     
     /**

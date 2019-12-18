@@ -17,12 +17,20 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
+import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.hamcrest.core.Is;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import java.math.BigDecimal;
-import java.sql.Blob;
-import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -30,16 +38,61 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class StreamQueryResultTest {
+    
+    private final ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
+
+    private final SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+
+    private final TablesContext tablesContext = mock(TablesContext.class);
+
+    @Before
+    public void setUp() {
+        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
+        when(tablesContext.getTableNames()).thenReturn(Collections.singleton("order"));
+    }
+
+    @Test
+    public void assertConstructorWithShardingRule() throws SQLException {
+        StreamQueryResult queryResult = new StreamQueryResult(getResultSet(), getShardingRule(), new ShardingProperties(new Properties()), sqlStatementContext);
+        assertThat(queryResult.getQueryResultMetaData().getShardingEncryptor(1), is(Optional.fromNullable(shardingEncryptor)));
+    }
+    
+    @Test
+    public void assertConstructorWithEncryptRule() throws SQLException {
+        StreamQueryResult queryResult = new StreamQueryResult(getResultSet(), getEncryptRule(), new ShardingProperties(new Properties()), sqlStatementContext);
+        assertThat(queryResult.getQueryResultMetaData().getShardingEncryptor(1), is(Optional.fromNullable(shardingEncryptor)));
+    }
+    
+    private ShardingRule getShardingRule() {
+        ShardingRule result = mock(ShardingRule.class);
+        doReturn(getEncryptRule()).when(result).getEncryptRule();
+        return result;
+    }
+    
+    private EncryptRule getEncryptRule() {
+        EncryptRule result = mock(EncryptRule.class);
+        EncryptTable encryptTable = mock(EncryptTable.class);
+        when(result.findShardingEncryptor("order", "order_id")).thenReturn(Optional.fromNullable(shardingEncryptor));
+        when(result.findEncryptTable(anyString())).thenReturn(Optional.of(encryptTable));
+        when(result.getLogicColumn(anyString(), anyString())).thenReturn("order_id");
+        when(encryptTable.getCipherColumns()).thenReturn(Collections.singleton("order_id"));
+        return result;
+    }
     
     @Test
     public void assertNext() throws SQLException {
@@ -49,115 +102,53 @@ public final class StreamQueryResultTest {
     }
     
     @Test
-    public void assertGetValueByBoolean() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.getBoolean(1)).thenReturn(true);
-        assertTrue((boolean) new StreamQueryResult(resultSet).getValue(1, boolean.class));
+    public void assertGetValueWithColumnIndex() throws SQLException {
+        StreamQueryResult queryResult = new StreamQueryResult(getResultSet());
+        queryResult.next();
+        assertThat(queryResult.getValue(1, int.class), Is.<Object>is(1));
     }
     
     @Test
-    public void assertGetValueByByte() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.getByte(1)).thenReturn((byte) 0x00);
-        assertThat(new StreamQueryResult(resultSet).getValue(1, byte.class), Is.<Object>is((byte) 0x00));
+    public void assertGetValueWithColumnLabel() throws SQLException {
+        StreamQueryResult queryResult = new StreamQueryResult(getResultSet());
+        queryResult.next();
+        assertThat(queryResult.getValue("order_id", int.class), Is.<Object>is(1));
     }
     
     @Test
-    public void assertGetValueByShort() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.getShort(1)).thenReturn((short) 1);
-        assertThat(new StreamQueryResult(resultSet).getValue(1, short.class), Is.<Object>is((short) 1));
+    public void assertGetValueWithShardingRule() throws SQLException {
+        when(shardingEncryptor.decrypt("1")).thenReturn("1");
+        StreamQueryResult queryResult = new StreamQueryResult(getResultSet(), getShardingRule(), new ShardingProperties(new Properties()), sqlStatementContext);
+        queryResult.next();
+        assertThat(queryResult.getValue("order_id", int.class), Is.<Object>is("1"));
+    }
+    
+    @Test(expected = Exception.class)
+    public void assertGetValueWithException() throws SQLException {
+        ResultSet resultSet = getResultSetWithException();
+        StreamQueryResult queryResult = new StreamQueryResult(resultSet);
+        queryResult.next();
+        queryResult.getValue("order_id", int.class);
+    }
+    
+    private ResultSet getResultSetWithException() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true).thenReturn(false);
+        when(result.getInt(1)).thenReturn(1);
+        doReturn(getResultSetMetaDataWithException()).when(result).getMetaData();
+        return result;
+    }
+    
+    private ResultSetMetaData getResultSetMetaDataWithException() throws SQLException {
+        ResultSetMetaData result = mock(ResultSetMetaData.class);
+        when(result.getColumnCount()).thenReturn(1);
+        when(result.getColumnLabel(1)).thenReturn("order_id");
+        when(result.getColumnName(1)).thenThrow(new SQLException());
+        return result;
     }
     
     @Test
-    public void assertGetValueByInt() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.getInt(1)).thenReturn(1);
-        assertThat(new StreamQueryResult(resultSet).getValue(1, int.class), Is.<Object>is(1));
-    }
-    
-    @Test
-    public void assertGetValueByLong() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.getLong(1)).thenReturn(1L);
-        assertThat(new StreamQueryResult(resultSet).getValue(1, long.class), Is.<Object>is(1L));
-    }
-    
-    @Test
-    public void assertGetValueByFloat() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.getFloat(1)).thenReturn(1F);
-        assertThat(new StreamQueryResult(resultSet).getValue(1, float.class), Is.<Object>is(1F));
-    }
-    
-    @Test
-    public void assertGetValueByDouble() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.getDouble(1)).thenReturn(1D);
-        assertThat(new StreamQueryResult(resultSet).getValue(1, double.class), Is.<Object>is(1D));
-    }
-    
-    @Test
-    public void assertGetValueByString() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.getString(1)).thenReturn("value");
-        assertThat(new StreamQueryResult(resultSet).getValue(1, String.class), Is.<Object>is("value"));
-    }
-    
-    @Test
-    public void assertGetValueByBigDecimal() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.getBigDecimal(1)).thenReturn(new BigDecimal("0"));
-        assertThat(new StreamQueryResult(resultSet).getValue(1, BigDecimal.class), Is.<Object>is(new BigDecimal("0")));
-    }
-    
-    @Test
-    public void assertGetValueByBytes() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        byte[] value = {1};
-        when(resultSet.getBytes(1)).thenReturn(value);
-        assertThat(new StreamQueryResult(resultSet).getValue(1, byte[].class), Is.<Object>is(value));
-    }
-    
-    @Test
-    public void assertGetValueByDate() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.getDate(1)).thenReturn(new Date(0L));
-        assertThat(new StreamQueryResult(resultSet).getValue(1, Date.class), Is.<Object>is(new Date(0L)));
-    }
-    
-    @Test
-    public void assertGetValueByTime() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.getTime(1)).thenReturn(new Time(0L));
-        assertThat(new StreamQueryResult(resultSet).getValue(1, Time.class), Is.<Object>is(new Time(0L)));
-    }
-    
-    @Test
-    public void assertGetValueByBlob() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        Blob value = mock(Blob.class);
-        when(resultSet.getBlob(1)).thenReturn(value);
-        assertThat(new StreamQueryResult(resultSet).getValue(1, Blob.class), Is.<Object>is(value));
-    }
-    
-    @Test
-    public void assertGetValueByClob() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        Clob value = mock(Clob.class);
-        when(resultSet.getClob(1)).thenReturn(value);
-        assertThat(new StreamQueryResult(resultSet).getValue(1, Clob.class), Is.<Object>is(value));
-    }
-    
-    @Test
-    public void assertGetValueByTimestamp() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.getTimestamp(1)).thenReturn(new Timestamp(0L));
-        assertThat(new StreamQueryResult(resultSet).getValue(1, Timestamp.class), Is.<Object>is(new Timestamp(0L)));
-    }
-    
-    @Test
-    public void assertGetCalendarValueWithDate() throws SQLException {
+    public void assertGetCalendarValueWithColumnIndexAndDate() throws SQLException {
         ResultSet result = getResultSet();
         Calendar calendar = Calendar.getInstance();
         StreamQueryResult queryResult = new StreamQueryResult(result);
@@ -167,7 +158,7 @@ public final class StreamQueryResultTest {
     }
     
     @Test
-    public void assertGetCalendarValueWithTime() throws SQLException {
+    public void assertGetCalendarValueWithColumnIndexAndTime() throws SQLException {
         ResultSet resultSet = getResultSet();
         Calendar calendar = Calendar.getInstance();
         StreamQueryResult queryResult = new StreamQueryResult(resultSet);
@@ -177,7 +168,7 @@ public final class StreamQueryResultTest {
     }
     
     @Test
-    public void assertGetCalendarValueWithTimestamp() throws SQLException {
+    public void assertGetCalendarValueWithColumnIndexAndTimestamp() throws SQLException {
         ResultSet resultSet = getResultSet();
         Calendar calendar = Calendar.getInstance();
         StreamQueryResult queryResult = new StreamQueryResult(resultSet);
@@ -187,14 +178,51 @@ public final class StreamQueryResultTest {
     }
     
     @Test(expected = SQLException.class)
-    public void assertGetCalendarValueWithUnsupportedType() throws SQLException {
+    public void assertGetCalendarValueWithColumnIndexAndUnsupportedType() throws SQLException {
         StreamQueryResult queryResult = new StreamQueryResult(getResultSet());
         queryResult.next();
         queryResult.getCalendarValue(1, Object.class, Calendar.getInstance());
     }
     
     @Test
-    public void assertGetInputStreamWithAscii() throws SQLException {
+    public void assertGetCalendarValueWithColumnLabelAndDate() throws SQLException {
+        ResultSet resultSet = getResultSet();
+        Calendar calendar = Calendar.getInstance();
+        StreamQueryResult queryResult = new StreamQueryResult(resultSet);
+        queryResult.next();
+        queryResult.getCalendarValue("order_id", Date.class, calendar);
+        verify(resultSet).getDate("order_id", calendar);
+    }
+    
+    @Test
+    public void assertGetCalendarValueWithColumnLabelAndTime() throws SQLException {
+        ResultSet resultSet = getResultSet();
+        Calendar calendar = Calendar.getInstance();
+        StreamQueryResult queryResult = new StreamQueryResult(resultSet);
+        queryResult.next();
+        queryResult.getCalendarValue("order_id", Time.class, calendar);
+        verify(resultSet).getTime("order_id", calendar);
+    }
+    
+    @Test
+    public void assertGetCalendarValueWithColumnLabelAndTimestamp() throws SQLException {
+        ResultSet resultSet = getResultSet();
+        Calendar calendar = Calendar.getInstance();
+        StreamQueryResult queryResult = new StreamQueryResult(resultSet);
+        queryResult.next();
+        queryResult.getCalendarValue("order_id", Timestamp.class, calendar);
+        verify(resultSet).getTimestamp("order_id", calendar);
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertGetCalendarValueWithColumnLabelAndUnsupportedType() throws SQLException {
+        StreamQueryResult queryResult = new StreamQueryResult(getResultSet());
+        queryResult.next();
+        queryResult.getCalendarValue("order_id", Object.class, Calendar.getInstance());
+    }
+    
+    @Test
+    public void assertGetInputStreamWithColumnIndexAndAscii() throws SQLException {
         ResultSet resultSet = getResultSet();
         StreamQueryResult queryResult = new StreamQueryResult(resultSet);
         queryResult.next();
@@ -204,7 +232,7 @@ public final class StreamQueryResultTest {
     
     @SuppressWarnings("deprecation")
     @Test
-    public void assertGetInputStreamWithUnicode() throws SQLException {
+    public void assertGetInputStreamWithColumnIndexAndUnicode() throws SQLException {
         ResultSet resultSet = getResultSet();
         StreamQueryResult queryResult = new StreamQueryResult(resultSet);
         queryResult.next();
@@ -213,7 +241,7 @@ public final class StreamQueryResultTest {
     }
     
     @Test
-    public void assertGetInputStreamWithBinary() throws SQLException {
+    public void assertGetInputStreamWithColumnIndexAndBinary() throws SQLException {
         ResultSet resultSet = getResultSet();
         StreamQueryResult queryResult = new StreamQueryResult(resultSet);
         queryResult.next();
@@ -222,10 +250,45 @@ public final class StreamQueryResultTest {
     }
     
     @Test(expected = SQLException.class)
-    public void assertGetInputStreamWithUnsupportedType() throws SQLException {
+    public void assertGetInputStreamWithColumnIndexAndUnsupportedType() throws SQLException {
         StreamQueryResult queryResult = new StreamQueryResult(getResultSet());
         queryResult.next();
         queryResult.getInputStream(1, "Unsupported Type");
+    }
+    
+    @Test
+    public void assertGetInputStreamWithColumnLabelAndAscii() throws SQLException {
+        ResultSet resultSet = getResultSet();
+        StreamQueryResult queryResult = new StreamQueryResult(resultSet);
+        queryResult.next();
+        queryResult.getInputStream("order_id", "Ascii");
+        verify(resultSet).getAsciiStream("order_id");
+    }
+    
+    @SuppressWarnings("deprecation")
+    @Test
+    public void assertGetInputStreamWithColumnLabelAndUnicode() throws SQLException {
+        ResultSet resultSet = getResultSet();
+        StreamQueryResult queryResult = new StreamQueryResult(resultSet);
+        queryResult.next();
+        queryResult.getInputStream("order_id", "Unicode");
+        verify(resultSet).getUnicodeStream("order_id");
+    }
+    
+    @Test
+    public void assertGetInputStreamWithColumnLabelAndBinary() throws SQLException {
+        ResultSet resultSet = getResultSet();
+        StreamQueryResult queryResult = new StreamQueryResult(resultSet);
+        queryResult.next();
+        queryResult.getInputStream("order_id", "Binary");
+        verify(resultSet).getBinaryStream("order_id");
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertGetInputStreamWithColumnLabelAndUnsupportedType() throws SQLException {
+        StreamQueryResult queryResult = new StreamQueryResult(getResultSet());
+        queryResult.next();
+        queryResult.getInputStream("order_id", "Unsupported Type");
     }
     
     @Test

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.diale
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
+import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 
 import java.util.Collection;
@@ -46,7 +47,8 @@ public final class PostgreSQLXADataSourceDefinition implements XADataSourceDefin
     @Override
     public Properties getXAProperties(final DatabaseAccessConfiguration databaseAccessConfiguration) {
         Properties result = new Properties();
-        PostgreSQLDataSourceMetaData dataSourceMetaData = new PostgreSQLDataSourceMetaData(databaseAccessConfiguration.getUrl());
+        DataSourceInfo dataSourceInfo = new DataSourceInfo(databaseAccessConfiguration.getUrl(), null);
+        PostgreSQLDataSourceMetaData dataSourceMetaData = new PostgreSQLDataSourceMetaData(dataSourceInfo);
         result.setProperty("user", databaseAccessConfiguration.getUsername());
         result.setProperty("password", Optional.fromNullable(databaseAccessConfiguration.getPassword()).or(""));
         result.setProperty("serverName", dataSourceMetaData.getHostName());

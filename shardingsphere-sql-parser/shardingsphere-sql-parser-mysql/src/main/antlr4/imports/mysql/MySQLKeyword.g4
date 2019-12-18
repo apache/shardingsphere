@@ -1515,23 +1515,3 @@ LOWER
 UPPER
     : U P P E R
     ;
-
-STR_TO_DATE
-    : S T R UL_ T O UL_ D A T E
-    ;
-
-AES_DECRYPT
-    : A E S UL_ D E C R Y P T
-    ;
-
-AES_ENCRYPT
-    : A E S UL_ E N C R Y P T
-    ;
-
-FROM_BASE64
-    : F R O M UL_ B A S E
-    ;
-
-TO_BASE64
-    : T O UL_ B A S E
-    ;

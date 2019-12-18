@@ -29,10 +29,11 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.config.ShardingConfigurationException;
+import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategyFactory;
+import org.apache.shardingsphere.core.strategy.route.hint.HintShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
-import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
 import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 
 import java.util.ArrayList;
@@ -488,5 +489,15 @@ public class ShardingRule implements BaseRule {
             }
         }
         return result;
+    }
+    
+    /**
+     * Is routing by hint.
+     *
+     * @param tableRule table rule
+     * @return route by hint is true
+     */
+    public boolean isRoutingByHint(final TableRule tableRule) {
+        return this.getDatabaseShardingStrategy(tableRule) instanceof HintShardingStrategy && this.getTableShardingStrategy(tableRule) instanceof HintShardingStrategy;
     }
 }

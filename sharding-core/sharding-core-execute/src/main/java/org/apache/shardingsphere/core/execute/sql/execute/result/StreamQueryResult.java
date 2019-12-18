@@ -17,13 +17,17 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
+import com.google.common.base.Optional;
+import lombok.Getter;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+
 import java.io.InputStream;
-import java.math.BigDecimal;
-import java.sql.Blob;
-import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -37,14 +41,25 @@ import java.util.Calendar;
  * @author yangyi
  */
 public final class StreamQueryResult implements QueryResult {
-    
-    private final ResultSetMetaData resultSetMetaData;
+
+    @Getter
+    private final QueryResultMetaData queryResultMetaData;
     
     private final ResultSet resultSet;
     
-    public StreamQueryResult(final ResultSet resultSet) throws SQLException {
-        resultSetMetaData = resultSet.getMetaData();
+    public StreamQueryResult(final ResultSet resultSet, final ShardingRule shardingRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext) throws SQLException {
         this.resultSet = resultSet;
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), shardingRule, properties, sqlStatementContext);
+    }
+
+    public StreamQueryResult(final ResultSet resultSet, final EncryptRule encryptRule, final ShardingProperties properties, final SQLStatementContext sqlStatementContext) throws SQLException {
+        this.resultSet = resultSet;
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData(), encryptRule, properties, sqlStatementContext);
+    }
+    
+    public StreamQueryResult(final ResultSet resultSet) throws SQLException {
+        this.resultSet = resultSet;
+        queryResultMetaData = new QueryResultMetaData(resultSet.getMetaData());
     }
     
     @Override
@@ -54,39 +69,12 @@ public final class StreamQueryResult implements QueryResult {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        if (boolean.class == type) {
-            return resultSet.getBoolean(columnIndex);
-        } else if (byte.class == type) {
-            return resultSet.getByte(columnIndex);
-        } else if (short.class == type) {
-            return resultSet.getShort(columnIndex);
-        } else if (int.class == type) {
-            return resultSet.getInt(columnIndex);
-        } else if (long.class == type) {
-            return resultSet.getLong(columnIndex);
-        } else if (float.class == type) {
-            return resultSet.getFloat(columnIndex);
-        } else if (double.class == type) {
-            return resultSet.getDouble(columnIndex);
-        } else if (String.class == type) {
-            return resultSet.getString(columnIndex);
-        } else if (BigDecimal.class == type) {
-            return resultSet.getBigDecimal(columnIndex);
-        } else if (byte[].class == type) {
-            return resultSet.getBytes(columnIndex);
-        } else if (Date.class == type) {
-            return resultSet.getDate(columnIndex);
-        } else if (Time.class == type) {
-            return resultSet.getTime(columnIndex);
-        } else if (Timestamp.class == type) {
-            return resultSet.getTimestamp(columnIndex);
-        } else if (Blob.class == type) {
-            return resultSet.getBlob(columnIndex);
-        } else if (Clob.class == type) {
-            return resultSet.getClob(columnIndex);
-        } else {
-            return resultSet.getObject(columnIndex);
-        }
+        return decrypt(columnIndex, QueryResultUtil.getValue(resultSet, columnIndex, type));
+    }
+    
+    @Override
+    public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
+        return decrypt(columnLabel, QueryResultUtil.getValue(resultSet, queryResultMetaData.getColumnIndex(columnLabel), type));
     }
     
     @Override
@@ -99,6 +87,20 @@ public final class StreamQueryResult implements QueryResult {
         }
         if (Timestamp.class == type) {
             return resultSet.getTimestamp(columnIndex, calendar);
+        }
+        throw new SQLException(String.format("Unsupported type: %s", type));
+    }
+    
+    @Override
+    public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) throws SQLException {
+        if (Date.class == type) {
+            return resultSet.getDate(columnLabel, calendar);
+        }
+        if (Time.class == type) {
+            return resultSet.getTime(columnLabel, calendar);
+        }
+        if (Timestamp.class == type) {
+            return resultSet.getTimestamp(columnLabel, calendar);
         }
         throw new SQLException(String.format("Unsupported type: %s", type));
     }
@@ -118,23 +120,51 @@ public final class StreamQueryResult implements QueryResult {
         }
     }
     
+    @SuppressWarnings("deprecation")
+    @Override
+    public InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
+        switch (type) {
+            case "Ascii":
+                return resultSet.getAsciiStream(columnLabel);
+            case "Unicode":
+                return resultSet.getUnicodeStream(columnLabel);
+            case "Binary":
+                return resultSet.getBinaryStream(columnLabel);
+            default:
+                throw new SQLException(String.format("Unsupported type: %s", type));
+        }
+    }
+    
     @Override
     public boolean wasNull() throws SQLException {
         return resultSet.wasNull();
     }
     
     @Override
+    public boolean isCaseSensitive(final int columnIndex) throws SQLException {
+        return queryResultMetaData.isCaseSensitive(columnIndex);
+    }
+    
+    @Override
     public int getColumnCount() throws SQLException {
-        return resultSetMetaData.getColumnCount();
+        return queryResultMetaData.getColumnCount();
     }
     
     @Override
     public String getColumnLabel(final int columnIndex) throws SQLException {
-        return resultSetMetaData.getColumnLabel(columnIndex);
+        return queryResultMetaData.getColumnLabel(columnIndex);
     }
     
-    @Override
-    public boolean isCaseSensitive(final int columnIndex) throws SQLException {
-        return resultSetMetaData.isCaseSensitive(columnIndex);
+    private Object decrypt(final String columnLabel, final Object value) throws SQLException {
+        return decrypt(queryResultMetaData.getColumnIndex(columnLabel), value);
+    }
+    
+    private Object decrypt(final int columnIndex, final Object value) throws SQLException {
+        Optional<ShardingEncryptor> shardingEncryptor = queryResultMetaData.getShardingEncryptor(columnIndex);
+        return queryResultMetaData.isQueryWithCipherColumn() && shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(getCiphertext(value)) : value;
+    }
+    
+    private String getCiphertext(final Object value) {
+        return null == value ? null : value.toString();
     }
 }

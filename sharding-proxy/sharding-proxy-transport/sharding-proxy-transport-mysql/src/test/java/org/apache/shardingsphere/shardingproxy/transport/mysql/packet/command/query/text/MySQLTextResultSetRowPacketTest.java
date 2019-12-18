@@ -51,28 +51,11 @@ public final class MySQLTextResultSetRowPacketTest {
     @Test
     public void assertWrite() {
         long now = System.currentTimeMillis();
-        Timestamp timestamp = new Timestamp(now);
-        MySQLTextResultSetRowPacket actual = new MySQLTextResultSetRowPacket(1, Arrays.<Object>asList(null, "value", BigDecimal.ONE, new byte[] {}, timestamp));
+        MySQLTextResultSetRowPacket actual = new MySQLTextResultSetRowPacket(1, Arrays.<Object>asList(null, "value", BigDecimal.ONE, new byte[] {}, new Timestamp(now)));
         actual.write(payload);
         verify(payload).writeInt1(0xfb);
         verify(payload).writeStringLenenc("value");
         verify(payload).writeStringLenenc("1");
-        if (0 == timestamp.getNanos()) {
-            verify(payload).writeStringLenenc(timestamp.toString().split("\\.")[0]);
-        } else {
-            verify(payload).writeStringLenenc(timestamp.toString());
-        }
-    }
-    
-    @Test
-    public void assertTimestampWithoutNanos() {
-        long now = System.currentTimeMillis() / 1000 * 1000;
-        Timestamp timestamp = new Timestamp(now);
-        MySQLTextResultSetRowPacket actual = new MySQLTextResultSetRowPacket(1, Arrays.<Object>asList(null, "value", BigDecimal.ONE, new byte[]{}, timestamp));
-        actual.write(payload);
-        verify(payload).writeInt1(0xfb);
-        verify(payload).writeStringLenenc("value");
-        verify(payload).writeStringLenenc("1");
-        verify(payload).writeStringLenenc(timestamp.toString().split("\\.")[0]);
+        verify(payload).writeStringLenenc((new Timestamp(now)).toString().split("\\.")[0]);
     }
 }

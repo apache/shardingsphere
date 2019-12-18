@@ -32,15 +32,9 @@ pipeline {
     stages {
         stage('SCM checkout') {
             steps {
-                script {
-                    try {
-                        deleteDir()
-                        checkout scm
-                        sh 'git submodule update --init'
-                    } catch (Exception err) {
-                        error 'Build failed'
-                    }
-                }
+                deleteDir()
+                checkout scm
+                sh 'git submodule update --init'
             }
         }
         stage('Build & Test') {

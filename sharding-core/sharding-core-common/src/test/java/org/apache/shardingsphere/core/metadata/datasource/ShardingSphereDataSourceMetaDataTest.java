@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.metadata.datasource;
 
-import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,10 +36,10 @@ public final class ShardingSphereDataSourceMetaDataTest {
     
     @Before
     public void setUp() {
-        Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap = new HashMap<>();
-        databaseAccessConfigurationMap.put("ds_0", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/db_0", "test", null));
-        databaseAccessConfigurationMap.put("ds_1", new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/db_1", "test", null));
-        dataSourceMetas = new DataSourceMetas(DatabaseTypes.getActualDatabaseType("MySQL"), databaseAccessConfigurationMap);
+        Map<String, DataSourceInfo> dataSourceInfoMap = new HashMap<>();
+        dataSourceInfoMap.put("ds_0", new DataSourceInfo("jdbc:mysql://127.0.0.1:3306/db_0", "test"));
+        dataSourceInfoMap.put("ds_1", new DataSourceInfo("jdbc:mysql://127.0.0.1:3306/db_1", "test"));
+        dataSourceMetas = new DataSourceMetas(DatabaseTypes.getActualDatabaseType("MySQL"), dataSourceInfoMap);
     }
     
     @Test

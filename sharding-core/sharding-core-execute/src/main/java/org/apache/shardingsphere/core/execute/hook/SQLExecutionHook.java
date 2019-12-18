@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.core.execute.hook;
 
+import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,14 +32,12 @@ public interface SQLExecutionHook {
     /**
      * Handle when SQL execution started.
      * 
-     * @param dataSourceName data source name
-     * @param sql SQL
-     * @param parameters parameters of SQL
+     * @param routeUnit route unit to be executed
      * @param dataSourceMetaData data source meta data
      * @param isTrunkThread is execution in trunk thread
      * @param shardingExecuteDataMap sharding execute data map
      */
-    void start(String dataSourceName, String sql, List<Object> parameters, DataSourceMetaData dataSourceMetaData, boolean isTrunkThread, Map<String, Object> shardingExecuteDataMap);
+    void start(RouteUnit routeUnit, DataSourceMetaData dataSourceMetaData, boolean isTrunkThread, Map<String, Object> shardingExecuteDataMap);
     
     /**
      * Handle when SQL execution finished success.

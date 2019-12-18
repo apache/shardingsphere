@@ -47,13 +47,13 @@ public final class EncryptTableTest {
     }
     
     @Test
-    public void assertGetLogicColumnOfCipher() {
-        assertNotNull(encryptTable.getLogicColumnOfCipher("cipherColumn"));
+    public void assertGetLogicColumn() {
+        assertNotNull(encryptTable.getLogicColumn("cipherColumn"));
     }
     
     @Test(expected = ShardingException.class)
     public void assertGetLogicColumnShardingExceptionThrownWhenCipherColumnAbsent() {
-        encryptTable.getLogicColumnOfCipher("___cipherColumn");
+        encryptTable.getLogicColumn("___cipherColumn");
     }
     
     @Test

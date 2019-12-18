@@ -19,8 +19,8 @@
   <div id="app">
     <s-container v-if="localStorage.getItem('Access-Token')">
       <el-breadcrumb separator="/" class="bread-wrap">
-        <el-breadcrumb-item :to="{ path: '/' }">{{ $t('common.home') }}</el-breadcrumb-item>
-        <el-breadcrumb-item>{{ $t('common.menuData[0].title') }}</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/' }">Home</el-breadcrumb-item>
+        <el-breadcrumb-item>Data governance</el-breadcrumb-item>
         <el-breadcrumb-item>{{ name }}</el-breadcrumb-item>
       </el-breadcrumb>
       <router-view />
@@ -46,14 +46,7 @@ export default {
   },
   watch: {
     $route(to, from) {
-      for (const v of this.$t('common').menuData) {
-        for (const vv of v.child) {
-          if (vv.href === to.path) {
-            this.name = vv.title
-            break
-          }
-        }
-      }
+      this.name = to.name
     }
   }
 }
