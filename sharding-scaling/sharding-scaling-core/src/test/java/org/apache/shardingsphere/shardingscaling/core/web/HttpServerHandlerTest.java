@@ -28,7 +28,6 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.web.entity.ResponseMessage;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,7 +72,7 @@ public class HttpServerHandlerTest {
         ArgumentCaptor argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
         FullHttpResponse fullHttpResponse = (FullHttpResponse) argumentCaptor.getValue();
-        assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains(ResponseMessage.START_SUCCESS));
+        assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains("jobId"));
     }
 
     @Test
@@ -83,7 +82,7 @@ public class HttpServerHandlerTest {
         ArgumentCaptor argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
         FullHttpResponse fullHttpResponse = (FullHttpResponse) argumentCaptor.getValue();
-        assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains(ResponseMessage.GET_PROGRESS_ERROR));
+        assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains("Can't find scaling job id 1"));
     }
 
     @Test
@@ -96,7 +95,7 @@ public class HttpServerHandlerTest {
         ArgumentCaptor argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
         FullHttpResponse fullHttpResponse = (FullHttpResponse) argumentCaptor.getValue();
-        assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains(ResponseMessage.STOP_SUCCESS));
+        assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains("{\"success\":true"));
     }
 
     @Test
@@ -106,7 +105,7 @@ public class HttpServerHandlerTest {
         ArgumentCaptor argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
         FullHttpResponse fullHttpResponse = (FullHttpResponse) argumentCaptor.getValue();
-        assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains(ResponseMessage.BAD_REQUEST));
+        assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains("Not support request!"));
     }
 
     @Test
@@ -116,7 +115,7 @@ public class HttpServerHandlerTest {
         ArgumentCaptor argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
         FullHttpResponse fullHttpResponse = (FullHttpResponse) argumentCaptor.getValue();
-        assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains(ResponseMessage.BAD_REQUEST));
+        assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains("Not support request!"));
     }
 
     @Test

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingscaling.core.web.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Http response content.
@@ -26,10 +27,15 @@ import lombok.Data;
  * @author ssxlulu
  */
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
 public class ResponseContent<T> {
 
-    private String message;
+    private boolean success = true;
 
-    private T content;
+    private int errorCode;
+
+    private String errorMsg;
+
+    private T model;
 }

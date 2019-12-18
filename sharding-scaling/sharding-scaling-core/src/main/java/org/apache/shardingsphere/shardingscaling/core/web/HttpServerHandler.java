@@ -39,7 +39,7 @@ import org.apache.shardingsphere.shardingscaling.core.controller.ScalingJobContr
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.shardingscaling.core.web.entity.ResponseContent;
-import org.apache.shardingsphere.shardingscaling.core.web.entity.ResponseMessage;
+import org.apache.shardingsphere.shardingscaling.core.web.util.ResponseContentUtil;
 import org.apache.shardingsphere.shardingscaling.core.web.util.SyncConfigurationUtil;
 
 import java.util.regex.Pattern;
@@ -56,7 +56,7 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     private static final Pattern URL_PATTERN = Pattern.compile("(^/shardingscaling/job/(start|stop))|(^/shardingscaling/job/progress/\\d+)",
             Pattern.CASE_INSENSITIVE);
 
-    private static final Gson GSON = new GsonBuilder().create();
+    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
     private static final ScalingJobController SCALING_JOB_CONTROLLER = new ScalingJobController();
 
@@ -66,7 +66,8 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
         String requestBody = request.content().toString(CharsetUtil.UTF_8);
         HttpMethod method = request.method();
         if (!URL_PATTERN.matcher(requestPath).matches()) {
-            response(ResponseMessage.BAD_REQUEST, channelHandlerContext, HttpResponseStatus.BAD_REQUEST);
+            response(GSON.toJson(ResponseContentUtil.handleBadRequest("Not support request!")),
+                    channelHandlerContext, HttpResponseStatus.BAD_REQUEST);
             return;
         }
         if ("/shardingscaling/job/start".equalsIgnoreCase(requestPath) && method.equals(HttpMethod.POST)) {
@@ -76,7 +77,7 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
             log.info("start job : {}", requestBody);
             //TODO, Exception handling
             SCALING_JOB_CONTROLLER.start(shardingScalingJob);
-            ResponseContent<ShardingScalingJob> responseContent = new ResponseContent<>(ResponseMessage.START_SUCCESS, shardingScalingJob);
+            ResponseContent<ShardingScalingJob> responseContent = ResponseContentUtil.build(shardingScalingJob);
             response(GSON.toJson(responseContent), channelHandlerContext, HttpResponseStatus.OK);
             return;
         }
@@ -84,11 +85,9 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
             Integer jobId = Integer.valueOf(requestPath.split("/")[4]);
             try {
                 SyncProgress progresses = SCALING_JOB_CONTROLLER.getProgresses(jobId);
-                ResponseContent<SyncProgress> responseContent = new ResponseContent<>(ResponseMessage.GET_PROGRESS_SUCCESS, progresses);
-                response(GSON.toJson(responseContent), channelHandlerContext, HttpResponseStatus.OK);
+                response(GSON.toJson(ResponseContentUtil.build(progresses)), channelHandlerContext, HttpResponseStatus.OK);
             } catch (ScalingJobNotFoundException e) {
-                ResponseContent<String> responseContent = new ResponseContent<>(ResponseMessage.GET_PROGRESS_ERROR, e.getMessage());
-                response(GSON.toJson(responseContent), channelHandlerContext, HttpResponseStatus.OK);
+                response(GSON.toJson(ResponseContentUtil.handleBadRequest(e.getMessage())), channelHandlerContext, HttpResponseStatus.BAD_REQUEST);
             }
             return;
         }
@@ -96,11 +95,11 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
             ShardingScalingJob shardingScalingJob = GSON.fromJson(requestBody, ShardingScalingJob.class);
             //TODO, Exception handling
             SCALING_JOB_CONTROLLER.stop(shardingScalingJob.getJobId());
-            ResponseContent<String> responseContent = new ResponseContent<>(ResponseMessage.STOP_SUCCESS, "");
-            response(GSON.toJson(responseContent), channelHandlerContext, HttpResponseStatus.OK);
+            response(GSON.toJson(ResponseContentUtil.success()), channelHandlerContext, HttpResponseStatus.OK);
             return;
         }
-        response(ResponseMessage.BAD_REQUEST, channelHandlerContext, HttpResponseStatus.BAD_REQUEST);
+        response(GSON.toJson(ResponseContentUtil.handleBadRequest("Not support request!")),
+                channelHandlerContext, HttpResponseStatus.BAD_REQUEST);
     }
 
     /**
@@ -121,7 +120,7 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     @Override
     public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
         log.error("request error", cause);
-        response(ResponseMessage.INTERNAL_SERVER_ERROR, ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR);
+        response(GSON.toJson(ResponseContentUtil.handleException(cause.toString())), ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR);
         ctx.close();
     }
 
