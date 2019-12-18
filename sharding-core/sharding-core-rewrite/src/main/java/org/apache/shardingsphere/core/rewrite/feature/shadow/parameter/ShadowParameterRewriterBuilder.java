@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.rewrite.feature.shadow.parameter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rewrite.feature.shadow.aware.ShadowRuleAware;
-import org.apache.shardingsphere.core.rewrite.feature.shadow.parameter.impl.ShadowAssignmentParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.feature.shadow.parameter.impl.ShadowInsertValueParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.feature.shadow.parameter.impl.ShadowPredicateParameterRewriter;
 import org.apache.shardingsphere.core.rewrite.parameter.rewriter.ParameterRewriter;
@@ -51,7 +50,6 @@ public final class ShadowParameterRewriterBuilder implements ParameterRewriterBu
 
     private Collection<ParameterRewriter> getParameterRewriters() {
         Collection<ParameterRewriter> result = new LinkedList<>();
-        result.add(new ShadowAssignmentParameterRewriter());
         result.add(new ShadowPredicateParameterRewriter());
         result.add(new ShadowInsertValueParameterRewriter());
         return result;
