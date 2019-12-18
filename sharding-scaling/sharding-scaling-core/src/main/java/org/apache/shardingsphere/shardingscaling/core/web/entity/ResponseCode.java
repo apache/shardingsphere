@@ -18,22 +18,13 @@
 package org.apache.shardingsphere.shardingscaling.core.web.entity;
 
 /**
- * Http response message.
+ * Http response code.
  *
  * @author ssxlulu
  */
-public final class ResponseMessage {
+public final class ResponseCode {
 
-    public static final String START_SUCCESS = "Strat job success!";
+    public static final int BAD_REQUEST = 400;
 
-    public static final String GET_PROGRESS_SUCCESS = "Get progress of the job success!";
-
-    public static final String GET_PROGRESS_ERROR = "Get progress of the job failed!";
-
-    public static final String STOP_SUCCESS = "Stop job success!";
-
-    public static final String BAD_REQUEST = "Not support request!";
-
-    public static final String INTERNAL_SERVER_ERROR = "Internal server error!";
-
+    public static final int SERVER_ERROR = 500;
 }
