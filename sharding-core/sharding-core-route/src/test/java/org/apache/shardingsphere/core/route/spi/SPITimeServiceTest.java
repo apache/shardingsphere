@@ -31,10 +31,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
 
-public class SPITimeServiceTest {
-
+public final class SPITimeServiceTest {
+    
     private SPITimeService timeService = new SPITimeService();
-
+    
     @Test
     public void assertGetTime() {
         Optional<TimeServiceFixture> optional = getFixtureHook();
@@ -44,7 +44,7 @@ public class SPITimeServiceTest {
         Date time = timeService.getTime();
         assertThat(date, is(time));
     }
-
+    
     @Test
     public void assertGetTimeWithDefault() {
         Optional<TimeServiceFixture> optional = getFixtureHook();
@@ -55,7 +55,8 @@ public class SPITimeServiceTest {
         Date time = timeService.getTime();
         assertTrue(time.after(date));
     }
-
+    
+    @SuppressWarnings("unchecked")
     @SneakyThrows
     private Optional<TimeServiceFixture> getFixtureHook() {
         Field routingHooksField = SPITimeService.class.getDeclaredField("timeServices");

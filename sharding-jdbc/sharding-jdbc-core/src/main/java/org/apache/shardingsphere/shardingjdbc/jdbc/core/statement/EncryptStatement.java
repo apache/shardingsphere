@@ -25,9 +25,9 @@ import org.apache.shardingsphere.sql.parser.relation.SQLStatementContextFactory;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetaData;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.core.rewrite.engine.impl.DefaultSQLRewriteEngine;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.context.EncryptSQLRewriteContextDecorator;
+import org.apache.shardingsphere.sql.rewriter.context.SQLRewriteContext;
+import org.apache.shardingsphere.sql.rewriter.engine.impl.DefaultSQLRewriteEngine;
+import org.apache.shardingsphere.sql.rewriter.encrypt.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
@@ -92,8 +92,9 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     @SuppressWarnings("unchecked")
     private String getRewriteSQL(final String sql) {
         SQLStatement sqlStatement = connection.getRuntimeContext().getParseEngine().parse(sql, false);
-        sqlStatementContext = SQLStatementContextFactory.newInstance(getRelationMetas(connection.getRuntimeContext().getTableMetas()), sql, Collections.emptyList(), sqlStatement);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(connection.getRuntimeContext().getTableMetas(), sqlStatementContext, sql, Collections.emptyList());
+        RelationMetas relationMetas = getRelationMetas(connection.getRuntimeContext().getTableMetas());
+        sqlStatementContext = SQLStatementContextFactory.newInstance(relationMetas, sql, Collections.emptyList(), sqlStatement);
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(relationMetas, sqlStatementContext, sql, Collections.emptyList());
         boolean isQueryWithCipherColumn = connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         new EncryptSQLRewriteContextDecorator(connection.getRuntimeContext().getRule(), isQueryWithCipherColumn).decorate(sqlRewriteContext);
         sqlRewriteContext.generateSQLTokens();

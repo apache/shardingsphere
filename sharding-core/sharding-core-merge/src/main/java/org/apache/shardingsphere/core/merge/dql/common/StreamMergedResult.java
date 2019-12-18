@@ -52,22 +52,8 @@ public abstract class StreamMergedResult implements MergedResult {
     }
     
     @Override
-    public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
-        Object result = getCurrentQueryResult().getValue(columnLabel, type);
-        wasNull = getCurrentQueryResult().wasNull();
-        return result;
-    }
-    
-    @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
         Object result = getCurrentQueryResult().getCalendarValue(columnIndex, type, calendar);
-        wasNull = getCurrentQueryResult().wasNull();
-        return result;
-    }
-    
-    @Override
-    public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) throws SQLException {
-        Object result = getCurrentQueryResult().getCalendarValue(columnLabel, type, calendar);
         wasNull = getCurrentQueryResult().wasNull();
         return result;
     }
@@ -76,14 +62,6 @@ public abstract class StreamMergedResult implements MergedResult {
     @Override
     public final InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
         InputStream result = getCurrentQueryResult().getInputStream(columnIndex, type);
-        wasNull = getCurrentQueryResult().wasNull();
-        return result;
-    }
-    
-    @SuppressWarnings("deprecation")
-    @Override
-    public final InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
-        InputStream result = getCurrentQueryResult().getInputStream(columnLabel, type);
         wasNull = getCurrentQueryResult().wasNull();
         return result;
     }

@@ -33,19 +33,21 @@ public final class AggregationUnitFactory {
      * Create aggregation unit instance.
      * 
      * @param type aggregation function type
+     * @param isDistinct is distinct
      * @return aggregation unit instance
      */
-    public static AggregationUnit create(final AggregationType type) {
+    public static AggregationUnit create(final AggregationType type, final boolean isDistinct) {
         switch (type) {
             case MAX:
                 return new ComparableAggregationUnit(false);
             case MIN:
                 return new ComparableAggregationUnit(true);
             case SUM:
+                return isDistinct ? new DistinctSumAggregationUnit() : new AccumulationAggregationUnit();
             case COUNT:
-                return new AccumulationAggregationUnit();
+                return isDistinct ? new DistinctCountAggregationUnit() : new AccumulationAggregationUnit();
             case AVG:
-                return new AverageAggregationUnit();
+                return isDistinct ? new DistinctAverageAggregationUnit() : new AverageAggregationUnit();
             default:
                 throw new UnsupportedOperationException(type.name());
         }

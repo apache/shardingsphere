@@ -38,6 +38,45 @@ public interface QueryResult {
     boolean next() throws SQLException;
     
     /**
+     * Get data value.
+     *
+     * @param columnIndex column index
+     * @param type class type of data value
+     * @return data value
+     * @throws SQLException SQL Exception
+     */
+    Object getValue(int columnIndex, Class<?> type) throws SQLException;
+    
+    /**
+     * Get calendar value.
+     *
+     * @param columnIndex column index
+     * @param type class type of data value
+     * @param calendar calendar
+     * @return calendar value
+     * @throws SQLException SQL Exception
+     */
+    Object getCalendarValue(int columnIndex, Class<?> type, Calendar calendar) throws SQLException;
+    
+    /**
+     * Get InputStream.
+     *
+     * @param columnIndex column index
+     * @param type class type of data value
+     * @return InputStream
+     * @throws SQLException SQL Exception
+     */
+    InputStream getInputStream(int columnIndex, String type) throws SQLException;
+    
+    /**
+     * Judge ResultSet is null or not.
+     *
+     * @return ResultSet is null or not
+     * @throws SQLException SQL Exception
+     */
+    boolean wasNull() throws SQLException;
+    
+    /**
      * Get column count.
      *
      * @return column count
@@ -55,76 +94,6 @@ public interface QueryResult {
     String getColumnLabel(int columnIndex) throws SQLException;
     
     /**
-     * Get data value.
-     *
-     * @param columnIndex column index
-     * @param type class type of data value
-     * @return data value
-     * @throws SQLException SQL Exception
-     */
-    Object getValue(int columnIndex, Class<?> type) throws SQLException;
-    
-    /**
-     * Get data value.
-     *
-     * @param columnLabel column label
-     * @param type class type of data value
-     * @return data value
-     * @throws SQLException SQL Exception
-     */
-    Object getValue(String columnLabel, Class<?> type) throws SQLException;
-    
-    /**
-     * Get calendar value.
-     *
-     * @param columnIndex column index
-     * @param type class type of data value
-     * @param calendar calendar
-     * @return calendar value
-     * @throws SQLException SQL Exception
-     */
-    Object getCalendarValue(int columnIndex, Class<?> type, Calendar calendar) throws SQLException;
-    
-    /**
-     * Get calendar value.
-     *
-     * @param columnLabel column label
-     * @param type class type of data value
-     * @param calendar calendar
-     * @return calendar value
-     * @throws SQLException SQL Exception
-     */
-    Object getCalendarValue(String columnLabel, Class<?> type, Calendar calendar) throws SQLException;
-    
-    /**
-     * Get InputStream.
-     *
-     * @param columnIndex column index
-     * @param type class type of data value
-     * @return InputStream
-     * @throws SQLException SQL Exception
-     */
-    InputStream getInputStream(int columnIndex, String type) throws SQLException;
-    
-    /**
-     * Get InputStream.
-     *
-     * @param columnLabel column label
-     * @param type class type of data value
-     * @return InputStream
-     * @throws SQLException SQL Exception
-     */
-    InputStream getInputStream(String columnLabel, String type) throws SQLException;
-    
-    /**
-     * Judge ResultSet is null or not.
-     *
-     * @return ResultSet is null or not
-     * @throws SQLException SQL Exception
-     */
-    boolean wasNull() throws SQLException;
-    
-    /**
      * Whether value is case sensitive or not.
      *
      * @param columnIndex column index
@@ -132,11 +101,4 @@ public interface QueryResult {
      * @throws SQLException SQL Exception
      */
     boolean isCaseSensitive(int columnIndex) throws SQLException;
-
-    /**
-     * Get QueryResultMetaData.
-     *
-     * @return QueryResultMetaData
-     */
-    QueryResultMetaData getQueryResultMetaData();
 }

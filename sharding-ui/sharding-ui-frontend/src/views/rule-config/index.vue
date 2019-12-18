@@ -18,9 +18,9 @@
 <template>
   <el-row class="box-card">
     <el-radio-group v-model="radioValue" @change="onChange">
-      <el-radio-button label="Schema" />
-      <el-radio-button label="Authentication" />
-      <el-radio-button label="Props" />
+      <el-radio-button :label="$t('ruleConfig.radioBtn.schema')" />
+      <el-radio-button :label="$t('ruleConfig.radioBtn.authentication')" />
+      <el-radio-button :label="$t('ruleConfig.radioBtn.props')" />
     </el-radio-group>
     <component :is="currentView" />
   </el-row>
@@ -31,7 +31,7 @@ import MAuthentication from './module/authentication'
 import MProps from './module/props'
 
 export default {
-  name: 'ConfigManage',
+  name: 'RuleConfig',
   components: {
     MSchema,
     MAuthentication,
@@ -39,17 +39,18 @@ export default {
   },
   data() {
     return {
-      radioValue: 'Schema',
+      radioValue: this.$t('ruleConfig').radioBtn.schema,
       currentView: MSchema
     }
   },
   methods: {
     onChange(val) {
-      if (val === 'Schema') {
+      const radioBtn = this.$t('ruleConfig').radioBtn
+      if (val === radioBtn.schema) {
         this.currentView = MSchema
-      } else if (val === 'Authentication') {
+      } else if (val === radioBtn.authentication) {
         this.currentView = MAuthentication
-      } else if (val === 'Props') {
+      } else if (val === radioBtn.props) {
         this.currentView = MProps
       }
     }

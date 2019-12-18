@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.schema.impl;
 
-import java.sql.SQLException;
-import java.util.Map;
-
+import com.google.common.eventbus.Subscribe;
+import lombok.Getter;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
@@ -33,10 +33,8 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 
-import com.google.common.eventbus.Subscribe;
-
-import lombok.Getter;
-import lombok.SneakyThrows;
+import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Encrypt schema.
@@ -61,7 +59,7 @@ public final class EncryptSchema extends LogicSchema {
     }
     
     private ShardingSphereMetaData createMetaData() throws SQLException {
-        DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDataSourceInfoMap(getDataSources()));
+        DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDatabaseAccessConfigurationMap());
         TableMetas tableMetas = new TableMetas(getTableMetaDataInitializer(dataSourceMetas).load(shardingRule));
         return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
     }

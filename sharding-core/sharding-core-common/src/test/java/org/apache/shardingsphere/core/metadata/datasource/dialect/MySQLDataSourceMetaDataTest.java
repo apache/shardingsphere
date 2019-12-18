@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
 import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,7 +28,7 @@ public final class MySQLDataSourceMetaDataTest {
     
     @Test
     public void assertNewConstructorWithPort() {
-        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData(new DataSourceInfo("jdbc:mysql://127.0.0.1:9999/ds_0?serverTimezone=UTC&useSSL=false", "test"));
+        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql://127.0.0.1:9999/ds_0?serverTimezone=UTC&useSSL=false");
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
         assertThat(actual.getCatalog(), is("ds_0"));
@@ -38,7 +37,7 @@ public final class MySQLDataSourceMetaDataTest {
     
     @Test
     public void assertNewConstructorWithDefaultPort() {
-        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData(new DataSourceInfo("jdbc:mysql:loadbalance://127.0.0.1/ds_0?serverTimezone=UTC&useSSL=false", "test"));
+        MySQLDataSourceMetaData actual = new MySQLDataSourceMetaData("jdbc:mysql:loadbalance://127.0.0.1/ds_0?serverTimezone=UTC&useSSL=false");
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(3306));
         assertNull(actual.getSchema());
@@ -46,6 +45,6 @@ public final class MySQLDataSourceMetaDataTest {
     
     @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertNewConstructorFailure() {
-        new MySQLDataSourceMetaData(new DataSourceInfo("jdbc:mysql:xxxxxxxx", "test"));
+        new MySQLDataSourceMetaData("jdbc:mysql:xxxxxxxx");
     }
 }

@@ -50,10 +50,17 @@ import java.util.Map.Entry;
  * @author zhaojun
  * @author maxiaoguang
  */
-@Getter
 public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection {
     
+    @Getter
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
+    
+    @Getter
+    private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
+    
+    private final ForceExecuteTemplate<Entry<String, Connection>> forceExecuteTemplateForClose = new ForceExecuteTemplate<>();
+    
+    private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
     
     private boolean autoCommit = true;
     
@@ -62,12 +69,6 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     private volatile boolean closed;
     
     private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
-    
-    private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
-    
-    private final ForceExecuteTemplate<Entry<String, Connection>> forceExecuteTemplateForClose = new ForceExecuteTemplate<>();
-    
-    private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
     
     protected AbstractConnectionAdapter() {
         rootInvokeHook.start();

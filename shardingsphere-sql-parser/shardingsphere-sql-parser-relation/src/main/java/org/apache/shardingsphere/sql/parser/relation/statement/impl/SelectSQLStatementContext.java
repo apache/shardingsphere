@@ -160,16 +160,6 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
     }
     
     /**
-     * Get column labels.
-     *
-     * @param relationMetas relation metas
-     * @return column labels
-     */
-    public List<String> getColumnLabels(final RelationMetas relationMetas) {
-        return projectionsContext.getColumnLabels(relationMetas, ((SelectStatement) getSqlStatement()).getTables());
-    }
-    
-    /**
      * Judge group by and order by sequence is same or not.
      *
      * @return group by and order by sequence is same or not
