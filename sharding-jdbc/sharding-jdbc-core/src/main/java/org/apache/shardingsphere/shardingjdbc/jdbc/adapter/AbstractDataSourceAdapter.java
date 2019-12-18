@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
@@ -42,13 +43,13 @@ import java.util.logging.Logger;
  * @author zhaojun
  */
 @Getter
-@Setter
 public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
     private final Map<String, DataSource> dataSourceMap;
     
     private final DatabaseType databaseType;
     
+    @Setter
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
@@ -92,7 +93,7 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     }
     
     @Override
-    public void close() throws Exception {
+    public final void close() throws Exception {
         close(dataSourceMap.keySet());
     }
     
@@ -106,6 +107,7 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         for (String each : dataSourceNames) {
             close(dataSourceMap.get(each));
         }
+        getRuntimeContext().close();
     }
     
     private void close(final DataSource dataSource) {
@@ -116,4 +118,6 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         } catch (final ReflectiveOperationException ignored) {
         }
     }
+    
+    protected abstract RuntimeContext getRuntimeContext();
 }

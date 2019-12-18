@@ -41,22 +41,4 @@ public final class SelectItemsSegment implements SQLSegment {
     private final boolean distinctRow;
     
     private final Collection<SelectItemSegment> selectItems = new LinkedList<>();
-    
-    /**
-     * Find select item segments.
-     * 
-     * @param selectItemSegmentType select item segment type
-     * @param <T> select item segment
-     * @return select item segments
-     */
-    @SuppressWarnings("unchecked")
-    public <T extends SelectItemSegment> Collection<T> findSelectItemSegments(final Class<T> selectItemSegmentType) {
-        Collection<T> result = new LinkedList<>();
-        for (SelectItemSegment each : selectItems) {
-            if (each.getClass().equals(selectItemSegmentType)) {
-                result.add((T) each);
-            }
-        }
-        return result;
-    }
 }

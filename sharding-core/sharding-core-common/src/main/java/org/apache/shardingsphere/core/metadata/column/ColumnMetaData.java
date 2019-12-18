@@ -38,8 +38,4 @@ public class ColumnMetaData {
     private final String dataType;
     
     private final boolean primaryKey;
-
-    private final boolean notNull;
-
-    private final boolean autoIncrement;
 }

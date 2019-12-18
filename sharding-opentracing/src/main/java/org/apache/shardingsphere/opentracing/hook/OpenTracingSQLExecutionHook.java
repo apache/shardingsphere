@@ -22,7 +22,6 @@ import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import org.apache.shardingsphere.core.execute.hook.SQLExecutionHook;
-import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.opentracing.constant.ShardingTags;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
@@ -44,7 +43,8 @@ public final class OpenTracingSQLExecutionHook implements SQLExecutionHook {
     private Span span;
     
     @Override
-    public void start(final RouteUnit routeUnit, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
+    public void start(final String dataSourceName, final String sql, final List<Object> parameters, 
+                      final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
         if (!isTrunkThread) {
             activeSpan = ((ActiveSpan.Continuation) shardingExecuteDataMap.get(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION)).activate();
         }
@@ -54,9 +54,9 @@ public final class OpenTracingSQLExecutionHook implements SQLExecutionHook {
                 .withTag(Tags.PEER_HOSTNAME.getKey(), dataSourceMetaData.getHostName())
                 .withTag(Tags.PEER_PORT.getKey(), dataSourceMetaData.getPort())
                 .withTag(Tags.DB_TYPE.getKey(), "sql")
-                .withTag(Tags.DB_INSTANCE.getKey(), routeUnit.getDataSourceName())
-                .withTag(Tags.DB_STATEMENT.getKey(), routeUnit.getSqlUnit().getSql())
-                .withTag(ShardingTags.DB_BIND_VARIABLES.getKey(), toString(routeUnit.getSqlUnit().getParameters())).startManual();
+                .withTag(Tags.DB_INSTANCE.getKey(), dataSourceName)
+                .withTag(Tags.DB_STATEMENT.getKey(), sql)
+                .withTag(ShardingTags.DB_BIND_VARIABLES.getKey(), toString(parameters)).startManual();
         
     }
     

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.execute.sql.prepare;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
-import org.apache.shardingsphere.core.execute.StatementExecuteUnit;
+import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
+import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLUnit;
 
@@ -80,8 +80,8 @@ public final class SQLExecutePrepareTemplate {
         return result;
     }
     
-    private List<ShardingExecuteGroup<StatementExecuteUnit>> getSQLExecuteGroups(
-            final String dataSourceName, final List<SQLUnit> sqlUnits, final SQLExecutePrepareCallback callback) throws SQLException {
+    private List<ShardingExecuteGroup<StatementExecuteUnit>> getSQLExecuteGroups(final String dataSourceName, 
+                                                                                 final List<SQLUnit> sqlUnits, final SQLExecutePrepareCallback callback) throws SQLException {
         List<ShardingExecuteGroup<StatementExecuteUnit>> result = new LinkedList<>();
         int desiredPartitionSize = Math.max(0 == sqlUnits.size() % maxConnectionsSizePerQuery ? sqlUnits.size() / maxConnectionsSizePerQuery : sqlUnits.size() / maxConnectionsSizePerQuery + 1, 1);
         List<List<SQLUnit>> sqlUnitPartitions = Lists.partition(sqlUnits, desiredPartitionSize);
@@ -103,5 +103,3 @@ public final class SQLExecutePrepareTemplate {
         return new ShardingExecuteGroup<>(result);
     }
 }
-
-

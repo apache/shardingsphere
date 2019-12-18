@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.fixture;
 import lombok.EqualsAndHashCode;
 import lombok.Setter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -31,12 +32,12 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@Setter
 @EqualsAndHashCode
 public final class TestDataSource extends AbstractDataSourceAdapter {
     
     private final String name;
     
+    @Setter
     private boolean throwExceptionWhenClosing;
     
     public TestDataSource(final String name) throws SQLException {
@@ -64,5 +65,10 @@ public final class TestDataSource extends AbstractDataSourceAdapter {
             doThrow(SQLException.class).when(result).close();
         }
         return result;
+    }
+    
+    @Override
+    protected RuntimeContext getRuntimeContext() {
+        return mock(RuntimeContext.class);
     }
 }
