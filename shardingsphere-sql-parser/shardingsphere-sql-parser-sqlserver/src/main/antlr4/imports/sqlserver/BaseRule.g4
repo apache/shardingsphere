@@ -95,7 +95,7 @@ unreservedWord_
     | MESSAGE | TYPE | REMOTE | BINDING | ROUTE | SECURITY | POLICY | AGGREGATE | QUEUE
     | RULE | SYNONYM | COLLECTION | SCRIPT | KILL | BACKUP | LOG | SHOWPLAN
     | SUBSCRIBE | QUERY | NOTIFICATIONS | CHECKPOINT | SEQUENCE | INSTANCE | DO | DEFINER | LOCAL | CASCADED
-    | NEXT | NAME | INTEGER | TYPE | MAX | MIN | SUM | COUNT | AVG
+    | NEXT | NAME | INTEGER | TYPE | MAX | MIN | SUM | COUNT | AVG | FIRST
     ;
 
 schemaName
@@ -268,6 +268,7 @@ subquery
 
 orderByClause
     : ORDER BY orderByItem (COMMA_ orderByItem)*
+    (OFFSET expr (ROW | ROWS) (FETCH (FIRST | NEXT) expr (ROW | ROWS) ONLY)?)?
     ;
 
 orderByItem
