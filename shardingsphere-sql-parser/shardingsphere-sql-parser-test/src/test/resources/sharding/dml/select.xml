@@ -1191,7 +1191,7 @@
         </select-items>
     </parser-result>
 
-    <parser-result sql-case-id="select_with_date_function">
+    <parser-result sql-case-id="select_with_date_format_function">
         <tables>
             <table name="t_order"/>
         </tables>
