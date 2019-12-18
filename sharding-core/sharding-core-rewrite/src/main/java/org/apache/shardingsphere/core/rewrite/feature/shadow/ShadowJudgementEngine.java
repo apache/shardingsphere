@@ -17,81 +17,16 @@
 
 package org.apache.shardingsphere.core.rewrite.feature.shadow;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rule.ShadowRule;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * Shadow judgement engine.
  *
  * @author zhyee
  */
-@RequiredArgsConstructor
-public class ShadowJudgementEngine {
-    
-    private final ShadowRule shadowRule;
-    
-    private final SQLStatementContext sqlStatementContext;
-    
-    private final List<Object> parameters;
-    
-    /**
-     * Judge if the sql should route to shadow table.
+public abstract class ShadowJudgementEngine {
+
+    /**Judge the sql if is shadow.
      *
-     * @return if the sql should route to shadow table
+     * @return if the sql is shadow
      */
-    public final boolean isShadowSql() {
-        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (sqlStatement instanceof InsertStatement) {
-            LinkedList<ColumnSegment> columnSegments = (LinkedList<ColumnSegment>) ((InsertStatement) sqlStatement).getColumns();
-            for (int i = 0; i < columnSegments.size(); i++) {
-                if (columnSegments.get(i).getName().equals(shadowRule.getColumn())) {
-                    final Object value = parameters.get(i);
-                    return value instanceof Boolean && (Boolean) value;
-                }
-            }
-            return false;
-        }
-        if (sqlStatement instanceof WhereSegmentAvailable) {
-            Optional<WhereSegment> whereSegment = ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere();
-            if (!whereSegment.isPresent()) {
-                return false;
-            }
-            Collection<AndPredicate> andPredicates = whereSegment.get().getAndPredicates();
-            for (AndPredicate andPredicate : andPredicates) {
-                if (judgePredicateSegments(andPredicate.getPredicates())) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    
-    private boolean judgePredicateSegments(final Collection<PredicateSegment> predicates) {
-        for (PredicateSegment each : predicates) {
-            if (each.getColumn().getName().equals(shadowRule.getColumn())) {
-                Preconditions.checkArgument(each.getRightValue() instanceof PredicateCompareRightValue, "must be PredicateCompareRightValue");
-                PredicateCompareRightValue rightValue = (PredicateCompareRightValue) each.getRightValue();
-                int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) rightValue.getExpression()).getParameterMarkerIndex();
-                final Object value = parameters.get(parameterMarkerIndex);
-                return value instanceof Boolean && (Boolean) value;
-            }
-        }
-        return false;
-    }
+    public abstract boolean isShadowSql();
 }

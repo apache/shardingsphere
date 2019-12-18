@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.core.rewrite.feature.shadow.token.generator.impl;
 
-import com.google.common.base.Optional;
 import lombok.Setter;
 import org.apache.shardingsphere.core.rewrite.feature.shadow.token.generator.BaseShadowSQLTokenGenerator;
 import org.apache.shardingsphere.core.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.core.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
-import org.apache.shardingsphere.core.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValuesToken;
 import org.apache.shardingsphere.core.rewrite.sql.token.pojo.generic.InsertValuesToken.InsertValueToken;
 import org.apache.shardingsphere.core.rule.DataNode;
@@ -35,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * Insert values token generator for shadow.
@@ -43,9 +39,7 @@ import java.util.List;
  * @author zhyee
  */
 @Setter
-public final class ShadowInsertValuesTokenGenerator extends BaseShadowSQLTokenGenerator implements OptionalSQLTokenGenerator, PreviousSQLTokensAware {
-
-    private List<SQLToken> previousSQLTokens;
+public final class ShadowInsertValuesTokenGenerator extends BaseShadowSQLTokenGenerator implements OptionalSQLTokenGenerator {
 
     @Override
     protected boolean isGenerateSQLTokenForShadow(final SQLStatementContext sqlStatementContext) {
@@ -54,7 +48,6 @@ public final class ShadowInsertValuesTokenGenerator extends BaseShadowSQLTokenGe
 
     @Override
     public InsertValuesToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        //todo findPreviousSQLToken?
         return generateNewSQLToken((InsertSQLStatementContext) sqlStatementContext);
     }
 
@@ -76,18 +69,8 @@ public final class ShadowInsertValuesTokenGenerator extends BaseShadowSQLTokenGe
     }
 
     private void removeValueToken(final InsertValueToken insertValueToken, final InsertSQLStatementContext sqlStatementContext, final String columnName) {
-//        Optional<SQLToken> useDefaultInsertColumnsToken = findPreviousSQLToken(UseDefaultInsertColumnsToken.class);
         int columnIndex = sqlStatementContext.getColumnNames().indexOf(columnName);
         insertValueToken.getValues().remove(columnIndex);
-    }
-
-    private Optional<SQLToken> findPreviousSQLToken(final Class<?> sqlToken) {
-        for (SQLToken each : previousSQLTokens) {
-            if (each.getClass().equals(sqlToken)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.absent();
     }
 
     private int getStartIndex(final Collection<InsertValuesSegment> segments) {
@@ -104,10 +87,5 @@ public final class ShadowInsertValuesTokenGenerator extends BaseShadowSQLTokenGe
             result = Math.max(result, each.getStopIndex());
         }
         return result;
-    }
-
-    @Override
-    public void setPreviousSQLTokens(final List<SQLToken> previousSQLTokens) {
-
     }
 }
