@@ -27,9 +27,9 @@ import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetaData;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.CommonSQLStatementContext;
-import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.core.rewrite.engine.impl.DefaultSQLRewriteEngine;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.context.EncryptSQLRewriteContextDecorator;
+import org.apache.shardingsphere.sql.rewriter.context.SQLRewriteContext;
+import org.apache.shardingsphere.sql.rewriter.engine.impl.DefaultSQLRewriteEngine;
+import org.apache.shardingsphere.sql.rewriter.encrypt.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
@@ -87,7 +87,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     private SQLRouteResult doMasterSlaveRoute(final String sql) {
         SQLStatement sqlStatement = logicSchema.getParseEngine().parse(sql, true);
         CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(logicSchema.getMetaData().getTables(), sqlStatementContext, sql, parameters);
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(getRelationMetas(logicSchema.getMetaData().getTables()), sqlStatementContext, sql, parameters);
         sqlRewriteContext.generateSQLTokens();
         String rewriteSQL = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
         SQLRouteResult result = new SQLRouteResult(sqlStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
@@ -102,8 +102,9 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     private SQLRouteResult doEncryptRoute(final String sql) {
         EncryptSchema encryptSchema = (EncryptSchema) logicSchema;
         SQLStatement sqlStatement = encryptSchema.getParseEngine().parse(sql, true);
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(getRelationMetas(logicSchema.getMetaData().getTables()), sql, parameters, sqlStatement);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(logicSchema.getMetaData().getTables(), sqlStatementContext, sql, parameters);
+        RelationMetas relationMetas = getRelationMetas(logicSchema.getMetaData().getTables());
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(relationMetas, sql, parameters, sqlStatement);
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(relationMetas, sqlStatementContext, sql, parameters);
         boolean isQueryWithCipherColumn = ShardingProxyContext.getInstance().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         new EncryptSQLRewriteContextDecorator(encryptSchema.getEncryptRule(), isQueryWithCipherColumn).decorate(sqlRewriteContext);
         sqlRewriteContext.generateSQLTokens();

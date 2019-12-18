@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.transaction.base.seata.at;
 
 import io.seata.core.context.RootContext;
-import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.junit.After;
 import org.junit.Before;
@@ -27,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,9 +39,6 @@ public final class TransactionalSQLExecutionHookTest {
     private final Map<String, Object> shardingExecuteDataMap = new HashMap<>();
     
     private final TransactionalSQLExecutionHook executionHook = new TransactionalSQLExecutionHook();
-    
-    @Mock
-    private RouteUnit routeUnit;
     
     @Mock
     private DataSourceMetaData dataSourceMetaData;
@@ -58,13 +55,13 @@ public final class TransactionalSQLExecutionHookTest {
     
     @Test
     public void assertStartInTrunkThread() {
-        executionHook.start(routeUnit, dataSourceMetaData, true, shardingExecuteDataMap);
+        executionHook.start("ds", "SELECT 1", Collections.emptyList(), dataSourceMetaData, true, shardingExecuteDataMap);
         assertFalse(RootContext.inGlobalTransaction());
     }
     
     @Test
     public void assertStartInChildThread() {
-        executionHook.start(routeUnit, dataSourceMetaData, false, shardingExecuteDataMap);
+        executionHook.start("ds", "SELECT 1", Collections.emptyList(), dataSourceMetaData, false, shardingExecuteDataMap);
         assertTrue(RootContext.inGlobalTransaction());
     }
     

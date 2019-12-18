@@ -41,8 +41,8 @@ public final class MariaDBDatabaseType implements BranchDatabaseType {
     }
     
     @Override
-    public MariaDBDataSourceMetaData getDataSourceMetaData(final DataSourceInfo dataSourceInfo) {
-        return new MariaDBDataSourceMetaData(dataSourceInfo);
+    public MariaDBDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
+        return new MariaDBDataSourceMetaData(url);
     }
     
     @Override

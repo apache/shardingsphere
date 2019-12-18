@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
-import org.apache.shardingsphere.core.execute.StatementExecuteUnit;
+import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
+import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.route.BatchRouteUnit;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLUnit;
@@ -121,18 +121,17 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         verify(preparedStatement2).executeBatch();
     }
     
-    private void setExecuteGroups(final List<PreparedStatement> preparedStatements) throws SQLException {
+    private void setExecuteGroups(final List<PreparedStatement> preparedStatements) {
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
         List<StatementExecuteUnit> preparedStatementExecuteUnits = new LinkedList<>();
         executeGroups.add(new ShardingExecuteGroup<>(preparedStatementExecuteUnits));
         Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
         for (PreparedStatement each : preparedStatements) {
-            RouteUnit routeUnit = new RouteUnit("ds_0", new SQLUnit(SQL, Collections.singletonList((Object) 1)));
-            BatchRouteUnit batchRouteUnit = new BatchRouteUnit(routeUnit);
+            BatchRouteUnit batchRouteUnit = new BatchRouteUnit(new RouteUnit("ds_0", new SQLUnit(SQL, Collections.singletonList((Object) 1))));
             batchRouteUnit.mapAddBatchCount(0);
             batchRouteUnit.mapAddBatchCount(1);
             routeUnits.add(batchRouteUnit);
-            preparedStatementExecuteUnits.add(new StatementExecuteUnit(routeUnit, each, ConnectionMode.MEMORY_STRICTLY));
+            preparedStatementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(SQL, Collections.singletonList((Object) 1))), each, ConnectionMode.MEMORY_STRICTLY));
         }
         setFields(executeGroups, routeUnits);
     }

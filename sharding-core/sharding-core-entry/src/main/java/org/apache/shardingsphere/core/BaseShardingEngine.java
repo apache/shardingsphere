@@ -17,30 +17,30 @@
 
 package org.apache.shardingsphere.core;
 
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.core.rewrite.engine.SQLRewriteResult;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.context.EncryptSQLRewriteContextDecorator;
-import org.apache.shardingsphere.core.rewrite.feature.sharding.context.ShardingSQLRewriteContextDecorator;
-import org.apache.shardingsphere.core.rewrite.feature.sharding.engine.ShardingSQLRewriteEngine;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
-import org.apache.shardingsphere.core.route.type.TableUnit;
-import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetaData;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.rewriter.context.SQLRewriteContext;
+import org.apache.shardingsphere.sql.rewriter.engine.SQLRewriteResult;
+import org.apache.shardingsphere.sql.rewriter.encrypt.context.EncryptSQLRewriteContextDecorator;
+import org.apache.shardingsphere.sql.rewriter.sharding.context.ShardingSQLRewriteContextDecorator;
+import org.apache.shardingsphere.sql.rewriter.sharding.engine.ShardingSQLRewriteEngine;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -108,49 +108,26 @@ public abstract class BaseShardingEngine {
     }
     
     private Collection<RouteUnit> rewriteAndConvert(final String sql, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(metaData.getTables(), sqlRouteResult.getSqlStatementContext(), sql, parameters);
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(getRelationMetas(metaData.getTables()), sqlRouteResult.getSqlStatementContext(), sql, parameters);
         new ShardingSQLRewriteContextDecorator(shardingRule, sqlRouteResult).decorate(sqlRewriteContext);
         boolean isQueryWithCipherColumn = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         new EncryptSQLRewriteContextDecorator(shardingRule.getEncryptRule(), isQueryWithCipherColumn).decorate(sqlRewriteContext);
         sqlRewriteContext.generateSQLTokens();
         Collection<RouteUnit> result = new LinkedHashSet<>();
         for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
-            ShardingSQLRewriteEngine sqlRewriteEngine = new ShardingSQLRewriteEngine(
-                    sqlRouteResult.getShardingConditions(), each, getLogicAndActualTables(each, sqlRouteResult.getSqlStatementContext().getTablesContext().getTableNames()));
+            ShardingSQLRewriteEngine sqlRewriteEngine = new ShardingSQLRewriteEngine(shardingRule, sqlRouteResult.getShardingConditions(), each);
             SQLRewriteResult sqlRewriteResult = sqlRewriteEngine.rewrite(sqlRewriteContext);
             result.add(new RouteUnit(each.getDataSourceName(), new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));
         }
         return result;
     }
     
-    private Map<String, String> getLogicAndActualTables(final RoutingUnit routingUnit, final Collection<String> parsedTableNames) {
-        Map<String, String> result = new HashMap<>();
-        for (TableUnit each : routingUnit.getTableUnits()) {
-            String logicTableName = each.getLogicTableName().toLowerCase();
-            result.put(logicTableName, each.getActualTableName());
-            result.putAll(getLogicAndActualTablesFromBindingTable(routingUnit.getMasterSlaveLogicDataSourceName(), each, parsedTableNames));
+    private RelationMetas getRelationMetas(final TableMetas tableMetas) {
+        Map<String, RelationMetaData> result = new HashMap<>(tableMetas.getAllTableNames().size());
+        for (String each : tableMetas.getAllTableNames()) {
+            TableMetaData tableMetaData = tableMetas.get(each);
+            result.put(each, new RelationMetaData(tableMetaData.getColumns().keySet()));
         }
-        return result;
-    }
-    
-    private Map<String, String> getLogicAndActualTablesFromBindingTable(final String dataSourceName, final TableUnit tableUnit, final Collection<String> parsedTableNames) {
-        Map<String, String> result = new LinkedHashMap<>();
-        Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(tableUnit.getLogicTableName());
-        if (bindingTableRule.isPresent()) {
-            result.putAll(getLogicAndActualTablesFromBindingTable(dataSourceName, tableUnit, parsedTableNames, bindingTableRule.get()));
-        }
-        return result;
-    }
-    
-    private Map<String, String> getLogicAndActualTablesFromBindingTable(
-            final String dataSourceName, final TableUnit tableUnit, final Collection<String> parsedTableNames, final BindingTableRule bindingTableRule) {
-        Map<String, String> result = new LinkedHashMap<>();
-        for (String each : parsedTableNames) {
-            String tableName = each.toLowerCase();
-            if (!tableName.equals(tableUnit.getLogicTableName().toLowerCase()) && bindingTableRule.hasLogicTable(tableName)) {
-                result.put(tableName, bindingTableRule.getBindingActualTable(dataSourceName, tableName, tableUnit.getActualTableName()));
-            }
-        }
-        return result;
+        return new RelationMetas(result);
     }
 }

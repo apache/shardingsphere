@@ -17,33 +17,25 @@
 
 package org.apache.shardingsphere.core.merge.dql.orderby;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
-import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
-import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,40 +48,28 @@ import static org.mockito.Mockito.when;
 
 public final class OrderByStreamMergedResultTest {
     
-    private DQLMergeEngine mergeEngine;
-    
-    private List<QueryResult> queryResults;
-    
-    private SQLRouteResult routeResult;
+    private SelectSQLStatementContext selectSQLStatementContext;
     
     @Before
-    public void setUp() throws SQLException {
-        queryResults = Lists.<QueryResult>newArrayList(
-                new TestQueryResult(mockResultSet()), new TestQueryResult(mockResultSet()), new TestQueryResult(mockResultSet()));
-        SQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
+    public void setUp() {
+        selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), 
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC))), false), 
-                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
-        routeResult = new SQLRouteResult(selectSQLStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-    }
-    
-    private ResultSet mockResultSet() throws SQLException {
-        ResultSet result = mock(ResultSet.class);
-        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-        when(result.getMetaData()).thenReturn(resultSetMetaData);
-        return result;
+                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
     }
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), mock(TableMetas.class), routeResult, queryResults);
+        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
+        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), mock(TableMetas.class), routeResult, queryResults);
+        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
+        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
         when(queryResults.get(0).next()).thenReturn(true, false);
         when(queryResults.get(0).getValue(1, Object.class)).thenReturn("2");
         when(queryResults.get(2).next()).thenReturn(true, true, false);
@@ -106,7 +86,8 @@ public final class OrderByStreamMergedResultTest {
     
     @Test
     public void assertNextForMix() throws SQLException {
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), mock(TableMetas.class), routeResult, queryResults);
+        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
+        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
         when(queryResults.get(0).next()).thenReturn(true, false);
         when(queryResults.get(0).getValue(1, Object.class)).thenReturn("2");
         when(queryResults.get(1).next()).thenReturn(true, true, true, false);
@@ -131,6 +112,7 @@ public final class OrderByStreamMergedResultTest {
     
     @Test
     public void assertNextForCaseSensitive() throws SQLException {
+        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
         when(queryResults.get(0).next()).thenReturn(true, false);
         when(queryResults.get(0).isCaseSensitive(1)).thenReturn(true);
         when(queryResults.get(0).getValue(1, Object.class)).thenReturn("b");
@@ -140,7 +122,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(2).next()).thenReturn(true, false);
         when(queryResults.get(2).isCaseSensitive(1)).thenReturn(true);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("A");
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), mock(TableMetas.class), routeResult, queryResults);
+        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("A"));
@@ -155,6 +137,7 @@ public final class OrderByStreamMergedResultTest {
     
     @Test
     public void assertNextForCaseInsensitive() throws SQLException {
+        List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
         when(queryResults.get(0).next()).thenReturn(true, false);
         when(queryResults.get(0).isCaseSensitive(1)).thenReturn(false);
         when(queryResults.get(0).getValue(1, Object.class)).thenReturn("b");
@@ -164,7 +147,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(2).next()).thenReturn(true, false);
         when(queryResults.get(2).isCaseSensitive(1)).thenReturn(false);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("A");
-        mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), mock(TableMetas.class), routeResult, queryResults);
+        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("a"));

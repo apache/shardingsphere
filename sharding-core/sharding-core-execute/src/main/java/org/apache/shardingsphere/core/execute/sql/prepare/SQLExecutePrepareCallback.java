@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.execute.sql.prepare;
 
 import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.execute.StatementExecuteUnit;
+import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.route.RouteUnit;
 
 import java.sql.Connection;

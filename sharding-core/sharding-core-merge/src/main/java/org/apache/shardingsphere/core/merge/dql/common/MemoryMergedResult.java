@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.core.merge.dql.common;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
-import org.apache.shardingsphere.sql.parser.util.SQLUtil;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.rule.BaseRule;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -30,26 +32,42 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
 import java.util.Calendar;
-import java.util.Map;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Memory merged result.
  *
  * @author zhangliang
+ * 
+ * @param <T> type of rule
  */
 @RequiredArgsConstructor
-public abstract class MemoryMergedResult implements MergedResult {
+public abstract class MemoryMergedResult<T extends BaseRule> implements MergedResult {
     
-    private final Map<String, Integer> labelAndIndexMap;
+    private final Iterator<MemoryQueryResultRow> memoryResultSetRows;
     
-    @Setter
     private MemoryQueryResultRow currentResultSetRow;
     
     private boolean wasNull;
     
-    protected final void resetLabelAndIndexMap(final Map<String, Integer> labelAndIndexMap) {
-        this.labelAndIndexMap.clear();
-        this.labelAndIndexMap.putAll(labelAndIndexMap);
+    protected MemoryMergedResult(final T rule, final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+        List<MemoryQueryResultRow> memoryQueryResultRowList = init(rule, tableMetas, sqlStatementContext, queryResults);
+        memoryResultSetRows = memoryQueryResultRowList.iterator();
+        if (!memoryQueryResultRowList.isEmpty()) {
+            currentResultSetRow = memoryQueryResultRowList.get(0);
+        }
+    }
+    
+    protected abstract List<MemoryQueryResultRow> init(T rule, TableMetas tableMetas, SQLStatementContext sqlStatementContext, List<QueryResult> queryResults) throws SQLException;
+    
+    @Override
+    public final boolean next() {
+        if (memoryResultSetRows.hasNext()) {
+            currentResultSetRow = memoryResultSetRows.next();
+            return true;
+        }
+        return false;
     }
     
     @Override
@@ -63,16 +81,6 @@ public abstract class MemoryMergedResult implements MergedResult {
     }
     
     @Override
-    public final Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
-        if (Blob.class == type || Clob.class == type || Reader.class == type || InputStream.class == type || SQLXML.class == type) {
-            throw new SQLFeatureNotSupportedException();
-        }
-        Object result = currentResultSetRow.getCell(labelAndIndexMap.containsKey(columnLabel) ? labelAndIndexMap.get(columnLabel) : labelAndIndexMap.get(SQLUtil.getExactlyValue(columnLabel)));
-        wasNull = null == result;
-        return result;
-    }
-    
-    @Override
     public final Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
         // TODO implement with calendar
         Object result = currentResultSetRow.getCell(columnIndex);
@@ -81,20 +89,7 @@ public abstract class MemoryMergedResult implements MergedResult {
     }
     
     @Override
-    public final Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
-        // TODO implement with calendar
-        Object result = currentResultSetRow.getCell(labelAndIndexMap.get(columnLabel));
-        wasNull = null == result;
-        return result;
-    }
-    
-    @Override
     public final InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public final InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
         throw new SQLFeatureNotSupportedException();
     }
     
