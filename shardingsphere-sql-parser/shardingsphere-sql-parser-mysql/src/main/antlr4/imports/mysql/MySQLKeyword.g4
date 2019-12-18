@@ -1516,8 +1516,52 @@ UPPER
     : U P P E R
     ;
 
+DATEDIFF
+    : D A T E D I F F
+    ;
+
+DATE_FORMAT
+    : D A T E UL_ F O R M A T
+    ;
+
+DAYNAME
+    : D A Y N A M E
+    ;
+
+DAYOFMONTH
+    : D A Y O F M O N T H
+    ;
+
+DAYOFWEEK
+    : D A Y O F W E E K
+    ;
+
+DAYOFYEAR
+    : D A Y O F Y E A R
+    ;
+
 STR_TO_DATE
     : S T R UL_ T O UL_ D A T E
+    ;
+
+TIMEDIFF
+    : T I M E D I F F
+    ;
+
+TIMESTAMPADD
+    : T I M E S T A M P A D D
+    ;
+
+TIMESTAMPDIFF
+    : T I M E S T A M P D I F F
+    ;
+
+TIME_FORMAT
+     : T I M E UL_ F O R M A T
+     ;
+
+TIME_TO_SEC
+    : T I M E UL_ T O UL_ S E C
     ;
 
 AES_DECRYPT
