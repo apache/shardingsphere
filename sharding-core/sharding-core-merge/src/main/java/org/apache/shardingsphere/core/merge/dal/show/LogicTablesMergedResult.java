@@ -24,12 +24,13 @@ import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -37,18 +38,26 @@ import java.util.Set;
  *
  * @author zhangliang
  */
-public class LogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
+public abstract class LogicTablesMergedResult extends MemoryMergedResult {
     
-    public LogicTablesMergedResult(final ShardingRule shardingRule, 
-                                   final SQLStatementContext sqlStatementContext, final TableMetas tableMetas, final List<QueryResult> queryResults) throws SQLException {
-        super(shardingRule, tableMetas, sqlStatementContext, queryResults);
+    private final ShardingRule shardingRule;
+    
+    private final Iterator<MemoryQueryResultRow> memoryResultSetRows;
+    
+    private final Set<String> tableNames = new HashSet<>();
+    
+    private final TableMetas tableMetas;
+    
+    public LogicTablesMergedResult(final Map<String, Integer> labelAndIndexMap, 
+                                   final ShardingRule shardingRule, final List<QueryResult> queryResults, final TableMetas tableMetas) throws SQLException {
+        super(labelAndIndexMap);
+        this.shardingRule = shardingRule;
+        this.tableMetas = tableMetas;
+        memoryResultSetRows = init(queryResults);
     }
     
-    @Override
-    protected final List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final TableMetas tableMetas, 
-                                                    final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+    private Iterator<MemoryQueryResultRow> init(final List<QueryResult> queryResults) throws SQLException {
         List<MemoryQueryResultRow> result = new LinkedList<>();
-        Set<String> tableNames = new HashSet<>();
         for (QueryResult each : queryResults) {
             while (each.next()) {
                 MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(each);
@@ -65,9 +74,21 @@ public class LogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
                 }
             }
         }
-        return result;
+        if (!result.isEmpty()) {
+            setCurrentResultSetRow(result.get(0));
+        }
+        return result.iterator();
     }
     
     protected void setCellValue(final MemoryQueryResultRow memoryResultSetRow, final String logicTableName, final String actualTableName) {
+    }
+    
+    @Override
+    public final boolean next() {
+        if (memoryResultSetRows.hasNext()) {
+            setCurrentResultSetRow(memoryResultSetRows.next());
+            return true;
+        }
+        return false;
     }
 }

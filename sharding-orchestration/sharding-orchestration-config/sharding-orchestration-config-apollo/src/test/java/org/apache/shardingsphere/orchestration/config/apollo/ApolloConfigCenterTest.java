@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.orchestration.config.apollo;
 
+import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.mockserver.EmbeddedApollo;
 import org.apache.shardingsphere.orchestration.config.api.ConfigCenter;
 import org.apache.shardingsphere.orchestration.config.api.ConfigCenterConfiguration;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.util.Properties;
 
@@ -33,8 +33,8 @@ import static org.junit.Assert.assertThat;
 public final class ApolloConfigCenterTest {
     
     static {
-        SLF4JBridgeHandler.removeHandlersForRootLogger();
-        SLF4JBridgeHandler.install();
+        System.setProperty("env", "DEV");
+        System.setProperty("idc", ConfigConsts.CLUSTER_NAME_DEFAULT);
     }
     
     @ClassRule

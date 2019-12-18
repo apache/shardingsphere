@@ -65,12 +65,20 @@ public final class QueryHeader {
             if (logicSchema.getMetaData().getTables().containsTable(resultSetMetaData.getTableName(columnIndex))) {
                 this.primaryKey = logicSchema.getMetaData().getTables().get(resultSetMetaData.getTableName(columnIndex)).getColumns()
                         .get(resultSetMetaData.getColumnName(columnIndex).toLowerCase()).isPrimaryKey();
+                this.notNull = logicSchema.getMetaData().getTables().get(resultSetMetaData.getTableName(columnIndex)).getColumns()
+                        .get(resultSetMetaData.getColumnName(columnIndex).toLowerCase()).isNotNull();
+                this.autoIncrement = logicSchema.getMetaData().getTables().get(resultSetMetaData.getTableName(columnIndex)).getColumns()
+                        .get(resultSetMetaData.getColumnName(columnIndex).toLowerCase()).isAutoIncrement();
             } else {
                 this.primaryKey = false;
+                this.notNull = false;
+                this.autoIncrement = false;
             }
         } else {
             this.table = resultSetMetaData.getTableName(columnIndex);
             this.primaryKey = false;
+            this.notNull = false;
+            this.autoIncrement = false;
         }
         this.columnLabel = resultSetMetaData.getColumnLabel(columnIndex);
         this.columnName = resultSetMetaData.getColumnName(columnIndex);
@@ -78,8 +86,6 @@ public final class QueryHeader {
         this.columnType = resultSetMetaData.getColumnType(columnIndex);
         this.decimals = resultSetMetaData.getScale(columnIndex);
         this.signed = resultSetMetaData.isSigned(columnIndex);
-        this.notNull = resultSetMetaData.isNullable(columnIndex) == ResultSetMetaData.columnNoNulls;
-        this.autoIncrement = resultSetMetaData.isAutoIncrement(columnIndex);
     }
     
     /**

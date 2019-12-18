@@ -74,8 +74,8 @@ public final class DatabaseTest {
     }
 
     private ShardingSphereMetaData getMetaDataForAllRoutingSQL() {
-        ColumnMetaData idColumnMetaData = new ColumnMetaData("id", "int", true);
-        ColumnMetaData nameColumnMetaData = new ColumnMetaData("user_id", "int", false);
+        ColumnMetaData idColumnMetaData = new ColumnMetaData("id", "int", true, true, true);
+        ColumnMetaData nameColumnMetaData = new ColumnMetaData("user_id", "int", false, false, false);
         TableMetas tableMetas = mock(TableMetas.class);
         when(tableMetas.get("tesT")).thenReturn(new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList("id", "user_id")));
         when(tableMetas.containsTable("tesT")).thenReturn(true);
@@ -101,8 +101,8 @@ public final class DatabaseTest {
     }
     
     private ShardingSphereMetaData getMetaDataForPagination() {
-        ColumnMetaData idColumnMetaData = new ColumnMetaData("id", "int", true);
-        ColumnMetaData nameColumnMetaData = new ColumnMetaData("user_id", "int", false);
+        ColumnMetaData idColumnMetaData = new ColumnMetaData("id", "int", true, true, true);
+        ColumnMetaData nameColumnMetaData = new ColumnMetaData("user_id", "int", false, false, false);
         TableMetas tableMetas = mock(TableMetas.class);
         when(tableMetas.get("tbl_pagination")).thenReturn(new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList("id", "user_id")));
         when(tableMetas.containsTable("tbl_pagination")).thenReturn(true);

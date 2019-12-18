@@ -25,7 +25,7 @@
         :label="item.label"
         :width="item.width"
       />
-      <el-table-column :label="$t('registryCenter.table.operate')" fixed="right" width="80" align="center">
+      <el-table-column :label="$t('index.table.operate')" fixed="right" width="80" align="center">
         <template slot-scope="scope">
           <el-switch v-model="scope.row.enabled" @change="handleChange(scope.row)" />
         </template>
@@ -52,15 +52,15 @@ export default {
     return {
       column: [
         {
-          label: this.$t('runtimeStatus').dataSource.schema,
+          label: this.$t('orchestration').dataSource.schema,
           prop: 'schema'
         },
         {
-          label: this.$t('runtimeStatus').dataSource.masterDataSourceName,
+          label: this.$t('orchestration').dataSource.masterDataSourceName,
           prop: 'masterDataSourceName'
         },
         {
-          label: this.$t('runtimeStatus').dataSource.slaveDataSourceName,
+          label: this.$t('orchestration').dataSource.slaveDataSourceName,
           prop: 'slaveDataSourceName'
         }
       ],

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.transaction.base.seata.at;
 
 import org.apache.shardingsphere.core.execute.hook.SQLExecutionHook;
+import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,8 +31,7 @@ import java.util.Map;
 public final class TransactionalSQLExecutionHook implements SQLExecutionHook {
     
     @Override
-    public void start(final String dataSourceName, final String sql, final List<Object> parameters,
-                      final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
+    public void start(final RouteUnit routeUnit, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
         if (!isTrunkThread) {
             SeataTransactionBroadcaster.broadcastIfNecessary(shardingExecuteDataMap);
         }

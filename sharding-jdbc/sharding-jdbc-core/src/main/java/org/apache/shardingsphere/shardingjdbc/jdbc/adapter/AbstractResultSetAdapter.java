@@ -57,7 +57,6 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     private final ForceExecuteTemplate<ResultSet> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
-    @Getter
     private final SQLRouteResult sqlRouteResult;
     
     @Getter(AccessLevel.PROTECTED)

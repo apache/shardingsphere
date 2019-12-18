@@ -25,7 +25,7 @@
         :label="item.label"
         :width="item.width"
       />
-      <el-table-column :label="$t('registryCenter.table.operate')" fixed="right" width="80" align="center">
+      <el-table-column :label="$t('index.table.operate')" fixed="right" width="80" align="center">
         <template slot-scope="scope">
           <el-switch v-model="scope.row.enabled" @change="handleChange(scope.row)" />
         </template>
@@ -52,11 +52,11 @@ export default {
     return {
       column: [
         {
-          label: this.$t('runtimeStatus').instance.serverIp,
+          label: this.$t('orchestration').instance.serverIp,
           prop: 'serverIp'
         },
         {
-          label: this.$t('runtimeStatus').instance.instanceId,
+          label: this.$t('orchestration').instance.instanceId,
           prop: 'instanceId'
         }
       ],

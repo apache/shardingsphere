@@ -40,7 +40,7 @@ public final class CompareUtil {
      * @param caseSensitive case sensitive
      * @return compare result
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderDirection orderDirection, final OrderDirection nullOrderDirection, final boolean caseSensitive) {
         if (null == thisValue && null == otherValue) {
             return 0;

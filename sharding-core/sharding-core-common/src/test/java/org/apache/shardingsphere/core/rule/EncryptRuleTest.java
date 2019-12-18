@@ -75,13 +75,13 @@ public final class EncryptRuleTest {
     }
     
     @Test
-    public void assertGetLogicColumnOfCipher() {
-        assertThat(new EncryptRule(encryptRuleConfig).getLogicColumnOfCipher(table, "cipher_pwd"), is(column));
+    public void assertGetLogicColumn() {
+        assertThat(new EncryptRule(encryptRuleConfig).getLogicColumn(table, "cipher_pwd"), is(column));
     }
     
     @Test
     public void assertFindPlainColumn() {
-        assertTrue(new EncryptRule(encryptRuleConfig).findPlainColumn(table, column).isPresent());
+        assertFalse(new EncryptRule(encryptRuleConfig).findPlainColumn(table, "cipher_pwd").isPresent());
     }
     
     @Test(expected = NullPointerException.class)

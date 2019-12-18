@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
 import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.spi.database.DataSourceInfo;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,16 +28,18 @@ public final class OracleDataSourceMetaDataTest {
     
     @Test
     public void assertNewConstructorWithPort() {
-        OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:thin:@//127.0.0.1:9999/ds_0", "test");
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:oracle:thin:@//127.0.0.1:9999/ds_0", "test");
+        OracleDataSourceMetaData actual = new OracleDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
         assertThat(actual.getCatalog(), is("ds_0"));
-        assertThat(actual.getSchema(), is("test"));
+        assertThat(actual.getSchema(), is(dataSourceInfo.getUsername()));
     }
     
     @Test
     public void assertNewConstructorWithDefaultPort() {
-        OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:oci:@127.0.0.1/ds_0", "test");
+        DataSourceInfo dataSourceInfo = new DataSourceInfo("jdbc:oracle:oci:@127.0.0.1/ds_0", "test");
+        OracleDataSourceMetaData actual = new OracleDataSourceMetaData(dataSourceInfo);
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(1521));
         assertThat(actual.getSchema(), is("test"));
@@ -44,6 +47,6 @@ public final class OracleDataSourceMetaDataTest {
     
     @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertNewConstructorFailure() {
-        new OracleDataSourceMetaData("jdbc:oracle:xxxxxxxx", "test");
+        new OracleDataSourceMetaData(new DataSourceInfo("jdbc:oracle:xxxxxxxx", "test"));
     }
 }

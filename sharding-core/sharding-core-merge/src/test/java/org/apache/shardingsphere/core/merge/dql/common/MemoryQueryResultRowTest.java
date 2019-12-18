@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.core.merge.dql.common;
 
-import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
+import org.apache.shardingsphere.core.merge.fixture.TestQueryResult;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,16 +33,21 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class MemoryQueryResultRowTest {
+    
+    @Mock
+    private ResultSet resultSet;
     
     private MemoryQueryResultRow memoryResultSetRow;
     
     @Before
     public void setUp() throws SQLException {
-        QueryResult queryResult = mock(QueryResult.class);
-        when(queryResult.getColumnCount()).thenReturn(1);
-        when(queryResult.getValue(1, Object.class)).thenReturn("value");
-        memoryResultSetRow = new MemoryQueryResultRow(queryResult);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
+        when(resultSetMetaData.getColumnCount()).thenReturn(1);
+        when(resultSet.getObject(1)).thenReturn("value");
+        memoryResultSetRow = new MemoryQueryResultRow(new TestQueryResult(resultSet));
     }
     
     @Test
