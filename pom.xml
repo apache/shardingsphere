@@ -36,6 +36,7 @@
         <module>shardingsphere-sql-rewriter</module>
         
         <module>sharding-core</module>
+        <module>encrypt-core</module>
         
         <module>sharding-jdbc</module>
         <module>sharding-proxy</module>

@@ -84,6 +84,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>encrypt-core-rewrite</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-core-execute</artifactId>
             <version>${project.version}</version>
         </dependency>

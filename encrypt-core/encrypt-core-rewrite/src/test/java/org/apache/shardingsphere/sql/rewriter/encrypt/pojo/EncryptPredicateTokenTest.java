@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.rewriter.encrypt.token.pojo;
+package org.apache.shardingsphere.sql.rewriter.encrypt.pojo;
 
 import org.apache.shardingsphere.core.constant.ShardingOperator;
+import org.apache.shardingsphere.sql.rewriter.encrypt.token.pojo.EncryptPredicateRightValueToken;
 import org.junit.Test;
 
 import java.util.Collections;
