@@ -21,12 +21,12 @@ import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+
 
 /**
  * Memory channel.
@@ -39,20 +39,12 @@ public class MemoryChannel implements Channel {
 
     private final BlockingQueue<Record> queue = new ArrayBlockingQueue<>(ScalingContext.getInstance().getServerConfiguration().getBlockQueueSize());
 
-    private final List<AckCallback> ackCallbacks;
+    private final AckCallback ackCallback;
 
     private List<Record> toBeAcknowledgeRecords = new LinkedList<>();
-
-    public MemoryChannel() {
-        this(new LinkedList<AckCallback>());
-    }
-
+    
     public MemoryChannel(final AckCallback ackCallback) {
-        this(Collections.singletonList(ackCallback));
-    }
-
-    public MemoryChannel(final List<AckCallback> ackCallbacks) {
-        this.ackCallbacks = ackCallbacks;
+        this.ackCallback = ackCallback;
     }
 
     @Override
@@ -77,7 +69,7 @@ public class MemoryChannel implements Channel {
             }
         }
         queue.drainTo(records, batchSize);
-        if (0 < ackCallbacks.size()) {
+        if (null != ackCallback) {
             toBeAcknowledgeRecords.addAll(records);
         }
         return records;
@@ -85,10 +77,8 @@ public class MemoryChannel implements Channel {
 
     @Override
     public final void ack() {
-        if (0 < ackCallbacks.size() && 0 < toBeAcknowledgeRecords.size()) {
-            for (AckCallback each : ackCallbacks) {
-                each.onAck(toBeAcknowledgeRecords);
-            }
+        if (null != ackCallback && toBeAcknowledgeRecords.size() > 0) {
+            ackCallback.onAck(toBeAcknowledgeRecords);
             toBeAcknowledgeRecords.clear();
         }
     }
