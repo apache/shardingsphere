@@ -8,7 +8,7 @@ weight = 5
 ## Target
 
 Performance test is classified as loss test and promotion test according to its verification target. Insert & update & delete which regarded as an association operation and select which focus on sharding optimization are used to evaluate performance based on the four different scenarios (single route, master slave, master slave & encrypt & sharding, full route).
-To achieve the result better, these tests are performed based on 1w data with 20 concurrent threads for 30 minutes.
+To achieve the result better, these tests are performed based on one thousand data with 20 concurrent threads for 30 minutes.
 
 ## Test Scenarios
 
