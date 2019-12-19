@@ -126,7 +126,7 @@ public final class EncryptResultSetMetaData extends WrapperAdapter implements Re
     
     private String getLogicColumn(final String actualColumn) throws SQLException {
         for (Entry<String, String> entry : logicAndActualColumns.entrySet()) {
-            if (entry.getValue().contains(actualColumn)) {
+            if (entry.getValue().equals(actualColumn)) {
                 return entry.getKey();
             }
         }
