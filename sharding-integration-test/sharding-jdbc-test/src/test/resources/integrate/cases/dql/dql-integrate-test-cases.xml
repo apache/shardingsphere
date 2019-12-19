@@ -378,6 +378,10 @@
     <dql-test-case sql-case-id="select_pagination_with_row_number_not_at_end">
         <assertion parameters="20:int" expected-data-file="select_pagination_with_row_number_not_at_end.xml" />
     </dql-test-case>
+
+    <dql-test-case sql-case-id="select_pagination_with_offset_fetch">
+        <assertion parameters="20:int" expected-data-file="select_pagination_with_offset_fetch.xml" />
+    </dql-test-case>
     
     <dql-test-case sql-case-id="select_pagination_with_group_by_and_order_by">
         <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 1:int, 10:int" expected-data-file="select_pagination_with_group_by_and_order_by.xml" />
