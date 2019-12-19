@@ -44,7 +44,7 @@ curl -X POST \
 	"success": true,
 	"errorCode": 0,
 	"errorMsg": null,
-	"model": ""
+	"model": null
 }
 ```
 
@@ -139,6 +139,6 @@ curl -X POST \
 	"success": true,
 	"errorCode": 0,
 	"errorMsg": null,
-	"model": ""
+	"model": null
 }
 ```
