@@ -56,6 +56,8 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
     
     private static final String SELECT_SQL_WITH_IN_OPERATOR = "select * from t_query_encrypt where pwd IN (?)";
 
+    private static final String SELECT_SQL_FOR_CONTAINS_COLUMN = "SELECT * FROM t_encrypt_contains_column WHERE plain_pwd = ?";
+
     @Test
     public void assertSqlShow() throws SQLException {
         assertTrue(getEncryptConnectionWithProps().getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
@@ -232,6 +234,22 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
             for (int i = 0; i < metaData.getColumnCount(); i++) {
                 assertThat(metaData.getColumnLabel(1), is("id"));
                 assertThat(metaData.getColumnLabel(2), is("pwd"));
+            }
+        }
+    }
+
+    @Test
+    public void assertSelectWithPlainColumnForContainsColumn() throws SQLException {
+        try (PreparedStatement statement = getEncryptConnectionWithProps().prepareStatement(SELECT_SQL_FOR_CONTAINS_COLUMN)) {
+            statement.setObject(1, "plainValue");
+            ResultSetMetaData metaData = statement.executeQuery().getMetaData();
+            assertThat(metaData.getColumnCount(), is(5));
+            for (int i = 0; i < metaData.getColumnCount(); i++) {
+                assertThat(metaData.getColumnLabel(1), is("id"));
+                assertThat(metaData.getColumnLabel(2), is("cipher_pwd"));
+                assertThat(metaData.getColumnLabel(3), is("plain_pwd"));
+                assertThat(metaData.getColumnLabel(4), is("cipher_pwd2"));
+                assertThat(metaData.getColumnLabel(5), is("plain_pwd2"));
             }
         }
     }
