@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.engine.SyncTaskExe
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncRunnerGroup;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.AckCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.RealtimeSyncChannel;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.DistributionChannel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManagerFactory;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.Reader;
@@ -39,7 +39,6 @@ import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -94,14 +93,14 @@ public final class RealtimeDataSyncTask implements SyncTask {
     }
     
     private void instanceChannel(final List<Writer> writers) {
-        Channel channel = new RealtimeSyncChannel(writers.size(), Collections.<AckCallback>singletonList(new AckCallback() {
+        Channel channel = new DistributionChannel(writers.size(), new AckCallback() {
             @Override
             public void onAck(final List<Record> records) {
                 Record lastHandledRecord = records.get(records.size() - 1);
                 logPositionManager.updateCurrentPosition(lastHandledRecord.getLogPosition());
                 delayMillisecond = System.currentTimeMillis() - lastHandledRecord.getCommitTime();
             }
-        }));
+        });
         reader.setChannel(channel);
         for (Writer each : writers) {
             each.setChannel(channel);
