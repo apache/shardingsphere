@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.execute.sql.execute.result;
+package org.apache.shardingsphere.sql.executor;
 
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Calendar;
 
 /**
- * Query result form database.
+ * Query result form SQL.
  *
  * @author zhangliang
  * @author yangyi

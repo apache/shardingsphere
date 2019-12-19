@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.merge.dal.common;
 
-import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
+import org.apache.shardingsphere.sql.executor.QueryResult;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;

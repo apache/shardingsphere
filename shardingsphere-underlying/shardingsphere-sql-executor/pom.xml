@@ -22,15 +22,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere</artifactId>
+        <artifactId>shardingsphere-underlying</artifactId>
         <version>4.0.0-RC4-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-underlying</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-sql-executor</artifactId>
     <name>${project.artifactId}</name>
-    
-    <modules>
-        <module>shardingsphere-sql-rewriter</module>
-        <module>shardingsphere-sql-executor</module>
-    </modules>
 </project>

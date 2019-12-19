@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.merge.dql.common;
 
 import lombok.Setter;
-import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
+import org.apache.shardingsphere.sql.executor.QueryResult;
 import org.apache.shardingsphere.core.merge.MergedResult;
 
 import java.io.InputStream;
