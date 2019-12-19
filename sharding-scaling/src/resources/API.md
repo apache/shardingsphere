@@ -44,12 +44,7 @@ curl -X POST \
 	"success": true,
 	"errorCode": 0,
 	"errorMsg": null,
-	"model": {
-		"message": "Strat job success!",
-		"content": {
-			"jobId": 1
-		}
-	}
+	"model": null
 }
 ```
 
@@ -72,49 +67,46 @@ curl -X GET \
 	"errorCode": 0,
 	"errorMsg": null,
 	"model": {
-		"message": "Get progress of the job success!",
-		"content": {
-			"id": 1,
-			"jobName": "Local Sharding Scaling Job",
-			"syncTaskProgress": [{
-				"id": "127.0.0.1-3306-test",
-				"status": "SYNCHRONIZE_REALTIME_DATA",
-				"historySyncTaskProgress": [{
-					"id": "history-test-t1#0",
-					"estimatedRows": 41147,
-					"syncedRows": 41147
-				}, {
-					"id": "history-test-t1#1",
-					"estimatedRows": 42917,
-					"syncedRows": 42917
-				}, {
-					"id": "history-test-t1#2",
-					"estimatedRows": 43543,
-					"syncedRows": 43543
-				}, {
-					"id": "history-test-t2#0",
-					"estimatedRows": 39679,
-					"syncedRows": 39679
-				}, {
-					"id": "history-test-t2#1",
-					"estimatedRows": 41483,
-					"syncedRows": 41483
-				}, {
-					"id": "history-test-t2#2",
-					"estimatedRows": 42107,
-					"syncedRows": 42107
-				}],
-				"realTimeSyncTaskProgress": {
-					"id": "realtime-test",
-					"delayMillisecond": 1576563771372,
-					"logPosition": {
-						"filename": "ON.000007",
-						"position": 177532875,
-						"serverId": 0
-					}
-				}
-			}]
-		}
+        "id": 1,
+        "jobName": "Local Sharding Scaling Job",
+        "syncTaskProgress": [{
+            "id": "127.0.0.1-3306-test",
+            "status": "SYNCHRONIZE_REALTIME_DATA",
+            "historySyncTaskProgress": [{
+                "id": "history-test-t1#0",
+                "estimatedRows": 41147,
+                "syncedRows": 41147
+            }, {
+                "id": "history-test-t1#1",
+                "estimatedRows": 42917,
+                "syncedRows": 42917
+            }, {
+                "id": "history-test-t1#2",
+                "estimatedRows": 43543,
+                "syncedRows": 43543
+            }, {
+                "id": "history-test-t2#0",
+                "estimatedRows": 39679,
+                "syncedRows": 39679
+            }, {
+                "id": "history-test-t2#1",
+                "estimatedRows": 41483,
+                "syncedRows": 41483
+            }, {
+                "id": "history-test-t2#2",
+                "estimatedRows": 42107,
+                "syncedRows": 42107
+            }],
+            "realTimeSyncTaskProgress": {
+                "id": "realtime-test",
+                "delayMillisecond": 1576563771372,
+                "logPosition": {
+                    "filename": "ON.000007",
+                    "position": 177532875,
+                    "serverId": 0
+                }
+            }
+        }]
 	}
 }
 ```
@@ -147,9 +139,6 @@ curl -X POST \
 	"success": true,
 	"errorCode": 0,
 	"errorMsg": null,
-	"model": {
-		"message": "Stop job success!",
-		"content": ""
-	}
+	"model": null
 }
 ```
