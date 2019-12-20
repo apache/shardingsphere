@@ -8,7 +8,7 @@ weight = 5
 ## Target
 
 Performance test is classified as loss test and promotion test according to its verification target. Insert & update & delete which regarded as an association operation and select which focus on sharding optimization are used to evaluate performance based on the four different scenarios (single route, master slave, master slave & encrypt & sharding, full route).
-To achieve the result better, these tests are performed based on 200w data with 20 concurrent threads for 30 minutes.
+To achieve the result better, these tests are performed based on one thousand data with 20 concurrent threads for 30 minutes.
 
 ## Test Scenarios
 
@@ -337,7 +337,7 @@ Delete from press_test where id=**
 select sql statement for full route:
 select max(id) from test where id%4=1
 select sql statement for single route:
-select id, k from test where id=1 and k=1
+select id, k from test ignore index(`PRIMARY`) where id=1 and k=1
 ```
 
 #### Jmeter Class
