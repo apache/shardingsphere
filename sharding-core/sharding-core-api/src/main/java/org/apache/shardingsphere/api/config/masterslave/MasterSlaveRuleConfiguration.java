@@ -21,8 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
-
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Master-slave rule configuration.
@@ -37,16 +36,16 @@ public class MasterSlaveRuleConfiguration implements RuleConfiguration {
     
     private final String masterDataSourceName;
     
-    private final Collection<String> slaveDataSourceNames;
+    private final List<String> slaveDataSourceNames;
     
     private final LoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration;
     
-    public MasterSlaveRuleConfiguration(final String name, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
+    public MasterSlaveRuleConfiguration(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames) {
         this(name, masterDataSourceName, slaveDataSourceNames, null);
     }
     
     public MasterSlaveRuleConfiguration(final String name, 
-                                        final String masterDataSourceName, final Collection<String> slaveDataSourceNames, final LoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {
+                                        final String masterDataSourceName, final List<String> slaveDataSourceNames, final LoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(name), "Name is required.");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(masterDataSourceName), "MasterDataSourceName is required.");
         Preconditions.checkArgument(null != slaveDataSourceNames && !slaveDataSourceNames.isEmpty(), "SlaveDataSourceNames is required.");

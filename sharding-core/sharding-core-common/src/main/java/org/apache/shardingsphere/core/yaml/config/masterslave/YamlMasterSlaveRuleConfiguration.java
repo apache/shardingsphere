@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -39,7 +39,7 @@ public class YamlMasterSlaveRuleConfiguration implements YamlConfiguration {
     
     private String masterDataSourceName;
     
-    private Collection<String> slaveDataSourceNames = new ArrayList<>();
+    private List<String> slaveDataSourceNames = new ArrayList<>();
     
     private String loadBalanceAlgorithmType;
     
