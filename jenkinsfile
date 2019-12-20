@@ -19,7 +19,7 @@
 def ssBuildBadge = addEmbeddableBadgeConfiguration(id: "ssbuild", subject: "Build")
 pipeline {
     agent  {
-        label 'xenial'
+        label 'ubuntu'
     }
     options {
         buildDiscarder(logRotator(
@@ -37,8 +37,9 @@ pipeline {
                         deleteDir()
                         checkout scm
                         sh 'git submodule update --init'
-                    } catch (Exception err) {
+                    } catch (exc) {
                         error 'Build failed'
+                        sh 'exit 1'
                     }
                 }
             }
