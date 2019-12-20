@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-executor</artifactId>
+            <artifactId>shardingsphere-sql-execute</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

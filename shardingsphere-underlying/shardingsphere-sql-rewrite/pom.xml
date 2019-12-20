@@ -25,14 +25,12 @@
         <artifactId>shardingsphere-underlying</artifactId>
         <version>4.0.0-RC4-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-result-merger</artifactId>
+    <artifactId>shardingsphere-sql-rewrite</artifactId>
     <name>${project.artifactId}</name>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-executor</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
+    <packaging>pom</packaging>
+    
+    <modules>
+        <module>shardingsphere-sql-rewrite-engine</module>
+        <module>shardingsphere-sql-rewrite-test</module>
+    </modules>
 </project>

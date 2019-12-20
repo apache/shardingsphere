@@ -25,12 +25,14 @@
         <artifactId>shardingsphere-underlying</artifactId>
         <version>4.0.0-RC4-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-sql-rewriter</artifactId>
+    <artifactId>shardingsphere-result-merge</artifactId>
     <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
-    
-    <modules>
-        <module>shardingsphere-sql-rewriter-engine</module>
-        <module>shardingsphere-sql-rewriter-test</module>
-    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-execute</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
