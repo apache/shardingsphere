@@ -23,101 +23,129 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Fi
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.PlaceholderRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Realtime data execute channel.
  *
  * @author avalon566
  */
-public class RealtimeSyncChannel implements Channel {
-
+public final class DistributionChannel implements Channel {
+    
     private final int channelNumber;
-
+    
     /**
      * key = channel id, value = channel.
      */
     private final Map<String, MemoryChannel> channels = new HashMap<>();
-
+    
     /**
      * key = thread id, value = channel id.
      */
     private final Map<String, String> channelAssignment = new HashMap<>();
-
-    private final List<AckCallback> ackCallbacks;
-
+    
+    private final AckCallback ackCallback;
+    
     private List<Record> toBeAcknowledgeRecords = new LinkedList<>();
-
+    
     private Map<LogPosition, Record> pendingAcknowledgeRecords = new ConcurrentHashMap<>();
-
-    private final Timer timer = new Timer();
-
-    public RealtimeSyncChannel(final int channelNumber) {
-        this(channelNumber, new LinkedList<AckCallback>());
-    }
-
-    public RealtimeSyncChannel(final int channelNumber, final List<AckCallback> ackCallbacks) {
+    
+    private ScheduledExecutorService scheduleAckRecordsExecutor;
+    
+    public DistributionChannel(final int channelNumber, final AckCallback ackCallback) {
         this.channelNumber = channelNumber;
-        this.ackCallbacks = ackCallbacks;
+        this.ackCallback = ackCallback;
         for (int i = 0; i < channelNumber; i++) {
-            if (0 < ackCallbacks.size()) {
-                channels.put(Integer.toString(i), new MemoryChannel(Collections.singletonList((AckCallback) new SingleChannelAckCallback())));
-            } else {
-                channels.put(Integer.toString(i), new MemoryChannel());
-            }
+            channels.put(Integer.toString(i), new MemoryChannel(new SingleChannelAckCallback()));
         }
         scheduleAckRecords();
     }
-
+    
+    private void scheduleAckRecords() {
+        this.scheduleAckRecordsExecutor = Executors.newSingleThreadScheduledExecutor();
+        scheduleAckRecordsExecutor.scheduleAtFixedRate(new Runnable() {
+            
+            @Override
+            public void run() {
+                ackRecords0();
+            }
+        }, 5, 1, TimeUnit.SECONDS);
+    }
+    
+    private void ackRecords0() {
+        synchronized (DistributionChannel.this) {
+            Iterator<Record> iterator = toBeAcknowledgeRecords.iterator();
+            List<Record> result = new LinkedList<>();
+            while (iterator.hasNext()) {
+                Record record = iterator.next();
+                if (pendingAcknowledgeRecords.containsKey(record.getLogPosition())) {
+                    result.add(record);
+                    iterator.remove();
+                    pendingAcknowledgeRecords.remove(record.getLogPosition());
+                } else {
+                    break;
+                }
+            }
+            if (result.size() > 0) {
+                ackCallback.onAck(result);
+            }
+        }
+    }
+    
     @Override
-    public final synchronized void pushRecord(final Record record) throws InterruptedException {
+    public synchronized void pushRecord(final Record record) throws InterruptedException {
         if (FinishedRecord.class.equals(record.getClass())) {
             // broadcast
             for (Map.Entry<String, MemoryChannel> entry : channels.entrySet()) {
                 entry.getValue().pushRecord(record);
             }
         } else if (DataRecord.class.equals(record.getClass())) {
-            if (0 < ackCallbacks.size()) {
-                toBeAcknowledgeRecords.add(record);
-            }
+            toBeAcknowledgeRecords.add(record);
             // hash by table name
             DataRecord dataRecord = (DataRecord) record;
             String index = Integer.toString(Math.abs(dataRecord.getTableName().hashCode()) % channelNumber);
             channels.get(index).pushRecord(dataRecord);
         } else if (PlaceholderRecord.class.equals(record.getClass())) {
-            if (0 < ackCallbacks.size()) {
-                toBeAcknowledgeRecords.add(record);
-                pendingAcknowledgeRecords.put(record.getLogPosition(), record);
-            }
+            toBeAcknowledgeRecords.add(record);
+            pendingAcknowledgeRecords.put(record.getLogPosition(), record);
         } else {
             throw new RuntimeException("Not Support Record Type");
         }
     }
-
+    
     @Override
-    public final List<Record> fetchRecords(final int batchSize, final int timeout) {
+    public List<Record> fetchRecords(final int batchSize, final int timeout) {
         return findChannel().fetchRecords(batchSize, timeout);
     }
-
+    
     @Override
-    public final synchronized void ack() {
+    public synchronized void ack() {
         findChannel().ack();
     }
-
+    
+    @Override
+    public void close() {
+        for (MemoryChannel each : channels.values()) {
+            each.close();
+        }
+        scheduleAckRecordsExecutor.shutdown();
+        ackRecords0();
+    }
+    
     private Channel findChannel() {
         String threadId = Long.toString(Thread.currentThread().getId());
         checkAssignment(threadId);
         return channels.get(channelAssignment.get(threadId));
     }
-
+    
     private void checkAssignment(final String threadId) {
         if (!channelAssignment.containsKey(threadId)) {
             synchronized (this) {
@@ -129,38 +157,8 @@ public class RealtimeSyncChannel implements Channel {
             }
         }
     }
-
-    private void scheduleAckRecords() {
-        // TODO refactor for checkstyle
-        // CHECKSTYLE:OFF
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                synchronized (RealtimeSyncChannel.this) {
-                    Iterator<Record> iterator = toBeAcknowledgeRecords.iterator();
-                    List<Record> result = new LinkedList<>();
-                    while (iterator.hasNext()) {
-                        Record record = iterator.next();
-                        if (pendingAcknowledgeRecords.containsKey(record.getLogPosition())) {
-                            result.add(record);
-                            iterator.remove();
-                            pendingAcknowledgeRecords.remove(record.getLogPosition());
-                        } else {
-                            break;
-                        }
-                    }
-                    if (0 < ackCallbacks.size() && 0 < result.size()) {
-                        for (AckCallback each : ackCallbacks) {
-                            each.onAck(result);
-                        }
-                    }
-                }
-            }
-        }, 5000, 1000);
-        // CHECKSTYLE:ON
-    }
-
-    class SingleChannelAckCallback implements AckCallback {
+    
+    private class SingleChannelAckCallback implements AckCallback {
 
         @Override
         public void onAck(final List<Record> records) {
