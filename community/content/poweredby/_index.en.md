@@ -84,6 +84,7 @@ The list here will be shown in the alphabetical order.
 1. Lily&Beauty https://www.lrlz.com/
 1. MaFengWo https://www.mafengwo.cn/
 1. MagicEares https://magicears.com.cn/
+1. MaMaGao http://www.mamagao.cn/
 1. MiaoMaiFang https://www.miaomaifang.com/
 1. MissFresh https://www.missfresh.cn/
 1. MLJR https://www.mljr.com/
@@ -99,6 +100,7 @@ The list here will be shown in the alphabetical order.
 1. Rabbitpre https://www.rabbitpre.com/
 1. RayCloud https://www.raycloud.com/
 1. Ruff https://ruff.io/
+1. SheBaoTong https://www.shebaotong.com/
 1. ShouQi https://www.01zhuanche.com/
 1. SoHu https://ss.sohu.com/
 1. SouChe https://www.souche.com/

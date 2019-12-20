@@ -55,6 +55,7 @@ chapter = true
 1. 光云科技 https://www.raycloud.com/ 
 1. 广西壮族自治区国土资源信息中心 http://z.gxdlr.gov.cn/ 
 1. 广州理德物联网科技有限公司 http://www.iotlead.com/
+1. 广州码码高信息科技有限公司 http://www.mamagao.cn/
 1. 海典软件 http://www.hydee.cn/ 
 1. 海尔消费金融 https://www.haiercash.com/ 
 1. 海康威视 https://www.hikvision.com/ 
@@ -94,6 +95,7 @@ chapter = true
 1. 权大师 https://www.quandashi.com/ 
 1. 赛特斯CertusNet http://www.certusnet.com.cn/ 
 1. 三只松鼠 http://www.3songshu.com/
+1. 上海社宝信息科技有限公司 https://www.shebaotong.com/
 1. 视觉中国 https://500px.me/ 
 1. 首汽约车 https://www.01zhuanche.com/
 1. 搜好货 https://www.912688.com/
