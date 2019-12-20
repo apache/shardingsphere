@@ -70,7 +70,6 @@ public final class DistributionChannel implements Channel {
     }
     
     private void scheduleAckRecords() {
-        // TODO find way to shutdown schedule executor correctly
         this.scheduleAckRecordsExecutor = Executors.newSingleThreadScheduledExecutor();
         scheduleAckRecordsExecutor.scheduleAtFixedRate(new Runnable() {
             
