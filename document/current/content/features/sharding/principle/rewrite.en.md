@@ -121,7 +121,7 @@ SELECT AVG(price) FROM t_order WHERE user_id=1;
 Should be rewritten as:
 
 ```sql
-SELECT COUNT(price) AS AVG_DERIVED_COUNT_0, SUM(price) AS AVG_DERIVED_ SUM _0 FROM t_order WHERE user_id=1;
+SELECT COUNT(price) AS AVG_DERIVED_COUNT_0, SUM(price) AS AVG_DERIVED_SUM_0 FROM t_order WHERE user_id=1;
 ```
 
 Then it can calculate the right average value through result merger.
