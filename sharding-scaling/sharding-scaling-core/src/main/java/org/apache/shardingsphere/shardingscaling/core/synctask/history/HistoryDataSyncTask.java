@@ -29,7 +29,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.engine.SyncTaskExe
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncRunnerGroup;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.AckCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.MemoryChannel;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.JdbcReader;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.Reader;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.ReaderFactory;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
@@ -65,10 +65,8 @@ public final class HistoryDataSyncTask implements SyncTask {
 
     private AtomicLong syncedRows = new AtomicLong();
     
-    private JdbcReader reader;
+    private Reader reader;
     
-    private Writer writer;
-
     public HistoryDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceFactory dataSourceFactory) {
         this.syncConfiguration = syncConfiguration;
         this.dataSourceFactory = dataSourceFactory;
@@ -88,9 +86,9 @@ public final class HistoryDataSyncTask implements SyncTask {
     @Override
     public void start(final ReportCallback callback) {
         getEstimatedRows();
-        instanceSyncRunner();
-        instanceChannel();
-        ScalingContext.getInstance().getSyncTaskExecuteEngine().submitGroup(groupSyncRunner(callback));
+        SyncRunnerGroup syncRunnerGroup = new SyncRunnerGroup(new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncTaskId, callback));
+        instanceSyncRunners(syncRunnerGroup);
+        ScalingContext.getInstance().getSyncTaskExecuteEngine().submitGroup(syncRunnerGroup);
     }
     
     private void getEstimatedRows() {
@@ -107,14 +105,20 @@ public final class HistoryDataSyncTask implements SyncTask {
         }
     }
     
-    private void instanceSyncRunner() {
+    private void instanceSyncRunners(final SyncRunnerGroup syncRunnerGroup) {
         syncConfiguration.getReaderConfiguration().setTableNameMap(syncConfiguration.getTableNameMap());
         reader = ReaderFactory.newInstanceJdbcReader(syncConfiguration.getReaderConfiguration(), dataSourceFactory);
-        writer = WriterFactory.newInstance(syncConfiguration.getWriterConfiguration(), dataSourceFactory);
+        Writer writer = WriterFactory.newInstance(syncConfiguration.getWriterConfiguration(), dataSourceFactory);
+        MemoryChannel channel = instanceChannel();
+        reader.setChannel(channel);
+        writer.setChannel(channel);
+        syncRunnerGroup.setChannel(channel);
+        syncRunnerGroup.addSyncRunner(reader);
+        syncRunnerGroup.addSyncRunner(writer);
     }
     
-    private void instanceChannel() {
-        MemoryChannel channel = new MemoryChannel(new AckCallback() {
+    private MemoryChannel instanceChannel() {
+        return new MemoryChannel(new AckCallback() {
     
             @Override
             public void onAck(final List<Record> records) {
@@ -127,15 +131,6 @@ public final class HistoryDataSyncTask implements SyncTask {
                 syncedRows.addAndGet(count);
             }
         });
-        reader.setChannel(channel);
-        writer.setChannel(channel);
-    }
-    
-    private SyncRunnerGroup groupSyncRunner(final ReportCallback callback) {
-        SyncRunnerGroup result = new SyncRunnerGroup(new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncTaskId, callback));
-        result.addSyncRunner(reader);
-        result.addSyncRunner(writer);
-        return result;
     }
 
     @Override

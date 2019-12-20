@@ -41,11 +41,11 @@ import java.util.concurrent.TimeUnit;
  * @author yangyi
  */
 public final class DefaultSyncTaskExecuteEngine implements SyncTaskExecuteEngine {
-
+    
     private final ListeningExecutorService executorService;
-
+    
     private int availableWorkerThread;
-
+    
     public DefaultSyncTaskExecuteEngine(final int maxWorkerThread) {
         executorService = MoreExecutors.listeningDecorator(
             new ThreadPoolExecutor(maxWorkerThread, maxWorkerThread, 0, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), new ThreadPoolExecutor.AbortPolicy()));
@@ -69,7 +69,7 @@ public final class DefaultSyncTaskExecuteEngine implements SyncTaskExecuteEngine
             }
         });
     }
-
+    
     @Override
     public synchronized List<ListenableFuture<Object>> submit(final Collection<SyncRunner> syncRunners) {
         if (null == syncRunners || 0 == syncRunners.size()) {
@@ -87,7 +87,7 @@ public final class DefaultSyncTaskExecuteEngine implements SyncTaskExecuteEngine
         }
         return result;
     }
-
+    
     private synchronized void releaseWorkerThread() {
         availableWorkerThread++;
     }

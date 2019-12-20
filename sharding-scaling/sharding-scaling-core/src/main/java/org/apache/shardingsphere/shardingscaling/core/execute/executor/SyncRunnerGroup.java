@@ -19,7 +19,10 @@ package org.apache.shardingsphere.shardingscaling.core.execute.executor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
 import org.apache.shardingsphere.shardingscaling.core.execute.engine.ExecuteCallback;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -31,11 +34,14 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public final class SyncRunnerGroup {
     
     private final ExecuteCallback executeCallback;
     
     private final Collection<SyncRunner> syncRunners = new LinkedList<>();
+    
+    private Channel channel;
     
     /**
      * Add {@code SyncRunner}.
@@ -59,6 +65,7 @@ public final class SyncRunnerGroup {
      * Invoked when this group is successful.
      */
     public void onSuccess() {
+        channel.close();
         executeCallback.onSuccess();
     }
     
@@ -71,6 +78,7 @@ public final class SyncRunnerGroup {
         for (SyncRunner each : syncRunners) {
             each.stop();
         }
+        channel.close();
         executeCallback.onFailure(throwable);
     }
 }

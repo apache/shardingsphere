@@ -49,4 +49,9 @@ public interface Channel {
      * Ack the last batch.
      */
     void ack();
+    
+    /**
+     * Close channel.
+     */
+    void close();
 }

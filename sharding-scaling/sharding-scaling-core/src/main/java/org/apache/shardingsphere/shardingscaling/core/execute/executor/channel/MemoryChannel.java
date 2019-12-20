@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author avalon566
  */
-public class MemoryChannel implements Channel {
+public final class MemoryChannel implements Channel {
 
     private static final int PUSH_TIMEOUT = ScalingContext.getInstance().getServerConfiguration().getPushTimeout();
 
@@ -48,14 +48,14 @@ public class MemoryChannel implements Channel {
     }
 
     @Override
-    public final void pushRecord(final Record dataRecord) throws InterruptedException {
+    public void pushRecord(final Record dataRecord) throws InterruptedException {
         if (!queue.offer(dataRecord, PUSH_TIMEOUT, TimeUnit.HOURS)) {
             throw new RuntimeException();
         }
     }
 
     @Override
-    public final List<Record> fetchRecords(final int batchSize, final int timeout) {
+    public List<Record> fetchRecords(final int batchSize, final int timeout) {
         List<Record> records = new ArrayList<>(batchSize);
         long start = System.currentTimeMillis();
         while (batchSize > queue.size()) {
@@ -69,17 +69,20 @@ public class MemoryChannel implements Channel {
             }
         }
         queue.drainTo(records, batchSize);
-        if (null != ackCallback) {
-            toBeAcknowledgeRecords.addAll(records);
-        }
+        toBeAcknowledgeRecords.addAll(records);
         return records;
     }
 
     @Override
-    public final void ack() {
-        if (null != ackCallback && toBeAcknowledgeRecords.size() > 0) {
+    public void ack() {
+        if (toBeAcknowledgeRecords.size() > 0) {
             ackCallback.onAck(toBeAcknowledgeRecords);
             toBeAcknowledgeRecords.clear();
         }
+    }
+    
+    @Override
+    public void close() {
+        queue.clear();
     }
 }
