@@ -25,9 +25,9 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.rewriter.encrypt.parameter.EncryptParameterRewriter;
-import org.apache.shardingsphere.sql.rewriter.parameter.builder.ParameterBuilder;
-import org.apache.shardingsphere.sql.rewriter.parameter.builder.impl.GroupedParameterBuilder;
-import org.apache.shardingsphere.sql.rewriter.parameter.builder.impl.StandardParameterBuilder;
+import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
+import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.GroupedParameterBuilder;
+import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.StandardParameterBuilder;
 
 import java.util.ArrayList;
 import java.util.Collection;

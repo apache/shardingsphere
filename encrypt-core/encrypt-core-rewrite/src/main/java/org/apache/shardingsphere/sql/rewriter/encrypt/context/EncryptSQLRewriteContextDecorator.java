@@ -19,11 +19,11 @@ package org.apache.shardingsphere.sql.rewriter.encrypt.context;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.sql.rewriter.context.SQLRewriteContext;
-import org.apache.shardingsphere.sql.rewriter.context.SQLRewriteContextDecorator;
+import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.sql.rewriter.encrypt.parameter.EncryptParameterRewriterBuilder;
 import org.apache.shardingsphere.sql.rewriter.encrypt.token.EncryptTokenGenerateBuilder;
-import org.apache.shardingsphere.sql.rewriter.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
 
 /**
  * SQL rewrite context decorator for encrypt.

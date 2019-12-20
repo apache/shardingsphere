@@ -29,11 +29,11 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.aware.PreviousSQLTokensAware;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.InsertValue;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.InsertValuesToken;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValue;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValuesToken;
 
 import java.util.Iterator;
 import java.util.List;

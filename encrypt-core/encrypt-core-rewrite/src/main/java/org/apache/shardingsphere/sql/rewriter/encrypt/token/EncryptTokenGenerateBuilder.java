@@ -29,8 +29,8 @@ import org.apache.shardingsphere.sql.rewriter.encrypt.token.generator.impl.Encry
 import org.apache.shardingsphere.sql.rewriter.encrypt.token.generator.impl.EncryptPredicateRightValueTokenGenerator;
 import org.apache.shardingsphere.sql.rewriter.encrypt.token.generator.impl.EncryptProjectionTokenGenerator;
 import org.apache.shardingsphere.sql.rewriter.encrypt.token.generator.impl.InsertCipherNameTokenGenerator;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.SQLTokenGenerator;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.builder.SQLTokenGeneratorBuilder;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.SQLTokenGenerator;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.builder.SQLTokenGeneratorBuilder;
 
 import java.util.Collection;
 import java.util.LinkedList;

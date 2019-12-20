@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.merge.MergedResult;
+import org.apache.shardingsphere.underlying.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dal.common.MultipleLocalDataMergedResult;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;

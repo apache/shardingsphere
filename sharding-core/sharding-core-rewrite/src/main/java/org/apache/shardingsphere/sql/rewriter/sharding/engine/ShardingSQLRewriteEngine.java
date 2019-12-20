@@ -23,13 +23,13 @@ import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCo
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.sql.rewriter.context.SQLRewriteContext;
-import org.apache.shardingsphere.sql.rewriter.engine.SQLRewriteEngine;
-import org.apache.shardingsphere.sql.rewriter.engine.SQLRewriteResult;
+import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
+import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.sql.rewriter.sharding.sql.ShardingSQLBuilder;
-import org.apache.shardingsphere.sql.rewriter.parameter.builder.ParameterBuilder;
-import org.apache.shardingsphere.sql.rewriter.parameter.builder.impl.GroupedParameterBuilder;
-import org.apache.shardingsphere.sql.rewriter.parameter.builder.impl.StandardParameterBuilder;
+import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
+import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.GroupedParameterBuilder;
+import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.StandardParameterBuilder;
 
 import java.util.LinkedList;
 import java.util.List;

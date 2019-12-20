@@ -36,8 +36,8 @@ import org.apache.shardingsphere.sql.rewriter.sharding.token.generator.impl.keyg
 import org.apache.shardingsphere.sql.rewriter.sharding.token.generator.impl.keygen.GeneratedKeyForUseDefaultInsertColumnsTokenGenerator;
 import org.apache.shardingsphere.sql.rewriter.sharding.token.generator.impl.keygen.GeneratedKeyInsertColumnTokenGenerator;
 import org.apache.shardingsphere.sql.rewriter.sharding.token.generator.impl.keygen.GeneratedKeyInsertValuesTokenGenerator;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.SQLTokenGenerator;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.builder.SQLTokenGeneratorBuilder;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.SQLTokenGenerator;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.builder.SQLTokenGeneratorBuilder;
 
 import java.util.Collection;
 import java.util.LinkedList;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.merge.dql.common.fixture;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.executor.QueryResult;
+import org.apache.shardingsphere.underlying.execute.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryMergedResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;

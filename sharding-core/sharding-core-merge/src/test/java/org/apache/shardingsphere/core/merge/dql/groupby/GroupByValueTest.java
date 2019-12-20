@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.merge.dql.groupby;
 
-import org.apache.shardingsphere.sql.executor.QueryResult;
+import org.apache.shardingsphere.underlying.execute.QueryResult;
 import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;

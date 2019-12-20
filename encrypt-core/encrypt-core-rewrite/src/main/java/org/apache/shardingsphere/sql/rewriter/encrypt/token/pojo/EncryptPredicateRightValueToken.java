@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sql.rewriter.encrypt.token.pojo;
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.Substitutable;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable;
 
 import java.util.Collection;
 import java.util.Map;

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sql.rewriter.sharding.token.pojo.impl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.Substitutable;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable;
 
 /**
  * Row count token.

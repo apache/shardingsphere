@@ -30,8 +30,8 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.rewriter.sharding.aware.SQLRouteResultAware;
 import org.apache.shardingsphere.sql.rewriter.sharding.token.pojo.impl.ShardingInsertValue;
 import org.apache.shardingsphere.sql.rewriter.sharding.token.pojo.impl.ShardingInsertValuesToken;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.InsertValuesToken;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValuesToken;
 
 import java.util.Collection;
 import java.util.Collections;

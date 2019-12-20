@@ -28,8 +28,8 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemsSegm
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.rewriter.encrypt.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.sql.rewriter.encrypt.token.generator.BaseEncryptSQLTokenGenerator;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.SubstitutableColumnNameToken;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 
 import java.util.Collection;
 import java.util.Collections;

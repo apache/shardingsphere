@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.rewriter.encrypt.aware.EncryptRuleAware;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.SQLTokenGenerator;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.SQLTokenGenerator;
 
 /**
  * Base SQL token generator for encrypt.

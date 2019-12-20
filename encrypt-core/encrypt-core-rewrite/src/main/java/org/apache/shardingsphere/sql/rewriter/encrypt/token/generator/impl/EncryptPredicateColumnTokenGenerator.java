@@ -28,9 +28,9 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateS
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
 import org.apache.shardingsphere.sql.rewriter.encrypt.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.sql.rewriter.encrypt.token.generator.BaseEncryptSQLTokenGenerator;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.aware.RelationMetasAware;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.SubstitutableColumnNameToken;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RelationMetasAware;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 
 import java.util.Collection;
 import java.util.LinkedList;

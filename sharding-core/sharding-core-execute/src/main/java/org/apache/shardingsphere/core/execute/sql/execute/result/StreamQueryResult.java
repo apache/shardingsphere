@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
-import org.apache.shardingsphere.sql.executor.QueryResult;
+import org.apache.shardingsphere.underlying.execute.QueryResult;
 
 import java.io.InputStream;
 import java.math.BigDecimal;

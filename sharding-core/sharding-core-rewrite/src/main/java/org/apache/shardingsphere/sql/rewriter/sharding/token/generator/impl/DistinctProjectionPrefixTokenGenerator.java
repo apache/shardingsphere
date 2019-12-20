@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.rewriter.sharding.token.generator.impl;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.rewriter.sharding.token.generator.IgnoreForSingleRoute;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.sql.rewriter.sharding.token.pojo.impl.DistinctProjectionPrefixToken;
 
 /**

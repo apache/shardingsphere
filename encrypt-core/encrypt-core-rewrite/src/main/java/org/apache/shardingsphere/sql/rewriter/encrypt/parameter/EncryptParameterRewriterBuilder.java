@@ -25,9 +25,9 @@ import org.apache.shardingsphere.sql.rewriter.encrypt.aware.QueryWithCipherColum
 import org.apache.shardingsphere.sql.rewriter.encrypt.parameter.impl.EncryptAssignmentParameterRewriter;
 import org.apache.shardingsphere.sql.rewriter.encrypt.parameter.impl.EncryptInsertValueParameterRewriter;
 import org.apache.shardingsphere.sql.rewriter.encrypt.parameter.impl.EncryptPredicateParameterRewriter;
-import org.apache.shardingsphere.sql.rewriter.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.sql.rewriter.parameter.rewriter.ParameterRewriterBuilder;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.aware.RelationMetasAware;
+import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriterBuilder;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RelationMetasAware;
 
 import java.util.Collection;
 import java.util.LinkedList;

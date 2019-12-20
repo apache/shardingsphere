@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sql.rewriter.encrypt.token.generator.BaseEncryp
 import org.apache.shardingsphere.sql.rewriter.encrypt.token.pojo.EncryptAssignmentToken;
 import org.apache.shardingsphere.sql.rewriter.encrypt.token.pojo.EncryptLiteralAssignmentToken;
 import org.apache.shardingsphere.sql.rewriter.encrypt.token.pojo.EncryptParameterAssignmentToken;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 
 import java.util.Collection;
 import java.util.Collections;

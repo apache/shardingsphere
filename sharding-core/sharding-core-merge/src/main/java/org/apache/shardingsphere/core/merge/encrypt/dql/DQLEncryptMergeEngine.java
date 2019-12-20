@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.merge.encrypt.dql;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.merge.MergeEngine;
-import org.apache.shardingsphere.core.merge.MergedResult;
+import org.apache.shardingsphere.underlying.merge.MergeEngine;
+import org.apache.shardingsphere.underlying.merge.MergedResult;
 
 /**
  * DQL result set merge engine for encrypt.

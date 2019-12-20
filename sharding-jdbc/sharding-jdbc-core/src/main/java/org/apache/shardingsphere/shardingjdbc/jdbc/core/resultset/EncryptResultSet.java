@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.sql.executor.QueryResult;
+import org.apache.shardingsphere.underlying.execute.QueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
-import org.apache.shardingsphere.core.merge.MergedResult;
+import org.apache.shardingsphere.underlying.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.iterator.IteratorStreamMergedResult;
 import org.apache.shardingsphere.core.merge.encrypt.dal.DALEncryptMergeEngine;
 import org.apache.shardingsphere.core.merge.encrypt.dql.DQLEncryptMergeEngine;

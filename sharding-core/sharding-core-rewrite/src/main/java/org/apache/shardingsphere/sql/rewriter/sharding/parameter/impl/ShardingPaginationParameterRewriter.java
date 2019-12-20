@@ -24,9 +24,9 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.P
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.rewriter.sharding.aware.SQLRouteResultAware;
-import org.apache.shardingsphere.sql.rewriter.parameter.builder.ParameterBuilder;
-import org.apache.shardingsphere.sql.rewriter.parameter.builder.impl.StandardParameterBuilder;
-import org.apache.shardingsphere.sql.rewriter.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
+import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.StandardParameterBuilder;
+import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
 
 import java.util.List;
 

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.rewriter.sharding.token.pojo.impl;
 
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.Attachable;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Attachable;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 
 /**
  * Distinct projection prefix token.

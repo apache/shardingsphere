@@ -21,13 +21,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.rewriter.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.sql.rewriter.parameter.rewriter.ParameterRewriterBuilder;
+import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriterBuilder;
 import org.apache.shardingsphere.sql.rewriter.sharding.aware.SQLRouteResultAware;
 import org.apache.shardingsphere.sql.rewriter.sharding.aware.ShardingRuleAware;
 import org.apache.shardingsphere.sql.rewriter.sharding.parameter.impl.ShardingGeneratedKeyInsertValueParameterRewriter;
 import org.apache.shardingsphere.sql.rewriter.sharding.parameter.impl.ShardingPaginationParameterRewriter;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.aware.RelationMetasAware;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RelationMetasAware;
 
 import java.util.Collection;
 import java.util.LinkedList;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.merge.dql.common;
 
-import org.apache.shardingsphere.core.merge.MergedResult;
+import org.apache.shardingsphere.underlying.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.common.fixture.TestDecoratorMergedResult;
 import org.junit.Before;
 import org.junit.Test;

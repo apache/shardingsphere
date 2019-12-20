@@ -20,9 +20,9 @@ package org.apache.shardingsphere.sql.rewriter.sharding.context;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.sql.rewriter.context.SQLRewriteContext;
-import org.apache.shardingsphere.sql.rewriter.context.SQLRewriteContextDecorator;
-import org.apache.shardingsphere.sql.rewriter.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
+import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.sql.rewriter.sharding.parameter.ShardingParameterRewriterBuilder;
 import org.apache.shardingsphere.sql.rewriter.sharding.token.pojo.impl.ShardingTokenGenerateBuilder;
 

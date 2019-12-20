@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.core.merge;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.executor.QueryResult;
+import org.apache.shardingsphere.underlying.execute.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.iterator.IteratorStreamMergedResult;
+import org.apache.shardingsphere.underlying.merge.MergeEngine;
+import org.apache.shardingsphere.underlying.merge.MergedResult;
 
 import java.util.List;
 

@@ -26,10 +26,10 @@ import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLSta
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.rewriter.encrypt.token.generator.BaseEncryptSQLTokenGenerator;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.aware.PreviousSQLTokensAware;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.UseDefaultInsertColumnsToken;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.UseDefaultInsertColumnsToken;
 
 import java.util.Iterator;
 import java.util.LinkedList;

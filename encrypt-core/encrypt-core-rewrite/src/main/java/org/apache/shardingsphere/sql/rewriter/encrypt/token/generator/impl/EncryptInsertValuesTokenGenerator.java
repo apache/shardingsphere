@@ -33,12 +33,12 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralE
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.rewriter.encrypt.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.sql.rewriter.encrypt.token.pojo.EncryptInsertValuesToken;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.aware.PreviousSQLTokensAware;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.InsertValue;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.InsertValuesToken;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.generic.UseDefaultInsertColumnsToken;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValue;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValuesToken;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.UseDefaultInsertColumnsToken;
 
 import java.util.Collection;
 import java.util.HashSet;

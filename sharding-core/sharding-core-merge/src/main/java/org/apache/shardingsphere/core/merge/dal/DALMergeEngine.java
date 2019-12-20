@@ -19,11 +19,11 @@ package org.apache.shardingsphere.core.merge.dal;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
-import org.apache.shardingsphere.sql.executor.QueryResult;
-import org.apache.shardingsphere.core.merge.MergeEngine;
-import org.apache.shardingsphere.core.merge.MergedResult;
+import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.merge.MergeEngine;
+import org.apache.shardingsphere.underlying.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dal.common.SingleLocalDataMergedResult;
-import org.apache.shardingsphere.core.merge.dal.common.TransparentMergedResult;
+import org.apache.shardingsphere.underlying.merge.TransparentMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.LogicTablesMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowCreateTableMergedResult;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;

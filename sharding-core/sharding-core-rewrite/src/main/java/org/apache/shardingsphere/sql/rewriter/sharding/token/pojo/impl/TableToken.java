@@ -22,8 +22,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 import org.apache.shardingsphere.sql.rewriter.sharding.token.pojo.LogicAndActualTablesAware;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.Substitutable;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable;
 
 import java.util.Map;
 

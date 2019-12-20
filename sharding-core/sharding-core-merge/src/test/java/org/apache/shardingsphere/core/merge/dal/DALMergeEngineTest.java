@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.core.merge.dal;
 
-import org.apache.shardingsphere.sql.executor.QueryResult;
+import org.apache.shardingsphere.underlying.execute.QueryResult;
 import org.apache.shardingsphere.core.merge.dal.common.SingleLocalDataMergedResult;
-import org.apache.shardingsphere.core.merge.dal.common.TransparentMergedResult;
+import org.apache.shardingsphere.underlying.merge.TransparentMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.LogicTablesMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowCreateTableMergedResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;

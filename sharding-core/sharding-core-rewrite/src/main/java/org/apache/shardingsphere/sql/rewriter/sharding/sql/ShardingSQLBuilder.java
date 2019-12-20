@@ -22,11 +22,11 @@ import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.sql.rewriter.context.SQLRewriteContext;
+import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.sql.rewriter.sharding.token.pojo.LogicAndActualTablesAware;
 import org.apache.shardingsphere.sql.rewriter.sharding.token.pojo.RoutingUnitAware;
-import org.apache.shardingsphere.sql.rewriter.sql.impl.AbstractSQLBuilder;
-import org.apache.shardingsphere.sql.rewriter.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.underlying.rewrite.sql.impl.AbstractSQLBuilder;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 
 import java.util.Collection;
 import java.util.HashMap;

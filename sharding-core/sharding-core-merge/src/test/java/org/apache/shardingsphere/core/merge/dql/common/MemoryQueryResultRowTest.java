@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.merge.dql.common;
 
-import org.apache.shardingsphere.sql.executor.QueryResult;
+import org.apache.shardingsphere.underlying.execute.QueryResult;
 import org.junit.Before;
 import org.junit.Test;
 

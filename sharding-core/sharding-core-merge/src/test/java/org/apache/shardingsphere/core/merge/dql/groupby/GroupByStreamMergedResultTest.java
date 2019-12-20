@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.merge.dql.groupby;
 
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.sql.executor.QueryResult;
-import org.apache.shardingsphere.core.merge.MergedResult;
+import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;

@@ -32,5 +32,6 @@
     <modules>
         <module>shardingsphere-sql-rewriter</module>
         <module>shardingsphere-sql-executor</module>
+        <module>shardingsphere-result-merger</module>
     </modules>
 </project>

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.merge.dql.common;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.executor.QueryResult;
-import org.apache.shardingsphere.core.merge.MergedResult;
+import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.merge.MergedResult;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.BaseRule;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;

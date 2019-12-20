@@ -28,9 +28,9 @@ import org.apache.shardingsphere.sql.rewriter.encrypt.EncryptConditionEngine;
 import org.apache.shardingsphere.sql.rewriter.encrypt.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.sql.rewriter.encrypt.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.sql.rewriter.encrypt.token.pojo.EncryptPredicateRightValueToken;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.aware.ParametersAware;
-import org.apache.shardingsphere.sql.rewriter.sql.token.generator.aware.RelationMetasAware;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.ParametersAware;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RelationMetasAware;
 
 import java.util.Collection;
 import java.util.Collections;
