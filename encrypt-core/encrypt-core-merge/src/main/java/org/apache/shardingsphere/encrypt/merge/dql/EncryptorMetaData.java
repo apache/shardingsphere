@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.encrypt.dql;
+package org.apache.shardingsphere.encrypt.merge.dql;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;

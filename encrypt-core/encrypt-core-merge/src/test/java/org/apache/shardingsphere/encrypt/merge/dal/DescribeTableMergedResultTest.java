@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.encrypt.dal;
+package org.apache.shardingsphere.encrypt.merge.dal;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.underlying.execute.QueryResult;
