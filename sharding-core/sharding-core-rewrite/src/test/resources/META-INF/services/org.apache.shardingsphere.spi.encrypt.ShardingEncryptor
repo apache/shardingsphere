@@ -32,5 +32,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sql.rewriter.fixture.NormalEncryptorFixture
-org.apache.shardingsphere.sql.rewriter.fixture.QueryAssistedEncryptorFixture
+org.apache.shardingsphere.sharding.rewrite.fixture.NormalEncryptorFixture
+org.apache.shardingsphere.sharding.rewrite.fixture.QueryAssistedEncryptorFixture
