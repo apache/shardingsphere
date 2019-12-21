@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.merge.encrypt.dal;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.merge.dql.common.MemoryMergedResult;
-import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
+import org.apache.shardingsphere.underlying.merge.impl.MemoryMergedResult;
+import org.apache.shardingsphere.underlying.merge.impl.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;

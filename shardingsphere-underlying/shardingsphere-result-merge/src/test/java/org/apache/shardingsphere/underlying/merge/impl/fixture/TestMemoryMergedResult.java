@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.dql.common.fixture;
+package org.apache.shardingsphere.underlying.merge.impl.fixture;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.merge.dql.common.MemoryMergedResult;
-import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
+import org.apache.shardingsphere.underlying.merge.impl.MemoryMergedResult;
+import org.apache.shardingsphere.underlying.merge.impl.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;

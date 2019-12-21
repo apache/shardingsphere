@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.dql.common;
+package org.apache.shardingsphere.underlying.merge.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

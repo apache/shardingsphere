@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.dql.common;
+package org.apache.shardingsphere.underlying.merge.impl;
 
 import org.apache.shardingsphere.underlying.execute.QueryResult;
-import org.apache.shardingsphere.core.merge.dql.common.fixture.TestStreamMergedResult;
+import org.apache.shardingsphere.underlying.merge.impl.fixture.TestStreamMergedResult;
 import org.junit.Test;
 
 import java.io.InputStream;

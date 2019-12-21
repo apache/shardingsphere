@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge.dql.common;
+package org.apache.shardingsphere.underlying.merge.impl;
 
-import org.apache.shardingsphere.core.merge.dql.common.fixture.TestMemoryMergedResult;
+import org.apache.shardingsphere.underlying.merge.impl.fixture.TestMemoryMergedResult;
 import org.junit.Before;
 import org.junit.Test;
 
