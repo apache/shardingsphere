@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-execute</artifactId>
+            <artifactId>sharding-core-route</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
