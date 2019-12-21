@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.merge;
+package org.apache.shardingsphere.underlying.merge.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.merge.MergedResult;
 
 import java.io.InputStream;
 import java.sql.SQLException;

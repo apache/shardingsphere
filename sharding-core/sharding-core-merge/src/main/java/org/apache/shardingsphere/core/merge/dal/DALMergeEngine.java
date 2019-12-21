@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Show
 import org.apache.shardingsphere.underlying.execute.QueryResult;
 import org.apache.shardingsphere.underlying.merge.MergeEngine;
 import org.apache.shardingsphere.underlying.merge.MergedResult;
-import org.apache.shardingsphere.underlying.merge.TransparentMergedResult;
+import org.apache.shardingsphere.underlying.merge.impl.TransparentMergedResult;
 
 import java.sql.SQLException;
 import java.util.Collections;
