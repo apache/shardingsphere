@@ -22,8 +22,6 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
@@ -42,7 +40,6 @@ import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.sql.parser.relation.SQLStatementContextFactory;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetaData;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
@@ -52,10 +49,8 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Sharding router.
@@ -105,11 +100,10 @@ public final class ShardingRouter {
         if (shardingStatementValidator.isPresent()) {
             shardingStatementValidator.get().validate(shardingRule, sqlStatement, parameters);
         }
-        RelationMetas relationMetas = getRelationMetas(metaData.getTables());
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(relationMetas, logicSQL, parameters, sqlStatement);
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getRelationMetas(), logicSQL, parameters, sqlStatement);
         Optional<GeneratedKey> generatedKey = sqlStatement instanceof InsertStatement
                 ? GeneratedKey.getGenerateKey(shardingRule, metaData.getTables(), parameters, (InsertStatement) sqlStatement) : Optional.<GeneratedKey>absent();
-        ShardingConditions shardingConditions = getShardingConditions(parameters, sqlStatementContext, generatedKey.orNull(), relationMetas);
+        ShardingConditions shardingConditions = getShardingConditions(parameters, sqlStatementContext, generatedKey.orNull(), metaData.getRelationMetas());
         boolean needMergeShardingValues = isNeedMergeShardingValues(sqlStatementContext);
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && needMergeShardingValues) {
             checkSubqueryShardingValues(sqlStatementContext, shardingConditions);
@@ -126,15 +120,6 @@ public final class ShardingRouter {
             setGeneratedValues(result);
         }
         return result;
-    }
-    
-    private RelationMetas getRelationMetas(final TableMetas tableMetas) {
-        Map<String, RelationMetaData> result = new HashMap<>(tableMetas.getAllTableNames().size());
-        for (String each : tableMetas.getAllTableNames()) {
-            TableMetaData tableMetaData = tableMetas.get(each);
-            result.put(each, new RelationMetaData(tableMetaData.getColumns().keySet()));
-        }
-        return new RelationMetas(result);
     }
     
     private ShardingConditions getShardingConditions(final List<Object> parameters, final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey, final RelationMetas relationMetas) {

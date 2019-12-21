@@ -21,17 +21,17 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryMergedResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnit;
 import org.apache.shardingsphere.core.merge.dql.groupby.aggregation.AggregationUnitFactory;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.underlying.execute.QueryResult;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     }
     
     @Override
-    protected List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final TableMetas tableMetas, 
+    protected List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final RelationMetas relationMetas, 
                                                     final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         SelectSQLStatementContext selectSQLStatementContext = (SelectSQLStatementContext) sqlStatementContext;
         Map<GroupByValue, MemoryQueryResultRow> dataMap = new HashMap<>(1024);

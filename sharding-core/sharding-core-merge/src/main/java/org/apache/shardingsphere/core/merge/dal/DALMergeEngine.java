@@ -19,15 +19,11 @@ package org.apache.shardingsphere.core.merge.dal;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
-import org.apache.shardingsphere.underlying.merge.MergeEngine;
-import org.apache.shardingsphere.underlying.merge.MergedResult;
 import org.apache.shardingsphere.core.merge.dal.common.SingleLocalDataMergedResult;
-import org.apache.shardingsphere.underlying.merge.TransparentMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.LogicTablesMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowCreateTableMergedResult;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowCreateTableStatement;
@@ -35,6 +31,10 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Show
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTablesStatement;
+import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.merge.MergeEngine;
+import org.apache.shardingsphere.underlying.merge.MergedResult;
+import org.apache.shardingsphere.underlying.merge.TransparentMergedResult;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -55,7 +55,7 @@ public final class DALMergeEngine implements MergeEngine {
     
     private final SQLStatementContext sqlStatementContext;
     
-    private final TableMetas tableMetas;
+    private final RelationMetas relationMetas;
     
     @Override
     public MergedResult merge() throws SQLException {
@@ -64,10 +64,10 @@ public final class DALMergeEngine implements MergeEngine {
             return new SingleLocalDataMergedResult(Collections.<Object>singletonList(ShardingConstant.LOGIC_SCHEMA_NAME));
         }
         if (dalStatement instanceof ShowTablesStatement || dalStatement instanceof ShowTableStatusStatement || dalStatement instanceof ShowIndexStatement) {
-            return new LogicTablesMergedResult(shardingRule, sqlStatementContext, tableMetas, queryResults);
+            return new LogicTablesMergedResult(shardingRule, sqlStatementContext, relationMetas, queryResults);
         }
         if (dalStatement instanceof ShowCreateTableStatement) {
-            return new ShowCreateTableMergedResult(shardingRule, sqlStatementContext, tableMetas, queryResults);
+            return new ShowCreateTableMergedResult(shardingRule, sqlStatementContext, relationMetas, queryResults);
         }
         return new TransparentMergedResult(queryResults.get(0));
     }

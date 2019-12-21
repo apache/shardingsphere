@@ -19,15 +19,15 @@ package org.apache.shardingsphere.core.merge;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
 import org.apache.shardingsphere.core.merge.dal.DALMergeEngine;
 import org.apache.shardingsphere.core.merge.dql.DQLMergeEngine;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.underlying.execute.QueryResult;
 import org.apache.shardingsphere.underlying.merge.MergeEngine;
 
 import java.util.List;
@@ -47,17 +47,17 @@ public final class MergeEngineFactory {
      * @param databaseType database type
      * @param shardingRule sharding rule
      * @param routeResult SQL route result
-     * @param tableMetas sharding table meta data
+     * @param relationMetas relation metas
      * @param queryResults query results
      * @return merge engine instance
      */
     public static MergeEngine newInstance(final DatabaseType databaseType, final ShardingRule shardingRule,
-                                          final SQLRouteResult routeResult, final TableMetas tableMetas, final List<QueryResult> queryResults) {
+                                          final SQLRouteResult routeResult, final RelationMetas relationMetas, final List<QueryResult> queryResults) {
         if (routeResult.getSqlStatementContext() instanceof SelectSQLStatementContext) {
             return new DQLMergeEngine(databaseType, (SelectSQLStatementContext) routeResult.getSqlStatementContext(), queryResults);
         } 
         if (routeResult.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
-            return new DALMergeEngine(shardingRule, queryResults, routeResult.getSqlStatementContext(), tableMetas);
+            return new DALMergeEngine(shardingRule, queryResults, routeResult.getSqlStatementContext(), relationMetas);
         }
         return new TransparentMergeEngine(queryResults);
     }

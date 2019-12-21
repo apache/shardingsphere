@@ -20,13 +20,12 @@ package org.apache.shardingsphere.core.merge.dal.show;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfiguration;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
 import org.apache.shardingsphere.core.merge.fixture.ComplexKeysShardingAlgorithmFixture;
-import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetaData;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.execute.QueryResult;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,12 +43,12 @@ public final class ShowCreateTableMergedResultTest {
     
     private ShardingRule shardingRule;
     
-    private TableMetas tableMetas;
+    private RelationMetas relationMetas;
     
     @Before
     public void setUp() {
         shardingRule = createShardingRule();
-        tableMetas = createTableMetas();
+        relationMetas = createRelationMetas();
     }
     
     private ShardingRule createShardingRule() {
@@ -60,21 +59,21 @@ public final class ShowCreateTableMergedResultTest {
         return new ShardingRule(shardingRuleConfig, Collections.singletonList("ds"));
     }
     
-    private TableMetas createTableMetas() {
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
-        tableMetaDataMap.put("table", new TableMetaData(Collections.<ColumnMetaData>emptyList(), Collections.<String>emptySet()));
-        return new TableMetas(tableMetaDataMap);
+    private RelationMetas createRelationMetas() {
+        Map<String, RelationMetaData> relationMetas = new HashMap<>(1, 1);
+        relationMetas.put("table", new RelationMetaData(Collections.<String>emptyList()));
+        return new RelationMetas(relationMetas);
     }
     
     @Test
     public void assertNextForEmptyQueryResult() throws SQLException {
-        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(shardingRule, mock(SQLStatementContext.class), tableMetas, Collections.<QueryResult>emptyList());
+        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(shardingRule, mock(SQLStatementContext.class), relationMetas, Collections.<QueryResult>emptyList());
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForTableRuleIsPresent() throws SQLException {
-        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(shardingRule, mock(SQLStatementContext.class), tableMetas, Collections.singletonList(createQueryResult()));
+        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(shardingRule, mock(SQLStatementContext.class), relationMetas, Collections.singletonList(createQueryResult()));
         assertTrue(actual.next());
     }
     

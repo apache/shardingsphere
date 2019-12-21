@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.core.merge.encrypt.dal;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryMergedResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.execute.QueryResult;
 
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -42,7 +42,7 @@ public final class DescribeTableMergedResult extends MemoryMergedResult<EncryptR
     }
     
     @Override
-    protected List<MemoryQueryResultRow> init(final EncryptRule encryptRule, final TableMetas tableMetas, 
+    protected List<MemoryQueryResultRow> init(final EncryptRule encryptRule, final RelationMetas relationMetas, 
                                               final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         List<MemoryQueryResultRow> result = new LinkedList<>();
         for (QueryResult each : queryResults) {

@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.core.merge.dal.show;
 
-import org.apache.shardingsphere.underlying.execute.QueryResult;
 import org.apache.shardingsphere.core.merge.dql.common.MemoryQueryResultRow;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.execute.QueryResult;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -33,9 +33,9 @@ import java.util.List;
  */
 public final class ShowCreateTableMergedResult extends LogicTablesMergedResult {
     
-    public ShowCreateTableMergedResult(final ShardingRule shardingRule, 
-                                       final SQLStatementContext sqlStatementContext, final TableMetas tableMetas, final List<QueryResult> queryResults) throws SQLException {
-        super(shardingRule, sqlStatementContext, tableMetas, queryResults);
+    public ShowCreateTableMergedResult(final ShardingRule shardingRule,
+                                       final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas, final List<QueryResult> queryResults) throws SQLException {
+        super(shardingRule, sqlStatementContext, relationMetas, queryResults);
     }
     
     @Override
