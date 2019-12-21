@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriterBuilder;
 import org.apache.shardingsphere.sharding.rewrite.aware.SQLRouteResultAware;
-import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRuleAware;
+import org.apache.shardingsphere.core.rule.aware.ShardingRuleAware;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RelationMetasAware;
 
 import java.util.Collection;

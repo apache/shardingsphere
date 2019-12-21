@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.OffsetTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.RowCountTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.aware.SQLRouteResultAware;
-import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRuleAware;
+import org.apache.shardingsphere.core.rule.aware.ShardingRuleAware;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.AggregationDistinctTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.DistinctProjectionPrefixTokenGenerator;

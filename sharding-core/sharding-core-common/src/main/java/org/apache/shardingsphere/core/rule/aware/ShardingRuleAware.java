@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.aware;
+package org.apache.shardingsphere.core.rule.aware;
 
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
