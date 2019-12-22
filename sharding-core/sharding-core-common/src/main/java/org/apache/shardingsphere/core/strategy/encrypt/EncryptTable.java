@@ -29,11 +29,13 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Encryptor table.
  *
  * @author panjuan
+ * @since 1.8
  */
 public final class EncryptTable {
     
@@ -153,7 +155,12 @@ public final class EncryptTable {
      * @return optional of sharding encryptor
      */
     public Optional<String> findShardingEncryptor(final String logicColumn) {
-        return columns.containsKey(logicColumn) ? Optional.of(columns.get(logicColumn).getEncryptor()) : Optional.<String>absent();
+        final String originLogicColumnName = getOriginLogicColumnName(logicColumn);
+        return columns.containsKey(originLogicColumnName) ? Optional.of(columns.get(originLogicColumnName).getEncryptor()) : Optional.<String>absent();
+    }
+
+    private String getOriginLogicColumnName(final String logicColumn){
+        return columns.keySet().stream().collect(Collectors.toMap(String::toLowerCase, it->it)).get(logicColumn.toLowerCase());
     }
     
     /**

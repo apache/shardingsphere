@@ -39,11 +39,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Encrypt rule.
  *
  * @author panjuan
+ * @since 1.8
  */
 public final class EncryptRule implements BaseRule {
     
@@ -132,7 +134,11 @@ public final class EncryptRule implements BaseRule {
      * @return plain column
      */
     public Optional<String> findPlainColumn(final String logicTable, final String logicColumn) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).findPlainColumn(logicColumn) : Optional.<String>absent();
+        return tables.containsKey(logicTable) ?  tables.get(logicTable).findPlainColumn(getOriginColumnName(logicTable, logicColumn)) : Optional.<String>absent();
+    }
+
+    private String getOriginColumnName(final String logicTable, final String logicColumn){
+        return tables.get(logicTable).getPlainColumns().stream().collect(Collectors.toMap(String::toLowerCase, it->it)).get(logicColumn.toLowerCase());
     }
     
     /**
