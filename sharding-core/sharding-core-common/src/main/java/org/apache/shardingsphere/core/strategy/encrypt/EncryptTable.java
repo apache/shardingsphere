@@ -147,7 +147,7 @@ public final class EncryptTable {
         }
         return result;
     }
-    
+
     /**
      * Find sharding encryptor.
      *
