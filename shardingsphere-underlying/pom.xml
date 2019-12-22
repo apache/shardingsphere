@@ -30,8 +30,8 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-sql-rewrite</module>
-        <module>shardingsphere-sql-execute</module>
-        <module>shardingsphere-result-merge</module>
+        <module>shardingsphere-rewrite</module>
+        <module>shardingsphere-execute</module>
+        <module>shardingsphere-merge</module>
     </modules>
 </project>

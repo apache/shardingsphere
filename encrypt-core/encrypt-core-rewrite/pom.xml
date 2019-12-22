@@ -41,13 +41,13 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-rewrite-engine</artifactId>
+            <artifactId>shardingsphere-rewrite-engine</artifactId>
             <version>${project.version}</version>
         </dependency>
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-rewrite-test</artifactId>
+            <artifactId>shardingsphere-rewrite-test</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

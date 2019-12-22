@@ -25,12 +25,12 @@
         <artifactId>shardingsphere-underlying</artifactId>
         <version>4.0.0-RC4-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-sql-rewrite</artifactId>
+    <artifactId>shardingsphere-rewrite</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     
     <modules>
-        <module>shardingsphere-sql-rewrite-engine</module>
-        <module>shardingsphere-sql-rewrite-test</module>
+        <module>shardingsphere-rewrite-engine</module>
+        <module>shardingsphere-rewrite-test</module>
     </modules>
 </project>

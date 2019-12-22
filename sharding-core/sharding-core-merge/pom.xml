@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-result-merge</artifactId>
+            <artifactId>shardingsphere-merge</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

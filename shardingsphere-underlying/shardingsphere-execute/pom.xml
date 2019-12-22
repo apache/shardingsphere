@@ -25,6 +25,6 @@
         <artifactId>shardingsphere-underlying</artifactId>
         <version>4.0.0-RC4-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-sql-execute</artifactId>
+    <artifactId>shardingsphere-execute</artifactId>
     <name>${project.artifactId}</name>
 </project>
