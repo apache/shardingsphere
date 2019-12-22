@@ -72,19 +72,16 @@ public final class DatabaseTest {
         Collection<String> actualDataSources = actual.getRoutingResult().getDataSourceNames();
         assertThat(actualDataSources.size(), is(1));
     }
-
+    
     private ShardingSphereMetaData getMetaDataForAllRoutingSQL() {
+        DataSourceMetas dataSourceMetas = mock(DataSourceMetas.class);
+        when(dataSourceMetas.getDataSourceMetaData("ds_0")).thenReturn(mock(DataSourceMetaData.class));
         ColumnMetaData idColumnMetaData = new ColumnMetaData("id", "int", true);
         ColumnMetaData nameColumnMetaData = new ColumnMetaData("user_id", "int", false);
         TableMetas tableMetas = mock(TableMetas.class);
         when(tableMetas.get("tesT")).thenReturn(new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList("id", "user_id")));
         when(tableMetas.containsTable("tesT")).thenReturn(true);
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
-        when(result.getTables()).thenReturn(tableMetas);
-        DataSourceMetas dataSourceMetas = mock(DataSourceMetas.class);
-        when(dataSourceMetas.getDataSourceMetaData("ds_0")).thenReturn(mock(DataSourceMetaData.class));
-        when(result.getDataSources()).thenReturn(dataSourceMetas);
-        return result;
+        return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
     }
     
     @Test
