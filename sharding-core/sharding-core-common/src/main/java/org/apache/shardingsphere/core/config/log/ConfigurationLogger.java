@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.util;
+package org.apache.shardingsphere.core.config.log;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -38,8 +38,8 @@ import java.util.Properties;
  *
  * @author sunbufu
  */
-@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class ConfigurationLogger {
 
     /**

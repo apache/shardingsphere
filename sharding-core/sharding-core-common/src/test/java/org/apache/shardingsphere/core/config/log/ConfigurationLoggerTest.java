@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.util;
+package org.apache.shardingsphere.core.config.log;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
@@ -54,9 +53,8 @@ public final class ConfigurationLoggerTest {
     @Mock
     private Logger log;
     
-    @SneakyThrows
     @Before
-    public void setLog() {
+    public void setLog() throws NoSuchFieldException, IllegalAccessException {
         Field field = ConfigurationLogger.class.getDeclaredField("log");
         setFinalStatic(field, log);
     }
