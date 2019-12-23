@@ -18,22 +18,16 @@
 package org.apache.shardingsphere.shardingscaling.mysql;
 
 import lombok.SneakyThrows;
-
-import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
-import org.apache.shardingsphere.shardingscaling.utils.ReflectionUtil;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
-import javax.sql.DataSource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -55,10 +49,6 @@ public class MySQLLogPositionManagerTest {
     @Mock
     private Connection connection;
     
-    private RdbmsConfiguration rdbmsConfiguration;
-    
-    private DataSourceFactory dataSourceFactory;
-    
     @Before
     public void setUp() throws Exception {
         when(dataSource.getConnection()).thenReturn(connection);
@@ -66,35 +56,20 @@ public class MySQLLogPositionManagerTest {
         when(connection.prepareStatement("show master status")).thenReturn(positionStatement);
         PreparedStatement serverIdStatement = mockServerIdStatement();
         when(connection.prepareStatement("show variables like 'server_id'")).thenReturn(serverIdStatement);
-        rdbmsConfiguration = new RdbmsConfiguration();
-        rdbmsConfiguration.setDataSourceConfiguration(new JdbcDataSourceConfiguration("", "", ""));
-        this.dataSourceFactory = new DataSourceFactory();
-    }
-    
-    @After
-    public void tearDown() {
-        dataSourceFactory.close();
     }
     
     @Test
     public void assertGetCurrentPosition() throws NoSuchFieldException, IllegalAccessException {
-        MySQLLogPositionManager mySQLLogManager = new MySQLLogPositionManager(rdbmsConfiguration, dataSourceFactory);
-        ReflectionUtil.setFieldValueToClass(mySQLLogManager, "dataSource", dataSource);
+        MySQLLogPositionManager mySQLLogManager = new MySQLLogPositionManager(dataSource);
         BinlogPosition actual = mySQLLogManager.getCurrentPosition();
         assertThat(actual.getServerId(), is(SERVER_ID));
         assertThat(actual.getFilename(), is(LOG_FILE_NAME));
         assertThat(actual.getPosition(), is(LOG_POSITION));
     }
     
-    @Test(expected = RuntimeException.class)
-    public void assertGetCurrentPositionInitFailed() {
-        MySQLLogPositionManager mySQLLogManager = new MySQLLogPositionManager(rdbmsConfiguration, dataSourceFactory);
-        BinlogPosition actual = mySQLLogManager.getCurrentPosition();
-    }
-    
     @Test
     public void assertUpdateCurrentPosition() {
-        MySQLLogPositionManager mySQLLogManager = new MySQLLogPositionManager(rdbmsConfiguration, dataSourceFactory);
+        MySQLLogPositionManager mySQLLogManager = new MySQLLogPositionManager(dataSource);
         BinlogPosition expected = new BinlogPosition(LOG_FILE_NAME, LOG_POSITION, SERVER_ID);
         mySQLLogManager.updateCurrentPosition(expected);
         assertThat(mySQLLogManager.getCurrentPosition(), is(expected));

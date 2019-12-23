@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql;
 
-import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
-import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -33,15 +32,12 @@ import java.sql.SQLException;
  * @author avalon566
  * @author yangyi
  */
+@RequiredArgsConstructor
 public final class MySQLLogPositionManager implements LogPositionManager<BinlogPosition> {
 
     private final DataSource dataSource;
     
     private BinlogPosition currentPosition;
-    
-    public MySQLLogPositionManager(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
-        this.dataSource = dataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
-    }
 
     @Override
     public BinlogPosition getCurrentPosition() {

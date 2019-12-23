@@ -70,10 +70,16 @@ public final class RealtimeDataSyncTask implements SyncTask {
 
     @Override
     public void prepare() {
-        this.logPositionManager = LogPositionManagerFactory.newInstanceLogManager(syncConfiguration.getReaderConfiguration(), dataSourceFactory);
+        this.logPositionManager = instanceLogPositionManager();
         logPositionManager.getCurrentPosition();
     }
-
+    
+    private LogPositionManager instanceLogPositionManager() {
+        return LogPositionManagerFactory.newInstanceLogManager(
+                syncConfiguration.getReaderConfiguration().getDataSourceConfiguration().getDatabaseType().getName(),
+                dataSourceFactory.getDataSource(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration()));
+    }
+    
     @Override
     public void start(final ReportCallback callback) {
         syncConfiguration.getReaderConfiguration().setTableNameMap(syncConfiguration.getTableNameMap());
