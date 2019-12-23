@@ -34,5 +34,10 @@
             <artifactId>sharding-scaling-core</artifactId>
             <version>${parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>
