@@ -45,17 +45,6 @@ MAIN_CLASS=org.apache.shardingsphere.shardingscaling.Bootstrap
 
 echo "Starting the $SERVER_NAME ..."
 
-if [ $# == 1 ]; then
-    MAIN_CLASS=${MAIN_CLASS}" "$1
-    echo "The port is configured as $1"
-fi
-
-if [ $# == 2 ]; then
-    MAIN_CLASS=${MAIN_CLASS}" "$1" "$2
-    echo "The port is configured as $1"
-    echo "The configuration file is $DEPLOY_DIR/conf/$2"
-fi
-
 nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
 sleep 1
 echo "Please check the STDOUT file: $STDOUT_FILE"
