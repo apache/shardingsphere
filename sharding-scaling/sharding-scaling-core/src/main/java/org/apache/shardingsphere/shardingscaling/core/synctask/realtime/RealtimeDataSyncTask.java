@@ -91,6 +91,8 @@ public final class RealtimeDataSyncTask implements SyncTask {
             each.setChannel(channel);
         }
         syncRunnerGroup.setChannel(channel);
+        syncRunnerGroup.addSyncRunner(reader);
+        syncRunnerGroup.addAllSyncRunner(writers);
     }
     
     private List<Writer> instanceWriters() {

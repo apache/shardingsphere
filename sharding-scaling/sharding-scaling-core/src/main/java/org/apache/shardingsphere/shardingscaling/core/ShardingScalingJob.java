@@ -19,6 +19,8 @@ package org.apache.shardingsphere.shardingscaling.core;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 
 import java.util.LinkedList;
@@ -31,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author yangyi
  */
 @Getter
+@Setter
 @RequiredArgsConstructor
 public final class ShardingScalingJob {
     
@@ -41,4 +44,6 @@ public final class ShardingScalingJob {
     private final transient List<SyncConfiguration> syncConfigurations = new LinkedList<>();
     
     private final transient String jobName;
+    
+    private String status = "RUNNING";
 }

@@ -140,10 +140,10 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
             for (int i = 0; i < concurrency; i++) {
                 RdbmsConfiguration splitReaderConfig = RdbmsConfiguration.clone(readerConfiguration);
                 if (i < concurrency - 1) {
-                    splitReaderConfig.setWhereCondition(String.format("where id between %d and %d", min, min + step));
+                    splitReaderConfig.setWhereCondition(String.format("where %s between %d and %d", primaryKey, min, min + step));
                     min = min + step + 1;
                 } else {
-                    splitReaderConfig.setWhereCondition(String.format("where id between %d and %d", min, max));
+                    splitReaderConfig.setWhereCondition(String.format("where %s between %d and %d", primaryKey, min, max));
                 }
                 splitReaderConfig.setSpiltNum(i);
                 result.add(new SyncConfiguration(concurrency, syncConfiguration.getTableNameMap(),

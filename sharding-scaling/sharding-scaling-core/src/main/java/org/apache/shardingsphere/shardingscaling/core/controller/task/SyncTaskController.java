@@ -73,10 +73,9 @@ public final class SyncTaskController implements Runnable {
      * Stop synchronize data.
      */
     public void stop() {
+        syncTaskControlStatus = SyncTaskControlStatus.STOPPING;
         historyDataSyncTaskGroup.stop();
         realtimeDataSyncTask.stop();
-        dataSourceFactory.close();
-        syncTaskControlStatus = SyncTaskControlStatus.STOPPING;
     }
 
     /**
@@ -114,6 +113,7 @@ public final class SyncTaskController implements Runnable {
             @Override
             public void report(final Event event) {
                 syncTaskControlStatus = SyncTaskControlStatus.STOPPED;
+                dataSourceFactory.close();
             }
         });
         syncTaskControlStatus = SyncTaskControlStatus.SYNCHRONIZE_REALTIME_DATA;

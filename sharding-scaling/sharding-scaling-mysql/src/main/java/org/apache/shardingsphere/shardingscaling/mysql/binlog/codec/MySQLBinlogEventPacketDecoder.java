@@ -159,6 +159,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         PlaceholderEvent result = new PlaceholderEvent();
         result.setFileName(binlogContext.getFileName());
         result.setPosition(binlogEventHeader.getEndLogPos());
+        result.setTimestamp(binlogEventHeader.getTimeStamp());
         return result;
     }
 

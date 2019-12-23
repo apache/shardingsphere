@@ -36,6 +36,8 @@ public final class ScalingJobProgress implements SyncProgress {
     
     private final String jobName;
     
+    private final String status;
+    
     private final List<SyncProgress> syncTaskProgress = new LinkedList<>();
     
     /**
