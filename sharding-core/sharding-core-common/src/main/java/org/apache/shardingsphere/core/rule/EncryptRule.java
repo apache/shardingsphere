@@ -136,14 +136,12 @@ public final class EncryptRule implements BaseRule {
     }
 
     private String getOriginColumnName(final String logicTable, final String logicColumn) {
-        String result = logicColumn;
         for (String each : tables.get(logicTable).getLogicColumns()) {
-            if (logicColumn.equals(each.toLowerCase())) {
-                result = each;
-                break;
+            if (logicColumn.equalsIgnoreCase(each)) {
+                return each;
             }
         }
-        return result;
+        return logicColumn;
     }
     
     /**
