@@ -25,8 +25,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -39,15 +41,21 @@ public final class EncryptRuleTest {
     private final String table = "table";
     
     private final String column = "column";
-    
+
+    private final String idNumber = "idNumber";
+
     private EncryptRuleConfiguration encryptRuleConfig;
     
     @Before
     public void setUp() {
         Properties props = new Properties();
-        EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("assistedTest", props);
         EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration("plain_pwd", "cipher_pwd", "", "aes");
-        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(Collections.singletonMap(column, columnConfig));
+        EncryptColumnRuleConfiguration idNumberConfig = new EncryptColumnRuleConfiguration("plain_id_number", "cipher_id_number", "", "aes");
+        Map<String, EncryptColumnRuleConfiguration> ruleConfigurationMap = new HashMap<>();
+        ruleConfigurationMap.put(column, columnConfig);
+        ruleConfigurationMap.put(idNumber, idNumberConfig);
+        EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("assistedTest", props);
+        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(ruleConfigurationMap);
         encryptRuleConfig = new EncryptRuleConfiguration();
         encryptRuleConfig.getEncryptors().put("aes", encryptorConfig);
         encryptRuleConfig.getTables().put(table, tableConfig);
@@ -82,6 +90,8 @@ public final class EncryptRuleTest {
     @Test
     public void assertFindPlainColumn() {
         assertTrue(new EncryptRule(encryptRuleConfig).findPlainColumn(table, column).isPresent());
+        assertTrue(new EncryptRule(encryptRuleConfig).findPlainColumn(table, idNumber.toLowerCase()).isPresent());
+        assertFalse(new EncryptRule(encryptRuleConfig).findPlainColumn(table, "notExistLogicColumn").isPresent());
     }
     
     @Test(expected = NullPointerException.class)

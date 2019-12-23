@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -74,5 +75,11 @@ public final class EncryptTableTest {
     @Test
     public void assertGetLogicAndPlainColumns() {
         assertFalse(encryptTable.getLogicAndPlainColumns().isEmpty());
+    }
+
+    @Test
+    public void assertGetShardingEncryptor() {
+        assertTrue(encryptTable.findShardingEncryptor("key").isPresent());
+        assertFalse(encryptTable.findShardingEncryptor("notExistLogicColumn").isPresent());
     }
 }
