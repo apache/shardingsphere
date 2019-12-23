@@ -152,12 +152,13 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
     private DataRecord createDataRecord(final AbstractRowsEvent rowsEvent, final int columnCount) {
         DataRecord result = new DataRecord(new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition(), rowsEvent.getServerId()), columnCount);
         result.setTableName(rdbmsConfiguration.getTableNameMap().get(rowsEvent.getTableName()));
-        result.setCommitTime(rowsEvent.getTimestamp());
+        result.setCommitTime(rowsEvent.getTimestamp() * 1000);
         return result;
     }
 
     private void createPlaceholderRecord(final Channel channel, final AbstractBinlogEvent event) {
         PlaceholderRecord record = new PlaceholderRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId()));
+        record.setCommitTime(event.getTimestamp() * 1000);
         pushRecord(channel, record);
     }
 
