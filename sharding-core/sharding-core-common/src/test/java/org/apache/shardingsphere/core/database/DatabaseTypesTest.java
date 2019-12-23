@@ -29,7 +29,7 @@ public final class DatabaseTypesTest {
         assertThat(DatabaseTypes.getActualDatabaseType("MySQL").getName(), is("MySQL"));
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = IllegalStateException.class)
     public void assertGetActualDatabaseTypeWithNotExistedDatabaseType() {
         DatabaseTypes.getActualDatabaseType("Invalid");
     }
