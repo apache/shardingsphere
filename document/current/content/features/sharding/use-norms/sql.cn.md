@@ -72,6 +72,20 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 
 不支持包含schema的SQL。因为ShardingSphere的理念是像使用一个数据源一样使用多数据源，因此对SQL的访问都是在同一个逻辑schema之上。
 
+### 对分片键进行操作
+
+运算表达式和函数中的分片键会导致全路由。
+
+假设`create_time`为分片键，则无法精确路由形如SQL：
+
+```sql
+SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
+```
+
+由于ShardingSphere只能通过SQL`字面`提取用于分片的值，因此当分片键处于运算表达式或函数中时，ShardingSphere无法提前获取分片键位于数据库中的值，从而无法计算出真正的分片值。
+
+当出现此类分片键处于运算表达式或函数中的SQL时，ShardingSphere将采用全路由的形式获取结果。
+
 ## 示例
 
 ### 支持的SQL
@@ -109,6 +123,7 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 | SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                  | UNION ALL                  |
 | SELECT * FROM ds.tbl_name1                                                                 | 包含schema                 |
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                         | 详见DISTINCT支持情况详细说明 |
+| SELECT * FROM tbl_name WHERE to_date(create_time, 'yyyy-mm-dd') = ?                        | 会导致全路由                |
 
 ## DISTINCT支持情况详细说明
 
