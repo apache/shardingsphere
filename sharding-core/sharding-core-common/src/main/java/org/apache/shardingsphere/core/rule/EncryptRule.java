@@ -132,16 +132,17 @@ public final class EncryptRule implements BaseRule {
      * @return plain column
      */
     public Optional<String> findPlainColumn(final String logicTable, final String logicColumn) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).findPlainColumn(getOriginColumnName(logicTable, logicColumn)) : Optional.<String>absent();
+        Optional<String> originColumnName = getOriginColumnName(logicTable, logicColumn);
+        return tables.containsKey(logicTable) && originColumnName.isPresent() ? tables.get(logicTable).findPlainColumn(originColumnName.get()) : Optional.<String>absent();
     }
 
-    private String getOriginColumnName(final String logicTable, final String logicColumn) {
+    private Optional<String> getOriginColumnName(final String logicTable, final String logicColumn) {
         for (String each : tables.get(logicTable).getLogicColumns()) {
             if (logicColumn.equalsIgnoreCase(each)) {
-                return each;
+                return Optional.of(each);
             }
         }
-        return logicColumn;
+        return Optional.absent();
     }
     
     /**
