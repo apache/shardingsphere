@@ -59,7 +59,7 @@ public abstract class LogicSchema {
     
     public LogicSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources) {
         this.name = name;
-        parseEngine = SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getDatabaseTypeName(LogicSchemas.getInstance().getDatabaseType()));
+        parseEngine = SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getTrunkDatabaseTypeName(LogicSchemas.getInstance().getDatabaseType()));
         backendDataSource = new JDBCBackendDataSource(dataSources);
         ShardingOrchestrationEventBus.getInstance().register(this);
     }

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.core.util.InlineExpressionParser;
+import org.apache.shardingsphere.core.config.inline.InlineExpressionParser;
 
 import java.util.ArrayList;
 import java.util.Collection;

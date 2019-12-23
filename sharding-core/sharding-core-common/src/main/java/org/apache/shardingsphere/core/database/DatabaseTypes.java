@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.core.database;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.spi.database.BranchDatabaseType;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -41,35 +41,13 @@ public final class DatabaseTypes {
     }
     
     /**
-     * Get database types.
-     * 
-     * @return database types
-     */
-    public static Collection<DatabaseType> getDatabaseTypes() {
-        return DATABASE_TYPES.values();
-    }
-    
-    /**
-     * Get name of database type.
+     * Get name of trunk database type.
      * 
      * @param databaseType database type
-     * @return name of database type
+     * @return name of trunk database type
      */
-    public static String getDatabaseTypeName(final DatabaseType databaseType) {
+    public static String getTrunkDatabaseTypeName(final DatabaseType databaseType) {
         return databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) databaseType).getTrunkDatabaseType().getName() : databaseType.getName();
-    }
-    
-    /**
-     * Get actual database type.
-     *
-     * @param name database name 
-     * @return actual database type
-     */
-    public static DatabaseType getActualDatabaseType(final String name) {
-        if (!DATABASE_TYPES.containsKey(name)) {
-            throw new UnsupportedOperationException(String.format("Unsupported database: '%s'", name));
-        }
-        return DATABASE_TYPES.get(name);
     }
     
     /**
@@ -80,6 +58,17 @@ public final class DatabaseTypes {
      */
     public static DatabaseType getTrunkDatabaseType(final String name) {
         return DATABASE_TYPES.get(name) instanceof BranchDatabaseType ? ((BranchDatabaseType) DATABASE_TYPES.get(name)).getTrunkDatabaseType() : getActualDatabaseType(name);
+    }
+    
+    /**
+     * Get actual database type.
+     *
+     * @param name database name 
+     * @return actual database type
+     */
+    public static DatabaseType getActualDatabaseType(final String name) {
+        Preconditions.checkState(DATABASE_TYPES.containsKey(name), "Unsupported database: '%s'", name);
+        return DATABASE_TYPES.get(name);
     }
     
     /**
