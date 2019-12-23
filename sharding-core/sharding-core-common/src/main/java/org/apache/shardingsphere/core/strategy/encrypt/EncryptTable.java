@@ -29,7 +29,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * Encryptor table.
@@ -160,7 +159,14 @@ public final class EncryptTable {
     }
 
     private String getOriginLogicColumnName(final String logicColumn){
-        return columns.keySet().stream().collect(Collectors.toMap(String::toLowerCase, it->it)).get(logicColumn.toLowerCase());
+        String result = logicColumn;
+        for (String each : columns.keySet()) {
+            if (logicColumn.equals(each.toLowerCase())){
+                result = each;
+                break;
+            }
+        }
+        return result;
     }
     
     /**
