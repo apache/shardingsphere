@@ -66,6 +66,7 @@ public class ScalingJobController {
         for (SyncTaskController syncTaskController : syncTaskControllerMaps.get(shardingScalingJobId)) {
             syncTaskController.stop();
         }
+        scalingJobMap.get(shardingScalingJobId).setStatus("STOPPED");
     }
 
     /**
@@ -78,7 +79,8 @@ public class ScalingJobController {
         if (!scalingJobMap.containsKey(shardingScalingJobId)) {
             throw new ScalingJobNotFoundException(String.format("Can't find scaling job id %s", shardingScalingJobId));
         }
-        ScalingJobProgress result = new ScalingJobProgress(shardingScalingJobId, scalingJobMap.get(shardingScalingJobId).getJobName());
+        ShardingScalingJob shardingScalingJob = scalingJobMap.get(shardingScalingJobId);
+        ScalingJobProgress result = new ScalingJobProgress(shardingScalingJobId, shardingScalingJob.getJobName(), shardingScalingJob.getStatus());
         if (syncTaskControllerMaps.containsKey(shardingScalingJobId)) {
             for (SyncTaskController syncTaskController : syncTaskControllerMaps.get(shardingScalingJobId)) {
                 result.addSyncTaskProgress(syncTaskController.getProgress());
