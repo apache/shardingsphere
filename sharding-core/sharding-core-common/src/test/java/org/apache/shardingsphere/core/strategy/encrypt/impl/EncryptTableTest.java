@@ -80,5 +80,6 @@ public final class EncryptTableTest {
     @Test
     public void assertGetShardingEncryptor() {
         assertTrue(encryptTable.findShardingEncryptor("key").isPresent());
+        assertFalse(encryptTable.findShardingEncryptor("notExistLogicColumn").isPresent());
     }
 }

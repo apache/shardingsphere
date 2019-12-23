@@ -91,6 +91,7 @@ public final class EncryptRuleTest {
     public void assertFindPlainColumn() {
         assertTrue(new EncryptRule(encryptRuleConfig).findPlainColumn(table, column).isPresent());
         assertTrue(new EncryptRule(encryptRuleConfig).findPlainColumn(table, idNumber.toLowerCase()).isPresent());
+        assertFalse(new EncryptRule(encryptRuleConfig).findPlainColumn(table, "notExistLogicColumn").isPresent());
     }
     
     @Test(expected = NullPointerException.class)
