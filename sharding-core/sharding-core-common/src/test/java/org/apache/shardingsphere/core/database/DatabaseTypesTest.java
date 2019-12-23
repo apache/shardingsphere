@@ -21,18 +21,8 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class DatabaseTypesTest {
-    
-    @Test
-    public void assertGetDatabaseTypes() {
-        assertTrue(DatabaseTypes.getDatabaseTypes().contains(DatabaseTypes.getActualDatabaseType("MySQL")));
-        assertTrue(DatabaseTypes.getDatabaseTypes().contains(DatabaseTypes.getActualDatabaseType("PostgreSQL")));
-        assertTrue(DatabaseTypes.getDatabaseTypes().contains(DatabaseTypes.getActualDatabaseType("Oracle")));
-        assertTrue(DatabaseTypes.getDatabaseTypes().contains(DatabaseTypes.getActualDatabaseType("SQLServer")));
-        assertTrue(DatabaseTypes.getDatabaseTypes().contains(DatabaseTypes.getActualDatabaseType("H2")));
-    }
     
     @Test
     public void assertGetActualDatabaseType() {

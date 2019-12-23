@@ -43,7 +43,7 @@ import java.util.List;
 @Setter
 public final class AuthoritySQLSet {
     
-    @XmlAttribute(name = "db-types")
+    @XmlAttribute(name = "db-types", required = true)
     private String databaseTypes;
     
     @XmlElementWrapper(name = "user-create")
@@ -75,13 +75,12 @@ public final class AuthoritySQLSet {
     }
     
     private Collection<DatabaseType> getDatabaseTypes() {
-        return null == databaseTypes ? DatabaseTypes.getDatabaseTypes() : Lists.transform(Splitter.on(",").trimResults().splitToList(databaseTypes),
-                new Function<String, DatabaseType>() {
-                    
-                    @Override
-                    public DatabaseType apply(final String input) {
-                        return DatabaseTypes.getActualDatabaseType(input);
-                    }
-                });
+        return Lists.transform(Splitter.on(",").trimResults().splitToList(databaseTypes), new Function<String, DatabaseType>() {
+                
+                @Override
+                public DatabaseType apply(final String input) {
+                    return DatabaseTypes.getActualDatabaseType(input);
+                }
+            });
     }
 }

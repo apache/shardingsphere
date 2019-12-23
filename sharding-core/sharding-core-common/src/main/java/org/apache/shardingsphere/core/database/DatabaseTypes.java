@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.database;
 import org.apache.shardingsphere.spi.database.BranchDatabaseType;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -38,15 +37,6 @@ public final class DatabaseTypes {
         for (DatabaseType each : ServiceLoader.load(DatabaseType.class)) {
             DATABASE_TYPES.put(each.getName(), each);
         }
-    }
-    
-    /**
-     * Get database types.
-     * 
-     * @return database types
-     */
-    public static Collection<DatabaseType> getDatabaseTypes() {
-        return DATABASE_TYPES.values();
     }
     
     /**

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.dbtest.engine.dql;
 
-import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.dataset.DataSet;
 import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
@@ -68,10 +67,8 @@ public abstract class BaseDQLIT extends SingleIT {
     @BeforeClass
     public static void insertData() throws IOException, JAXBException, SQLException, ParseException {
         createDatabasesAndTables();
-        for (DatabaseType each : DatabaseTypes.getDatabaseTypes()) {
-            if (IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(each)) {
-                insertData(each);
-            }
+        for (DatabaseType each : integrateTestEnvironment.getDatabaseTypes()) {
+            insertData(each);
         }
     }
     
@@ -83,10 +80,8 @@ public abstract class BaseDQLIT extends SingleIT {
     
     @AfterClass
     public static void clearData() throws IOException, JAXBException, SQLException {
-        for (DatabaseType each : DatabaseTypes.getDatabaseTypes()) {
-            if (IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(each)) {
-                clearData(each);
-            }
+        for (DatabaseType each : integrateTestEnvironment.getDatabaseTypes()) {
+            clearData(each);
         }
         dropDatabases();
     }
