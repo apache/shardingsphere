@@ -157,10 +157,10 @@ public final class EncryptTable {
         return columns.containsKey(originLogicColumnName) ? Optional.of(columns.get(originLogicColumnName).getEncryptor()) : Optional.<String>absent();
     }
 
-    private String getOriginLogicColumnName(final String logicColumn){
+    private String getOriginLogicColumnName(final String logicColumn) {
         String result = logicColumn;
         for (String each : columns.keySet()) {
-            if (logicColumn.equals(each.toLowerCase())){
+            if (logicColumn.equals(each.toLowerCase())) {
                 result = each;
                 break;
             }
