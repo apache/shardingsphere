@@ -78,7 +78,7 @@ public final class EncryptTableTest {
     }
 
     @Test
-    public void assertGetShardingEncryptor(){
+    public void assertGetShardingEncryptor() {
         assertTrue(encryptTable.findShardingEncryptor("key").isPresent());
     }
 }

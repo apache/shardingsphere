@@ -24,7 +24,11 @@ import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Properties;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -45,12 +49,12 @@ public final class EncryptRuleTest {
     @Before
     public void setUp() {
         Properties props = new Properties();
-        EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("assistedTest", props);
         EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration("plain_pwd", "cipher_pwd", "", "aes");
         EncryptColumnRuleConfiguration idNumberConfig = new EncryptColumnRuleConfiguration("plain_id_number", "cipher_id_number", "", "aes");
         Map<String, EncryptColumnRuleConfiguration> ruleConfigurationMap = new HashMap<>();
         ruleConfigurationMap.put(column, columnConfig);
         ruleConfigurationMap.put(idNumber, idNumberConfig);
+        EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("assistedTest", props);
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(ruleConfigurationMap);
         encryptRuleConfig = new EncryptRuleConfiguration();
         encryptRuleConfig.getEncryptors().put("aes", encryptorConfig);
