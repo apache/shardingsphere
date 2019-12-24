@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.mysql;
+package org.apache.shardingsphere.shardingscaling.postgresql;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
+import org.postgresql.replication.LogSequenceNumber;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -27,20 +28,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * MySQL log manager, based on binlog mechanism.
+ * PostgreSQL log position manager.
  *
  * @author avalon566
- * @author yangyi
  */
 @RequiredArgsConstructor
-public final class MySQLLogPositionManager implements LogPositionManager<BinlogPosition> {
-
+public final class PostgreSQLLogPositionManager implements LogPositionManager<WalPosition> {
+    
     private final DataSource dataSource;
     
-    private BinlogPosition currentPosition;
-
+    private WalPosition currentPosition;
+    
     @Override
-    public BinlogPosition getCurrentPosition() {
+    public WalPosition getCurrentPosition() {
         if (null == currentPosition) {
             getCurrentPositionFromSource();
         }
@@ -49,21 +49,25 @@ public final class MySQLLogPositionManager implements LogPositionManager<BinlogP
     
     private void getCurrentPositionFromSource() {
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement ps = connection.prepareStatement("show master status");
+            String sql = "";
+            if (9 == connection.getMetaData().getDatabaseMajorVersion() && 6 <= connection.getMetaData().getDatabaseMinorVersion()) {
+                sql = "select pg_current_xlog_location()";
+            } else if (10 <= connection.getMetaData().getDatabaseMajorVersion()) {
+                sql = "select pg_current_wal_lsn()";
+            } else {
+                throw new RuntimeException("Not support postgrsql version:" + connection.getMetaData().getDatabaseProductVersion());
+            }
+            PreparedStatement ps = connection.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             rs.next();
-            currentPosition = new BinlogPosition(rs.getString(1), rs.getLong(2));
-            ps = connection.prepareStatement("show variables like 'server_id'");
-            rs = ps.executeQuery();
-            rs.next();
-            currentPosition.setServerId(rs.getLong(2));
+            currentPosition = new WalPosition(LogSequenceNumber.valueOf(rs.getString(1)));
         } catch (SQLException e) {
             throw new RuntimeException("markPosition error", e);
         }
     }
     
     @Override
-    public void updateCurrentPosition(final BinlogPosition newLogPosition) {
-        this.currentPosition = newLogPosition;
+    public void updateCurrentPosition(final WalPosition newLogPosition) {
+        currentPosition = newLogPosition;
     }
 }
