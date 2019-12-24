@@ -560,7 +560,7 @@ The following votes are carried over from ShardingSphere dev mailing list,
 
 4. 宣布投票结果模板：
 
-**注意：计算投票结果时，社区投票的vote结果也需要包含在内。**
+**注意：计算投票结果时，社区投票结果也需要包含在内。**
 
 正文：
 
