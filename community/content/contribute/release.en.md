@@ -560,6 +560,8 @@ Checklist for reference:
 
 4. Announce the vote result:
 
+**Notice: Please include the votes from ShardingSphere community above.**
+
 Body:
 
 ```
