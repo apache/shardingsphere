@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.config.log;
+package org.apache.shardingsphere.core.log;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

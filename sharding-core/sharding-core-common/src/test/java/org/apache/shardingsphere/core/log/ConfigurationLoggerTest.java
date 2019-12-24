@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.config.log;
+package org.apache.shardingsphere.core.log;
 
 import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfiguration;
