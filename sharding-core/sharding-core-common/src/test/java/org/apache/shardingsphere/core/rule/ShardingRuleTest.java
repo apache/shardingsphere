@@ -24,7 +24,7 @@ import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.config.ShardingConfigurationException;
+import org.apache.shardingsphere.underlying.common.config.ShardingConfigurationException;
 import org.apache.shardingsphere.core.fixture.PreciseShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.strategy.keygen.SnowflakeShardingKeyGenerator;
 import org.apache.shardingsphere.core.strategy.keygen.fixture.IncrementShardingKeyGenerator;

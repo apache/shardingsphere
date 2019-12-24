@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring;
 
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;

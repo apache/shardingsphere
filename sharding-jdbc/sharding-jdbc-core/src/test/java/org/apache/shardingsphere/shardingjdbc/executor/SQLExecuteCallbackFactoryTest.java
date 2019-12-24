@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
-import org.apache.shardingsphere.core.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.common.constant.ConnectionMode;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback;

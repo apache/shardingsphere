@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLLogger;

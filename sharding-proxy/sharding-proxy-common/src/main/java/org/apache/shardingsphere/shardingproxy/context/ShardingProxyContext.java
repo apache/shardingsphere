@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.context;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;

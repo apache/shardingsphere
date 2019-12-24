@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.route.router.sharding.validator.impl;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingException;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;

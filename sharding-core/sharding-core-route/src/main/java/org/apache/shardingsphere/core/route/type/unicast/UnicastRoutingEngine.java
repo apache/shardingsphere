@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.route.type.unicast;
 
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.config.ShardingConfigurationException;
+import org.apache.shardingsphere.underlying.common.config.ShardingConfigurationException;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.metadata.datasource;
 
-import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.junit.Before;
 import org.junit.Test;

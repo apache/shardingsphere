@@ -19,9 +19,9 @@ package org.apache.shardingsphere.shardingproxy.backend.schema;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
-import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.metadata.TableMetaDataInitializer;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;

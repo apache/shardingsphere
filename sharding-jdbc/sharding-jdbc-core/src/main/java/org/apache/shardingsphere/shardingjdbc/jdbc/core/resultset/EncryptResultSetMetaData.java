@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import org.apache.shardingsphere.core.constant.ShardingConstant;
+import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;

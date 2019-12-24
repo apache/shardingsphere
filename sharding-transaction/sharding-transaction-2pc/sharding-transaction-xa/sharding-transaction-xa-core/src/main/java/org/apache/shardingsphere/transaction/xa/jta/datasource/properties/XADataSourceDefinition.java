@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties;
 
-import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.spi.DatabaseTypeAwareSPI;
 
 import java.util.Collection;

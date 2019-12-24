@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.route.type.standard;
 
-import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;

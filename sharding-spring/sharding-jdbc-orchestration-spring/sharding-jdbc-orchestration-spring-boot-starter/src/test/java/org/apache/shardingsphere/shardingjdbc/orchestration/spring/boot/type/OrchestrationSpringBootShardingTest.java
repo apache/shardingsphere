@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.type;
 
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;

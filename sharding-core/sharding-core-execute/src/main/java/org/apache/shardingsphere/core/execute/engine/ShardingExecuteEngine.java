@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.execute.engine;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingException;
 
 import java.sql.SQLException;
 import java.util.Collection;

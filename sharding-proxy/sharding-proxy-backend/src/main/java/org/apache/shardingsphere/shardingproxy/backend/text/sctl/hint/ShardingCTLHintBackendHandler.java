@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;

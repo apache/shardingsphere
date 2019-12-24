@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.util;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.core.config.DataSourceConfiguration;
+import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;

@@ -21,7 +21,7 @@ import io.opentracing.NoopTracerFactory;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingException;
 import org.apache.shardingsphere.opentracing.fixture.FooTracer;
 import org.junit.After;
 import org.junit.Before;

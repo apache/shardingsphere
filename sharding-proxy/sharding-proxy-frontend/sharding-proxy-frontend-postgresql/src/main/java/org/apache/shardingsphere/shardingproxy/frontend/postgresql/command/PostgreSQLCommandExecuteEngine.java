@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql.command;
 
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;

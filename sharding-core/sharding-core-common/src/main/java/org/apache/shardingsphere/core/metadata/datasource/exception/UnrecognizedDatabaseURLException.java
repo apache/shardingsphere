@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.metadata.datasource.exception;
 
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingException;
 
 /**
  * Unrecognized database URL exception.

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingException;
 import org.junit.Test;
 
 import java.math.BigDecimal;

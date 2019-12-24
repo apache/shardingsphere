@@ -22,7 +22,7 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;

@@ -22,7 +22,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingException;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.execute.metadata.TableMetaDataInitializer;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;

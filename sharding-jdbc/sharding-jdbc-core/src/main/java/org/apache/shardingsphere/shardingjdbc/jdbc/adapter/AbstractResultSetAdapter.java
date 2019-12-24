@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;

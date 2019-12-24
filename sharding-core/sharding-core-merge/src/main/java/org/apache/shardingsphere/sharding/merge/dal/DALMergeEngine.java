@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dal;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.ShardingConstant;
+import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
 import org.apache.shardingsphere.sharding.merge.dal.show.LogicTablesMergedResult;

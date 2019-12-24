@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.metadata.datasource;
 
-import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.spi.database.MemorizedDataSourceMetaData;

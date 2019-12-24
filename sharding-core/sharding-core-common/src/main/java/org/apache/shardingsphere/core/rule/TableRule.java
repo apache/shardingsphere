@@ -23,13 +23,13 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.core.config.ShardingConfigurationException;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.config.ShardingConfigurationException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingException;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
 import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategyFactory;
-import org.apache.shardingsphere.core.config.inline.InlineExpressionParser;
+import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
 import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 
 import java.util.Collection;

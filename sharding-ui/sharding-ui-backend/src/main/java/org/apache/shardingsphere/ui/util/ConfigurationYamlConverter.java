@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.core.config.DataSourceConfiguration;
+import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.relation.SQLStatementContextFactory;

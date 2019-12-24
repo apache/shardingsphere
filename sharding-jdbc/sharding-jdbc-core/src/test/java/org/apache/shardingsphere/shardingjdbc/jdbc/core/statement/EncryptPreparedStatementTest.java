@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractEncryptJDBCDatabaseAndTableTest;
 import org.junit.Test;
 

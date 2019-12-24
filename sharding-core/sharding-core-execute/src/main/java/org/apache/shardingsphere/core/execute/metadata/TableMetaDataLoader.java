@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.execute.metadata;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingException;
 import org.apache.shardingsphere.core.execute.engine.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
 import org.apache.shardingsphere.core.execute.engine.ShardingGroupExecuteCallback;

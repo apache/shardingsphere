@@ -22,7 +22,7 @@ import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingException;
 
 import java.math.BigDecimal;
 import java.sql.Time;

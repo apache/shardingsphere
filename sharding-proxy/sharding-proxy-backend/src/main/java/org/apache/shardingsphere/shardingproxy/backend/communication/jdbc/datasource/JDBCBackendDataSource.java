@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datas
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.common.exception.ShardingException;
 import org.apache.shardingsphere.shardingproxy.backend.BackendDataSource;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;

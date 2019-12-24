@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteTemplate;

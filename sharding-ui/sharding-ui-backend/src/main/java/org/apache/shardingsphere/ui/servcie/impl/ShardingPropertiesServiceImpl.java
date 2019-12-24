@@ -20,7 +20,7 @@ package org.apache.shardingsphere.ui.servcie.impl;
 import org.apache.shardingsphere.ui.servcie.RegistryCenterService;
 import org.apache.shardingsphere.ui.servcie.ShardingPropertiesService;
 import org.apache.shardingsphere.ui.util.ConfigurationYamlConverter;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingException;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;

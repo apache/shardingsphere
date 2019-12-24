@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.common.exception.ShardingException;
 import org.apache.shardingsphere.shardingproxy.backend.MockLogicSchemasUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;

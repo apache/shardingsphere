@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapp
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.PreparedQueryShardingEngine;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.SQLUnit;

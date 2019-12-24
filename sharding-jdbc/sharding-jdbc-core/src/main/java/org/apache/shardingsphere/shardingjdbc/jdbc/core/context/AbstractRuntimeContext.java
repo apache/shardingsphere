@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.engine.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.rule.BaseRule;

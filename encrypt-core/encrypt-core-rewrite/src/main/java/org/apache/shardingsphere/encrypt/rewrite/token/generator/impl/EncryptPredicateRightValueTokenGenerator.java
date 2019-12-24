@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
 import com.google.common.base.Optional;
 import lombok.Setter;
-import org.apache.shardingsphere.core.constant.ShardingOperator;
+import org.apache.shardingsphere.underlying.common.constant.ShardingOperator;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;

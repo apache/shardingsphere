@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.route.router.sharding.validator.impl;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingException;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.rewrite;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.constant.ShardingOperator;
+import org.apache.shardingsphere.underlying.common.constant.ShardingOperator;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;

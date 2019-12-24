@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.merge.dal.DALEncryptMergeEngine;

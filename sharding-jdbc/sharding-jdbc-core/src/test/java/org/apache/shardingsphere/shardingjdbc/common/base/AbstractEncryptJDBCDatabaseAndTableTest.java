@@ -23,7 +23,7 @@ import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfigurati
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;

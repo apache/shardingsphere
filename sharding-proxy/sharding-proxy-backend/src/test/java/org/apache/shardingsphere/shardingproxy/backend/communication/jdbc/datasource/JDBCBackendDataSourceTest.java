@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datas
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.common.constant.ConnectionMode;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.junit.Before;
 import org.junit.Test;

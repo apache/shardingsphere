@@ -19,7 +19,7 @@ package org.apache.shardingsphere.opentracing.hook;
 
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingException;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHook;
 import org.apache.shardingsphere.sql.parser.hook.SPIParsingHook;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;

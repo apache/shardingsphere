@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.context;
 
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;

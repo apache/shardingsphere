@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.pojo;
 
-import org.apache.shardingsphere.core.constant.ShardingOperator;
+import org.apache.shardingsphere.underlying.common.constant.ShardingOperator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateRightValueToken;
 import org.junit.Test;
 

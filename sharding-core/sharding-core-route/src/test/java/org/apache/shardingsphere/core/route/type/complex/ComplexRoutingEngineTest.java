@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.route.type.complex;
 
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingException;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.underlying.merge.MergedResult;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;

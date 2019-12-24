@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recog
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingException;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
 
 import java.util.Collection;

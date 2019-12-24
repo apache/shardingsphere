@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.route.router.sharding.condition.engine;
 import com.google.common.base.Optional;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingException;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.core.route.router.sharding.condition.AlwaysFalseRouteValue;

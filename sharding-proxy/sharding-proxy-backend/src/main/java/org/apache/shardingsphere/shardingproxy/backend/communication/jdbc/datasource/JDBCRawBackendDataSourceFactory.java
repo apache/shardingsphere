@@ -21,7 +21,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingException;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 
