@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.execute.hook.fixture;
 
 import org.apache.shardingsphere.core.execute.hook.SQLExecutionHook;
-import org.apache.shardingsphere.spi.database.DataSourceMetaData;
+import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 
 import java.util.Collection;
 import java.util.LinkedList;

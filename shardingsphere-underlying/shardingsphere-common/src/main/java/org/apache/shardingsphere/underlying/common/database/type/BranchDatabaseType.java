@@ -15,41 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.database;
+package org.apache.shardingsphere.underlying.common.database.type;
 
 /**
- * Data source meta data.
+ * Branch database type.
  *
- * @author panjuan
  * @author zhangliang
  */
-public interface DataSourceMetaData {
+public interface BranchDatabaseType extends DatabaseType {
     
     /**
-     * Get host name.
+     * Get trunk database type.
      * 
-     * @return host name
+     * @return trunk database type
      */
-    String getHostName();
-    
-    /**
-     * Get port.
-     * 
-     * @return port
-     */
-    int getPort();
-    
-    /**
-     * Get catalog.
-     *
-     * @return catalog
-     */
-    String getCatalog();
-    
-    /**
-     * Get schema.
-     * 
-     * @return schema
-     */
-    String getSchema();
+    DatabaseType getTrunkDatabaseType();
 }

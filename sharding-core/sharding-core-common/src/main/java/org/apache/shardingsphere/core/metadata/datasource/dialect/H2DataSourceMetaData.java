@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.metadata.datasource.dialect;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.datasource.exception.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.spi.database.MemorizedDataSourceMetaData;
+import org.apache.shardingsphere.underlying.common.database.metadata.MemorizedDataSourceMetaData;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

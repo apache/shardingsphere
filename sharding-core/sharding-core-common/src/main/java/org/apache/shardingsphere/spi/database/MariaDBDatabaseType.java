@@ -19,6 +19,8 @@ package org.apache.shardingsphere.spi.database;
 
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.metadata.datasource.dialect.MariaDBDataSourceMetaData;
+import org.apache.shardingsphere.underlying.common.database.type.BranchDatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 
 import java.util.Collection;
 import java.util.Collections;

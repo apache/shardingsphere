@@ -15,33 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.database;
-
-import org.apache.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaData;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-
-import java.util.Collection;
-import java.util.Collections;
+package org.apache.shardingsphere.underlying.common.database.type;
 
 /**
- * Database type of MySQL.
- *
+ * Database type aware SPI.
+ * 
  * @author zhangliang
  */
-public final class MySQLDatabaseType implements DatabaseType {
+public interface DatabaseTypeAwareSPI {
     
-    @Override
-    public String getName() {
-        return "MySQL";
-    }
-    
-    @Override
-    public Collection<String> getJdbcUrlPrefixAlias() {
-        return Collections.singletonList("jdbc:mysqlx:");
-    }
-    
-    @Override
-    public MySQLDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new MySQLDataSourceMetaData(url);
-    }
+    /**
+     * Get database type.
+     * 
+     * <p>
+     *     The value of database type must registered by SPI for {@code org.apache.shardingsphere.spi.database.DatabaseType}.
+     * </p>
+     * 
+     * @return database type
+     */
+    String getDatabaseType();
 }

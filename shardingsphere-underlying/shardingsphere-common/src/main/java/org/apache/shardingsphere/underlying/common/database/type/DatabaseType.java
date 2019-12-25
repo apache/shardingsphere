@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.database;
+package org.apache.shardingsphere.underlying.common.database.type;
+
+import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 
 import java.util.Collection;
 
