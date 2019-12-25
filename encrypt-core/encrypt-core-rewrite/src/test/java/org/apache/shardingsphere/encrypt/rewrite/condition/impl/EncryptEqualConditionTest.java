@@ -15,34 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite;
+package org.apache.shardingsphere.encrypt.rewrite.condition.impl;
 
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class EncryptConditionTest {
+public final class EncryptEqualConditionTest {
     
     @Test
-    public void assertGetConditionValuesForEqual() {
-        List<Object> actual = new EncryptCondition("col", null, 0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());
+    public void assertGetConditionValues() {
+        List<Object> actual = new EncryptEqualCondition("col", null, 0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());
         assertThat(actual.size(), is(1));
         assertThat((Integer) actual.get(0), is(1));
-    }
-    
-    @Test
-    public void assertGetConditionValuesForIn() {
-        List<Object> actual = new EncryptCondition(
-                "col", null, 0, 0, Arrays.<ExpressionSegment>asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2))).getValues(Collections.emptyList());
-        assertThat(actual.size(), is(2));
-        assertThat((Integer) actual.get(0), is(1));
-        assertThat((Integer) actual.get(1), is(2));
     }
 }

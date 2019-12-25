@@ -19,12 +19,13 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
 import com.google.common.base.Optional;
 import lombok.Setter;
+import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
 import org.apache.shardingsphere.underlying.common.constant.ShardingOperator;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
-import org.apache.shardingsphere.encrypt.rewrite.EncryptCondition;
-import org.apache.shardingsphere.encrypt.rewrite.EncryptConditionEngine;
+import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
+import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionEngine;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateRightValueToken;
@@ -76,7 +77,7 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     
     private EncryptPredicateRightValueToken generateSQLToken(final EncryptCondition encryptCondition) {
         List<Object> originalValues = encryptCondition.getValues(parameters);
-        int startIndex = encryptCondition.getOperator().equals(ShardingOperator.IN) ? encryptCondition.getStartIndex() - 1 : encryptCondition.getStartIndex();
+        int startIndex = encryptCondition instanceof EncryptInCondition ? encryptCondition.getStartIndex() - 1 : encryptCondition.getStartIndex();
         return queryWithCipherColumn ? generateSQLTokenForQueryWithCipherColumn(encryptCondition, originalValues, startIndex)
                 : generateSQLTokenForQueryWithoutCipherColumn(encryptCondition, originalValues, startIndex);
     }
@@ -84,7 +85,7 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     private EncryptPredicateRightValueToken generateSQLTokenForQueryWithCipherColumn(final EncryptCondition encryptCondition, final List<Object> originalValues, final int startIndex) {
         List<Object> encryptedValues = getEncryptedValues(encryptCondition, originalValues);
         return new EncryptPredicateRightValueToken(startIndex, encryptCondition.getStopIndex(), getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptedValues),
-                encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
+                encryptCondition.getPositionIndexMap().keySet(), getShardingOperator(encryptCondition));
     }
     
     private List<Object> getEncryptedValues(final EncryptCondition encryptCondition, final List<Object> originalValues) {
@@ -96,7 +97,7 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     
     private EncryptPredicateRightValueToken generateSQLTokenForQueryWithoutCipherColumn(final EncryptCondition encryptCondition, final List<Object> originalValues, final int startIndex) {
         return new EncryptPredicateRightValueToken(startIndex, encryptCondition.getStopIndex(),
-                getPositionValues(encryptCondition.getPositionValueMap().keySet(), originalValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator());
+                getPositionValues(encryptCondition.getPositionValueMap().keySet(), originalValues), encryptCondition.getPositionIndexMap().keySet(), getShardingOperator(encryptCondition));
     }
     
     private Map<Integer, Object> getPositionValues(final Collection<Integer> valuePositions, final List<Object> encryptValues) {
@@ -105,5 +106,9 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
             result.put(each, encryptValues.get(each));
         }
         return result;
+    }
+    
+    private ShardingOperator getShardingOperator(final EncryptCondition encryptCondition) {
+        return encryptCondition instanceof EncryptInCondition ? ShardingOperator.IN : ShardingOperator.EQUAL;
     }
 }

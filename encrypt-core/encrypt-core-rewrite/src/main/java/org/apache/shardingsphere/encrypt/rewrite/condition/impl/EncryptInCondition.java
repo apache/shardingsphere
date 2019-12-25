@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite;
+package org.apache.shardingsphere.encrypt.rewrite.condition.impl;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.underlying.common.constant.ShardingOperator;
+import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -40,7 +40,7 @@ import java.util.Map.Entry;
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class EncryptCondition {
+public final class EncryptInCondition implements EncryptCondition {
     
     private final String columnName;
     
@@ -50,27 +50,15 @@ public final class EncryptCondition {
     
     private final int stopIndex;
     
-    private final ShardingOperator operator;
-    
     private final Map<Integer, Integer> positionIndexMap = new LinkedHashMap<>();
     
     private final Map<Integer, Object> positionValueMap = new LinkedHashMap<>();
     
-    public EncryptCondition(final String columnName, final String tableName, final int startIndex, final int stopIndex, final ExpressionSegment expressionSegment) {
+    public EncryptInCondition(final String columnName, final String tableName, final int startIndex, final int stopIndex, final List<ExpressionSegment> expressionSegments) {
         this.columnName = columnName;
         this.tableName = tableName;
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
-        operator = ShardingOperator.EQUAL;
-        putPositionMap(0, expressionSegment);
-    }
-    
-    public EncryptCondition(final String columnName, final String tableName, final int startIndex, final int stopIndex, final List<ExpressionSegment> expressionSegments) {
-        this.columnName = columnName;
-        this.tableName = tableName;
-        this.startIndex = startIndex;
-        this.stopIndex = stopIndex;
-        operator = ShardingOperator.IN;
         int count = 0;
         for (ExpressionSegment each : expressionSegments) {
             putPositionMap(count, each);
@@ -86,12 +74,7 @@ public final class EncryptCondition {
         }
     }
     
-    /**
-     * Get values.
-     *
-     * @param parameters SQL parameters
-     * @return values
-     */
+    @Override
     public List<Object> getValues(final List<Object> parameters) {
         List<Object> result = new ArrayList<>(positionValueMap.values());
         for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {

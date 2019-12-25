@@ -24,5 +24,5 @@ package org.apache.shardingsphere.underlying.common.constant;
  */
 public enum ShardingOperator {
     
-    EQUAL, BETWEEN, IN
+    EQUAL, IN
 }

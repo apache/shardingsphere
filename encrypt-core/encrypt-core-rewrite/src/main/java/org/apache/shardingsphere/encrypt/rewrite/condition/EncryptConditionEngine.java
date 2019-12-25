@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite;
+package org.apache.shardingsphere.encrypt.rewrite.condition;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptEqualCondition;
+import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -115,7 +117,7 @@ public final class EncryptConditionEngine {
     
     private static Optional<EncryptCondition> createCompareEncryptCondition(final String tableName, final PredicateSegment predicateSegment, final PredicateCompareRightValue compareRightValue) {
         return compareRightValue.getExpression() instanceof SimpleExpressionSegment
-                ? Optional.of(new EncryptCondition(predicateSegment.getColumn().getName(), tableName, compareRightValue.getExpression().getStartIndex(), 
+                ? Optional.<EncryptCondition>of(new EncryptEqualCondition(predicateSegment.getColumn().getName(), tableName, compareRightValue.getExpression().getStartIndex(), 
                 predicateSegment.getStopIndex(), compareRightValue.getExpression()))
                 : Optional.<EncryptCondition>absent();
     }
@@ -128,7 +130,7 @@ public final class EncryptConditionEngine {
             }
         }
         return expressionSegments.isEmpty() ? Optional.<EncryptCondition>absent()
-                : Optional.of(new EncryptCondition(
+                : Optional.<EncryptCondition>of(new EncryptInCondition(
                         predicateSegment.getColumn().getName(), tableName, inRightValue.getSqlExpressions().iterator().next().getStartIndex(), predicateSegment.getStopIndex(), expressionSegments));
     }
     
