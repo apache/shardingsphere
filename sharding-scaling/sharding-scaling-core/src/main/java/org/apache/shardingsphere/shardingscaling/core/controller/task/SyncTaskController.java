@@ -102,6 +102,9 @@ public final class SyncTaskController implements Runnable {
                 log.info("history data sync finished, execute result: {}", event.getEventType().name());
                 if (EventType.FINISHED.equals(event.getEventType())) {
                     executeRealTimeSyncTask();
+                } else {
+                    stop();
+                    syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_HISTORY_DATA_FAILURE;
                 }
             }
         });

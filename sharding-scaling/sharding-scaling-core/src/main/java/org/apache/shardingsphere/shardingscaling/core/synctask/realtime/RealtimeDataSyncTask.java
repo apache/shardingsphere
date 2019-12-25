@@ -124,6 +124,7 @@ public final class RealtimeDataSyncTask implements SyncTask {
     public void stop() {
         if (null != reader) {
             reader.stop();
+            reader = null;
         }
     }
 

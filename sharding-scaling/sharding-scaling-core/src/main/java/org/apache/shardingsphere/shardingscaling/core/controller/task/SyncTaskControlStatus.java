@@ -24,5 +24,6 @@ package org.apache.shardingsphere.shardingscaling.core.controller.task;
  */
 public enum SyncTaskControlStatus {
     
-    PREPARING, MIGRATE_HISTORY_DATA, SYNCHRONIZE_REALTIME_DATA, STOPPING, STOPPED
+    PREPARING, MIGRATE_HISTORY_DATA, SYNCHRONIZE_REALTIME_DATA, STOPPING, STOPPED,
+    MIGRATE_HISTORY_DATA_FAILURE
 }
