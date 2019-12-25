@@ -58,7 +58,7 @@ public final class SimpleJudgementEngine extends ShadowJudgementEngine {
                 return false;
             }
             List<Object> values = shadowCondition.get().getValues(Collections.emptyList());
-            return "TRUE".equals(((String) values.get(0)).toUpperCase());
+            return values.size() != 0 && "TRUE".equals(((String) values.get(0)).toUpperCase());
         }
         return false;
     }
