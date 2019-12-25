@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.execute.sql.execute;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.execute.constant.ConnectionMode;
 import org.apache.shardingsphere.core.execute.engine.ShardingGroupExecuteCallback;
 import org.apache.shardingsphere.core.execute.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.core.execute.hook.SQLExecutionHook;
