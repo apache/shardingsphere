@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.pojo;
 
 import lombok.Getter;
 import org.apache.shardingsphere.underlying.common.constant.ShardingOperator;
-import org.apache.shardingsphere.underlying.common.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable;
 
@@ -59,7 +59,7 @@ public final class EncryptPredicateRightValueToken extends SQLToken implements S
             case IN:
                 return toStringForIn();
             default:
-                throw new ShardingException("Sharding operator do not support.");
+                throw new ShardingSphereException("Sharding operator do not support.");
         }
     }
     

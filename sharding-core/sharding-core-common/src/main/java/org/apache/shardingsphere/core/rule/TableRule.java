@@ -24,7 +24,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.underlying.common.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
 import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
@@ -171,7 +171,7 @@ public final class TableRule {
         for (String each : actualDataNodes) {
             DataNode dataNode = new DataNode(each);
             if (!dataSourceNames.contains(dataNode.getDataSourceName())) {
-                throw new ShardingException("Cannot find data source in sharding rule, invalid actual data node is: '%s'", each);
+                throw new ShardingSphereException("Cannot find data source in sharding rule, invalid actual data node is: '%s'", each);
             }
             result.add(dataNode);
             dataNodeIndexMap.put(dataNode, index);

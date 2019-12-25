@@ -22,7 +22,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -61,7 +61,7 @@ public final class EncryptTable {
                 return entry.getKey();
             }
         }
-        throw new ShardingException("Can not find logic column by %s.", cipherColumn);
+        throw new ShardingSphereException("Can not find logic column by %s.", cipherColumn);
     }
     
     /**
@@ -194,7 +194,7 @@ public final class EncryptTable {
                 if (input.getPlainColumn().isPresent()) {
                     return input.getPlainColumn().get();
                 }
-                throw new ShardingException("Plain column is null.");
+                throw new ShardingSphereException("Plain column is null.");
             }
         });
     }

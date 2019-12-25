@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
-import org.apache.shardingsphere.underlying.common.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -57,7 +57,7 @@ public final class ResultSetUtilTest {
         assertThat(ResultSetUtil.convertValue((short) 1, String.class), is((Object) "1"));
     }
     
-    @Test(expected = ShardingException.class)
+    @Test(expected = ShardingSphereException.class)
     public void assertConvertNumberValueError() {
         ResultSetUtil.convertValue(1, Date.class);
     }
@@ -100,7 +100,7 @@ public final class ResultSetUtilTest {
         assertThat((BigDecimal) ResultSetUtil.convertValue(Longs.toByteArray(1L), BigDecimal.class), is(new BigDecimal("1")));
     }
     
-    @Test(expected = ShardingException.class)
+    @Test(expected = ShardingSphereException.class)
     public void assertConvertDateValueError() {
         ResultSetUtil.convertValue(new Date(), int.class);
     }

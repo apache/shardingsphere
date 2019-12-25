@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.execute.metadata;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.core.execute.engine.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
 import org.apache.shardingsphere.core.execute.engine.ShardingGroupExecuteCallback;
@@ -227,7 +227,7 @@ public final class TableMetaDataLoader {
         TableMetaData sample = actualTableMetaDataList.iterator().next();
         for (TableMetaData each : actualTableMetaDataList) {
             if (!sample.equals(each)) {
-                throw new ShardingException("Cannot get uniformed table structure for `%s`. The different meta data of actual tables are as follows:\n%s\n%s.", logicTableName, sample, each);
+                throw new ShardingSphereException("Cannot get uniformed table structure for `%s`. The different meta data of actual tables are as follows:\n%s\n%s.", logicTableName, sample, each);
             }
         }
     }

@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.core.metadata.datasource.exception;
 
-import org.apache.shardingsphere.underlying.common.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 
 /**
  * Unrecognized database URL exception.
  *
  * @author zhangliang
  */
-public final class UnrecognizedDatabaseURLException extends ShardingException {
+public final class UnrecognizedDatabaseURLException extends ShardingSphereException {
     
     private static final long serialVersionUID = -1551117178863766353L;
     

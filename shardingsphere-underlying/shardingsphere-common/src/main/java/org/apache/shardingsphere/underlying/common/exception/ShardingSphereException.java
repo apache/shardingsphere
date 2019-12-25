@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.underlying.common.exception;
 
 /**
- * Sharding exception.
+ * Basic exception for ShardingSphere.
  * 
  * @author zhangliang
  */
-public class ShardingException extends RuntimeException {
+public class ShardingSphereException extends RuntimeException {
     
     private static final long serialVersionUID = -1343739516839252250L;
     
@@ -32,7 +32,7 @@ public class ShardingException extends RuntimeException {
      * @param errorMessage formatted error message
      * @param args arguments of error message
      */
-    public ShardingException(final String errorMessage, final Object... args) {
+    public ShardingSphereException(final String errorMessage, final Object... args) {
         super(String.format(errorMessage, args));
     }
     
@@ -42,7 +42,7 @@ public class ShardingException extends RuntimeException {
      * @param message error message
      * @param cause error cause
      */
-    public ShardingException(final String message, final Exception cause) {
+    public ShardingSphereException(final String message, final Exception cause) {
         super(message, cause);
     }
     
@@ -51,7 +51,7 @@ public class ShardingException extends RuntimeException {
      *
      * @param cause error cause
      */
-    public ShardingException(final Exception cause) {
+    public ShardingSphereException(final Exception cause) {
         super(cause);
     }
 }

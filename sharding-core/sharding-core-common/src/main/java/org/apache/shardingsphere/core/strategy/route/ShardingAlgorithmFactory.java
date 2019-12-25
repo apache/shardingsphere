@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.sharding.ShardingAlgorithm;
-import org.apache.shardingsphere.underlying.common.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 
 /**
  * Sharding algorithm factory.
@@ -44,7 +44,7 @@ public final class ShardingAlgorithmFactory {
     public static <T extends ShardingAlgorithm> T newInstance(final String shardingAlgorithmClassName, final Class<T> superShardingAlgorithmClass) {
         Class<?> result = Class.forName(shardingAlgorithmClassName);
         if (!superShardingAlgorithmClass.isAssignableFrom(result)) {
-            throw new ShardingException("Class %s should be implement %s", shardingAlgorithmClassName, superShardingAlgorithmClass.getName());
+            throw new ShardingSphereException("Class %s should be implement %s", shardingAlgorithmClassName, superShardingAlgorithmClass.getName());
         }
         return (T) result.newInstance();
     }

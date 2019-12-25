@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 
-import org.apache.shardingsphere.underlying.common.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
@@ -44,7 +44,7 @@ public final class ShardingInsertStatementValidatorTest {
         new ShardingInsertStatementValidator().validate(shardingRule, createInsertStatement(), Collections.emptyList());
     }
     
-    @Test(expected = ShardingException.class)
+    @Test(expected = ShardingSphereException.class)
     public void assertValidateOnDuplicateKeyWithShardingKey() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         new ShardingInsertStatementValidator().validate(shardingRule, createInsertStatement(), Collections.emptyList());

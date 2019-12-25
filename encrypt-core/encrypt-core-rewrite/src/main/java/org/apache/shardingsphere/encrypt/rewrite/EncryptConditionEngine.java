@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
@@ -108,7 +108,7 @@ public final class EncryptConditionEngine {
             return createInEncryptCondition(tableName, predicateSegment, (PredicateInRightValue) predicateSegment.getRightValue());
         }
         if (predicateSegment.getRightValue() instanceof PredicateBetweenRightValue) {
-            throw new ShardingException("The SQL clause 'BETWEEN...AND...' is unsupported in encrypt rule.");
+            throw new ShardingSphereException("The SQL clause 'BETWEEN...AND...' is unsupported in encrypt rule.");
         }
         return Optional.absent();
     }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.execute.engine;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
-import org.apache.shardingsphere.underlying.common.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -141,7 +141,7 @@ public final class ShardingExecuteEngine implements AutoCloseable {
         if (exception.getCause() instanceof SQLException) {
             throw (SQLException) exception.getCause();
         }
-        throw new ShardingException(exception);
+        throw new ShardingSphereException(exception);
     }
     
     @Override

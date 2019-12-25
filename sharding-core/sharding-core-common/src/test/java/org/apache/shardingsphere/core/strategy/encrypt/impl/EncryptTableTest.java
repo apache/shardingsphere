@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.strategy.encrypt.impl;
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +52,7 @@ public final class EncryptTableTest {
         assertNotNull(encryptTable.getLogicColumnOfCipher("cipherColumn"));
     }
     
-    @Test(expected = ShardingException.class)
+    @Test(expected = ShardingSphereException.class)
     public void assertGetLogicColumnShardingExceptionThrownWhenCipherColumnAbsent() {
         encryptTable.getLogicColumnOfCipher("___cipherColumn");
     }

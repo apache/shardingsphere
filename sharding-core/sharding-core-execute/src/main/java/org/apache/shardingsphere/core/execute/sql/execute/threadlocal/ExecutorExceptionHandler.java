@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.execute.sql.execute.threadlocal;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.underlying.common.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 
 import java.sql.SQLException;
 
@@ -70,7 +70,7 @@ public final class ExecutorExceptionHandler {
             if (exception instanceof SQLException) {
                 throw (SQLException) exception;
             }
-            throw new ShardingException(exception);
+            throw new ShardingSphereException(exception);
         }
         log.error("exception occur: ", exception);
     }

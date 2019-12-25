@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.spring.boot;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
 import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
@@ -130,9 +130,9 @@ public class SpringBootConfiguration implements EnvironmentAware {
             try {
                 dataSourceMap.put(each, getDataSource(environment, prefix, each));
             } catch (final ReflectiveOperationException ex) {
-                throw new ShardingException("Can't find datasource type!", ex);
+                throw new ShardingSphereException("Can't find datasource type!", ex);
             } catch (final NamingException namingEx) {
-                throw new ShardingException("Can't find JNDI datasource!", namingEx);
+                throw new ShardingSphereException("Can't find JNDI datasource!", namingEx);
             }
         }
     }
