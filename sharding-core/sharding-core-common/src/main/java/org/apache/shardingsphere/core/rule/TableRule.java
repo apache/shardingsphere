@@ -23,7 +23,7 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.config.ShardingConfigurationException;
+import org.apache.shardingsphere.underlying.common.config.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.underlying.common.exception.ShardingException;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
 import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
@@ -233,7 +233,7 @@ public final class TableRule {
     
     private void checkRule(final List<String> dataNodes) {
         if (isEmptyDataNodes(dataNodes) && null != tableShardingStrategy && !(tableShardingStrategy instanceof NoneShardingStrategy)) {
-            throw new ShardingConfigurationException("ActualDataNodes must be configured if want to shard tables for logicTable [%s]", logicTable);
+            throw new ShardingSphereConfigurationException("ActualDataNodes must be configured if want to shard tables for logicTable [%s]", logicTable);
         }
     }
 }

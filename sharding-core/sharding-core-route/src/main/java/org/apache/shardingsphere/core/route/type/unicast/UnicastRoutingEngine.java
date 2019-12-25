@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.route.type.unicast;
 
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.config.ShardingConfigurationException;
+import org.apache.shardingsphere.underlying.common.config.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
@@ -90,7 +90,7 @@ public final class UnicastRoutingEngine implements RoutingEngine {
                 }
             }
             if (availableDatasourceNames.isEmpty()) {
-                throw new ShardingConfigurationException("Cannot find actual datasource intersection for logic tables: %s", logicTables);
+                throw new ShardingSphereConfigurationException("Cannot find actual datasource intersection for logic tables: %s", logicTables);
             }
             RoutingUnit routingUnit = new RoutingUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName(availableDatasourceNames));
             routingUnit.getTableUnits().addAll(tableUnits);

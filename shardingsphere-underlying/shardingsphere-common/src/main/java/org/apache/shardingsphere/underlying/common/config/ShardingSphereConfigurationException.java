@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.underlying.common.config;
 
 /**
- * Sharding rule exception.
+ * Configuration exception.
  *
  * @author zhangliang
  */
-public final class ShardingConfigurationException extends RuntimeException {
+public final class ShardingSphereConfigurationException extends RuntimeException {
     
     private static final long serialVersionUID = -1360264079938958332L;
     
@@ -32,7 +32,7 @@ public final class ShardingConfigurationException extends RuntimeException {
      * @param errorMessage formatted error message
      * @param args arguments of error message
      */
-    public ShardingConfigurationException(final String errorMessage, final Object... args) {
+    public ShardingSphereConfigurationException(final String errorMessage, final Object... args) {
         super(String.format(errorMessage, args));
     }
     
@@ -41,7 +41,7 @@ public final class ShardingConfigurationException extends RuntimeException {
      *
      * @param cause cause exception
      */
-    public ShardingConfigurationException(final Exception cause) {
+    public ShardingSphereConfigurationException(final Exception cause) {
         super(cause);
     }
 }

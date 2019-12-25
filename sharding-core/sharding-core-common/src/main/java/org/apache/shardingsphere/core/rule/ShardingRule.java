@@ -28,7 +28,7 @@ import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.underlying.common.config.ShardingConfigurationException;
+import org.apache.shardingsphere.underlying.common.config.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategyFactory;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
@@ -188,7 +188,7 @@ public class ShardingRule implements BaseRule {
         if (!Strings.isNullOrEmpty(shardingDataSourceNames.getDefaultDataSourceName())) {
             return new TableRule(shardingDataSourceNames.getDefaultDataSourceName(), logicTableName);
         }
-        throw new ShardingConfigurationException("Cannot find table rule and default data source with logic table: '%s'", logicTableName);
+        throw new ShardingSphereConfigurationException("Cannot find table rule and default data source with logic table: '%s'", logicTableName);
     }
     
     /**
@@ -373,7 +373,7 @@ public class ShardingRule implements BaseRule {
     public Comparable<?> generateKey(final String logicTableName) {
         Optional<TableRule> tableRule = findTableRule(logicTableName);
         if (!tableRule.isPresent()) {
-            throw new ShardingConfigurationException("Cannot find strategy for generate keys.");
+            throw new ShardingSphereConfigurationException("Cannot find strategy for generate keys.");
         }
         ShardingKeyGenerator shardingKeyGenerator = null == tableRule.get().getShardingKeyGenerator() ? defaultShardingKeyGenerator : tableRule.get().getShardingKeyGenerator();
         return shardingKeyGenerator.generateKey();
@@ -420,7 +420,7 @@ public class ShardingRule implements BaseRule {
                 return each;
             }
         }
-        throw new ShardingConfigurationException("Cannot find actual data node for data source name: '%s' and logic table name: '%s'", dataSourceName, logicTableName);
+        throw new ShardingSphereConfigurationException("Cannot find actual data node for data source name: '%s' and logic table name: '%s'", dataSourceName, logicTableName);
     }
     
     /**

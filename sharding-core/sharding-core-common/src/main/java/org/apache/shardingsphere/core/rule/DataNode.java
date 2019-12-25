@@ -22,7 +22,7 @@ import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.underlying.common.config.ShardingConfigurationException;
+import org.apache.shardingsphere.underlying.common.config.ShardingSphereConfigurationException;
 
 import java.util.List;
 
@@ -49,7 +49,7 @@ public final class DataNode {
      */
     public DataNode(final String dataNode) {
         if (!isValidDataNode(dataNode)) {
-            throw new ShardingConfigurationException("Invalid format for actual data nodes: '%s'", dataNode);
+            throw new ShardingSphereConfigurationException("Invalid format for actual data nodes: '%s'", dataNode);
         }
         List<String> segments = Splitter.on(DELIMITER).splitToList(dataNode);
         dataSourceName = segments.get(0);
