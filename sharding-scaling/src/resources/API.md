@@ -111,6 +111,32 @@ curl -X GET \
    }
 }
 ```
+## List scaling jobs
+
+GET /shardingscaling/job/list
+
+### Example
+
+```
+curl -X GET \
+  http://localhost:8888/shardingscaling/job/list
+```
+
+### Response
+
+```
+{
+  "success": true,
+  "errorCode": 0,
+  "model": [
+    {
+      "jobId": 1,
+      "jobName": "Local Sharding Scaling Job",
+      "status": "RUNNING"
+    }
+  ]
+}
+```
 
 ## Stop scaling job
 
