@@ -88,6 +88,7 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
         RelationMetas result = mock(RelationMetas.class);
         when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
+        when(result.getAllColumnNames("t_account_bak1")).thenReturn(Arrays.asList("password", "amount", "certificate_number"));
         return result;
     }
 }

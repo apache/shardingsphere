@@ -106,18 +106,27 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
         }
         Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, encryptLogicColumnName);
         if (plainColumn.isPresent()) {
-            int plainColumnIndex = getColumnIndex(groupedParameterBuilder, sqlStatementContext, plainColumn.get());
-            if (plainColumnIndex > -1) {
-                parameterBuilder.addReplacedParameters(plainColumnIndex, originalValue);
-            } else {
-                addedParameters.add(originalValue);
-            }
+            setParameters(groupedParameterBuilder, sqlStatementContext, encryptLogicColumnName, addedParameters, originalValue, plainColumn, parameterBuilder);
         }
         if (!addedParameters.isEmpty()) {
             if (!parameterBuilder.getAddedIndexAndParameters().containsKey(columnIndex + 1)) {
                 parameterBuilder.getAddedIndexAndParameters().put(columnIndex + 1, new LinkedList<>());
             }
             parameterBuilder.getAddedIndexAndParameters().get(columnIndex + 1).addAll(addedParameters);
+        }
+    }
+
+    private void setParameters(final GroupedParameterBuilder groupedParameterBuilder, final InsertSQLStatementContext sqlStatementContext, final String encryptLogicColumnName,
+                               final Collection<Object> addedParameters, final Object originalValue, final Optional<String> plainColumn, final StandardParameterBuilder parameterBuilder) {
+        int plainColumnIndex = getColumnIndex(groupedParameterBuilder, sqlStatementContext, plainColumn.get());
+        if (plainColumnIndex > -1) {
+            if (encryptLogicColumnName.equals(plainColumn.get())) {
+                addedParameters.add(originalValue);
+            } else {
+                parameterBuilder.addReplacedParameters(plainColumnIndex, originalValue);
+            }
+        } else {
+            addedParameters.add(originalValue);
         }
     }
 }

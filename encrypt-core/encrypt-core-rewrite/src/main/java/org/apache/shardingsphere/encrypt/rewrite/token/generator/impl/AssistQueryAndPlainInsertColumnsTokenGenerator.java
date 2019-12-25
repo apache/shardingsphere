@@ -76,7 +76,8 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator extends BaseEn
         Optional<String> plainColumn = encryptTable.findPlainColumn(columnSegment.getName());
         if (plainColumn.isPresent()) {
             String plainColumnName = plainColumn.get();
-            if (!insertColumns.contains(plainColumnName)) {
+            String logicColumn = encryptTable.getLogicColumnOfPlain(plainColumnName);
+            if (!insertColumns.contains(plainColumnName) || plainColumnName.equals(logicColumn)) {
                 result.add(plainColumnName);
             }
         }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
 import com.google.common.base.Optional;
 import lombok.Setter;
+import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptInsertValuesToken;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
@@ -137,14 +138,15 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
     
     private void addPlainColumn(final InsertValue insertValueToken, final int columnIndex,
                                 final String tableName, final String columnName, final InsertValueContext insertValueContext, final Object originalValue, final Set<String> columnNames) {
-        Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, columnName);
+        EncryptTable encryptTable = getEncryptRule().findEncryptTable(tableName).get();
+        Optional<String> plainColumn = encryptTable.findPlainColumn(columnName);
         if (plainColumn.isPresent()) {
-            if (columnNames.contains(plainColumn.get())) {
-                return;
+            String logicColumn = encryptTable.getLogicColumnOfPlain(plainColumn.get());
+            if (!columnNames.contains(plainColumn.get()) || plainColumn.get().equals(logicColumn)) {
+                DerivedSimpleExpressionSegment derivedExpressionSegment = insertValueContext.getParameters().isEmpty()
+                        ? new DerivedLiteralExpressionSegment(originalValue) : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
+                insertValueToken.getValues().add(columnIndex + 1, derivedExpressionSegment);
             }
-            DerivedSimpleExpressionSegment derivedExpressionSegment = insertValueContext.getParameters().isEmpty()
-                    ? new DerivedLiteralExpressionSegment(originalValue) : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
-            insertValueToken.getValues().add(columnIndex + 1, derivedExpressionSegment);
         }
     }
     

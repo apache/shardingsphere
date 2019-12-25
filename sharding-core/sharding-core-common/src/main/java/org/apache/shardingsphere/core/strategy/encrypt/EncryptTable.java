@@ -63,6 +63,21 @@ public final class EncryptTable {
         }
         throw new ShardingException("Can not find logic column by %s.", cipherColumn);
     }
+
+    /**
+     * Get logic column of plain column.
+     *
+     * @param plainColumn plain column
+     * @return logic column
+     */
+    public String getLogicColumnOfPlain(final String plainColumn) {
+        for (Entry<String, EncryptColumn> entry : columns.entrySet()) {
+            if (entry.getValue().getPlainColumn().get().equals(plainColumn)) {
+                return entry.getKey();
+            }
+        }
+        throw new ShardingException("Can not find logic column by %s.", plainColumn);
+    }
     
     /**
      * Get logic columns.
