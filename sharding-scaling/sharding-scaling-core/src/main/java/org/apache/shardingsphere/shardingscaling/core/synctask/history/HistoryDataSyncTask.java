@@ -137,6 +137,7 @@ public final class HistoryDataSyncTask implements SyncTask {
     public void stop() {
         if (null != reader) {
             reader.stop();
+            reader = null;
         }
     }
 

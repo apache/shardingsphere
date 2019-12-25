@@ -157,15 +157,18 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
 
     @Override
     public final void start(final ReportCallback callback) {
-        final List<Event> events = new LinkedList<>();
+        final List<Event> finishedEvents = new LinkedList<>();
         for (final SyncTask each : syncTasks) {
             each.start(new ReportCallback() {
 
                 @Override
                 public void report(final Event event) {
-                    events.add(event);
-                    if (syncTasks.size() == events.size()) {
-                        //TODO check error
+                    if (EventType.FINISHED == event.getEventType()) {
+                        finishedEvents.add(event);
+                    } else {
+                        callback.report(new Event(syncTaskId, EventType.EXCEPTION_EXIT));
+                    }
+                    if (syncTasks.size() == finishedEvents.size()) {
                         callback.report(new Event(syncTaskId, EventType.FINISHED));
                     }
                 }
