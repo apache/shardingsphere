@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.pojo;
 
-import org.apache.shardingsphere.underlying.common.constant.ShardingOperator;
+import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateInRightValueToken;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateRightValueToken;
 import org.junit.Test;
 
@@ -28,34 +28,20 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class EncryptPredicateTokenTest {
-    
-    @Test
-    public void assertToStringWithoutPlaceholderWithoutTableOwnerWithEqual() {
-        Map<Integer, Object> indexValues = new LinkedHashMap<>();
-        indexValues.put(0, "a");
-        EncryptPredicateRightValueToken actual = new EncryptPredicateRightValueToken(0, 0, indexValues, Collections.<Integer>emptyList(), ShardingOperator.EQUAL);
-        assertThat(actual.toString(), is("'a'"));
-    }
-    
-    @Test
-    public void assertToStringWithPlaceholderWithoutTableOwnerWithEqual() {
-        EncryptPredicateRightValueToken actual = new EncryptPredicateRightValueToken(0, 0, Collections.<Integer, Object>emptyMap(), Collections.singletonList(0), ShardingOperator.EQUAL);
-        assertThat(actual.toString(), is("?"));
-    }
+public final class EncryptPredicateInRightValueTokenTest {
     
     @Test
     public void assertToStringWithoutPlaceholderWithoutTableOwnerWithIn() {
         Map<Integer, Object> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "a");
         indexValues.put(1, "b");
-        EncryptPredicateRightValueToken actual = new EncryptPredicateRightValueToken(0, 0, indexValues, Collections.<Integer>emptyList(), ShardingOperator.IN);
+        EncryptPredicateRightValueToken actual = new EncryptPredicateInRightValueToken(0, 0, indexValues, Collections.<Integer>emptyList());
         assertThat(actual.toString(), is("('a', 'b')"));
     }
     
     @Test
     public void assertToStringWithPlaceholderWithoutTableOwnerWithIn() {
-        EncryptPredicateRightValueToken actual = new EncryptPredicateRightValueToken(0, 0, Collections.<Integer, Object>emptyMap(), Collections.singletonList(0), ShardingOperator.IN);
+        EncryptPredicateRightValueToken actual = new EncryptPredicateInRightValueToken(0, 0, Collections.<Integer, Object>emptyMap(), Collections.singletonList(0));
         assertThat(actual.toString(), is("(?)"));
     }
 }

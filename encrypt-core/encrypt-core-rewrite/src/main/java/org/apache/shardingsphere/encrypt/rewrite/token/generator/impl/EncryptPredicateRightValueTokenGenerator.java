@@ -19,16 +19,17 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
 import com.google.common.base.Optional;
 import lombok.Setter;
+import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
+import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
+import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionEngine;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
-import org.apache.shardingsphere.underlying.common.constant.ShardingOperator;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
+import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateEqualRightValueToken;
+import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateInRightValueToken;
+import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateRightValueToken;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
-import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
-import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionEngine;
-import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
-import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateRightValueToken;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.ParametersAware;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RelationMetasAware;
@@ -83,9 +84,12 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     }
     
     private EncryptPredicateRightValueToken generateSQLTokenForQueryWithCipherColumn(final EncryptCondition encryptCondition, final List<Object> originalValues, final int startIndex) {
-        List<Object> encryptedValues = getEncryptedValues(encryptCondition, originalValues);
-        return new EncryptPredicateRightValueToken(startIndex, encryptCondition.getStopIndex(), getPositionValues(encryptCondition.getPositionValueMap().keySet(), encryptedValues),
-                encryptCondition.getPositionIndexMap().keySet(), getShardingOperator(encryptCondition));
+        int stopIndex = encryptCondition.getStopIndex();
+        Map<Integer, Object> indexValues = getPositionValues(encryptCondition.getPositionValueMap().keySet(), getEncryptedValues(encryptCondition, originalValues));
+        Collection<Integer> parameterMarkerIndexes = encryptCondition.getPositionIndexMap().keySet();
+        return encryptCondition instanceof EncryptInCondition
+                ? new EncryptPredicateInRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes)
+                : new EncryptPredicateEqualRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes);
     }
     
     private List<Object> getEncryptedValues(final EncryptCondition encryptCondition, final List<Object> originalValues) {
@@ -96,8 +100,12 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     }
     
     private EncryptPredicateRightValueToken generateSQLTokenForQueryWithoutCipherColumn(final EncryptCondition encryptCondition, final List<Object> originalValues, final int startIndex) {
-        return new EncryptPredicateRightValueToken(startIndex, encryptCondition.getStopIndex(),
-                getPositionValues(encryptCondition.getPositionValueMap().keySet(), originalValues), encryptCondition.getPositionIndexMap().keySet(), getShardingOperator(encryptCondition));
+        int stopIndex = encryptCondition.getStopIndex();
+        Map<Integer, Object> indexValues = getPositionValues(encryptCondition.getPositionValueMap().keySet(), originalValues);
+        Collection<Integer> parameterMarkerIndexes = encryptCondition.getPositionIndexMap().keySet();
+        return encryptCondition instanceof EncryptInCondition
+                ? new EncryptPredicateInRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes)
+                : new EncryptPredicateEqualRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes);
     }
     
     private Map<Integer, Object> getPositionValues(final Collection<Integer> valuePositions, final List<Object> encryptValues) {
@@ -106,9 +114,5 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
             result.put(each, encryptValues.get(each));
         }
         return result;
-    }
-    
-    private ShardingOperator getShardingOperator(final EncryptCondition encryptCondition) {
-        return encryptCondition instanceof EncryptInCondition ? ShardingOperator.IN : ShardingOperator.EQUAL;
     }
 }
