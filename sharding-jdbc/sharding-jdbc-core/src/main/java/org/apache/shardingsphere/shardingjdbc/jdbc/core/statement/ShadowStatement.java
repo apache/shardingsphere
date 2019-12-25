@@ -59,6 +59,8 @@ public final class ShadowStatement extends AbstractStatementAdapter {
 
     private ResultSet resultSet;
 
+    private Statement statement;
+
     public ShadowStatement(final ShadowConnection shadowConnection) {
         this(shadowConnection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
@@ -81,7 +83,7 @@ public final class ShadowStatement extends AbstractStatementAdapter {
 
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
-        return null;
+        return statement.getGeneratedKeys();
     }
 
     @Override
@@ -156,14 +158,15 @@ public final class ShadowStatement extends AbstractStatementAdapter {
 
     @Override
     protected Collection<? extends Statement> getRoutedStatements() {
-        return null;
+        return Collections.singleton(statement);
     }
 
     private Statement getStatementAndReplay(final String sql) throws SQLException {
         SQLStatement sqlStatement = shadowConnection.getRuntimeContext().getParseEngine().parse(sql, false);
         sqlStatementContext = SQLStatementContextFactory.newInstance(getRelationMetas(shadowConnection.getRuntimeContext().getTableMetas()), sql, Collections.emptyList(), sqlStatement);
         ShadowJudgementEngine shadowJudgementEngine = new SimpleJudgementEngine(shadowConnection.getRuntimeContext().getRule(), sqlStatementContext);
-        return shadowStatementGenerator.createStatement(shadowJudgementEngine);
+        statement = shadowStatementGenerator.createStatement(shadowJudgementEngine);
+        return statement;
     }
 
     private RelationMetas getRelationMetas(final TableMetas tableMetas) {
@@ -176,8 +179,6 @@ public final class ShadowStatement extends AbstractStatementAdapter {
     }
 
     private String rewriteSql(final String sql) {
-        SQLStatement sqlStatement = shadowConnection.getRuntimeContext().getParseEngine().parse(sql, true);
-        sqlStatementContext = SQLStatementContextFactory.newInstance(getRelationMetas(shadowConnection.getRuntimeContext().getTableMetas()), sql, Collections.emptyList(), sqlStatement);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(shadowConnection.getRuntimeContext().getTableMetas(), sqlStatementContext, sql, Collections.emptyList());
         new ShadowSQLRewriteContextDecorator(shadowConnection.getRuntimeContext().getRule()).decorate(sqlRewriteContext);
         sqlRewriteContext.generateSQLTokens();
