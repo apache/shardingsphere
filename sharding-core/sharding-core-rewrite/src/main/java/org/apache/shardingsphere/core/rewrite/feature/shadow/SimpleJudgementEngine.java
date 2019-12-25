@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAv
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Simple shadow judgement engine.
@@ -59,10 +58,7 @@ public final class SimpleJudgementEngine extends ShadowJudgementEngine {
                 return false;
             }
             List<Object> values = shadowCondition.get().getValues(Collections.emptyList());
-            for (Map.Entry<Integer, Integer> entry : shadowCondition.get().getPositionIndexMap().entrySet()) {
-                Object value = values.get(entry.getValue());
-                return value instanceof Boolean && (Boolean) value;
-            }
+            return "TRUE".equals(((String) values.get(0)).toUpperCase());
         }
         return false;
     }
@@ -74,7 +70,7 @@ public final class SimpleJudgementEngine extends ShadowJudgementEngine {
             if (shadowRule.getColumn().equals(columnName)) {
                 int columnIndex = insertSQLStatementContext.getColumnNames().indexOf(columnName);
                 Object value = insertValueContext.getValue(columnIndex);
-                return value instanceof Boolean && (Boolean) value;
+                return "TRUE".equals(((String) value).toUpperCase());
             }
         }
         return false;
