@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.merge.dal.DALEncryptMergeEngine;
@@ -80,7 +80,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
         this.sqlStatementContext = sqlStatementContext;
         this.encryptStatement = encryptStatement;
         originalResultSet = resultSet;
-        boolean queryWithCipherColumn = encryptRuntimeContext.getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
+        boolean queryWithCipherColumn = encryptRuntimeContext.getProperties().<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         mergedResult = createMergedResult(queryWithCipherColumn, resultSet);
         logicAndActualColumns = createLogicAndActualColumns(queryWithCipherColumn);
         columnLabelAndIndexMap = createColumnLabelAndIndexMap(originalResultSet.getMetaData());

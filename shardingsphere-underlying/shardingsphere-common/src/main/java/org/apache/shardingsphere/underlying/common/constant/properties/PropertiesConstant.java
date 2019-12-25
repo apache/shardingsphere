@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Sharding properties constant.
+ * Properties constant.
  * 
  * @author gaohongtao
  * @author caohao
@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public enum ShardingPropertiesConstant {
+public enum PropertiesConstant {
     
     /**
      * Enable or Disable to show SQL details.
@@ -139,8 +139,8 @@ public enum ShardingPropertiesConstant {
      * @param key property key
      * @return value enum, return {@code null} if not found
      */
-    public static ShardingPropertiesConstant findByKey(final String key) {
-        for (ShardingPropertiesConstant each : ShardingPropertiesConstant.values()) {
+    public static PropertiesConstant findByKey(final String key) {
+        for (PropertiesConstant each : PropertiesConstant.values()) {
             if (each.getKey().equals(key)) {
                 return each;
             }

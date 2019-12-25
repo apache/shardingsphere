@@ -30,20 +30,20 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Properties for sharding configuration.
+ * ShardingSphere properties for configuration.
  *
  * @author gaohongtao
  * @author zhangliang
  * @author panjuan
  */
-public final class ShardingProperties {
+public final class ShardingSphereProperties {
     
     @Getter
     private final Properties props;
     
-    private final Map<ShardingPropertiesConstant, Object> cachedProperties = new ConcurrentHashMap<>(64, 1);
+    private final Map<PropertiesConstant, Object> cachedProperties = new ConcurrentHashMap<>(64, 1);
     
-    public ShardingProperties(final Properties props) {
+    public ShardingSphereProperties(final Properties props) {
         this.props = props;
         validate();
     }
@@ -52,16 +52,16 @@ public final class ShardingProperties {
         Set<String> propertyNames = props.stringPropertyNames();
         Collection<String> errorMessages = new ArrayList<>(propertyNames.size());
         for (String each : propertyNames) {
-            ShardingPropertiesConstant shardingPropertiesConstant = ShardingPropertiesConstant.findByKey(each);
-            if (null == shardingPropertiesConstant) {
+            PropertiesConstant propertiesConstant = PropertiesConstant.findByKey(each);
+            if (null == propertiesConstant) {
                 continue;
             }
-            Class<?> type = shardingPropertiesConstant.getType();
+            Class<?> type = propertiesConstant.getType();
             String value = props.getProperty(each);
             if (type == boolean.class && !StringUtil.isBooleanValue(value)) {
-                errorMessages.add(getErrorMessage(shardingPropertiesConstant, value));
+                errorMessages.add(getErrorMessage(propertiesConstant, value));
             } else if (type == int.class && !StringUtil.isIntValue(value)) {
-                errorMessages.add(getErrorMessage(shardingPropertiesConstant, value));
+                errorMessages.add(getErrorMessage(propertiesConstant, value));
             }
         }
         if (!errorMessages.isEmpty()) {
@@ -69,42 +69,42 @@ public final class ShardingProperties {
         }
     }
     
-    private String getErrorMessage(final ShardingPropertiesConstant shardingPropertiesConstant, final String invalidValue) {
-        return String.format("Value '%s' of '%s' cannot convert to type '%s'.", invalidValue, shardingPropertiesConstant.getKey(), shardingPropertiesConstant.getType().getName());
+    private String getErrorMessage(final PropertiesConstant propertiesConstant, final String invalidValue) {
+        return String.format("Value '%s' of '%s' cannot convert to type '%s'.", invalidValue, propertiesConstant.getKey(), propertiesConstant.getType().getName());
     }
     
     /**
      * Get property value.
      *
-     * @param shardingPropertiesConstant sharding properties constant
+     * @param propertiesConstant properties constant
      * @param <T> class type of return value
      * @return property value
      */
     @SuppressWarnings("unchecked")
-    public <T> T getValue(final ShardingPropertiesConstant shardingPropertiesConstant) {
-        if (cachedProperties.containsKey(shardingPropertiesConstant)) {
-            return (T) cachedProperties.get(shardingPropertiesConstant);
+    public <T> T getValue(final PropertiesConstant propertiesConstant) {
+        if (cachedProperties.containsKey(propertiesConstant)) {
+            return (T) cachedProperties.get(propertiesConstant);
         }
-        String value = props.getProperty(shardingPropertiesConstant.getKey());
+        String value = props.getProperty(propertiesConstant.getKey());
         if (Strings.isNullOrEmpty(value)) {
-            Object obj = props.get(shardingPropertiesConstant.getKey());
+            Object obj = props.get(propertiesConstant.getKey());
             if (null == obj) {
-                value = shardingPropertiesConstant.getDefaultValue();
+                value = propertiesConstant.getDefaultValue();
             } else {
                 value = obj.toString();
             }
         }
         Object result;
-        if (boolean.class == shardingPropertiesConstant.getType()) {
+        if (boolean.class == propertiesConstant.getType()) {
             result = Boolean.valueOf(value);
-        } else if (int.class == shardingPropertiesConstant.getType()) {
+        } else if (int.class == propertiesConstant.getType()) {
             result = Integer.valueOf(value);
-        } else if (long.class == shardingPropertiesConstant.getType()) {
+        } else if (long.class == propertiesConstant.getType()) {
             result = Long.valueOf(value);
         } else {
             result = value;
         }
-        cachedProperties.put(shardingPropertiesConstant, result);
+        cachedProperties.put(propertiesConstant, result);
         return (T) result;
     }
 }

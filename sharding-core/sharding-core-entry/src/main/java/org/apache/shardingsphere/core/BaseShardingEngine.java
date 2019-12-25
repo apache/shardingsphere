@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLLogger;
@@ -50,7 +50,7 @@ public abstract class BaseShardingEngine {
     
     private final ShardingRule shardingRule;
     
-    private final ShardingProperties shardingProperties;
+    private final ShardingSphereProperties properties;
     
     private final ShardingSphereMetaData metaData;
     
@@ -67,9 +67,9 @@ public abstract class BaseShardingEngine {
         List<Object> clonedParameters = cloneParameters(parameters);
         SQLRouteResult result = executeRoute(sql, clonedParameters);
         result.getRouteUnits().addAll(HintManager.isDatabaseShardingOnly() ? convert(sql, clonedParameters, result) : rewriteAndConvert(sql, clonedParameters, result));
-        boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+        boolean showSQL = properties.getValue(PropertiesConstant.SQL_SHOW);
         if (showSQL) {
-            boolean showSimple = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SIMPLE);
+            boolean showSimple = properties.getValue(PropertiesConstant.SQL_SIMPLE);
             SQLLogger.logSQL(sql, showSimple, result.getSqlStatementContext(), result.getRouteUnits());
         }
         return result;
@@ -104,7 +104,7 @@ public abstract class BaseShardingEngine {
     private Collection<RouteUnit> rewriteAndConvert(final String sql, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(metaData.getRelationMetas(), sqlRouteResult.getSqlStatementContext(), sql, parameters);
         new ShardingSQLRewriteContextDecorator(shardingRule, sqlRouteResult).decorate(sqlRewriteContext);
-        boolean isQueryWithCipherColumn = shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
+        boolean isQueryWithCipherColumn = properties.<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         new EncryptSQLRewriteContextDecorator(shardingRule.getEncryptRule(), isQueryWithCipherColumn).decorate(sqlRewriteContext);
         sqlRewriteContext.generateSQLTokens();
         Collection<RouteUnit> result = new LinkedHashSet<>();

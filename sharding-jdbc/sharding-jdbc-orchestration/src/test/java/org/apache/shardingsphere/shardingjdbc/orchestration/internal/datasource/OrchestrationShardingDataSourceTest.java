@@ -119,7 +119,7 @@ public final class OrchestrationShardingDataSourceTest {
     @Test
     public void assertRenewProperties() {
         shardingDataSource.renew(getPropertiesChangedEvent());
-        assertThat(shardingDataSource.getDataSource().getRuntimeContext().getProps().getProps().getProperty("sql.show"), is("true"));
+        assertThat(shardingDataSource.getDataSource().getRuntimeContext().getProperties().getProps().getProperty("sql.show"), is("true"));
     }
     
     private PropertiesChangedEvent getPropertiesChangedEvent() {

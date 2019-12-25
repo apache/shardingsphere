@@ -25,7 +25,7 @@ import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
@@ -284,7 +284,7 @@ public final class ConfigurationServiceTest {
     
     private Properties createProperties() {
         Properties result = new Properties();
-        result.put(ShardingPropertiesConstant.SQL_SHOW.getKey(), Boolean.FALSE);
+        result.put(PropertiesConstant.SQL_SHOW.getKey(), Boolean.FALSE);
         return result;
     }
     
@@ -369,7 +369,7 @@ public final class ConfigurationServiceTest {
         when(regCenter.getDirectly("/test/config/props")).thenReturn(PROPS_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         Properties actual = configurationService.loadProperties();
-        assertThat(actual.get(ShardingPropertiesConstant.SQL_SHOW.getKey()), CoreMatchers.<Object>is(Boolean.FALSE));
+        assertThat(actual.get(PropertiesConstant.SQL_SHOW.getKey()), CoreMatchers.<Object>is(Boolean.FALSE));
     }
     
     @Test

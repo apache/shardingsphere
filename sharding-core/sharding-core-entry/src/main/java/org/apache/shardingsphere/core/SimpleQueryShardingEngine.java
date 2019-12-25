@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core;
 
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -43,8 +43,8 @@ public final class SimpleQueryShardingEngine extends BaseShardingEngine {
     
     private final StatementRoutingEngine routingEngine;
     
-    public SimpleQueryShardingEngine(final ShardingRule shardingRule, final ShardingProperties shardingProperties, final ShardingSphereMetaData metaData, final SQLParseEngine sqlParseEngine) {
-        super(shardingRule, shardingProperties, metaData);
+    public SimpleQueryShardingEngine(final ShardingRule shardingRule, final ShardingSphereProperties properties, final ShardingSphereMetaData metaData, final SQLParseEngine sqlParseEngine) {
+        super(shardingRule, properties, metaData);
         routingEngine = new StatementRoutingEngine(shardingRule, metaData, sqlParseEngine);
     }
     

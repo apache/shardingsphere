@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.core.route.RouteUnit;
@@ -47,10 +47,10 @@ public abstract class BaseShardingEngineTest {
     
     private final List<Object> parameters;
     
-    protected final ShardingProperties getShardingProperties() {
+    protected final ShardingSphereProperties getProperties() {
         Properties result = new Properties();
-        result.setProperty(ShardingPropertiesConstant.SQL_SHOW.getKey(), Boolean.TRUE.toString());
-        return new ShardingProperties(result);
+        result.setProperty(PropertiesConstant.SQL_SHOW.getKey(), Boolean.TRUE.toString());
+        return new ShardingSphereProperties(result);
     }
     
     protected final SQLRouteResult createSQLRouteResult() {

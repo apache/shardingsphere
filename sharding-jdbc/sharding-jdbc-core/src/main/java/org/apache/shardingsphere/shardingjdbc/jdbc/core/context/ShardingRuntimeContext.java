@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import lombok.Getter;
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.core.execute.metadata.TableMetaDataInitializer;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
@@ -89,8 +89,8 @@ public final class ShardingRuntimeContext extends AbstractRuntimeContext<Shardin
     
     private TableMetaDataInitializer getTableMetaDataInitializer(final Map<String, DataSource> dataSourceMap, final DataSourceMetas dataSourceMetas) {
         return new TableMetaDataInitializer(dataSourceMetas, getExecuteEngine(), new JDBCTableMetaDataConnectionManager(dataSourceMap),
-                this.getProps().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
-                this.getProps().<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
+                this.getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
+                this.getProperties().<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
     }
     
     @Override

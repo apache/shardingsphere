@@ -23,8 +23,8 @@ import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.core.execute.engine.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
@@ -104,7 +104,7 @@ public abstract class AbstractStatementExecutor {
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
         this.connection = shardingConnection;
-        int maxConnectionsSizePerQuery = connection.getRuntimeContext().getProps().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        int maxConnectionsSizePerQuery = connection.getRuntimeContext().getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
         ShardingExecuteEngine executeEngine = connection.getRuntimeContext().getExecuteEngine();
         sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery);
         sqlExecuteTemplate = new SQLExecuteTemplate(executeEngine, connection.isHoldTransaction());
@@ -240,10 +240,10 @@ public abstract class AbstractStatementExecutor {
     }
     
     private TableMetaDataInitializer getTableMetaDataInitializer() {
-        ShardingProperties shardingProperties = connection.getRuntimeContext().getProps();
+        ShardingSphereProperties properties = connection.getRuntimeContext().getProperties();
         return new TableMetaDataInitializer(connection.getRuntimeContext().getMetaData().getDataSources(), 
                 connection.getRuntimeContext().getExecuteEngine(), new JDBCTableMetaDataConnectionManager(connection.getDataSourceMap()),
-                shardingProperties.<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
-                shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
+                properties.<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
+                properties.<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.merge.dal.DALEncryptMergeEngine;
@@ -138,7 +138,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (null == encryptRule) {
             return mergedResult;
         }
-        boolean queryWithCipherColumn = ShardingProxyContext.getInstance().getShardingProperties().getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
+        boolean queryWithCipherColumn = ShardingProxyContext.getInstance().getProperties().getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         DQLEncryptMergeEngine mergeEngine = new DQLEncryptMergeEngine(
                 new QueryHeaderEncryptorMetaData(getEncryptRule(), ((QueryResponse) response).getQueryHeaders()), mergedResult, queryWithCipherColumn);
         return mergeEngine.merge();
@@ -204,7 +204,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     @Override
     public QueryData getQueryData() throws SQLException {
         Optional<EncryptRule> encryptRule = findEncryptRule();
-        boolean isQueryWithCipherColumn = ShardingProxyContext.getInstance().getShardingProperties().getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
+        boolean isQueryWithCipherColumn = ShardingProxyContext.getInstance().getProperties().getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         List<QueryHeader> queryHeaders = ((QueryResponse) response).getQueryHeaders();
         List<Object> row = new ArrayList<>(queryHeaders.size());
         for (int columnIndex = 1; columnIndex <= queryHeaders.size(); columnIndex++) {

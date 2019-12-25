@@ -22,7 +22,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.core.SimpleQueryShardingEngine;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
@@ -146,7 +146,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             return new ShardingResultSet(resultSets, mergedResult, this, sqlRouteResult);
         }
         ResultSetEncryptorMetaData metaData = new ResultSetEncryptorMetaData(encryptRule, resultSets.get(0).getMetaData(), sqlRouteResult.getSqlStatementContext());
-        boolean queryWithCipherColumn = connection.getRuntimeContext().getProps().getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
+        boolean queryWithCipherColumn = connection.getRuntimeContext().getProperties().getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         return new ShardingResultSet(resultSets, new DQLEncryptMergeEngine(metaData, mergedResult, queryWithCipherColumn).merge(), this, sqlRouteResult);
     }
     
@@ -269,7 +269,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private void shard(final String sql) {
         ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
-        SimpleQueryShardingEngine shardingEngine = new SimpleQueryShardingEngine(runtimeContext.getRule(), runtimeContext.getProps(), runtimeContext.getMetaData(), runtimeContext.getParseEngine());
+        SimpleQueryShardingEngine shardingEngine = new SimpleQueryShardingEngine(
+                runtimeContext.getRule(), runtimeContext.getProperties(), runtimeContext.getMetaData(), runtimeContext.getParseEngine());
         sqlRouteResult = shardingEngine.shard(sql, Collections.emptyList());
     }
     

@@ -56,7 +56,7 @@ public final class PreparedQueryShardingEngineTest extends BaseShardingEngineTes
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
         when(shardingSphereMetaData.getTables()).thenReturn(mock(TableMetas.class));
-        shardingEngine = new PreparedQueryShardingEngine(getSql(), shardingRule, getShardingProperties(), shardingSphereMetaData, mock(SQLParseEngine.class));
+        shardingEngine = new PreparedQueryShardingEngine(getSql(), shardingRule, getProperties(), shardingSphereMetaData, mock(SQLParseEngine.class));
         setRoutingEngine();
     }
     

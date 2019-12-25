@@ -22,8 +22,8 @@ import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrate
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -232,13 +232,13 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     public void assertPropsDataSource() {
         ShardingDataSource shardingDataSource = applicationContext.getBean("propsDataSource", ShardingDataSource.class);
         ShardingRuntimeContext runtimeContext = (ShardingRuntimeContext) FieldValueUtil.getFieldValue(shardingDataSource, "runtimeContext", true);
-        assertTrue(runtimeContext.getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
-        ShardingProperties shardingProperties = runtimeContext.getProps();
-        boolean showSql = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
+        assertTrue(runtimeContext.getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW));
+        ShardingSphereProperties properties = runtimeContext.getProperties();
+        boolean showSql = properties.getValue(PropertiesConstant.SQL_SHOW);
         assertTrue(showSql);
-        int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
+        int executorSize = properties.getValue(PropertiesConstant.EXECUTOR_SIZE);
         assertThat(executorSize, is(10));
-        assertNull(ShardingPropertiesConstant.findByKey("foo"));
+        assertNull(PropertiesConstant.findByKey("foo"));
     }
     
     @Test

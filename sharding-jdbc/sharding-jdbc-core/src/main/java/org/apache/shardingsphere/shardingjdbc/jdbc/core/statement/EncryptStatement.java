@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.relation.SQLStatementContextFactory;
@@ -95,7 +95,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
         RelationMetas relationMetas = getRelationMetas(connection.getRuntimeContext().getTableMetas());
         sqlStatementContext = SQLStatementContextFactory.newInstance(relationMetas, sql, Collections.emptyList(), sqlStatement);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(relationMetas, sqlStatementContext, sql, Collections.emptyList());
-        boolean isQueryWithCipherColumn = connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
+        boolean isQueryWithCipherColumn = connection.getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         new EncryptSQLRewriteContextDecorator(connection.getRuntimeContext().getRule(), isQueryWithCipherColumn).decorate(sqlRewriteContext);
         sqlRewriteContext.generateSQLTokens();
         String result = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
@@ -113,7 +113,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     }
     
     private void showSQL(final String sql) {
-        boolean showSQL = connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW);
+        boolean showSQL = connection.getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW);
         if (showSQL) {
             SQLLogger.logSQL(sql);
         }

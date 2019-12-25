@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.engine.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
@@ -70,7 +70,7 @@ public abstract class AbstractBaseExecutorTest {
     private void setConnection() throws SQLException {
         ShardingRuntimeContext runtimeContext = mock(ShardingRuntimeContext.class);
         when(runtimeContext.getExecuteEngine()).thenReturn(executeEngine);
-        when(runtimeContext.getProps()).thenReturn(getShardingProperties());
+        when(runtimeContext.getProperties()).thenReturn(getProperties());
         when(runtimeContext.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
         ShardingRule shardingRule = getShardingRule();
         when(runtimeContext.getRule()).thenReturn(shardingRule);
@@ -107,10 +107,10 @@ public abstract class AbstractBaseExecutorTest {
         return sqlStatementContext;
     }
     
-    private ShardingProperties getShardingProperties() {
+    private ShardingSphereProperties getProperties() {
         Properties props = new Properties();
-        props.setProperty(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY.getDefaultValue());
-        return new ShardingProperties(props);
+        props.setProperty(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY.getDefaultValue());
+        return new ShardingSphereProperties(props);
     }
     
     @After

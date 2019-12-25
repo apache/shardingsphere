@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingproxy.backend.schema;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.execute.metadata.TableMetaDataInitializer;
 import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
@@ -99,11 +99,11 @@ public abstract class LogicSchema {
     }
     
     protected final TableMetaDataInitializer getTableMetaDataInitializer(final DataSourceMetas dataSourceMetas) {
-        ShardingProperties shardingProperties = ShardingProxyContext.getInstance().getShardingProperties();
+        ShardingSphereProperties properties = ShardingProxyContext.getInstance().getProperties();
         return new TableMetaDataInitializer(
                 dataSourceMetas, BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()),
-                shardingProperties.<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
-                shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
+                properties.<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
+                properties.<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
     }
     
     /**

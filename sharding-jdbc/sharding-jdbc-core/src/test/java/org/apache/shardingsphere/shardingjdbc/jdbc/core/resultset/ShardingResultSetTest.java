@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.merge.MergedResult;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.EncryptRule;
@@ -71,7 +71,7 @@ public final class ShardingResultSetTest {
         mergeResultSet = mock(MergedResult.class);
         ShardingRuntimeContext shardingRuntimeContext = mock(ShardingRuntimeContext.class);
         when(shardingRuntimeContext.getRule()).thenReturn(mock(ShardingRule.class));
-        when(shardingRuntimeContext.getProps()).thenReturn(new ShardingProperties(new Properties()));
+        when(shardingRuntimeContext.getProperties()).thenReturn(new ShardingSphereProperties(new Properties()));
         shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement(), createSQLRouteResult());
     }
     
@@ -103,7 +103,7 @@ public final class ShardingResultSetTest {
         when(encryptRule.findShardingEncryptor(anyString(), anyString())).thenReturn(Optional.<ShardingEncryptor>absent());
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         when(runtimeContext.getRule()).thenReturn(shardingRule);
-        when(runtimeContext.getProps()).thenReturn(new ShardingProperties(new Properties()));
+        when(runtimeContext.getProperties()).thenReturn(new ShardingSphereProperties(new Properties()));
         when(shardingConnection.getRuntimeContext()).thenReturn(runtimeContext);
         ShardingStatement statement = mock(ShardingStatement.class);
         when(statement.getConnection()).thenReturn(shardingConnection);
