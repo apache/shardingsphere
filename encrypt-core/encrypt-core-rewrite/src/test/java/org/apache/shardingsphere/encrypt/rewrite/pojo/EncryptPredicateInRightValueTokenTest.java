@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.rewrite.pojo;
 
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateInRightValueToken;
-import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateRightValueToken;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -35,13 +34,13 @@ public final class EncryptPredicateInRightValueTokenTest {
         Map<Integer, Object> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "a");
         indexValues.put(1, "b");
-        EncryptPredicateRightValueToken actual = new EncryptPredicateInRightValueToken(0, 0, indexValues, Collections.<Integer>emptyList());
+        EncryptPredicateInRightValueToken actual = new EncryptPredicateInRightValueToken(0, 0, indexValues, Collections.<Integer>emptyList());
         assertThat(actual.toString(), is("('a', 'b')"));
     }
     
     @Test
     public void assertToStringWithPlaceholderWithoutTableOwnerWithIn() {
-        EncryptPredicateRightValueToken actual = new EncryptPredicateInRightValueToken(0, 0, Collections.<Integer, Object>emptyMap(), Collections.singletonList(0));
+        EncryptPredicateInRightValueToken actual = new EncryptPredicateInRightValueToken(0, 0, Collections.<Integer, Object>emptyMap(), Collections.singletonList(0));
         assertThat(actual.toString(), is("(?)"));
     }
 }

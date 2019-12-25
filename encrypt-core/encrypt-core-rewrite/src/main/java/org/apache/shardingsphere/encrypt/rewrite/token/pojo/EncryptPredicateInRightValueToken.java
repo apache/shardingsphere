@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.pojo;
 
 import lombok.Getter;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable;
 
 import java.util.Collection;
 import java.util.Map;
@@ -27,7 +29,7 @@ import java.util.Map;
  *
  * @author panjuan
  */
-public final class EncryptPredicateInRightValueToken extends EncryptPredicateRightValueToken {
+public final class EncryptPredicateInRightValueToken extends SQLToken implements Substitutable {
     
     @Getter
     private final int stopIndex;

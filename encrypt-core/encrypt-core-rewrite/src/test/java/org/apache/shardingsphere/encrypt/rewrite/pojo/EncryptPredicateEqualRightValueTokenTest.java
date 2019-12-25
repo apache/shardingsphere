@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.rewrite.pojo;
 
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateEqualRightValueToken;
-import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateRightValueToken;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -34,13 +33,13 @@ public final class EncryptPredicateEqualRightValueTokenTest {
     public void assertToStringWithoutPlaceholderWithoutTableOwnerWithEqual() {
         Map<Integer, Object> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "a");
-        EncryptPredicateRightValueToken actual = new EncryptPredicateEqualRightValueToken(0, 0, indexValues, Collections.<Integer>emptyList());
+        EncryptPredicateEqualRightValueToken actual = new EncryptPredicateEqualRightValueToken(0, 0, indexValues, Collections.<Integer>emptyList());
         assertThat(actual.toString(), is("'a'"));
     }
     
     @Test
     public void assertToStringWithPlaceholderWithoutTableOwnerWithEqual() {
-        EncryptPredicateRightValueToken actual = new EncryptPredicateEqualRightValueToken(0, 0, Collections.<Integer, Object>emptyMap(), Collections.singletonList(0));
+        EncryptPredicateEqualRightValueToken actual = new EncryptPredicateEqualRightValueToken(0, 0, Collections.<Integer, Object>emptyMap(), Collections.singletonList(0));
         assertThat(actual.toString(), is("?"));
     }
 }
