@@ -62,8 +62,6 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
 
     private PreparedStatement preparedStatement;
 
-    private SQLStatementContext sqlStatementContext;
-
     private ResultSet resultSet;
 
     private final Collection<SQLUnit> sqlUnits = new LinkedList<>();
@@ -167,7 +165,7 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
     private SQLUnit getSQLUnit(final String sql) {
         ShadowConnection connection = preparedStatementGenerator.connection;
         SQLStatement sqlStatement = connection.getRuntimeContext().getParseEngine().parse(sql, true);
-        sqlStatementContext = SQLStatementContextFactory.newInstance(getRelationMetas(connection.getRuntimeContext().getTableMetas()), sql, getParameters(), sqlStatement);
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(getRelationMetas(connection.getRuntimeContext().getTableMetas()), sql, getParameters(), sqlStatement);
         shadowJudgementEngine = new PreparedJudgementEngine(connection.getRuntimeContext().getRule(), sqlStatementContext, getParameters());
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(connection.getRuntimeContext().getTableMetas(), sqlStatementContext, sql, getParameters());
         new ShadowSQLRewriteContextDecorator(connection.getRuntimeContext().getRule()).decorate(sqlRewriteContext);
