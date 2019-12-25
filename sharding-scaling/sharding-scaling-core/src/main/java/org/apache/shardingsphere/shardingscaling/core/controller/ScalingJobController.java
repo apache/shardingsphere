@@ -22,6 +22,7 @@ import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.task.SyncTaskController;
 import org.apache.shardingsphere.shardingscaling.core.exception.ScalingJobNotFoundException;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -87,5 +88,14 @@ public class ScalingJobController {
             }
         }
         return result;
+    }
+
+    /**
+     * List all shardingscaling jobs.
+     *
+     * @return list of shardingscaling jobs
+     */
+    public List<ShardingScalingJob> listShardingScalingJobs() {
+        return new ArrayList<>(scalingJobMap.values());
     }
 }

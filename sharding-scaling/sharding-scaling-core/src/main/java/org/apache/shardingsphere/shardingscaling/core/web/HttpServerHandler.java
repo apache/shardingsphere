@@ -38,10 +38,10 @@ import org.apache.shardingsphere.shardingscaling.core.config.ScalingConfiguratio
 import org.apache.shardingsphere.shardingscaling.core.controller.ScalingJobController;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.exception.ScalingJobNotFoundException;
-import org.apache.shardingsphere.shardingscaling.core.web.entity.ResponseContent;
 import org.apache.shardingsphere.shardingscaling.core.web.util.ResponseContentUtil;
 import org.apache.shardingsphere.shardingscaling.core.web.util.SyncConfigurationUtil;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 
@@ -53,10 +53,10 @@ import java.util.regex.Pattern;
 @Slf4j
 public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
-    private static final Pattern URL_PATTERN = Pattern.compile("(^/shardingscaling/job/(start|stop))|(^/shardingscaling/job/progress/\\d+)",
+    private static final Pattern URL_PATTERN = Pattern.compile("(^/shardingscaling/job/(start|stop|list))|(^/shardingscaling/job/progress/\\d+)",
             Pattern.CASE_INSENSITIVE);
 
-    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
+    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
 
     private static final ScalingJobController SCALING_JOB_CONTROLLER = new ScalingJobController();
 
@@ -71,35 +71,55 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
             return;
         }
         if ("/shardingscaling/job/start".equalsIgnoreCase(requestPath) && method.equals(HttpMethod.POST)) {
-            ScalingConfiguration scalingConfiguration = GSON.fromJson(requestBody, ScalingConfiguration.class);
-            ShardingScalingJob shardingScalingJob = new ShardingScalingJob("Local Sharding Scaling Job");
-            shardingScalingJob.getSyncConfigurations().addAll(SyncConfigurationUtil.toSyncConfigurations(scalingConfiguration));
-            log.info("start job : {}", requestBody);
-            //TODO, Exception handling
-            SCALING_JOB_CONTROLLER.start(shardingScalingJob);
-            ResponseContent<ShardingScalingJob> responseContent = ResponseContentUtil.build(shardingScalingJob);
-            response(GSON.toJson(responseContent), channelHandlerContext, HttpResponseStatus.OK);
+            startJob(channelHandlerContext, requestBody);
             return;
         }
         if (requestPath.contains("/shardingscaling/job/progress/") && method.equals(HttpMethod.GET)) {
-            Integer jobId = Integer.valueOf(requestPath.split("/")[4]);
-            try {
-                SyncProgress progresses = SCALING_JOB_CONTROLLER.getProgresses(jobId);
-                response(GSON.toJson(ResponseContentUtil.build(progresses)), channelHandlerContext, HttpResponseStatus.OK);
-            } catch (ScalingJobNotFoundException e) {
-                response(GSON.toJson(ResponseContentUtil.handleBadRequest(e.getMessage())), channelHandlerContext, HttpResponseStatus.BAD_REQUEST);
-            }
+            getJobProgress(channelHandlerContext, requestPath);
+            return;
+        }
+        if ("/shardingscaling/job/list".equalsIgnoreCase(requestPath) && method.equals(HttpMethod.POST)) {
+            listAllJobs(channelHandlerContext);
             return;
         }
         if ("/shardingscaling/job/stop".equalsIgnoreCase(requestPath) && method.equals(HttpMethod.POST)) {
-            ShardingScalingJob shardingScalingJob = GSON.fromJson(requestBody, ShardingScalingJob.class);
-            //TODO, Exception handling
-            SCALING_JOB_CONTROLLER.stop(shardingScalingJob.getJobId());
-            response(GSON.toJson(ResponseContentUtil.success()), channelHandlerContext, HttpResponseStatus.OK);
+            stopJob(channelHandlerContext, requestBody);
             return;
         }
         response(GSON.toJson(ResponseContentUtil.handleBadRequest("Not support request!")),
                 channelHandlerContext, HttpResponseStatus.BAD_REQUEST);
+    }
+
+    private void startJob(final ChannelHandlerContext channelHandlerContext, final String requestBody) {
+        ScalingConfiguration scalingConfiguration = GSON.fromJson(requestBody, ScalingConfiguration.class);
+        ShardingScalingJob shardingScalingJob = new ShardingScalingJob("Local Sharding Scaling Job");
+        shardingScalingJob.getSyncConfigurations().addAll(SyncConfigurationUtil.toSyncConfigurations(scalingConfiguration));
+        log.info("start job : {}", requestBody);
+        //TODO, Exception handling
+        SCALING_JOB_CONTROLLER.start(shardingScalingJob);
+        response(GSON.toJson(ResponseContentUtil.success()), channelHandlerContext, HttpResponseStatus.OK);
+    }
+
+    private void getJobProgress(final ChannelHandlerContext channelHandlerContext, final String requestPath) {
+        Integer jobId = Integer.valueOf(requestPath.split("/")[4]);
+        try {
+            SyncProgress progresses = SCALING_JOB_CONTROLLER.getProgresses(jobId);
+            response(GSON.toJson(ResponseContentUtil.build(progresses)), channelHandlerContext, HttpResponseStatus.OK);
+        } catch (ScalingJobNotFoundException e) {
+            response(GSON.toJson(ResponseContentUtil.handleBadRequest(e.getMessage())), channelHandlerContext, HttpResponseStatus.BAD_REQUEST);
+        }
+    }
+
+    private void listAllJobs(final ChannelHandlerContext channelHandlerContext) {
+        List<ShardingScalingJob> shardingScalingJobs = SCALING_JOB_CONTROLLER.listShardingScalingJobs();
+        response(GSON.toJson(ResponseContentUtil.build(shardingScalingJobs)), channelHandlerContext, HttpResponseStatus.OK);
+    }
+
+    private void stopJob(final ChannelHandlerContext channelHandlerContext, final String requestBody) {
+        ShardingScalingJob shardingScalingJob = GSON.fromJson(requestBody, ShardingScalingJob.class);
+        //TODO, Exception handling
+        SCALING_JOB_CONTROLLER.stop(shardingScalingJob.getJobId());
+        response(GSON.toJson(ResponseContentUtil.success()), channelHandlerContext, HttpResponseStatus.OK);
     }
 
     /**

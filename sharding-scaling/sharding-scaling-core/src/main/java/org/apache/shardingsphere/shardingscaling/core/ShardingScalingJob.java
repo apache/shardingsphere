@@ -43,7 +43,7 @@ public final class ShardingScalingJob {
     
     private final transient List<SyncConfiguration> syncConfigurations = new LinkedList<>();
     
-    private final transient String jobName;
+    private final String jobName;
     
     private String status = "RUNNING";
 }
