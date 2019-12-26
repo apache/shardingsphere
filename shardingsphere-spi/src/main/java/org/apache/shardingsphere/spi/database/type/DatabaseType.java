@@ -15,41 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.database.metadata;
+package org.apache.shardingsphere.spi.database.type;
+
+import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
+
+import java.util.Collection;
 
 /**
- * Data source meta data.
+ * Database type.
  *
- * @author panjuan
  * @author zhangliang
  */
-public interface DataSourceMetaData {
+public interface DatabaseType {
     
     /**
-     * Get host name.
+     * Get database name.
      * 
-     * @return host name
+     * @return database name
      */
-    String getHostName();
+    String getName();
     
     /**
-     * Get port.
+     * Get alias of JDBC URL prefixes.
      * 
-     * @return port
+     * @return Alias of JDBC URL prefixes
      */
-    int getPort();
+    Collection<String> getJdbcUrlPrefixAlias();
     
     /**
-     * Get catalog.
-     *
-     * @return catalog
-     */
-    String getCatalog();
-    
-    /**
-     * Get schema.
+     * Get data source meta data.
      * 
-     * @return schema
+     * @param url URL of data source
+     * @param username username of data source
+     * @return data source meta data
      */
-    String getSchema();
+    DataSourceMetaData getDataSourceMetaData(String url, String username);
 }

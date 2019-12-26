@@ -15,12 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.database.metadata;
+package org.apache.shardingsphere.spi.database.type;
 
 /**
- * Memorized data source meta data.
- *
+ * Database type aware SPI.
+ * 
  * @author zhangliang
  */
-public interface MemorizedDataSourceMetaData extends DataSourceMetaData {
+public interface DatabaseTypeAwareSPI {
+    
+    /**
+     * Get database type.
+     * 
+     * <p>
+     *     The value of database type must registered by SPI for {@code org.apache.shardingsphere.spi.database.DatabaseType}.
+     * </p>
+     * 
+     * @return database type
+     */
+    String getDatabaseType();
 }

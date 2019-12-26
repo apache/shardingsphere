@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.database;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.underlying.common.database.type.BranchDatabaseType;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.spi.database.type.BranchDatabaseType;
+import org.apache.shardingsphere.spi.database.type.DatabaseType;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.execute.hook;
 
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 
 import java.util.Collection;
 import java.util.List;

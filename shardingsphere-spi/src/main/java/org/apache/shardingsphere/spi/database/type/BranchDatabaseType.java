@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.database.type;
+package org.apache.shardingsphere.spi.database.type;
 
 /**
- * Database type aware SPI.
- * 
+ * Branch database type.
+ *
  * @author zhangliang
  */
-public interface DatabaseTypeAwareSPI {
+public interface BranchDatabaseType extends DatabaseType {
     
     /**
-     * Get database type.
+     * Get trunk database type.
      * 
-     * <p>
-     *     The value of database type must registered by SPI for {@code org.apache.shardingsphere.spi.database.DatabaseType}.
-     * </p>
-     * 
-     * @return database type
+     * @return trunk database type
      */
-    String getDatabaseType();
+    DatabaseType getTrunkDatabaseType();
 }

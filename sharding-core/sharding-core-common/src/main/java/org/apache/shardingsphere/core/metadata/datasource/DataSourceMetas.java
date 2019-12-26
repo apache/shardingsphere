@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.core.metadata.datasource;
 
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.database.metadata.MemorizedDataSourceMetaData;
+import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.spi.database.metadata.MemorizedDataSourceMetaData;
 
 import java.util.Collection;
 import java.util.HashMap;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.spi.database;
 
 import org.apache.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaData;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.spi.database.type.DatabaseType;
 
 import java.util.Collection;
 import java.util.Collections;

@@ -15,39 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.database.type;
-
-import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
-
-import java.util.Collection;
+package org.apache.shardingsphere.spi.database.metadata;
 
 /**
- * Database type.
+ * Memorized data source meta data.
  *
  * @author zhangliang
  */
-public interface DatabaseType {
-    
-    /**
-     * Get database name.
-     * 
-     * @return database name
-     */
-    String getName();
-    
-    /**
-     * Get alias of JDBC URL prefixes.
-     * 
-     * @return Alias of JDBC URL prefixes
-     */
-    Collection<String> getJdbcUrlPrefixAlias();
-    
-    /**
-     * Get data source meta data.
-     * 
-     * @param url URL of data source
-     * @param username username of data source
-     * @return data source meta data
-     */
-    DataSourceMetaData getDataSourceMetaData(String url, String username);
+public interface MemorizedDataSourceMetaData extends DataSourceMetaData {
 }
