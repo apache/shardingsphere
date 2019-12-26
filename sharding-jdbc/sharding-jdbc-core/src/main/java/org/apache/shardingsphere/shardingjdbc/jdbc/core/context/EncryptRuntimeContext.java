@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.core.metadata.column.EncryptColumnMetaData;
+import org.apache.shardingsphere.encrypt.metadata.EncryptColumnMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;

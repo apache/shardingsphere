@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.metadata.column;
+package org.apache.shardingsphere.encrypt.metadata;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

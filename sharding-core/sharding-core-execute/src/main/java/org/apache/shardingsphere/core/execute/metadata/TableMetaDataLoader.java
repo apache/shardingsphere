@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.execute.engine.ShardingExecuteEngine;
 import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
 import org.apache.shardingsphere.core.execute.engine.ShardingGroupExecuteCallback;
 import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.core.metadata.column.EncryptColumnMetaData;
+import org.apache.shardingsphere.encrypt.metadata.EncryptColumnMetaData;
 import org.apache.shardingsphere.core.metadata.column.ShardingGeneratedKeyColumnMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
