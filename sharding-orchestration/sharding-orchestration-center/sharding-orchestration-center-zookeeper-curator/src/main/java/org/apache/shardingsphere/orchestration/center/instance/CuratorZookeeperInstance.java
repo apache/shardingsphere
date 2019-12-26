@@ -54,7 +54,7 @@ import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
 
 /**
- * Distributed lock org.apache.shardingsphere.orchestration.center for zookeeper with curator.
+ * Distributed lock center for zookeeper with curator.
  *
  * @author zhangliang
  * @author sunbufu
