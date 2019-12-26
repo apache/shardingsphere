@@ -30,10 +30,8 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.Collecti
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertColumnsToken;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Assist query and plain insert columns token generator.
@@ -54,9 +52,8 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator extends BaseEn
         Collection<InsertColumnsToken> result = new LinkedList<>();
         Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(sqlStatementContext.getTablesContext().getSingleTableName());
         Preconditions.checkState(encryptTable.isPresent());
-        Set<String> insertColumns = new HashSet<>(((InsertStatement) sqlStatementContext.getSqlStatement()).getColumnNames());
         for (ColumnSegment each : ((InsertStatement) sqlStatementContext.getSqlStatement()).getColumns()) {
-            List<String> columns = getColumns(encryptTable.get(), each, insertColumns);
+            List<String> columns = getColumns(encryptTable.get(), each);
             if (!columns.isEmpty()) {
                 result.add(new InsertColumnsToken(each.getStopIndex() + 1, columns));
             }
@@ -64,21 +61,15 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator extends BaseEn
         return result;
     }
     
-    private List<String> getColumns(final EncryptTable encryptTable, final ColumnSegment columnSegment, final Set<String> insertColumns) {
+    private List<String> getColumns(final EncryptTable encryptTable, final ColumnSegment columnSegment) {
         List<String> result = new LinkedList<>();
         Optional<String> assistedQueryColumn = encryptTable.findAssistedQueryColumn(columnSegment.getName());
         if (assistedQueryColumn.isPresent()) {
-            String assistedQueryColumnName = assistedQueryColumn.get();
-            if (!insertColumns.contains(assistedQueryColumnName)) {
-                result.add(assistedQueryColumnName);
-            }
+            result.add(assistedQueryColumn.get());
         }
         Optional<String> plainColumn = encryptTable.findPlainColumn(columnSegment.getName());
         if (plainColumn.isPresent()) {
-            String plainColumnName = plainColumn.get();
-            if (!insertColumns.contains(plainColumnName)) {
-                result.add(plainColumnName);
-            }
+            result.add(plainColumn.get());
         }
         return result;
     }
