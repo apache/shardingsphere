@@ -6,7 +6,9 @@ chapter = true
 +++
 
 ShardingSphere provided a full functionality test engine. it defines SQLs in xml files, every single SQL is drove by SQL parse unit test engine and integration test engine,
-each engine is suit for H2、MySQL、PostgreSQL、SQLServer and Oracle
+each engine is suit for H2、MySQL、PostgreSQL、SQLServer and Oracle.
+
+To make the test engine more easy to get start, all test engines in shardingsphere are designed to modify the configuration files to execute all assertions without any **Java code** modification.
 
 The SQL parsing unit test covers both SQL placeholder and literal dimension. 
 Integration test can be further divided into two dimensions of strategy and JDBC; the former one includes strategies as Sharding, table Sharding, database Sharding, and read-write split while the latter one includes `Statement` and `PreparedStatement`.
