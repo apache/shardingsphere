@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.metadata;
+package org.apache.shardingsphere.underlying.common.metadata;
 
 import lombok.Getter;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
