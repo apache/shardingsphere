@@ -22,7 +22,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.core.yaml.config.common.YamlProxyUserConfiguration;
-import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
 import java.util.Collections;
 

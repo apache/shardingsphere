@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.yaml.swapper.impl;
 
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlKeyGeneratorConfiguration;
-import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
 /**
  * Key generator configuration YAML swapper.

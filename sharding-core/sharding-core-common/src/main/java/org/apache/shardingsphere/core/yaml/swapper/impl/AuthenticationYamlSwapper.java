@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.core.yaml.config.common.YamlProxyUserConfiguration;
-import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
 /**
  * Authentication YAML swapper.

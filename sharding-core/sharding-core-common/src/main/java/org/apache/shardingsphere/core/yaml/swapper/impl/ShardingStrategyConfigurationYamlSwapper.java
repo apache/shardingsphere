@@ -34,7 +34,7 @@ import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlComplexS
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlHintShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlInlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlStandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
 /**
  * Sharding strategy configuration YAML swapper.

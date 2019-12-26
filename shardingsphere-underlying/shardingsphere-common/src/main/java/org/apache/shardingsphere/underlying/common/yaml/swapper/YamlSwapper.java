@@ -15,12 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.yaml.config;
+package org.apache.shardingsphere.underlying.common.yaml.swapper;
+
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 
 /**
- * YAML configuration.
+ * YAML configuration swapper.
  *
  * @author zhangliang
+ * 
+ * @param <Y> type of YAML configuration
+ * @param <T> type of swapped object
  */
-public interface YamlConfiguration {
+public interface YamlSwapper<Y extends YamlConfiguration, T> {
+    
+    /**
+     * Swap to YAML configuration.
+     *
+     * @param data data to be swapped
+     * @return YAML configuration
+     */
+    Y swap(T data);
+    
+    /**
+     * Swap from YAML configuration to object.
+     *
+     * @param yamlConfiguration YAML configuration
+     * @return swapped object
+     */
+    T swap(Y yamlConfiguration);
 }

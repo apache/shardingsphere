@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.swapper.OrchestrationConfigurationYamlSwapper;

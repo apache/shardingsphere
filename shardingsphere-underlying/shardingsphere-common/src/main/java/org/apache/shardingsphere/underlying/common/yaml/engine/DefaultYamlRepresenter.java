@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.yaml.engine;
+package org.apache.shardingsphere.underlying.common.yaml.engine;
 
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.nodes.CollectionNode;

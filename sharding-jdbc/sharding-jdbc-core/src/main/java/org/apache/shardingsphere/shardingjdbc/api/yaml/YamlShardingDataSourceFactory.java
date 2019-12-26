@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.api.yaml;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
-import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 

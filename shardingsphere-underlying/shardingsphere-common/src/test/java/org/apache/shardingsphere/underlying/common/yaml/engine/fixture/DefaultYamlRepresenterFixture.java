@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.yaml.engine.fixture;
+package org.apache.shardingsphere.underlying.common.yaml.engine.fixture;
 
 import lombok.Getter;
 import lombok.Setter;

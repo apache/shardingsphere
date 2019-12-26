@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.yaml.engine;
 
 import org.apache.shardingsphere.core.yaml.config.common.YamlProxyUserConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.junit.Test;
 
 import java.util.Map;
@@ -26,7 +27,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class YamlEngineTest {
+public final class YamlEngineProxyUserConfigurationTest {
     
     @Test
     public void assertUnmarshal() {

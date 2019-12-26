@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.yaml.engine;
+package org.apache.shardingsphere.underlying.common.yaml.engine;
 
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
