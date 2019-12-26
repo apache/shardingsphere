@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.rule;
 
-import org.apache.shardingsphere.underlying.common.config.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

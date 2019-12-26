@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.config;
+package org.apache.shardingsphere.underlying.common.config.exception;
 
 /**
  * Configuration exception.

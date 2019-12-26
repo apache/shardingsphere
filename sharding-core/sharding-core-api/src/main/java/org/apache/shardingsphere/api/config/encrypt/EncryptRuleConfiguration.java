@@ -19,7 +19,7 @@ package org.apache.shardingsphere.api.config.encrypt;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.api.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

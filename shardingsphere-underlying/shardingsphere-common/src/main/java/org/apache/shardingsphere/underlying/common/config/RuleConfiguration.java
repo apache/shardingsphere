@@ -15,33 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config;
-
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import lombok.Getter;
-
-import java.util.Properties;
+package org.apache.shardingsphere.underlying.common.config;
 
 /**
- * Type based SPI configuration.
+ * Rule configuration.
  * 
- * @author zhangliang
+ * @author panjuan
  */
-@Getter
-public abstract class TypeBasedSPIConfiguration {
-    
-    private final String type;
-    
-    private final Properties properties;
-    
-    public TypeBasedSPIConfiguration(final String type) {
-        this(type, null);
-    }
-    
-    public TypeBasedSPIConfiguration(final String type, final Properties properties) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required.");
-        this.type = type;
-        this.properties = null == properties ? new Properties() : properties;
-    }
+public interface RuleConfiguration {
 }

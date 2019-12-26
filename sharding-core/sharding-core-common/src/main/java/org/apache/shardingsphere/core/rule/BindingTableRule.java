@@ -21,7 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.config.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 
 import java.util.Collection;
 import java.util.List;
