@@ -52,11 +52,11 @@ public final class ConfigurationLogger {
             return;
         }
         if (ruleConfiguration instanceof ShardingRuleConfiguration) {
-            ConfigurationLogger.log((ShardingRuleConfiguration) ruleConfiguration);
+            log((ShardingRuleConfiguration) ruleConfiguration);
         } else if (ruleConfiguration instanceof MasterSlaveRuleConfiguration) {
-            ConfigurationLogger.log((MasterSlaveRuleConfiguration) ruleConfiguration);
+            log((MasterSlaveRuleConfiguration) ruleConfiguration);
         } else if (ruleConfiguration instanceof EncryptRuleConfiguration) {
-            ConfigurationLogger.log((EncryptRuleConfiguration) ruleConfiguration);
+            log((EncryptRuleConfiguration) ruleConfiguration);
         }
     }
     
@@ -101,6 +101,6 @@ public final class ConfigurationLogger {
     }
     
     private static void log(final String type, final String logContent) {
-        log.info("{}\n{}", type, logContent);
+        log.info("{}:\n{}", type, logContent);
     }
 }
