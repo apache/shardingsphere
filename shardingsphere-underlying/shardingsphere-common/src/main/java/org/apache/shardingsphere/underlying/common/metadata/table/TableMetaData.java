@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.metadata.table;
+package org.apache.shardingsphere.underlying.common.metadata.table;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
 
 import java.util.Collection;
 import java.util.Collections;

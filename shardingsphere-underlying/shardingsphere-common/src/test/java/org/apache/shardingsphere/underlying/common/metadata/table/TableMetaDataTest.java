@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.metadata.table;
+package org.apache.shardingsphere.underlying.common.metadata.table;
 
-import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
 import org.junit.Test;
 
 import java.util.Collections;

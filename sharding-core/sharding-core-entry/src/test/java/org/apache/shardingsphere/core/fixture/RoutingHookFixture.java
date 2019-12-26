@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.fixture;
 
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.hook.RoutingHook;
 

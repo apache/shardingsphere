@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.execute.metadata;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.execute.engine.ShardingExecuteEngine;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;

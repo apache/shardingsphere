@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.route.hook;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.fixture.RoutingHookFixture;
 import org.junit.Test;

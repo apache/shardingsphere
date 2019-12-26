@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.metadata.datasource;
+package org.apache.shardingsphere.underlying.common.metadata.datasource;
 
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.route.type.broadcast;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingDataSourceNames;

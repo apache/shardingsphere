@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.metadata.table;
+package org.apache.shardingsphere.underlying.common.metadata.table;
 
 import java.util.ArrayList;
 import java.util.Collection;
