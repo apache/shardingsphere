@@ -25,8 +25,8 @@ import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.spi.database.MySQLDatabaseType;
-import org.apache.shardingsphere.spi.database.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.dialect.PostgreSQLDatabaseType;
 
 import java.sql.Connection;
 import java.sql.SQLException;

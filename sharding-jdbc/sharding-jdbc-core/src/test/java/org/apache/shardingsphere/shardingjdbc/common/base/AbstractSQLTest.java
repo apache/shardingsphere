@@ -21,7 +21,7 @@ import com.google.common.collect.Sets;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.underlying.common.database.DatabaseTypes;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.shardingjdbc.common.env.DatabaseEnvironment;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.h2.tools.RunScript;

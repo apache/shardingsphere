@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.connection;
 
-import org.apache.shardingsphere.underlying.common.database.DatabaseTypes;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.h2.jdbcx.JdbcXAConnection;
 import org.junit.Test;
 import org.junit.runner.RunWith;
