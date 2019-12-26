@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
-import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 

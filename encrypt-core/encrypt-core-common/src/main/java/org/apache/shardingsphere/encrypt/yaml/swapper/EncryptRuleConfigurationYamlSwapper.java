@@ -19,9 +19,9 @@ package org.apache.shardingsphere.encrypt.yaml.swapper;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptorRuleConfiguration;

@@ -30,6 +30,7 @@
     <packaging>pom</packaging>
     
     <modules>
+        <module>encrypt-core-api</module>
         <module>encrypt-core-common</module>
         <module>encrypt-core-rewrite</module>
         <module>encrypt-core-merge</module>

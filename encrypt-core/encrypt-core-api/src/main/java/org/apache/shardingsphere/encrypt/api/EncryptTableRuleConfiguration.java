@@ -15,21 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rule.aware;
+package org.apache.shardingsphere.encrypt.api;
 
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Encrypt rule aware.
+ * Encrypt table rule configuration.
  *
- * @author zhangliang
+ * @author panjuan
  */
-public interface EncryptRuleAware {
+@NoArgsConstructor
+@Getter
+public final class EncryptTableRuleConfiguration {
     
-    /**
-     * Set encrypt rule.
-     * 
-     * @param encryptRule encrypt rule
-     */
-    void setEncryptRule(EncryptRule encryptRule);
+    private final Map<String, EncryptColumnRuleConfiguration> columns = new LinkedHashMap<>();
+    
+    public EncryptTableRuleConfiguration(final Map<String, EncryptColumnRuleConfiguration> columns) {
+        this.columns.putAll(columns);
+    }
 }

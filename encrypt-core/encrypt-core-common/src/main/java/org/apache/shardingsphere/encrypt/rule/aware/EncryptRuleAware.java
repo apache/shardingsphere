@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.encrypt;
+package org.apache.shardingsphere.encrypt.rule.aware;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 
 /**
- * Encrypt rule configuration.
+ * Encrypt rule aware.
  *
- * @author panjuan
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class EncryptRuleConfiguration implements RuleConfiguration {
+public interface EncryptRuleAware {
     
-    private final Map<String, EncryptorRuleConfiguration> encryptors;
-    
-    private final Map<String, EncryptTableRuleConfiguration> tables;
-    
-    public EncryptRuleConfiguration() {
-        this(new LinkedHashMap<String, EncryptorRuleConfiguration>(), new LinkedHashMap<String, EncryptTableRuleConfiguration>());
-    }
+    /**
+     * Set encrypt rule.
+     * 
+     * @param encryptRule encrypt rule
+     */
+    void setEncryptRule(EncryptRule encryptRule);
 }

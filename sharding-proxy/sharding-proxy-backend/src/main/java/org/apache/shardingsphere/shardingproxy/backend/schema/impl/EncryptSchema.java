@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.schema.impl;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
