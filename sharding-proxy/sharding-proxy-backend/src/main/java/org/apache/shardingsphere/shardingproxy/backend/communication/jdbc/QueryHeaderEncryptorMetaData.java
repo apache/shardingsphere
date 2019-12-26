@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
-import org.apache.shardingsphere.encrypt.strategy.spi.ShardingEncryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 
 import java.util.List;
 
@@ -39,12 +39,12 @@ public final class QueryHeaderEncryptorMetaData implements EncryptorMetaData {
     private final List<QueryHeader> queryHeaders;
     
     @Override
-    public Optional<ShardingEncryptor> findEncryptor(final int columnIndex) {
+    public Optional<Encryptor> findEncryptor(final int columnIndex) {
         QueryHeader queryHeader = queryHeaders.get(columnIndex - 1);
         String tableName = queryHeader.getTable();
         String columnName = queryHeader.getColumnName();
-        return encryptRule.isCipherColumn(tableName, columnName) ? encryptRule.findShardingEncryptor(tableName, encryptRule.getLogicColumnOfCipher(tableName, columnName))
-                : Optional.<ShardingEncryptor>absent();
+        return encryptRule.isCipherColumn(tableName, columnName) ? encryptRule.findEncryptor(tableName, encryptRule.getLogicColumnOfCipher(tableName, columnName))
+                : Optional.<Encryptor>absent();
     }
     
 }

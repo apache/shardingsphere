@@ -26,9 +26,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-public final class AESShardingEncryptorTest {
+public final class AESEncryptorTest {
     
-    private final AESShardingEncryptor encryptor = new AESShardingEncryptor();
+    private final AESEncryptor encryptor = new AESEncryptor();
     
     @Before
     public void setUp() {

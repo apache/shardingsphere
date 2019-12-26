@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.encrypt.strategy.impl.MD5ShardingEncryptor;
+import org.apache.shardingsphere.encrypt.strategy.impl.MD5Encryptor;
 import org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.core.strategy.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
@@ -41,7 +41,7 @@ import org.apache.shardingsphere.shardingjdbc.spring.algorithm.RangeModuloTableS
 import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.fixture.IncrementKeyGenerator;
 import org.apache.shardingsphere.shardingjdbc.spring.util.FieldValueUtil;
-import org.apache.shardingsphere.encrypt.strategy.spi.ShardingEncryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -112,8 +112,8 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
         assertTrue(shardingRule.getEncryptRule().findEncryptTable("t_order").isPresent());
         assertThat(shardingRule.getEncryptRule().findEncryptTable("t_order").get().getCipherColumn("user_id"), is("user_encrypt"));
-        assertTrue(shardingRule.getEncryptRule().findShardingEncryptor("t_order", "order_id").isPresent());
-        assertThat(shardingRule.getEncryptRule().findShardingEncryptor("t_order", "order_id").get(), CoreMatchers.<ShardingEncryptor>instanceOf(MD5ShardingEncryptor.class));
+        assertTrue(shardingRule.getEncryptRule().findEncryptor("t_order", "order_id").isPresent());
+        assertThat(shardingRule.getEncryptRule().findEncryptor("t_order", "order_id").get(), CoreMatchers.<Encryptor>instanceOf(MD5Encryptor.class));
         shardingRule.getTableRule("t_order");
     }
     

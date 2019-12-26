@@ -97,7 +97,7 @@ public final class EncryptConditionEngine {
     
     private Optional<EncryptCondition> createEncryptCondition(final PredicateSegment predicateSegment, final TablesContext tablesContext) {
         Optional<String> tableName = tablesContext.findTableName(predicateSegment.getColumn(), relationMetas);
-        return tableName.isPresent() && encryptRule.findShardingEncryptor(tableName.get(), predicateSegment.getColumn().getName()).isPresent()
+        return tableName.isPresent() && encryptRule.findEncryptor(tableName.get(), predicateSegment.getColumn().getName()).isPresent()
                 ? createEncryptCondition(predicateSegment, tableName.get()) : Optional.<EncryptCondition>absent();
     }
     

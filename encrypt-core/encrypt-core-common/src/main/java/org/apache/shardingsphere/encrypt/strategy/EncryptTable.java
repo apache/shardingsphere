@@ -147,12 +147,12 @@ public final class EncryptTable {
     }
     
     /**
-     * Find sharding encryptor.
+     * Find encryptor.
      *
      * @param logicColumn column name
-     * @return optional of sharding encryptor
+     * @return encryptor
      */
-    public Optional<String> findShardingEncryptor(final String logicColumn) {
+    public Optional<String> findEncryptor(final String logicColumn) {
         Optional<String> originLogicColumnName = findOriginLogicColumnName(logicColumn);
         return originLogicColumnName.isPresent() && columns.containsKey(originLogicColumnName.get()) ? Optional.of(columns.get(originLogicColumnName.get()).getEncryptor()) : Optional.<String>absent();
     }

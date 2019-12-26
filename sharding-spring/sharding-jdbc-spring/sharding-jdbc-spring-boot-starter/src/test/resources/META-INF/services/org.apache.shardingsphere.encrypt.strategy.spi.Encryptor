@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.shardingjdbc.fixture.TestQueryAssistedShardingEncryptor
-org.apache.shardingsphere.shardingjdbc.fixture.TestShardingEncryptor
+org.apache.shardingsphere.shardingjdbc.spring.boot.fixture.TestEncryptor

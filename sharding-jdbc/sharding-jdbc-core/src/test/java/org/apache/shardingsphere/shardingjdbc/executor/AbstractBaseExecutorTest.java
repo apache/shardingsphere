@@ -33,7 +33,7 @@ import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
-import org.apache.shardingsphere.encrypt.strategy.spi.ShardingEncryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.After;
@@ -86,11 +86,11 @@ public abstract class AbstractBaseExecutorTest {
     private ShardingRule getShardingRule() {
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.<String>emptyList());
-        ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
-        when(shardingEncryptor.decrypt(anyString())).thenReturn("decryptValue");
+        Encryptor encryptor = mock(Encryptor.class);
+        when(encryptor.decrypt(anyString())).thenReturn("decryptValue");
         EncryptRule encryptRule = mock(EncryptRule.class);
         EncryptTable encryptTable = mock(EncryptTable.class);
-        when(encryptRule.findShardingEncryptor(anyString(), anyString())).thenReturn(Optional.of(shardingEncryptor));
+        when(encryptRule.findEncryptor(anyString(), anyString())).thenReturn(Optional.of(encryptor));
         when(encryptRule.getLogicColumnOfCipher(anyString(), anyString())).thenReturn("column");
         when(encryptRule.findEncryptTable("table_x")).thenReturn(Optional.of(encryptTable));
         when(encryptTable.getCipherColumns()).thenReturn(Collections.singleton("column"));

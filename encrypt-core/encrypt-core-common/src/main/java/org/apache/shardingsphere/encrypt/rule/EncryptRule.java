@@ -27,10 +27,10 @@ import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfigurati
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.encrypt.strategy.spi.loader.ShardingEncryptorServiceLoader;
+import org.apache.shardingsphere.encrypt.strategy.spi.loader.EncryptorServiceLoader;
 import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
-import org.apache.shardingsphere.encrypt.strategy.spi.ShardingEncryptor;
-import org.apache.shardingsphere.encrypt.strategy.spi.ShardingQueryAssistedEncryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptor;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.util.Collection;
@@ -48,7 +48,7 @@ import java.util.Map.Entry;
  */
 public final class EncryptRule implements BaseRule {
     
-    private final Map<String, ShardingEncryptor> encryptors = new LinkedHashMap<>();
+    private final Map<String, Encryptor> encryptors = new LinkedHashMap<>();
     
     private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
     
@@ -86,14 +86,14 @@ public final class EncryptRule implements BaseRule {
     }
     
     private void initEncryptors(final Map<String, EncryptorRuleConfiguration> encryptors) {
-        ShardingEncryptorServiceLoader serviceLoader = new ShardingEncryptorServiceLoader();
+        EncryptorServiceLoader serviceLoader = new EncryptorServiceLoader();
         for (Entry<String, EncryptorRuleConfiguration> entry : encryptors.entrySet()) {
-            this.encryptors.put(entry.getKey(), createShardingEncryptor(serviceLoader, entry.getValue()));
+            this.encryptors.put(entry.getKey(), createEncryptor(serviceLoader, entry.getValue()));
         }
     }
     
-    private ShardingEncryptor createShardingEncryptor(final ShardingEncryptorServiceLoader serviceLoader, final EncryptorRuleConfiguration encryptorRuleConfig) {
-        ShardingEncryptor result = serviceLoader.newService(encryptorRuleConfig.getType(), encryptorRuleConfig.getProperties());
+    private Encryptor createEncryptor(final EncryptorServiceLoader serviceLoader, final EncryptorRuleConfiguration encryptorRuleConfig) {
+        Encryptor result = serviceLoader.newService(encryptorRuleConfig.getType(), encryptorRuleConfig.getProperties());
         result.init();
         return result;
     }
@@ -235,14 +235,14 @@ public final class EncryptRule implements BaseRule {
      * @return assisted query values
      */
     public List<Object> getEncryptAssistedQueryValues(final String logicTable, final String logicColumn, final List<Object> originalValues) {
-        final Optional<ShardingEncryptor> shardingEncryptor = findShardingEncryptor(logicTable, logicColumn);
-        Preconditions.checkArgument(shardingEncryptor.isPresent() && shardingEncryptor.get() instanceof ShardingQueryAssistedEncryptor,
-                String.format("Can not find ShardingQueryAssistedEncryptor by %s.%s.", logicTable, logicColumn));
+        final Optional<Encryptor> encryptor = findEncryptor(logicTable, logicColumn);
+        Preconditions.checkArgument(encryptor.isPresent() && encryptor.get() instanceof QueryAssistedEncryptor,
+                String.format("Can not find QueryAssistedEncryptor by %s.%s.", logicTable, logicColumn));
         return Lists.transform(originalValues, new Function<Object, Object>() {
             
             @Override
             public Object apply(final Object input) {
-                return null == input ? null : ((ShardingQueryAssistedEncryptor) shardingEncryptor.get()).queryAssistedEncrypt(input.toString());
+                return null == input ? null : ((QueryAssistedEncryptor) encryptor.get()).queryAssistedEncrypt(input.toString());
             }
         });
     }
@@ -256,13 +256,13 @@ public final class EncryptRule implements BaseRule {
      * @return encrypt values
      */
     public List<Object> getEncryptValues(final String logicTable, final String logicColumn, final List<Object> originalValues) {
-        final Optional<ShardingEncryptor> shardingEncryptor = findShardingEncryptor(logicTable, logicColumn);
-        Preconditions.checkArgument(shardingEncryptor.isPresent(), String.format("Can not find ShardingQueryAssistedEncryptor by %s.%s.", logicTable, logicColumn));
+        final Optional<Encryptor> encryptor = findEncryptor(logicTable, logicColumn);
+        Preconditions.checkArgument(encryptor.isPresent(), String.format("Can not find QueryAssistedEncryptor by %s.%s.", logicTable, logicColumn));
         return Lists.transform(originalValues, new Function<Object, Object>() {
             
             @Override
             public Object apply(final Object input) {
-                return null == input ? null : String.valueOf(shardingEncryptor.get().encrypt(input.toString()));
+                return null == input ? null : String.valueOf(encryptor.get().encrypt(input.toString()));
             }
         });
     }
@@ -274,12 +274,12 @@ public final class EncryptRule implements BaseRule {
      * @param logicColumn logic column name
      * @return sharding encryptor
      */
-    public Optional<ShardingEncryptor> findShardingEncryptor(final String logicTable, final String logicColumn) {
+    public Optional<Encryptor> findEncryptor(final String logicTable, final String logicColumn) {
         if (!tables.containsKey(logicTable)) {
             return Optional.absent();
         }
-        Optional<String> encryptor = tables.get(logicTable).findShardingEncryptor(logicColumn);
-        return encryptor.isPresent() ? Optional.of(encryptors.get(encryptor.get())) : Optional.<ShardingEncryptor>absent();
+        Optional<String> encryptor = tables.get(logicTable).findEncryptor(logicColumn);
+        return encryptor.isPresent() ? Optional.of(encryptors.get(encryptor.get())) : Optional.<Encryptor>absent();
     }
     
     /**

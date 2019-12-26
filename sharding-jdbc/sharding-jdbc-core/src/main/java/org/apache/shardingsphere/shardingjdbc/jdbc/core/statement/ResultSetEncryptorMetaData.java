@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.strategy.spi.ShardingEncryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.sql.ResultSetMetaData;
@@ -42,11 +42,11 @@ public final class ResultSetEncryptorMetaData implements EncryptorMetaData {
     private final SQLStatementContext sqlStatementContext;
     
     @Override
-    public Optional<ShardingEncryptor> findEncryptor(final int columnIndex) throws SQLException {
+    public Optional<Encryptor> findEncryptor(final int columnIndex) throws SQLException {
         String columnName = resultSetMetaData.getColumnName(columnIndex);
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            Optional<ShardingEncryptor> result = encryptRule.isCipherColumn(each, columnName)
-                    ? encryptRule.findShardingEncryptor(each, encryptRule.getLogicColumnOfCipher(each, columnName)) : Optional.<ShardingEncryptor>absent();
+            Optional<Encryptor> result = encryptRule.isCipherColumn(each, columnName)
+                    ? encryptRule.findEncryptor(each, encryptRule.getLogicColumnOfCipher(each, columnName)) : Optional.<Encryptor>absent();
             if (result.isPresent()) {
                 return result;
             }

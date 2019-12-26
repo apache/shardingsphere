@@ -29,8 +29,8 @@ import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.route.inline.InlineShardingStrategy;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.fixture.TestShardingEncryptor;
-import org.apache.shardingsphere.encrypt.strategy.spi.ShardingEncryptor;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.fixture.TestEncryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -77,9 +77,9 @@ public class SpringBootShardingTest {
         assertTrue(encryptRule.findEncryptTable("t_order").isPresent());
         assertThat(encryptRule.findEncryptTable("t_order").get().getCipherColumns().size(), is(2));
         assertThat(encryptRule.getAssistedQueryAndPlainColumns("t_order").size(), is(1));
-        Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor("t_order", "pwd");
-        assertTrue(shardingEncryptor.isPresent());
-        assertThat(shardingEncryptor.get(), instanceOf(TestShardingEncryptor.class));
+        Optional<Encryptor> encryptor = encryptRule.findEncryptor("t_order", "pwd");
+        assertTrue(encryptor.isPresent());
+        assertThat(encryptor.get(), instanceOf(TestEncryptor.class));
     }
     
     @Test

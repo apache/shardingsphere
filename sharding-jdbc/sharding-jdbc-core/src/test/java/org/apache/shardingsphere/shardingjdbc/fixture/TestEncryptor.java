@@ -19,13 +19,13 @@ package org.apache.shardingsphere.shardingjdbc.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.strategy.spi.ShardingEncryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 
 import java.util.Properties;
 
 @Getter
 @Setter
-public final class TestShardingEncryptor implements ShardingEncryptor {
+public final class TestEncryptor implements Encryptor {
     
     private Properties properties = new Properties();
     

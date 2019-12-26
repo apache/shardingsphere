@@ -61,7 +61,7 @@ public class SpringBootEncryptTest {
     public void assertWithEncryptRule() {
         EncryptRule encryptRule = ((EncryptDataSource) dataSource).getRuntimeContext().getRule();
         assertThat(encryptRule.getEncryptTableNames().size(), is(1));
-        assertTrue(encryptRule.findShardingEncryptor("t_order", "user_id").isPresent());
+        assertTrue(encryptRule.findEncryptor("t_order", "user_id").isPresent());
         assertThat(encryptRule.getCipherColumn("t_order", "user_id"), is("user_encrypt"));
         assertThat(encryptRule.findPlainColumn("t_order", "user_id"), is(Optional.of("user_decrypt")));
     }

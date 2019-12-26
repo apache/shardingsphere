@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.merge.dql;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.encrypt.strategy.spi.ShardingEncryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 
 import java.sql.SQLException;
 
@@ -36,5 +36,5 @@ public interface EncryptorMetaData {
      * @return encryptor
      * @throws SQLException SQL exception
      */
-    Optional<ShardingEncryptor> findEncryptor(int columnIndex) throws SQLException;
+    Optional<Encryptor> findEncryptor(int columnIndex) throws SQLException;
 }

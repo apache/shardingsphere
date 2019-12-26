@@ -41,7 +41,7 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.EncryptSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
-import org.apache.shardingsphere.encrypt.strategy.spi.ShardingEncryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
@@ -211,9 +211,9 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             Object value = mergedResult.getValue(columnIndex, Object.class);
             if (isQueryWithCipherColumn && encryptRule.isPresent()) {
                 QueryHeader queryHeader = ((QueryResponse) response).getQueryHeaders().get(columnIndex - 1);
-                Optional<ShardingEncryptor> shardingEncryptor = encryptRule.get().findShardingEncryptor(queryHeader.getTable(), queryHeader.getColumnName());
-                if (shardingEncryptor.isPresent()) {
-                    value = shardingEncryptor.get().decrypt(getCiphertext(value));
+                Optional<Encryptor> encryptor = encryptRule.get().findEncryptor(queryHeader.getTable(), queryHeader.getColumnName());
+                if (encryptor.isPresent()) {
+                    value = encryptor.get().decrypt(getCiphertext(value));
                 }
             }
             row.add(value);

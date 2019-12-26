@@ -24,7 +24,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.shardingsphere.encrypt.strategy.spi.ShardingEncryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -35,13 +35,13 @@ import java.util.Arrays;
 import java.util.Properties;
 
 /**
- * AES sharding encryptor.
+ * AES encryptor.
  *
  * @author panjuan
  */
 @Getter
 @Setter
-public final class AESShardingEncryptor implements ShardingEncryptor {
+public final class AESEncryptor implements Encryptor {
     
     private static final String AES_KEY = "aes.key.value";
     
@@ -74,7 +74,7 @@ public final class AESShardingEncryptor implements ShardingEncryptor {
     }
     
     private Cipher getCipher(final int decryptMode) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
-        Preconditions.checkArgument(properties.containsKey(AES_KEY), "No available secret key for `%s`.", AESShardingEncryptor.class.getName());
+        Preconditions.checkArgument(properties.containsKey(AES_KEY), "No available secret key for `%s`.", AESEncryptor.class.getName());
         Cipher result = Cipher.getInstance(getType());
         result.init(decryptMode, new SecretKeySpec(createSecretKey(), getType()));
         return result;

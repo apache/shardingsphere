@@ -15,25 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.strategy.spi.loader;
+package org.apache.shardingsphere.encrypt.strategy.spi;
 
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.spi.TypeBasedSPIServiceLoader;
-import org.apache.shardingsphere.encrypt.strategy.spi.ShardingEncryptor;
+import org.apache.shardingsphere.spi.TypeBasedSPI;
 
 /**
- * Sharding encryptor service loader.
- * 
+ * Encryptor.
+ *
  * @author panjuan
  */
-public final class ShardingEncryptorServiceLoader extends TypeBasedSPIServiceLoader<ShardingEncryptor> {
+public interface Encryptor extends TypeBasedSPI {
     
-    static {
-        NewInstanceServiceLoader.register(ShardingEncryptor.class);
-    }
+    /**
+     * Initialize.
+     */
+    void init();
     
-    public ShardingEncryptorServiceLoader() {
-        super(ShardingEncryptor.class);
-    }
+    /**
+     * Encode.
+     * 
+     * @param plaintext plaintext
+     * @return ciphertext
+     */
+    String encrypt(Object plaintext);
+    
+    /**
+     * Decode.
+     * 
+     * @param ciphertext ciphertext
+     * @return plaintext
+     */
+    Object decrypt(String ciphertext);
 }
-

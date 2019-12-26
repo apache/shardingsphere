@@ -19,13 +19,13 @@ package org.apache.shardingsphere.sharding.rewrite.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.strategy.spi.ShardingQueryAssistedEncryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptor;
 
 import java.util.Properties;
 
 @Getter
 @Setter
-public final class QueryAssistedEncryptorFixture implements ShardingQueryAssistedEncryptor {
+public final class QueryAssistedEncryptorFixture implements QueryAssistedEncryptor {
     
     private Properties properties = new Properties();
     
