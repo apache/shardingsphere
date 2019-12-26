@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.rule.aware;
 
-import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 
 /**
  * Encrypt rule aware.

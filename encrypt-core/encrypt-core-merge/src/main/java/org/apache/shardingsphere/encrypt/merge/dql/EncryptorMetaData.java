@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.merge.dql;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.ShardingEncryptor;
 
 import java.sql.SQLException;
 

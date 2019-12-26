@@ -19,8 +19,8 @@ package org.apache.shardingsphere.encrypt.merge.dal;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.underlying.execute.QueryResult;
-import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.junit.Test;

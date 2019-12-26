@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.ShardingEncryptor;
 
 import java.util.Properties;
 

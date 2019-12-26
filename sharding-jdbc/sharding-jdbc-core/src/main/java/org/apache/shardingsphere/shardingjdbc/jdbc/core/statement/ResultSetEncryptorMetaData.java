@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
-import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.strategy.spi.ShardingEncryptor;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 import java.sql.ResultSetMetaData;

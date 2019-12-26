@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 import com.google.common.base.Optional;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;

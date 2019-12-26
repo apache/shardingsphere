@@ -23,7 +23,7 @@ import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaDat
 import org.apache.shardingsphere.core.metadata.column.EncryptColumnMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 
 import javax.sql.DataSource;

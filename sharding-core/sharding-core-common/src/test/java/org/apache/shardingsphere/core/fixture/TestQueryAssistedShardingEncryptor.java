@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.ShardingQueryAssistedEncryptor;
 
 import java.util.Properties;
 
