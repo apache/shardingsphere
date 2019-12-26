@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.underlying.merge.impl.fixture;
 
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.merge.impl.MemoryMergedResult;
-import org.apache.shardingsphere.underlying.merge.impl.MemoryQueryResultRow;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.merge.impl.MemoryMergedResult;
+import org.apache.shardingsphere.underlying.merge.impl.MemoryQueryResultRow;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -32,7 +31,7 @@ import java.util.List;
 import static org.mockito.Mockito.mock;
 
 @Getter
-public final class TestMemoryMergedResult extends MemoryMergedResult<ShardingRule> {
+public final class TestMemoryMergedResult extends MemoryMergedResult<TestRule> {
     
     private MemoryQueryResultRow memoryQueryResultRow;
     
@@ -41,7 +40,7 @@ public final class TestMemoryMergedResult extends MemoryMergedResult<ShardingRul
     }
     
     @Override
-    protected List<MemoryQueryResultRow> init(final ShardingRule shardingRule, 
+    protected List<MemoryQueryResultRow> init(final TestRule rule, 
                                               final RelationMetas relationMetas, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) {
         memoryQueryResultRow = mock(MemoryQueryResultRow.class);
         return Collections.singletonList(memoryQueryResultRow);

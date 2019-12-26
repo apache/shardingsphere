@@ -31,12 +31,12 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-common</artifactId>
+            <artifactId>shardingsphere-sql-parser-relation</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-parser-relation</artifactId>
+            <artifactId>shardingsphere-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
