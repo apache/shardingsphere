@@ -31,6 +31,7 @@ import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptorServiceL
 import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
 import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.util.Collection;
 import java.util.Collections;

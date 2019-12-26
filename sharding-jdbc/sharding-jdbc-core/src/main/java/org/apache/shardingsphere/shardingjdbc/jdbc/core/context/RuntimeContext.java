@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.core.execute.engine.ShardingExecuteEngine;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
-import org.apache.shardingsphere.core.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 
 /**

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rule;
+package org.apache.shardingsphere.underlying.common.rule;
 
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 

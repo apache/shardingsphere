@@ -34,6 +34,7 @@ import org.apache.shardingsphere.core.strategy.route.ShardingStrategyFactory;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
 import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
 import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
