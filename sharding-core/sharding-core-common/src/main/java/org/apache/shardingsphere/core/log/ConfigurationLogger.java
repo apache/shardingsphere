@@ -20,57 +20,32 @@ package org.apache.shardingsphere.core.log;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 import java.util.Properties;
 
 /**
- * Configuration printer class.
+ * Configuration logger.
  *
  * @author sunbufu
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class ConfigurationLogger {
-
+    
     /**
-     * log properties configuration.
+     * Log rule configuration.
      *
-     * @param propsConfiguration properties configuration
-     */
-    public static void log(final Properties propsConfiguration) {
-        if (null == propsConfiguration) {
-            return;
-        }
-        log(propsConfiguration.getClass().getSimpleName(), YamlEngine.marshal(propsConfiguration));
-    }
-
-    /**
-     * log EncryptRuleConfiguration.
-     *
-     * @param encryptRuleConfiguration encryptRule configuration
-     */
-    public static void log(final EncryptRuleConfiguration encryptRuleConfiguration) {
-        if (null == encryptRuleConfiguration) {
-            return;
-        }
-        log(encryptRuleConfiguration.getClass().getSimpleName(),
-            YamlEngine.marshal(new EncryptRuleConfigurationYamlSwapper().swap(encryptRuleConfiguration)));
-    }
-
-    /**
-     * log ruleConfiguration.
-     *
-     * @param ruleConfiguration ruleConfiguration
+     * @param ruleConfiguration rule configuration
      */
     public static void log(final RuleConfiguration ruleConfiguration) {
         if (null == ruleConfiguration) {
@@ -84,53 +59,48 @@ public final class ConfigurationLogger {
             ConfigurationLogger.log((EncryptRuleConfiguration) ruleConfiguration);
         }
     }
-
-    /**
-     * log ShardingRuleConfiguration.
-     *
-     * @param shardingRuleConfiguration shardingRule configuration
-     */
-    public static void log(final ShardingRuleConfiguration shardingRuleConfiguration) {
-        if (null == shardingRuleConfiguration) {
-            return;
+    
+    private static void log(final ShardingRuleConfiguration shardingRuleConfiguration) {
+        if (null != shardingRuleConfiguration) {
+            log(shardingRuleConfiguration.getClass().getSimpleName(), YamlEngine.marshal(new ShardingRuleConfigurationYamlSwapper().swap(shardingRuleConfiguration)));
         }
-        log(shardingRuleConfiguration.getClass().getSimpleName(),
-            YamlEngine.marshal(new ShardingRuleConfigurationYamlSwapper().swap(shardingRuleConfiguration)));
     }
-
-    /**
-     * log MasterSlaveRuleConfiguration.
-     *
-     * @param masterSlaveRuleConfiguration masterSlaveRule configuration
-     */
-    public static void log(final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration) {
-        if (null == masterSlaveRuleConfiguration) {
-            return;
+    
+    private static void log(final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration) {
+        if (null != masterSlaveRuleConfiguration) {
+            log(masterSlaveRuleConfiguration.getClass().getSimpleName(), YamlEngine.marshal(new MasterSlaveRuleConfigurationYamlSwapper().swap(masterSlaveRuleConfiguration)));
         }
-        log(masterSlaveRuleConfiguration.getClass().getSimpleName(),
-            YamlEngine.marshal(new MasterSlaveRuleConfigurationYamlSwapper().swap(masterSlaveRuleConfiguration)));
     }
-
+    
+    private static void log(final EncryptRuleConfiguration encryptRuleConfiguration) {
+        if (null != encryptRuleConfiguration) {
+            log(encryptRuleConfiguration.getClass().getSimpleName(), YamlEngine.marshal(new EncryptRuleConfigurationYamlSwapper().swap(encryptRuleConfiguration)));
+        }
+    }
+    
     /**
-     * log AuthenticationConfiguration.
+     * Log authentication configuration.
      *
      * @param authenticationConfiguration authentication configuration
      */
     public static void log(final Authentication authenticationConfiguration) {
-        if (null == authenticationConfiguration) {
-            return;
+        if (null != authenticationConfiguration) {
+            log(authenticationConfiguration.getClass().getSimpleName(), YamlEngine.marshal(new AuthenticationYamlSwapper().swap(authenticationConfiguration)));
         }
-        log(authenticationConfiguration.getClass().getSimpleName(),
-            YamlEngine.marshal(new AuthenticationYamlSwapper().swap(authenticationConfiguration)));
     }
-
+    
     /**
-     * log configuration log.
+     * Log properties.
      *
-     * @param base base node name
-     * @param yamlStr yaml string
+     * @param properties properties
      */
-    public static void log(final String base, final String yamlStr) {
-        log.info("{}\n{}", base, yamlStr);
+    public static void log(final Properties properties) {
+        if (null != properties) {
+            log(properties.getClass().getSimpleName(), YamlEngine.marshal(properties));
+        }
+    }
+    
+    private static void log(final String type, final String logContent) {
+        log.info("{}\n{}", type, logContent);
     }
 }

@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.core.log;
 
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptColumnRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.rule.ProxyUser;
+import org.apache.shardingsphere.encrypt.api.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,7 +59,7 @@ public final class ConfigurationLoggerTest {
         setFinalStatic(field, log);
     }
     
-    private static void setFinalStatic(final Field field, final Object newValue) throws NoSuchFieldException, IllegalAccessException {
+    private void setFinalStatic(final Field field, final Object newValue) throws NoSuchFieldException, IllegalAccessException {
         field.setAccessible(true);
         Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);
@@ -67,60 +67,10 @@ public final class ConfigurationLoggerTest {
         field.set(null, newValue);
     }
     
-    private void assertEqualsWithLogInfo(final String base, final String yamlStr) {
-        doAnswer(new Answer() {
-            
-            @Override
-            public Void answer(final InvocationOnMock invocationOnMock) {
-                assertThat(invocationOnMock.getArgument(1).toString(), is(base));
-                assertThat(invocationOnMock.getArgument(2).toString(), is(yamlStr));
-                return null;
-            }
-        }).when(log).info(anyString(), anyString(), anyString());
-    }
-    
     @Test
-    public void logPropsConfiguration() {
-        String yamlStr =
-            "slaveDataSourceNames:\n" + "- slave_ds_0\n" + "- slave_ds_1\n" + "masterDataSourceName: master_ds\n";
-        assertEqualsWithLogInfo(Properties.class.getSimpleName(), yamlStr);
-        ConfigurationLogger.log(getProperties());
-    }
-    
-    private Properties getProperties() {
-        Properties result = new Properties();
-        result.put("masterDataSourceName", "master_ds");
-        result.put("slaveDataSourceNames", Arrays.asList("slave_ds_0", "slave_ds_1"));
-        return result;
-    }
-    
-    @Test
-    public void logEncryptRuleConfiguration() {
-        String yamlStr = "encryptors:\n" + "  encryptor_aes:\n" + "    props:\n" + "      aes.key.value: 123456abc\n" + "    type: aes\n"
-            + "tables:\n" + "  t_encrypt:\n" + "    columns:\n" + "      user_id:\n" + "        assistedQueryColumn: user_assisted\n"
-            + "        cipherColumn: user_encrypt\n" + "        encryptor: encryptor_aes\n" + "        plainColumn: user_decrypt\n";
-        assertEqualsWithLogInfo(EncryptRuleConfiguration.class.getSimpleName(), yamlStr);
-        ConfigurationLogger.log(getEncryptRuleConfiguration());
-    }
-    
-    private EncryptRuleConfiguration getEncryptRuleConfiguration() {
-        EncryptRuleConfiguration result = new EncryptRuleConfiguration();
-        Properties properties = new Properties();
-        properties.put("aes.key.value", "123456abc");
-        EncryptorRuleConfiguration encryptorRuleConfiguration =
-            new EncryptorRuleConfiguration("aes", properties);
-        result.getEncryptors().put("encryptor_aes", encryptorRuleConfiguration);
-        EncryptTableRuleConfiguration tableRuleConfiguration =
-            new EncryptTableRuleConfiguration(Collections.singletonMap("user_id", new EncryptColumnRuleConfiguration("user_decrypt", "user_encrypt", "user_assisted", "encryptor_aes")));
-        result.getTables().put("t_encrypt", tableRuleConfiguration);
-        return result;
-    }
-    
-    @Test
-    public void logShardingRuleConfiguration() {
-        String yamlStr =
-            "tables:\n" + "  user:\n" + "    actualDataNodes: ds_${0}.user_${0..1}\n" + "    logicTable: user\n";
-        assertEqualsWithLogInfo(ShardingRuleConfiguration.class.getSimpleName(), yamlStr);
+    public void assertLogShardingRuleConfiguration() {
+        String yaml = "tables:\n" + "  user:\n" + "    actualDataNodes: ds_${0}.user_${0..1}\n" + "    logicTable: user\n";
+        assertLogInfo(ShardingRuleConfiguration.class.getSimpleName(), yaml);
         ConfigurationLogger.log(getShardingRuleConfiguration());
     }
     
@@ -132,10 +82,9 @@ public final class ConfigurationLoggerTest {
     }
     
     @Test
-    public void logMasterSlaveRuleConfiguration() {
-        String yamlStr = "masterDataSourceName: master_ds\n" + "name: ms_ds\n" + "slaveDataSourceNames:\n"
-            + "- slave_ds_0\n" + "- slave_ds_1\n";
-        assertEqualsWithLogInfo(MasterSlaveRuleConfiguration.class.getSimpleName(), yamlStr);
+    public void assertLogMasterSlaveRuleConfiguration() {
+        String yaml = "masterDataSourceName: master_ds\n" + "name: ms_ds\n" + "slaveDataSourceNames:\n" + "- slave_ds_0\n" + "- slave_ds_1\n";
+        assertLogInfo(MasterSlaveRuleConfiguration.class.getSimpleName(), yaml);
         ConfigurationLogger.log(getMasterSlaveRuleConfiguration());
     }
     
@@ -144,34 +93,53 @@ public final class ConfigurationLoggerTest {
     }
     
     @Test
-    public void logRuleConfigurationWithEncryptRuleConfiguration() {
-        String yamlStr = "encryptors:\n" + "  encryptor_aes:\n" + "    props:\n" + "      aes.key.value: 123456abc\n" + "    type: aes\n"
+    public void assertLogEncryptRuleConfiguration() {
+        String yaml = "encryptors:\n" + "  encryptor_aes:\n" + "    props:\n" + "      aes.key.value: 123456abc\n" + "    type: aes\n"
+                + "tables:\n" + "  t_encrypt:\n" + "    columns:\n" + "      user_id:\n" + "        assistedQueryColumn: user_assisted\n"
+                + "        cipherColumn: user_encrypt\n" + "        encryptor: encryptor_aes\n" + "        plainColumn: user_decrypt\n";
+        assertLogInfo(EncryptRuleConfiguration.class.getSimpleName(), yaml);
+        ConfigurationLogger.log(getEncryptRuleConfiguration());
+    }
+    
+    private EncryptRuleConfiguration getEncryptRuleConfiguration() {
+        EncryptRuleConfiguration result = new EncryptRuleConfiguration();
+        Properties properties = new Properties();
+        properties.put("aes.key.value", "123456abc");
+        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("aes", properties);
+        result.getEncryptors().put("encryptor_aes", encryptorRuleConfiguration);
+        EncryptTableRuleConfiguration tableRuleConfiguration =
+                new EncryptTableRuleConfiguration(Collections.singletonMap("user_id", new EncryptColumnRuleConfiguration("user_decrypt", "user_encrypt", "user_assisted", "encryptor_aes")));
+        result.getTables().put("t_encrypt", tableRuleConfiguration);
+        return result;
+    }
+    
+    @Test
+    public void assertLogRuleConfigurationWithEncryptRuleConfiguration() {
+        String yaml = "encryptors:\n" + "  encryptor_aes:\n" + "    props:\n" + "      aes.key.value: 123456abc\n" + "    type: aes\n"
             + "tables:\n" + "  t_encrypt:\n" + "    columns:\n" + "      user_id:\n" + "        assistedQueryColumn: user_assisted\n"
             + "        cipherColumn: user_encrypt\n" + "        encryptor: encryptor_aes\n" + "        plainColumn: user_decrypt\n";
-        assertEqualsWithLogInfo(EncryptRuleConfiguration.class.getSimpleName(), yamlStr);
-        ConfigurationLogger.log((RuleConfiguration) getEncryptRuleConfiguration());
+        assertLogInfo(EncryptRuleConfiguration.class.getSimpleName(), yaml);
+        ConfigurationLogger.log(getEncryptRuleConfiguration());
     }
     
     @Test
-    public void logRuleConfigurationWithShardingRuleConfiguration() {
-        String yamlStr =
-            "tables:\n" + "  user:\n" + "    actualDataNodes: ds_${0}.user_${0..1}\n" + "    logicTable: user\n";
-        assertEqualsWithLogInfo(ShardingRuleConfiguration.class.getSimpleName(), yamlStr);
-        ConfigurationLogger.log((RuleConfiguration) getShardingRuleConfiguration());
+    public void assertLogRuleConfigurationWithShardingRuleConfiguration() {
+        String yaml = "tables:\n" + "  user:\n" + "    actualDataNodes: ds_${0}.user_${0..1}\n" + "    logicTable: user\n";
+        assertLogInfo(ShardingRuleConfiguration.class.getSimpleName(), yaml);
+        ConfigurationLogger.log(getShardingRuleConfiguration());
     }
     
     @Test
-    public void logRuleConfigurationWithMasterSlaveRuleConfiguration() {
-        String yamlStr = "masterDataSourceName: master_ds\n" + "name: ms_ds\n" + "slaveDataSourceNames:\n"
-            + "- slave_ds_0\n" + "- slave_ds_1\n";
-        assertEqualsWithLogInfo(MasterSlaveRuleConfiguration.class.getSimpleName(), yamlStr);
-        ConfigurationLogger.log((RuleConfiguration) getMasterSlaveRuleConfiguration());
+    public void assertLogRuleConfigurationWithMasterSlaveRuleConfiguration() {
+        String yaml = "masterDataSourceName: master_ds\n" + "name: ms_ds\n" + "slaveDataSourceNames:\n" + "- slave_ds_0\n" + "- slave_ds_1\n";
+        assertLogInfo(MasterSlaveRuleConfiguration.class.getSimpleName(), yaml);
+        ConfigurationLogger.log(getMasterSlaveRuleConfiguration());
     }
     
     @Test
-    public void logAuthenticationConfiguration() {
-        String yamlStr = "users:\n" + "  root:\n" + "    authorizedSchemas: sharding_db\n" + "    password: '123456'\n";
-        assertEqualsWithLogInfo(Authentication.class.getSimpleName(), yamlStr);
+    public void assertLogAuthenticationConfiguration() {
+        String yaml = "users:\n" + "  root:\n" + "    authorizedSchemas: sharding_db\n" + "    password: '123456'\n";
+        assertLogInfo(Authentication.class.getSimpleName(), yaml);
         ConfigurationLogger.log(getAuthentication());
     }
     
@@ -182,10 +150,28 @@ public final class ConfigurationLoggerTest {
     }
     
     @Test
-    public void log() {
-        String base = "base";
-        String yamlStr = "yamlStr";
-        assertEqualsWithLogInfo(base, yamlStr);
-        ConfigurationLogger.log(base, yamlStr);
+    public void assertLogProperties() {
+        String yaml = "sql.simple: 'true'\n" + "sql.show: 'true'\n";
+        assertLogInfo(Properties.class.getSimpleName(), yaml);
+        ConfigurationLogger.log(getProperties());
+    }
+    
+    private Properties getProperties() {
+        Properties result = new Properties();
+        result.put(PropertiesConstant.SQL_SHOW.getKey(), Boolean.TRUE.toString());
+        result.put(PropertiesConstant.SQL_SIMPLE.getKey(), Boolean.TRUE.toString());
+        return result;
+    }
+    
+    private void assertLogInfo(final String type, final String logContent) {
+        doAnswer(new Answer() {
+            
+            @Override
+            public Void answer(final InvocationOnMock invocationOnMock) {
+                assertThat(invocationOnMock.getArgument(1).toString(), is(type));
+                assertThat(invocationOnMock.getArgument(2).toString(), is(logContent));
+                return null;
+            }
+        }).when(log).info(anyString(), anyString(), anyString());
     }
 }
