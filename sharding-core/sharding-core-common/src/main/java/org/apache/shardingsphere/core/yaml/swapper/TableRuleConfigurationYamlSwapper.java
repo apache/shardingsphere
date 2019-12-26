@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.yaml.swapper.impl;
+package org.apache.shardingsphere.core.yaml.swapper;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
