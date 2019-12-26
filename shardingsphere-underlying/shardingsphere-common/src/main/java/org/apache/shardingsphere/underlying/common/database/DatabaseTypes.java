@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.database;
+package org.apache.shardingsphere.underlying.common.database;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.spi.database.type.BranchDatabaseType;

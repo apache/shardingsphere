@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.dbtest.env.dataset;
 
 import com.google.common.base.Joiner;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.underlying.common.database.DatabaseTypes;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;

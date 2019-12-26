@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.common.env;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.underlying.common.database.DatabaseTypes;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 
 import java.util.HashMap;
