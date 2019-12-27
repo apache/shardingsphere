@@ -49,16 +49,6 @@ public final class SQLLogger {
     }
     
     /**
-     * Print SQL log for encrypt rule.
-     * 
-     * @param encryptSQL encrypt SQL
-     */
-    public static void logSQL(final String encryptSQL) { 
-        log("Rule Type: encrypt");
-        log("SQL: {}", encryptSQL);
-    }
-    
-    /**
      * Print SQL log for sharding rule.
      * 
      * @param logicSQL logic SQL
