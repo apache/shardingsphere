@@ -174,8 +174,7 @@ public final class ConfigurationService {
      * @return is sharding rule or not
      */
     public boolean isShardingRule(final String shardingSchemaName) {
-        if (regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)).contains("encryptRule:\n")
-            && regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)).contains("tables:\n")) {
+        if (regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)).contains("encryptRule:\n")) {
             return true;
         }
         if (regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)).contains("tables:\n")) {
