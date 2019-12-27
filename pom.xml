@@ -31,7 +31,7 @@
         <spring-boot.version>1.5.17.RELEASE</spring-boot.version>
         <hikari-cp.version>2.4.11</hikari-cp.version>
         <mysql-connector-java.version>5.1.42</mysql-connector-java.version>
-        <postgresql.version>9.1-901-1.jdbc4</postgresql.version>
+        <postgresql.version>42.2.5.jre7</postgresql.version>
         <slf4j.version>1.7.7</slf4j.version>
         <logback.version>1.2.0</logback.version>
         
@@ -217,6 +217,11 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql-connector-java.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

@@ -36,7 +36,14 @@ import java.util.Map;
 public class ExampleMain {
     
     private static String configFile = "/META-INF/sharding-databases-tables.yaml";
-    //    private static String configFile = "/META-INF/master-slave.yaml";
+//    private static String configFile = "/META-INF/sharding-databases-tables-postgresql.yaml";
+//    private static String configFile = "/META-INF/master-slave.yaml";
+    
+    private static final String MYSQL_CREATE_TABLE =
+        "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))";
+    
+//    private static final String POSTGRESQL_CREATE_TABLE =
+//        "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT PRIMARY KEY NOT NULL, user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50))";
     
     public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(getFile(configFile));
@@ -50,8 +57,8 @@ public class ExampleMain {
     }
     
     private static void initEnvironment(final JdbcTemplate jdbcTemplate) {
-        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))");
-        jdbcTemplate.execute("TRUNCATE table t_order");
+        jdbcTemplate.execute("TRUNCATE TABLE t_order");
+        jdbcTemplate.execute(MYSQL_CREATE_TABLE);
     }
     
     private static void process(final JdbcTemplate jdbcTemplate) {
