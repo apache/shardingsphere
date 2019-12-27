@@ -182,7 +182,7 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
             statement.executeQuery();
         }
     }
-
+    
     @Test
     public void assertSelectWithInOperator() throws SQLException {
         try (PreparedStatement statement = getEncryptConnection().prepareStatement(SELECT_SQL_WITH_IN_OPERATOR)) {
@@ -195,7 +195,7 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
             }
         }
     }
-
+    
     @Test
     public void assertSelectWithPlainColumnForContainsColumn() throws SQLException {
         try (PreparedStatement statement = getEncryptConnectionWithProps().prepareStatement(SELECT_SQL_FOR_CONTAINS_COLUMN)) {
