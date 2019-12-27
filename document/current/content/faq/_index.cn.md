@@ -212,3 +212,15 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 具体的SPI使用方式，请大家自行搜索。
 
 与分布式主键`ShardingKeyGenerator`接口相同，其他ShardingSphere的[扩展功能](https://shardingsphere.apache.org/document/current/cn/features/spi/)也需要用相同的方式注入才能生效。
+
+#### 17. JPA 和 数据脱敏无法一起使用，如何解决？
+
+回答：
+
+由于数据脱敏的DDL尚未开发完成，因此对于自动生成DDL语句的JPA与数据脱敏一起使用时，会导致JPA的实体类(Entity)无法同时满足DDL和DML的情况。
+
+解决方案如下：
+
+1. 以需要脱敏的逻辑列名编写JPA的实体类(Entity).
+2. 关闭JPA的auto-ddl，如 auto-ddl=none.
+3. 手动建表，建表时应使用数据脱敏配置的`cipherColumn`,`plainColumn`和`assistedQueryColumn`代替逻辑列.
