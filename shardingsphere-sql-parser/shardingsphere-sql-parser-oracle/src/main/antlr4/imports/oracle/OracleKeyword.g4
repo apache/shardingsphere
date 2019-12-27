@@ -670,3 +670,7 @@ SYSOPER
 DBA_RECYCLEBIN
     : D B A UL_ R E C Y C L E B I N
     ;
+
+FIRST
+    : F I R S T
+    ;
