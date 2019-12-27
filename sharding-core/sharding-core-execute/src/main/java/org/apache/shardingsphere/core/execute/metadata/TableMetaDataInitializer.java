@@ -19,11 +19,15 @@ package org.apache.shardingsphere.core.execute.metadata;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.execute.engine.ShardingExecuteEngine;
-import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.execute.metadata.loader.ShardingTableMetaDataLoader;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.encrypt.metadata.EncryptColumnMetaData;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -32,6 +36,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -45,13 +50,13 @@ public final class TableMetaDataInitializer {
     
     private final TableMetaDataConnectionManager connectionManager;
     
-    private final TableMetaDataLoader tableMetaDataLoader;
+    private final ShardingTableMetaDataLoader tableMetaDataLoader;
     
     public TableMetaDataInitializer(final DataSourceMetas dataSourceMetas, final ShardingExecuteEngine executeEngine,
                                     final TableMetaDataConnectionManager connectionManager, final int maxConnectionsSizePerQuery, final boolean isCheckingMetaData) {
         this.dataSourceMetas = dataSourceMetas;
         this.connectionManager = connectionManager;
-        tableMetaDataLoader = new TableMetaDataLoader(dataSourceMetas, executeEngine, connectionManager, maxConnectionsSizePerQuery, isCheckingMetaData);
+        tableMetaDataLoader = new ShardingTableMetaDataLoader(dataSourceMetas, executeEngine, connectionManager, maxConnectionsSizePerQuery, isCheckingMetaData);
     }
     
     /**
@@ -63,12 +68,12 @@ public final class TableMetaDataInitializer {
      * @throws SQLException SQL exception
      */
     public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) throws SQLException {
-        return tableMetaDataLoader.load(logicTableName, shardingRule);
+        return decorate(tableMetaDataLoader.load(logicTableName, shardingRule), logicTableName, shardingRule.getEncryptRule());
     }
     
     /**
      * Load all table meta data.
-     * 
+     *
      * @param shardingRule sharding rule
      * @return all table meta data
      * @throws SQLException SQL exception
@@ -80,10 +85,36 @@ public final class TableMetaDataInitializer {
         return result;
     }
     
+    private TableMetaData decorate(final TableMetaData tableMetaData, final String logicTableName, final EncryptRule encryptRule) {
+        return new TableMetaData(getEncryptColumnMetaDataList(logicTableName, tableMetaData.getColumns().values(), encryptRule), tableMetaData.getIndexes());
+    }
+    
+    private Collection<ColumnMetaData> getEncryptColumnMetaDataList(final String tableName, final Collection<ColumnMetaData> originalColumnMetaDataList, final EncryptRule encryptRule) {
+        Collection<ColumnMetaData> result = new LinkedList<>();
+        Collection<String> derivedColumns = encryptRule.getAssistedQueryAndPlainColumns(tableName);
+        for (ColumnMetaData each : originalColumnMetaDataList) {
+            if (!derivedColumns.contains(each.getName())) {
+                result.add(getEncryptColumnMetaData(tableName, each, encryptRule));
+            }
+        }
+        return result;
+    }
+    
+    private ColumnMetaData getEncryptColumnMetaData(final String tableName, final ColumnMetaData originalColumnMetaData, final EncryptRule encryptRule) {
+        if (!encryptRule.isCipherColumn(tableName, originalColumnMetaData.getName())) {
+            return originalColumnMetaData;
+        }
+        String logicColumnName = encryptRule.getLogicColumnOfCipher(tableName, originalColumnMetaData.getName());
+        String plainColumnName = encryptRule.findPlainColumn(tableName, logicColumnName).orNull();
+        String assistedQueryColumnName = encryptRule.findAssistedQueryColumn(tableName, logicColumnName).orNull();
+        return new EncryptColumnMetaData(
+                logicColumnName, originalColumnMetaData.getDataType(), originalColumnMetaData.isPrimaryKey(), originalColumnMetaData.getName(), plainColumnName, assistedQueryColumnName);
+    }
+    
     private Map<String, TableMetaData> loadShardingTables(final ShardingRule shardingRule) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>(shardingRule.getTableRules().size(), 1);
         for (TableRule each : shardingRule.getTableRules()) {
-            result.put(each.getLogicTable(), tableMetaDataLoader.load(each.getLogicTable(), shardingRule));
+            result.put(each.getLogicTable(), load(each.getLogicTable(), shardingRule));
         }
         return result;
     }
@@ -96,7 +127,7 @@ public final class TableMetaDataInitializer {
         Collection<String> tableNames = loadAllTableNames(actualDefaultDataSourceName.get());
         Map<String, TableMetaData> result = new HashMap<>(tableNames.size(), 1);
         for (String each : tableNames) {
-            result.put(each, tableMetaDataLoader.load(each, shardingRule));
+            result.put(each, load(each, shardingRule));
         }
         return result;
     }
