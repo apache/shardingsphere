@@ -68,8 +68,7 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
             if (!each.isEmpty()) {
                 StandardParameterBuilder standardParameterBuilder = parameterBuilder.getParameterBuilders().get(count);
                 encryptInsertValue(
-                        shardingEncryptor, tableName, columnIndex, sqlStatementContext.getInsertValueContexts().get(count).getValue(columnIndex), standardParameterBuilder, encryptLogicColumnName,
-                        parameterBuilder, sqlStatementContext);
+                        shardingEncryptor, tableName, columnIndex, sqlStatementContext.getInsertValueContexts().get(count).getValue(columnIndex), standardParameterBuilder, encryptLogicColumnName);
             }
             count++;
         }
@@ -87,8 +86,7 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
     } 
     
     private void encryptInsertValue(final ShardingEncryptor shardingEncryptor, final String tableName, final int columnIndex, 
-                                    final Object originalValue, final StandardParameterBuilder parameterBuilder, final String encryptLogicColumnName,
-                                    final GroupedParameterBuilder groupedParameterBuilder, final InsertSQLStatementContext sqlStatementContext) {
+                                    final Object originalValue, final StandardParameterBuilder parameterBuilder, final String encryptLogicColumnName) {
         // FIXME: can process all part of insert value is ? or literal, can not process mix ? and literal
         // For example: values (?, ?), (1, 1) can process
         // For example: values (?, 1), (?, 2) can not process
@@ -97,21 +95,10 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
             Optional<String> assistedColumnName = getEncryptRule().findAssistedQueryColumn(tableName, encryptLogicColumnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            int assistedColumnIndex = getColumnIndex(groupedParameterBuilder, sqlStatementContext, assistedColumnName.get());
-            if (assistedColumnIndex > -1) {
-                parameterBuilder.addReplacedParameters(assistedColumnIndex, ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()));
-            } else {
-                addedParameters.add(((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()));
-            }
+            addedParameters.add(((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()));
         }
-        Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, encryptLogicColumnName);
-        if (plainColumn.isPresent()) {
-            int plainColumnIndex = getColumnIndex(groupedParameterBuilder, sqlStatementContext, plainColumn.get());
-            if (plainColumnIndex > -1) {
-                parameterBuilder.addReplacedParameters(plainColumnIndex, originalValue);
-            } else {
-                addedParameters.add(originalValue);
-            }
+        if (getEncryptRule().findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
+            addedParameters.add(originalValue);
         }
         if (!addedParameters.isEmpty()) {
             if (!parameterBuilder.getAddedIndexAndParameters().containsKey(columnIndex + 1)) {
