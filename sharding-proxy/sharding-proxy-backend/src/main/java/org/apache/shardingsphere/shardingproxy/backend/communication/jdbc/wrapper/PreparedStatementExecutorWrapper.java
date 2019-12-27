@@ -70,7 +70,10 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         if (logicSchema instanceof MasterSlaveSchema) {
             return doMasterSlaveRoute(sql);
         }
-        return doEncryptRoute(sql);
+        if (logicSchema instanceof EncryptSchema) {
+            return doEncryptRoute(sql);
+        }
+        return doTransparentRoute(sql);
     }
     
     private SQLRouteResult doShardingRoute(final String sql) {
@@ -106,6 +109,13 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         SQLRouteResult result = new SQLRouteResult(sqlStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         result.getRouteUnits().add(
                 new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql(), parameters)));
+        return result;
+    }
+    
+    private SQLRouteResult doTransparentRoute(final String sql) {
+        SQLStatement sqlStatement = logicSchema.getParseEngine().parse(sql, false);
+        SQLRouteResult result = new SQLRouteResult(new CommonSQLStatementContext(sqlStatement), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+        result.getRouteUnits().add(new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sql, Collections.emptyList())));
         return result;
     }
     
