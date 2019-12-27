@@ -36,7 +36,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-common</artifactId>
+            <artifactId>encrypt-core-common</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
