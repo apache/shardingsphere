@@ -29,6 +29,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -88,22 +89,25 @@ public final class TableMetaDataInitializer {
     }
     
     private Map<String, TableMetaData> loadDefaultTables(final ShardingRule shardingRule) throws SQLException {
-        Map<String, TableMetaData> result = new HashMap<>(shardingRule.getTableRules().size(), 1);
         Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
-        if (actualDefaultDataSourceName.isPresent()) {
-            for (String each : getAllTableNames(actualDefaultDataSourceName.get())) {
-                result.put(each, tableMetaDataLoader.load(each, shardingRule));
-            }
+        if (!actualDefaultDataSourceName.isPresent()) {
+            return Collections.emptyMap();
+        }
+        Collection<String> tableNames = loadAllTableNames(actualDefaultDataSourceName.get());
+        Map<String, TableMetaData> result = new HashMap<>(tableNames.size(), 1);
+        for (String each : tableNames) {
+            result.put(each, tableMetaDataLoader.load(each, shardingRule));
         }
         return result;
     }
     
-    private Collection<String> getAllTableNames(final String dataSourceName) throws SQLException {
+    private Collection<String> loadAllTableNames(final String dataSourceName) throws SQLException {
         Collection<String> result = new LinkedHashSet<>();
-        DataSourceMetaData dataSourceMetaData = this.dataSourceMetas.getDataSourceMetaData(dataSourceName);
+        DataSourceMetaData dataSourceMetaData = dataSourceMetas.getDataSourceMetaData(dataSourceName);
         String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getCatalog();
         String schemaName = null == dataSourceMetaData ? null : dataSourceMetaData.getSchema();
-        try (Connection connection = connectionManager.getConnection(dataSourceName);
+        try (
+                Connection connection = connectionManager.getConnection(dataSourceName);
                 ResultSet resultSet = connection.getMetaData().getTables(catalog, schemaName, null, new String[]{"TABLE"})) {
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");

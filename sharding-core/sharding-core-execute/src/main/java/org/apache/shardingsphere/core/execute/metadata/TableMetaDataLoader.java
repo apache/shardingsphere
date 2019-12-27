@@ -162,8 +162,7 @@ public final class TableMetaDataLoader {
                 String columnName = resultSet.getString(COLUMN_NAME);
                 String columnType = resultSet.getString(TYPE_NAME);
                 boolean isPrimaryKey = primaryKeys.contains(columnName);
-                Optional<ColumnMetaData> columnMetaData = getColumnMetaData(logicTableName, columnName, columnType, isPrimaryKey,
-                        generateKeyColumnName, encryptRule, derivedColumns);
+                Optional<ColumnMetaData> columnMetaData = getColumnMetaData(logicTableName, columnName, columnType, isPrimaryKey, generateKeyColumnName, encryptRule, derivedColumns);
                 if (columnMetaData.isPresent()) {
                     result.add(columnMetaData.get());
                 }
