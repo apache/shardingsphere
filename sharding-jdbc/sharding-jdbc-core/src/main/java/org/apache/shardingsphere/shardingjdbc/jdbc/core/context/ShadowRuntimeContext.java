@@ -21,6 +21,9 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.ShadowRule;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import javax.sql.DataSource;
@@ -42,10 +45,26 @@ public class ShadowRuntimeContext extends AbstractRuntimeContext<ShadowRule> {
     
     private final DataSource shadowDataSource;
     
+    private final ShadowType shadowType;
+    
     public ShadowRuntimeContext(final DataSource actualDataSource, final DataSource shadowDataSource, final ShadowRule rule, final Properties props, final DatabaseType databaseType) {
         super(rule, props, databaseType);
         tableMetas = new TableMetas(Collections.<String, TableMetaData>emptyMap());
         this.actualDataSource = actualDataSource;
         this.shadowDataSource = shadowDataSource;
+        
+        if (actualDataSource instanceof MasterSlaveDataSource) {
+            shadowType = ShadowType.MASTER_SLAVE;
+        } else if (actualDataSource instanceof ShardingDataSource) {
+            shadowType = ShadowType.SHARDING;
+        } else if (actualDataSource instanceof EncryptDataSource) {
+            shadowType = ShadowType.ENCRYPT;
+        } else {
+            shadowType = ShadowType.RAW;
+        }
+    }
+    
+    public enum ShadowType {
+        MASTER_SLAVE, ENCRYPT, SHARDING, RAW
     }
 }
