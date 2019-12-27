@@ -20,8 +20,8 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter.impl;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
-import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
-import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptor;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.spi.encrypt.ShardingQueryAssistedEncryptor;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
@@ -53,23 +53,22 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
         Iterator<String> descendingColumnNames = ((InsertSQLStatementContext) sqlStatementContext).getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
-            Optional<Encryptor> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
-            if (encryptor.isPresent()) {
-                encryptInsertValues((GroupedParameterBuilder) parameterBuilder, (InsertSQLStatementContext) sqlStatementContext, encryptor.get(), tableName, columnName);
+            Optional<ShardingEncryptor> shardingEncryptor = getEncryptRule().findShardingEncryptor(tableName, columnName);
+            if (shardingEncryptor.isPresent()) {
+                encryptInsertValues((GroupedParameterBuilder) parameterBuilder, (InsertSQLStatementContext) sqlStatementContext, shardingEncryptor.get(), tableName, columnName);
             }
         }
     }
     
-    private void encryptInsertValues(final GroupedParameterBuilder parameterBuilder,
-                                     final InsertSQLStatementContext sqlStatementContext, final Encryptor encryptor, final String tableName, final String encryptLogicColumnName) {
+    private void encryptInsertValues(final GroupedParameterBuilder parameterBuilder, 
+                                     final InsertSQLStatementContext sqlStatementContext, final ShardingEncryptor shardingEncryptor, final String tableName, final String encryptLogicColumnName) {
         int columnIndex = getColumnIndex(parameterBuilder, sqlStatementContext, encryptLogicColumnName);
         int count = 0;
         for (List<Object> each : sqlStatementContext.getGroupedParameters()) {
             if (!each.isEmpty()) {
                 StandardParameterBuilder standardParameterBuilder = parameterBuilder.getParameterBuilders().get(count);
                 encryptInsertValue(
-                        encryptor, tableName, columnIndex, sqlStatementContext.getInsertValueContexts().get(count).getValue(columnIndex), standardParameterBuilder, encryptLogicColumnName,
-                        parameterBuilder, sqlStatementContext);
+                        shardingEncryptor, tableName, columnIndex, sqlStatementContext.getInsertValueContexts().get(count).getValue(columnIndex), standardParameterBuilder, encryptLogicColumnName);
             }
             count++;
         }
@@ -86,22 +85,21 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
         return columnNames.indexOf(encryptLogicColumnName);
     } 
     
-    private void encryptInsertValue(final Encryptor encryptor, final String tableName, final int columnIndex,
-                                    final Object originalValue, final StandardParameterBuilder parameterBuilder, final String encryptLogicColumnName,
-                                    final GroupedParameterBuilder groupedParameterBuilder, final InsertSQLStatementContext sqlStatementContext) {
+    private void encryptInsertValue(final ShardingEncryptor shardingEncryptor, final String tableName, final int columnIndex, 
+                                    final Object originalValue, final StandardParameterBuilder parameterBuilder, final String encryptLogicColumnName) {
         // FIXME: can process all part of insert value is ? or literal, can not process mix ? and literal
         // For example: values (?, ?), (1, 1) can process
         // For example: values (?, 1), (?, 2) can not process
-        parameterBuilder.addReplacedParameters(columnIndex, encryptor.encrypt(originalValue));
+        parameterBuilder.addReplacedParameters(columnIndex, shardingEncryptor.encrypt(originalValue));
         Collection<Object> addedParameters = new LinkedList<>();
-        if (encryptor instanceof QueryAssistedEncryptor) {
+        if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
             Optional<String> assistedColumnName = getEncryptRule().findAssistedQueryColumn(tableName, encryptLogicColumnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
             int assistedColumnIndex = getColumnIndex(groupedParameterBuilder, sqlStatementContext, assistedColumnName.get());
             if (assistedColumnIndex > -1) {
-                parameterBuilder.addReplacedParameters(assistedColumnIndex, ((QueryAssistedEncryptor) encryptor).queryAssistedEncrypt(originalValue.toString()));
+                parameterBuilder.addReplacedParameters(assistedColumnIndex, ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()));
             } else {
-                addedParameters.add(((QueryAssistedEncryptor) encryptor).queryAssistedEncrypt(originalValue.toString()));
+                addedParameters.add(((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(originalValue.toString()));
             }
         }
         Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, encryptLogicColumnName);
