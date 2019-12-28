@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.underlying.execute.constant.ConnectionMode;
-import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
+import org.apache.shardingsphere.underlying.execute.engine.InputGroup;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.execute.QueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
@@ -332,9 +332,9 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     
     @SneakyThrows
     private void setExecuteGroups(final List<Statement> statements, final boolean isQuery) {
-        Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
+        Collection<InputGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
         List<StatementExecuteUnit> statementExecuteUnits = new LinkedList<>();
-        executeGroups.add(new ShardingExecuteGroup<>(statementExecuteUnits));
+        executeGroups.add(new InputGroup<>(statementExecuteUnits));
         for (Statement each : statements) {
             statementExecuteUnits.add(
                     new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList((Object) 1))), each, ConnectionMode.MEMORY_STRICTLY));

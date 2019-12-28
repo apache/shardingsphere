@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.execute.sql.execute;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.execute.engine.ShardingExecuteEngine;
-import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
+import org.apache.shardingsphere.underlying.execute.engine.ExecutorEngine;
+import org.apache.shardingsphere.underlying.execute.engine.InputGroup;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 
@@ -39,7 +39,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class SQLExecuteTemplate {
     
-    private final ShardingExecuteEngine executeEngine;
+    private final ExecutorEngine executorEngine;
     
     private final boolean serial;
     
@@ -52,7 +52,7 @@ public final class SQLExecuteTemplate {
      * @return execute result
      * @throws SQLException SQL exception
      */
-    public <T> List<T> executeGroup(final Collection<ShardingExecuteGroup<? extends StatementExecuteUnit>> sqlExecuteGroups, final SQLExecuteCallback<T> callback) throws SQLException {
+    public <T> List<T> executeGroup(final Collection<InputGroup<? extends StatementExecuteUnit>> sqlExecuteGroups, final SQLExecuteCallback<T> callback) throws SQLException {
         return executeGroup(sqlExecuteGroups, null, callback);
     }
     
@@ -67,10 +67,10 @@ public final class SQLExecuteTemplate {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    public <T> List<T> executeGroup(final Collection<ShardingExecuteGroup<? extends StatementExecuteUnit>> sqlExecuteGroups,
+    public <T> List<T> executeGroup(final Collection<InputGroup<? extends StatementExecuteUnit>> sqlExecuteGroups,
                                     final SQLExecuteCallback<T> firstCallback, final SQLExecuteCallback<T> callback) throws SQLException {
         try {
-            return executeEngine.groupExecute((Collection) sqlExecuteGroups, firstCallback, callback, serial);
+            return executorEngine.groupExecute((Collection) sqlExecuteGroups, firstCallback, callback, serial);
         } catch (final SQLException ex) {
             ExecutorExceptionHandler.handleException(ex);
             return Collections.emptyList();

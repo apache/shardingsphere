@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
-import org.apache.shardingsphere.core.execute.engine.ShardingExecuteEngine;
+import org.apache.shardingsphere.underlying.execute.engine.ExecutorEngine;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
@@ -46,7 +46,7 @@ public abstract class AbstractRuntimeContext<T extends BaseRule> implements Runt
     
     private final DatabaseType databaseType;
     
-    private final ShardingExecuteEngine executeEngine;
+    private final ExecutorEngine executorEngine;
     
     private final SQLParseEngine parseEngine;
     
@@ -54,7 +54,7 @@ public abstract class AbstractRuntimeContext<T extends BaseRule> implements Runt
         this.rule = rule;
         this.properties = new ShardingSphereProperties(null == props ? new Properties() : props);
         this.databaseType = databaseType;
-        executeEngine = new ShardingExecuteEngine(this.properties.<Integer>getValue(PropertiesConstant.EXECUTOR_SIZE));
+        executorEngine = new ExecutorEngine(this.properties.<Integer>getValue(PropertiesConstant.EXECUTOR_SIZE));
         parseEngine = SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType));
         ConfigurationLogger.log(rule.getRuleConfiguration());
         ConfigurationLogger.log(props);
@@ -62,6 +62,6 @@ public abstract class AbstractRuntimeContext<T extends BaseRule> implements Runt
     
     @Override
     public void close() throws Exception {
-        executeEngine.close();
+        executorEngine.close();
     }
 }

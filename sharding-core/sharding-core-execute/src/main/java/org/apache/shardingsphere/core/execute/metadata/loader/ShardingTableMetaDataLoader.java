@@ -20,9 +20,9 @@ package org.apache.shardingsphere.core.execute.metadata.loader;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.execute.engine.ShardingExecuteEngine;
-import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
-import org.apache.shardingsphere.core.execute.engine.ShardingGroupExecuteCallback;
+import org.apache.shardingsphere.underlying.execute.engine.ExecutorEngine;
+import org.apache.shardingsphere.underlying.execute.engine.InputGroup;
+import org.apache.shardingsphere.underlying.execute.engine.GroupedCallback;
 import org.apache.shardingsphere.core.execute.metadata.TableMetaDataConnectionManager;
 import org.apache.shardingsphere.core.metadata.column.ShardingGeneratedKeyColumnMetaData;
 import org.apache.shardingsphere.core.rule.DataNode;
@@ -62,7 +62,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     
     private final DataSourceMetas dataSourceMetas;
     
-    private final ShardingExecuteEngine executeEngine;
+    private final ExecutorEngine executorEngine;
     
     private final TableMetaDataConnectionManager connectionManager;
     
@@ -79,10 +79,10 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     
     private List<TableMetaData> load(final Map<String, List<DataNode>> dataNodeGroups, final ShardingRule shardingRule, final String logicTableName) throws SQLException {
         final String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(logicTableName).orNull();
-        return executeEngine.groupExecute(getDataNodeExecuteGroups(dataNodeGroups), new ShardingGroupExecuteCallback<DataNode, TableMetaData>() {
+        return executorEngine.groupExecute(getDataNodeExecuteGroups(dataNodeGroups), new GroupedCallback<DataNode, TableMetaData>() {
             
             @Override
-            public Collection<TableMetaData> execute(final Collection<DataNode> dataNodes, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) throws SQLException {
+            public Collection<TableMetaData> execute(final Collection<DataNode> dataNodes, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
                 String masterDataSourceName = shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(dataNodes.iterator().next().getDataSourceName());
                 DataSourceMetaData dataSourceMetaData = ShardingTableMetaDataLoader.this.dataSourceMetas.getDataSourceMetaData(masterDataSourceName);
                 return load(masterDataSourceName, dataSourceMetaData, dataNodes, generateKeyColumnName);
@@ -110,18 +110,18 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
         return Collections.singletonMap(firstDataNode.getDataSourceName(), Collections.singletonList(firstDataNode));
     }
     
-    private Collection<ShardingExecuteGroup<DataNode>> getDataNodeExecuteGroups(final Map<String, List<DataNode>> dataNodeGroups) {
-        Collection<ShardingExecuteGroup<DataNode>> result = new LinkedList<>();
+    private Collection<InputGroup<DataNode>> getDataNodeExecuteGroups(final Map<String, List<DataNode>> dataNodeGroups) {
+        Collection<InputGroup<DataNode>> result = new LinkedList<>();
         for (Entry<String, List<DataNode>> entry : dataNodeGroups.entrySet()) {
             result.addAll(getDataNodeExecuteGroups(entry.getValue()));
         }
         return result;
     }
     
-    private Collection<ShardingExecuteGroup<DataNode>> getDataNodeExecuteGroups(final List<DataNode> dataNodes) {
-        Collection<ShardingExecuteGroup<DataNode>> result = new LinkedList<>();
+    private Collection<InputGroup<DataNode>> getDataNodeExecuteGroups(final List<DataNode> dataNodes) {
+        Collection<InputGroup<DataNode>> result = new LinkedList<>();
         for (List<DataNode> each : Lists.partition(dataNodes, Math.max(dataNodes.size() / maxConnectionsSizePerQuery, 1))) {
-            result.add(new ShardingExecuteGroup<>(each));
+            result.add(new InputGroup<>(each));
         }
         return result;
     }

@@ -23,7 +23,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
-import org.apache.shardingsphere.core.execute.engine.ShardingExecuteEngine;
+import org.apache.shardingsphere.underlying.execute.engine.ExecutorEngine;
 import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
@@ -55,7 +55,7 @@ import static org.mockito.Mockito.when;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractBaseExecutorTest {
     
-    private ShardingExecuteEngine executeEngine;
+    private ExecutorEngine executorEngine;
     
     private ShardingConnection connection;
     
@@ -63,13 +63,13 @@ public abstract class AbstractBaseExecutorTest {
     public void setUp() throws SQLException {
         MockitoAnnotations.initMocks(this);
         ExecutorExceptionHandler.setExceptionThrown(false);
-        executeEngine = new ShardingExecuteEngine(Runtime.getRuntime().availableProcessors());
+        executorEngine = new ExecutorEngine(Runtime.getRuntime().availableProcessors());
         setConnection();
     }
     
     private void setConnection() throws SQLException {
         ShardingRuntimeContext runtimeContext = mock(ShardingRuntimeContext.class);
-        when(runtimeContext.getExecuteEngine()).thenReturn(executeEngine);
+        when(runtimeContext.getExecutorEngine()).thenReturn(executorEngine);
         when(runtimeContext.getProperties()).thenReturn(getProperties());
         when(runtimeContext.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
         ShardingRule shardingRule = getShardingRule();
@@ -115,6 +115,6 @@ public abstract class AbstractBaseExecutorTest {
     
     @After
     public void tearDown() {
-        executeEngine.close();
+        executorEngine.close();
     }
 }

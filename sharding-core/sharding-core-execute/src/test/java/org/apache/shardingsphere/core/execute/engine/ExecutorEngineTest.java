@@ -19,6 +19,9 @@ package org.apache.shardingsphere.core.execute.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.execute.engine.ExecutorEngine;
+import org.apache.shardingsphere.underlying.execute.engine.InputGroup;
+import org.apache.shardingsphere.underlying.execute.engine.GroupedCallback;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,15 +40,15 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ShardingExecuteEngineTest {
+public final class ExecutorEngineTest {
     
-    private ShardingExecuteEngine shardingExecuteEngine = new ShardingExecuteEngine(10);
+    private ExecutorEngine executorEngine = new ExecutorEngine(10);
     
-    private Collection<ShardingExecuteGroup<StatementExecuteUnit>> inputGroups;
+    private Collection<InputGroup<StatementExecuteUnit>> inputGroups;
     
-    private MockGroupExecuteCallback firstCallback;
+    private MockedGroupedCallback firstCallback;
     
-    private MockGroupExecuteCallback callback;
+    private MockedGroupedCallback callback;
     
     private CountDownLatch latch;
     
@@ -53,44 +56,44 @@ public final class ShardingExecuteEngineTest {
     public void setUp() {
         latch = new CountDownLatch(4);
         inputGroups = mockInputGroups(2, 2);
-        firstCallback = new MockGroupExecuteCallback(latch);
-        callback = new MockGroupExecuteCallback(latch);
+        firstCallback = new MockedGroupedCallback(latch);
+        callback = new MockedGroupedCallback(latch);
     }
     
     @After
     public void tearDown() {
-        shardingExecuteEngine.close();
+        executorEngine.close();
     }
     
-    private Collection<ShardingExecuteGroup<StatementExecuteUnit>> mockInputGroups(final int groupSize, final int unitSize) {
-        Collection<ShardingExecuteGroup<StatementExecuteUnit>> result = new LinkedList<>();
+    private Collection<InputGroup<StatementExecuteUnit>> mockInputGroups(final int groupSize, final int unitSize) {
+        Collection<InputGroup<StatementExecuteUnit>> result = new LinkedList<>();
         for (int i = 0; i < groupSize; i++) {
             List<StatementExecuteUnit> inputs = new LinkedList<>();
             for (int j = 0; j < unitSize; j++) {
                 inputs.add(mock(StatementExecuteUnit.class));
             }
-            result.add(new ShardingExecuteGroup<>(inputs));
+            result.add(new InputGroup<>(inputs));
         }
         return result;
     }
     
     @Test
     public void assertParallelExecuteWithoutFirstCallback() throws SQLException, InterruptedException {
-        List<String> actual = shardingExecuteEngine.groupExecute(inputGroups, callback);
+        List<String> actual = executorEngine.groupExecute(inputGroups, callback);
         latch.await();
         assertThat(actual.size(), is(4));
     }
     
     @Test
     public void assertParallelExecuteWithFirstCallback() throws SQLException, InterruptedException {
-        List<String> actual = shardingExecuteEngine.groupExecute(inputGroups, firstCallback, callback, false);
+        List<String> actual = executorEngine.groupExecute(inputGroups, firstCallback, callback, false);
         latch.await();
         assertThat(actual.size(), is(4));
     }
     
     @Test
     public void assertSerialExecute() throws SQLException, InterruptedException {
-        List<String> actual = shardingExecuteEngine.groupExecute(inputGroups, firstCallback, callback, true);
+        List<String> actual = executorEngine.groupExecute(inputGroups, firstCallback, callback, true);
         latch.await();
         assertThat(actual.size(), is(4));
     }
@@ -98,24 +101,18 @@ public final class ShardingExecuteEngineTest {
     @Test
     public void assertInputGroupIsEmpty() throws SQLException {
         CountDownLatch latch = new CountDownLatch(1);
-        List<String> actual = shardingExecuteEngine.groupExecute(new LinkedList<ShardingExecuteGroup<StatementExecuteUnit>>(), new MockGroupExecuteCallback(latch));
+        List<String> actual = executorEngine.groupExecute(new LinkedList<InputGroup<StatementExecuteUnit>>(), new MockedGroupedCallback(latch));
         latch.countDown();
         assertThat(actual.size(), is(0));
     }
     
     @RequiredArgsConstructor
-    private final class MockGroupExecuteCallback implements ShardingExecuteCallback<StatementExecuteUnit, String>, ShardingGroupExecuteCallback<StatementExecuteUnit, String> {
+    private final class MockedGroupedCallback implements GroupedCallback<StatementExecuteUnit, String> {
         
         private final CountDownLatch latch;
         
         @Override
-        public String execute(final StatementExecuteUnit input, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
-            latch.countDown();
-            return "succeed";
-        }
-        
-        @Override
-        public Collection<String> execute(final Collection<StatementExecuteUnit> inputs, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
+        public Collection<String> execute(final Collection<StatementExecuteUnit> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) {
             List<String> result = new LinkedList<>();
             for (StatementExecuteUnit each : inputs) {
                 latch.countDown();

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.execute.engine;
+package org.apache.shardingsphere.underlying.execute.engine;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,14 +23,14 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 /**
- * Sharding execute group.
+ * Input group.
  *
  * @author zhangliang
  * @param <T> type of inputs value
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingExecuteGroup<T> {
+public final class InputGroup<T> {
     
     private final List<T> inputs;
 }

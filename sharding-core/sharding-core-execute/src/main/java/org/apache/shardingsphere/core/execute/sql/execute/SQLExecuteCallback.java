@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.execute.sql.execute;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.execute.constant.ConnectionMode;
-import org.apache.shardingsphere.core.execute.engine.ShardingGroupExecuteCallback;
+import org.apache.shardingsphere.underlying.execute.engine.GroupedCallback;
 import org.apache.shardingsphere.core.execute.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.core.execute.hook.SQLExecutionHook;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
@@ -45,7 +45,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @param <T> class type of return value
  */
 @RequiredArgsConstructor
-public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallback<StatementExecuteUnit, T> {
+public abstract class SQLExecuteCallback<T> implements GroupedCallback<StatementExecuteUnit, T> {
     
     private static final Map<String, DataSourceMetaData> CACHED_DATASOURCE_METADATA = new ConcurrentHashMap<>();
     
@@ -55,10 +55,10 @@ public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallb
     
     @Override
     public final Collection<T> execute(final Collection<StatementExecuteUnit> statementExecuteUnits, 
-                                       final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) throws SQLException {
+                                       final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
         Collection<T> result = new LinkedList<>();
         for (StatementExecuteUnit each : statementExecuteUnits) {
-            result.add(execute0(each, isTrunkThread, shardingExecuteDataMap));
+            result.add(execute0(each, isTrunkThread, dataMap));
         }
         return result;
     }

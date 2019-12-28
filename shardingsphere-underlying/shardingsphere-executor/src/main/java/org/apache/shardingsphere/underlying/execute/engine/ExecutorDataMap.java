@@ -15,42 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.execute.engine;
+package org.apache.shardingsphere.underlying.execute.engine;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.concurrent.ThreadFactory;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Sharding thread factory builder.
+ * Executor data map for thread local even cross multiple threads.
  *
+ * @author caohao
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingThreadFactoryBuilder {
+public final class ExecutorDataMap {
     
-    private static final String NAME_FORMAT_PREFIX = "ShardingSphere-";
-    
-    private static final String DEFAULT_EXECUTOR_NAME_FORMAT = NAME_FORMAT_PREFIX + "%d";
+    private static ThreadLocal<Map<String, Object>> dataMap = new ThreadLocal<Map<String, Object>>() {
+        
+        @Override
+        protected Map<String, Object> initialValue() {
+            return new LinkedHashMap<>();
+        }
+    };
     
     /**
-     * Build default sharding thread factory.
+     * Set data map.
      *
-     * @return default sharding thread factory
+     * @param dataMap data map
      */
-    public static ThreadFactory build() {
-        return new ThreadFactoryBuilder().setDaemon(true).setNameFormat(DEFAULT_EXECUTOR_NAME_FORMAT).build();
+    public static void setDataMap(final Map<String, Object> dataMap) {
+        ExecutorDataMap.dataMap.set(dataMap);
     }
     
     /**
-     * Build sharding thread factory.
-     * 
-     * @param nameFormat thread name format
-     * @return sharding thread factory
+     * Get data map.
+     *
+     * @return data map
      */
-    public static ThreadFactory build(final String nameFormat) {
-        return new ThreadFactoryBuilder().setDaemon(true).setNameFormat(NAME_FORMAT_PREFIX + nameFormat).build();
+    public static Map<String, Object> getDataMap() {
+        return dataMap.get();
     }
 }

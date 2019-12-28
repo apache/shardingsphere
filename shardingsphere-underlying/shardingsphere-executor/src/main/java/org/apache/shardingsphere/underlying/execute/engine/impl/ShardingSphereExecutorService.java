@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.execute.engine;
+package org.apache.shardingsphere.underlying.execute.engine.impl;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -27,32 +27,32 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Sharding executor service.
+ * ShardingSphere executor service.
  *
  * @author wuxu
  * @author zhaojun
  */
 @Getter
-public final class ShardingExecutorService {
+public final class ShardingSphereExecutorService {
     
     private static final String DEFAULT_NAME_FORMAT = "%d";
     
-    private static final ExecutorService SHUTDOWN_EXECUTOR = Executors.newSingleThreadExecutor(ShardingThreadFactoryBuilder.build("Executor-Engine-Closer"));
+    private static final ExecutorService SHUTDOWN_EXECUTOR = Executors.newSingleThreadExecutor(ShardingSphereThreadFactoryBuilder.build("Executor-Engine-Closer"));
     
     private ListeningExecutorService executorService;
     
-    public ShardingExecutorService(final int executorSize) {
+    public ShardingSphereExecutorService(final int executorSize) {
         this(executorSize, DEFAULT_NAME_FORMAT);
     }
     
-    public ShardingExecutorService(final int executorSize, final String nameFormat) {
+    public ShardingSphereExecutorService(final int executorSize, final String nameFormat) {
         executorService = MoreExecutors.listeningDecorator(getExecutorService(executorSize, nameFormat));
         MoreExecutors.addDelayedShutdownHook(executorService, 60, TimeUnit.SECONDS);
     }
     
     private ExecutorService getExecutorService(final int executorSize, final String nameFormat) {
-        ThreadFactory shardingThreadFactory = ShardingThreadFactoryBuilder.build(nameFormat);
-        return 0 == executorSize ? Executors.newCachedThreadPool(shardingThreadFactory) : Executors.newFixedThreadPool(executorSize, shardingThreadFactory);
+        ThreadFactory threadFactory = ShardingSphereThreadFactoryBuilder.build(nameFormat);
+        return 0 == executorSize ? Executors.newCachedThreadPool(threadFactory) : Executors.newFixedThreadPool(executorSize, threadFactory);
     }
     
     /**

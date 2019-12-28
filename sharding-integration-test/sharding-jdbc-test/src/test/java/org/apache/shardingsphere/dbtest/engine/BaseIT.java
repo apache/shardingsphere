@@ -217,7 +217,7 @@ public abstract class BaseIT {
     @After
     public void tearDown() {
         if (dataSource instanceof ShardingDataSource) {
-            ((ShardingDataSource) dataSource).getRuntimeContext().getExecuteEngine().close();
+            ((ShardingDataSource) dataSource).getRuntimeContext().getExecutorEngine().close();
         }
     }
 }

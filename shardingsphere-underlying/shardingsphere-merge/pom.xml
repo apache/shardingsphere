@@ -41,7 +41,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-execute</artifactId>
+            <artifactId>shardingsphere-executor</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

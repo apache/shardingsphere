@@ -25,7 +25,7 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.shardingsphere.underlying.execute.constant.ConnectionMode;
-import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
+import org.apache.shardingsphere.underlying.execute.engine.InputGroup;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback;
 import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
@@ -80,7 +80,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
         getExecuteGroups().addAll(obtainExecuteGroups(routeUnits));
     }
     
-    private Collection<ShardingExecuteGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<BatchRouteUnit> routeUnits) throws SQLException {
+    private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<BatchRouteUnit> routeUnits) throws SQLException {
         return getSqlExecutePrepareTemplate().getExecuteUnitGroups(Lists.transform(new ArrayList<>(routeUnits), new Function<BatchRouteUnit, RouteUnit>() {
     
             @Override
@@ -180,7 +180,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     private int[] accumulate(final List<int[]> results) {
         int[] result = new int[batchCount];
         int count = 0;
-        for (ShardingExecuteGroup<StatementExecuteUnit> each : getExecuteGroups()) {
+        for (InputGroup<StatementExecuteUnit> each : getExecuteGroups()) {
             for (StatementExecuteUnit eachUnit : each.getInputs()) {
                 Map<Integer, Integer> jdbcAndActualAddBatchCallTimesMap = Collections.emptyMap();
                 for (BatchRouteUnit eachRouteUnit : routeUnits) {
@@ -208,7 +208,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     @Override
     public List<Statement> getStatements() {
         List<Statement> result = new LinkedList<>();
-        for (ShardingExecuteGroup<StatementExecuteUnit> each : getExecuteGroups()) {
+        for (InputGroup<StatementExecuteUnit> each : getExecuteGroups()) {
             result.addAll(Lists.transform(each.getInputs(), new Function<StatementExecuteUnit, Statement>() {
                 
                 @Override
@@ -228,7 +228,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      */
     public List<List<Object>> getParameterSet(final Statement statement) {
         List<List<Object>> result = new LinkedList<>();
-        for (ShardingExecuteGroup<StatementExecuteUnit> each : getExecuteGroups()) {
+        for (InputGroup<StatementExecuteUnit> each : getExecuteGroups()) {
             Optional<StatementExecuteUnit> target = getStatementExecuteUnit(statement, each);
             if (target.isPresent()) {
                 result = getParameterSets(target.get());
@@ -238,7 +238,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
         return result;
     }
     
-    private Optional<StatementExecuteUnit> getStatementExecuteUnit(final Statement statement, final ShardingExecuteGroup<StatementExecuteUnit> executeGroup) {
+    private Optional<StatementExecuteUnit> getStatementExecuteUnit(final Statement statement, final InputGroup<StatementExecuteUnit> executeGroup) {
         return Iterators.tryFind(executeGroup.getInputs().iterator(), new Predicate<StatementExecuteUnit>() {
             
             @Override

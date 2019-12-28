@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.opentracing.hook;
 
-import org.apache.shardingsphere.core.execute.engine.ShardingExecuteDataMap;
+import org.apache.shardingsphere.underlying.execute.engine.ExecutorDataMap;
 import org.apache.shardingsphere.core.execute.hook.RootInvokeHook;
 import org.apache.shardingsphere.core.execute.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
@@ -38,7 +38,7 @@ public final class OpenTracingRootInvokeHookTest extends BaseOpenTracingHookTest
     @Test
     public void assertRootInvoke() {
         rootInvokeHook.start();
-        assertTrue(ShardingExecuteDataMap.getDataMap().containsKey(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION));
+        assertTrue(ExecutorDataMap.getDataMap().containsKey(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION));
         rootInvokeHook.finish(1);
     }
 }

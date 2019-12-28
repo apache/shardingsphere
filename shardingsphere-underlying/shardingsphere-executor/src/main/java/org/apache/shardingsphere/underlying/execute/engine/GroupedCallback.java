@@ -15,30 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.execute.engine;
+package org.apache.shardingsphere.underlying.execute.engine;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
 /**
- * Sharding group execute callback.
+ * Grouped callback.
  * 
  * @author zhangliang
  * 
  * @param <I> type of inputs value
  * @param <O> type of outputs value
  */
-public interface ShardingGroupExecuteCallback<I, O> {
+public interface GroupedCallback<I, O> {
     
     /**
-     * Execute callback.
+     * Execute.
      * 
      * @param inputs input values
      * @param isTrunkThread is execution in trunk thread
-     * @param shardingExecuteDataMap sharding execute data map
+     * @param dataMap data map
      * @return execute result
      * @throws SQLException throw when execute failure
      */
-    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread, Map<String, Object> shardingExecuteDataMap) throws SQLException;
+    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread, Map<String, Object> dataMap) throws SQLException;
 }

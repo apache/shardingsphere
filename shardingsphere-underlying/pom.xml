@@ -32,7 +32,7 @@
     <modules>
         <module>shardingsphere-common</module>
         <module>shardingsphere-rewrite</module>
-        <module>shardingsphere-execute</module>
+        <module>shardingsphere-executor</module>
         <module>shardingsphere-merge</module>
     </modules>
 </project>

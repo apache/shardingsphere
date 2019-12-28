@@ -25,8 +25,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.core.execute.engine.ShardingExecuteEngine;
-import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
+import org.apache.shardingsphere.underlying.execute.engine.ExecutorEngine;
+import org.apache.shardingsphere.underlying.execute.engine.InputGroup;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.metadata.TableMetaDataInitializer;
 import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback;
@@ -96,7 +96,7 @@ public abstract class AbstractStatementExecutor {
     @Getter
     private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
     
-    private final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
+    private final Collection<InputGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
     
     public AbstractStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
         this.databaseType = shardingConnection.getRuntimeContext().getDatabaseType();
@@ -105,13 +105,13 @@ public abstract class AbstractStatementExecutor {
         this.resultSetHoldability = resultSetHoldability;
         this.connection = shardingConnection;
         int maxConnectionsSizePerQuery = connection.getRuntimeContext().getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        ShardingExecuteEngine executeEngine = connection.getRuntimeContext().getExecuteEngine();
+        ExecutorEngine executorEngine = connection.getRuntimeContext().getExecutorEngine();
         sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery);
-        sqlExecuteTemplate = new SQLExecuteTemplate(executeEngine, connection.isHoldTransaction());
+        sqlExecuteTemplate = new SQLExecuteTemplate(executorEngine, connection.isHoldTransaction());
     }
     
     protected final void cacheStatements() {
-        for (ShardingExecuteGroup<StatementExecuteUnit> each : executeGroups) {
+        for (InputGroup<StatementExecuteUnit> each : executeGroups) {
             statements.addAll(Lists.transform(each.getInputs(), new Function<StatementExecuteUnit, Statement>() {
                 
                 @Override
@@ -242,7 +242,7 @@ public abstract class AbstractStatementExecutor {
     private TableMetaDataInitializer getTableMetaDataInitializer() {
         ShardingSphereProperties properties = connection.getRuntimeContext().getProperties();
         return new TableMetaDataInitializer(connection.getRuntimeContext().getMetaData().getDataSources(), 
-                connection.getRuntimeContext().getExecuteEngine(), new JDBCTableMetaDataConnectionManager(connection.getDataSourceMap()),
+                connection.getRuntimeContext().getExecutorEngine(), new JDBCTableMetaDataConnectionManager(connection.getDataSourceMap()),
                 properties.<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
                 properties.<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
     }
