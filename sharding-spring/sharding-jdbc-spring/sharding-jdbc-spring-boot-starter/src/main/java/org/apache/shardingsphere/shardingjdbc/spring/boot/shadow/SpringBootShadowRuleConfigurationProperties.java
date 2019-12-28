@@ -15,24 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.shadow;
+package org.apache.shardingsphere.shardingjdbc.spring.boot.shadow;
 
-import com.google.common.base.Preconditions;
-import lombok.Getter;
-import org.apache.shardingsphere.api.config.RuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.shadow.YamlShadowRuleConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Shadow rule configuration.
+ * Shadow rule configuration properties.
  *
  * @author xiayan
  */
-@Getter
-public class ShadowRuleConfiguration implements RuleConfiguration {
-    
-    private final String column;
-    
-    public ShadowRuleConfiguration(final String column) {
-        Preconditions.checkArgument(null != column, "Column is Required.");
-        this.column = column;
-    }
+@ConfigurationProperties(prefix = "spring.shardingsphere.shadow", ignoreInvalidFields = true)
+public class SpringBootShadowRuleConfigurationProperties extends YamlShadowRuleConfiguration {
 }
