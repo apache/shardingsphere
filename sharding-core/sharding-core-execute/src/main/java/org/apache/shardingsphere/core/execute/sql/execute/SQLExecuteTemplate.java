@@ -44,22 +44,22 @@ public final class SQLExecuteTemplate {
     private final boolean serial;
     
     /**
-     * Execute group.
+     * Execute.
      *
-     * @param sqlExecuteGroups SQL execute groups
+     * @param inputGroups input groups
      * @param callback SQL execute callback
      * @param <T> class type of return value
      * @return execute result
      * @throws SQLException SQL exception
      */
-    public <T> List<T> executeGroup(final Collection<InputGroup<? extends StatementExecuteUnit>> sqlExecuteGroups, final SQLExecuteCallback<T> callback) throws SQLException {
-        return executeGroup(sqlExecuteGroups, null, callback);
+    public <T> List<T> execute(final Collection<InputGroup<? extends StatementExecuteUnit>> inputGroups, final SQLExecuteCallback<T> callback) throws SQLException {
+        return execute(inputGroups, null, callback);
     }
     
     /**
-     * Execute group.
+     * Execute.
      *
-     * @param sqlExecuteGroups SQL execute groups
+     * @param inputGroups input groups
      * @param firstCallback first SQL execute callback
      * @param callback SQL execute callback
      * @param <T> class type of return value
@@ -67,10 +67,10 @@ public final class SQLExecuteTemplate {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    public <T> List<T> executeGroup(final Collection<InputGroup<? extends StatementExecuteUnit>> sqlExecuteGroups,
-                                    final SQLExecuteCallback<T> firstCallback, final SQLExecuteCallback<T> callback) throws SQLException {
+    public <T> List<T> execute(final Collection<InputGroup<? extends StatementExecuteUnit>> inputGroups,
+                               final SQLExecuteCallback<T> firstCallback, final SQLExecuteCallback<T> callback) throws SQLException {
         try {
-            return executorEngine.execute((Collection) sqlExecuteGroups, firstCallback, callback, serial);
+            return executorEngine.execute((Collection) inputGroups, firstCallback, callback, serial);
         } catch (final SQLException ex) {
             ExecutorExceptionHandler.handleException(ex);
             return Collections.emptyList();

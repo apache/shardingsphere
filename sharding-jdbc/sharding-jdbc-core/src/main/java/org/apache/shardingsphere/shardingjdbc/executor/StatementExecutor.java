@@ -60,7 +60,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
      */
     public void init(final SQLRouteResult routeResult) throws SQLException {
         setSqlStatementContext(routeResult.getSqlStatementContext());
-        getExecuteGroups().addAll(obtainExecuteGroups(routeResult.getRouteUnits()));
+        getInputGroups().addAll(obtainExecuteGroups(routeResult.getRouteUnits()));
         cacheStatements();
     }
     

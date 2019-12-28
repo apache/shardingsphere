@@ -96,7 +96,7 @@ public abstract class AbstractStatementExecutor {
     @Getter
     private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
     
-    private final Collection<InputGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
+    private final Collection<InputGroup<StatementExecuteUnit>> inputGroups = new LinkedList<>();
     
     public AbstractStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
         this.databaseType = shardingConnection.getRuntimeContext().getDatabaseType();
@@ -111,7 +111,7 @@ public abstract class AbstractStatementExecutor {
     }
     
     protected final void cacheStatements() {
-        for (InputGroup<StatementExecuteUnit> each : executeGroups) {
+        for (InputGroup<StatementExecuteUnit> each : inputGroups) {
             statements.addAll(Lists.transform(each.getInputs(), new Function<StatementExecuteUnit, Statement>() {
                 
                 @Override
@@ -137,7 +137,7 @@ public abstract class AbstractStatementExecutor {
      */
     @SuppressWarnings("unchecked")
     protected final <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
-        List<T> result = sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);
+        List<T> result = sqlExecuteTemplate.execute((Collection) inputGroups, executeCallback);
         refreshMetaDataIfNeeded(connection.getRuntimeContext(), sqlStatementContext);
         return result;
     }
@@ -157,7 +157,7 @@ public abstract class AbstractStatementExecutor {
         parameterSets.clear();
         connections.clear();
         resultSets.clear();
-        executeGroups.clear();
+        inputGroups.clear();
     }
     
     private void clearStatements() throws SQLException {

@@ -79,7 +79,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     
     private List<TableMetaData> load(final Map<String, List<DataNode>> dataNodeGroups, final ShardingRule shardingRule, final String logicTableName) throws SQLException {
         final String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(logicTableName).orNull();
-        return executorEngine.execute(getDataNodeExecuteGroups(dataNodeGroups), new GroupedCallback<DataNode, TableMetaData>() {
+        return executorEngine.execute(getDataNodeInputGroups(dataNodeGroups), new GroupedCallback<DataNode, TableMetaData>() {
             
             @Override
             public Collection<TableMetaData> execute(final Collection<DataNode> dataNodes, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
@@ -110,15 +110,15 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
         return Collections.singletonMap(firstDataNode.getDataSourceName(), Collections.singletonList(firstDataNode));
     }
     
-    private Collection<InputGroup<DataNode>> getDataNodeExecuteGroups(final Map<String, List<DataNode>> dataNodeGroups) {
+    private Collection<InputGroup<DataNode>> getDataNodeInputGroups(final Map<String, List<DataNode>> dataNodeGroups) {
         Collection<InputGroup<DataNode>> result = new LinkedList<>();
         for (Entry<String, List<DataNode>> entry : dataNodeGroups.entrySet()) {
-            result.addAll(getDataNodeExecuteGroups(entry.getValue()));
+            result.addAll(getDataNodeInputGroups(entry.getValue()));
         }
         return result;
     }
     
-    private Collection<InputGroup<DataNode>> getDataNodeExecuteGroups(final List<DataNode> dataNodes) {
+    private Collection<InputGroup<DataNode>> getDataNodeInputGroups(final List<DataNode> dataNodes) {
         Collection<InputGroup<DataNode>> result = new LinkedList<>();
         for (List<DataNode> each : Lists.partition(dataNodes, Math.max(dataNodes.size() / maxConnectionsSizePerQuery, 1))) {
             result.add(new InputGroup<>(each));

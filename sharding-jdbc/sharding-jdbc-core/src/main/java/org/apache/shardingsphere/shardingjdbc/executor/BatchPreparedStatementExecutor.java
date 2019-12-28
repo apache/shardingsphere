@@ -77,7 +77,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      */
     public void init(final SQLRouteResult routeResult) throws SQLException {
         setSqlStatementContext(routeResult.getSqlStatementContext());
-        getExecuteGroups().addAll(obtainExecuteGroups(routeUnits));
+        getInputGroups().addAll(obtainExecuteGroups(routeUnits));
     }
     
     private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<BatchRouteUnit> routeUnits) throws SQLException {
@@ -180,7 +180,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     private int[] accumulate(final List<int[]> results) {
         int[] result = new int[batchCount];
         int count = 0;
-        for (InputGroup<StatementExecuteUnit> each : getExecuteGroups()) {
+        for (InputGroup<StatementExecuteUnit> each : getInputGroups()) {
             for (StatementExecuteUnit eachUnit : each.getInputs()) {
                 Map<Integer, Integer> jdbcAndActualAddBatchCallTimesMap = Collections.emptyMap();
                 for (BatchRouteUnit eachRouteUnit : routeUnits) {
@@ -208,7 +208,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     @Override
     public List<Statement> getStatements() {
         List<Statement> result = new LinkedList<>();
-        for (InputGroup<StatementExecuteUnit> each : getExecuteGroups()) {
+        for (InputGroup<StatementExecuteUnit> each : getInputGroups()) {
             result.addAll(Lists.transform(each.getInputs(), new Function<StatementExecuteUnit, Statement>() {
                 
                 @Override
@@ -228,7 +228,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      */
     public List<List<Object>> getParameterSet(final Statement statement) {
         List<List<Object>> result = new LinkedList<>();
-        for (InputGroup<StatementExecuteUnit> each : getExecuteGroups()) {
+        for (InputGroup<StatementExecuteUnit> each : getInputGroups()) {
             Optional<StatementExecuteUnit> target = getStatementExecuteUnit(statement, each);
             if (target.isPresent()) {
                 result = getParameterSets(target.get());
