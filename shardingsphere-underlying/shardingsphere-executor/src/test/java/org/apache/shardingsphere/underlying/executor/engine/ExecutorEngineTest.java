@@ -15,49 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.execute.engine;
+package org.apache.shardingsphere.underlying.executor.engine;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
-import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
-import org.apache.shardingsphere.underlying.executor.engine.GroupedCallback;
+import org.apache.shardingsphere.underlying.executor.engine.fixture.GroupedCallbackFixture;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class ExecutorEngineTest {
     
-    private ExecutorEngine executorEngine = new ExecutorEngine(10);
+    private final ExecutorEngine executorEngine = new ExecutorEngine(10);
     
-    private Collection<InputGroup<StatementExecuteUnit>> inputGroups;
+    private final CountDownLatch latch = new CountDownLatch(4);
     
-    private MockedGroupedCallback firstCallback;
+    private Collection<InputGroup<Object>> inputGroups;
     
-    private MockedGroupedCallback callback;
+    private GroupedCallbackFixture firstCallback;
     
-    private CountDownLatch latch;
+    private GroupedCallbackFixture callback;
     
     @Before
     public void setUp() {
-        latch = new CountDownLatch(4);
-        inputGroups = mockInputGroups(2, 2);
-        firstCallback = new MockedGroupedCallback(latch);
-        callback = new MockedGroupedCallback(latch);
+        inputGroups = createMockedInputGroups(2, 2);
+        firstCallback = new GroupedCallbackFixture(latch);
+        callback = new GroupedCallbackFixture(latch);
     }
     
     @After
@@ -65,14 +56,18 @@ public final class ExecutorEngineTest {
         executorEngine.close();
     }
     
-    private Collection<InputGroup<StatementExecuteUnit>> mockInputGroups(final int groupSize, final int unitSize) {
-        Collection<InputGroup<StatementExecuteUnit>> result = new LinkedList<>();
+    private Collection<InputGroup<Object>> createMockedInputGroups(final int groupSize, final int unitSize) {
+        Collection<InputGroup<Object>> result = new LinkedList<>();
         for (int i = 0; i < groupSize; i++) {
-            List<StatementExecuteUnit> inputs = new LinkedList<>();
-            for (int j = 0; j < unitSize; j++) {
-                inputs.add(mock(StatementExecuteUnit.class));
-            }
-            result.add(new InputGroup<>(inputs));
+            result.add(new InputGroup<>(createMockedInputs(unitSize)));
+        }
+        return result;
+    }
+    
+    private List<Object> createMockedInputs(final int size) {
+        List<Object> result = new LinkedList<>();
+        for (int j = 0; j < size; j++) {
+            result.add(mock(Object.class));
         }
         return result;
     }
@@ -101,24 +96,8 @@ public final class ExecutorEngineTest {
     @Test
     public void assertInputGroupIsEmpty() throws SQLException {
         CountDownLatch latch = new CountDownLatch(1);
-        List<String> actual = executorEngine.execute(new LinkedList<InputGroup<StatementExecuteUnit>>(), new MockedGroupedCallback(latch));
+        List<String> actual = executorEngine.execute(new LinkedList<InputGroup<Object>>(), new GroupedCallbackFixture(latch));
         latch.countDown();
         assertThat(actual.size(), is(0));
-    }
-    
-    @RequiredArgsConstructor
-    private final class MockedGroupedCallback implements GroupedCallback<StatementExecuteUnit, String> {
-        
-        private final CountDownLatch latch;
-        
-        @Override
-        public Collection<String> execute(final Collection<StatementExecuteUnit> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) {
-            List<String> result = new LinkedList<>();
-            for (StatementExecuteUnit each : inputs) {
-                latch.countDown();
-                result.add("succeed");
-            }
-            return result;
-        }
     }
 }
