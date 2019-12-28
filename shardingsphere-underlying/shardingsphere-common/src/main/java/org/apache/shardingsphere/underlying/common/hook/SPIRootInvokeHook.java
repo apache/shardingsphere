@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.execute.hook;
+package org.apache.shardingsphere.underlying.common.hook;
 
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 

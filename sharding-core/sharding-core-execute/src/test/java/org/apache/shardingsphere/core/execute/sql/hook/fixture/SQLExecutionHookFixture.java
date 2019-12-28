@@ -15,47 +15,50 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.execute.hook;
+package org.apache.shardingsphere.core.execute.sql.hook.fixture;
 
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.core.execute.sql.hook.SQLExecutionHook;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * SQL Execution hook for SPI.
- *
- * @author zhangliang
- */
-public final class SPISQLExecutionHook implements SQLExecutionHook {
+public final class SQLExecutionHookFixture implements SQLExecutionHook {
     
-    private final Collection<SQLExecutionHook> sqlExecutionHooks = NewInstanceServiceLoader.newServiceInstances(SQLExecutionHook.class);
-    
-    static {
-        NewInstanceServiceLoader.register(SQLExecutionHook.class);
-    }
+    private static final Collection<String> ACTIONS = new LinkedList<>();
     
     @Override
     public void start(final String dataSourceName, final String sql, final List<Object> parameters, 
                       final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
-        for (SQLExecutionHook each : sqlExecutionHooks) {
-            each.start(dataSourceName, sql, parameters, dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);
-        }
+        ACTIONS.add("start");
     }
     
     @Override
     public void finishSuccess() {
-        for (SQLExecutionHook each : sqlExecutionHooks) {
-            each.finishSuccess();
-        }
+        ACTIONS.add("finishSuccess");
     }
     
     @Override
     public void finishFailure(final Exception cause) {
-        for (SQLExecutionHook each : sqlExecutionHooks) {
-            each.finishFailure(cause);
-        }
+        ACTIONS.add("finishFailure");
+    }
+    
+    /**
+     * Contains action or not.
+     * 
+     * @param action action
+     * @return contains action or not
+     */
+    public static boolean containsAction(final String action) {
+        return ACTIONS.contains(action);
+    }
+    
+    /**
+     * Clear actions.
+     */
+    public static void clearActions() {
+        ACTIONS.clear();
     }
 }

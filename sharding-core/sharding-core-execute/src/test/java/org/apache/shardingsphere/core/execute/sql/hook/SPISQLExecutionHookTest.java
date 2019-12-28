@@ -15,33 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.execute.hook;
+package org.apache.shardingsphere.core.execute.sql.hook;
 
-import org.apache.shardingsphere.core.execute.hook.fixture.RootInvokeHookFixture;
+import org.apache.shardingsphere.core.execute.sql.hook.fixture.SQLExecutionHookFixture;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collections;
+
 import static org.junit.Assert.assertTrue;
 
-public final class SPIRootInvokeHookTest {
+public final class SPISQLExecutionHookTest {
     
-    private SPIRootInvokeHook spiRootInvokeHook;
+    private SPISQLExecutionHook spiSQLExecutionHook;
     
     @Before
     public void setUp() {
-        RootInvokeHookFixture.clearActions();
-        spiRootInvokeHook = new SPIRootInvokeHook();
+        SQLExecutionHookFixture.clearActions();
+        spiSQLExecutionHook = new SPISQLExecutionHook();
     }
     
     @Test
     public void assertStart() {
-        spiRootInvokeHook.start();
-        assertTrue(RootInvokeHookFixture.containsAction("start"));
+        spiSQLExecutionHook.start("ds", "SELECT 1", Collections.emptyList(), null, true, null);
+        assertTrue(SQLExecutionHookFixture.containsAction("start"));
     }
     
     @Test
     public void assertFinishSuccess() {
-        spiRootInvokeHook.finish(0);
-        assertTrue(RootInvokeHookFixture.containsAction("finish"));
+        spiSQLExecutionHook.finishSuccess();
+        assertTrue(SQLExecutionHookFixture.containsAction("finishSuccess"));
+    }
+    
+    @Test
+    public void assertFinishFailure() {
+        spiSQLExecutionHook.finishFailure(null);
+        assertTrue(SQLExecutionHookFixture.containsAction("finishFailure"));
     }
 }

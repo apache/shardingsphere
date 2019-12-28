@@ -138,7 +138,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     
     @SneakyThrows
     private void setFields(final Collection<InputGroup<StatementExecuteUnit>> executeGroups, final Collection<BatchRouteUnit> routeUnits) {
-        Field field = BatchPreparedStatementExecutor.class.getSuperclass().getDeclaredField("executeGroups");
+        Field field = BatchPreparedStatementExecutor.class.getSuperclass().getDeclaredField("inputGroups");
         field.setAccessible(true);
         field.set(actual, executeGroups);
         field = BatchPreparedStatementExecutor.class.getDeclaredField("routeUnits");

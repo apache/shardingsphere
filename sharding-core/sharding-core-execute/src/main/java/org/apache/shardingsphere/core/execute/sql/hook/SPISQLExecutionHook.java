@@ -15,34 +15,47 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.base.seata.at;
+package org.apache.shardingsphere.core.execute.sql.hook;
 
-import org.apache.shardingsphere.core.execute.sql.hook.SQLExecutionHook;
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Seata transactional SQL execution hook.
+ * SQL Execution hook for SPI.
  *
- * @author zhaojun
+ * @author zhangliang
  */
-public final class TransactionalSQLExecutionHook implements SQLExecutionHook {
+public final class SPISQLExecutionHook implements SQLExecutionHook {
+    
+    private final Collection<SQLExecutionHook> sqlExecutionHooks = NewInstanceServiceLoader.newServiceInstances(SQLExecutionHook.class);
+    
+    static {
+        NewInstanceServiceLoader.register(SQLExecutionHook.class);
+    }
     
     @Override
-    public void start(final String dataSourceName, final String sql, final List<Object> parameters,
+    public void start(final String dataSourceName, final String sql, final List<Object> parameters, 
                       final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
-        if (!isTrunkThread) {
-            SeataTransactionBroadcaster.broadcastIfNecessary(shardingExecuteDataMap);
+        for (SQLExecutionHook each : sqlExecutionHooks) {
+            each.start(dataSourceName, sql, parameters, dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);
         }
     }
     
     @Override
     public void finishSuccess() {
+        for (SQLExecutionHook each : sqlExecutionHooks) {
+            each.finishSuccess();
+        }
     }
     
     @Override
     public void finishFailure(final Exception cause) {
+        for (SQLExecutionHook each : sqlExecutionHooks) {
+            each.finishFailure(cause);
+        }
     }
 }

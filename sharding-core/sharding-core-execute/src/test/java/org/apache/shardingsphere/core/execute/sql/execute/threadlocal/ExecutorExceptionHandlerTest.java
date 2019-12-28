@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.execute.threadlocal;
+package org.apache.shardingsphere.core.execute.sql.execute.threadlocal;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.junit.After;
 import org.junit.Test;
 

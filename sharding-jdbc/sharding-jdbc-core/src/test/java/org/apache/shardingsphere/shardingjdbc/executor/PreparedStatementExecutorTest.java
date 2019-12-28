@@ -269,7 +269,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
             preparedStatementExecuteUnits.add(
                     new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList((Object) 1))), each, ConnectionMode.MEMORY_STRICTLY));
         }
-        Field field = PreparedStatementExecutor.class.getSuperclass().getDeclaredField("executeGroups");
+        Field field = PreparedStatementExecutor.class.getSuperclass().getDeclaredField("inputGroups");
         field.setAccessible(true);
         field.set(actual, executeGroups);
     }

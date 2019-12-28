@@ -15,34 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.execute.hook.fixture;
+package org.apache.shardingsphere.underlying.common.hook.fixture;
 
-import org.apache.shardingsphere.core.execute.hook.SQLExecutionHook;
-import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.underlying.common.hook.RootInvokeHook;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
-public final class SQLExecutionHookFixture implements SQLExecutionHook {
+public final class RootInvokeHookFixture implements RootInvokeHook {
     
     private static final Collection<String> ACTIONS = new LinkedList<>();
     
     @Override
-    public void start(final String dataSourceName, final String sql, final List<Object> parameters, 
-                      final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
+    public void start() {
         ACTIONS.add("start");
     }
     
     @Override
-    public void finishSuccess() {
-        ACTIONS.add("finishSuccess");
-    }
-    
-    @Override
-    public void finishFailure(final Exception cause) {
-        ACTIONS.add("finishFailure");
+    public void finish(final int connectionCount) {
+        ACTIONS.add("finish");
     }
     
     /**
