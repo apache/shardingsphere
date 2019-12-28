@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.MergedResult;
 
 import java.io.InputStream;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.underlying.merge.impl;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 
 import java.sql.SQLException;
 

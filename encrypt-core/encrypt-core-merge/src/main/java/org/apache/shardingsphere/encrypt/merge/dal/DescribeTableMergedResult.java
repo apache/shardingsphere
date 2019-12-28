@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 
 import java.sql.SQLException;
 import java.util.LinkedList;

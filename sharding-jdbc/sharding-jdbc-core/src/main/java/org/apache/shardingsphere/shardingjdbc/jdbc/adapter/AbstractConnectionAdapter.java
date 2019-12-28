@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.execute.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.core.execute.hook.RootInvokeHook;
 import org.apache.shardingsphere.core.execute.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.core.route.router.masterslave.MasterVisitedManager;

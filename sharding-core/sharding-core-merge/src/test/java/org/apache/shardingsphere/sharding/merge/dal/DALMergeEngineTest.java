@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Show
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowOtherStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTablesStatement;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.impl.TransparentMergedResult;
 import org.junit.Before;
 import org.junit.Test;

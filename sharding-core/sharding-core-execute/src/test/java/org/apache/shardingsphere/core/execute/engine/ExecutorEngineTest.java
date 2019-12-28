@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.execute.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.execute.engine.ExecutorEngine;
-import org.apache.shardingsphere.underlying.execute.engine.InputGroup;
-import org.apache.shardingsphere.underlying.execute.engine.GroupedCallback;
+import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
+import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
+import org.apache.shardingsphere.underlying.executor.engine.GroupedCallback;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

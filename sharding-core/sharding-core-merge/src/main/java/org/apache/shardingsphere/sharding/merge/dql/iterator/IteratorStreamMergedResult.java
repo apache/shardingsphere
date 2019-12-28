@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.iterator;
 
-import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.impl.StreamMergedResult;
 
 import java.sql.SQLException;

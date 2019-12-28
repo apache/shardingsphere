@@ -38,7 +38,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.junit.Before;
 import org.junit.Test;
 

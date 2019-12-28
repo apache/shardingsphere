@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.P
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.MergeEngine;
 import org.apache.shardingsphere.underlying.merge.MergedResult;
 

@@ -43,7 +43,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResult
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.MergeEngine;
 import org.apache.shardingsphere.underlying.merge.MergedResult;
 

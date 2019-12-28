@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ResultSetEncry
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.MergedResult;
 
 import java.io.InputStream;

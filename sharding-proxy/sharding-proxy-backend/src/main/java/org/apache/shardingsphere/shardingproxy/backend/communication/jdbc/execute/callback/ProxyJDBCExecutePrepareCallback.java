@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.execute.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.sql.prepare.SQLExecutePrepareCallback;
 import org.apache.shardingsphere.core.route.RouteUnit;

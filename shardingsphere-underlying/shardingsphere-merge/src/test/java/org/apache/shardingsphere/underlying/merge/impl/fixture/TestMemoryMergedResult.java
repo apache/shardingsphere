@@ -20,7 +20,7 @@ package org.apache.shardingsphere.underlying.merge.impl.fixture;
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.impl.MemoryMergedResult;
 import org.apache.shardingsphere.underlying.merge.impl.MemoryQueryResultRow;
 

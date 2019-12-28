@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetaData;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.junit.Before;
 import org.junit.Test;
 

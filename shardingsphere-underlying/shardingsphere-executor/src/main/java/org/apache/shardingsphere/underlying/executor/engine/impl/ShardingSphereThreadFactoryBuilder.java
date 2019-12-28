@@ -15,46 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.execute.engine;
+package org.apache.shardingsphere.underlying.executor.engine.impl;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.concurrent.ThreadFactory;
 
 /**
- * Executor data map for thread local even cross multiple threads.
+ * ShardingSphere thread factory builder.
  *
- * @author caohao
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExecutorDataMap {
+public final class ShardingSphereThreadFactoryBuilder {
     
-    private static ThreadLocal<Map<String, Object>> dataMap = new ThreadLocal<Map<String, Object>>() {
-        
-        @Override
-        protected Map<String, Object> initialValue() {
-            return new LinkedHashMap<>();
-        }
-    };
+    private static final String NAME_FORMAT_PREFIX = "ShardingSphere-";
+    
+    private static final String DEFAULT_EXECUTOR_NAME_FORMAT = NAME_FORMAT_PREFIX + "%d";
     
     /**
-     * Set data map.
+     * Build default ShardingSphere thread factory.
      *
-     * @param dataMap data map
+     * @return default ShardingSphere thread factory
      */
-    public static void setDataMap(final Map<String, Object> dataMap) {
-        ExecutorDataMap.dataMap.set(dataMap);
+    public static ThreadFactory build() {
+        return new ThreadFactoryBuilder().setDaemon(true).setNameFormat(DEFAULT_EXECUTOR_NAME_FORMAT).build();
     }
     
     /**
-     * Get data map.
-     *
-     * @return data map
+     * Build ShardingSphere thread factory.
+     * 
+     * @param nameFormat thread name format
+     * @return ShardingSphere thread factory
      */
-    public static Map<String, Object> getDataMap() {
-        return dataMap.get();
+    public static ThreadFactory build(final String nameFormat) {
+        return new ThreadFactoryBuilder().setDaemon(true).setNameFormat(NAME_FORMAT_PREFIX + nameFormat).build();
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.merge.dal;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.MergeEngine;
 import org.apache.shardingsphere.underlying.merge.MergedResult;
 import org.apache.shardingsphere.underlying.merge.impl.TransparentMergedResult;

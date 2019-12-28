@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.P
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.MergedResult;
 import org.junit.Before;
 import org.junit.Test;

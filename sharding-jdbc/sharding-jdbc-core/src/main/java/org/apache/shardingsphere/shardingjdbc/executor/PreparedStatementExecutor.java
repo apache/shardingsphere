@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.execute.constant.ConnectionMode;
-import org.apache.shardingsphere.underlying.execute.engine.InputGroup;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback;
 import org.apache.shardingsphere.core.execute.sql.execute.result.MemoryQueryResult;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.core.execute.sql.prepare.SQLExecutePrepareCallback;

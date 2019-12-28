@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.merge.dql.orderby;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
 
 import java.sql.SQLException;

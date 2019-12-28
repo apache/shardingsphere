@@ -27,7 +27,7 @@ import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.MergeEngine;
 
 import java.util.List;

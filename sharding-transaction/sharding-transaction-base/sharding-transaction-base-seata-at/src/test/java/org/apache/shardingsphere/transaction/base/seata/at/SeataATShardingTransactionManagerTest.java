@@ -30,7 +30,7 @@ import io.seata.tm.api.GlobalTransactionContext;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
-import org.apache.shardingsphere.underlying.execute.engine.ExecutorDataMap;
+import org.apache.shardingsphere.underlying.executor.engine.ExecutorDataMap;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.After;

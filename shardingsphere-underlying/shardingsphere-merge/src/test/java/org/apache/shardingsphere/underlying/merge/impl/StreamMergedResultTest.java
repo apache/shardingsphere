@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.merge.impl;
 
-import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.impl.fixture.TestStreamMergedResult;
 import org.junit.Test;
 

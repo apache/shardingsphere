@@ -15,22 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.execute.engine;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.List;
+package org.apache.shardingsphere.underlying.executor.constant;
 
 /**
- * Input group.
+ * Connection Mode.
  *
- * @author zhangliang
- * @param <T> type of inputs value
+ * @author zhangyonglun
  */
-@RequiredArgsConstructor
-@Getter
-public final class InputGroup<T> {
+public enum ConnectionMode {
     
-    private final List<T> inputs;
+    MEMORY_STRICTLY, CONNECTION_STRICTLY
 }

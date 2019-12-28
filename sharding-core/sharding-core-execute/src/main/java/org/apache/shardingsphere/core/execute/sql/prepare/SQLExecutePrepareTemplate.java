@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.execute.sql.prepare;
 
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.execute.constant.ConnectionMode;
-import org.apache.shardingsphere.underlying.execute.engine.InputGroup;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLUnit;
