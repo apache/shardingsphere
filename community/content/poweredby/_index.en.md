@@ -59,6 +59,7 @@ The list here will be shown in the alphabetical order.
 1. Guangxi Province Territorial Resources Information Center http://z.gxdlr.gov.cn/
 1. GuaZi https://www.guazi.com/
 1. Haier Cash https://www.haiercash.com/
+1. HelloGlobal https://www.helloglobal.com/
 1. Hikvision https://www.hikvision.com/ 
 1. Hiveview http://www.hiveview.com/
 1. HQWX http://www.hqwx.com/
@@ -68,6 +69,7 @@ The list here will be shown in the alphabetical order.
 1. HYDEE http://www.hydee.cn/
 1. Iflytek https://www.iflytek.com/
 1. Iqiyi https://www.iqiyi.com/
+1. ITrusChina https://www.itrus.com.cn/
 1. IZXCS http://www.izxcs.com/
 1. JD Digits https://www.jddglobal.com/
 1. JD.ru https://www.jd.ru/
@@ -81,6 +83,7 @@ The list here will be shown in the alphabetical order.
 1. KeRuYun https://www.keruyun.com/
 1. KingCome http://www.kingcome.cn/
 1. KJT pay https://www.kjtpay.com/
+1. KTJR https://www.ktjr.com/
 1. Lily&Beauty https://www.lrlz.com/
 1. MaFengWo https://www.mafengwo.cn/
 1. MagicEares https://magicears.com.cn/
@@ -119,6 +122,7 @@ The list here will be shown in the alphabetical order.
 1. XiaChuFang https://www.xiachufang.com/
 1. XiaoHongChun https://www.xiaohongchun.com/
 1. XiaoNiu88 https://www.xiaoniu88.com/
+1. YaDuo http://www.yaduo.com/
 1. YiChe https://www.yiche.com/
 1. YiDianZiXun https://www.yidianzixun.com/
 1. YiWuGou https://www.yiwugou.com/

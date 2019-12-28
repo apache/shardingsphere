@@ -56,6 +56,7 @@ chapter = true
 1. 广西壮族自治区国土资源信息中心 http://z.gxdlr.gov.cn/ 
 1. 广州理德物联网科技有限公司 http://www.iotlead.com/
 1. 广州码码高信息科技有限公司 http://www.mamagao.cn/
+1. 哈啰出行 https://www.helloglobal.com/
 1. 海典软件 http://www.hydee.cn/ 
 1. 海尔消费金融 https://www.haiercash.com/ 
 1. 海康威视 https://www.hikvision.com/ 
@@ -77,6 +78,7 @@ chapter = true
 1. 玖富数科 https://www.9fgroup.com/ 
 1. 均瑶集团 http://www.juneyao.com/ 
 1. 开课啦 https://www.kaike.la/
+1. 开通金融 https://www.ktjr.com/
 1. 康帕斯科技 http://www.compasshz.com/ 
 1. 科大讯飞 https://www.iflytek.com/ 
 1. 客如云 https://www.keruyun.com/
@@ -103,6 +105,7 @@ chapter = true
 1. 速珂智能 https://www.supersoco.com/ 
 1. 随手记 https://www.sui.com/ 
 1. 特微智能 https://www.trawe.cn/
+1. 天威诚信 https://www.itrus.com.cn/
 1. 天涯社区 https://www.tianya.cn/
 1. 途家民宿 https://www.tujia.com/
 1. 兔展 https://www.rabbitpre.com/ 
@@ -115,6 +118,7 @@ chapter = true
 1. 小牛在线 https://www.xiaoniu88.com/ 
 1. 携程旅游 https://www.ctrip.com/ 
 1. 新脉远望 http://www.cyberplus.com.cn/ 
+1. 亚朵 http://www.yaduo.com/
 1. 一点资讯 https://www.yidianzixun.com/ 
 1. 义乌购 https://www.yiwugou.com/ 
 1. 易车网 https://www.yiche.com/ 
