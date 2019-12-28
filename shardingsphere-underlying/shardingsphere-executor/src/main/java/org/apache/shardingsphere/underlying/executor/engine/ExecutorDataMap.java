@@ -41,20 +41,11 @@ public final class ExecutorDataMap {
     };
     
     /**
-     * Set data map.
-     *
-     * @param dataMap data map
-     */
-    public static void setDataMap(final Map<String, Object> dataMap) {
-        ExecutorDataMap.dataMap.set(dataMap);
-    }
-    
-    /**
-     * Get data map.
+     * Get value.
      *
      * @return data map
      */
-    public static Map<String, Object> getDataMap() {
+    public static Map<String, Object> getValue() {
         return dataMap.get();
     }
 }

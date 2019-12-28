@@ -97,7 +97,7 @@ public final class SeataATShardingTransactionManagerTest {
     
     @After
     public void tearDown() {
-        ExecutorDataMap.getDataMap().clear();
+        ExecutorDataMap.getValue().clear();
         RootContext.unbind();
         SeataTransactionHolder.clear();
         seataATShardingTransactionManager.close();
@@ -136,7 +136,7 @@ public final class SeataATShardingTransactionManagerTest {
     @Test
     public void assertBegin() {
         seataATShardingTransactionManager.begin();
-        assertTrue(ExecutorDataMap.getDataMap().containsKey("SEATA_TX_XID"));
+        assertTrue(ExecutorDataMap.getValue().containsKey("SEATA_TX_XID"));
         assertTrue(seataATShardingTransactionManager.isInTransaction());
         assertResult();
     }

@@ -46,7 +46,7 @@ public final class ExecutorEngine implements AutoCloseable {
     }
     
     /**
-     * Execute for group.
+     * Execute.
      *
      * @param inputGroups input groups
      * @param callback grouped callback
@@ -55,12 +55,12 @@ public final class ExecutorEngine implements AutoCloseable {
      * @return execute result
      * @throws SQLException throw if execute failure
      */
-    public <I, O> List<O> groupExecute(final Collection<InputGroup<I>> inputGroups, final GroupedCallback<I, O> callback) throws SQLException {
-        return groupExecute(inputGroups, null, callback, false);
+    public <I, O> List<O> execute(final Collection<InputGroup<I>> inputGroups, final GroupedCallback<I, O> callback) throws SQLException {
+        return execute(inputGroups, null, callback, false);
     }
     
     /**
-     * Execute for group.
+     * Execute.
      *
      * @param inputGroups input groups
      * @param firstCallback first grouped callback
@@ -71,43 +71,45 @@ public final class ExecutorEngine implements AutoCloseable {
      * @return execute result
      * @throws SQLException throw if execute failure
      */
-    public <I, O> List<O> groupExecute(final Collection<InputGroup<I>> inputGroups, final GroupedCallback<I, O> firstCallback, final GroupedCallback<I, O> callback, final boolean serial)
-            throws SQLException {
+    public <I, O> List<O> execute(final Collection<InputGroup<I>> inputGroups, 
+                                  final GroupedCallback<I, O> firstCallback, final GroupedCallback<I, O> callback, final boolean serial) throws SQLException {
         if (inputGroups.isEmpty()) {
             return Collections.emptyList();
         }
         return serial ? serialExecute(inputGroups, firstCallback, callback) : parallelExecute(inputGroups, firstCallback, callback);
     }
     
-    private <I, O> List<O> serialExecute(final Collection<InputGroup<I>> inputGroups, final GroupedCallback<I, O> firstCallback,
-                                         final GroupedCallback<I, O> callback) throws SQLException {
+    private <I, O> List<O> serialExecute(final Collection<InputGroup<I>> inputGroups, final GroupedCallback<I, O> firstCallback, final GroupedCallback<I, O> callback) throws SQLException {
         Iterator<InputGroup<I>> inputGroupsIterator = inputGroups.iterator();
         InputGroup<I> firstInputs = inputGroupsIterator.next();
-        List<O> result = new LinkedList<>(syncGroupExecute(firstInputs, null == firstCallback ? callback : firstCallback));
+        List<O> result = new LinkedList<>(syncExecute(firstInputs, null == firstCallback ? callback : firstCallback));
         for (InputGroup<I> each : Lists.newArrayList(inputGroupsIterator)) {
-            result.addAll(syncGroupExecute(each, callback));
+            result.addAll(syncExecute(each, callback));
         }
         return result;
     }
     
-    private <I, O> List<O> parallelExecute(final Collection<InputGroup<I>> inputGroups, final GroupedCallback<I, O> firstCallback,
-                                           final GroupedCallback<I, O> callback) throws SQLException {
+    private <I, O> List<O> parallelExecute(final Collection<InputGroup<I>> inputGroups, final GroupedCallback<I, O> firstCallback, final GroupedCallback<I, O> callback) throws SQLException {
         Iterator<InputGroup<I>> inputGroupsIterator = inputGroups.iterator();
         InputGroup<I> firstInputs = inputGroupsIterator.next();
-        Collection<ListenableFuture<Collection<O>>> restResultFutures = asyncGroupExecute(Lists.newArrayList(inputGroupsIterator), callback);
-        return getGroupResults(syncGroupExecute(firstInputs, null == firstCallback ? callback : firstCallback), restResultFutures);
+        Collection<ListenableFuture<Collection<O>>> restResultFutures = asyncExecute(Lists.newArrayList(inputGroupsIterator), callback);
+        return getGroupResults(syncExecute(firstInputs, null == firstCallback ? callback : firstCallback), restResultFutures);
     }
     
-    private <I, O> Collection<ListenableFuture<Collection<O>>> asyncGroupExecute(final List<InputGroup<I>> inputGroups, final GroupedCallback<I, O> callback) {
+    private <I, O> Collection<O> syncExecute(final InputGroup<I> inputGroup, final GroupedCallback<I, O> callback) throws SQLException {
+        return callback.execute(inputGroup.getInputs(), true, ExecutorDataMap.getValue());
+    }
+    
+    private <I, O> Collection<ListenableFuture<Collection<O>>> asyncExecute(final List<InputGroup<I>> inputGroups, final GroupedCallback<I, O> callback) {
         Collection<ListenableFuture<Collection<O>>> result = new LinkedList<>();
         for (InputGroup<I> each : inputGroups) {
-            result.add(asyncGroupExecute(each, callback));
+            result.add(asyncExecute(each, callback));
         }
         return result;
     }
     
-    private <I, O> ListenableFuture<Collection<O>> asyncGroupExecute(final InputGroup<I> inputGroup, final GroupedCallback<I, O> callback) {
-        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
+    private <I, O> ListenableFuture<Collection<O>> asyncExecute(final InputGroup<I> inputGroup, final GroupedCallback<I, O> callback) {
+        final Map<String, Object> dataMap = ExecutorDataMap.getValue();
         return executorService.getExecutorService().submit(new Callable<Collection<O>>() {
             
             @Override
@@ -115,10 +117,6 @@ public final class ExecutorEngine implements AutoCloseable {
                 return callback.execute(inputGroup.getInputs(), false, dataMap);
             }
         });
-    }
-    
-    private <I, O> Collection<O> syncGroupExecute(final InputGroup<I> executeGroup, final GroupedCallback<I, O> callback) throws SQLException {
-        return callback.execute(executeGroup.getInputs(), true, ExecutorDataMap.getDataMap());
     }
     
     private <O> List<O> getGroupResults(final Collection<O> firstResults, final Collection<ListenableFuture<Collection<O>>> restFutures) throws SQLException {

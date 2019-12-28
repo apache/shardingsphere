@@ -79,21 +79,21 @@ public final class ExecutorEngineTest {
     
     @Test
     public void assertParallelExecuteWithoutFirstCallback() throws SQLException, InterruptedException {
-        List<String> actual = executorEngine.groupExecute(inputGroups, callback);
+        List<String> actual = executorEngine.execute(inputGroups, callback);
         latch.await();
         assertThat(actual.size(), is(4));
     }
     
     @Test
     public void assertParallelExecuteWithFirstCallback() throws SQLException, InterruptedException {
-        List<String> actual = executorEngine.groupExecute(inputGroups, firstCallback, callback, false);
+        List<String> actual = executorEngine.execute(inputGroups, firstCallback, callback, false);
         latch.await();
         assertThat(actual.size(), is(4));
     }
     
     @Test
     public void assertSerialExecute() throws SQLException, InterruptedException {
-        List<String> actual = executorEngine.groupExecute(inputGroups, firstCallback, callback, true);
+        List<String> actual = executorEngine.execute(inputGroups, firstCallback, callback, true);
         latch.await();
         assertThat(actual.size(), is(4));
     }
@@ -101,7 +101,7 @@ public final class ExecutorEngineTest {
     @Test
     public void assertInputGroupIsEmpty() throws SQLException {
         CountDownLatch latch = new CountDownLatch(1);
-        List<String> actual = executorEngine.groupExecute(new LinkedList<InputGroup<StatementExecuteUnit>>(), new MockedGroupedCallback(latch));
+        List<String> actual = executorEngine.execute(new LinkedList<InputGroup<StatementExecuteUnit>>(), new MockedGroupedCallback(latch));
         latch.countDown();
         assertThat(actual.size(), is(0));
     }

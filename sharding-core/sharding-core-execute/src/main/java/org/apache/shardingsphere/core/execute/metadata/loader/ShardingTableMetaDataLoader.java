@@ -79,7 +79,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     
     private List<TableMetaData> load(final Map<String, List<DataNode>> dataNodeGroups, final ShardingRule shardingRule, final String logicTableName) throws SQLException {
         final String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(logicTableName).orNull();
-        return executorEngine.groupExecute(getDataNodeExecuteGroups(dataNodeGroups), new GroupedCallback<DataNode, TableMetaData>() {
+        return executorEngine.execute(getDataNodeExecuteGroups(dataNodeGroups), new GroupedCallback<DataNode, TableMetaData>() {
             
             @Override
             public Collection<TableMetaData> execute(final Collection<DataNode> dataNodes, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {

@@ -64,13 +64,13 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         Continuation continuation = mock(Continuation.class);
         ActiveSpan result = mock(ActiveSpan.class);
         when(continuation.activate()).thenReturn(result);
-        ExecutorDataMap.getDataMap().put(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION, continuation);
+        ExecutorDataMap.getValue().put(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION, continuation);
         return result;
     }
     
     @After
     public void tearDown() {
-        ExecutorDataMap.getDataMap().remove(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION);
+        ExecutorDataMap.getValue().remove(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION);
     }
     
     @Test
@@ -122,7 +122,7 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
-        sqlExecutionHook.start("success_ds", "SELECT * FROM success_tbl;", Arrays.<Object>asList("1", 2), dataSourceMetaData, false, ExecutorDataMap.getDataMap());
+        sqlExecutionHook.start("success_ds", "SELECT * FROM success_tbl;", Arrays.<Object>asList("1", 2), dataSourceMetaData, false, ExecutorDataMap.getValue());
         sqlExecutionHook.finishSuccess();
         MockSpan actual = getActualSpan();
         assertThat(actual.operationName(), is("/ShardingSphere/executeSQL/"));

@@ -33,7 +33,7 @@ class SeataTransactionBroadcaster {
     
     static void collectGlobalTxId() {
         if (RootContext.inGlobalTransaction()) {
-            ExecutorDataMap.getDataMap().put(SEATA_TX_XID, RootContext.getXID());
+            ExecutorDataMap.getValue().put(SEATA_TX_XID, RootContext.getXID());
         }
     }
     
@@ -44,6 +44,6 @@ class SeataTransactionBroadcaster {
     }
 
     static void clear() {
-        ExecutorDataMap.getDataMap().remove(SEATA_TX_XID);
+        ExecutorDataMap.getValue().remove(SEATA_TX_XID);
     }
 }

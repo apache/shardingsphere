@@ -70,7 +70,7 @@ public final class SQLExecuteTemplate {
     public <T> List<T> executeGroup(final Collection<InputGroup<? extends StatementExecuteUnit>> sqlExecuteGroups,
                                     final SQLExecuteCallback<T> firstCallback, final SQLExecuteCallback<T> callback) throws SQLException {
         try {
-            return executorEngine.groupExecute((Collection) sqlExecuteGroups, firstCallback, callback, serial);
+            return executorEngine.execute((Collection) sqlExecuteGroups, firstCallback, callback, serial);
         } catch (final SQLException ex) {
             ExecutorExceptionHandler.handleException(ex);
             return Collections.emptyList();

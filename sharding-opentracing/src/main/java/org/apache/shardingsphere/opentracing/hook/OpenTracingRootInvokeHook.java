@@ -40,7 +40,7 @@ public final class OpenTracingRootInvokeHook implements RootInvokeHook {
     @Override
     public void start() {
         activeSpan = ShardingTracer.get().buildSpan(OPERATION_NAME).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startActive();
-        ExecutorDataMap.getDataMap().put(ACTIVE_SPAN_CONTINUATION, activeSpan.capture());
+        ExecutorDataMap.getValue().put(ACTIVE_SPAN_CONTINUATION, activeSpan.capture());
     }
     
     @Override
