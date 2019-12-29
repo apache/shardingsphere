@@ -20,11 +20,6 @@ package org.apache.shardingsphere.core.execute.metadata.loader;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.metadata.table.loader.TableMetaDataLoader;
-import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
-import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
-import org.apache.shardingsphere.underlying.executor.engine.GroupedCallback;
-import org.apache.shardingsphere.underlying.common.metadata.table.loader.ConnectionManager;
 import org.apache.shardingsphere.core.metadata.column.ShardingGeneratedKeyColumnMetaData;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -32,8 +27,14 @@ import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.column.loader.ColumnMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.table.loader.ConnectionManager;
+import org.apache.shardingsphere.underlying.common.metadata.table.loader.TableMetaDataLoader;
+import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
+import org.apache.shardingsphere.underlying.executor.engine.GroupedCallback;
+import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -55,10 +56,6 @@ import java.util.Map.Entry;
 @RequiredArgsConstructor
 public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<ShardingRule> {
     
-    private static final String COLUMN_NAME = "COLUMN_NAME";
-    
-    private static final String TYPE_NAME = "TYPE_NAME";
-    
     private static final String INDEX_NAME = "INDEX_NAME";
     
     private final DataSourceMetas dataSourceMetas;
@@ -70,6 +67,8 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     private final int maxConnectionsSizePerQuery;
     
     private final boolean isCheckingMetaData;
+    
+    private final ColumnMetaDataLoader columnMetaDataLoader = new ColumnMetaDataLoader();
     
     @Override
     public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) throws SQLException {
@@ -144,31 +143,15 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     
     private Collection<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String catalog, final String actualTableName, final String generateKeyColumnName) throws SQLException {
         Collection<ColumnMetaData> result = new LinkedList<>();
-        Collection<String> primaryKeys = getPrimaryKeys(connection, catalog, actualTableName);
-        try (ResultSet resultSet = connection.getMetaData().getColumns(catalog, null, actualTableName, "%")) {
-            while (resultSet.next()) {
-                String columnName = resultSet.getString(COLUMN_NAME);
-                String columnType = resultSet.getString(TYPE_NAME);
-                boolean isPrimaryKey = primaryKeys.contains(columnName);
-                result.add(getColumnMetaData(columnName, columnType, isPrimaryKey, generateKeyColumnName));
-            }
+        for (ColumnMetaData each : columnMetaDataLoader.load(connection, catalog, actualTableName)) {
+            result.add(filterColumnMetaData(each, generateKeyColumnName));
         }
         return result;
     }
     
-    private Collection<String> getPrimaryKeys(final Connection connection, final String catalog, final String actualTableName) throws SQLException {
-        Collection<String> result = new HashSet<>();
-        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(catalog, null, actualTableName)) {
-            while (resultSet.next()) {
-                result.add(resultSet.getString(COLUMN_NAME));
-            }
-        }
-        return result;
-    }
-    
-    private ColumnMetaData getColumnMetaData(final String columnName, final String columnType, final boolean isPrimaryKey, final String generateKeyColumnName) {
-        return columnName.equalsIgnoreCase(generateKeyColumnName)
-                ? new ShardingGeneratedKeyColumnMetaData(columnName, columnType, isPrimaryKey) : new ColumnMetaData(columnName, columnType, isPrimaryKey);
+    private ColumnMetaData filterColumnMetaData(final ColumnMetaData columnMetaData, final String generateKeyColumnName) {
+        return columnMetaData.getName().equalsIgnoreCase(generateKeyColumnName) 
+                ? new ShardingGeneratedKeyColumnMetaData(columnMetaData.getName(), columnMetaData.getDataType(), columnMetaData.isPrimaryKey()) : columnMetaData;
     }
     
     private Collection<String> getLogicIndexes(final Connection connection, final String catalog, final String schema, final String actualTableName) throws SQLException {
