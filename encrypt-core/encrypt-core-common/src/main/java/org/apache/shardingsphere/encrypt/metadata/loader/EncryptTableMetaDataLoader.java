@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.metadata.loader;
 
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.metadata.EncryptColumnMetaData;
+import org.apache.shardingsphere.encrypt.metadata.decorator.EncryptTableMetaDataDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
@@ -32,9 +31,7 @@ import org.apache.shardingsphere.underlying.common.metadata.table.loader.TableMe
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 
 /**
  * Table meta data loader for encrypt.
@@ -51,26 +48,23 @@ public final class EncryptTableMetaDataLoader implements TableMetaDataLoader<Enc
     
     private final ColumnMetaDataLoader columnMetaDataLoader = new ColumnMetaDataLoader();
     
+    private final EncryptTableMetaDataDecorator encryptTableMetaDataDecorator = new EncryptTableMetaDataDecorator();
+    
     @Override
-    public TableMetaData load(final String logicTableName, final EncryptRule encryptRule) throws SQLException {
-        return load(encryptRule, logicTableName);
+    public TableMetaData load(final String tableName, final EncryptRule encryptRule) throws SQLException {
+        return encryptTableMetaDataDecorator.decorate(load(tableName), tableName, encryptRule);
     }
     
-    private TableMetaData load(final EncryptRule encryptRule, final String logicTableName) throws SQLException {
-        DataSourceMetaData dataSourceMetaData = dataSourceMetas.getDataSourceMetaData(dataSourceMetas.getAllInstanceDataSourceNames().iterator().next());
-        return load(dataSourceMetaData, logicTableName, encryptRule);
-    }
-    
-    private TableMetaData load(final DataSourceMetaData dataSourceMetaData, final String tableName, final EncryptRule encryptRule) throws SQLException {
+    private TableMetaData load(final String tableName) throws SQLException {
         try (Connection connection = connectionManager.getConnection(dataSourceMetas.getAllInstanceDataSourceNames().iterator().next())) {
-            return createTableMetaData(connection, dataSourceMetaData, tableName, encryptRule);
+            return createTableMetaData(connection, dataSourceMetas.getDataSourceMetaData(dataSourceMetas.getAllInstanceDataSourceNames().iterator().next()), tableName);
         }
     }
     
-    private TableMetaData createTableMetaData(final Connection connection, final DataSourceMetaData dataSourceMetaData, final String tableName, final EncryptRule encryptRule) throws SQLException {
+    private TableMetaData createTableMetaData(final Connection connection, final DataSourceMetaData dataSourceMetaData, final String tableName) throws SQLException {
         String catalog = dataSourceMetaData.getCatalog();
         return isTableExist(connection, catalog, tableName)
-                ? new TableMetaData(loadColumnMetaDataList(connection, catalog, tableName, encryptRule), Collections.<String>emptyList())
+                ? new TableMetaData(columnMetaDataLoader.load(connection, catalog, tableName), Collections.<String>emptyList())
                 : new TableMetaData(Collections.<ColumnMetaData>emptyList(), Collections.<String>emptySet());
     }
     
@@ -78,32 +72,5 @@ public final class EncryptTableMetaDataLoader implements TableMetaDataLoader<Enc
         try (ResultSet resultSet = connection.getMetaData().getTables(catalog, null, tableName, null)) {
             return resultSet.next();
         }
-    }
-    
-    private Collection<ColumnMetaData> loadColumnMetaDataList(final Connection connection, final String catalog, final String tableName, final EncryptRule encryptRule) throws SQLException {
-        Collection<ColumnMetaData> result = new LinkedList<>();
-        Collection<String> derivedColumns = encryptRule.getAssistedQueryAndPlainColumns(tableName);
-        for (ColumnMetaData each : columnMetaDataLoader.load(connection, catalog, tableName)) {
-            Optional<ColumnMetaData> filteredColumnMetaData = filterColumnMetaData(each, tableName, encryptRule, derivedColumns);
-            if (filteredColumnMetaData.isPresent()) {
-                result.add(filteredColumnMetaData.get());
-            }
-        }
-        return result;
-    }
-    
-    private Optional<ColumnMetaData> filterColumnMetaData(final ColumnMetaData columnMetaData, final String tableName, final EncryptRule encryptRule, final Collection<String> derivedColumns) {
-        String columnName = columnMetaData.getName();
-        if (derivedColumns.contains(columnName)) {
-            return Optional.absent();
-        }
-        if (!encryptRule.isCipherColumn(tableName, columnName)) {
-            return Optional.of(columnMetaData);
-        }
-        String logicColumnName = encryptRule.getLogicColumnOfCipher(tableName, columnName);
-        String plainColumnName = encryptRule.findPlainColumn(tableName, logicColumnName).orNull();
-        String assistedQueryColumnName = encryptRule.findAssistedQueryColumn(tableName, logicColumnName).orNull();
-        return Optional.<ColumnMetaData>of(
-                new EncryptColumnMetaData(logicColumnName, columnMetaData.getDataType(), columnMetaData.isPrimaryKey(), columnName, plainColumnName, assistedQueryColumnName));
     }
 }
