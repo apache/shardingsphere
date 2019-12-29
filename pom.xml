@@ -62,7 +62,7 @@
         <guava.version>18.0</guava.version>
         <slf4j.version>1.7.7</slf4j.version>
         
-        <antlr4.version>4.7.1</antlr4.version>
+        <antlr4.version>4.7.2</antlr4.version>
         
         <groovy.version>2.4.5</groovy.version>
         <snakeyaml.version>1.16</snakeyaml.version>
