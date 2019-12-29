@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.execute.metadata;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.underlying.common.metadata.table.ConnectionManager;
+import org.apache.shardingsphere.underlying.common.metadata.table.loader.ConnectionManager;
 import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
 import org.apache.shardingsphere.core.execute.metadata.loader.ShardingTableMetaDataLoader;
 import org.apache.shardingsphere.core.rule.ShardingRule;

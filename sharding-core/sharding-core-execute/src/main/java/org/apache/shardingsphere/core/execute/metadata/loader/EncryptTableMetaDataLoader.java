@@ -19,13 +19,14 @@ package org.apache.shardingsphere.core.execute.metadata.loader;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.metadata.table.ConnectionManager;
+import org.apache.shardingsphere.underlying.common.metadata.table.loader.ConnectionManager;
 import org.apache.shardingsphere.encrypt.metadata.EncryptColumnMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.table.loader.TableMetaDataLoader;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

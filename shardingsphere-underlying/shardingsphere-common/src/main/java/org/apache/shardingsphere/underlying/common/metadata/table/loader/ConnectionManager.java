@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata.table;
+package org.apache.shardingsphere.underlying.common.metadata.table.loader;
 
 import java.sql.Connection;
 import java.sql.SQLException;

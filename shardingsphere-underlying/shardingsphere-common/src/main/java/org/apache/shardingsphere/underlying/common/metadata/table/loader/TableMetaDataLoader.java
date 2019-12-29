@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.execute.metadata.loader;
+package org.apache.shardingsphere.underlying.common.metadata.table.loader;
 
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
@@ -38,5 +38,4 @@ public interface TableMetaDataLoader<T extends BaseRule> {
      * @throws SQLException SQL exception
      */
     TableMetaData load(String tableName, T rule) throws SQLException;
-    
 }
