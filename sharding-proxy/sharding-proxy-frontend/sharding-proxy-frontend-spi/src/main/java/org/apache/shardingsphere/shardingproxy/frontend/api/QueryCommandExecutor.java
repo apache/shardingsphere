@@ -29,6 +29,13 @@ import java.sql.SQLException;
 public interface QueryCommandExecutor extends CommandExecutor {
     
     /**
+     * Judge execution has error or not.
+     *
+     * @return has error or not
+     */
+    boolean hasError();
+    
+    /**
      * Judge is query SQL or not.
      *
      * @return is query SQL or not

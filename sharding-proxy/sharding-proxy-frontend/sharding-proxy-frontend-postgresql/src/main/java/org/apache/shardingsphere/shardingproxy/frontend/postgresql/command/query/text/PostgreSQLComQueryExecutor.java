@@ -56,6 +56,8 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     private volatile boolean isQuery;
     
+    private volatile boolean hasError;
+    
     public PostgreSQLComQueryExecutor(final PostgreSQLComQueryPacket comQueryPacket, final BackendConnection backendConnection) {
         textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypes.getActualDatabaseType("PostgreSQL"), comQueryPacket.getSql(), backendConnection);
     }
@@ -67,6 +69,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
         }
         BackendResponse backendResponse = textProtocolBackendHandler.execute();
         if (backendResponse instanceof ErrorResponse) {
+            hasError = true;
             return Collections.<DatabasePacket>singletonList(createErrorPacket((ErrorResponse) backendResponse));
         }
         if (backendResponse instanceof UpdateResponse) {
@@ -105,6 +108,11 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     @Override
     public boolean isQuery() {
         return isQuery;
+    }
+    
+    @Override
+    public boolean hasError() {
+        return hasError;
     }
     
     @Override

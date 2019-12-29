@@ -62,6 +62,8 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     private volatile boolean isQuery;
     
+    private volatile boolean hasError;
+    
     public PostgreSQLComBindExecutor(final PostgreSQLComBindPacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
         databaseCommunicationEngine = null == packet.getSql()
@@ -80,6 +82,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
         }
         BackendResponse backendResponse = databaseCommunicationEngine.execute();
         if (backendResponse instanceof ErrorResponse) {
+            hasError = true;
             result.add(createErrorPacket((ErrorResponse) backendResponse));
         }
         if (backendResponse instanceof UpdateResponse) {
@@ -123,6 +126,11 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     @Override
     public boolean isQuery() {
         return isQuery;
+    }
+    
+    @Override
+    public boolean hasError() {
+        return hasError;
     }
     
     @Override

@@ -74,6 +74,10 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
             context.write(new PostgreSQLReadyForQueryPacket());
             return;
         }
+        if (queryCommandExecutor.hasError()) {
+            context.write(new PostgreSQLReadyForQueryPacket());
+            return;
+        }
         int count = 0;
         int proxyFrontendFlushThreshold = ShardingProxyContext.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.PROXY_FRONTEND_FLUSH_THRESHOLD);
         while (queryCommandExecutor.next()) {
