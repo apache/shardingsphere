@@ -33,9 +33,10 @@
         <module>shardingsphere-spi</module>
         
         <module>shardingsphere-sql-parser</module>
-        <module>shardingsphere-sql-rewriter</module>
+        <module>shardingsphere-underlying</module>
         
         <module>sharding-core</module>
+        <module>encrypt-core</module>
         
         <module>sharding-jdbc</module>
         <module>sharding-proxy</module>
@@ -44,7 +45,7 @@
         <module>sharding-transaction</module>
         <module>sharding-orchestration</module> 
         <module>sharding-opentracing</module>
-    
+        
         <module>sharding-spring</module>
         <module>sharding-sql-test</module>
         
@@ -118,7 +119,7 @@
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
         <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
         <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
-        <jacoco.version>0.7.9</jacoco.version>
+        <jacoco.version>0.8.0</jacoco.version>
         <findbugs-maven-plugin.version>3.0.2</findbugs-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
         <maven-pmd-plugin.version>3.5</maven-pmd-plugin.version>

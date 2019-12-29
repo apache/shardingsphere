@@ -38,10 +38,6 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
     
     private static final String INSERT_SQL = "insert into t_query_encrypt(id, pwd) values(?,?)";
     
-    private static final String INSERT_SQL_WITH_ASSISTED_QUERY_COLUMN = "insert into t_query_encrypt(id, pwd, assist_pwd) values(?,?,?)";
-    
-    private static final String INSERT_SQL_WITH_FULL_COLUMNS = "insert into t_query_and_plain_encrypt(id, pwd, plain_pwd, assist_pwd) values(?,?,?,?)";
-    
     private static final String INSERT_GENERATED_KEY_SQL = "insert into t_query_encrypt(pwd) values('b')";
     
     private static final String DELETE_SQL = "delete from t_query_encrypt where pwd = ? and id = ?";
@@ -52,9 +48,9 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
     
     private static final String SELECT_ALL_SQL = "select id, cipher_pwd, assist_pwd from t_query_encrypt";
     
-    private static final String SELECT_FULL_SQL = "select id, cipher_pwd, plain_pwd, assist_pwd from t_query_and_plain_encrypt";
-    
     private static final String SELECT_SQL_WITH_IN_OPERATOR = "select * from t_query_encrypt where pwd IN (?)";
+
+    private static final String SELECT_SQL_FOR_CONTAINS_COLUMN = "SELECT * FROM t_encrypt_contains_column WHERE plain_pwd = ?";
 
     @Test
     public void assertSqlShow() throws SQLException {
@@ -69,29 +65,6 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
             statement.execute();
         }
         assertResultSet(3, 2, "encryptValue", "assistedEncryptValue");
-    }
-    
-    @Test
-    public void assertInsertWithAssistedQueryColumn() throws SQLException {
-        try (PreparedStatement statement = getEncryptConnection().prepareStatement(INSERT_SQL_WITH_ASSISTED_QUERY_COLUMN)) {
-            statement.setObject(1, 2);
-            statement.setObject(2, "pwd");
-            statement.setObject(3, "anyValue");
-            statement.execute();
-        }
-        assertResultSet(3, 2, "encryptValue", "assistedEncryptValue");
-    }
-    
-    @Test
-    public void assertInsertWithFullColumns() throws SQLException {
-        try (PreparedStatement statement = getEncryptConnectionWithFullColumns().prepareStatement(INSERT_SQL_WITH_FULL_COLUMNS)) {
-            statement.setObject(1, 2);
-            statement.setObject(2, "pwd");
-            statement.setObject(3, "plain_pwd");
-            statement.setObject(4, "assist_pwd");
-            statement.execute();
-        }
-        assertFullResultSet(2, "encryptValue", "pwd", "assistedEncryptValue");
     }
     
     @Test
@@ -196,19 +169,6 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
         }
     }
     
-    private void assertFullResultSet(final int id, final Object pwd, final Object plainPwd, final Object assistPwd) throws SQLException {
-        try (Connection conn = getDatabaseTypeMap().get(DatabaseTypes.getActualDatabaseType("H2")).get("encrypt").getConnection();
-             Statement stmt = conn.createStatement()) {
-            ResultSet resultSet = stmt.executeQuery(SELECT_FULL_SQL);
-            while (resultSet.next()) {
-                assertThat(id, is(resultSet.getObject("id")));
-                assertThat(pwd, is(resultSet.getObject("cipher_pwd")));
-                assertThat(plainPwd, is(resultSet.getObject("plain_pwd")));
-                assertThat(assistPwd, is(resultSet.getObject("assist_pwd")));
-            }
-        }
-    }
-    
     @Test(expected = SQLException.class)
     public void assertQueryWithNull() throws SQLException {
         try (PreparedStatement statement = getEncryptConnection().prepareStatement(null)) {
@@ -232,6 +192,22 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
             for (int i = 0; i < metaData.getColumnCount(); i++) {
                 assertThat(metaData.getColumnLabel(1), is("id"));
                 assertThat(metaData.getColumnLabel(2), is("pwd"));
+            }
+        }
+    }
+
+    @Test
+    public void assertSelectWithPlainColumnForContainsColumn() throws SQLException {
+        try (PreparedStatement statement = getEncryptConnectionWithProps().prepareStatement(SELECT_SQL_FOR_CONTAINS_COLUMN)) {
+            statement.setObject(1, "plainValue");
+            ResultSetMetaData metaData = statement.executeQuery().getMetaData();
+            assertThat(metaData.getColumnCount(), is(5));
+            for (int i = 0; i < metaData.getColumnCount(); i++) {
+                assertThat(metaData.getColumnLabel(1), is("id"));
+                assertThat(metaData.getColumnLabel(2), is("cipher_pwd"));
+                assertThat(metaData.getColumnLabel(3), is("plain_pwd"));
+                assertThat(metaData.getColumnLabel(4), is("cipher_pwd2"));
+                assertThat(metaData.getColumnLabel(5), is("plain_pwd2"));
             }
         }
     }

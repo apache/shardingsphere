@@ -46,8 +46,6 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     
     private static EncryptDataSource encryptDataSourceWithProps;
     
-    private static EncryptDataSource encryptDataSourceWithFullColumns;
-    
     private static final List<String> ENCRYPT_DB_NAMES = Collections.singletonList("encrypt");
     
     @BeforeClass
@@ -58,7 +56,6 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
         Map<String, DataSource> dataSources = getDataSources();
         encryptDataSource = new EncryptDataSource(dataSources.values().iterator().next(), new EncryptRule(createEncryptRuleConfiguration()), new Properties());
         encryptDataSourceWithProps = new EncryptDataSource(dataSources.values().iterator().next(), new EncryptRule(createEncryptRuleConfiguration()), createProperties());
-        encryptDataSourceWithFullColumns = new EncryptDataSource(dataSources.values().iterator().next(), new EncryptRule(createEncryptRuleConfigurationWithFullColumns()), createProperties());
     }
     
     private static Properties createProperties() {
@@ -85,21 +82,15 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
         EncryptTableRuleConfiguration tableConfig1 = new EncryptTableRuleConfiguration(Collections.singletonMap("pwd", columnConfig1));
         EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration("", "cipher_pwd", "assist_pwd", "assistedTest");
         EncryptTableRuleConfiguration tableConfig2 = new EncryptTableRuleConfiguration(Collections.singletonMap("pwd", columnConfig2));
+        EncryptColumnRuleConfiguration columnConfig3 = new EncryptColumnRuleConfiguration("plain_pwd2", "cipher_pwd2", "", "test");
+        EncryptTableRuleConfiguration tableConfig3 = new EncryptTableRuleConfiguration(Collections.singletonMap("plain_pwd2", columnConfig3));
+        tableConfig3.getColumns().put("plain_pwd", columnConfig1);
         EncryptRuleConfiguration result = new EncryptRuleConfiguration();
         result.getEncryptors().put("test", encryptorConfig);
         result.getEncryptors().put("assistedTest", encryptorQueryConfig);
         result.getTables().put("t_encrypt", tableConfig1);
         result.getTables().put("t_query_encrypt", tableConfig2);
-        return result;
-    }
-    
-    private static EncryptRuleConfiguration createEncryptRuleConfigurationWithFullColumns() {
-        EncryptorRuleConfiguration encryptorQueryConfig = new EncryptorRuleConfiguration("assistedTest", new Properties());
-        EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration("plain_pwd", "cipher_pwd", "assist_pwd", "assistedTest");
-        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(Collections.singletonMap("pwd", columnConfig));
-        EncryptRuleConfiguration result = new EncryptRuleConfiguration();
-        result.getEncryptors().put("assistedTest", encryptorQueryConfig);
-        result.getTables().put("t_query_and_plain_encrypt", tableConfig);
+        result.getTables().put("t_encrypt_contains_column", tableConfig3);
         return result;
     }
     
@@ -120,10 +111,6 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     
     protected final EncryptConnection getEncryptConnectionWithProps() throws SQLException {
         return encryptDataSourceWithProps.getConnection();
-    }
-    
-    protected final EncryptConnection getEncryptConnectionWithFullColumns() throws SQLException {
-        return encryptDataSourceWithFullColumns.getConnection();
     }
     
     @AfterClass

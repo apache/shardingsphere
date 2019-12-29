@@ -49,7 +49,7 @@ export default {
       updateCompletedMessage: '更新成功',
       updateFaildMessage: '更新失败'
     },
-    loginOut: '退出登陆',
+    loginOut: '退出登录',
     dropdownList: [
       {
         title: '中文',
