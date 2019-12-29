@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
-import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
+import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLUnit;

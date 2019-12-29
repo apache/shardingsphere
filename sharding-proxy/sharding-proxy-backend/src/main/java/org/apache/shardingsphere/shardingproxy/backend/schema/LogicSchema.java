@@ -23,7 +23,7 @@ import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfigur
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
-import org.apache.shardingsphere.core.execute.metadata.TableMetaDataInitializer;
+import org.apache.shardingsphere.sharding.execute.metadata.TableMetaDataInitializer;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.rule.ShardingRule;
