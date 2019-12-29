@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.execute.metadata;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.underlying.common.metadata.table.ConnectionManager;
 import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
 import org.apache.shardingsphere.core.execute.metadata.loader.ShardingTableMetaDataLoader;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -48,12 +49,12 @@ public final class TableMetaDataInitializer {
     
     private final DataSourceMetas dataSourceMetas;
     
-    private final TableMetaDataConnectionManager connectionManager;
+    private final ConnectionManager connectionManager;
     
     private final ShardingTableMetaDataLoader tableMetaDataLoader;
     
     public TableMetaDataInitializer(final DataSourceMetas dataSourceMetas, final ExecutorEngine executorEngine,
-                                    final TableMetaDataConnectionManager connectionManager, final int maxConnectionsSizePerQuery, final boolean isCheckingMetaData) {
+                                    final ConnectionManager connectionManager, final int maxConnectionsSizePerQuery, final boolean isCheckingMetaData) {
         this.dataSourceMetas = dataSourceMetas;
         this.connectionManager = connectionManager;
         tableMetaDataLoader = new ShardingTableMetaDataLoader(dataSourceMetas, executorEngine, connectionManager, maxConnectionsSizePerQuery, isCheckingMetaData);

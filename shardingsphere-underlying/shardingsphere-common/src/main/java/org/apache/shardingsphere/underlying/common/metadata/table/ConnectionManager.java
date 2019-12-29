@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.execute.metadata;
+package org.apache.shardingsphere.underlying.common.metadata.table;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Manager of connection which for table meta data loader.
+ * Connection manager.
  *
  * @author zhangliang
  */
-public interface TableMetaDataConnectionManager {
+public interface ConnectionManager {
     
     /**
      * Get connection.

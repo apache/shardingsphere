@@ -43,7 +43,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCTableMetaDataConnectionManager;
+import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCConnectionManager;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 
 import java.sql.Connection;
@@ -242,7 +242,7 @@ public abstract class AbstractStatementExecutor {
     private TableMetaDataInitializer getTableMetaDataInitializer() {
         ShardingSphereProperties properties = connection.getRuntimeContext().getProperties();
         return new TableMetaDataInitializer(connection.getRuntimeContext().getMetaData().getDataSources(), 
-                connection.getRuntimeContext().getExecutorEngine(), new JDBCTableMetaDataConnectionManager(connection.getDataSourceMap()),
+                connection.getRuntimeContext().getExecutorEngine(), new JDBCConnectionManager(connection.getDataSourceMap()),
                 properties.<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
                 properties.<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
     }

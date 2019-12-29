@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
 import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 import org.apache.shardingsphere.underlying.executor.engine.GroupedCallback;
-import org.apache.shardingsphere.core.execute.metadata.TableMetaDataConnectionManager;
+import org.apache.shardingsphere.underlying.common.metadata.table.ConnectionManager;
 import org.apache.shardingsphere.core.metadata.column.ShardingGeneratedKeyColumnMetaData;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -64,7 +64,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     
     private final ExecutorEngine executorEngine;
     
-    private final TableMetaDataConnectionManager connectionManager;
+    private final ConnectionManager connectionManager;
     
     private final int maxConnectionsSizePerQuery;
     

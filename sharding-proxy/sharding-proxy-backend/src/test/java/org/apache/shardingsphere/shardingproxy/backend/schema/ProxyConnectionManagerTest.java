@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ProxyTableMetaDataConnectionManagerTest {
+public final class ProxyConnectionManagerTest {
     
     @Mock
     private JDBCBackendDataSource backendDataSource;
@@ -41,6 +41,6 @@ public final class ProxyTableMetaDataConnectionManagerTest {
     public void assertGetConnection() throws SQLException {
         Connection connection = mock(Connection.class);
         when(backendDataSource.getConnection("ds_name")).thenReturn(connection);
-        assertThat(new ProxyTableMetaDataConnectionManager(backendDataSource).getConnection("ds_name"), is(connection));
+        assertThat(new ProxyConnectionManager(backendDataSource).getConnection("ds_name"), is(connection));
     }
 }

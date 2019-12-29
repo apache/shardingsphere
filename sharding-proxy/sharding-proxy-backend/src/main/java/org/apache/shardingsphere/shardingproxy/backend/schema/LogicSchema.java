@@ -101,7 +101,7 @@ public abstract class LogicSchema {
     protected final TableMetaDataInitializer getTableMetaDataInitializer(final DataSourceMetas dataSourceMetas) {
         ShardingSphereProperties properties = ShardingProxyContext.getInstance().getProperties();
         return new TableMetaDataInitializer(
-                dataSourceMetas, BackendExecutorContext.getInstance().getExecutorEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()),
+                dataSourceMetas, BackendExecutorContext.getInstance().getExecutorEngine(), new ProxyConnectionManager(getBackendDataSource()),
                 properties.<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
                 properties.<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
     }

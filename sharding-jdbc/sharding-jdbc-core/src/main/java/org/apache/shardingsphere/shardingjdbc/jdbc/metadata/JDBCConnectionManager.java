@@ -15,27 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.schema;
+package org.apache.shardingsphere.shardingjdbc.jdbc.metadata;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.execute.metadata.TableMetaDataConnectionManager;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
+import org.apache.shardingsphere.underlying.common.metadata.table.ConnectionManager;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Map;
 
 /**
- * Manager of connection which for table meta data loader of proxy.
+ * Connection manager of JDBC.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ProxyTableMetaDataConnectionManager implements TableMetaDataConnectionManager {
+public final class JDBCConnectionManager implements ConnectionManager {
     
-    private final JDBCBackendDataSource backendDataSource;
+    private final Map<String, DataSource> dataSourceMap;
     
     @Override
     public Connection getConnection(final String dataSourceName) throws SQLException {
-        return backendDataSource.getConnection(dataSourceName);
+        return dataSourceMap.get(dataSourceName).getConnection();
     }
 }

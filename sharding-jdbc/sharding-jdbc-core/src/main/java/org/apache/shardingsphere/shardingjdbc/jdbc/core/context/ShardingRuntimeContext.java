@@ -26,7 +26,7 @@ import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourc
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
-import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCTableMetaDataConnectionManager;
+import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCConnectionManager;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 
@@ -88,7 +88,7 @@ public final class ShardingRuntimeContext extends AbstractRuntimeContext<Shardin
     }
     
     private TableMetaDataInitializer getTableMetaDataInitializer(final Map<String, DataSource> dataSourceMap, final DataSourceMetas dataSourceMetas) {
-        return new TableMetaDataInitializer(dataSourceMetas, this.getExecutorEngine(), new JDBCTableMetaDataConnectionManager(dataSourceMap),
+        return new TableMetaDataInitializer(dataSourceMetas, this.getExecutorEngine(), new JDBCConnectionManager(dataSourceMap),
                 this.getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
                 this.getProperties().<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
     }

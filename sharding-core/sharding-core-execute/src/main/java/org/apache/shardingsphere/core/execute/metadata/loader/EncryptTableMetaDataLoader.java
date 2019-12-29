@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.execute.metadata.loader;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.execute.metadata.TableMetaDataConnectionManager;
+import org.apache.shardingsphere.underlying.common.metadata.table.ConnectionManager;
 import org.apache.shardingsphere.encrypt.metadata.EncryptColumnMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
@@ -50,7 +50,7 @@ public final class EncryptTableMetaDataLoader implements TableMetaDataLoader<Enc
     
     private final DataSourceMetas dataSourceMetas;
     
-    private final TableMetaDataConnectionManager connectionManager;
+    private final ConnectionManager connectionManager;
     
     @Override
     public TableMetaData load(final String logicTableName, final EncryptRule encryptRule) throws SQLException {
