@@ -37,6 +37,8 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.text.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
+import org.postgresql.util.PSQLException;
+import org.postgresql.util.ServerErrorMessage;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -80,6 +82,15 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     }
     
     private PostgreSQLErrorResponsePacket createErrorPacket(final ErrorResponse errorResponse) {
+        if (errorResponse.getCause() instanceof PSQLException) {
+            ServerErrorMessage serverErrorMessage = ((PSQLException) errorResponse.getCause()).getServerErrorMessage();
+            PostgreSQLErrorResponsePacket errorResponsePacket = new PostgreSQLErrorResponsePacket();
+            errorResponsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY, serverErrorMessage.getSeverity());
+            errorResponsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE, serverErrorMessage.getSQLState());
+            errorResponsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, serverErrorMessage.getMessage());
+            errorResponsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_POSITION, Integer.toString(serverErrorMessage.getPosition()));
+            return errorResponsePacket;
+        }
         return new PostgreSQLErrorResponsePacket();
     }
     
