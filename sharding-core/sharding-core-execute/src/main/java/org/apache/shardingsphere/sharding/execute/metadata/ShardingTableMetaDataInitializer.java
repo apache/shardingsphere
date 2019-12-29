@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sharding.execute.metadata.loader.ShardingTableM
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.loader.ConnectionManager;
 import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
 
@@ -38,11 +39,11 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 
 /**
- * Table meta data initializer.
+ * Table meta data initializer for sharding.
  *
  * @author zhangliang
  */
-public final class TableMetaDataInitializer {
+public final class ShardingTableMetaDataInitializer {
     
     private final DataSourceMetas dataSourceMetas;
     
@@ -52,8 +53,8 @@ public final class TableMetaDataInitializer {
     
     private final EncryptTableMetaDataDecorator encryptTableMetaDataDecorator;
     
-    public TableMetaDataInitializer(final DataSourceMetas dataSourceMetas, final ExecutorEngine executorEngine,
-                                    final ConnectionManager connectionManager, final int maxConnectionsSizePerQuery, final boolean isCheckingMetaData) {
+    public ShardingTableMetaDataInitializer(final DataSourceMetas dataSourceMetas, final ExecutorEngine executorEngine,
+                                            final ConnectionManager connectionManager, final int maxConnectionsSizePerQuery, final boolean isCheckingMetaData) {
         this.dataSourceMetas = dataSourceMetas;
         this.connectionManager = connectionManager;
         tableMetaDataLoader = new ShardingTableMetaDataLoader(dataSourceMetas, executorEngine, connectionManager, maxConnectionsSizePerQuery, isCheckingMetaData);
@@ -73,17 +74,17 @@ public final class TableMetaDataInitializer {
     }
     
     /**
-     * Load all table meta data.
+     * Load table metas.
      *
      * @param shardingRule sharding rule
-     * @return all table meta data
+     * @return Table metas
      * @throws SQLException SQL exception
      */
-    public Map<String, TableMetaData> load(final ShardingRule shardingRule) throws SQLException {
+    public TableMetas load(final ShardingRule shardingRule) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>();
         result.putAll(loadShardingTables(shardingRule));
         result.putAll(loadDefaultTables(shardingRule));
-        return result;
+        return new TableMetas(result);
     }
     
     private Map<String, TableMetaData> loadShardingTables(final ShardingRule shardingRule) throws SQLException {

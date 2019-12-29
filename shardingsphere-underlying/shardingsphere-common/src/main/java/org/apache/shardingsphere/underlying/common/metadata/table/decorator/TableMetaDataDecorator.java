@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.underlying.common.metadata.table.decorator;
 
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 /**
@@ -28,7 +29,16 @@ import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 public interface TableMetaDataDecorator<T extends BaseRule> {
     
     /**
-     * Load table meta data.
+     * Decorate table metas.
+     *
+     * @param tableMetas table metas
+     * @param rule rule
+     * @return decorated table metas
+     */
+    TableMetas decorate(TableMetas tableMetas, T rule);
+    
+    /**
+     * Decorate table meta data.
      *
      * @param tableMetaData table meta data
      * @param tableName table name
