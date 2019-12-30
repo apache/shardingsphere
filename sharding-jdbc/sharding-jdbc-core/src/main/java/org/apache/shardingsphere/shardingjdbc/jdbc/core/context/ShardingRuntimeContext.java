@@ -55,10 +55,10 @@ public final class ShardingRuntimeContext extends AbstractRuntimeContext<Shardin
     
     private final ShardingTransactionManagerEngine shardingTransactionManagerEngine;
     
-    public ShardingRuntimeContext(final Map<String, DataSource> dataSourceMap, final ShardingRule rule, final Properties props, final DatabaseType databaseType) throws SQLException {
-        super(rule, props, databaseType);
-        cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap, rule);
-        metaData = createMetaData(dataSourceMap, rule, databaseType);
+    public ShardingRuntimeContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Properties props, final DatabaseType databaseType) throws SQLException {
+        super(shardingRule, props, databaseType);
+        cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap, shardingRule);
+        metaData = createMetaData(dataSourceMap, shardingRule, databaseType);
         shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
         shardingTransactionManagerEngine.init(databaseType, dataSourceMap);
     }
