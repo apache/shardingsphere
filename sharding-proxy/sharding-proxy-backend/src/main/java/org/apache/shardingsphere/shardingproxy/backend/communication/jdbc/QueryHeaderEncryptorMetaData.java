@@ -43,8 +43,6 @@ public final class QueryHeaderEncryptorMetaData implements EncryptorMetaData {
         QueryHeader queryHeader = queryHeaders.get(columnIndex - 1);
         String tableName = queryHeader.getTable();
         String columnName = queryHeader.getColumnName();
-        return encryptRule.isCipherColumn(tableName, columnName) ? encryptRule.findEncryptor(tableName, encryptRule.getLogicColumnOfCipher(tableName, columnName))
-                : Optional.<Encryptor>absent();
+        return encryptRule.isCipherColumn(tableName, columnName) ? encryptRule.findEncryptor(tableName, encryptRule.getLogicColumnOfCipher(tableName, columnName)) : Optional.<Encryptor>absent();
     }
-    
 }
