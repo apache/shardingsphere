@@ -98,9 +98,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             clearPrevious();
             shard(sql);
             initStatementExecutor();
-            MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getRuntimeContext().getDatabaseType(), 
-                    connection.getRuntimeContext().getRule(), sqlRouteResult, connection.getRuntimeContext().getMetaData().getRelationMetas(), statementExecutor.executeQuery());
-            result = getResultSet(mergeEngine);
+            result = getResultSet(statementExecutor.executeQuery());
         } finally {
             currentResultSet = null;
         }
@@ -123,18 +121,18 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             }
         }
         if (sqlRouteResult.getSqlStatementContext() instanceof SelectSQLStatementContext || sqlRouteResult.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
-            MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getRuntimeContext().getDatabaseType(),
-                    connection.getRuntimeContext().getRule(), sqlRouteResult, connection.getRuntimeContext().getMetaData().getRelationMetas(), queryResults);
-            currentResultSet = getCurrentResultSet(resultSets, mergeEngine);
+            currentResultSet = getCurrentResultSet(resultSets, queryResults);
         }
         return currentResultSet;
     }
     
-    private ShardingResultSet getResultSet(final MergeEngine mergeEngine) throws SQLException {
-        return getCurrentResultSet(statementExecutor.getResultSets(), mergeEngine);
+    private ShardingResultSet getResultSet(final List<QueryResult> queryResults) throws SQLException {
+        return getCurrentResultSet(statementExecutor.getResultSets(), queryResults);
     }
     
-    private ShardingResultSet getCurrentResultSet(final List<ResultSet> resultSets, final MergeEngine mergeEngine) throws SQLException {
+    private ShardingResultSet getCurrentResultSet(final List<ResultSet> resultSets, final List<QueryResult> queryResults) throws SQLException {
+        MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getRuntimeContext().getDatabaseType(),
+                connection.getRuntimeContext().getRule(), sqlRouteResult, connection.getRuntimeContext().getMetaData().getRelationMetas(), queryResults);
         EncryptRule encryptRule = connection.getRuntimeContext().getRule().getEncryptRule();
         if (null != encryptRule && sqlRouteResult.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
             MergedResult mergedResult = new DALEncryptMergeEngine(
