@@ -59,9 +59,8 @@ public final class MemoryQueryResult implements QueryResult {
         Collection<List<Object>> result = new LinkedList<>();
         while (resultSet.next()) {
             List<Object> rowData = new ArrayList<>(resultSet.getMetaData().getColumnCount());
-            Object rowValue;
             for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
-                rowValue = getRowValue(resultSet, columnIndex);
+                Object rowValue = getRowValue(resultSet, columnIndex);
                 rowData.add(resultSet.wasNull() ? null : rowValue);
             }
             result.add(rowData);
