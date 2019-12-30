@@ -19,9 +19,12 @@ package org.apache.shardingsphere.core.yaml.config.shadow;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.common.YamlRootRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 
-import javax.sql.DataSource;
+import java.util.Map;
 
 /**
  * Shadow rule configuration.
@@ -30,9 +33,42 @@ import javax.sql.DataSource;
  */
 @Getter
 @Setter
-public class YamlShadowRuleConfiguration extends YamlRootRuleConfiguration {
+public class YamlShadowRuleConfiguration implements YamlConfiguration {
     
     private String column;
     
-    private DataSource dataSource;
+    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
+    
+    private YamlEncryptRuleConfiguration encryptRule;
+    
+    private YamlShardingRuleConfiguration shardingRule;
+    
+    private Map<String, String> shadowMappings;
+    
+    /**
+     * Raw datasource is encrypt.
+     *
+     * @return is the encrypt datasource
+     */
+    public boolean isEncrypt() {
+        return null != encryptRule;
+    }
+    
+    /**
+     * Raw datasource is sharding.
+     *
+     * @return is the sharding
+     */
+    public boolean isSharding() {
+        return null != shardingRule;
+    }
+    
+    /**
+     * Raw datasource is master slave.
+     *
+     * @return is the master slave
+     */
+    public boolean isMasterSlave() {
+        return null != masterSlaveRule;
+    }
 }

@@ -28,7 +28,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  *
  * @author xiayan
  */
-public final class LocalShadowRuleCondition extends SpringBootCondition {
+public final class ShadowRuleCondition extends SpringBootCondition {
     
     private static final String SHADOW_PREFIX = "spring.shardingsphere.shadow";
     

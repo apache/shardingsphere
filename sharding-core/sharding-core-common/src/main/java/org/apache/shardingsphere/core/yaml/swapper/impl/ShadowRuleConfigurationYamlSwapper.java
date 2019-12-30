@@ -28,15 +28,41 @@ import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
  */
 public final class ShadowRuleConfigurationYamlSwapper implements YamlSwapper<YamlShadowRuleConfiguration, ShadowRuleConfiguration> {
     
+    private final ShardingRuleConfigurationYamlSwapper shardingRuleConfigurationYamlSwapper = new ShardingRuleConfigurationYamlSwapper();
+    
+    private final EncryptRuleConfigurationYamlSwapper encryptRuleConfigurationYamlSwapper = new EncryptRuleConfigurationYamlSwapper();
+    
+    private final MasterSlaveRuleConfigurationYamlSwapper masterSlaveRuleConfigurationYamlSwapper = new MasterSlaveRuleConfigurationYamlSwapper();
+    
     @Override
     public YamlShadowRuleConfiguration swap(final ShadowRuleConfiguration data) {
         YamlShadowRuleConfiguration result = new YamlShadowRuleConfiguration();
         result.setColumn(data.getColumn());
+        result.setShadowMappings(data.getShadowMappings());
+        
+        if (data.isEncrypt()) {
+            result.setEncryptRule(encryptRuleConfigurationYamlSwapper.swap(data.getEncryptRuleConfig()));
+        } else if (data.isMasterSlave()) {
+            result.setMasterSlaveRule(masterSlaveRuleConfigurationYamlSwapper.swap(data.getMasterSlaveRuleConfig()));
+        } else if (data.isSharding()) {
+            result.setShardingRule(shardingRuleConfigurationYamlSwapper.swap(data.getShardingRuleConfig()));
+        }
         return result;
     }
     
     @Override
     public ShadowRuleConfiguration swap(final YamlShadowRuleConfiguration yamlConfiguration) {
-        return new ShadowRuleConfiguration(yamlConfiguration.getColumn());
+        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
+        result.setColumn(yamlConfiguration.getColumn());
+        result.setShadowMappings(yamlConfiguration.getShadowMappings());
+        
+        if (yamlConfiguration.isEncrypt()) {
+            result.setEncryptRuleConfig(encryptRuleConfigurationYamlSwapper.swap(yamlConfiguration.getEncryptRule()));
+        } else if (yamlConfiguration.isMasterSlave()) {
+            result.setMasterSlaveRuleConfig(masterSlaveRuleConfigurationYamlSwapper.swap(yamlConfiguration.getMasterSlaveRule()));
+        } else if (yamlConfiguration.isSharding()) {
+            result.setShardingRuleConfig(shardingRuleConfigurationYamlSwapper.swap(yamlConfiguration.getShardingRule()));
+        }
+        return result;
     }
 }
