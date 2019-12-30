@@ -38,7 +38,7 @@ import java.sql.Statement;
 import java.util.concurrent.locks.LockSupport;
 
 /*
-    Please startup seata-server( before running this example.
+    Please startup seata-server-1.0.0 before running this example.
     Download seata-server from here https://github.com/seata/seata/releases
  */
 public class ExampleMain {
