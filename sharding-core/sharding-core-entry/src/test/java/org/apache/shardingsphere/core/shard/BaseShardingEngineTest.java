@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core;
+package org.apache.shardingsphere.core.shard;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

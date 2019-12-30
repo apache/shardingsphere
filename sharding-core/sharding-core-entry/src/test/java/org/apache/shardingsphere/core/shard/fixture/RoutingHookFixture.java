@@ -15,17 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.fixture;
+package org.apache.shardingsphere.core.shard.fixture;
 
-import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingAlgorithm;
-import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingValue;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.hook.RoutingHook;
 
-import java.util.Collection;
-
-public final class ComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<Integer> {
+/**
+ * Routing hook fixture.
+ *
+ * @author zhaojun
+ */
+public final class RoutingHookFixture implements RoutingHook {
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Integer> shardingValue) {
-        return availableTargetNames;
+    public void start(final String sql) {
+    }
+    
+    @Override
+    public void finishSuccess(final SQLRouteResult sqlRouteResult, final TableMetas tableMetas) {
+    }
+    
+    @Override
+    public void finishFailure(final Exception cause) {
     }
 }

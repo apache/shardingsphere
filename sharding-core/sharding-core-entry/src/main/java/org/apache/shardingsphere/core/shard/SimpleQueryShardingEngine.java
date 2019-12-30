@@ -15,47 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core;
+package org.apache.shardingsphere.core.shard;
 
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
-import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.StatementRoutingEngine;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * Sharding engine for prepared query.
+ * Sharding engine for simple query.
  * 
  * <pre>
- *     Prepared query:  
- *       for JDBC is PreparedStatement; 
- *       for MyQL is COM_STMT; 
- *       for PostgreSQL is Extended Query;
+ *     Simple query:  
+ *       for JDBC is Statement; 
+ *       for MyQL is COM_QUERY; 
+ *       for PostgreSQL is Simple Query;
  * </pre>
- * 
+ *
  * @author zhangliang
  */
-public final class PreparedQueryShardingEngine extends BaseShardingEngine {
+public final class SimpleQueryShardingEngine extends BaseShardingEngine {
     
-    private final PreparedStatementRoutingEngine routingEngine;
+    private final StatementRoutingEngine routingEngine;
     
-    public PreparedQueryShardingEngine(final String sql,
-                                       final ShardingRule shardingRule, final ShardingSphereProperties properties, final ShardingSphereMetaData metaData, final SQLParseEngine sqlParseEngine) {
+    public SimpleQueryShardingEngine(final ShardingRule shardingRule, final ShardingSphereProperties properties, final ShardingSphereMetaData metaData, final SQLParseEngine sqlParseEngine) {
         super(shardingRule, properties, metaData);
-        routingEngine = new PreparedStatementRoutingEngine(sql, shardingRule, metaData, sqlParseEngine);
+        routingEngine = new StatementRoutingEngine(shardingRule, metaData, sqlParseEngine);
     }
     
     @Override
     protected List<Object> cloneParameters(final List<Object> parameters) {
-        return new ArrayList<>(parameters);
+        return Collections.emptyList();
     }
     
     @Override
     protected SQLRouteResult route(final String sql, final List<Object> parameters) {
-        return routingEngine.route(parameters);
+        return routingEngine.route(sql);
     }
 }

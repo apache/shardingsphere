@@ -15,28 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.fixture;
+package org.apache.shardingsphere.core.shard.fixture;
 
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.route.hook.RoutingHook;
+import org.apache.shardingsphere.api.sharding.hint.HintShardingAlgorithm;
+import org.apache.shardingsphere.api.sharding.hint.HintShardingValue;
 
-/**
- * Routing hook fixture.
- *
- * @author zhaojun
- */
-public final class RoutingHookFixture implements RoutingHook {
+import java.util.Collection;
+import java.util.Collections;
+
+public final class HintShardingAlgorithmFixture implements HintShardingAlgorithm<Integer> {
     
     @Override
-    public void start(final String sql) {
-    }
-    
-    @Override
-    public void finishSuccess(final SQLRouteResult sqlRouteResult, final TableMetas tableMetas) {
-    }
-    
-    @Override
-    public void finishFailure(final Exception cause) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<Integer> shardingValue) {
+        for (String each : availableTargetNames) {
+            if (each.endsWith(String.valueOf(shardingValue.getValues().iterator().next() % 2))) {
+                return Collections.singletonList(each);
+            }
+        }
+        return null;
     }
 }
