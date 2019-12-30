@@ -23,15 +23,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 import lombok.Getter;
+import org.apache.shardingsphere.core.merge.MergeEntry;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.shard.PreparedQueryShardingEngine;
-import org.apache.shardingsphere.encrypt.merge.dal.DALEncryptMergeEngine;
-import org.apache.shardingsphere.encrypt.merge.dql.DQLEncryptMergeEngine;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
-import org.apache.shardingsphere.sharding.merge.MergeEngineFactory;
 import org.apache.shardingsphere.shardingjdbc.executor.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.executor.PreparedStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
@@ -45,7 +42,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.MergeEngine;
 import org.apache.shardingsphere.underlying.merge.MergedResult;
 
 import java.sql.PreparedStatement;
@@ -54,7 +50,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -143,7 +138,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             }
         }
         if (routeResult.getSqlStatementContext() instanceof SelectSQLStatementContext || routeResult.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
-            currentResultSet = new ShardingResultSet(resultSets, getMergedResult(resultSets, queryResults), this, routeResult);
+            currentResultSet = new ShardingResultSet(resultSets, createMergedResult(resultSets, queryResults), this, routeResult);
             
         }
         return currentResultSet;
@@ -151,23 +146,15 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private ShardingResultSet getResultSet(final List<QueryResult> queryResults) throws SQLException {
         List<ResultSet> resultSets = preparedStatementExecutor.getResultSets();
-        return new ShardingResultSet(resultSets, getMergedResult(resultSets, queryResults), this, routeResult);
+        return new ShardingResultSet(resultSets, createMergedResult(resultSets, queryResults), this, routeResult);
     }
     
-    private MergedResult getMergedResult(final List<ResultSet> resultSets, final List<QueryResult> queryResults) throws SQLException {
-        EncryptRule encryptRule = connection.getRuntimeContext().getRule().getEncryptRule();
-        if (null != encryptRule && routeResult.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
-            return new DALEncryptMergeEngine(encryptRule, Collections.<QueryResult>singletonList(new StreamQueryResult(resultSets.get(0))), routeResult.getSqlStatementContext()).merge();
-        }
-        MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getRuntimeContext().getDatabaseType(),
-                connection.getRuntimeContext().getRule(), routeResult, connection.getRuntimeContext().getMetaData().getRelationMetas(), queryResults);
-        MergedResult mergedResult = mergeEngine.merge();
-        if (null == encryptRule) {
-            return mergedResult;
-        }
-        EncryptorMetaData metaData = new ResultSetEncryptorMetaData(encryptRule, resultSets.get(0).getMetaData(), routeResult.getSqlStatementContext());
+    private MergedResult createMergedResult(final List<ResultSet> resultSets, final List<QueryResult> queryResults) throws SQLException {
         boolean queryWithCipherColumn = connection.getRuntimeContext().getProperties().getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
-        return new DQLEncryptMergeEngine(metaData, mergedResult, queryWithCipherColumn).merge();
+        EncryptorMetaData encryptorMetaData = new ResultSetEncryptorMetaData(
+                connection.getRuntimeContext().getRule().getEncryptRule(), resultSets.get(0).getMetaData(), routeResult.getSqlStatementContext());
+        return new MergeEntry(connection.getRuntimeContext().getDatabaseType(), connection.getRuntimeContext().getMetaData().getRelationMetas(), connection.getRuntimeContext().getRule(), 
+                connection.getRuntimeContext().getRule().getEncryptRule(), routeResult, queryWithCipherColumn).getMergedResult(queryResults, encryptorMetaData);
     }
     
     @Override

@@ -19,13 +19,11 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.merge.MergeEntry;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.encrypt.merge.dal.DALEncryptMergeEngine;
-import org.apache.shardingsphere.encrypt.merge.dql.DQLEncryptMergeEngine;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
-import org.apache.shardingsphere.sharding.merge.MergeEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.ConnectionStatus;
@@ -45,11 +43,10 @@ import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.merge.MergeEngine;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.MergedResult;
 
 import java.sql.SQLException;
@@ -115,7 +112,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             mergeUpdateCount(routeResult);
             return response;
         }
-        this.mergedResult = getMergedResult(routeResult);
+        this.mergedResult = createMergedResult(routeResult, ((QueryResponse) response).getQueryResults());
         handleColumnsForQueryHeader(routeResult);
         return response;
     }
@@ -130,20 +127,12 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return logicSchema instanceof ShardingSchema && logicSchema.getShardingRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames());
     }
     
-    private MergedResult getMergedResult(final SQLRouteResult routeResult) throws SQLException {
+    private MergedResult createMergedResult(final SQLRouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
         EncryptRule encryptRule = getEncryptRule();
-        if (null != encryptRule && routeResult.getSqlStatementContext() instanceof DALStatement) {
-            return new DALEncryptMergeEngine(encryptRule, ((QueryResponse) response).getQueryResults(), routeResult.getSqlStatementContext()).merge();
-        }
-        MergeEngine mergeEngine = MergeEngineFactory.newInstance(LogicSchemas.getInstance().getDatabaseType(),
-                logicSchema.getShardingRule(), routeResult, logicSchema.getMetaData().getRelationMetas(), ((QueryResponse) response).getQueryResults());
-        MergedResult mergedResult = mergeEngine.merge();
-        if (null == encryptRule) {
-            return mergedResult;
-        }
-        EncryptorMetaData metaData = new QueryHeaderEncryptorMetaData(encryptRule, ((QueryResponse) response).getQueryHeaders());
         boolean queryWithCipherColumn = ShardingProxyContext.getInstance().getProperties().getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
-        return new DQLEncryptMergeEngine(metaData, mergedResult, queryWithCipherColumn).merge();
+        EncryptorMetaData encryptorMetaData = new QueryHeaderEncryptorMetaData(encryptRule, ((QueryResponse) response).getQueryHeaders());
+        return new MergeEntry(LogicSchemas.getInstance().getDatabaseType(), 
+                logicSchema.getMetaData().getRelationMetas(), logicSchema.getShardingRule(), encryptRule, routeResult, queryWithCipherColumn).getMergedResult(queryResults, encryptorMetaData);
     }
     
     private void handleColumnsForQueryHeader(final SQLRouteResult routeResult) {
