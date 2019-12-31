@@ -23,8 +23,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.encrypt.merge.dal.DALEncryptMergeEngine;
-import org.apache.shardingsphere.encrypt.merge.dql.DQLEncryptMergeEngine;
+import org.apache.shardingsphere.encrypt.merge.dal.DALDecoratorEngine;
+import org.apache.shardingsphere.encrypt.merge.dql.DQLDecoratorEngine;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.merge.MergeEngineFactory;
@@ -72,7 +72,7 @@ public abstract class MergeEntry {
         Optional<EncryptRule> encryptRule = findEncryptRule();
         Preconditions.checkState(shardingRule.isPresent() || encryptRule.isPresent());
         if (encryptRule.isPresent() && routeResult.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
-            return new DALEncryptMergeEngine(encryptRule.get()).decorate(queryResults.get(0), routeResult.getSqlStatementContext(), relationMetas);
+            return new DALDecoratorEngine(encryptRule.get()).decorate(queryResults.get(0), routeResult.getSqlStatementContext(), relationMetas);
         }
         MergedResult mergedResult;
         if (shardingRule.isPresent()) {
@@ -81,7 +81,7 @@ public abstract class MergeEntry {
             mergedResult = new IteratorStreamMergedResult(queryResults);
         }
         return encryptRule.isPresent()
-                ? new DQLEncryptMergeEngine(createEncryptorMetaData(encryptRule.get()), queryWithCipherColumn).decorate(mergedResult, routeResult.getSqlStatementContext(), relationMetas)
+                ? new DQLDecoratorEngine(createEncryptorMetaData(encryptRule.get()), queryWithCipherColumn).decorate(mergedResult, routeResult.getSqlStatementContext(), relationMetas)
                 : mergedResult;
     }
     

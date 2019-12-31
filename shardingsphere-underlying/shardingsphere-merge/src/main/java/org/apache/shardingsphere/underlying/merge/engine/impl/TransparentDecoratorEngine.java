@@ -20,21 +20,24 @@ package org.apache.shardingsphere.underlying.merge.engine.impl;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.engine.MergeEngine;
+import org.apache.shardingsphere.underlying.merge.engine.DecoratorEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.apache.shardingsphere.underlying.merge.result.impl.transparent.TransparentMergedResult;
 
-import java.util.List;
-
 /**
- * Transparent merge engine.
+ * Transparent decorator engine.
  *
  * @author zhangliang
  */
-public final class TransparentMergeEngine implements MergeEngine {
+public final class TransparentDecoratorEngine implements DecoratorEngine {
     
     @Override
-    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
-        return new TransparentMergedResult(queryResults.get(0));
+    public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
+        return new TransparentMergedResult(queryResult);
+    }
+    
+    @Override
+    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
+        return mergedResult;
     }
 }

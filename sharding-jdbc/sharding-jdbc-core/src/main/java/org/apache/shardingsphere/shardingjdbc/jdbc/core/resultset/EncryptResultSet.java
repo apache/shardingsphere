@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import org.apache.shardingsphere.encrypt.merge.dal.DALEncryptMergeEngine;
-import org.apache.shardingsphere.encrypt.merge.dql.DQLEncryptMergeEngine;
+import org.apache.shardingsphere.encrypt.merge.dal.DALDecoratorEngine;
+import org.apache.shardingsphere.encrypt.merge.dql.DQLDecoratorEngine;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
@@ -86,10 +86,10 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     private MergedResult createMergedResult(final boolean queryWithCipherColumn, final ResultSet resultSet) throws SQLException {
         QueryResult queryResult = new StreamQueryResult(resultSet);
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
-            return new DALEncryptMergeEngine(encryptRule).decorate(queryResult, sqlStatementContext, null);
+            return new DALDecoratorEngine(encryptRule).decorate(queryResult, sqlStatementContext, null);
         }
         ResultSetEncryptorMetaData metaData = new ResultSetEncryptorMetaData(encryptRule, originalResultSet.getMetaData(), sqlStatementContext);
-        return new DQLEncryptMergeEngine(metaData, queryWithCipherColumn).decorate(queryResult, sqlStatementContext, null);
+        return new DQLDecoratorEngine(metaData, queryWithCipherColumn).decorate(queryResult, sqlStatementContext, null);
     }
     
     private Map<String, String> createLogicAndActualColumns(final boolean isQueryWithCipherColumn) {

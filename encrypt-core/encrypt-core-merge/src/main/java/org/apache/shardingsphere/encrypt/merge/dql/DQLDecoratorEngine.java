@@ -26,24 +26,24 @@ import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.apache.shardingsphere.underlying.merge.result.impl.transparent.TransparentMergedResult;
 
 /**
- * DQL result set merge engine for encrypt.
+ * DQL decorator engine.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class DQLEncryptMergeEngine implements DecoratorEngine {
+public final class DQLDecoratorEngine implements DecoratorEngine {
     
-    private final EncryptorMetaData metaData;
+    private final EncryptorMetaData encryptorMetaData;
     
     private final boolean queryWithCipherColumn;
     
     @Override
     public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
-        return new EncryptMergedResult(metaData, new TransparentMergedResult(queryResult), queryWithCipherColumn);
+        return new EncryptMergedResult(encryptorMetaData, new TransparentMergedResult(queryResult), queryWithCipherColumn);
     }
     
     @Override
     public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
-        return new EncryptMergedResult(metaData, mergedResult, queryWithCipherColumn);
+        return new EncryptMergedResult(encryptorMetaData, mergedResult, queryWithCipherColumn);
     }
 }

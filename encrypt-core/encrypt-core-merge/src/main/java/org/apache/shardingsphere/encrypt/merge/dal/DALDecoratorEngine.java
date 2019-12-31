@@ -32,12 +32,12 @@ import org.apache.shardingsphere.underlying.merge.result.impl.transparent.Transp
 import java.sql.SQLException;
 
 /**
- * DAL result set merge engine for encrypt.
+ * DAL decorator engine.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class DALEncryptMergeEngine implements DecoratorEngine {
+public final class DALDecoratorEngine implements DecoratorEngine {
     
     private final EncryptRule encryptRule;
     
