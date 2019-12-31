@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.underlying.merge.engine.impl;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.merge.engine.MergeEngine;
-import org.apache.shardingsphere.underlying.merge.result.impl.stream.IteratorStreamMergedResult;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.merge.engine.MergeEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
+import org.apache.shardingsphere.underlying.merge.result.impl.transparent.TransparentMergedResult;
 
 import java.util.List;
 
@@ -32,11 +31,10 @@ import java.util.List;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 public final class TransparentMergeEngine implements MergeEngine {
     
     @Override
     public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
-        return new IteratorStreamMergedResult(queryResults);
+        return new TransparentMergedResult(queryResults.get(0));
     }
 }
