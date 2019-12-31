@@ -63,27 +63,27 @@ public final class YamlEngineShadowMasterSlaveConfigurationTest {
         assertDataSourceMap(actual);
         assertMasterSlaveRule(actual);
         assertThat(actual.getShadowRule().getColumn(), is("is_shadow"));
-        assertShadowDataSourceMap(actual);
+        assertShadowMappings(actual);
     }
     
     private void assertDataSourceMap(final YamlRootShadowConfiguration actual) {
-        assertThat(actual.getDataSources().size(), is(3));
+        assertThat(actual.getDataSources().size(), is(6));
         assertTrue(actual.getDataSources().containsKey("master_ds"));
         assertTrue(actual.getDataSources().containsKey("slave_ds_0"));
         assertTrue(actual.getDataSources().containsKey("slave_ds_1"));
     }
     
     private void assertMasterSlaveRule(final YamlRootShadowConfiguration actual) {
-        assertThat(actual.getMasterSlaveRule().getName(), is("master-slave-ds"));
-        assertThat(actual.getMasterSlaveRule().getMasterDataSourceName(), is("master_ds"));
-        assertThat(actual.getMasterSlaveRule().getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Arrays.asList("slave_ds_0", "slave_ds_1")));
-        assertThat(actual.getMasterSlaveRule().getLoadBalanceAlgorithmType(), is("ROUND_ROBIN"));
+        assertThat(actual.getShadowRule().getMasterSlaveRule().getName(), is("master-slave-ds"));
+        assertThat(actual.getShadowRule().getMasterSlaveRule().getMasterDataSourceName(), is("master_ds"));
+        assertThat(actual.getShadowRule().getMasterSlaveRule().getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Arrays.asList("slave_ds_0", "slave_ds_1")));
+        assertThat(actual.getShadowRule().getMasterSlaveRule().getLoadBalanceAlgorithmType(), is("ROUND_ROBIN"));
     }
     
-    private void assertShadowDataSourceMap(final YamlRootShadowConfiguration actual) {
-        assertThat(actual.getShadowRule().getDataSources().size(), is(3));
-        assertTrue(actual.getShadowRule().getDataSources().containsKey("master_ds"));
-        assertTrue(actual.getShadowRule().getDataSources().containsKey("slave_ds_0"));
-        assertTrue(actual.getShadowRule().getDataSources().containsKey("slave_ds_1"));
+    private void assertShadowMappings(final YamlRootShadowConfiguration actual) {
+        assertThat(actual.getShadowRule().getShadowMappings().size(), is(3));
+        assertThat(actual.getShadowRule().getShadowMappings().get("master_ds"), is("shadow_master_ds"));
+        assertThat(actual.getShadowRule().getShadowMappings().get("slave_ds_0"), is("shadow_slave_ds_0"));
+        assertThat(actual.getShadowRule().getShadowMappings().get("slave_ds_1"), is("shadow_slave_ds_1"));
     }
 }
