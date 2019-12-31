@@ -23,18 +23,17 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.encrypt.merge.dal.DALDecoratorEngine;
-import org.apache.shardingsphere.encrypt.merge.dql.DQLDecoratorEngine;
+import org.apache.shardingsphere.encrypt.merge.DecoratorEngineFactory;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.merge.MergeEngineFactory;
-import org.apache.shardingsphere.sharding.merge.dql.iterator.IteratorStreamMergedResult;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.merge.engine.DecoratorEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
+import org.apache.shardingsphere.underlying.merge.result.impl.transparent.TransparentMergedResult;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -67,22 +66,22 @@ public abstract class MergeEntry {
      * @throws SQLException SQL exception
      */
     public MergedResult getMergedResult(final List<QueryResult> queryResults) throws SQLException {
-        // TODO process sharding + encrypt for desc table
         Optional<ShardingRule> shardingRule = findShardingRule();
-        Optional<EncryptRule> encryptRule = findEncryptRule();
-        Preconditions.checkState(shardingRule.isPresent() || encryptRule.isPresent());
-        if (encryptRule.isPresent() && routeResult.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
-            return new DALDecoratorEngine(encryptRule.get()).decorate(queryResults.get(0), routeResult.getSqlStatementContext(), relationMetas);
-        }
-        MergedResult mergedResult;
+        MergedResult result = null;
         if (shardingRule.isPresent()) {
-            mergedResult = MergeEngineFactory.newInstance(databaseType, shardingRule.get(), routeResult).merge(queryResults, routeResult.getSqlStatementContext(), relationMetas);
-        } else {
-            mergedResult = new IteratorStreamMergedResult(queryResults);
+            result = MergeEngineFactory.newInstance(databaseType, shardingRule.get(), routeResult).merge(queryResults, routeResult.getSqlStatementContext(), relationMetas);
         }
-        return encryptRule.isPresent()
-                ? new DQLDecoratorEngine(createEncryptorMetaData(encryptRule.get()), queryWithCipherColumn).decorate(mergedResult, routeResult.getSqlStatementContext(), relationMetas)
-                : mergedResult;
+        Optional<EncryptRule> encryptRule = findEncryptRule();
+        if (encryptRule.isPresent()) {
+            EncryptorMetaData encryptorMetaData = createEncryptorMetaData(encryptRule.get());
+            DecoratorEngine decoratorEngine = DecoratorEngineFactory.newInstance(encryptRule.get(), routeResult.getSqlStatementContext(), encryptorMetaData, queryWithCipherColumn);
+            if (null == result) {
+                result = new TransparentMergedResult(queryResults.get(0));
+            }
+            result = decoratorEngine.decorate(result, routeResult.getSqlStatementContext(), relationMetas);
+        }
+        Preconditions.checkNotNull(result);
+        return result;
     }
     
     private Optional<ShardingRule> findShardingRule() {

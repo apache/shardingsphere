@@ -52,7 +52,7 @@ public final class DALDecoratorEngine implements DecoratorEngine {
     
     @Override
     public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
-        // TODO
+        // TODO process sharding + encrypt for desc table
         return mergedResult;
     }
 }
