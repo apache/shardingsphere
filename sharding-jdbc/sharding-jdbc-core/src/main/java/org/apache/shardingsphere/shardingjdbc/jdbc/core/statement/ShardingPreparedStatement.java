@@ -27,7 +27,6 @@ import org.apache.shardingsphere.core.merge.MergeEntry;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.shard.PreparedQueryShardingEngine;
-import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.shardingjdbc.executor.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.executor.PreparedStatementExecutor;
@@ -37,6 +36,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionCon
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSet;
+import org.apache.shardingsphere.shardingjdbc.merge.JDBCMergeEntry;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
@@ -151,10 +151,9 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private MergedResult createMergedResult(final List<ResultSet> resultSets, final List<QueryResult> queryResults) throws SQLException {
         boolean queryWithCipherColumn = connection.getRuntimeContext().getProperties().getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
-        EncryptorMetaData encryptorMetaData = new ResultSetEncryptorMetaData(
-                connection.getRuntimeContext().getRule().getEncryptRule(), resultSets.get(0).getMetaData(), routeResult.getSqlStatementContext());
-        return new MergeEntry(connection.getRuntimeContext().getDatabaseType(), connection.getRuntimeContext().getMetaData().getRelationMetas(), connection.getRuntimeContext().getRule(), 
-                connection.getRuntimeContext().getRule().getEncryptRule(), routeResult, queryWithCipherColumn).getMergedResult(queryResults, encryptorMetaData);
+        MergeEntry mergeEntry = new JDBCMergeEntry(connection.getRuntimeContext().getDatabaseType(), connection.getRuntimeContext().getMetaData().getRelationMetas(), 
+                connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getRule().getEncryptRule(), routeResult, queryWithCipherColumn, resultSets.get(0).getMetaData());
+        return mergeEntry.getMergedResult(queryResults);
     }
     
     @Override

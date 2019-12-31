@@ -19,15 +19,14 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.merge.MergeEntry;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.ConnectionStatus;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.JDBCExecuteEngine;
+import org.apache.shardingsphere.shardingproxy.backend.communication.merge.ProxyMergeEntry;
 import org.apache.shardingsphere.shardingproxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
@@ -130,9 +129,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     private MergedResult createMergedResult(final SQLRouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
         EncryptRule encryptRule = getEncryptRule();
         boolean queryWithCipherColumn = ShardingProxyContext.getInstance().getProperties().getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
-        EncryptorMetaData encryptorMetaData = new QueryHeaderEncryptorMetaData(encryptRule, ((QueryResponse) response).getQueryHeaders());
-        return new MergeEntry(LogicSchemas.getInstance().getDatabaseType(), 
-                logicSchema.getMetaData().getRelationMetas(), logicSchema.getShardingRule(), encryptRule, routeResult, queryWithCipherColumn).getMergedResult(queryResults, encryptorMetaData);
+        return new ProxyMergeEntry(LogicSchemas.getInstance().getDatabaseType(), logicSchema.getMetaData().getRelationMetas(), 
+                logicSchema.getShardingRule(), encryptRule, routeResult, queryWithCipherColumn, ((QueryResponse) response).getQueryHeaders()).getMergedResult(queryResults);
     }
     
     private void handleColumnsForQueryHeader(final SQLRouteResult routeResult) {

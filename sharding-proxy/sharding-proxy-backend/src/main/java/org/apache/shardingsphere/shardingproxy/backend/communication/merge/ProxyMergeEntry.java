@@ -15,34 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
+package org.apache.shardingsphere.shardingproxy.backend.communication.merge;
 
-import com.google.common.base.Optional;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.merge.MergeEntry;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
-import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
+import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 
 import java.util.List;
 
 /**
- * Encryptor meta data for query header.
+ * Proxy merge entry.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-public final class QueryHeaderEncryptorMetaData implements EncryptorMetaData {
-    
-    private final EncryptRule encryptRule;
+public final class ProxyMergeEntry extends MergeEntry {
     
     private final List<QueryHeader> queryHeaders;
     
+    public ProxyMergeEntry(final DatabaseType databaseType, final RelationMetas relationMetas, final ShardingRule shardingRule,
+                           final EncryptRule encryptRule, final SQLRouteResult routeResult, final boolean queryWithCipherColumn, final List<QueryHeader> queryHeaders) {
+        super(databaseType, relationMetas, shardingRule, encryptRule, routeResult, queryWithCipherColumn);
+        this.queryHeaders = queryHeaders;
+    }
+    
     @Override
-    public Optional<Encryptor> findEncryptor(final int columnIndex) {
-        QueryHeader queryHeader = queryHeaders.get(columnIndex - 1);
-        String tableName = queryHeader.getTable();
-        String columnName = queryHeader.getColumnName();
-        return encryptRule.isCipherColumn(tableName, columnName) ? encryptRule.findEncryptor(tableName, encryptRule.getLogicColumnOfCipher(tableName, columnName)) : Optional.<Encryptor>absent();
+    protected EncryptorMetaData createEncryptorMetaData() {
+        return new QueryHeaderEncryptorMetaData(getEncryptRule(), queryHeaders);
     }
 }

@@ -15,17 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
+package org.apache.shardingsphere.shardingproxy.backend.communication.merge;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Encryptor meta data for query header.
@@ -33,24 +32,17 @@ import java.sql.SQLException;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ResultSetEncryptorMetaData implements EncryptorMetaData {
+public final class QueryHeaderEncryptorMetaData implements EncryptorMetaData {
     
     private final EncryptRule encryptRule;
     
-    private final ResultSetMetaData resultSetMetaData;
-    
-    private final SQLStatementContext sqlStatementContext;
+    private final List<QueryHeader> queryHeaders;
     
     @Override
-    public Optional<Encryptor> findEncryptor(final int columnIndex) throws SQLException {
-        String columnName = resultSetMetaData.getColumnName(columnIndex);
-        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            Optional<Encryptor> result = encryptRule.isCipherColumn(each, columnName)
-                    ? encryptRule.findEncryptor(each, encryptRule.getLogicColumnOfCipher(each, columnName)) : Optional.<Encryptor>absent();
-            if (result.isPresent()) {
-                return result;
-            }
-        }
-        return Optional.absent();
+    public Optional<Encryptor> findEncryptor(final int columnIndex) {
+        QueryHeader queryHeader = queryHeaders.get(columnIndex - 1);
+        String tableName = queryHeader.getTable();
+        String columnName = queryHeader.getColumnName();
+        return encryptRule.isCipherColumn(tableName, columnName) ? encryptRule.findEncryptor(tableName, encryptRule.getLogicColumnOfCipher(tableName, columnName)) : Optional.<Encryptor>absent();
     }
 }

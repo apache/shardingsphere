@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.merge;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -40,7 +41,7 @@ import java.util.List;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class MergeEntry {
+public abstract class MergeEntry {
     
     private final DatabaseType databaseType;
     
@@ -48,8 +49,10 @@ public final class MergeEntry {
     
     private final ShardingRule shardingRule;
     
+    @Getter
     private final EncryptRule encryptRule;
     
+    @Getter
     private final SQLRouteResult routeResult;
     
     private final boolean queryWithCipherColumn;
@@ -58,16 +61,17 @@ public final class MergeEntry {
      * Get merged result.
      * 
      * @param queryResults query results
-     * @param encryptorMetaData encryptor meta data
      * @return merged result
      * @throws SQLException SQL exception
      */
-    public MergedResult getMergedResult(final List<QueryResult> queryResults, final EncryptorMetaData encryptorMetaData) throws SQLException {
+    public MergedResult getMergedResult(final List<QueryResult> queryResults) throws SQLException {
         // TODO process sharding + encrypt for desc table
         if (!encryptRule.getEncryptTableNames().isEmpty() && routeResult.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
             return new DALEncryptMergeEngine(encryptRule, queryResults, routeResult.getSqlStatementContext()).merge();
         }
         MergedResult mergedResult = MergeEngineFactory.newInstance(databaseType, shardingRule, routeResult, relationMetas, queryResults).merge();
-        return encryptRule.getEncryptTableNames().isEmpty() ? mergedResult : new DQLEncryptMergeEngine(encryptorMetaData, mergedResult, queryWithCipherColumn).merge();
+        return encryptRule.getEncryptTableNames().isEmpty() ? mergedResult : new DQLEncryptMergeEngine(createEncryptorMetaData(), mergedResult, queryWithCipherColumn).merge();
     }
+    
+    protected abstract EncryptorMetaData createEncryptorMetaData();
 }
