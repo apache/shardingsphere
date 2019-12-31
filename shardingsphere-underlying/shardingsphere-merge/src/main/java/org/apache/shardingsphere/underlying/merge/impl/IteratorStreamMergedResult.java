@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.merge.dql.iterator;
+package org.apache.shardingsphere.underlying.merge.impl;
 
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.impl.StreamMergedResult;
 
 import java.sql.SQLException;
 import java.util.Iterator;

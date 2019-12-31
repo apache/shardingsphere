@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.merge.dal.DALEncryptMergeEngine;
 import org.apache.shardingsphere.encrypt.merge.dql.DQLEncryptMergeEngine;
-import org.apache.shardingsphere.sharding.merge.dql.iterator.IteratorStreamMergedResult;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
-import org.apache.shardingsphere.shardingjdbc.merge.ResultSetEncryptorMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
+import org.apache.shardingsphere.shardingjdbc.merge.ResultSetEncryptorMetaData;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.MergedResult;
 
@@ -92,7 +91,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
             return new DALEncryptMergeEngine(encryptRule).merge(queryResults, sqlStatementContext, null);
         }
         ResultSetEncryptorMetaData metaData = new ResultSetEncryptorMetaData(encryptRule, originalResultSet.getMetaData(), sqlStatementContext);
-        return new DQLEncryptMergeEngine(metaData, new IteratorStreamMergedResult(queryResults), queryWithCipherColumn).merge(null, sqlStatementContext, null);
+        return new DQLEncryptMergeEngine(metaData, queryWithCipherColumn).merge(queryResults, sqlStatementContext, null);
     }
     
     private Map<String, String> createLogicAndActualColumns(final boolean isQueryWithCipherColumn) {

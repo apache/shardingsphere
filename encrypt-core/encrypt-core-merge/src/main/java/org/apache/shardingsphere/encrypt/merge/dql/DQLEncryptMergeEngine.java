@@ -21,8 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.MergeEngine;
+import org.apache.shardingsphere.underlying.merge.DecoratedMergeEngine;
 import org.apache.shardingsphere.underlying.merge.MergedResult;
+import org.apache.shardingsphere.underlying.merge.impl.IteratorStreamMergedResult;
 
 import java.util.List;
 
@@ -32,16 +33,19 @@ import java.util.List;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class DQLEncryptMergeEngine implements MergeEngine {
+public final class DQLEncryptMergeEngine implements DecoratedMergeEngine {
     
     private final EncryptorMetaData metaData;
-    
-    private final MergedResult mergedResult;
     
     private final boolean queryWithCipherColumn;
     
     @Override
     public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
+        return new EncryptMergedResult(metaData, new IteratorStreamMergedResult(queryResults), queryWithCipherColumn);
+    }
+    
+    @Override
+    public MergedResult merge(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
         return new EncryptMergedResult(metaData, mergedResult, queryWithCipherColumn);
     }
 }

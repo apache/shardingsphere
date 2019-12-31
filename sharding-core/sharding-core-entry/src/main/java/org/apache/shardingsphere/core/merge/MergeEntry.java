@@ -28,7 +28,7 @@ import org.apache.shardingsphere.encrypt.merge.dql.DQLEncryptMergeEngine;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.merge.MergeEngineFactory;
-import org.apache.shardingsphere.sharding.merge.dql.iterator.IteratorStreamMergedResult;
+import org.apache.shardingsphere.underlying.merge.impl.IteratorStreamMergedResult;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
@@ -81,8 +81,7 @@ public abstract class MergeEntry {
             mergedResult = new IteratorStreamMergedResult(queryResults);
         }
         return encryptRule.isPresent()
-                ? new DQLEncryptMergeEngine(createEncryptorMetaData(encryptRule.get()), mergedResult, queryWithCipherColumn).merge(null, routeResult.getSqlStatementContext(), relationMetas)
-                : mergedResult;
+                ? new DQLEncryptMergeEngine(createEncryptorMetaData(encryptRule.get()), queryWithCipherColumn).merge(mergedResult, routeResult.getSqlStatementContext(), relationMetas) : mergedResult;
     }
     
     private Optional<ShardingRule> findShardingRule() {
