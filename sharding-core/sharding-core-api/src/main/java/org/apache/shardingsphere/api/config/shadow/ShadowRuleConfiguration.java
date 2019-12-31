@@ -17,9 +17,14 @@
 
 package org.apache.shardingsphere.api.config.shadow;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+
+import java.util.Map;
 
 /**
  * Shadow rule configuration.
@@ -27,12 +32,43 @@ import org.apache.shardingsphere.api.config.RuleConfiguration;
  * @author xiayan
  */
 @Getter
+@Setter
 public class ShadowRuleConfiguration implements RuleConfiguration {
     
-    private final String column;
+    private String column;
     
-    public ShadowRuleConfiguration(final String column) {
-        Preconditions.checkArgument(null != column, "Column is Required.");
-        this.column = column;
+    private ShardingRuleConfiguration shardingRuleConfig;
+    
+    private MasterSlaveRuleConfiguration masterSlaveRuleConfig;
+    
+    private EncryptRuleConfiguration encryptRuleConfig;
+    
+    private Map<String, String> shadowMappings;
+    
+    /**
+     * Raw datasource is encrypt.
+     *
+     * @return is the encrypt datasource
+     */
+    public boolean isEncrypt() {
+        return null != encryptRuleConfig;
+    }
+    
+    /**
+     * Raw datasource is sharding.
+     *
+     * @return is the sharding
+     */
+    public boolean isSharding() {
+        return null != shardingRuleConfig;
+    }
+    
+    /**
+     * Raw datasource is master slave.
+     *
+     * @return is the master slave
+     */
+    public boolean isMasterSlave() {
+        return null != masterSlaveRuleConfig;
     }
 }

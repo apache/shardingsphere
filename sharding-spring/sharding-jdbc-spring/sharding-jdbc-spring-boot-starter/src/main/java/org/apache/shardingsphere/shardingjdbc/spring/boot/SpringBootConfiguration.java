@@ -20,9 +20,6 @@ package org.apache.shardingsphere.shardingjdbc.spring.boot;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.util.InlineExpressionParser;
 import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
@@ -38,8 +35,7 @@ import org.apache.shardingsphere.shardingjdbc.spring.boot.encrypt.EncryptRuleCon
 import org.apache.shardingsphere.shardingjdbc.spring.boot.encrypt.SpringBootEncryptRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.masterslave.MasterSlaveRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.shadow.LocalShadowRuleCondition;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.shadow.NonLocalShadowRuleCondition;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.shadow.ShadowRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.shadow.SpringBootShadowRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.ShardingRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
@@ -96,8 +92,6 @@ public class SpringBootConfiguration implements EnvironmentAware {
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
-    private final Map<String, DataSource> shadowDataSourceMap = new LinkedHashMap<>();
-    
     private final String jndiName = "jndi-name";
     
     /**
@@ -107,7 +101,7 @@ public class SpringBootConfiguration implements EnvironmentAware {
      * @throws SQLException SQL exception
      */
     @Bean
-    @Conditional({ShardingRuleCondition.class, NonLocalShadowRuleCondition.class})
+    @Conditional(ShardingRuleCondition.class)
     public DataSource shardingDataSource() throws SQLException {
         return ShardingDataSourceFactory.createDataSource(dataSourceMap, new ShardingRuleConfigurationYamlSwapper().swap(shardingRule), props.getProps());
     }
@@ -119,7 +113,7 @@ public class SpringBootConfiguration implements EnvironmentAware {
      * @throws SQLException SQL exception
      */
     @Bean
-    @Conditional({MasterSlaveRuleCondition.class, NonLocalShadowRuleCondition.class})
+    @Conditional(MasterSlaveRuleCondition.class)
     public DataSource masterSlaveDataSource() throws SQLException {
         return MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new MasterSlaveRuleConfigurationYamlSwapper().swap(masterSlaveRule), props.getProps());
     }
@@ -131,7 +125,7 @@ public class SpringBootConfiguration implements EnvironmentAware {
      * @throws SQLException SQL exception
      */
     @Bean
-    @Conditional({EncryptRuleCondition.class, NonLocalShadowRuleCondition.class})
+    @Conditional(EncryptRuleCondition.class)
     public DataSource encryptDataSource() throws SQLException {
         return EncryptDataSourceFactory.createDataSource(dataSourceMap.values().iterator().next(), new EncryptRuleConfigurationYamlSwapper().swap(encryptRule), props.getProps());
     }
@@ -143,41 +137,17 @@ public class SpringBootConfiguration implements EnvironmentAware {
      * @throws SQLException SQL exception
      */
     @Bean
-    @Conditional(LocalShadowRuleCondition.class)
+    @Conditional(ShadowRuleCondition.class)
     public DataSource shadowDataSource() throws SQLException {
-        DataSource actualDataSource;
-        DataSource shadowDataSource;
-        
-        if (isMasterSlave()) {
-            MasterSlaveRuleConfiguration config = new MasterSlaveRuleConfigurationYamlSwapper().swap(masterSlaveRule);
-            actualDataSource = MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, config, props.getProps());
-            shadowDataSource = MasterSlaveDataSourceFactory.createDataSource(shadowDataSourceMap, config, props.getProps());
-        } else if (isSharding()) {
-            ShardingRuleConfiguration config = new ShardingRuleConfigurationYamlSwapper().swap(shardingRule);
-            actualDataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, config, props.getProps());
-            shadowDataSource = ShardingDataSourceFactory.createDataSource(shadowDataSourceMap, config, props.getProps());
-        } else if (isEncrypt()) {
-            EncryptRuleConfiguration config = new EncryptRuleConfigurationYamlSwapper().swap(encryptRule);
-            actualDataSource = EncryptDataSourceFactory.createDataSource(dataSourceMap.values().iterator().next(), config, props.getProps());
-            shadowDataSource = EncryptDataSourceFactory.createDataSource(shadowDataSourceMap.values().iterator().next(), config, props.getProps());
-        } else {
-            actualDataSource = dataSourceMap.values().iterator().next();
-            shadowDataSource = shadowDataSourceMap.values().iterator().next();
-        }
-        
-        return ShadowDataSourceFactory.createDataSource(actualDataSource, shadowDataSource, new ShadowRuleConfigurationYamlSwapper().swap(shadowRule), props.getProps());
+        return ShadowDataSourceFactory.createDataSource(dataSourceMap, new ShadowRuleConfigurationYamlSwapper().swap(shadowRule), props.getProps());
     }
     
     @Override
     public final void setEnvironment(final Environment environment) {
         String prefix = "spring.shardingsphere.datasource.";
-        String shadowPrefix = "spring.shardingsphere.shadow.datasource.";
         for (String each : getDataSourceNames(environment, prefix)) {
             try {
                 dataSourceMap.put(each, getDataSource(environment, prefix, each));
-                if (isShadow()) {
-                    shadowDataSourceMap.put(each, getDataSource(environment, shadowPrefix, each));
-                }
             } catch (final ReflectiveOperationException ex) {
                 throw new ShardingException("Can't find datasource type!", ex);
             } catch (final NamingException namingEx) {
@@ -215,21 +185,5 @@ public class SpringBootConfiguration implements EnvironmentAware {
         bean.setProxyInterface(DataSource.class);
         bean.afterPropertiesSet();
         return (DataSource) bean.getObject();
-    }
-    
-    private boolean isMasterSlave() {
-        return null != masterSlaveRule.getName();
-    }
-    
-    private boolean isSharding() {
-        return !shardingRule.getTables().isEmpty();
-    }
-    
-    private boolean isEncrypt() {
-        return !encryptRule.getEncryptors().isEmpty();
-    }
-    
-    private boolean isShadow() {
-        return null != shadowRule.getColumn();
     }
 }
