@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -16,8 +15,12 @@
   ~ limitations under the License.
   -->
 
-<sql-cases db-types="MySQL">
-    <sql-case id="select_from_actual_without_shadow_column" value="SELECT order_id, user_id,status from t_order where user_id = ?" />
-    <sql-case id="select_from_shadow" value="SELECT order_id, user_id, status from t_order where shadow = ?" />
-    <sql-case id="select_from_shadow_with_condition" value="SELECT order_id, user_id, status from t_order where shadow = ? and user_id = ?" />
-</sql-cases>
+<dataset>
+    <metadata>
+        <column name="order_id" />
+        <column name="user_id" />
+        <column name="status" />
+    </metadata>
+    <row values="1700, 17, actual" />
+    <row values="1701, 17, actual" />
+</dataset>

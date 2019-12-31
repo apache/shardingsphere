@@ -1,0 +1,104 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata data-nodes="actual.t_order,shadow.t_order">
+        <column name="order_id" type="numeric" />
+        <column name="user_id" type="numeric" />
+        <column name="status" type="varchar" />
+    </metadata>
+    <row data-node="actual.t_order" values="1000, 10, actual" />
+    <row data-node="actual.t_order" values="1001, 10, actual" />
+    <row data-node="actual.t_order" values="1100, 11, actual" />
+    <row data-node="actual.t_order" values="1101, 11, actual" />
+    <row data-node="actual.t_order" values="1200, 12, actual" />
+    <row data-node="actual.t_order" values="1201, 12, actual" />
+    <row data-node="actual.t_order" values="1300, 13, actual" />
+    <row data-node="actual.t_order" values="1301, 13, actual" />
+    <row data-node="actual.t_order" values="1400, 14, actual" />
+    <row data-node="actual.t_order" values="1401, 14, actual" />
+    <row data-node="actual.t_order" values="1500, 15, actual" />
+    <row data-node="actual.t_order" values="1501, 15, actual" />
+    <row data-node="actual.t_order" values="1600, 16, actual" />
+    <row data-node="actual.t_order" values="1601, 16, actual" />
+    <row data-node="actual.t_order" values="1700, 17, actual" />
+    <row data-node="actual.t_order" values="1701, 17, actual" />
+    <row data-node="actual.t_order" values="1800, 18, actual" />
+    <row data-node="actual.t_order" values="1801, 18, actual" />
+    <row data-node="actual.t_order" values="1900, 19, actual" />
+    <row data-node="actual.t_order" values="1901, 19, actual" />
+    <row data-node="actual.t_order" values="2000, 20, actual" />
+    <row data-node="actual.t_order" values="2001, 20, actual" />
+    <row data-node="actual.t_order" values="2100, 21, actual" />
+    <row data-node="actual.t_order" values="2101, 21, actual" />
+    <row data-node="actual.t_order" values="2200, 22, actual" />
+    <row data-node="actual.t_order" values="2201, 22, actual" />
+    <row data-node="actual.t_order" values="2300, 23, actual" />
+    <row data-node="actual.t_order" values="2301, 23, actual" />
+    <row data-node="actual.t_order" values="2400, 24, actual" />
+    <row data-node="actual.t_order" values="2401, 24, actual" />
+    <row data-node="actual.t_order" values="2500, 25, actual" />
+    <row data-node="actual.t_order" values="2501, 25, actual" />
+    <row data-node="actual.t_order" values="2600, 26, actual" />
+    <row data-node="actual.t_order" values="2601, 26, actual" />
+    <row data-node="actual.t_order" values="2700, 27, actual" />
+    <row data-node="actual.t_order" values="2701, 27, actual" />
+    <row data-node="actual.t_order" values="2800, 28, actual" />
+    <row data-node="actual.t_order" values="2801, 28, actual" />
+    <row data-node="actual.t_order" values="2900, 29, actual" />
+    <row data-node="actual.t_order" values="2901, 29, actual" />
+    <row data-node="shadow.t_order" values="1000, 10, shadow" />
+    <row data-node="shadow.t_order" values="1001, 10, shadow" />
+    <row data-node="shadow.t_order" values="1100, 11, shadow" />
+    <row data-node="shadow.t_order" values="1101, 11, shadow" />
+    <row data-node="shadow.t_order" values="1200, 12, shadow" />
+    <row data-node="shadow.t_order" values="1201, 12, shadow" />
+    <row data-node="shadow.t_order" values="1300, 13, shadow" />
+    <row data-node="shadow.t_order" values="1301, 13, shadow" />
+    <row data-node="shadow.t_order" values="1400, 14, shadow" />
+    <row data-node="shadow.t_order" values="1401, 14, shadow" />
+    <row data-node="shadow.t_order" values="1500, 15, shadow" />
+    <row data-node="shadow.t_order" values="1501, 15, shadow" />
+    <row data-node="shadow.t_order" values="1600, 16, shadow" />
+    <row data-node="shadow.t_order" values="1601, 16, shadow" />
+    <row data-node="shadow.t_order" values="1700, 17, shadow" />
+    <row data-node="shadow.t_order" values="1701, 17, shadow" />
+    <row data-node="shadow.t_order" values="1800, 18, shadow" />
+    <row data-node="shadow.t_order" values="1801, 18, shadow" />
+    <row data-node="shadow.t_order" values="1900, 19, shadow" />
+    <row data-node="shadow.t_order" values="1901, 19, shadow" />
+    <row data-node="shadow.t_order" values="2000, 20, shadow" />
+    <row data-node="shadow.t_order" values="2001, 20, shadow" />
+    <row data-node="shadow.t_order" values="2100, 21, shadow" />
+    <row data-node="shadow.t_order" values="2101, 21, shadow" />
+    <row data-node="shadow.t_order" values="2200, 22, shadow" />
+    <row data-node="shadow.t_order" values="2201, 22, shadow" />
+    <row data-node="shadow.t_order" values="2300, 23, shadow" />
+    <row data-node="shadow.t_order" values="2301, 23, shadow" />
+    <row data-node="shadow.t_order" values="2400, 24, shadow" />
+    <row data-node="shadow.t_order" values="2401, 24, shadow" />
+    <row data-node="shadow.t_order" values="2500, 25, shadow" />
+    <row data-node="shadow.t_order" values="2501, 25, shadow" />
+    <row data-node="shadow.t_order" values="2600, 26, shadow" />
+    <row data-node="shadow.t_order" values="2601, 26, shadow" />
+    <row data-node="shadow.t_order" values="2700, 27, shadow" />
+    <row data-node="shadow.t_order" values="2701, 27, shadow" />
+    <row data-node="shadow.t_order" values="2800, 28, shadow" />
+    <row data-node="shadow.t_order" values="2801, 28, shadow" />
+    <row data-node="shadow.t_order" values="2900, 29, shadow" />
+    <row data-node="shadow.t_order" values="2901, 29, shadow" />
+</dataset>

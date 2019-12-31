@@ -17,28 +17,23 @@
   -->
 
 <parser-result-sets>
-    <parser-result sql-case-id="select_from_actual_without_shadow_column" parameters="111">
+    <parser-result sql-case-id="update_actual_without_shadow_column" parameters="'actual', 111">
         <tables>
             <table name="t_order" />
         </tables>
     </parser-result>
-    <parser-result sql-case-id="select_from_shadow" parameters="'true'">
+    <parser-result sql-case-id="update_shadow" parameters="'shadow', 'true'">
+        <tables>
+            <table name="t_order" />
+        </tables>
+    </parser-result>
+    <parser-result sql-case-id="update_shadow_whit_condition" parameters="'shadow', 111, 'true'">
         <tables>
             <table name="t_order" />
         </tables>
         <shadow-conditions>
             <condition column-name="shadow" table-name="t_order" operator="EQUAL">
-                <value index="0" literal="true" type="boolean" />
-            </condition>
-        </shadow-conditions>
-    </parser-result>
-    <parser-result sql-case-id="select_from_shadow_with_condition" parameters="'true',111">
-        <tables>
-            <table name="t_order" />
-        </tables>
-        <shadow-conditions>
-            <condition column-name="shadow" table-name="t_order" operator="EQUAL">
-                <value index="0" literal="true" type="boolean" />
+                <value index="2" literal="true" type="boolean" />
             </condition>
         </shadow-conditions>
     </parser-result>

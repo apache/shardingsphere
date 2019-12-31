@@ -16,8 +16,15 @@
   ~ limitations under the License.
   -->
 
-<sql-cases db-types="MySQL">
-    <sql-case id="select_from_actual_without_shadow_column" value="SELECT order_id, user_id,status from t_order where user_id = ?" />
-    <sql-case id="select_from_shadow" value="SELECT order_id, user_id, status from t_order where shadow = ?" />
-    <sql-case id="select_from_shadow_with_condition" value="SELECT order_id, user_id, status from t_order where shadow = ? and user_id = ?" />
-</sql-cases>
+<schema>
+    <databases>
+        <database>actual</database>
+        <database>shadow</database>
+    </databases>
+    <table-create>
+        <sql>CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))</sql>
+    </table-create>
+    <table-drop>
+        <sql>DROP TABLE t_order</sql>
+    </table-drop>
+</schema>

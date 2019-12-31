@@ -17,7 +17,7 @@
   -->
 
 <sql-cases db-types="MySQL">
-    <sql-case id="select_from_actual_without_shadow_column" value="SELECT order_id, user_id,status from t_order where user_id = ?" />
-    <sql-case id="select_from_shadow" value="SELECT order_id, user_id, status from t_order where shadow = ?" />
-    <sql-case id="select_from_shadow_with_condition" value="SELECT order_id, user_id, status from t_order where shadow = ? and user_id = ?" />
+    <sql-case id="update_actual_without_shadow_column" value="UPDATE t_order SET status = ? WHERE user_id = ?" />
+    <sql-case id="update_shadow" value="UPDATE t_order SET status = ? WHERE shadow = ?" />
+    <sql-case id="update_shadow_whit_condition" value="UPDATE t_order SET status = ? WHERE user_id = ? and shadow = ?" />
 </sql-cases>

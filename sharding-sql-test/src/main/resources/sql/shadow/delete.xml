@@ -17,7 +17,6 @@
   -->
 
 <sql-cases db-types="MySQL">
-    <sql-case id="select_from_actual_without_shadow_column" value="SELECT order_id, user_id,status from t_order where user_id = ?" />
-    <sql-case id="select_from_shadow" value="SELECT order_id, user_id, status from t_order where shadow = ?" />
-    <sql-case id="select_from_shadow_with_condition" value="SELECT order_id, user_id, status from t_order where shadow = ? and user_id = ?" />
+    <sql-case id="delete_from_actual" value="DELETE FROM t_order WHERE order_id = ?" />
+    <sql-case id="delete_from_shadow" value="DELETE FROM t_order WHERE shadow = ? and order_id = ?" />
 </sql-cases>

@@ -17,7 +17,7 @@
   -->
 
 <sql-cases db-types="MySQL">
-    <sql-case id="select_from_actual_without_shadow_column" value="SELECT order_id, user_id,status from t_order where user_id = ?" />
-    <sql-case id="select_from_shadow" value="SELECT order_id, user_id, status from t_order where shadow = ?" />
-    <sql-case id="select_from_shadow_with_condition" value="SELECT order_id, user_id, status from t_order where shadow = ? and user_id = ?" />
+    <sql-case id="insert_into_actual_without_shadow_column" value="INSERT INTO t_order(order_id, user_id) VALUES(?,?)" />
+    <sql-case id="insert_into_actual" value="INSERT INTO t_order(order_id, user_id, shadow) VALUES(?,?,?)" />
+    <sql-case id="insert_into_shadow" value="INSERT INTO t_order(order_id, user_id, shadow) VALUES(?,?,?)" />
 </sql-cases>
