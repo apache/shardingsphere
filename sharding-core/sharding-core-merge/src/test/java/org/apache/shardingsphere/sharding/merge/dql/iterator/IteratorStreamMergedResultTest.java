@@ -56,8 +56,8 @@ public final class IteratorStreamMergedResultTest {
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
-        MergedResult actual = mergeEngine.merge();
+        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
+        MergedResult actual = mergeEngine.merge(queryResults, selectSQLStatementContext, null);
         assertFalse(actual.next());
     }
     
@@ -67,8 +67,8 @@ public final class IteratorStreamMergedResultTest {
         for (QueryResult each : queryResults) {
             when(each.next()).thenReturn(true, false);
         }
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
-        MergedResult actual = mergeEngine.merge();
+        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
+        MergedResult actual = mergeEngine.merge(queryResults, selectSQLStatementContext, null);
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -79,8 +79,8 @@ public final class IteratorStreamMergedResultTest {
     public void assertNextForFirstResultSetsNotEmptyOnly() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
         when(queryResults.get(0).next()).thenReturn(true, false);
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
-        MergedResult actual = mergeEngine.merge();
+        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
+        MergedResult actual = mergeEngine.merge(queryResults, selectSQLStatementContext, null);
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
@@ -89,8 +89,8 @@ public final class IteratorStreamMergedResultTest {
     public void assertNextForMiddleResultSetsNotEmpty() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
         when(queryResults.get(1).next()).thenReturn(true, false);
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
-        MergedResult actual = mergeEngine.merge();
+        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
+        MergedResult actual = mergeEngine.merge(queryResults, selectSQLStatementContext, null);
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
@@ -99,8 +99,8 @@ public final class IteratorStreamMergedResultTest {
     public void assertNextForLastResultSetsNotEmptyOnly() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
         when(queryResults.get(2).next()).thenReturn(true, false);
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
-        MergedResult actual = mergeEngine.merge();
+        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
+        MergedResult actual = mergeEngine.merge(queryResults, selectSQLStatementContext, null);
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
@@ -112,8 +112,8 @@ public final class IteratorStreamMergedResultTest {
         when(queryResults.get(1).next()).thenReturn(true, false);
         when(queryResults.get(3).next()).thenReturn(true, false);
         when(queryResults.get(5).next()).thenReturn(true, false);
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
-        MergedResult actual = mergeEngine.merge();
+        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
+        MergedResult actual = mergeEngine.merge(queryResults, selectSQLStatementContext, null);
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertTrue(actual.next());

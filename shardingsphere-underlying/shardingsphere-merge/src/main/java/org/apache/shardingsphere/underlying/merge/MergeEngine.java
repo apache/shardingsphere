@@ -17,7 +17,12 @@
 
 package org.apache.shardingsphere.underlying.merge;
 
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
+
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Result set merge engine.
@@ -27,10 +32,13 @@ import java.sql.SQLException;
 public interface MergeEngine {
     
     /**
-     * Merge result sets.
-     *
-     * @return merged result set.
+     * Merge query results.
+     * 
+     * @param queryResults query results
+     * @param sqlStatementContext SQL statement context
+     * @param relationMetas relation metas
+     * @return merged result set
      * @throws SQLException SQL exception
      */
-    MergedResult merge() throws SQLException;
+    MergedResult merge(List<QueryResult> queryResults, SQLStatementContext sqlStatementContext, RelationMetas relationMetas) throws SQLException;
 }

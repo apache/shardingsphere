@@ -51,14 +51,8 @@ public final class DALMergeEngine implements MergeEngine {
     
     private final ShardingRule shardingRule;
     
-    private final List<QueryResult> queryResults;
-    
-    private final SQLStatementContext sqlStatementContext;
-    
-    private final RelationMetas relationMetas;
-    
     @Override
-    public MergedResult merge() throws SQLException {
+    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) throws SQLException {
         SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
         if (dalStatement instanceof ShowDatabasesStatement) {
             return new SingleLocalDataMergedResult(Collections.<Object>singletonList(ShardingConstant.LOGIC_SCHEMA_NAME));

@@ -18,15 +18,16 @@
 package org.apache.shardingsphere.encrypt.merge.dal;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.MergeEngine;
-import org.apache.shardingsphere.underlying.merge.MergedResult;
-import org.apache.shardingsphere.underlying.merge.impl.TransparentMergedResult;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.DescribeStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowColumnsStatement;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.merge.MergeEngine;
+import org.apache.shardingsphere.underlying.merge.MergedResult;
+import org.apache.shardingsphere.underlying.merge.impl.TransparentMergedResult;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -41,12 +42,8 @@ public final class DALEncryptMergeEngine implements MergeEngine {
     
     private final EncryptRule encryptRule;
     
-    private final List<QueryResult> queryResults;
-    
-    private final SQLStatementContext sqlStatementContext;
-    
     @Override
-    public MergedResult merge() throws SQLException {
+    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) throws SQLException {
         SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
         if (dalStatement instanceof DescribeStatement || dalStatement instanceof ShowColumnsStatement) {
             return new DescribeTableMergedResult(encryptRule, queryResults, sqlStatementContext);

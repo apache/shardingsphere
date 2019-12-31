@@ -18,8 +18,13 @@
 package org.apache.shardingsphere.encrypt.merge.dql;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.MergeEngine;
 import org.apache.shardingsphere.underlying.merge.MergedResult;
+
+import java.util.List;
 
 /**
  * DQL result set merge engine for encrypt.
@@ -36,7 +41,7 @@ public final class DQLEncryptMergeEngine implements MergeEngine {
     private final boolean queryWithCipherColumn;
     
     @Override
-    public MergedResult merge() {
+    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
         return new EncryptMergedResult(metaData, mergedResult, queryWithCipherColumn);
     }
 }

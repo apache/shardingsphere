@@ -19,6 +19,8 @@ package org.apache.shardingsphere.sharding.merge;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sharding.merge.dql.iterator.IteratorStreamMergedResult;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.MergeEngine;
 import org.apache.shardingsphere.underlying.merge.MergedResult;
@@ -33,10 +35,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class TransparentMergeEngine implements MergeEngine {
     
-    private final List<QueryResult> queryResults;
-    
     @Override
-    public MergedResult merge() {
+    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
         return new IteratorStreamMergedResult(queryResults);
     }
 }

@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sharding.merge;
 
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.merge.dal.DALMergeEngine;
 import org.apache.shardingsphere.sharding.merge.dql.DQLMergeEngine;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
@@ -38,31 +36,15 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.junit.Before;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.junit.Test;
 
-import java.sql.SQLException;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class MergeEngineFactoryTest {
-    
-    private final List<QueryResult> queryResults = new LinkedList<>();
-    
-    @Before
-    public void setUp() throws SQLException {
-        QueryResult queryResult = mock(QueryResult.class);
-        when(queryResult.getColumnCount()).thenReturn(1);
-        when(queryResult.getColumnLabel(1)).thenReturn("label");
-        queryResults.add(queryResult);
-    }
     
     @Test
     public void assertNewInstanceWithSelectStatement() {
@@ -71,13 +53,13 @@ public final class MergeEngineFactoryTest {
                         new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
                         new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList())), 
                 new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, mock(RelationMetas.class), queryResults), instanceOf(DQLMergeEngine.class));
+        assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult), instanceOf(DQLMergeEngine.class));
     }
     
     @Test
     public void assertNewInstanceWithDALStatement() {
         SQLRouteResult routeResult = new SQLRouteResult(new CommonSQLStatementContext(new DALStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, mock(RelationMetas.class), queryResults), instanceOf(DALMergeEngine.class));
+        assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult), instanceOf(DALMergeEngine.class));
     }
     
     @Test
@@ -87,6 +69,6 @@ public final class MergeEngineFactoryTest {
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "col"));
         SQLRouteResult routeResult = new SQLRouteResult(
                 new InsertSQLStatementContext(null, Collections.emptyList(), insertStatement), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult, mock(RelationMetas.class), queryResults), instanceOf(TransparentMergeEngine.class));
+        assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult), instanceOf(TransparentMergeEngine.class));
     }
 }

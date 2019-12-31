@@ -24,13 +24,9 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.merge.dal.DALMergeEngine;
 import org.apache.shardingsphere.sharding.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.MergeEngine;
-
-import java.util.List;
 
 /**
  * Result merge engine factory.
@@ -47,18 +43,15 @@ public final class MergeEngineFactory {
      * @param databaseType database type
      * @param shardingRule sharding rule
      * @param routeResult SQL route result
-     * @param relationMetas relation metas
-     * @param queryResults query results
      * @return merge engine instance
      */
-    public static MergeEngine newInstance(final DatabaseType databaseType, final ShardingRule shardingRule,
-                                          final SQLRouteResult routeResult, final RelationMetas relationMetas, final List<QueryResult> queryResults) {
+    public static MergeEngine newInstance(final DatabaseType databaseType, final ShardingRule shardingRule, final SQLRouteResult routeResult) {
         if (routeResult.getSqlStatementContext() instanceof SelectSQLStatementContext) {
-            return new DQLMergeEngine(databaseType, (SelectSQLStatementContext) routeResult.getSqlStatementContext(), queryResults);
+            return new DQLMergeEngine(databaseType);
         } 
         if (routeResult.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
-            return new DALMergeEngine(shardingRule, queryResults, routeResult.getSqlStatementContext(), relationMetas);
+            return new DALMergeEngine(shardingRule);
         }
-        return new TransparentMergeEngine(queryResults);
+        return new TransparentMergeEngine();
     }
 }

@@ -89,10 +89,10 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     private MergedResult createMergedResult(final boolean queryWithCipherColumn, final ResultSet resultSet) throws SQLException {
         List<QueryResult> queryResults = Collections.<QueryResult>singletonList(new StreamQueryResult(resultSet));
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
-            return new DALEncryptMergeEngine(encryptRule, queryResults, sqlStatementContext).merge();
+            return new DALEncryptMergeEngine(encryptRule).merge(queryResults, sqlStatementContext, null);
         }
         ResultSetEncryptorMetaData metaData = new ResultSetEncryptorMetaData(encryptRule, originalResultSet.getMetaData(), sqlStatementContext);
-        return new DQLEncryptMergeEngine(metaData, new IteratorStreamMergedResult(queryResults), queryWithCipherColumn).merge();
+        return new DQLEncryptMergeEngine(metaData, new IteratorStreamMergedResult(queryResults), queryWithCipherColumn).merge(null, sqlStatementContext, null);
     }
     
     private Map<String, String> createLogicAndActualColumns(final boolean isQueryWithCipherColumn) {

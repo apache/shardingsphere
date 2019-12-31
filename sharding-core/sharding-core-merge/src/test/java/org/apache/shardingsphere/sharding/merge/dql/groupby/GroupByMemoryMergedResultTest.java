@@ -51,9 +51,8 @@ public final class GroupByMemoryMergedResultTest {
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(
-                DatabaseTypes.getActualDatabaseType("MySQL"), createSelectSQLStatementContext(), Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult()));
-        MergedResult actual = mergeEngine.merge();
+        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
+        MergedResult actual = mergeEngine.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult()), createSelectSQLStatementContext(), null);
         assertFalse(actual.next());
     }
     
@@ -74,8 +73,8 @@ public final class GroupByMemoryMergedResultTest {
         when(queryResult3.getValue(3, Object.class)).thenReturn(2, 3);
         when(queryResult3.getValue(4, Object.class)).thenReturn(2, 2, 3);
         when(queryResult3.getValue(5, Object.class)).thenReturn(20, 20, 30);
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), createSelectSQLStatementContext(), Arrays.asList(queryResult1, queryResult2, queryResult3));
-        MergedResult actual = mergeEngine.merge();
+        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
+        MergedResult actual = mergeEngine.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectSQLStatementContext(), null);
         assertTrue(actual.next());
         assertThat((BigDecimal) actual.getValue(1, Object.class), is(new BigDecimal(30)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));

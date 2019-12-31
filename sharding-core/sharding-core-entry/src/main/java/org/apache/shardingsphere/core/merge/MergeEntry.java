@@ -72,15 +72,17 @@ public abstract class MergeEntry {
         Optional<EncryptRule> encryptRule = findEncryptRule();
         Preconditions.checkState(shardingRule.isPresent() || encryptRule.isPresent());
         if (encryptRule.isPresent() && routeResult.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
-            return new DALEncryptMergeEngine(encryptRule.get(), queryResults, routeResult.getSqlStatementContext()).merge();
+            return new DALEncryptMergeEngine(encryptRule.get()).merge(queryResults, routeResult.getSqlStatementContext(), relationMetas);
         }
         MergedResult mergedResult;
         if (shardingRule.isPresent()) {
-            mergedResult = MergeEngineFactory.newInstance(databaseType, shardingRule.get(), routeResult, relationMetas, queryResults).merge();
+            mergedResult = MergeEngineFactory.newInstance(databaseType, shardingRule.get(), routeResult).merge(queryResults, routeResult.getSqlStatementContext(), relationMetas);
         } else {
             mergedResult = new IteratorStreamMergedResult(queryResults);
         }
-        return encryptRule.isPresent() ? new DQLEncryptMergeEngine(createEncryptorMetaData(encryptRule.get()), mergedResult, queryWithCipherColumn).merge() : mergedResult;
+        return encryptRule.isPresent()
+                ? new DQLEncryptMergeEngine(createEncryptorMetaData(encryptRule.get()), mergedResult, queryWithCipherColumn).merge(null, routeResult.getSqlStatementContext(), relationMetas)
+                : mergedResult;
     }
     
     private Optional<ShardingRule> findShardingRule() {
