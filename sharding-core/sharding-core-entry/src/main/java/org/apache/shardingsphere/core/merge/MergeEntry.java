@@ -74,10 +74,12 @@ public abstract class MergeEntry {
         if (encryptRule.isPresent() && routeResult.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
             return new DALEncryptMergeEngine(encryptRule.get(), queryResults, routeResult.getSqlStatementContext()).merge();
         }
-        if (encryptRule.isPresent() && !shardingRule.isPresent()) {
-            return new DQLEncryptMergeEngine(createEncryptorMetaData(encryptRule.get()), new IteratorStreamMergedResult(queryResults), queryWithCipherColumn).merge();
+        MergedResult mergedResult;
+        if (shardingRule.isPresent()) {
+            mergedResult = MergeEngineFactory.newInstance(databaseType, shardingRule.get(), routeResult, relationMetas, queryResults).merge();
+        } else {
+            mergedResult = new IteratorStreamMergedResult(queryResults);
         }
-        MergedResult mergedResult = MergeEngineFactory.newInstance(databaseType, shardingRule.get(), routeResult, relationMetas, queryResults).merge();
         return encryptRule.isPresent() ? new DQLEncryptMergeEngine(createEncryptorMetaData(encryptRule.get()), mergedResult, queryWithCipherColumn).merge() : mergedResult;
     }
     
