@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,8 +38,8 @@ import java.util.List;
  */
 public final class DescribeTableMergedResult extends MemoryMergedResult<EncryptRule> {
     
-    public DescribeTableMergedResult(final EncryptRule encryptRule, final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
-        super(encryptRule, null, sqlStatementContext, queryResults);
+    public DescribeTableMergedResult(final EncryptRule encryptRule, final QueryResult queryResult, final SQLStatementContext sqlStatementContext) throws SQLException {
+        super(encryptRule, null, sqlStatementContext, Collections.singletonList(queryResult));
     }
     
     @Override

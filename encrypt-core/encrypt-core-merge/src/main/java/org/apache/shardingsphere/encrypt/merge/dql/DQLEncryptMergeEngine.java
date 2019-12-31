@@ -21,11 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.engine.DecoratedMergeEngine;
+import org.apache.shardingsphere.underlying.merge.engine.DecoratorEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
-import org.apache.shardingsphere.underlying.merge.result.impl.stream.IteratorStreamMergedResult;
-
-import java.util.List;
+import org.apache.shardingsphere.underlying.merge.result.impl.transparent.TransparentMergedResult;
 
 /**
  * DQL result set merge engine for encrypt.
@@ -33,19 +31,19 @@ import java.util.List;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class DQLEncryptMergeEngine implements DecoratedMergeEngine {
+public final class DQLEncryptMergeEngine implements DecoratorEngine {
     
     private final EncryptorMetaData metaData;
     
     private final boolean queryWithCipherColumn;
     
     @Override
-    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
-        return new EncryptMergedResult(metaData, new IteratorStreamMergedResult(queryResults), queryWithCipherColumn);
+    public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
+        return new EncryptMergedResult(metaData, new TransparentMergedResult(queryResult), queryWithCipherColumn);
     }
     
     @Override
-    public MergedResult merge(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
+    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
         return new EncryptMergedResult(metaData, mergedResult, queryWithCipherColumn);
     }
 }

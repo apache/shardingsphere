@@ -25,12 +25,11 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.DescribeStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowColumnsStatement;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.engine.MergeEngine;
+import org.apache.shardingsphere.underlying.merge.engine.DecoratorEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.apache.shardingsphere.underlying.merge.result.impl.transparent.TransparentMergedResult;
 
 import java.sql.SQLException;
-import java.util.List;
 
 /**
  * DAL result set merge engine for encrypt.
@@ -38,16 +37,22 @@ import java.util.List;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class DALEncryptMergeEngine implements MergeEngine {
+public final class DALEncryptMergeEngine implements DecoratorEngine {
     
     private final EncryptRule encryptRule;
     
     @Override
-    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) throws SQLException {
+    public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) throws SQLException {
         SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
         if (dalStatement instanceof DescribeStatement || dalStatement instanceof ShowColumnsStatement) {
-            return new DescribeTableMergedResult(encryptRule, queryResults, sqlStatementContext);
+            return new DescribeTableMergedResult(encryptRule, queryResult, sqlStatementContext);
         }
-        return new TransparentMergedResult(queryResults.get(0));
+        return new TransparentMergedResult(queryResult);
+    }
+    
+    @Override
+    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
+        // TODO
+        return mergedResult;
     }
 }

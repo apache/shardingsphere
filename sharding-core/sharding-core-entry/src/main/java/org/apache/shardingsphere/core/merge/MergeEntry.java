@@ -72,7 +72,7 @@ public abstract class MergeEntry {
         Optional<EncryptRule> encryptRule = findEncryptRule();
         Preconditions.checkState(shardingRule.isPresent() || encryptRule.isPresent());
         if (encryptRule.isPresent() && routeResult.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
-            return new DALEncryptMergeEngine(encryptRule.get()).merge(queryResults, routeResult.getSqlStatementContext(), relationMetas);
+            return new DALEncryptMergeEngine(encryptRule.get()).decorate(queryResults.get(0), routeResult.getSqlStatementContext(), relationMetas);
         }
         MergedResult mergedResult;
         if (shardingRule.isPresent()) {
@@ -81,7 +81,8 @@ public abstract class MergeEntry {
             mergedResult = new IteratorStreamMergedResult(queryResults);
         }
         return encryptRule.isPresent()
-                ? new DQLEncryptMergeEngine(createEncryptorMetaData(encryptRule.get()), queryWithCipherColumn).merge(mergedResult, routeResult.getSqlStatementContext(), relationMetas) : mergedResult;
+                ? new DQLEncryptMergeEngine(createEncryptorMetaData(encryptRule.get()), queryWithCipherColumn).decorate(mergedResult, routeResult.getSqlStatementContext(), relationMetas)
+                : mergedResult;
     }
     
     private Optional<ShardingRule> findShardingRule() {

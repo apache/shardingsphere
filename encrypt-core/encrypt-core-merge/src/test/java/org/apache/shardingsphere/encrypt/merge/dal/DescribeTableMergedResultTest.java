@@ -38,16 +38,9 @@ import static org.mockito.Mockito.when;
 public final class DescribeTableMergedResultTest {
     
     @Test
-    public void assertNextForEmptyQueryResult() throws SQLException {
-        EncryptRule encryptRule = mock(EncryptRule.class);
-        DescribeTableMergedResult actual = new DescribeTableMergedResult(encryptRule, Collections.<QueryResult>emptyList(), createSQLStatementContext());
-        assertFalse(actual.next());
-    }
-    
-    @Test
     public void assertFieldWithEncryptRule() throws SQLException {
         EncryptRule encryptRule = createEncryptRule();
-        DescribeTableMergedResult actual = new DescribeTableMergedResult(encryptRule, Collections.singletonList(createQueryResult()), createSQLStatementContext());
+        DescribeTableMergedResult actual = new DescribeTableMergedResult(encryptRule, createQueryResult(), createSQLStatementContext());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, String.class).toString(), is("id"));
         assertTrue(actual.next());
@@ -60,7 +53,7 @@ public final class DescribeTableMergedResultTest {
     @Test
     public void assertAllWithEncryptRule() throws SQLException {
         EncryptRule encryptRule = createEncryptRule();
-        DescribeTableMergedResult actual = new DescribeTableMergedResult(encryptRule, Collections.singletonList(createQueryResult()), createSQLStatementContext());
+        DescribeTableMergedResult actual = new DescribeTableMergedResult(encryptRule, createQueryResult(), createSQLStatementContext());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, String.class).toString(), is("id"));
         assertThat(actual.getValue(2, String.class).toString(), is("int(11) unsigned"));

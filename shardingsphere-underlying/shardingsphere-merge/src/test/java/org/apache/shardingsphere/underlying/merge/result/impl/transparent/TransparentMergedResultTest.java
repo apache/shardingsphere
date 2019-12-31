@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.underlying.merge.result.impl.transparent;
 
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.result.impl.transparent.TransparentMergedResult;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;

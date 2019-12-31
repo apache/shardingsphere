@@ -46,9 +46,7 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -86,12 +84,12 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     }
     
     private MergedResult createMergedResult(final boolean queryWithCipherColumn, final ResultSet resultSet) throws SQLException {
-        List<QueryResult> queryResults = Collections.<QueryResult>singletonList(new StreamQueryResult(resultSet));
+        QueryResult queryResult = new StreamQueryResult(resultSet);
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
-            return new DALEncryptMergeEngine(encryptRule).merge(queryResults, sqlStatementContext, null);
+            return new DALEncryptMergeEngine(encryptRule).decorate(queryResult, sqlStatementContext, null);
         }
         ResultSetEncryptorMetaData metaData = new ResultSetEncryptorMetaData(encryptRule, originalResultSet.getMetaData(), sqlStatementContext);
-        return new DQLEncryptMergeEngine(metaData, queryWithCipherColumn).merge(queryResults, sqlStatementContext, null);
+        return new DQLEncryptMergeEngine(metaData, queryWithCipherColumn).decorate(queryResult, sqlStatementContext, null);
     }
     
     private Map<String, String> createLogicAndActualColumns(final boolean isQueryWithCipherColumn) {
