@@ -387,8 +387,11 @@ function resolve(dir) {
 
 const nodeModulesPath = resolve('node_modules')
 
-fs.exists(nodeModulesPath, (exists)=> {
-  if(exists) {
+fs.stat(nodeModulesPath, (err, stats)=> {
+  const stat = stats.isDirectory()
+  if(stat) {
+    const list = fs.readdirSync(nodeModulesPath)
+    if(!list.length) return
     rimraf(nodeModulesPath, () => {
       console.log('delete node_modules')
     })
