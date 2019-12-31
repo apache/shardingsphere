@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLSta
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.MergedResult;
 
@@ -45,6 +46,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -129,9 +131,10 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private MergedResult createMergedResult(final List<ResultSet> resultSets, final List<QueryResult> queryResults) throws SQLException {
+        Collection<BaseRule> rules = Arrays.asList(connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getRule().getEncryptRule());
         boolean queryWithCipherColumn = connection.getRuntimeContext().getProperties().getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
-        MergeEntry mergeEntry = new JDBCMergeEntry(connection.getRuntimeContext().getDatabaseType(), connection.getRuntimeContext().getMetaData().getRelationMetas(),
-                connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getRule().getEncryptRule(), routeResult, queryWithCipherColumn, resultSets.get(0).getMetaData());
+        MergeEntry mergeEntry = new JDBCMergeEntry(connection.getRuntimeContext().getDatabaseType(),
+                connection.getRuntimeContext().getMetaData().getRelationMetas(), rules, routeResult, queryWithCipherColumn, resultSets.get(0).getMetaData());
         return mergeEntry.getMergedResult(queryResults);
     }
     

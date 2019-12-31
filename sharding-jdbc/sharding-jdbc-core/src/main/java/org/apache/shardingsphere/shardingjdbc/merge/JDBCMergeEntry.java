@@ -19,13 +19,14 @@ package org.apache.shardingsphere.shardingjdbc.merge;
 
 import org.apache.shardingsphere.core.merge.MergeEntry;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.sql.ResultSetMetaData;
+import java.util.Collection;
 
 /**
  * JDBC merge entry.
@@ -36,14 +37,14 @@ public final class JDBCMergeEntry extends MergeEntry {
     
     private final ResultSetMetaData resultSetMetaData;
     
-    public JDBCMergeEntry(final DatabaseType databaseType, final RelationMetas relationMetas, final ShardingRule shardingRule, 
-                          final EncryptRule encryptRule, final SQLRouteResult routeResult, final boolean queryWithCipherColumn, final ResultSetMetaData resultSetMetaData) {
-        super(databaseType, relationMetas, shardingRule, encryptRule, routeResult, queryWithCipherColumn);
+    public JDBCMergeEntry(final DatabaseType databaseType, final RelationMetas relationMetas, 
+                          final Collection<BaseRule> rules, final SQLRouteResult routeResult, final boolean queryWithCipherColumn, final ResultSetMetaData resultSetMetaData) {
+        super(databaseType, relationMetas, rules, routeResult, queryWithCipherColumn);
         this.resultSetMetaData = resultSetMetaData;
     }
     
     @Override
-    protected EncryptorMetaData createEncryptorMetaData() {
-        return new ResultSetEncryptorMetaData(getEncryptRule(), resultSetMetaData, getRouteResult().getSqlStatementContext());
+    protected EncryptorMetaData createEncryptorMetaData(final EncryptRule encryptRule) {
+        return new ResultSetEncryptorMetaData(encryptRule, resultSetMetaData, getRouteResult().getSqlStatementContext());
     }
 }

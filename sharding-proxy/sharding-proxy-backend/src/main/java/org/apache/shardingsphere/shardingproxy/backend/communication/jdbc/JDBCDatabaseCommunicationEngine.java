@@ -45,11 +45,13 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.MergedResult;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -127,10 +129,10 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private MergedResult createMergedResult(final SQLRouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
-        EncryptRule encryptRule = getEncryptRule();
+        Collection<BaseRule> rules = Arrays.asList(logicSchema.getShardingRule(), getEncryptRule());
         boolean queryWithCipherColumn = ShardingProxyContext.getInstance().getProperties().getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         return new ProxyMergeEntry(LogicSchemas.getInstance().getDatabaseType(), logicSchema.getMetaData().getRelationMetas(), 
-                logicSchema.getShardingRule(), encryptRule, routeResult, queryWithCipherColumn, ((QueryResponse) response).getQueryHeaders()).getMergedResult(queryResults);
+                rules, routeResult, queryWithCipherColumn, ((QueryResponse) response).getQueryHeaders()).getMergedResult(queryResults);
     }
     
     private void handleColumnsForQueryHeader(final SQLRouteResult routeResult) {

@@ -19,13 +19,14 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.merge;
 
 import org.apache.shardingsphere.core.merge.MergeEntry;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -37,14 +38,14 @@ public final class ProxyMergeEntry extends MergeEntry {
     
     private final List<QueryHeader> queryHeaders;
     
-    public ProxyMergeEntry(final DatabaseType databaseType, final RelationMetas relationMetas, final ShardingRule shardingRule,
-                           final EncryptRule encryptRule, final SQLRouteResult routeResult, final boolean queryWithCipherColumn, final List<QueryHeader> queryHeaders) {
-        super(databaseType, relationMetas, shardingRule, encryptRule, routeResult, queryWithCipherColumn);
+    public ProxyMergeEntry(final DatabaseType databaseType, final RelationMetas relationMetas, 
+                           final Collection<BaseRule> rules, final SQLRouteResult routeResult, final boolean queryWithCipherColumn, final List<QueryHeader> queryHeaders) {
+        super(databaseType, relationMetas, rules, routeResult, queryWithCipherColumn);
         this.queryHeaders = queryHeaders;
     }
     
     @Override
-    protected EncryptorMetaData createEncryptorMetaData() {
-        return new QueryHeaderEncryptorMetaData(getEncryptRule(), queryHeaders);
+    protected EncryptorMetaData createEncryptorMetaData(final EncryptRule encryptRule) {
+        return new QueryHeaderEncryptorMetaData(encryptRule, queryHeaders);
     }
 }

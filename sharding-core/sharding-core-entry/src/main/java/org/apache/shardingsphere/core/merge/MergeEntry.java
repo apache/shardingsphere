@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.core.merge;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -26,13 +28,16 @@ import org.apache.shardingsphere.encrypt.merge.dql.DQLEncryptMergeEngine;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.merge.MergeEngineFactory;
+import org.apache.shardingsphere.sharding.merge.dql.iterator.IteratorStreamMergedResult;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.MergedResult;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -47,10 +52,7 @@ public abstract class MergeEntry {
     
     private final RelationMetas relationMetas;
     
-    private final ShardingRule shardingRule;
-    
-    @Getter
-    private final EncryptRule encryptRule;
+    private final Collection<BaseRule> rules;
     
     @Getter
     private final SQLRouteResult routeResult;
@@ -66,12 +68,36 @@ public abstract class MergeEntry {
      */
     public MergedResult getMergedResult(final List<QueryResult> queryResults) throws SQLException {
         // TODO process sharding + encrypt for desc table
-        if (!encryptRule.getEncryptTableNames().isEmpty() && routeResult.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
-            return new DALEncryptMergeEngine(encryptRule, queryResults, routeResult.getSqlStatementContext()).merge();
+        Optional<ShardingRule> shardingRule = findShardingRule();
+        Optional<EncryptRule> encryptRule = findEncryptRule();
+        Preconditions.checkState(shardingRule.isPresent() || encryptRule.isPresent());
+        if (encryptRule.isPresent() && routeResult.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
+            return new DALEncryptMergeEngine(encryptRule.get(), queryResults, routeResult.getSqlStatementContext()).merge();
         }
-        MergedResult mergedResult = MergeEngineFactory.newInstance(databaseType, shardingRule, routeResult, relationMetas, queryResults).merge();
-        return encryptRule.getEncryptTableNames().isEmpty() ? mergedResult : new DQLEncryptMergeEngine(createEncryptorMetaData(), mergedResult, queryWithCipherColumn).merge();
+        if (encryptRule.isPresent() && !shardingRule.isPresent()) {
+            return new DQLEncryptMergeEngine(createEncryptorMetaData(encryptRule.get()), new IteratorStreamMergedResult(queryResults), queryWithCipherColumn).merge();
+        }
+        MergedResult mergedResult = MergeEngineFactory.newInstance(databaseType, shardingRule.get(), routeResult, relationMetas, queryResults).merge();
+        return encryptRule.isPresent() ? new DQLEncryptMergeEngine(createEncryptorMetaData(encryptRule.get()), mergedResult, queryWithCipherColumn).merge() : mergedResult;
     }
     
-    protected abstract EncryptorMetaData createEncryptorMetaData();
+    private Optional<ShardingRule> findShardingRule() {
+        for (BaseRule each : rules) {
+            if (each instanceof ShardingRule) {
+                return Optional.of((ShardingRule) each);
+            }
+        }
+        return Optional.absent();
+    }
+    
+    private Optional<EncryptRule> findEncryptRule() {
+        for (BaseRule each : rules) {
+            if (each instanceof EncryptRule && !((EncryptRule) each).getEncryptTableNames().isEmpty()) {
+                return Optional.of((EncryptRule) each);
+            }
+        }
+        return Optional.absent();
+    }
+    
+    protected abstract EncryptorMetaData createEncryptorMetaData(EncryptRule encryptRule);
 }
