@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.merge.impl;
+package org.apache.shardingsphere.underlying.merge.result.impl.decorator;
 
-import org.apache.shardingsphere.underlying.merge.MergedResult;
-import org.apache.shardingsphere.underlying.merge.impl.fixture.TestDecoratorMergedResult;
+import org.apache.shardingsphere.underlying.merge.result.MergedResult;
+import org.apache.shardingsphere.underlying.merge.result.impl.decorator.fixture.TestDecoratorMergedResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -15,28 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.merge;
+package org.apache.shardingsphere.underlying.merge.result.impl.fixture;
 
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 /**
- * Decorated result set merge engine.
+ * Rule for test.
  *
  * @author zhangliang
  */
-public interface DecoratedMergeEngine extends MergeEngine {
+public final class TestRule implements BaseRule {
     
-    /**
-     * Merge query results.
-     * 
-     * @param mergedResult merged result
-     * @param sqlStatementContext SQL statement context
-     * @param relationMetas relation metas
-     * @return merged result set
-     * @throws SQLException SQL exception
-     */
-    MergedResult merge(MergedResult mergedResult, SQLStatementContext sqlStatementContext, RelationMetas relationMetas) throws SQLException;
+    @Override
+    public RuleConfiguration getRuleConfiguration() {
+        return null;
+    }
 }

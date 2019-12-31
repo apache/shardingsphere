@@ -15,51 +15,47 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.merge.impl;
+package org.apache.shardingsphere.underlying.merge.result.impl.stream;
 
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.hamcrest.CoreMatchers;
+import org.apache.shardingsphere.underlying.merge.result.impl.stream.fixture.TestStreamMergedResult;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.InputStream;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.Calendar;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class TransparentMergedResultTest {
+public final class StreamMergedResultTest {
     
-    @Test
-    public void assertNext() throws SQLException {
-        QueryResult queryResult = mock(QueryResult.class);
-        when(queryResult.next()).thenReturn(true, false);
-        TransparentMergedResult actual = new TransparentMergedResult(queryResult);
-        assertTrue(actual.next());
-        assertFalse(actual.next());
+    private final TestStreamMergedResult streamMergedResult = new TestStreamMergedResult();
+    
+    @Test(expected = SQLException.class)
+    public void assertGetCurrentQueryResultIfNull() throws SQLException {
+        streamMergedResult.getCurrentQueryResult();
     }
     
     @Test
     public void assertGetValue() throws SQLException {
         QueryResult queryResult = mock(QueryResult.class);
         when(queryResult.getValue(1, Object.class)).thenReturn("1");
-        TransparentMergedResult actual = new TransparentMergedResult(queryResult);
-        assertThat(actual.getValue(1, Object.class).toString(), is("1"));
+        streamMergedResult.setCurrentQueryResult(queryResult);
+        assertThat(streamMergedResult.getValue(1, Object.class).toString(), is("1"));
     }
     
     @Test
     public void assertGetCalendarValue() throws SQLException {
         QueryResult queryResult = mock(QueryResult.class);
-        when(queryResult.getCalendarValue(1, Date.class, null)).thenReturn(new Date(0L));
-        TransparentMergedResult actual = new TransparentMergedResult(queryResult);
-        assertThat(actual.getCalendarValue(1, Date.class, null), CoreMatchers.<Object>is(new Date(0L)));
+        Calendar calendar = Calendar.getInstance();
+        when(queryResult.getCalendarValue(1, Date.class, calendar)).thenReturn(new Date(0L));
+        streamMergedResult.setCurrentQueryResult(queryResult);
+        assertThat((Date) streamMergedResult.getCalendarValue(1, Date.class, calendar), is(new Date(0L)));
     }
     
     @Test
@@ -67,13 +63,14 @@ public final class TransparentMergedResultTest {
         QueryResult queryResult = mock(QueryResult.class);
         InputStream value = mock(InputStream.class);
         when(queryResult.getInputStream(1, "Ascii")).thenReturn(value);
-        TransparentMergedResult actual = new TransparentMergedResult(queryResult);
-        assertThat(actual.getInputStream(1, "Ascii"), is(value));
+        streamMergedResult.setCurrentQueryResult(queryResult);
+        assertThat(streamMergedResult.getInputStream(1, "Ascii"), is(value));
     }
     
     @Test
-    public void assertWasNull() throws SQLException {
-        TransparentMergedResult actual = new TransparentMergedResult(mock(QueryResult.class));
-        assertFalse(actual.wasNull());
+    public void assertWasNull() {
+        QueryResult queryResult = mock(QueryResult.class);
+        streamMergedResult.setCurrentQueryResult(queryResult);
+        assertFalse(streamMergedResult.wasNull());
     }
 }

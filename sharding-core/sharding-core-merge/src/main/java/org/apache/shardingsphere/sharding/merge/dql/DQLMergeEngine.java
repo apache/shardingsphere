@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.merge.dql;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByMemoryMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByStreamMergedResult;
-import org.apache.shardingsphere.underlying.merge.impl.IteratorStreamMergedResult;
+import org.apache.shardingsphere.underlying.merge.result.impl.stream.IteratorStreamMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.pagination.LimitDecoratorMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.pagination.RowNumberDecoratorMergedResult;
@@ -36,8 +36,8 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrde
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.MergeEngine;
-import org.apache.shardingsphere.underlying.merge.MergedResult;
+import org.apache.shardingsphere.underlying.merge.engine.MergeEngine;
+import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
 import java.sql.SQLException;
 import java.util.List;

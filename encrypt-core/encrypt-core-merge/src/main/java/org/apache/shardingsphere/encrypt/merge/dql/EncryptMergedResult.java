@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.merge.dql;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.merge.MergedResult;
+import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 
 import java.io.InputStream;

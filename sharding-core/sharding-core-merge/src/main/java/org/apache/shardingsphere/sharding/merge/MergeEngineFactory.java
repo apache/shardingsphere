@@ -26,7 +26,8 @@ import org.apache.shardingsphere.sharding.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.underlying.merge.MergeEngine;
+import org.apache.shardingsphere.underlying.merge.engine.MergeEngine;
+import org.apache.shardingsphere.underlying.merge.engine.impl.TransparentMergeEngine;
 
 /**
  * Result merge engine factory.

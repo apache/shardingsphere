@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.Num
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.MergedResult;
+import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.junit.Test;
 
 import java.sql.SQLException;

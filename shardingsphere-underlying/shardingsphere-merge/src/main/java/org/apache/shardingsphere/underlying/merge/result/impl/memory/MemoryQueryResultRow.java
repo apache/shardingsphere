@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.merge.impl;
+package org.apache.shardingsphere.underlying.merge.result.impl.memory;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.underlying.executor.QueryResult;

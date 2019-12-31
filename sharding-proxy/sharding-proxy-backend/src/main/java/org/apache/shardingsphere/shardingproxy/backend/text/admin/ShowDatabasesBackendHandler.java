@@ -27,7 +27,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryRespo
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
-import org.apache.shardingsphere.underlying.merge.MergedResult;
+import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
 import java.sql.SQLException;
 import java.sql.Types;

@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.merge;
+package org.apache.shardingsphere.underlying.merge.engine;
 
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
 import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Result set merge engine.
+ * Query results merge engine.
  *
  * @author zhangliang
  */
@@ -37,7 +38,7 @@ public interface MergeEngine {
      * @param queryResults query results
      * @param sqlStatementContext SQL statement context
      * @param relationMetas relation metas
-     * @return merged result set
+     * @return merged result
      * @throws SQLException SQL exception
      */
     MergedResult merge(List<QueryResult> queryResults, SQLStatementContext sqlStatementContext, RelationMetas relationMetas) throws SQLException;

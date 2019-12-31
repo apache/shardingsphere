@@ -30,8 +30,8 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.i
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.impl.MemoryMergedResult;
-import org.apache.shardingsphere.underlying.merge.impl.MemoryQueryResultRow;
+import org.apache.shardingsphere.underlying.merge.result.impl.memory.MemoryMergedResult;
+import org.apache.shardingsphere.underlying.merge.result.impl.memory.MemoryQueryResultRow;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

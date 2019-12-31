@@ -28,13 +28,13 @@ import org.apache.shardingsphere.encrypt.merge.dql.DQLEncryptMergeEngine;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.merge.MergeEngineFactory;
-import org.apache.shardingsphere.underlying.merge.impl.IteratorStreamMergedResult;
+import org.apache.shardingsphere.underlying.merge.result.impl.stream.IteratorStreamMergedResult;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.MergedResult;
+import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
 import java.sql.SQLException;
 import java.util.Collection;

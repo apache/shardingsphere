@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.merge.impl.fixture;
+package org.apache.shardingsphere.underlying.merge.result.impl.decorator.fixture;
 
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.merge.result.MergedResult;
+import org.apache.shardingsphere.underlying.merge.result.impl.decorator.DecoratorMergedResult;
 
-/**
- * Rule for test.
- *
- * @author zhangliang
- */
-public final class TestRule implements BaseRule {
+public final class TestDecoratorMergedResult extends DecoratorMergedResult {
+    
+    public TestDecoratorMergedResult(final MergedResult mergedResult) {
+        super(mergedResult);
+    }
     
     @Override
-    public RuleConfiguration getRuleConfiguration() {
-        return null;
+    public boolean next() {
+        return false;
     }
 }

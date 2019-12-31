@@ -15,37 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.merge.dql;
+package org.apache.shardingsphere.underlying.merge.engine.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.underlying.merge.engine.MergeEngine;
+import org.apache.shardingsphere.underlying.merge.result.impl.stream.IteratorStreamMergedResult;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.engine.DecoratedMergeEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
-import org.apache.shardingsphere.underlying.merge.result.impl.stream.IteratorStreamMergedResult;
 
 import java.util.List;
 
 /**
- * DQL result set merge engine for encrypt.
+ * Transparent result set merge engine.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class DQLEncryptMergeEngine implements DecoratedMergeEngine {
-    
-    private final EncryptorMetaData metaData;
-    
-    private final boolean queryWithCipherColumn;
+public final class TransparentMergeEngine implements MergeEngine {
     
     @Override
     public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
-        return new EncryptMergedResult(metaData, new IteratorStreamMergedResult(queryResults), queryWithCipherColumn);
-    }
-    
-    @Override
-    public MergedResult merge(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
-        return new EncryptMergedResult(metaData, mergedResult, queryWithCipherColumn);
+        return new IteratorStreamMergedResult(queryResults);
     }
 }

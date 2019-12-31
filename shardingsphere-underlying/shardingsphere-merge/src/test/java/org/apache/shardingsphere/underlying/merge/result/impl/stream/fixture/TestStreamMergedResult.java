@@ -15,16 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.merge.impl.fixture;
+package org.apache.shardingsphere.underlying.merge.result.impl.stream.fixture;
 
-import org.apache.shardingsphere.underlying.merge.MergedResult;
-import org.apache.shardingsphere.underlying.merge.impl.DecoratorMergedResult;
+import org.apache.shardingsphere.underlying.merge.result.impl.stream.StreamMergedResult;
 
-public final class TestDecoratorMergedResult extends DecoratorMergedResult {
-    
-    public TestDecoratorMergedResult(final MergedResult mergedResult) {
-        super(mergedResult);
-    }
+public final class TestStreamMergedResult extends StreamMergedResult {
     
     @Override
     public boolean next() {

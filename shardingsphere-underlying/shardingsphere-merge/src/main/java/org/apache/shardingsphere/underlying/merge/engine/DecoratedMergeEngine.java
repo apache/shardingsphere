@@ -15,28 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.merge;
+package org.apache.shardingsphere.underlying.merge.engine;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.merge.impl.IteratorStreamMergedResult;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.MergeEngine;
-import org.apache.shardingsphere.underlying.merge.MergedResult;
+import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
-import java.util.List;
+import java.sql.SQLException;
 
 /**
- * Transparent result set merge engine.
+ * Decorated query results merge engine.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-public final class TransparentMergeEngine implements MergeEngine {
+public interface DecoratedMergeEngine extends MergeEngine {
     
-    @Override
-    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
-        return new IteratorStreamMergedResult(queryResults);
-    }
+    /**
+     * Merge query results.
+     * 
+     * @param mergedResult merged result
+     * @param sqlStatementContext SQL statement context
+     * @param relationMetas relation metas
+     * @return merged result
+     * @throws SQLException SQL exception
+     */
+    MergedResult merge(MergedResult mergedResult, SQLStatementContext sqlStatementContext, RelationMetas relationMetas) throws SQLException;
 }

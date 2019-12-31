@@ -15,59 +15,48 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.merge.impl;
+package org.apache.shardingsphere.underlying.merge.result.impl.transparent;
 
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.MergedResult;
+import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Calendar;
 
 /**
- * Stream merged result.
+ * Transparent merged result.
  *
  * @author zhangliang
  */
-@Setter
-public abstract class StreamMergedResult implements MergedResult {
+@RequiredArgsConstructor
+public final class TransparentMergedResult implements MergedResult {
     
-    private QueryResult currentQueryResult;
+    private final QueryResult queryResult;
     
-    private boolean wasNull;
-    
-    protected final QueryResult getCurrentQueryResult() throws SQLException {
-        if (null == currentQueryResult) {
-            throw new SQLException("Current ResultSet is null, ResultSet perhaps end of next.");
-        }
-        return currentQueryResult;
+    @Override
+    public boolean next() throws SQLException {
+        return queryResult.next();
     }
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        Object result = getCurrentQueryResult().getValue(columnIndex, type);
-        wasNull = getCurrentQueryResult().wasNull();
-        return result;
+        return queryResult.getValue(columnIndex, type);
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
-        Object result = getCurrentQueryResult().getCalendarValue(columnIndex, type, calendar);
-        wasNull = getCurrentQueryResult().wasNull();
-        return result;
-    }
-    
-    @SuppressWarnings("deprecation")
-    @Override
-    public final InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        InputStream result = getCurrentQueryResult().getInputStream(columnIndex, type);
-        wasNull = getCurrentQueryResult().wasNull();
-        return result;
+        return queryResult.getCalendarValue(columnIndex, type, calendar);
     }
     
     @Override
-    public final boolean wasNull() {
-        return wasNull;
+    public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
+        return queryResult.getInputStream(columnIndex, type);
+    }
+    
+    @Override
+    public boolean wasNull() throws SQLException {
+        return queryResult.wasNull();
     }
 }

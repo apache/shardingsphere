@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.merge;
+package org.apache.shardingsphere.underlying.merge.result;
 
 import java.io.InputStream;
 import java.sql.SQLException;

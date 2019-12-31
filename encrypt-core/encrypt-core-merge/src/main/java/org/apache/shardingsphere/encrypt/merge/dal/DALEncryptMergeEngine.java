@@ -25,9 +25,9 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.DescribeStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowColumnsStatement;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.MergeEngine;
-import org.apache.shardingsphere.underlying.merge.MergedResult;
-import org.apache.shardingsphere.underlying.merge.impl.TransparentMergedResult;
+import org.apache.shardingsphere.underlying.merge.engine.MergeEngine;
+import org.apache.shardingsphere.underlying.merge.result.MergedResult;
+import org.apache.shardingsphere.underlying.merge.result.impl.transparent.TransparentMergedResult;
 
 import java.sql.SQLException;
 import java.util.List;

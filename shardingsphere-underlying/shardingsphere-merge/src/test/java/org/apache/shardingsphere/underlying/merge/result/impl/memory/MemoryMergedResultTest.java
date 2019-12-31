@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.merge.impl;
+package org.apache.shardingsphere.underlying.merge.result.impl.memory;
 
-import org.apache.shardingsphere.underlying.merge.impl.fixture.TestMemoryMergedResult;
+import org.apache.shardingsphere.underlying.merge.result.impl.memory.fixture.TestMemoryMergedResult;
 import org.junit.Before;
 import org.junit.Test;
 
