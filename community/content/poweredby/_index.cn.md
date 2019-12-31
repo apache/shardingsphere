@@ -31,6 +31,7 @@ chapter = true
 1. 百果园 http://www.pagoda.com.cn/ 
 1. 百姓网 https://www.baixing.com/ 
 1. 百畅科技 http://www.sdbaichang.com/ 
+1. 佰裕行科技（深圳）有限公司 https://innoways.com/
 1. 北京环球网校 http://www.hqwx.com/ 
 1. 北京千丁互联科技有限公司 http://caas.com.cn/
 1. 哔哩哔哩弹幕网 https://www.bilibili.com/ 
@@ -46,6 +47,7 @@ chapter = true
 1. 东奥教育集团 http://edu.dongao.com/ 
 1. 东方车联 http://www.dongfang789.com/ 
 1. 斗鱼TV https://www.douyu.com/ 
+1. 对啊网 https://www.duia.com/
 1. 非凡之星 http://www.ffzxnet.com/ 
 1. 蜂网 https://www.newbeescm.com/ 
 1. 凤凰汽车 https://auto.ifeng.com/ 
@@ -85,12 +87,14 @@ chapter = true
 1. 快捷通支付服务有限公司 https://www.kjtpay.com/
 1. 丽人丽妆 https://www.lrlz.com/ 
 1. 马蜂窝 https://www.mafengwo.cn/ 
+1. 马上金融 https://www.msxf.com/
 1. 每日优鲜便利购 https://www.missfresh.cn/ 
 1. 美利车金融 https://www.mljr.com/ 
 1. 秒卖房 https://www.miaomaifang.com/ 
 1. 魔力耳朵 https://magicears.com.cn/ 
 1. 男衣库 https://www.nanyiku.com/
 1. 南潮信息科技 https://ruff.io/ 
+1. 南京爱福路汽车科技 http://www.f6car.com/
 1. 你我金融 https://www.niiwoo.com/ 
 1. 拍拍贷 https://www.ppdai.com/ 
 1. 汽车之家  https://www.autohome.com.cn/ 
@@ -98,6 +102,7 @@ chapter = true
 1. 赛特斯CertusNet http://www.certusnet.com.cn/ 
 1. 三只松鼠 http://www.3songshu.com/
 1. 上海社宝信息科技有限公司 https://www.shebaotong.com/
+1. 上海 soul app https://www.soulapp.cn/
 1. 视觉中国 https://500px.me/ 
 1. 首汽约车 https://www.01zhuanche.com/
 1. 搜好货 https://www.912688.com/
