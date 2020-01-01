@@ -180,7 +180,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         List<RouteValue> result = new ArrayList<>(shardingColumns.size());
         for (RouteValue each : shardingCondition.getRouteValues()) {
             Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(logicTableName);
-            if ((logicTableName.equals(each.getTableName()) || bindingTableRule.isPresent() && bindingTableRule.get().hasLogicTable(logicTableName)) 
+            if ((logicTableName.equalsIgnoreCase(each.getTableName()) || bindingTableRule.isPresent() && bindingTableRule.get().hasLogicTable(logicTableName))
                     && shardingColumns.contains(each.getColumnName())) {
                 result.add(each);
             }
