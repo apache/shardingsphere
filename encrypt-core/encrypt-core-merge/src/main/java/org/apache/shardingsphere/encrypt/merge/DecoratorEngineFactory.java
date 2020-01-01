@@ -52,7 +52,7 @@ public final class DecoratorEngineFactory {
         if (sqlStatementContext instanceof SelectSQLStatementContext) {
             return new DQLDecoratorEngine(encryptorMetaData, queryWithCipherColumn);
         } 
-        if (sqlStatementContext instanceof DALStatement) {
+        if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
             return new DALDecoratorEngine(encryptRule);
         }
         return new TransparentDecoratorEngine();
