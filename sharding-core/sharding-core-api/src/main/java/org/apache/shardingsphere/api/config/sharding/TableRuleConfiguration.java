@@ -49,7 +49,7 @@ public final class TableRuleConfiguration {
     
     public TableRuleConfiguration(final String logicTable, final String actualDataNodes) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(logicTable), "LogicTable is required.");
-        this.logicTable = logicTable;
+        this.logicTable = logicTable.toLowerCase();
         this.actualDataNodes = actualDataNodes;
     }
 }
