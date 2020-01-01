@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import org.apache.shardingsphere.encrypt.merge.dal.DALDecoratorEngine;
-import org.apache.shardingsphere.encrypt.merge.dql.DQLDecoratorEngine;
+import org.apache.shardingsphere.encrypt.merge.DecoratorEngineFactory;
+import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 import org.apache.shardingsphere.shardingjdbc.merge.ResultSetEncryptorMetaData;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.merge.engine.DecoratorEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
 import java.io.InputStream;
@@ -84,12 +83,9 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     }
     
     private MergedResult createMergedResult(final boolean queryWithCipherColumn, final ResultSet resultSet) throws SQLException {
-        QueryResult queryResult = new StreamQueryResult(resultSet);
-        if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
-            return new DALDecoratorEngine(encryptRule).decorate(queryResult, sqlStatementContext, null);
-        }
-        ResultSetEncryptorMetaData metaData = new ResultSetEncryptorMetaData(encryptRule, originalResultSet.getMetaData(), sqlStatementContext);
-        return new DQLDecoratorEngine(metaData, queryWithCipherColumn).decorate(queryResult, sqlStatementContext, null);
+        EncryptorMetaData encryptorMetaData = new ResultSetEncryptorMetaData(encryptRule, originalResultSet.getMetaData(), sqlStatementContext);
+        DecoratorEngine decoratorEngine = DecoratorEngineFactory.newInstance(encryptRule, sqlStatementContext, encryptorMetaData, queryWithCipherColumn);
+        return decoratorEngine.decorate(new StreamQueryResult(resultSet), sqlStatementContext, null);
     }
     
     private Map<String, String> createLogicAndActualColumns(final boolean isQueryWithCipherColumn) {
