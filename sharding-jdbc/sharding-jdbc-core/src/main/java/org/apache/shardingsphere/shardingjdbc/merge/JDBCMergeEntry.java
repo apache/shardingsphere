@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingjdbc.merge;
 
 import org.apache.shardingsphere.core.merge.MergeEntry;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
@@ -39,8 +38,8 @@ public final class JDBCMergeEntry extends MergeEntry {
     private final ResultSetMetaData resultSetMetaData;
     
     public JDBCMergeEntry(final DatabaseType databaseType, final RelationMetas relationMetas, 
-                          final Collection<BaseRule> rules, final SQLRouteResult routeResult, final boolean queryWithCipherColumn, final ResultSetMetaData resultSetMetaData) {
-        super(databaseType, relationMetas, rules, routeResult, queryWithCipherColumn);
+                          final Collection<BaseRule> rules, final boolean queryWithCipherColumn, final ResultSetMetaData resultSetMetaData) {
+        super(databaseType, relationMetas, rules, queryWithCipherColumn);
         this.resultSetMetaData = resultSetMetaData;
     }
     

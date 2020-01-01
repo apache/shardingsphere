@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.merge;
 
 import org.apache.shardingsphere.core.merge.MergeEntry;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
@@ -40,8 +39,8 @@ public final class ProxyMergeEntry extends MergeEntry {
     private final List<QueryHeader> queryHeaders;
     
     public ProxyMergeEntry(final DatabaseType databaseType, final RelationMetas relationMetas, 
-                           final Collection<BaseRule> rules, final SQLRouteResult routeResult, final boolean queryWithCipherColumn, final List<QueryHeader> queryHeaders) {
-        super(databaseType, relationMetas, rules, routeResult, queryWithCipherColumn);
+                           final Collection<BaseRule> rules, final boolean queryWithCipherColumn, final List<QueryHeader> queryHeaders) {
+        super(databaseType, relationMetas, rules, queryWithCipherColumn);
         this.queryHeaders = queryHeaders;
     }
     

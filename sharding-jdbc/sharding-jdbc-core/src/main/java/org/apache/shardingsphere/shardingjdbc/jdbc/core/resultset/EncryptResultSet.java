@@ -86,7 +86,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     private MergedResult createMergedResult(final EncryptRuntimeContext encryptRuntimeContext, final ResultSet resultSet) throws SQLException {
         boolean queryWithCipherColumn = encryptRuntimeContext.getProperties().<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         MergeEntry mergeEntry = new JDBCMergeEntry(
-                encryptRuntimeContext.getDatabaseType(), null, Collections.<BaseRule>singletonList(encryptRuntimeContext.getRule()), null, queryWithCipherColumn, resultSet.getMetaData());
+                encryptRuntimeContext.getDatabaseType(), null, Collections.<BaseRule>singletonList(encryptRuntimeContext.getRule()), queryWithCipherColumn, resultSet.getMetaData());
         return mergeEntry.getMergedResult(Collections.<QueryResult>singletonList(new StreamQueryResult(resultSet)), sqlStatementContext);
     }
     

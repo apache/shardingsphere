@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.sharding.merge;
 
-import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.merge.dal.DALMergeEngine;
 import org.apache.shardingsphere.sharding.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
@@ -28,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.Orde
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
@@ -49,18 +47,16 @@ public final class MergeEngineFactoryTest {
     
     @Test
     public void assertNewInstanceWithSelectStatement() {
-        SQLRouteResult routeResult = new SQLRouteResult(
-                new SelectSQLStatementContext(new SelectStatement(), 
-                        new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
-                        new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList())), 
-                new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult), instanceOf(DQLMergeEngine.class));
+        SQLStatementContext sqlStatementContext = new SelectSQLStatementContext(new SelectStatement(),
+                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
+                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
+        assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, sqlStatementContext), instanceOf(DQLMergeEngine.class));
     }
     
     @Test
     public void assertNewInstanceWithDALStatement() {
-        SQLRouteResult routeResult = new SQLRouteResult(new CommonSQLStatementContext(new DALStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult), instanceOf(DALMergeEngine.class));
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new DALStatement());
+        assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, sqlStatementContext), instanceOf(DALMergeEngine.class));
     }
     
     @Test
@@ -68,8 +64,7 @@ public final class MergeEngineFactoryTest {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "col"));
-        SQLRouteResult routeResult = new SQLRouteResult(
-                new InsertSQLStatementContext(null, Collections.emptyList(), insertStatement), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, routeResult), instanceOf(TransparentMergeEngine.class));
+        SQLStatementContext sqlStatementContext = new InsertSQLStatementContext(null, Collections.emptyList(), insertStatement);
+        assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, sqlStatementContext), instanceOf(TransparentMergeEngine.class));
     }
 }

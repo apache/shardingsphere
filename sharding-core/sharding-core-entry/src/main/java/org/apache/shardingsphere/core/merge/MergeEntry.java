@@ -19,9 +19,7 @@ package org.apache.shardingsphere.core.merge;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.merge.DecoratorEngineFactory;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
@@ -54,9 +52,6 @@ public abstract class MergeEntry {
     
     private final Collection<BaseRule> rules;
     
-    @Getter
-    private final SQLRouteResult routeResult;
-    
     private final boolean queryWithCipherColumn;
     
     /**
@@ -71,7 +66,7 @@ public abstract class MergeEntry {
         Optional<ShardingRule> shardingRule = findShardingRule();
         MergedResult result = null;
         if (shardingRule.isPresent()) {
-            result = MergeEngineFactory.newInstance(databaseType, shardingRule.get(), routeResult).merge(queryResults, sqlStatementContext, relationMetas);
+            result = MergeEngineFactory.newInstance(databaseType, shardingRule.get(), sqlStatementContext).merge(queryResults, sqlStatementContext, relationMetas);
         }
         Optional<EncryptRule> encryptRule = findEncryptRule();
         if (encryptRule.isPresent()) {

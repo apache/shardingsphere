@@ -134,7 +134,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         Collection<BaseRule> rules = Arrays.asList(connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getRule().getEncryptRule());
         boolean queryWithCipherColumn = connection.getRuntimeContext().getProperties().getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         MergeEntry mergeEntry = new JDBCMergeEntry(connection.getRuntimeContext().getDatabaseType(),
-                connection.getRuntimeContext().getMetaData().getRelationMetas(), rules, routeResult, queryWithCipherColumn, resultSets.get(0).getMetaData());
+                connection.getRuntimeContext().getMetaData().getRelationMetas(), rules, queryWithCipherColumn, resultSets.get(0).getMetaData());
         return mergeEntry.getMergedResult(queryResults, routeResult.getSqlStatementContext());
     }
     

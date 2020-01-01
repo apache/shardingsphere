@@ -19,11 +19,11 @@ package org.apache.shardingsphere.sharding.merge;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.merge.dal.DALMergeEngine;
 import org.apache.shardingsphere.sharding.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.merge.engine.MergeEngine;
@@ -43,14 +43,14 @@ public final class MergeEngineFactory {
      *
      * @param databaseType database type
      * @param shardingRule sharding rule
-     * @param routeResult SQL route result
+     * @param sqlStatementContext SQL statement context
      * @return merge engine instance
      */
-    public static MergeEngine newInstance(final DatabaseType databaseType, final ShardingRule shardingRule, final SQLRouteResult routeResult) {
-        if (routeResult.getSqlStatementContext() instanceof SelectSQLStatementContext) {
+    public static MergeEngine newInstance(final DatabaseType databaseType, final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext) {
+        if (sqlStatementContext instanceof SelectSQLStatementContext) {
             return new DQLMergeEngine(databaseType);
         } 
-        if (routeResult.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
+        if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
             return new DALMergeEngine(shardingRule);
         }
         return new TransparentMergeEngine();

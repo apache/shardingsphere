@@ -132,7 +132,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         Collection<BaseRule> rules = Arrays.asList(logicSchema.getShardingRule(), getEncryptRule());
         boolean queryWithCipherColumn = ShardingProxyContext.getInstance().getProperties().getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         return new ProxyMergeEntry(LogicSchemas.getInstance().getDatabaseType(), logicSchema.getMetaData().getRelationMetas(), 
-                rules, routeResult, queryWithCipherColumn, ((QueryResponse) response).getQueryHeaders()).getMergedResult(queryResults, routeResult.getSqlStatementContext());
+                rules, queryWithCipherColumn, ((QueryResponse) response).getQueryHeaders()).getMergedResult(queryResults, routeResult.getSqlStatementContext());
     }
     
     private void handleColumnsForQueryHeader(final SQLRouteResult routeResult) {
