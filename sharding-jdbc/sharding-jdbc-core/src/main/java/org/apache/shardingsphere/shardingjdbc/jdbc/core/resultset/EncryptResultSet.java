@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import org.apache.shardingsphere.encrypt.merge.DecoratorEngineFactory;
-import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
+import org.apache.shardingsphere.core.merge.MergeEntry;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
-import org.apache.shardingsphere.shardingjdbc.merge.ResultSetEncryptorMetaData;
+import org.apache.shardingsphere.shardingjdbc.merge.JDBCMergeEntry;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.merge.engine.DecoratorEngine;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
 import java.io.InputStream;
@@ -45,6 +45,7 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -76,16 +77,17 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
         this.sqlStatementContext = sqlStatementContext;
         this.encryptStatement = encryptStatement;
         originalResultSet = resultSet;
+        mergedResult = createMergedResult(encryptRuntimeContext, resultSet);
         boolean queryWithCipherColumn = encryptRuntimeContext.getProperties().<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
-        mergedResult = createMergedResult(queryWithCipherColumn, resultSet);
         logicAndActualColumns = createLogicAndActualColumns(queryWithCipherColumn);
         columnLabelAndIndexMap = createColumnLabelAndIndexMap(originalResultSet.getMetaData());
     }
     
-    private MergedResult createMergedResult(final boolean queryWithCipherColumn, final ResultSet resultSet) throws SQLException {
-        EncryptorMetaData encryptorMetaData = new ResultSetEncryptorMetaData(encryptRule, originalResultSet.getMetaData(), sqlStatementContext);
-        DecoratorEngine decoratorEngine = DecoratorEngineFactory.newInstance(encryptRule, sqlStatementContext, encryptorMetaData, queryWithCipherColumn);
-        return decoratorEngine.decorate(new StreamQueryResult(resultSet), sqlStatementContext, null);
+    private MergedResult createMergedResult(final EncryptRuntimeContext encryptRuntimeContext, final ResultSet resultSet) throws SQLException {
+        boolean queryWithCipherColumn = encryptRuntimeContext.getProperties().<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
+        MergeEntry mergeEntry = new JDBCMergeEntry(
+                encryptRuntimeContext.getDatabaseType(), null, Collections.<BaseRule>singletonList(encryptRuntimeContext.getRule()), null, queryWithCipherColumn, resultSet.getMetaData());
+        return mergeEntry.getMergedResult(Collections.<QueryResult>singletonList(new StreamQueryResult(resultSet)), sqlStatementContext);
     }
     
     private Map<String, String> createLogicAndActualColumns(final boolean isQueryWithCipherColumn) {

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.sql.ResultSetMetaData;
@@ -44,7 +45,7 @@ public final class JDBCMergeEntry extends MergeEntry {
     }
     
     @Override
-    protected EncryptorMetaData createEncryptorMetaData(final EncryptRule encryptRule) {
-        return new ResultSetEncryptorMetaData(encryptRule, resultSetMetaData, getRouteResult().getSqlStatementContext());
+    protected EncryptorMetaData createEncryptorMetaData(final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext) {
+        return new ResultSetEncryptorMetaData(encryptRule, resultSetMetaData, sqlStatementContext);
     }
 }

@@ -156,7 +156,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         boolean queryWithCipherColumn = connection.getRuntimeContext().getProperties().getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         MergeEntry mergeEntry = new JDBCMergeEntry(connection.getRuntimeContext().getDatabaseType(), 
                 connection.getRuntimeContext().getMetaData().getRelationMetas(), rules, routeResult, queryWithCipherColumn, resultSets.get(0).getMetaData());
-        return mergeEntry.getMergedResult(queryResults);
+        return mergeEntry.getMergedResult(queryResults, routeResult.getSqlStatementContext());
     }
     
     @Override

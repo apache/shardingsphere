@@ -24,6 +24,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.util.Collection;
@@ -45,7 +46,7 @@ public final class ProxyMergeEntry extends MergeEntry {
     }
     
     @Override
-    protected EncryptorMetaData createEncryptorMetaData(final EncryptRule encryptRule) {
+    protected EncryptorMetaData createEncryptorMetaData(final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext) {
         return new QueryHeaderEncryptorMetaData(encryptRule, queryHeaders);
     }
 }
