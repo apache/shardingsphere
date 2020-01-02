@@ -23,12 +23,12 @@ import org.apache.shardingsphere.core.merge.MergeEntry;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
-import org.apache.shardingsphere.sharding.merge.ShardingMergerEntry;
+import org.apache.shardingsphere.sharding.merge.ShardingResultMergeEntry;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.ConnectionStatus;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.JDBCExecuteEngine;
-import org.apache.shardingsphere.shardingproxy.backend.communication.merge.ProxyEncryptDecoratorEntry;
+import org.apache.shardingsphere.shardingproxy.backend.communication.merge.ProxyResultDecorateEntry;
 import org.apache.shardingsphere.shardingproxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
@@ -134,10 +134,10 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private MergedResult createMergedResult(final SQLRouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
         Map<BaseRule, ResultProcessEntry> entries = new HashMap<>(2, 1);
-        entries.put(logicSchema.getShardingRule(), new ShardingMergerEntry());
+        entries.put(logicSchema.getShardingRule(), new ShardingResultMergeEntry());
         EncryptRule encryptRule = getEncryptRule();
         if (!encryptRule.getEncryptTableNames().isEmpty()) {
-            entries.put(encryptRule, new ProxyEncryptDecoratorEntry(((QueryResponse) response).getQueryHeaders()));
+            entries.put(encryptRule, new ProxyResultDecorateEntry(((QueryResponse) response).getQueryHeaders()));
         }
         MergeEntry mergeEntry = new MergeEntry(
                 LogicSchemas.getInstance().getDatabaseType(), logicSchema.getMetaData().getRelationMetas(), ShardingProxyContext.getInstance().getProperties(), entries);

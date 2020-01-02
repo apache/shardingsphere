@@ -15,40 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.merge;
+package org.apache.shardingsphere.sharding.merge;
 
-import org.apache.shardingsphere.encrypt.merge.dal.DALDecorateEngine;
-import org.apache.shardingsphere.encrypt.merge.dql.DQLDecorateEngine;
-import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.merge.dal.DALMergeEngine;
+import org.apache.shardingsphere.sharding.merge.dql.DQLMergeEngine;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.merge.engine.DecorateEngine;
-import org.apache.shardingsphere.underlying.merge.engine.impl.TransparentDecorateEngine;
-import org.apache.shardingsphere.underlying.merge.entry.DecoratorEntry;
+import org.apache.shardingsphere.underlying.merge.engine.MergeEngine;
+import org.apache.shardingsphere.underlying.merge.engine.impl.TransparentMergeEngine;
+import org.apache.shardingsphere.underlying.merge.entry.ResultMergeEntry;
 
 /**
- * Decorator entry of encrypt.
+ * Result merge entry for sharding.
  *
  * @author zhangliang
  * @author panjuan
  */
-public abstract class EncryptDecoratorEntry implements DecoratorEntry<EncryptRule> {
+public final class ShardingResultMergeEntry implements ResultMergeEntry<ShardingRule> {
     
     @Override
-    public final DecorateEngine newInstance(final DatabaseType databaseType, final EncryptRule encryptRule, final ShardingSphereProperties properties, final SQLStatementContext sqlStatementContext) {
+    public MergeEngine newInstance(final DatabaseType databaseType, final ShardingRule shardingRule, final ShardingSphereProperties properties, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectSQLStatementContext) {
-            return new DQLDecorateEngine(createEncryptorMetaData(encryptRule, sqlStatementContext), properties.<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
+            return new DQLMergeEngine(databaseType);
         } 
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
-            return new DALDecorateEngine(encryptRule);
+            return new DALMergeEngine(shardingRule);
         }
-        return new TransparentDecorateEngine();
+        return new TransparentMergeEngine();
     }
-    
-    protected abstract EncryptorMetaData createEncryptorMetaData(EncryptRule encryptRule, SQLStatementContext sqlStatementContext);
 }

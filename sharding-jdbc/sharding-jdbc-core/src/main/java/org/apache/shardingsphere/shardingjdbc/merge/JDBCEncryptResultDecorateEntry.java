@@ -15,31 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.merge.entry;
+package org.apache.shardingsphere.shardingjdbc.merge;
 
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.merge.EncryptResultDecorateEntry;
+import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
-import org.apache.shardingsphere.underlying.merge.engine.MergeEngine;
+
+import java.sql.ResultSetMetaData;
 
 /**
- * Merger entry.
+ * JDBC result decorate entry of encrypt.
  *
  * @author zhangliang
- * 
- * @param <T> type of base rule
  */
-public interface MergerEntry<T extends BaseRule> extends ResultProcessEntry {
+@RequiredArgsConstructor
+public final class JDBCEncryptResultDecorateEntry extends EncryptResultDecorateEntry {
     
-    /**
-     * Create new instance of merge engine.
-     * 
-     * @param databaseType database type
-     * @param rule rule
-     * @param properties ShardingSphere properties
-     * @param sqlStatementContext SQL statement context
-     * @return new instance of merge engine
-     */
-    MergeEngine newInstance(DatabaseType databaseType, T rule, ShardingSphereProperties properties, SQLStatementContext sqlStatementContext);
+    private final ResultSetMetaData resultSetMetaData;
+    
+    @Override
+    protected EncryptorMetaData createEncryptorMetaData(final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext) {
+        return new ResultSetEncryptorMetaData(encryptRule, resultSetMetaData, sqlStatementContext);
+    }
 }

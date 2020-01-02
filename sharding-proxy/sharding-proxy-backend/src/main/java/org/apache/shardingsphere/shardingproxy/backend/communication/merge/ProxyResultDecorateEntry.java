@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.merge;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.merge.EncryptDecoratorEntry;
+import org.apache.shardingsphere.encrypt.merge.EncryptResultDecorateEntry;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
@@ -27,12 +27,12 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
 import java.util.List;
 
 /**
- * Proxy decorator entry of encrypt.
+ * Proxy result decorate entry of encrypt.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ProxyEncryptDecoratorEntry extends EncryptDecoratorEntry {
+public final class ProxyResultDecorateEntry extends EncryptResultDecorateEntry {
     
     private final List<QueryHeader> queryHeaders;
     
