@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.merge;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.merge.dal.DALDecorateEngine;
 import org.apache.shardingsphere.encrypt.merge.dql.DQLDecorateEngine;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
@@ -38,19 +37,18 @@ import org.apache.shardingsphere.underlying.merge.entry.DecoratorEntry;
  * @author zhangliang
  * @author panjuan
  */
-@RequiredArgsConstructor
-public final class EncryptDecoratorEntry implements DecoratorEntry<EncryptRule> {
-    
-    private final EncryptorMetaData encryptorMetaData;
+public abstract class EncryptDecoratorEntry implements DecoratorEntry<EncryptRule> {
     
     @Override
-    public DecorateEngine newInstance(final DatabaseType databaseType, final EncryptRule encryptRule, final ShardingSphereProperties properties, final SQLStatementContext sqlStatementContext) {
+    public final DecorateEngine newInstance(final DatabaseType databaseType, final EncryptRule encryptRule, final ShardingSphereProperties properties, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectSQLStatementContext) {
-            return new DQLDecorateEngine(encryptorMetaData, properties.<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
+            return new DQLDecorateEngine(createEncryptorMetaData(encryptRule, sqlStatementContext), properties.<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         } 
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
             return new DALDecorateEngine(encryptRule);
         }
         return new TransparentDecorateEngine();
     }
+    
+    protected abstract EncryptorMetaData createEncryptorMetaData(EncryptRule encryptRule, SQLStatementContext sqlStatementContext);
 }

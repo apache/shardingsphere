@@ -17,32 +17,23 @@
 
 package org.apache.shardingsphere.shardingjdbc.merge;
 
-import org.apache.shardingsphere.core.merge.MergeEntry;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.merge.EncryptDecoratorEntry;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.sql.ResultSetMetaData;
-import java.util.Collection;
 
 /**
- * JDBC merge entry.
+ * JDBC decorator entry of encrypt.
  *
  * @author zhangliang
  */
-public final class JDBCMergeEntry extends MergeEntry {
+@RequiredArgsConstructor
+public final class JDBCEncryptDecoratorEntry extends EncryptDecoratorEntry {
     
     private final ResultSetMetaData resultSetMetaData;
-    
-    public JDBCMergeEntry(final DatabaseType databaseType, final RelationMetas relationMetas,
-                          final Collection<BaseRule> rules, final ShardingSphereProperties properties, final ResultSetMetaData resultSetMetaData) {
-        super(databaseType, relationMetas, rules, properties);
-        this.resultSetMetaData = resultSetMetaData;
-    }
     
     @Override
     protected EncryptorMetaData createEncryptorMetaData(final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext) {

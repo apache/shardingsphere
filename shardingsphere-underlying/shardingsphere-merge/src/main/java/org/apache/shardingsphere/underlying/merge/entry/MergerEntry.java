@@ -30,7 +30,7 @@ import org.apache.shardingsphere.underlying.merge.engine.MergeEngine;
  * 
  * @param <T> type of base rule
  */
-public interface MergerEntry<T extends BaseRule> {
+public interface MergerEntry<T extends BaseRule> extends ResultProcessEntry {
     
     /**
      * Create new instance of merge engine.

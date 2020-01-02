@@ -30,7 +30,7 @@ import org.apache.shardingsphere.underlying.merge.engine.DecorateEngine;
  * 
  * @param <T> type of base rule
  */
-public interface DecoratorEntry<T extends BaseRule> {
+public interface DecoratorEntry<T extends BaseRule> extends ResultProcessEntry {
     
     /**
      * Create new instance of decorate engine.

@@ -25,7 +25,9 @@ import org.apache.shardingsphere.core.merge.MergeEntry;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.shard.SimpleQueryShardingEngine;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
+import org.apache.shardingsphere.sharding.merge.ShardingMergerEntry;
 import org.apache.shardingsphere.shardingjdbc.executor.StatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractStatementAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
@@ -33,22 +35,24 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionCon
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSet;
-import org.apache.shardingsphere.shardingjdbc.merge.JDBCMergeEntry;
+import org.apache.shardingsphere.shardingjdbc.merge.JDBCEncryptDecoratorEntry;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.merge.entry.ResultProcessEntry;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Statement that support sharding.
@@ -130,9 +134,14 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private MergedResult createMergedResult(final List<ResultSet> resultSets, final List<QueryResult> queryResults) throws SQLException {
-        Collection<BaseRule> rules = Arrays.asList(connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getRule().getEncryptRule());
-        MergeEntry mergeEntry = new JDBCMergeEntry(connection.getRuntimeContext().getDatabaseType(),
-                connection.getRuntimeContext().getMetaData().getRelationMetas(), rules, connection.getRuntimeContext().getProperties(), resultSets.get(0).getMetaData());
+        Map<BaseRule, ResultProcessEntry> entries = new HashMap<>(2, 1);
+        entries.put(connection.getRuntimeContext().getRule(), new ShardingMergerEntry());
+        EncryptRule encryptRule = connection.getRuntimeContext().getRule().getEncryptRule();
+        if (!encryptRule.getEncryptTableNames().isEmpty()) {
+            entries.put(encryptRule, new JDBCEncryptDecoratorEntry(resultSets.get(0).getMetaData()));
+        }
+        MergeEntry mergeEntry = new MergeEntry(connection.getRuntimeContext().getDatabaseType(), 
+                connection.getRuntimeContext().getMetaData().getRelationMetas(), connection.getRuntimeContext().getProperties(), entries);
         return mergeEntry.getMergedResult(queryResults, routeResult.getSqlStatementContext());
     }
     

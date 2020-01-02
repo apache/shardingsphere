@@ -19,14 +19,16 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.merge.MergeEntry;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
+import org.apache.shardingsphere.sharding.merge.ShardingMergerEntry;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.ConnectionStatus;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.JDBCExecuteEngine;
-import org.apache.shardingsphere.shardingproxy.backend.communication.merge.ProxyMergeEntry;
+import org.apache.shardingsphere.shardingproxy.backend.communication.merge.ProxyEncryptDecoratorEntry;
 import org.apache.shardingsphere.shardingproxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
@@ -47,14 +49,16 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.merge.entry.ResultProcessEntry;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Database access engine for JDBC.
@@ -129,9 +133,15 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private MergedResult createMergedResult(final SQLRouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
-        Collection<BaseRule> rules = Arrays.asList(logicSchema.getShardingRule(), getEncryptRule());
-        return new ProxyMergeEntry(LogicSchemas.getInstance().getDatabaseType(), logicSchema.getMetaData().getRelationMetas(), 
-                rules, ShardingProxyContext.getInstance().getProperties(), ((QueryResponse) response).getQueryHeaders()).getMergedResult(queryResults, routeResult.getSqlStatementContext());
+        Map<BaseRule, ResultProcessEntry> entries = new HashMap<>(2, 1);
+        entries.put(logicSchema.getShardingRule(), new ShardingMergerEntry());
+        EncryptRule encryptRule = getEncryptRule();
+        if (!encryptRule.getEncryptTableNames().isEmpty()) {
+            entries.put(encryptRule, new ProxyEncryptDecoratorEntry(((QueryResponse) response).getQueryHeaders()));
+        }
+        MergeEntry mergeEntry = new MergeEntry(
+                LogicSchemas.getInstance().getDatabaseType(), logicSchema.getMetaData().getRelationMetas(), ShardingProxyContext.getInstance().getProperties(), entries);
+        return mergeEntry.getMergedResult(queryResults, routeResult.getSqlStatementContext());
     }
     
     private void handleColumnsForQueryHeader(final SQLRouteResult routeResult) {

@@ -22,11 +22,12 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
-import org.apache.shardingsphere.shardingjdbc.merge.JDBCMergeEntry;
+import org.apache.shardingsphere.shardingjdbc.merge.JDBCEncryptDecoratorEntry;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.merge.entry.ResultProcessEntry;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
 import java.io.InputStream;
@@ -46,6 +47,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -84,8 +86,9 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     }
     
     private MergedResult createMergedResult(final EncryptRuntimeContext encryptRuntimeContext, final ResultSet resultSet) throws SQLException {
-        MergeEntry mergeEntry = new JDBCMergeEntry(
-                encryptRuntimeContext.getDatabaseType(), null, Collections.<BaseRule>singletonList(encryptRuntimeContext.getRule()), encryptRuntimeContext.getProperties(), resultSet.getMetaData());
+        Map<BaseRule, ResultProcessEntry> entries = new HashMap<>(1, 1);
+        entries.put(encryptRule, new JDBCEncryptDecoratorEntry(resultSet.getMetaData()));
+        MergeEntry mergeEntry = new MergeEntry(encryptRuntimeContext.getDatabaseType(), null, encryptRuntimeContext.getProperties(), entries);
         return mergeEntry.getMergedResult(Collections.<QueryResult>singletonList(new StreamQueryResult(resultSet)), sqlStatementContext);
     }
     

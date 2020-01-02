@@ -17,33 +17,24 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.merge;
 
-import org.apache.shardingsphere.core.merge.MergeEntry;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.merge.EncryptDecoratorEntry;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
- * Proxy merge entry.
+ * Proxy decorator entry of encrypt.
  *
  * @author zhangliang
  */
-public final class ProxyMergeEntry extends MergeEntry {
+@RequiredArgsConstructor
+public final class ProxyEncryptDecoratorEntry extends EncryptDecoratorEntry {
     
     private final List<QueryHeader> queryHeaders;
-    
-    public ProxyMergeEntry(final DatabaseType databaseType, final RelationMetas relationMetas,
-                           final Collection<BaseRule> rules, final ShardingSphereProperties properties, final List<QueryHeader> queryHeaders) {
-        super(databaseType, relationMetas, rules, properties);
-        this.queryHeaders = queryHeaders;
-    }
     
     @Override
     protected EncryptorMetaData createEncryptorMetaData(final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext) {

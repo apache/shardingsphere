@@ -18,13 +18,7 @@
 package org.apache.shardingsphere.core.merge;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.encrypt.merge.EncryptDecoratorEntry;
-import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.sharding.merge.ShardingMergerEntry;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
@@ -32,12 +26,17 @@ import org.apache.shardingsphere.underlying.common.constant.properties.ShardingS
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.engine.DecorateEngine;
+import org.apache.shardingsphere.underlying.merge.engine.MergeEngine;
+import org.apache.shardingsphere.underlying.merge.entry.DecoratorEntry;
+import org.apache.shardingsphere.underlying.merge.entry.MergerEntry;
+import org.apache.shardingsphere.underlying.merge.entry.ResultProcessEntry;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.apache.shardingsphere.underlying.merge.result.impl.transparent.TransparentMergedResult;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Merge entry.
@@ -45,15 +44,15 @@ import java.util.List;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public abstract class MergeEntry {
+public final class MergeEntry {
     
     private final DatabaseType databaseType;
     
     private final RelationMetas relationMetas;
     
-    private final Collection<BaseRule> rules;
-    
     private final ShardingSphereProperties properties;
+    
+    private final Map<BaseRule, ResultProcessEntry> entries;
     
     /**
      * Get merged result.
@@ -64,41 +63,43 @@ public abstract class MergeEntry {
      * @throws SQLException SQL exception
      */
     public MergedResult getMergedResult(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
-        Optional<ShardingRule> shardingRule = findShardingRule();
+        Optional<MergedResult> mergedResult = merge(queryResults, sqlStatementContext);
+        Optional<MergedResult> result = mergedResult.isPresent() ? Optional.of(decorate(mergedResult.get(), sqlStatementContext)) : decorate(queryResults.get(0), sqlStatementContext);
+        return result.isPresent() ? result.get() : new TransparentMergedResult(queryResults.get(0));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Optional<MergedResult> merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
+        for (Entry<BaseRule, ResultProcessEntry> entry : entries.entrySet()) {
+            if (entry.getValue() instanceof MergerEntry) {
+                MergeEngine mergeEngine = ((MergerEntry) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
+                return Optional.of(mergeEngine.merge(queryResults, sqlStatementContext, relationMetas));
+            }
+        }
+        return Optional.absent();
+    }
+    
+    @SuppressWarnings("unchecked")
+    private MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext) throws SQLException {
         MergedResult result = null;
-        if (shardingRule.isPresent()) {
-            result = new ShardingMergerEntry().newInstance(databaseType, shardingRule.get(), properties, sqlStatementContext).merge(queryResults, sqlStatementContext, relationMetas);
-        }
-        Optional<EncryptRule> encryptRule = findEncryptRule();
-        if (encryptRule.isPresent()) {
-            EncryptorMetaData encryptorMetaData = createEncryptorMetaData(encryptRule.get(), sqlStatementContext);
-            DecorateEngine decoratorEngine = new EncryptDecoratorEntry(encryptorMetaData).newInstance(databaseType, encryptRule.get(), properties, sqlStatementContext);
-            if (null == result) {
-                result = new TransparentMergedResult(queryResults.get(0));
-            }
-            result = decoratorEngine.decorate(result, sqlStatementContext, relationMetas);
-        }
-        Preconditions.checkNotNull(result);
-        return result;
-    }
-    
-    private Optional<ShardingRule> findShardingRule() {
-        for (BaseRule each : rules) {
-            if (each instanceof ShardingRule) {
-                return Optional.of((ShardingRule) each);
+        for (Entry<BaseRule, ResultProcessEntry> entry : entries.entrySet()) {
+            if (entry.getValue() instanceof DecoratorEntry) {
+                DecorateEngine decorateEngine = ((DecoratorEntry) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
+                result = null == result ? decorateEngine.decorate(mergedResult, sqlStatementContext, relationMetas) : decorateEngine.decorate(result, sqlStatementContext, relationMetas);
             }
         }
-        return Optional.absent();
+        return null == result ? mergedResult : result;
     }
     
-    private Optional<EncryptRule> findEncryptRule() {
-        for (BaseRule each : rules) {
-            if (each instanceof EncryptRule && !((EncryptRule) each).getEncryptTableNames().isEmpty()) {
-                return Optional.of((EncryptRule) each);
+    @SuppressWarnings("unchecked")
+    private Optional<MergedResult> decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext) throws SQLException {
+        MergedResult result = null;
+        for (Entry<BaseRule, ResultProcessEntry> entry : entries.entrySet()) {
+            if (entry.getValue() instanceof DecoratorEntry) {
+                DecorateEngine decorateEngine = ((DecoratorEntry) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
+                result = null == result ? decorateEngine.decorate(queryResult, sqlStatementContext, relationMetas) : decorateEngine.decorate(result, sqlStatementContext, relationMetas);
             }
         }
-        return Optional.absent();
+        return Optional.fromNullable(result);
     }
-    
-    protected abstract EncryptorMetaData createEncryptorMetaData(EncryptRule encryptRule, SQLStatementContext sqlStatementContext);
 }
