@@ -496,18 +496,4 @@
     <dql-test-case sql-case-id="select_for_update">
         <assertion parameters="10:int" expected-data-file="select_for_update.xml" />
     </dql-test-case>
-
-    <dql-test-case sql-case-id="select_from_actual_without_shadow_column">
-        <assertion parameters="17:int" expected-data-file="select_from_actual_without_shadow_column.xml" />
-    </dql-test-case>
-
-    <dql-test-case sql-case-id="select_from_shadow">
-        <assertion parameters="true:boolean" expected-data-file="select_from_shadow_true.xml" />
-        <assertion parameters="false:boolean" expected-data-file="select_from_actual_without_shadow_column.xml" />
-    </dql-test-case>
-
-    <dql-test-case sql-case-id="select_from_shadow_with_condition">
-        <assertion parameters="true:boolean, 17:int" expected-data-file="select_from_shadow_with_condition_true.xml" />
-        <assertion parameters="false:boolean, 17:int" expected-data-file="select_from_shadow_with_condition_false.xml" />
-    </dql-test-case>
 </integrate-test-cases>

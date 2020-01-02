@@ -17,7 +17,26 @@
 
 shadowRule:
   column: shadow
-  datasource:
-    actual:
-      xxx
-    shadow:
+  shadowMappings:
+    db: shadow_db
+  shardingRule:
+    tables:
+      t_order_item:
+        actualDataNodes: db.t_order_item
+        databaseStrategy:
+          inline:
+            shardingColumn: item_id
+            algorithmExpression: db
+        tableStrategy:
+          inline:
+            shardingColumn: item_id
+            algorithmExpression: t_order_item
+        keyGenerator:
+          type: Constant
+          column: item_id
+    defaultDataSourceName: db
+    defaultTableStrategy:
+      none:
+
+props:
+  sql.show: true

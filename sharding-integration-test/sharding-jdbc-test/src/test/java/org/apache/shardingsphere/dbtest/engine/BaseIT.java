@@ -131,7 +131,7 @@ public abstract class BaseIT {
     }
     
     private Map<String, DataSource> createInstanceDataSourceMap() throws SQLException {
-        return "masterslave".equals(shardingRuleType) ? dataSourceMap : getShardingInstanceDataSourceMap();
+        return "masterslave".equals(shardingRuleType) || "shadow".equals(shardingRuleType) ? dataSourceMap : getShardingInstanceDataSourceMap();
     }
     
     private Map<String, DataSource> getShardingInstanceDataSourceMap() throws SQLException {
