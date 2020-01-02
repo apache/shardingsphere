@@ -21,7 +21,7 @@ import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
-import org.apache.shardingsphere.underlying.merge.engine.DecorateEngine;
+import org.apache.shardingsphere.underlying.merge.engine.ResultDecorator;
 
 /**
  * Result decorate entry.
@@ -33,13 +33,13 @@ import org.apache.shardingsphere.underlying.merge.engine.DecorateEngine;
 public interface ResultDecorateEntry<T extends BaseRule> extends ResultProcessEntry {
     
     /**
-     * Create new instance of decorate engine.
+     * Create new instance of result decorator.
      * 
      * @param databaseType database type
      * @param rule rule
      * @param properties ShardingSphere properties
      * @param sqlStatementContext SQL statement context
-     * @return new instance of decorator engine
+     * @return new instance of result decorator
      */
-    DecorateEngine newInstance(DatabaseType databaseType, T rule, ShardingSphereProperties properties, SQLStatementContext sqlStatementContext);
+    ResultDecorator newInstance(DatabaseType databaseType, T rule, ShardingSphereProperties properties, SQLStatementContext sqlStatementContext);
 }

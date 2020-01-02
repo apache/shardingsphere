@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.engine.DecorateEngine;
+import org.apache.shardingsphere.underlying.merge.engine.ResultDecorator;
 import org.apache.shardingsphere.underlying.merge.engine.MergeEngine;
 import org.apache.shardingsphere.underlying.merge.entry.ResultDecorateEntry;
 import org.apache.shardingsphere.underlying.merge.entry.ResultMergeEntry;
@@ -84,8 +84,8 @@ public final class MergeEntry {
         MergedResult result = null;
         for (Entry<BaseRule, ResultProcessEntry> entry : entries.entrySet()) {
             if (entry.getValue() instanceof ResultDecorateEntry) {
-                DecorateEngine decorateEngine = ((ResultDecorateEntry) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
-                result = null == result ? decorateEngine.decorate(mergedResult, sqlStatementContext, relationMetas) : decorateEngine.decorate(result, sqlStatementContext, relationMetas);
+                ResultDecorator resultDecorator = ((ResultDecorateEntry) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
+                result = null == result ? resultDecorator.decorate(mergedResult, sqlStatementContext, relationMetas) : resultDecorator.decorate(result, sqlStatementContext, relationMetas);
             }
         }
         return null == result ? mergedResult : result;
@@ -96,8 +96,8 @@ public final class MergeEntry {
         MergedResult result = null;
         for (Entry<BaseRule, ResultProcessEntry> entry : entries.entrySet()) {
             if (entry.getValue() instanceof ResultDecorateEntry) {
-                DecorateEngine decorateEngine = ((ResultDecorateEntry) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
-                result = null == result ? decorateEngine.decorate(queryResult, sqlStatementContext, relationMetas) : decorateEngine.decorate(result, sqlStatementContext, relationMetas);
+                ResultDecorator resultDecorator = ((ResultDecorateEntry) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
+                result = null == result ? resultDecorator.decorate(queryResult, sqlStatementContext, relationMetas) : resultDecorator.decorate(result, sqlStatementContext, relationMetas);
             }
         }
         return Optional.fromNullable(result);
