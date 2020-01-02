@@ -36,7 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrde
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.engine.MergeEngine;
+import org.apache.shardingsphere.underlying.merge.engine.ResultMerger;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
 import java.sql.SQLException;
@@ -45,13 +45,13 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * DQL result set merge engine.
+ * DQL result merger for Sharding.
  *
  * @author zhangliang
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class DQLMergeEngine implements MergeEngine {
+public final class ShardingDQLResultMerger implements ResultMerger {
     
     private final DatabaseType databaseType;
     

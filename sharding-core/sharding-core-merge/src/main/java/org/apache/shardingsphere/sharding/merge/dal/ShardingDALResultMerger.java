@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Show
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTablesStatement;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.engine.MergeEngine;
+import org.apache.shardingsphere.underlying.merge.engine.ResultMerger;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.apache.shardingsphere.underlying.merge.result.impl.transparent.TransparentMergedResult;
 
@@ -41,13 +41,13 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * DAL result set merge engine.
+ * DAL result merger for Sharding.
  *
  * @author zhangliang
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class DALMergeEngine implements MergeEngine {
+public final class ShardingDALResultMerger implements ResultMerger {
     
     private final ShardingRule shardingRule;
     

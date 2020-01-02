@@ -26,11 +26,11 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Query results merge engine.
+ * Query results merger.
  *
  * @author zhangliang
  */
-public interface MergeEngine {
+public interface ResultMerger {
     
     /**
      * Merge query results.

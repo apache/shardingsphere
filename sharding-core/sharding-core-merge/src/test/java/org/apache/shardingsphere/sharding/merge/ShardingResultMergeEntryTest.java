@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.merge;
 
-import org.apache.shardingsphere.sharding.merge.dal.DALMergeEngine;
-import org.apache.shardingsphere.sharding.merge.dql.DQLMergeEngine;
+import org.apache.shardingsphere.sharding.merge.dal.ShardingDALResultMerger;
+import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
@@ -36,7 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
-import org.apache.shardingsphere.underlying.merge.engine.impl.TransparentMergeEngine;
+import org.apache.shardingsphere.underlying.merge.engine.impl.TransparentResultMerger;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -53,14 +53,14 @@ public final class ShardingResultMergeEntryTest {
         SQLStatementContext sqlStatementContext = new SelectSQLStatementContext(new SelectStatement(),
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
-        assertThat(new ShardingResultMergeEntry().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(DQLMergeEngine.class));
+        assertThat(new ShardingResultMergeEntry().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(ShardingDQLResultMerger.class));
     }
     
     @Test
     public void assertNewInstanceWithDALStatement() {
         ShardingSphereProperties properties = new ShardingSphereProperties(new Properties());
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new DALStatement());
-        assertThat(new ShardingResultMergeEntry().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(DALMergeEngine.class));
+        assertThat(new ShardingResultMergeEntry().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(ShardingDALResultMerger.class));
     }
     
     @Test
@@ -70,6 +70,6 @@ public final class ShardingResultMergeEntryTest {
         insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "col"));
         SQLStatementContext sqlStatementContext = new InsertSQLStatementContext(null, Collections.emptyList(), insertStatement);
-        assertThat(new ShardingResultMergeEntry().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(TransparentMergeEngine.class));
+        assertThat(new ShardingResultMergeEntry().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(TransparentResultMerger.class));
     }
 }

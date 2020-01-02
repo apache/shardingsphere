@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
-import org.apache.shardingsphere.sharding.merge.dql.DQLMergeEngine;
+import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
@@ -61,20 +61,20 @@ public final class OrderByStreamMergedResultTest {
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
-        MergedResult actual = mergeEngine.merge(queryResults, selectSQLStatementContext, null);
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
+        MergedResult actual = resultMerger.merge(queryResults, selectSQLStatementContext, null);
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
         when(queryResults.get(0).next()).thenReturn(true, false);
         when(queryResults.get(0).getValue(1, Object.class)).thenReturn("2");
         when(queryResults.get(2).next()).thenReturn(true, true, false);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("1", "1", "3", "3");
-        MergedResult actual = mergeEngine.merge(queryResults, selectSQLStatementContext, null);
+        MergedResult actual = resultMerger.merge(queryResults, selectSQLStatementContext, null);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("1"));
         assertTrue(actual.next());
@@ -87,14 +87,14 @@ public final class OrderByStreamMergedResultTest {
     @Test
     public void assertNextForMix() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
         when(queryResults.get(0).next()).thenReturn(true, false);
         when(queryResults.get(0).getValue(1, Object.class)).thenReturn("2");
         when(queryResults.get(1).next()).thenReturn(true, true, true, false);
         when(queryResults.get(1).getValue(1, Object.class)).thenReturn("2", "2", "3", "3", "4", "4");
         when(queryResults.get(2).next()).thenReturn(true, true, false);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("1", "1", "3", "3");
-        MergedResult actual = mergeEngine.merge(queryResults, selectSQLStatementContext, null);
+        MergedResult actual = resultMerger.merge(queryResults, selectSQLStatementContext, null);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("1"));
         assertTrue(actual.next());
@@ -122,8 +122,8 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(2).next()).thenReturn(true, false);
         when(queryResults.get(2).isCaseSensitive(1)).thenReturn(true);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("A");
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
-        MergedResult actual = mergeEngine.merge(queryResults, selectSQLStatementContext, null);
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
+        MergedResult actual = resultMerger.merge(queryResults, selectSQLStatementContext, null);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("A"));
         assertTrue(actual.next());
@@ -147,8 +147,8 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(2).next()).thenReturn(true, false);
         when(queryResults.get(2).isCaseSensitive(1)).thenReturn(false);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("A");
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"));
-        MergedResult actual = mergeEngine.merge(queryResults, selectSQLStatementContext, null);
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
+        MergedResult actual = resultMerger.merge(queryResults, selectSQLStatementContext, null);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("a"));
         assertTrue(actual.next());

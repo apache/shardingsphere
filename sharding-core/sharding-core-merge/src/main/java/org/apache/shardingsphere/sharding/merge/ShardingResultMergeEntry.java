@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.sharding.merge;
 
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.merge.dal.DALMergeEngine;
-import org.apache.shardingsphere.sharding.merge.dql.DQLMergeEngine;
+import org.apache.shardingsphere.sharding.merge.dal.ShardingDALResultMerger;
+import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.merge.engine.MergeEngine;
-import org.apache.shardingsphere.underlying.merge.engine.impl.TransparentMergeEngine;
+import org.apache.shardingsphere.underlying.merge.engine.ResultMerger;
+import org.apache.shardingsphere.underlying.merge.engine.impl.TransparentResultMerger;
 import org.apache.shardingsphere.underlying.merge.entry.ResultMergeEntry;
 
 /**
@@ -38,13 +38,13 @@ import org.apache.shardingsphere.underlying.merge.entry.ResultMergeEntry;
 public final class ShardingResultMergeEntry implements ResultMergeEntry<ShardingRule> {
     
     @Override
-    public MergeEngine newInstance(final DatabaseType databaseType, final ShardingRule shardingRule, final ShardingSphereProperties properties, final SQLStatementContext sqlStatementContext) {
+    public ResultMerger newInstance(final DatabaseType databaseType, final ShardingRule shardingRule, final ShardingSphereProperties properties, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectSQLStatementContext) {
-            return new DQLMergeEngine(databaseType);
+            return new ShardingDQLResultMerger(databaseType);
         } 
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
-            return new DALMergeEngine(shardingRule);
+            return new ShardingDALResultMerger(shardingRule);
         }
-        return new TransparentMergeEngine();
+        return new TransparentResultMerger();
     }
 }

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.underlying.common.constant.properties.ShardingS
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.engine.ResultDecorator;
-import org.apache.shardingsphere.underlying.merge.engine.MergeEngine;
+import org.apache.shardingsphere.underlying.merge.engine.ResultMerger;
 import org.apache.shardingsphere.underlying.merge.entry.ResultDecorateEntry;
 import org.apache.shardingsphere.underlying.merge.entry.ResultMergeEntry;
 import org.apache.shardingsphere.underlying.merge.entry.ResultProcessEntry;
@@ -72,8 +72,8 @@ public final class MergeEntry {
     private Optional<MergedResult> merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
         for (Entry<BaseRule, ResultProcessEntry> entry : entries.entrySet()) {
             if (entry.getValue() instanceof ResultMergeEntry) {
-                MergeEngine mergeEngine = ((ResultMergeEntry) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
-                return Optional.of(mergeEngine.merge(queryResults, sqlStatementContext, relationMetas));
+                ResultMerger resultMerger = ((ResultMergeEntry) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
+                return Optional.of(resultMerger.merge(queryResults, sqlStatementContext, relationMetas));
             }
         }
         return Optional.absent();
