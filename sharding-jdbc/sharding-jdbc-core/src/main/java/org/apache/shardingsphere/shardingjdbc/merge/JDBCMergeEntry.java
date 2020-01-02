@@ -23,6 +23,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.sql.ResultSetMetaData;
@@ -37,9 +38,9 @@ public final class JDBCMergeEntry extends MergeEntry {
     
     private final ResultSetMetaData resultSetMetaData;
     
-    public JDBCMergeEntry(final DatabaseType databaseType, final RelationMetas relationMetas, 
-                          final Collection<BaseRule> rules, final boolean queryWithCipherColumn, final ResultSetMetaData resultSetMetaData) {
-        super(databaseType, relationMetas, rules, queryWithCipherColumn);
+    public JDBCMergeEntry(final DatabaseType databaseType, final RelationMetas relationMetas,
+                          final Collection<BaseRule> rules, final ShardingSphereProperties properties, final ResultSetMetaData resultSetMetaData) {
+        super(databaseType, relationMetas, rules, properties);
         this.resultSetMetaData = resultSetMetaData;
     }
     

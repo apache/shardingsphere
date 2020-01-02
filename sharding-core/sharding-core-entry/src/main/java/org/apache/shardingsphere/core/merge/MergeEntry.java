@@ -28,6 +28,8 @@ import org.apache.shardingsphere.sharding.merge.MergeEngineFactory;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.engine.DecoratorEngine;
@@ -52,7 +54,7 @@ public abstract class MergeEntry {
     
     private final Collection<BaseRule> rules;
     
-    private final boolean queryWithCipherColumn;
+    private final ShardingSphereProperties properties;
     
     /**
      * Get merged result.
@@ -70,6 +72,7 @@ public abstract class MergeEntry {
         }
         Optional<EncryptRule> encryptRule = findEncryptRule();
         if (encryptRule.isPresent()) {
+            boolean queryWithCipherColumn = properties.<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
             EncryptorMetaData encryptorMetaData = createEncryptorMetaData(encryptRule.get(), sqlStatementContext);
             DecoratorEngine decoratorEngine = DecoratorEngineFactory.newInstance(encryptRule.get(), sqlStatementContext, encryptorMetaData, queryWithCipherColumn);
             if (null == result) {

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeade
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.util.Collection;
@@ -38,9 +39,9 @@ public final class ProxyMergeEntry extends MergeEntry {
     
     private final List<QueryHeader> queryHeaders;
     
-    public ProxyMergeEntry(final DatabaseType databaseType, final RelationMetas relationMetas, 
-                           final Collection<BaseRule> rules, final boolean queryWithCipherColumn, final List<QueryHeader> queryHeaders) {
-        super(databaseType, relationMetas, rules, queryWithCipherColumn);
+    public ProxyMergeEntry(final DatabaseType databaseType, final RelationMetas relationMetas,
+                           final Collection<BaseRule> rules, final ShardingSphereProperties properties, final List<QueryHeader> queryHeaders) {
+        super(databaseType, relationMetas, rules, properties);
         this.queryHeaders = queryHeaders;
     }
     
