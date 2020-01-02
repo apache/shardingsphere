@@ -21,10 +21,10 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.encrypt.merge.DecoratorEngineFactory;
+import org.apache.shardingsphere.encrypt.merge.EncryptDecoratorEntry;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.sharding.merge.MergeEngineFactory;
+import org.apache.shardingsphere.sharding.merge.ShardingMergerEntry;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
@@ -32,7 +32,7 @@ import org.apache.shardingsphere.underlying.common.constant.properties.Propertie
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.engine.DecoratorEngine;
+import org.apache.shardingsphere.underlying.merge.engine.DecorateEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.apache.shardingsphere.underlying.merge.result.impl.transparent.TransparentMergedResult;
 
@@ -68,13 +68,13 @@ public abstract class MergeEntry {
         Optional<ShardingRule> shardingRule = findShardingRule();
         MergedResult result = null;
         if (shardingRule.isPresent()) {
-            result = MergeEngineFactory.newInstance(databaseType, shardingRule.get(), sqlStatementContext).merge(queryResults, sqlStatementContext, relationMetas);
+            result = new ShardingMergerEntry(databaseType).newInstance(shardingRule.get(), sqlStatementContext).merge(queryResults, sqlStatementContext, relationMetas);
         }
         Optional<EncryptRule> encryptRule = findEncryptRule();
         if (encryptRule.isPresent()) {
             boolean queryWithCipherColumn = properties.<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
             EncryptorMetaData encryptorMetaData = createEncryptorMetaData(encryptRule.get(), sqlStatementContext);
-            DecoratorEngine decoratorEngine = DecoratorEngineFactory.newInstance(encryptRule.get(), sqlStatementContext, encryptorMetaData, queryWithCipherColumn);
+            DecorateEngine decoratorEngine = new EncryptDecoratorEntry(encryptorMetaData, queryWithCipherColumn).newInstance(encryptRule.get(), sqlStatementContext);
             if (null == result) {
                 result = new TransparentMergedResult(queryResults.get(0));
             }

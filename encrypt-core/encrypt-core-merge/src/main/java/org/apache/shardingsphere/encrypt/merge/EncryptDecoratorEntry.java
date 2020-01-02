@@ -17,44 +17,39 @@
 
 package org.apache.shardingsphere.encrypt.merge;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.encrypt.merge.dal.DALDecoratorEngine;
-import org.apache.shardingsphere.encrypt.merge.dql.DQLDecoratorEngine;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.merge.dal.DALDecorateEngine;
+import org.apache.shardingsphere.encrypt.merge.dql.DQLDecorateEngine;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.underlying.merge.engine.DecoratorEngine;
-import org.apache.shardingsphere.underlying.merge.engine.impl.TransparentDecoratorEngine;
+import org.apache.shardingsphere.underlying.merge.engine.DecorateEngine;
+import org.apache.shardingsphere.underlying.merge.engine.impl.TransparentDecorateEngine;
+import org.apache.shardingsphere.underlying.merge.entry.DecoratorEntry;
 
 /**
- * Result merge engine factory.
+ * Decorator entry of encrypt.
  *
  * @author zhangliang
  * @author panjuan
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DecoratorEngineFactory {
+@RequiredArgsConstructor
+public final class EncryptDecoratorEntry implements DecoratorEntry<EncryptRule> {
     
-    /**
-     * Create decorator engine instance.
-     * 
-     * @param encryptRule encrypt rule
-     * @param sqlStatementContext SQL statement context
-     * @param encryptorMetaData encryptor meta data
-     * @param queryWithCipherColumn query with cipher column
-     * @return decorator engine
-     */
-    public static DecoratorEngine newInstance(final EncryptRule encryptRule, 
-                                              final SQLStatementContext sqlStatementContext, final EncryptorMetaData encryptorMetaData, final boolean queryWithCipherColumn) {
+    private final EncryptorMetaData encryptorMetaData;
+    
+    private final boolean queryWithCipherColumn;
+    
+    @Override
+    public DecorateEngine newInstance(final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectSQLStatementContext) {
-            return new DQLDecoratorEngine(encryptorMetaData, queryWithCipherColumn);
+            return new DQLDecorateEngine(encryptorMetaData, queryWithCipherColumn);
         } 
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
-            return new DALDecoratorEngine(encryptRule);
+            return new DALDecorateEngine(encryptRule);
         }
-        return new TransparentDecoratorEngine();
+        return new TransparentDecorateEngine();
     }
 }

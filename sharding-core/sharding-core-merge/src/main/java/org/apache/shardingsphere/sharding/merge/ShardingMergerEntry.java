@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.merge.dal.DALMergeEngine;
 import org.apache.shardingsphere.sharding.merge.dql.DQLMergeEngine;
@@ -28,25 +27,21 @@ import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLSta
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.merge.engine.MergeEngine;
 import org.apache.shardingsphere.underlying.merge.engine.impl.TransparentMergeEngine;
+import org.apache.shardingsphere.underlying.merge.entry.MergerEntry;
 
 /**
- * Result merge engine factory.
+ * Merger entry for sharding.
  *
  * @author zhangliang
  * @author panjuan
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MergeEngineFactory {
+@RequiredArgsConstructor
+public final class ShardingMergerEntry implements MergerEntry<ShardingRule> {
     
-    /**
-     * Create merge engine instance.
-     *
-     * @param databaseType database type
-     * @param shardingRule sharding rule
-     * @param sqlStatementContext SQL statement context
-     * @return merge engine instance
-     */
-    public static MergeEngine newInstance(final DatabaseType databaseType, final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext) {
+    private final DatabaseType databaseType;
+    
+    @Override
+    public MergeEngine newInstance(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectSQLStatementContext) {
             return new DQLMergeEngine(databaseType);
         } 

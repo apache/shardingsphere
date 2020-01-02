@@ -43,20 +43,20 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public final class MergeEngineFactoryTest {
+public final class ShardingMergerEntryTest {
     
     @Test
     public void assertNewInstanceWithSelectStatement() {
         SQLStatementContext sqlStatementContext = new SelectSQLStatementContext(new SelectStatement(),
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
-        assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, sqlStatementContext), instanceOf(DQLMergeEngine.class));
+        assertThat(new ShardingMergerEntry(DatabaseTypes.getActualDatabaseType("MySQL")).newInstance(null, sqlStatementContext), instanceOf(DQLMergeEngine.class));
     }
     
     @Test
     public void assertNewInstanceWithDALStatement() {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new DALStatement());
-        assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, sqlStatementContext), instanceOf(DALMergeEngine.class));
+        assertThat(new ShardingMergerEntry(DatabaseTypes.getActualDatabaseType("MySQL")).newInstance(null, sqlStatementContext), instanceOf(DALMergeEngine.class));
     }
     
     @Test
@@ -65,6 +65,6 @@ public final class MergeEngineFactoryTest {
         insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "col"));
         SQLStatementContext sqlStatementContext = new InsertSQLStatementContext(null, Collections.emptyList(), insertStatement);
-        assertThat(MergeEngineFactory.newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, sqlStatementContext), instanceOf(TransparentMergeEngine.class));
+        assertThat(new ShardingMergerEntry(DatabaseTypes.getActualDatabaseType("MySQL")).newInstance(null, sqlStatementContext), instanceOf(TransparentMergeEngine.class));
     }
 }

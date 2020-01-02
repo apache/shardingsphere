@@ -15,41 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.merge.engine;
+package org.apache.shardingsphere.underlying.merge.engine.impl;
 
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.merge.engine.DecorateEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.underlying.merge.result.impl.transparent.TransparentMergedResult;
 
 /**
- * Decorator engine.
+ * Transparent decorate engine.
  *
  * @author zhangliang
  */
-public interface DecoratorEngine {
+public final class TransparentDecorateEngine implements DecorateEngine {
     
-    /**
-     * Decorate query result.
-     *
-     * @param queryResult query result
-     * @param sqlStatementContext SQL statement context
-     * @param relationMetas relation metas
-     * @return merged result
-     * @throws SQLException SQL exception
-     */
-    MergedResult decorate(QueryResult queryResult, SQLStatementContext sqlStatementContext, RelationMetas relationMetas) throws SQLException;
+    @Override
+    public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
+        return new TransparentMergedResult(queryResult);
+    }
     
-    /**
-     * Decorate merged result.
-     * 
-     * @param mergedResult merged result
-     * @param sqlStatementContext SQL statement context
-     * @param relationMetas relation metas
-     * @return merged result
-     * @throws SQLException SQL exception
-     */
-    MergedResult decorate(MergedResult mergedResult, SQLStatementContext sqlStatementContext, RelationMetas relationMetas) throws SQLException;
+    @Override
+    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
+        return mergedResult;
+    }
 }

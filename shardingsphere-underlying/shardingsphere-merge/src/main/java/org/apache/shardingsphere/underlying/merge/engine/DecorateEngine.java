@@ -15,29 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.merge.engine.impl;
+package org.apache.shardingsphere.underlying.merge.engine;
 
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.engine.DecoratorEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
-import org.apache.shardingsphere.underlying.merge.result.impl.transparent.TransparentMergedResult;
+
+import java.sql.SQLException;
 
 /**
- * Transparent decorator engine.
+ * Decorate engine.
  *
  * @author zhangliang
  */
-public final class TransparentDecoratorEngine implements DecoratorEngine {
+public interface DecorateEngine {
     
-    @Override
-    public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
-        return new TransparentMergedResult(queryResult);
-    }
+    /**
+     * Decorate query result.
+     *
+     * @param queryResult query result
+     * @param sqlStatementContext SQL statement context
+     * @param relationMetas relation metas
+     * @return merged result
+     * @throws SQLException SQL exception
+     */
+    MergedResult decorate(QueryResult queryResult, SQLStatementContext sqlStatementContext, RelationMetas relationMetas) throws SQLException;
     
-    @Override
-    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
-        return mergedResult;
-    }
+    /**
+     * Decorate merged result.
+     * 
+     * @param mergedResult merged result
+     * @param sqlStatementContext SQL statement context
+     * @param relationMetas relation metas
+     * @return merged result
+     * @throws SQLException SQL exception
+     */
+    MergedResult decorate(MergedResult mergedResult, SQLStatementContext sqlStatementContext, RelationMetas relationMetas) throws SQLException;
 }
