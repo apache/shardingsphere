@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.merge;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.merge.dal.DALMergeEngine;
 import org.apache.shardingsphere.sharding.merge.dql.DQLMergeEngine;
@@ -25,6 +24,7 @@ import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.merge.engine.MergeEngine;
 import org.apache.shardingsphere.underlying.merge.engine.impl.TransparentMergeEngine;
 import org.apache.shardingsphere.underlying.merge.entry.MergerEntry;
@@ -35,13 +35,10 @@ import org.apache.shardingsphere.underlying.merge.entry.MergerEntry;
  * @author zhangliang
  * @author panjuan
  */
-@RequiredArgsConstructor
 public final class ShardingMergerEntry implements MergerEntry<ShardingRule> {
     
-    private final DatabaseType databaseType;
-    
     @Override
-    public MergeEngine newInstance(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext) {
+    public MergeEngine newInstance(final DatabaseType databaseType, final ShardingRule shardingRule, final ShardingSphereProperties properties, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectSQLStatementContext) {
             return new DQLMergeEngine(databaseType);
         } 

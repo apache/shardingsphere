@@ -22,9 +22,12 @@ import org.apache.shardingsphere.encrypt.merge.dal.DALDecorateEngine;
 import org.apache.shardingsphere.encrypt.merge.dql.DQLDecorateEngine;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.merge.engine.DecorateEngine;
 import org.apache.shardingsphere.underlying.merge.engine.impl.TransparentDecorateEngine;
 import org.apache.shardingsphere.underlying.merge.entry.DecoratorEntry;
@@ -40,12 +43,10 @@ public final class EncryptDecoratorEntry implements DecoratorEntry<EncryptRule> 
     
     private final EncryptorMetaData encryptorMetaData;
     
-    private final boolean queryWithCipherColumn;
-    
     @Override
-    public DecorateEngine newInstance(final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext) {
+    public DecorateEngine newInstance(final DatabaseType databaseType, final EncryptRule encryptRule, final ShardingSphereProperties properties, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectSQLStatementContext) {
-            return new DQLDecorateEngine(encryptorMetaData, queryWithCipherColumn);
+            return new DQLDecorateEngine(encryptorMetaData, properties.<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         } 
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
             return new DALDecorateEngine(encryptRule);

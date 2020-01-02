@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.underlying.merge.entry;
 
+import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.merge.engine.MergeEngine;
 
@@ -31,11 +33,13 @@ import org.apache.shardingsphere.underlying.merge.engine.MergeEngine;
 public interface MergerEntry<T extends BaseRule> {
     
     /**
-     * Create new instance of merger engine.
+     * Create new instance of merge engine.
      * 
+     * @param databaseType database type
      * @param rule rule
+     * @param properties ShardingSphere properties
      * @param sqlStatementContext SQL statement context
-     * @return new instance of merger engine
+     * @return new instance of merge engine
      */
-    MergeEngine newInstance(T rule, SQLStatementContext sqlStatementContext);
+    MergeEngine newInstance(DatabaseType databaseType, T rule, ShardingSphereProperties properties, SQLStatementContext sqlStatementContext);
 }

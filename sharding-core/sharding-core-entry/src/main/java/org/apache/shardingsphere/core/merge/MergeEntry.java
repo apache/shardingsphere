@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sharding.merge.ShardingMergerEntry;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
@@ -68,13 +67,12 @@ public abstract class MergeEntry {
         Optional<ShardingRule> shardingRule = findShardingRule();
         MergedResult result = null;
         if (shardingRule.isPresent()) {
-            result = new ShardingMergerEntry(databaseType).newInstance(shardingRule.get(), sqlStatementContext).merge(queryResults, sqlStatementContext, relationMetas);
+            result = new ShardingMergerEntry().newInstance(databaseType, shardingRule.get(), properties, sqlStatementContext).merge(queryResults, sqlStatementContext, relationMetas);
         }
         Optional<EncryptRule> encryptRule = findEncryptRule();
         if (encryptRule.isPresent()) {
-            boolean queryWithCipherColumn = properties.<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
             EncryptorMetaData encryptorMetaData = createEncryptorMetaData(encryptRule.get(), sqlStatementContext);
-            DecorateEngine decoratorEngine = new EncryptDecoratorEntry(encryptorMetaData, queryWithCipherColumn).newInstance(encryptRule.get(), sqlStatementContext);
+            DecorateEngine decoratorEngine = new EncryptDecoratorEntry(encryptorMetaData).newInstance(databaseType, encryptRule.get(), properties, sqlStatementContext);
             if (null == result) {
                 result = new TransparentMergedResult(queryResults.get(0));
             }

@@ -34,11 +34,13 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.merge.engine.impl.TransparentMergeEngine;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -47,24 +49,27 @@ public final class ShardingMergerEntryTest {
     
     @Test
     public void assertNewInstanceWithSelectStatement() {
+        ShardingSphereProperties properties = new ShardingSphereProperties(new Properties());
         SQLStatementContext sqlStatementContext = new SelectSQLStatementContext(new SelectStatement(),
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
-        assertThat(new ShardingMergerEntry(DatabaseTypes.getActualDatabaseType("MySQL")).newInstance(null, sqlStatementContext), instanceOf(DQLMergeEngine.class));
+        assertThat(new ShardingMergerEntry().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(DQLMergeEngine.class));
     }
     
     @Test
     public void assertNewInstanceWithDALStatement() {
+        ShardingSphereProperties properties = new ShardingSphereProperties(new Properties());
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new DALStatement());
-        assertThat(new ShardingMergerEntry(DatabaseTypes.getActualDatabaseType("MySQL")).newInstance(null, sqlStatementContext), instanceOf(DALMergeEngine.class));
+        assertThat(new ShardingMergerEntry().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(DALMergeEngine.class));
     }
     
     @Test
     public void assertNewInstanceWithOtherStatement() {
+        ShardingSphereProperties properties = new ShardingSphereProperties(new Properties());
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
         insertStatement.getColumns().add(new ColumnSegment(0, 0, "col"));
         SQLStatementContext sqlStatementContext = new InsertSQLStatementContext(null, Collections.emptyList(), insertStatement);
-        assertThat(new ShardingMergerEntry(DatabaseTypes.getActualDatabaseType("MySQL")).newInstance(null, sqlStatementContext), instanceOf(TransparentMergeEngine.class));
+        assertThat(new ShardingMergerEntry().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(TransparentMergeEngine.class));
     }
 }

@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.underlying.merge.entry;
 
+import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.merge.engine.DecorateEngine;
 
@@ -33,9 +35,11 @@ public interface DecoratorEntry<T extends BaseRule> {
     /**
      * Create new instance of decorate engine.
      * 
+     * @param databaseType database type
      * @param rule rule
+     * @param properties ShardingSphere properties
      * @param sqlStatementContext SQL statement context
      * @return new instance of decorator engine
      */
-    DecorateEngine newInstance(T rule, SQLStatementContext sqlStatementContext);
+    DecorateEngine newInstance(DatabaseType databaseType, T rule, ShardingSphereProperties properties, SQLStatementContext sqlStatementContext);
 }
