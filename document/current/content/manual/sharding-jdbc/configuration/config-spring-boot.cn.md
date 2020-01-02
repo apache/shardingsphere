@@ -189,12 +189,12 @@ spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.shardin
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item_$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_item_id
 spring.shardingsphere.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
-spring.shardingsphere.encrypt.encryptors.encryptor_aes.type=aes
-spring.shardingsphere.encrypt.encryptors.encryptor_aes.props.aes.key.value=123456
-spring.shardingsphere.encrypt.tables.t_order.columns.user_id.plainColumn=user_decrypt
-spring.shardingsphere.encrypt.tables.t_order.columns.user_id.cipherColumn=user_encrypt
-spring.shardingsphere.encrypt.tables.t_order.columns.user_id.assistedQueryColumn=user_assisted
-spring.shardingsphere.encrypt.tables.t_order.columns.user_id.encryptor=encryptor_aes
+spring.shardingsphere.sharding.encrypt-rule.encryptors.encryptor_aes.type=aes
+spring.shardingsphere.sharding.encrypt-rule.encryptors.encryptor_aes.props.aes.key.value=123456
+spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.plainColumn=user_decrypt
+spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.cipherColumn=user_encrypt
+spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.assistedQueryColumn=user_assisted
+spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.encryptor=encryptor_aes
 ```
 
 ### 治理
