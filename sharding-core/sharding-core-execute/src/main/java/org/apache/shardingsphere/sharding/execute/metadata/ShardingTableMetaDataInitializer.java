@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.execute.metadata;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.encrypt.metadata.decorator.EncryptTableMetaDataDecorator;
 import org.apache.shardingsphere.sharding.execute.metadata.loader.ShardingTableMetaDataLoader;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
@@ -51,14 +50,11 @@ public final class ShardingTableMetaDataInitializer {
     
     private final ShardingTableMetaDataLoader tableMetaDataLoader;
     
-    private final EncryptTableMetaDataDecorator encryptTableMetaDataDecorator;
-    
     public ShardingTableMetaDataInitializer(final DataSourceMetas dataSourceMetas, final ExecutorEngine executorEngine,
                                             final ConnectionManager connectionManager, final int maxConnectionsSizePerQuery, final boolean isCheckingMetaData) {
         this.dataSourceMetas = dataSourceMetas;
         this.connectionManager = connectionManager;
         tableMetaDataLoader = new ShardingTableMetaDataLoader(dataSourceMetas, executorEngine, connectionManager, maxConnectionsSizePerQuery, isCheckingMetaData);
-        encryptTableMetaDataDecorator = new EncryptTableMetaDataDecorator();
     }
     
     /**
@@ -70,7 +66,7 @@ public final class ShardingTableMetaDataInitializer {
      * @throws SQLException SQL exception
      */
     public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) throws SQLException {
-        return encryptTableMetaDataDecorator.decorate(tableMetaDataLoader.load(logicTableName, shardingRule), logicTableName, shardingRule.getEncryptRule());
+        return tableMetaDataLoader.load(logicTableName, shardingRule);
     }
     
     /**
