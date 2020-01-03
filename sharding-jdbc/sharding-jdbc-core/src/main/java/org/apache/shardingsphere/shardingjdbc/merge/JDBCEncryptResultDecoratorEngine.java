@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.merge;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.merge.EncryptResultDecorateEntry;
+import org.apache.shardingsphere.encrypt.merge.EncryptResultDecoratorEngine;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
@@ -26,12 +26,12 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
 import java.sql.ResultSetMetaData;
 
 /**
- * JDBC result decorate entry of encrypt.
+ * JDBC result decorator engine of encrypt.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class JDBCEncryptResultDecorateEntry extends EncryptResultDecorateEntry {
+public final class JDBCEncryptResultDecoratorEngine extends EncryptResultDecoratorEngine {
     
     private final ResultSetMetaData resultSetMetaData;
     
