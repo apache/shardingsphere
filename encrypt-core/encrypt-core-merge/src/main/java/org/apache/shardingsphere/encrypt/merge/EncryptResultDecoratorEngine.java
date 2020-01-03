@@ -40,7 +40,8 @@ import org.apache.shardingsphere.underlying.merge.engine.decorator.ResultDecorat
 public abstract class EncryptResultDecoratorEngine implements ResultDecoratorEngine<EncryptRule> {
     
     @Override
-    public final ResultDecorator newInstance(final DatabaseType databaseType, final EncryptRule encryptRule, final ShardingSphereProperties properties, final SQLStatementContext sqlStatementContext) {
+    public final ResultDecorator newInstance(final DatabaseType databaseType, 
+                                             final EncryptRule encryptRule, final ShardingSphereProperties properties, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectSQLStatementContext) {
             return new EncryptDQLResultDecorator(createEncryptorMetaData(encryptRule, sqlStatementContext), properties.<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         } 
