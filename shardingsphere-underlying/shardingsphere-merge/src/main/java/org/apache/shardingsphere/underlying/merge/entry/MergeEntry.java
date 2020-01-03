@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.merge;
+package org.apache.shardingsphere.underlying.merge.entry;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +27,6 @@ import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.engine.ResultDecorator;
 import org.apache.shardingsphere.underlying.merge.engine.ResultMerger;
-import org.apache.shardingsphere.underlying.merge.entry.ResultDecorateEntry;
-import org.apache.shardingsphere.underlying.merge.entry.ResultMergeEntry;
-import org.apache.shardingsphere.underlying.merge.entry.ResultProcessEntry;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.apache.shardingsphere.underlying.merge.result.impl.transparent.TransparentMergedResult;
 
