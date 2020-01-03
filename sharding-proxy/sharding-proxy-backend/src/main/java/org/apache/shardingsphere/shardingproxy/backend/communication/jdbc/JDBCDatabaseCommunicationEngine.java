@@ -133,14 +133,14 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private MergedResult createMergedResult(final SQLRouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
-        Map<BaseRule, ResultProcessEngine> entries = new HashMap<>(2, 1);
-        entries.put(logicSchema.getShardingRule(), new ShardingResultMergeEntry());
+        Map<BaseRule, ResultProcessEngine> engines = new HashMap<>(2, 1);
+        engines.put(logicSchema.getShardingRule(), new ShardingResultMergeEntry());
         EncryptRule encryptRule = getEncryptRule();
         if (!encryptRule.getEncryptTableNames().isEmpty()) {
-            entries.put(encryptRule, new ProxyResultDecorateEntry(((QueryResponse) response).getQueryHeaders()));
+            engines.put(encryptRule, new ProxyResultDecorateEntry(((QueryResponse) response).getQueryHeaders()));
         }
         MergeEntry mergeEntry = new MergeEntry(
-                LogicSchemas.getInstance().getDatabaseType(), logicSchema.getMetaData().getRelationMetas(), ShardingProxyContext.getInstance().getProperties(), entries);
+                LogicSchemas.getInstance().getDatabaseType(), logicSchema.getMetaData().getRelationMetas(), ShardingProxyContext.getInstance().getProperties(), engines);
         return mergeEntry.getMergedResult(queryResults, routeResult.getSqlStatementContext());
     }
     

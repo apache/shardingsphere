@@ -134,14 +134,14 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private MergedResult createMergedResult(final List<ResultSet> resultSets, final List<QueryResult> queryResults) throws SQLException {
-        Map<BaseRule, ResultProcessEngine> entries = new HashMap<>(2, 1);
-        entries.put(connection.getRuntimeContext().getRule(), new ShardingResultMergeEntry());
+        Map<BaseRule, ResultProcessEngine> engines = new HashMap<>(2, 1);
+        engines.put(connection.getRuntimeContext().getRule(), new ShardingResultMergeEntry());
         EncryptRule encryptRule = connection.getRuntimeContext().getRule().getEncryptRule();
         if (!encryptRule.getEncryptTableNames().isEmpty()) {
-            entries.put(encryptRule, new JDBCEncryptResultDecorateEntry(resultSets.get(0).getMetaData()));
+            engines.put(encryptRule, new JDBCEncryptResultDecorateEntry(resultSets.get(0).getMetaData()));
         }
         MergeEntry mergeEntry = new MergeEntry(connection.getRuntimeContext().getDatabaseType(), 
-                connection.getRuntimeContext().getMetaData().getRelationMetas(), connection.getRuntimeContext().getProperties(), entries);
+                connection.getRuntimeContext().getMetaData().getRelationMetas(), connection.getRuntimeContext().getProperties(), engines);
         return mergeEntry.getMergedResult(queryResults, routeResult.getSqlStatementContext());
     }
     
