@@ -165,8 +165,8 @@ public final class ShadowStatement extends AbstractStatementAdapter {
         return false;
     }
 
-    @Override
     @SuppressWarnings("unchecked")
+    @Override
     protected Collection<Statement> getRoutedStatements() {
         Collection<Statement> result = new LinkedList();
         if (null == statement) {
