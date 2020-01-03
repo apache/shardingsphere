@@ -52,7 +52,7 @@ public final class MergeEntry {
     
     private final ShardingSphereProperties properties;
     
-    private final Map<BaseRule, ResultProcessEngine> entries;
+    private final Map<BaseRule, ResultProcessEngine> engines;
     
     /**
      * Process query results.
@@ -70,7 +70,7 @@ public final class MergeEntry {
     
     @SuppressWarnings("unchecked")
     private Optional<MergedResult> merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
-        for (Entry<BaseRule, ResultProcessEngine> entry : entries.entrySet()) {
+        for (Entry<BaseRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultMergerEngine) {
                 ResultMerger resultMerger = ((ResultMergerEngine) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
                 return Optional.of(resultMerger.merge(queryResults, sqlStatementContext, relationMetas));
@@ -82,7 +82,7 @@ public final class MergeEntry {
     @SuppressWarnings("unchecked")
     private MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext) throws SQLException {
         MergedResult result = null;
-        for (Entry<BaseRule, ResultProcessEngine> entry : entries.entrySet()) {
+        for (Entry<BaseRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultDecoratorEngine) {
                 ResultDecorator resultDecorator = ((ResultDecoratorEngine) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
                 result = null == result ? resultDecorator.decorate(mergedResult, sqlStatementContext, relationMetas) : resultDecorator.decorate(result, sqlStatementContext, relationMetas);
@@ -94,7 +94,7 @@ public final class MergeEntry {
     @SuppressWarnings("unchecked")
     private Optional<MergedResult> decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext) throws SQLException {
         MergedResult result = null;
-        for (Entry<BaseRule, ResultProcessEngine> entry : entries.entrySet()) {
+        for (Entry<BaseRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultDecoratorEngine) {
                 ResultDecorator resultDecorator = ((ResultDecoratorEngine) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
                 result = null == result ? resultDecorator.decorate(queryResult, sqlStatementContext, relationMetas) : resultDecorator.decorate(result, sqlStatementContext, relationMetas);
