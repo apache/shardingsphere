@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dbtest.cases.dataset;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.rule.DataNode;
-import org.apache.shardingsphere.core.util.InlineExpressionParser;
+import org.apache.shardingsphere.core.config.inline.InlineExpressionParser;
 import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
 

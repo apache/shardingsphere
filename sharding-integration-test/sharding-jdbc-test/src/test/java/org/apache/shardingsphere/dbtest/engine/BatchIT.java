@@ -20,7 +20,7 @@ package org.apache.shardingsphere.dbtest.engine;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.core.rule.DataNode;
-import org.apache.shardingsphere.core.util.InlineExpressionParser;
+import org.apache.shardingsphere.core.config.inline.InlineExpressionParser;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.dataset.DataSet;

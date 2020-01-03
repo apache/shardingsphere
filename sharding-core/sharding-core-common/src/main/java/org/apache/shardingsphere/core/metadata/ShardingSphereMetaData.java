@@ -18,20 +18,41 @@
 package org.apache.shardingsphere.core.metadata;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetaData;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * ShardingSphere meta data.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
 public final class ShardingSphereMetaData {
     
     private final DataSourceMetas dataSources;
     
     private final TableMetas tables;
+    
+    private final RelationMetas relationMetas;
+    
+    public ShardingSphereMetaData(final DataSourceMetas dataSources, final TableMetas tables) {
+        this.dataSources = dataSources;
+        this.tables = tables;
+        relationMetas = createRelationMetas();
+    }
+    
+    private RelationMetas createRelationMetas() {
+        Map<String, RelationMetaData> result = new HashMap<>(tables.getAllTableNames().size());
+        for (String each : tables.getAllTableNames()) {
+            TableMetaData tableMetaData = tables.get(each);
+            result.put(each, new RelationMetaData(tableMetaData.getColumns().keySet()));
+        }
+        return new RelationMetas(result);
+    }
 }

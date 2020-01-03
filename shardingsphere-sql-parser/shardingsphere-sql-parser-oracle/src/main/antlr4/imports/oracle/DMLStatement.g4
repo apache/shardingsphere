@@ -20,15 +20,39 @@ grammar DMLStatement;
 import Symbol, Keyword, OracleKeyword, Literals, BaseRule;
 
 insert
-    : INSERT INTO tableName (AS? alias)? (insertValuesClause | insertSelectClause)
+    : INSERT (insertSingleTable | insertMultiTable)
+    ;
+
+insertSingleTable
+    : insertIntoClause (insertValuesClause | select)
+    ;
+
+insertMultiTable
+    : (ALL multiTableElement+ | conditionalInsertClause) select
+    ;
+
+multiTableElement
+    : insertIntoClause insertValuesClause
+    ;
+
+conditionalInsertClause
+    : (ALL | FIRST)? conditionalInsertWhenPart+ conditionalInsertElsePart?
+    ;
+
+conditionalInsertWhenPart
+    : WHEN expr THEN multiTableElement+
+    ;
+
+conditionalInsertElsePart
+    : ELSE multiTableElement+
+    ;
+
+insertIntoClause
+    : INTO tableName (AS? alias)? columnNames?
     ;
 
 insertValuesClause
-    : columnNames? VALUES assignmentValues (COMMA_ assignmentValues)*
-    ;
-
-insertSelectClause
-    : columnNames? select
+    : VALUES assignmentValues (COMMA_ assignmentValues)*
     ;
 
 update

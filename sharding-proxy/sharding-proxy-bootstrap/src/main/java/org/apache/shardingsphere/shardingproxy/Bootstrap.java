@@ -25,7 +25,7 @@ import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.core.util.ConfigurationLogger;
+import org.apache.shardingsphere.core.config.log.ConfigurationLogger;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.impl.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;

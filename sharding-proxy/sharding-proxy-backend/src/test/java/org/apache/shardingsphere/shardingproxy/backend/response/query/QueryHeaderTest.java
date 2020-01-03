@@ -109,7 +109,7 @@ public final class QueryHeaderTest {
     @SneakyThrows
     private ShardingSchema getShardingSchema() {
         ShardingSchema result = mock(ShardingSchema.class);
-        ColumnMetaData columnMetaData = new ColumnMetaData("order_id", "int", true, true, true);
+        ColumnMetaData columnMetaData = new ColumnMetaData("order_id", "int", true);
         TableMetas tableMetas = mock(TableMetas.class);
         when(tableMetas.get("t_order")).thenReturn(new TableMetaData(Collections.singletonList(columnMetaData), Collections.singletonList("order_id")));
         when(tableMetas.containsTable("t_order")).thenReturn(true);
@@ -134,6 +134,8 @@ public final class QueryHeaderTest {
         when(result.getColumnName(1)).thenReturn("order_id");
         when(result.getColumnType(1)).thenReturn(Types.INTEGER);
         when(result.isSigned(1)).thenReturn(true);
+        when(result.isAutoIncrement(1)).thenReturn(true);
+        when(result.isNullable(1)).thenReturn(ResultSetMetaData.columnNoNulls);
         when(result.getColumnDisplaySize(1)).thenReturn(1);
         when(result.getScale(1)).thenReturn(1);
         return result;

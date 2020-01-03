@@ -21,7 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.core.util.ConfigurationLogger;
+import org.apache.shardingsphere.core.config.log.ConfigurationLogger;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;

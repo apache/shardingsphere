@@ -34,11 +34,21 @@ public final class RelationMetas {
     private final Map<String, RelationMetaData> relations;
     
     /**
+     * Judge whether contains table.
+     *
+     * @param tableName table name
+     * @return contains table or not
+     */
+    public boolean containsTable(final String tableName) {
+        return relations.containsKey(tableName);
+    }
+    
+    /**
      * Judge whether contains column name.
      * 
      * @param tableName table name
      * @param columnName column name
-     * @return contains column name or not
+     * @return contains column or not
      */
     public boolean containsColumn(final String tableName, final String columnName) {
         return relations.containsKey(tableName) && relations.get(tableName).getColumnNames().contains(columnName.toLowerCase());

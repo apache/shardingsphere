@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback;
 import org.apache.shardingsphere.core.execute.sql.execute.result.MemoryQueryResult;
-import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
+import org.apache.shardingsphere.underlying.execute.QueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.core.execute.sql.prepare.SQLExecutePrepareCallback;
@@ -102,7 +102,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         SQLExecuteCallback<QueryResult> executeCallback = new SQLExecuteCallback<QueryResult>(getDatabaseType(), isExceptionThrown) {
             
             @Override
-            protected QueryResult executeSQL(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+            protected QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return getQueryResult(statement, connectionMode);
             }
         };

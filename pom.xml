@@ -33,8 +33,10 @@
         <module>shardingsphere-spi</module>
         
         <module>shardingsphere-sql-parser</module>
+        <module>shardingsphere-underlying</module>
         
         <module>sharding-core</module>
+        <module>encrypt-core</module>
         
         <module>sharding-jdbc</module>
         <module>sharding-proxy</module>
@@ -43,7 +45,7 @@
         <module>sharding-transaction</module>
         <module>sharding-orchestration</module> 
         <module>sharding-opentracing</module>
-    
+        
         <module>sharding-spring</module>
         <module>sharding-sql-test</module>
         
@@ -60,7 +62,7 @@
         <guava.version>18.0</guava.version>
         <slf4j.version>1.7.7</slf4j.version>
         
-        <antlr4.version>4.7.1</antlr4.version>
+        <antlr4.version>4.7.2</antlr4.version>
         
         <groovy.version>2.4.5</groovy.version>
         <snakeyaml.version>1.16</snakeyaml.version>
@@ -117,7 +119,7 @@
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
         <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
         <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
-        <jacoco.version>0.7.9</jacoco.version>
+        <jacoco.version>0.8.0</jacoco.version>
         <findbugs-maven-plugin.version>3.0.2</findbugs-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
         <maven-pmd-plugin.version>3.5</maven-pmd-plugin.version>

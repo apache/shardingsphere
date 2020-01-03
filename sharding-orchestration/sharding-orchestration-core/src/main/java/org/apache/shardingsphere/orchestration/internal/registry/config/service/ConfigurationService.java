@@ -174,7 +174,14 @@ public final class ConfigurationService {
      * @return is sharding rule or not
      */
     public boolean isShardingRule(final String shardingSchemaName) {
-        return regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)).contains("tables:\n");
+        if (regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)).contains("encryptRule:\n")) {
+            return true;
+        }
+        if (regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)).contains("tables:\n")
+            && !regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)).contains("encryptors:\n")) {
+            return true;
+        }
+        return false;
     }
     
     /**
@@ -183,7 +190,8 @@ public final class ConfigurationService {
      * @return is encrypt rule or not
      */
     public boolean isEncryptRule(final String shardingSchemaName) {
-        return regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)).contains("encryptors:\n");
+        return !regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)).contains("encryptRule:\n")
+                && regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)).contains("encryptors:\n");
     }
     
     /**

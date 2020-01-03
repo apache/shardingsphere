@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.execute.sql.execute.result;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.underlying.execute.QueryResult;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -59,7 +60,8 @@ public final class MemoryQueryResult implements QueryResult {
         while (resultSet.next()) {
             List<Object> rowData = new ArrayList<>(resultSet.getMetaData().getColumnCount());
             for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
-                rowData.add(resultSet.wasNull() ? null : getRowValue(resultSet, columnIndex));
+                Object rowValue = getRowValue(resultSet, columnIndex);
+                rowData.add(resultSet.wasNull() ? null : rowValue);
             }
             result.add(rowData);
         }
@@ -75,9 +77,15 @@ public final class MemoryQueryResult implements QueryResult {
             case Types.SMALLINT:
                 return resultSet.getInt(columnIndex);
             case Types.INTEGER:
-                return metaData.isSigned(columnIndex) ? resultSet.getInt(columnIndex) : resultSet.getLong(columnIndex);
+                if (metaData.isSigned(columnIndex)) {
+                    return resultSet.getInt(columnIndex);
+                }
+                return resultSet.getLong(columnIndex);
             case Types.BIGINT:
-                return metaData.isSigned(columnIndex) ? resultSet.getLong(columnIndex) : resultSet.getBigDecimal(columnIndex).toBigInteger();
+                if (metaData.isSigned(columnIndex)) {
+                    return resultSet.getLong(columnIndex);
+                }
+                return resultSet.getBigDecimal(columnIndex).toBigInteger();
             case Types.NUMERIC:
             case Types.DECIMAL:
                 return resultSet.getBigDecimal(columnIndex);

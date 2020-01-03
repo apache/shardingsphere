@@ -114,14 +114,14 @@ public final class EncryptRule implements BaseRule {
     }
     
     /**
-     * Get logic column.
+     * Get logic column of cipher column.
      *
      * @param logicTable logic table
      * @param cipherColumn cipher column
      * @return logic column
      */
-    public String getLogicColumn(final String logicTable, final String cipherColumn) {
-        return tables.get(logicTable).getLogicColumn(cipherColumn);
+    public String getLogicColumnOfCipher(final String logicTable, final String cipherColumn) {
+        return tables.get(logicTable).getLogicColumnOfCipher(cipherColumn);
     }
     
     /**
@@ -132,7 +132,17 @@ public final class EncryptRule implements BaseRule {
      * @return plain column
      */
     public Optional<String> findPlainColumn(final String logicTable, final String logicColumn) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).findPlainColumn(logicColumn) : Optional.<String>absent();
+        Optional<String> originColumnName = findOriginColumnName(logicTable, logicColumn);
+        return originColumnName.isPresent() && tables.containsKey(logicTable) ? tables.get(logicTable).findPlainColumn(originColumnName.get()) : Optional.<String>absent();
+    }
+
+    private Optional<String> findOriginColumnName(final String logicTable, final String logicColumn) {
+        for (String each : tables.get(logicTable).getLogicColumns()) {
+            if (logicColumn.equalsIgnoreCase(each)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.absent();
     }
     
     /**

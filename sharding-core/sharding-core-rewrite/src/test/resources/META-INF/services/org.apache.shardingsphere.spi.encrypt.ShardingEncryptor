@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.core.rewrite.fixture.NormalEncryptorFixture
-org.apache.shardingsphere.core.rewrite.fixture.QueryAssistedEncryptorFixture
+org.apache.shardingsphere.sharding.rewrite.fixture.NormalEncryptorFixture
+org.apache.shardingsphere.sharding.rewrite.fixture.QueryAssistedEncryptorFixture

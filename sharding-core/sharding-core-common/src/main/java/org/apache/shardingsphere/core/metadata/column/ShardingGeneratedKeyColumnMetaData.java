@@ -31,8 +31,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public final class ShardingGeneratedKeyColumnMetaData extends ColumnMetaData {
     
-    public ShardingGeneratedKeyColumnMetaData(final String name, final String dataType, final boolean primaryKey, 
-                                              final boolean notNull, final boolean autoIncrement) {
-        super(name, dataType, primaryKey, notNull, autoIncrement);
+    public ShardingGeneratedKeyColumnMetaData(final String name, final String dataType, final boolean primaryKey) {
+        super(name, dataType, primaryKey);
     }
 }

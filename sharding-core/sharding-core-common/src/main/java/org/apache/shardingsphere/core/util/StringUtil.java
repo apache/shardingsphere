@@ -52,19 +52,4 @@ public final class StringUtil {
             return false;
         }
     }
-    
-    /**
-     * Judge is long value or not.
-     *
-     * @param value to be judged string value
-     * @return is long value or not
-     */
-    public static boolean isLongValue(final String value) {
-        try {
-            Long.parseLong(value);
-            return true;
-        } catch (final NumberFormatException ex) {
-            return false;
-        }
-    }
 }

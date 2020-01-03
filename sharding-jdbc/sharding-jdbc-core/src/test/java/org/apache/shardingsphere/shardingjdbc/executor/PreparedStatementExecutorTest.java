@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
 import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
+import org.apache.shardingsphere.underlying.execute.QueryResult;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
@@ -266,8 +266,8 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         List<StatementExecuteUnit> preparedStatementExecuteUnits = new LinkedList<>();
         executeGroups.add(new ShardingExecuteGroup<>(preparedStatementExecuteUnits));
         for (PreparedStatement each : preparedStatements) {
-            preparedStatementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", 
-                    new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList((Object) 1))), each, ConnectionMode.MEMORY_STRICTLY));
+            preparedStatementExecuteUnits.add(
+                    new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList((Object) 1))), each, ConnectionMode.MEMORY_STRICTLY));
         }
         Field field = PreparedStatementExecutor.class.getSuperclass().getDeclaredField("executeGroups");
         field.setAccessible(true);

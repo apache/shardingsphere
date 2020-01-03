@@ -78,9 +78,9 @@ public class OrchestrationSpringBootRegistryMasterSlaveTest {
         testRegistryCenter.persist("/demo_spring_boot_ds_registry/config/schema/logic_db/rule", "loadBalanceAlgorithmType: ROUND_ROBIN\n"
             + "masterDataSourceName: ds_master\n"
             + "name: ds_ms\n"
-            + "slaveDataSourceNames: !!set\n"
-            + "  ds_slave_0: null\n"
-            + "  ds_slave_1: null\n");
+            + "slaveDataSourceNames: \n"
+            + "  - ds_slave_0\n"
+            + "  - ds_slave_1\n");
         testRegistryCenter.persist("/demo_spring_boot_ds_registry/config/props", "{}\n");
         testRegistryCenter.persist("/demo_spring_boot_ds_registry/state/datasources", "");
     }
