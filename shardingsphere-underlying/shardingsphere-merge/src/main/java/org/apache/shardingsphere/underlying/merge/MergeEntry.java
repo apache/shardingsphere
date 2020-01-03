@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.merge.entry;
+package org.apache.shardingsphere.underlying.merge;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +25,11 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.engine.ResultDecorator;
-import org.apache.shardingsphere.underlying.merge.engine.ResultMerger;
+import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
+import org.apache.shardingsphere.underlying.merge.engine.decorator.ResultDecorator;
+import org.apache.shardingsphere.underlying.merge.engine.merger.ResultMergerEngine;
+import org.apache.shardingsphere.underlying.merge.engine.merger.ResultMerger;
+import org.apache.shardingsphere.underlying.merge.engine.decorator.ResultDecoratorEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.apache.shardingsphere.underlying.merge.result.impl.transparent.TransparentMergedResult;
 
@@ -49,7 +52,7 @@ public final class MergeEntry {
     
     private final ShardingSphereProperties properties;
     
-    private final Map<BaseRule, ResultProcessEntry> entries;
+    private final Map<BaseRule, ResultProcessEngine> entries;
     
     /**
      * Get merged result.
@@ -67,9 +70,9 @@ public final class MergeEntry {
     
     @SuppressWarnings("unchecked")
     private Optional<MergedResult> merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
-        for (Entry<BaseRule, ResultProcessEntry> entry : entries.entrySet()) {
-            if (entry.getValue() instanceof ResultMergeEntry) {
-                ResultMerger resultMerger = ((ResultMergeEntry) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
+        for (Entry<BaseRule, ResultProcessEngine> entry : entries.entrySet()) {
+            if (entry.getValue() instanceof ResultMergerEngine) {
+                ResultMerger resultMerger = ((ResultMergerEngine) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
                 return Optional.of(resultMerger.merge(queryResults, sqlStatementContext, relationMetas));
             }
         }
@@ -79,9 +82,9 @@ public final class MergeEntry {
     @SuppressWarnings("unchecked")
     private MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext) throws SQLException {
         MergedResult result = null;
-        for (Entry<BaseRule, ResultProcessEntry> entry : entries.entrySet()) {
-            if (entry.getValue() instanceof ResultDecorateEntry) {
-                ResultDecorator resultDecorator = ((ResultDecorateEntry) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
+        for (Entry<BaseRule, ResultProcessEngine> entry : entries.entrySet()) {
+            if (entry.getValue() instanceof ResultDecoratorEngine) {
+                ResultDecorator resultDecorator = ((ResultDecoratorEngine) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
                 result = null == result ? resultDecorator.decorate(mergedResult, sqlStatementContext, relationMetas) : resultDecorator.decorate(result, sqlStatementContext, relationMetas);
             }
         }
@@ -91,9 +94,9 @@ public final class MergeEntry {
     @SuppressWarnings("unchecked")
     private Optional<MergedResult> decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext) throws SQLException {
         MergedResult result = null;
-        for (Entry<BaseRule, ResultProcessEntry> entry : entries.entrySet()) {
-            if (entry.getValue() instanceof ResultDecorateEntry) {
-                ResultDecorator resultDecorator = ((ResultDecorateEntry) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
+        for (Entry<BaseRule, ResultProcessEngine> entry : entries.entrySet()) {
+            if (entry.getValue() instanceof ResultDecoratorEngine) {
+                ResultDecorator resultDecorator = ((ResultDecoratorEngine) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
                 result = null == result ? resultDecorator.decorate(queryResult, sqlStatementContext, relationMetas) : resultDecorator.decorate(result, sqlStatementContext, relationMetas);
             }
         }

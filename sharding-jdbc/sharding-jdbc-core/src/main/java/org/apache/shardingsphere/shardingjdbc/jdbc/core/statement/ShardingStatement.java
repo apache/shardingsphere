@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.merge.entry.MergeEntry;
+import org.apache.shardingsphere.underlying.merge.MergeEntry;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.shard.SimpleQueryShardingEngine;
@@ -41,7 +41,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.entry.ResultProcessEntry;
+import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
 import java.sql.ResultSet;
@@ -134,7 +134,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private MergedResult createMergedResult(final List<ResultSet> resultSets, final List<QueryResult> queryResults) throws SQLException {
-        Map<BaseRule, ResultProcessEntry> entries = new HashMap<>(2, 1);
+        Map<BaseRule, ResultProcessEngine> entries = new HashMap<>(2, 1);
         entries.put(connection.getRuntimeContext().getRule(), new ShardingResultMergeEntry());
         EncryptRule encryptRule = connection.getRuntimeContext().getRule().getEncryptRule();
         if (!encryptRule.getEncryptTableNames().isEmpty()) {

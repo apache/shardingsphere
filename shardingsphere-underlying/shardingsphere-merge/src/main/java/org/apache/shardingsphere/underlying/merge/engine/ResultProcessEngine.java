@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.merge.entry;
+package org.apache.shardingsphere.underlying.merge.engine;
 
 /**
- * Result process entry.
+ * Result process engine.
  *
  * @author zhangliang
  */
-public interface ResultProcessEntry {
+public interface ResultProcessEngine {
 }

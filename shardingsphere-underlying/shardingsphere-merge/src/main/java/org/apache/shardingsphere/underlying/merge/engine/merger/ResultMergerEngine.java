@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.merge.entry;
+package org.apache.shardingsphere.underlying.merge.engine.merger;
 
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
-import org.apache.shardingsphere.underlying.merge.engine.ResultDecorator;
+import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
 
 /**
- * Result decorate entry.
+ * Result merger engine.
  *
  * @author zhangliang
  * 
  * @param <T> type of base rule
  */
-public interface ResultDecorateEntry<T extends BaseRule> extends ResultProcessEntry {
+public interface ResultMergerEngine<T extends BaseRule> extends ResultProcessEngine {
     
     /**
-     * Create new instance of result decorator.
+     * Create new instance of result merger engine.
      * 
      * @param databaseType database type
      * @param rule rule
      * @param properties ShardingSphere properties
      * @param sqlStatementContext SQL statement context
-     * @return new instance of result decorator
+     * @return new instance of result merger engine
      */
-    ResultDecorator newInstance(DatabaseType databaseType, T rule, ShardingSphereProperties properties, SQLStatementContext sqlStatementContext);
+    ResultMerger newInstance(DatabaseType databaseType, T rule, ShardingSphereProperties properties, SQLStatementContext sqlStatementContext);
 }

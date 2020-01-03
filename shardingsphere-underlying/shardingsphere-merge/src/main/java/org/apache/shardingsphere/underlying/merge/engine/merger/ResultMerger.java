@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.merge.entry;
+package org.apache.shardingsphere.underlying.merge.engine.merger;
 
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
-import org.apache.shardingsphere.underlying.merge.engine.ResultMerger;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.merge.result.MergedResult;
+
+import java.sql.SQLException;
+import java.util.List;
 
 /**
- * Result merge entry.
+ * Query results merger.
  *
  * @author zhangliang
- * 
- * @param <T> type of base rule
  */
-public interface ResultMergeEntry<T extends BaseRule> extends ResultProcessEntry {
+public interface ResultMerger {
     
     /**
-     * Create new instance of merge engine.
+     * Merge query results.
      * 
-     * @param databaseType database type
-     * @param rule rule
-     * @param properties ShardingSphere properties
+     * @param queryResults query results
      * @param sqlStatementContext SQL statement context
-     * @return new instance of merge engine
+     * @param relationMetas relation metas
+     * @return merged result
+     * @throws SQLException SQL exception
      */
-    ResultMerger newInstance(DatabaseType databaseType, T rule, ShardingSphereProperties properties, SQLStatementContext sqlStatementContext);
+    MergedResult merge(List<QueryResult> queryResults, SQLStatementContext sqlStatementContext, RelationMetas relationMetas) throws SQLException;
 }

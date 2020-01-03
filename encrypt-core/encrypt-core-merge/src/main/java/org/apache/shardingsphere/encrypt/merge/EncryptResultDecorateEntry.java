@@ -27,9 +27,9 @@ import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLSta
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.merge.engine.ResultDecorator;
-import org.apache.shardingsphere.underlying.merge.engine.impl.TransparentResultDecorator;
-import org.apache.shardingsphere.underlying.merge.entry.ResultDecorateEntry;
+import org.apache.shardingsphere.underlying.merge.engine.decorator.ResultDecorator;
+import org.apache.shardingsphere.underlying.merge.engine.decorator.impl.TransparentResultDecorator;
+import org.apache.shardingsphere.underlying.merge.engine.decorator.ResultDecoratorEngine;
 
 /**
  * Result decorate entry of encrypt.
@@ -37,7 +37,7 @@ import org.apache.shardingsphere.underlying.merge.entry.ResultDecorateEntry;
  * @author zhangliang
  * @author panjuan
  */
-public abstract class EncryptResultDecorateEntry implements ResultDecorateEntry<EncryptRule> {
+public abstract class EncryptResultDecorateEntry implements ResultDecoratorEngine<EncryptRule> {
     
     @Override
     public final ResultDecorator newInstance(final DatabaseType databaseType, final EncryptRule encryptRule, final ShardingSphereProperties properties, final SQLStatementContext sqlStatementContext) {

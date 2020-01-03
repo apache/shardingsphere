@@ -25,9 +25,9 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.merge.engine.ResultMerger;
-import org.apache.shardingsphere.underlying.merge.engine.impl.TransparentResultMerger;
-import org.apache.shardingsphere.underlying.merge.entry.ResultMergeEntry;
+import org.apache.shardingsphere.underlying.merge.engine.merger.ResultMerger;
+import org.apache.shardingsphere.underlying.merge.engine.merger.impl.TransparentResultMerger;
+import org.apache.shardingsphere.underlying.merge.engine.merger.ResultMergerEngine;
 
 /**
  * Result merge entry for sharding.
@@ -35,7 +35,7 @@ import org.apache.shardingsphere.underlying.merge.entry.ResultMergeEntry;
  * @author zhangliang
  * @author panjuan
  */
-public final class ShardingResultMergeEntry implements ResultMergeEntry<ShardingRule> {
+public final class ShardingResultMergeEntry implements ResultMergerEngine<ShardingRule> {
     
     @Override
     public ResultMerger newInstance(final DatabaseType databaseType, final ShardingRule shardingRule, final ShardingSphereProperties properties, final SQLStatementContext sqlStatementContext) {
