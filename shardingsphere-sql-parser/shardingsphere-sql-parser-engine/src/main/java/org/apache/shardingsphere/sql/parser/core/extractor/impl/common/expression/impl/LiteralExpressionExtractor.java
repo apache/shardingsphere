@@ -64,6 +64,14 @@ public final class LiteralExpressionExtractor implements OptionalSQLSegmentExtra
             String text = stringLiteralsNode.get().getText();
             return Optional.of(text.substring(1, text.length() - 1));
         }
+        return getBooleanLiterals(literalsNode);
+    }
+    
+    private Optional<String> getBooleanLiterals(final ParserRuleContext literalsNode) {
+        Optional<ParserRuleContext> booleanLiteralsNode = ExtractorUtils.findFirstChildNode(literalsNode, RuleName.BOOLEAN_LITERALS);
+        if (booleanLiteralsNode.isPresent()) {
+            return Optional.of(booleanLiteralsNode.get().getText());
+        }
         return Optional.absent();
     }
 }
