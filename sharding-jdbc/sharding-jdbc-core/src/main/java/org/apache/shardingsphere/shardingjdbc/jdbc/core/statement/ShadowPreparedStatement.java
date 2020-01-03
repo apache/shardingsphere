@@ -130,7 +130,9 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
             preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
             replayMethodsInvocation(preparedStatement);
             replaySetParameter(preparedStatement, sqlUnit.getParameters());
-            return preparedStatement.execute();
+            boolean result = preparedStatement.execute();
+            this.resultSet = preparedStatement.getResultSet();
+            return result;
         } finally {
             clearParameters();
         }
@@ -144,6 +146,9 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
 
     @Override
     public int[] executeBatch() throws SQLException {
+        if (0 == sqlUnits.size()) {
+            return new int[0];
+        }
         try {
             preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnits.iterator().next().getSql());
             replayMethodsInvocation(preparedStatement);
@@ -236,6 +241,15 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
     @Override
     public int getResultSetHoldability() {
         return preparedStatementGenerator.resultSetHoldability;
+    }
+
+    @Override
+    public void clearBatch() throws SQLException {
+        if (null != preparedStatement) {
+            preparedStatement.clearBatch();
+        }
+        sqlUnits.clear();
+        clearParameters();
     }
 
     @RequiredArgsConstructor

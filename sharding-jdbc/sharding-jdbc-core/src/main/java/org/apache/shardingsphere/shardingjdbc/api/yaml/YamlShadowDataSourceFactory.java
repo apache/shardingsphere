@@ -28,6 +28,8 @@ import org.apache.shardingsphere.shardingjdbc.api.ShadowDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
+import java.util.Map;
+
 
 /**
  * Shadow data source factory for YAML.
@@ -36,7 +38,7 @@ import java.io.File;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlShadowDataSourceFactory {
-    
+
     /**
      * Create shadow data source.
      *
@@ -49,7 +51,7 @@ public final class YamlShadowDataSourceFactory {
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfigurationYamlSwapper().swap(config.getShadowRule());
         return ShadowDataSourceFactory.createDataSource(config.getDataSources(), ruleConfig, config.getProps());
     }
-    
+
     /**
      * Create shadow data source.
      *
@@ -61,5 +63,19 @@ public final class YamlShadowDataSourceFactory {
         YamlRootShadowConfiguration config = YamlEngine.unmarshal(yamlBytes, YamlRootShadowConfiguration.class);
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfigurationYamlSwapper().swap(config.getShadowRule());
         return ShadowDataSourceFactory.createDataSource(config.getDataSources(), ruleConfig, config.getProps());
+    }
+
+    /**
+     * Create shadow data source.
+     *
+     * @param dataSourceMap the data sources map
+     * @param yamlFile YAML file for encrypt rule configuration with data sources
+     * @return shadow data source
+     */
+    @SneakyThrows
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) {
+        YamlRootShadowConfiguration config = YamlEngine.unmarshal(yamlFile, YamlRootShadowConfiguration.class);
+        ShadowRuleConfiguration ruleConfig = new ShadowRuleConfigurationYamlSwapper().swap(config.getShadowRule());
+        return ShadowDataSourceFactory.createDataSource(dataSourceMap, ruleConfig, config.getProps());
     }
 }
