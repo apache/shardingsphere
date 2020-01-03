@@ -7,32 +7,34 @@ weight = 5
 
 ## 目标
 
-根据验证目标将性能测试分为损耗测试和提升测试，从业务角度考虑，insert+update+delete通常用作一个完整的关联操作，可用作损耗/提升测试评估，而select作为查询操作关注分片优化可用作损耗/提升操作性能评估的另一个操作，因此在性能测试设计中，基于基本应用场景（单路由，主从，主从+脱敏+分库分表，全路由）分别以上述操作做测试。为了更好的观察性能效果，设计在已知数据量（1千）的基础上，20并发线程持续压测半小时，进行增删改查性能测试。
+根据验证目标将性能测试分为损耗测试和提升测试，从业务角度考虑，在基本应用场景（单路由，主从+脱敏+分库分表，全路由）下，insert+update+delete通常用作一个完整的关联操作，用作损耗/提升测试评估，而select关注分片优化可用作性能评估的另一个操作；而主从模式下，将insert+select+delete作为一组评估性能的关联操作。为了更好的观察效果，设计在一定数据量的基础上，20并发线程持续压测半小时，进行增删改查性能测试。
 
 ## 测试场景
 
 #### 单路由
 
-分库分表，根据ID分为4个库，根据K分为1024个表，在200W数据的基础上，查询操作路由到单库单表。
+在1000数据量的基础上分库分表，根据`id`分为4个库，根据`k`分为1024个表，查询操作路由到单库单表。
 
 #### 主从
 
-基本主从场景，设置一主库一从库，查询使用相同的单条数据查询。
+基本主从场景，设置一主库一从库，在10000数据量的基础上，观察读写性能。
 
 #### 主从+脱敏+分库分表
 
-根据ID分为4个库，根据K分为1024个表，C使用aes加密，pad使用md5加密，查询操作路由到单库单表。
+在1000数据量的基础上，根据`id`分为4个库，根据`k`分为1024个表，`c`使用aes加密，`pad`使用md5加密，查询操作路由到单库单表。
 
 #### 全路由
 
-分库分表，根据ID分为4个库，根据K分为1个表，查询操作使用全路由。
+在1000数据量的基础上，分库分表，根据`id`分为4个库，根据`k`分为1个表，查询操作使用全路由。
 
 ## 测试环境搭建
 
 #### 数据库表结构
 
+此处表结构参考sysbench的sbtest表
+
 ```shell
-CREATE TABLE `press_test` (
+CREATE TABLE `tbl` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `k` int(11) NOT NULL DEFAULT 0,
   `c` char(120) NOT NULL DEFAULT '',
@@ -51,32 +53,32 @@ Sharding-JDBC使用与Sharding-Proxy一致的配置，MySQL直连一个库用做
 schemaName: sharding_db
 
 dataSources:
-  press_test_0:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+  ds_0:
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password: 
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-  press_test_1:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+  ds_1:
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password: 
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-  press_test_2:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+  ds_2:
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test 
     password: 
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-  press_test_3:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+  ds_3:
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -85,19 +87,19 @@ dataSources:
     maxPoolSize: 200
 shardingRule:
     tables:
-      test:
-        actualDataNodes: press_test_${0..3}.test${0..1023}
+      tbl:
+        actualDataNodes: ds_${0..3}.tbl${0..1023}
         tableStrategy:
           inline:
             shardingColumn: k
-            algorithmExpression: test${k % 1024}
+            algorithmExpression: tbl${k % 1024}
         keyGenerator:
             type: SNOWFLAKE
             column: id
     defaultDatabaseStrategy:
       inline:
         shardingColumn: id
-        algorithmExpression: press_test_${id % 4}
+        algorithmExpression: ds_${id % 4}
     defaultTableStrategy:
       none:
 ```
@@ -109,7 +111,7 @@ schemaName: sharding_db
 
 dataSources:
   master_ds:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -117,7 +119,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
   slave_ds_0:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -138,7 +140,7 @@ schemaName: sharding_db
 
 dataSources:
   master_ds_0:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -146,7 +148,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
   slave_ds_0:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -154,7 +156,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
   master_ds_1:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -162,7 +164,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
   slave_ds_1:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -170,7 +172,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
   master_ds_2:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -178,7 +180,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
   slave_ds_2:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -186,7 +188,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
   master_ds_3:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -194,7 +196,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
   slave_ds_3:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -203,8 +205,8 @@ dataSources:
     maxPoolSize: 200
 shardingRule:
   tables:
-    test:
-      actualDataNodes: ms_ds_${0..3}.test${0..1023}
+    tbl:
+      actualDataNodes: ms_ds_${0..3}.tbl${0..1023}
       databaseStrategy:
         inline:
           shardingColumn: id
@@ -212,12 +214,12 @@ shardingRule:
       tableStrategy:
         inline:
           shardingColumn: k
-          algorithmExpression: test${k % 1024}
+          algorithmExpression: tbl${k % 1024}
       keyGenerator:
         type: SNOWFLAKE
         column: id
   bindingTables:
-    - test
+    - tbl
   defaultDataSourceName: master_ds_1
   defaultTableStrategy:
     none:
@@ -268,32 +270,32 @@ encryptRule:
 schemaName: sharding_db
 
 dataSources:
-  press_test_0:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+  ds_0:
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-  press_test_1:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+  ds_1:
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-  press_test_2:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+  ds_2:
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-  press_test_3:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+  ds_3:
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -302,19 +304,19 @@ dataSources:
     maxPoolSize: 200
 shardingRule:
   tables:
-    test:
-      actualDataNodes: press_test_${0..3}.test1
+    tbl:
+      actualDataNodes: ds_${0..3}.tbl1
       tableStrategy:
         inline:
           shardingColumn: k
-          algorithmExpression: test1
+          algorithmExpression: tbl1
       keyGenerator:
           type: SNOWFLAKE
           column: id
   defaultDatabaseStrategy:
     inline:
       shardingColumn: id
-      algorithmExpression: press_test_${id % 4}
+      algorithmExpression: ds_${id % 4}
   defaultTableStrategy:
     none:  
 ```
@@ -325,13 +327,21 @@ shardingRule:
 
 ```shell
 Insert+Update+Delete语句：
-Insert into press_test(k, c, pad) values (1, "###", "###")
-Update press_test set c="###-#", pad="###-#" where id=**
-Delete from press_test where id=**
+insert into tbl(k, c, pad) values(1, '###-###-###', '###-###');
+update tbl set c='####-####-####', pad='####-####' where id=?;
+delete from tbl where id=?
+
 全路由查询语句：
-select max(id) from test where id%4=1
+select max(id) from tbl where id%4=1
+
 单路由查询语句：
-select id, k from test ignore index(`PRIMARY`) where id=1 and k=1
+select id, k from tbl ignore index(`PRIMARY`) where id=1 and k=1
+
+Insert+Select+Delete语句：
+insert into tbl1(k, c, pad) values(1, '###-###-###', '###-###');
+select count(id) from tbl1;
+select max(id) from tbl1 ignore index(`PRIMARY`);
+delete from tbl1 where id=?
 ```
 
 #### 压测类

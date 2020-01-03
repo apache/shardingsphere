@@ -7,37 +7,38 @@ weight = 5
 
 ## Target
 
-Performance test is classified as loss test and promotion test according to its verification target. Insert & update & delete which regarded as an association operation and select which focus on sharding optimization are used to evaluate performance based on the four different scenarios (single route, master slave, master slave & encrypt & sharding, full route).
-To achieve the result better, these tests are performed based on one thousand data with 20 concurrent threads for 30 minutes.
+Performance test is classified as loss test and promotion test according to its verification target. Insert & update & delete which regarded as a set of associated operation and select which focus on sharding optimization are used to evaluate performance for the basic scenarios (single route, master slave & encrypt & sharding, full route). While another set of associated operation, Insert & select & delete, is used to evaluate performance for master slave.
+To achieve the result better, these tests are performed based on a certain amount of data with 20 concurrent threads for 30 minutes.
 
 ## Test Scenarios
 
 #### Single Route
 
-Four databases that each contains 1024 tables with id used for database sharding and k used for table sharding are designed for this scenario.
+On the basis of one thousand data volume, four databases that each contains 1024 tables with `id` used for database sharding and `k` used for table sharding are designed for this scenario.          
 Single route select sql statement is chosen here.
 
 #### Master Slave
 
-One master database and one slave database is designed for this scene. 
-Single route select sql statement is chosen here.
+One master database and one slave database is designed for this scenario based on ten thousand data volume. 
 
 #### Master Slave & Encrypt & Sharding
 
-Four databases that each contains 1024 tables with id used for database sharding, k used for table sharding, c encrypted with aes and  pad encrypted with md5 are designed for this scene.
+On the basis of one thousand data volume, four databases that each contains 1024 tables with `id` used for database sharding, `k` used for table sharding, `c` encrypted with aes and  `pad` encrypted with md5 are designed for this scenario.
 Single route select sql statement is chosen here.
 
 #### Full Route
 
-Four databases that each contains one table are designed for this scene, field 'id' is used for database sharding and 'k' is used for table sharding.
+On the basis of one thousand data volume, four databases that each contains one table are designed for this scenario, field `id` is used for database sharding and `k` is used for table sharding.
 Full route select sql statement is chosen here.
 
 ## Testing Environment
 
 #### Table Structure of Database
 
+The structure of table here refer to `sbtest` in `sysbench`
+
 ```shell
-CREATE TABLE `press_test` (
+CREATE TABLE `tbl` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `k` int(11) NOT NULL DEFAULT 0,
   `c` char(120) NOT NULL DEFAULT '',
@@ -48,7 +49,7 @@ CREATE TABLE `press_test` (
 
 #### Test Scenarios Configuration
 
-The same configurations are used for Sharding-JDBC and Sharding-Proxy, while MySQL with one database connected is designed for comparision loss/promotion test.
+The same configurations are used for Sharding-JDBC and Sharding-Proxy, while MySQL with one database connected is designed for comparision.
 The details for these scenarios are shown as follows.
 
 ##### Single Route Configuration
@@ -57,32 +58,32 @@ The details for these scenarios are shown as follows.
 schemaName: sharding_db
 
 dataSources:
-  press_test_0:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+  ds_0:
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password: 
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-  press_test_1:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+  ds_1:
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password: 
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-  press_test_2:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+  ds_2:
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test 
     password: 
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-  press_test_3:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+  ds_3:
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -91,19 +92,19 @@ dataSources:
     maxPoolSize: 200
 shardingRule:
     tables:
-      test:
-        actualDataNodes: press_test_${0..3}.test${0..1023}
+      tbl:
+        actualDataNodes: ds_${0..3}.tbl${0..1023}
         tableStrategy:
           inline:
             shardingColumn: k
-            algorithmExpression: test${k % 1024}
+            algorithmExpression: tbl${k % 1024}
         keyGenerator:
             type: SNOWFLAKE
             column: id
     defaultDatabaseStrategy:
       inline:
         shardingColumn: id
-        algorithmExpression: press_test_${id % 4}
+        algorithmExpression: ds_${id % 4}
     defaultTableStrategy:
       none:
 ```
@@ -115,7 +116,7 @@ schemaName: sharding_db
 
 dataSources:
   master_ds:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -123,7 +124,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
   slave_ds_0:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -144,7 +145,7 @@ schemaName: sharding_db
 
 dataSources:
   master_ds_0:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -152,7 +153,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
   slave_ds_0:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -160,7 +161,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
   master_ds_1:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -168,7 +169,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
   slave_ds_1:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -176,7 +177,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
   master_ds_2:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -184,7 +185,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
   slave_ds_2:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -192,7 +193,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
   master_ds_3:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -200,7 +201,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
   slave_ds_3:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -209,8 +210,8 @@ dataSources:
     maxPoolSize: 200
 shardingRule:
   tables:
-    test:
-      actualDataNodes: ms_ds_${0..3}.test${0..1023}
+    tbl:
+      actualDataNodes: ms_ds_${0..3}.tbl${0..1023}
       databaseStrategy:
         inline:
           shardingColumn: id
@@ -218,12 +219,12 @@ shardingRule:
       tableStrategy:
         inline:
           shardingColumn: k
-          algorithmExpression: test${k % 1024}
+          algorithmExpression: tbl${k % 1024}
       keyGenerator:
         type: SNOWFLAKE
         column: id
   bindingTables:
-    - test
+    - tbl
   defaultDataSourceName: master_ds_1
   defaultTableStrategy:
     none:
@@ -274,32 +275,32 @@ encryptRule:
 schemaName: sharding_db
 
 dataSources:
-  press_test_0:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+  ds_0:
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-  press_test_1:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+  ds_1:
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-  press_test_2:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+  ds_2:
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
-  press_test_3:
-    url: jdbc:mysql://***.***.***.***:****/press_test?serverTimezone=UTC&useSSL=false
+  ds_3:
+    url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&useSSL=false
     username: test
     password:
     connectionTimeoutMilliseconds: 30000
@@ -308,19 +309,19 @@ dataSources:
     maxPoolSize: 200
 shardingRule:
   tables:
-    test:
-      actualDataNodes: press_test_${0..3}.test1
+    tbl:
+      actualDataNodes: ds_${0..3}.tbl1
       tableStrategy:
         inline:
           shardingColumn: k
-          algorithmExpression: test1
+          algorithmExpression: tbl1
       keyGenerator:
           type: SNOWFLAKE
           column: id
   defaultDatabaseStrategy:
     inline:
       shardingColumn: id
-      algorithmExpression: press_test_${id % 4}
+      algorithmExpression: ds_${id % 4}
   defaultTableStrategy:
     none:  
 ```
@@ -331,13 +332,21 @@ shardingRule:
  
 ```shell
 Insert+Update+Delete sql statements:
-Insert into press_test(k, c, pad) values (1, "###", "###")
-Update press_test set c="###-#", pad="###-#" where id=**
-Delete from press_test where id=**
-select sql statement for full route:
-select max(id) from test where id%4=1
-select sql statement for single route:
-select id, k from test ignore index(`PRIMARY`) where id=1 and k=1
+insert into tbl(k, c, pad) values(1, '###-###-###', '###-###');
+update tbl set c='####-####-####', pad='####-####' where id=?;
+delete from tbl where id=?
+
+Select sql statement for full route:
+select max(id) from tbl where id%4=1
+
+Select sql statement for single route:
+select id, k from tbl ignore index(`PRIMARY`) where id=1 and k=1
+
+Insert+Select+Delete sql statements：
+insert into tbl1(k, c, pad) values(1, '###-###-###', '###-###');
+select count(id) from tbl1;
+select max(id) from tbl1 ignore index(`PRIMARY`);
+delete from tbl1 where id=?
 ```
 
 #### Jmeter Class
