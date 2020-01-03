@@ -32,7 +32,7 @@ import org.apache.shardingsphere.underlying.merge.engine.decorator.impl.Transpar
 import org.apache.shardingsphere.underlying.merge.engine.decorator.ResultDecoratorEngine;
 
 /**
- * Result decorator engine of encrypt.
+ * Result decorator engine for encrypt.
  *
  * @author zhangliang
  * @author panjuan

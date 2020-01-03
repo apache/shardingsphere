@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
 import java.sql.ResultSetMetaData;
 
 /**
- * JDBC result decorator engine of encrypt.
+ * JDBC result decorator engine for encrypt.
  *
  * @author zhangliang
  */

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
 import java.util.List;
 
 /**
- * Proxy result decorator engine of encrypt.
+ * Proxy result decorator engine for encrypt.
  *
  * @author zhangliang
  */
