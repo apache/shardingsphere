@@ -21,12 +21,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.core.rewrite.engine.impl.DefaultSQLRewriteEngine;
-import org.apache.shardingsphere.core.rewrite.feature.shadow.ShadowJudgementEngine;
-import org.apache.shardingsphere.core.rewrite.feature.shadow.SimpleJudgementEngine;
-import org.apache.shardingsphere.core.rewrite.feature.shadow.context.ShadowSQLRewriteContextDecorator;
 import org.apache.shardingsphere.core.route.SQLLogger;
+import org.apache.shardingsphere.shadow.rewrite.ShadowJudgementEngine;
+import org.apache.shardingsphere.shadow.rewrite.SimpleJudgementEngine;
+import org.apache.shardingsphere.shadow.rewrite.context.ShadowSQLRewriteContextDecorator;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractStatementAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShadowConnection;
 import org.apache.shardingsphere.sql.parser.relation.SQLStatementContextFactory;
@@ -34,6 +32,8 @@ import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetaData;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.underlying.rewrite.engine.impl.DefaultSQLRewriteEngine;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -194,7 +194,7 @@ public final class ShadowStatement extends AbstractStatementAdapter {
     }
 
     private String rewriteSql(final String sql) {
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(shadowConnection.getRuntimeContext().getTableMetas(), sqlStatementContext, sql, Collections.emptyList());
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(getRelationMetas(shadowConnection.getRuntimeContext().getTableMetas()), sqlStatementContext, sql, Collections.emptyList());
         new ShadowSQLRewriteContextDecorator(shadowConnection.getRuntimeContext().getRule()).decorate(sqlRewriteContext);
         sqlRewriteContext.generateSQLTokens();
         String result = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
