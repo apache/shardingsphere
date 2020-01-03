@@ -55,14 +55,14 @@ public final class MergeEntry {
     private final Map<BaseRule, ResultProcessEngine> entries;
     
     /**
-     * Get merged result.
+     * Process query results.
      * 
      * @param queryResults query results
-     * @param sqlStatementContext SQL statementContext
+     * @param sqlStatementContext SQL statement context
      * @return merged result
      * @throws SQLException SQL exception
      */
-    public MergedResult getMergedResult(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
+    public MergedResult process(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
         Optional<MergedResult> mergedResult = merge(queryResults, sqlStatementContext);
         Optional<MergedResult> result = mergedResult.isPresent() ? Optional.of(decorate(mergedResult.get(), sqlStatementContext)) : decorate(queryResults.get(0), sqlStatementContext);
         return result.isPresent() ? result.get() : new TransparentMergedResult(queryResults.get(0));

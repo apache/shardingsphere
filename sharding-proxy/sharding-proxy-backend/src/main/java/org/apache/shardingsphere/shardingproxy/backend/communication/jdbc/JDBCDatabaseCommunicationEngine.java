@@ -141,7 +141,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
         MergeEntry mergeEntry = new MergeEntry(
                 LogicSchemas.getInstance().getDatabaseType(), logicSchema.getMetaData().getRelationMetas(), ShardingProxyContext.getInstance().getProperties(), engines);
-        return mergeEntry.getMergedResult(queryResults, routeResult.getSqlStatementContext());
+        return mergeEntry.process(queryResults, routeResult.getSqlStatementContext());
     }
     
     private void handleColumnsForQueryHeader(final SQLRouteResult routeResult) {

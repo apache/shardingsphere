@@ -89,7 +89,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
         Map<BaseRule, ResultProcessEngine> engines = new HashMap<>(1, 1);
         engines.put(encryptRule, new JDBCEncryptResultDecorateEntry(resultSet.getMetaData()));
         MergeEntry mergeEntry = new MergeEntry(encryptRuntimeContext.getDatabaseType(), null, encryptRuntimeContext.getProperties(), engines);
-        return mergeEntry.getMergedResult(Collections.<QueryResult>singletonList(new StreamQueryResult(resultSet)), sqlStatementContext);
+        return mergeEntry.process(Collections.<QueryResult>singletonList(new StreamQueryResult(resultSet)), sqlStatementContext);
     }
     
     private Map<String, String> createLogicAndActualColumns(final boolean isQueryWithCipherColumn) {

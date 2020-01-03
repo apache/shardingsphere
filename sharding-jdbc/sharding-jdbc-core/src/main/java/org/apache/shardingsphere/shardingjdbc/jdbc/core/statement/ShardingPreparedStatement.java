@@ -163,7 +163,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         }
         MergeEntry mergeEntry = new MergeEntry(connection.getRuntimeContext().getDatabaseType(),
                 connection.getRuntimeContext().getMetaData().getRelationMetas(), connection.getRuntimeContext().getProperties(), engines);
-        return mergeEntry.getMergedResult(queryResults, routeResult.getSqlStatementContext());
+        return mergeEntry.process(queryResults, routeResult.getSqlStatementContext());
     }
     
     @Override
