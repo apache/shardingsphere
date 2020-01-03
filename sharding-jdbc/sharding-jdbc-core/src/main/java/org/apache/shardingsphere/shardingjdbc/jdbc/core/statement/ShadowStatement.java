@@ -42,6 +42,7 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -156,11 +157,17 @@ public final class ShadowStatement extends AbstractStatementAdapter {
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    protected Collection<? extends Statement> getRoutedStatements() {
-        return Collections.singleton(statement);
+    protected Collection<Statement> getRoutedStatements() {
+        Collection<Statement> result = new LinkedList();
+        if (null == statement) {
+            return result;
+        }
+        result.add(statement);
+        return result;
     }
-
+    
     private Statement getStatementAndReplay(final String sql) throws SQLException {
         SQLStatement sqlStatement = shadowConnection.getRuntimeContext().getParseEngine().parse(sql, false);
         sqlStatementContext = SQLStatementContextFactory.newInstance(getRelationMetas(shadowConnection.getRuntimeContext().getTableMetas()), sql, Collections.emptyList(), sqlStatement);
