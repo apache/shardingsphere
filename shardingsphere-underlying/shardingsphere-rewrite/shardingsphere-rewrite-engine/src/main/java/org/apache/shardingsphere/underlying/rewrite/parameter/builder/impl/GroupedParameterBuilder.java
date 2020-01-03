@@ -36,7 +36,10 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     
     @Getter
     private final List<StandardParameterBuilder> parameterBuilders;
-    
+
+    @Getter
+    private final List<Object> onDuplicateKeyUpdateAddedParameters = new LinkedList<>();
+
     @Setter
     private String derivedColumnName;
     
@@ -52,6 +55,9 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
         List<Object> result = new LinkedList<>();
         for (int i = 0; i < parameterBuilders.size(); i++) {
             result.addAll(getParameters(i));
+        }
+        if (!onDuplicateKeyUpdateAddedParameters.isEmpty()) {
+            result.addAll(onDuplicateKeyUpdateAddedParameters);
         }
         return result;
     }

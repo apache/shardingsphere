@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.core.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
@@ -58,6 +59,7 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
         result.add(new EncryptAssignmentParameterRewriter());
         result.add(new EncryptPredicateParameterRewriter());
         result.add(new EncryptInsertValueParameterRewriter());
+        result.add(new EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter());
         return result;
     }
     
