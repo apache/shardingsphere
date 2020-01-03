@@ -132,8 +132,13 @@ public abstract class AbstractStatementExecutor {
     /**
      * To make sure SkyWalking will be available at the next release of ShardingSphere,
      * a new plugin should be provided to SkyWalking project if this API changed.
-     *
+     * 
      * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
+     * 
+     * @param executeCallback execute callback
+     * @param <T> class type of return value 
+     * @return result
+     * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
     protected final <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
