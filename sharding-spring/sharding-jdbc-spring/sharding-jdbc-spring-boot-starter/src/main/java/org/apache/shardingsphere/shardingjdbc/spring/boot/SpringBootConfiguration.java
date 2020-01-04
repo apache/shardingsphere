@@ -25,18 +25,27 @@ import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressio
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.core.config.inline.InlineExpressionParser;
+import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.impl.ShadowRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.api.EncryptDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.ShadowDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.common.SpringBootPropertiesConfigurationProperties;
-import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetter;
-import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetterHolder;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.encrypt.EncryptRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.encrypt.SpringBootEncryptRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.masterslave.MasterSlaveRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.shadow.ShadowRuleCondition;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.shadow.SpringBootShadowRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.ShardingRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
+import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetter;
+import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetterHolder;
 import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -68,8 +77,9 @@ import java.util.Map;
  */
 @Configuration
 @EnableConfigurationProperties({
-        SpringBootShardingRuleConfigurationProperties.class, 
-        SpringBootMasterSlaveRuleConfigurationProperties.class, SpringBootEncryptRuleConfigurationProperties.class, SpringBootPropertiesConfigurationProperties.class})
+        SpringBootShardingRuleConfigurationProperties.class,
+        SpringBootMasterSlaveRuleConfigurationProperties.class, SpringBootEncryptRuleConfigurationProperties.class,
+        SpringBootPropertiesConfigurationProperties.class, SpringBootShadowRuleConfigurationProperties.class})
 @ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
 @RequiredArgsConstructor
@@ -80,6 +90,8 @@ public class SpringBootConfiguration implements EnvironmentAware {
     private final SpringBootMasterSlaveRuleConfigurationProperties masterSlaveRule;
     
     private final SpringBootEncryptRuleConfigurationProperties encryptRule;
+    
+    private final SpringBootShadowRuleConfigurationProperties shadowRule;
     
     private final SpringBootPropertiesConfigurationProperties props;
     
@@ -140,7 +152,7 @@ public class SpringBootConfiguration implements EnvironmentAware {
     private List<String> getDataSourceNames(final Environment environment, final String prefix) {
         StandardEnvironment standardEnv = (StandardEnvironment) environment;
         standardEnv.setIgnoreUnresolvableNestedPlaceholders(true);
-        return null == standardEnv.getProperty(prefix + "name") 
+        return null == standardEnv.getProperty(prefix + "name")
                 ? new InlineExpressionParser(standardEnv.getProperty(prefix + "names")).splitAndEvaluate() : Collections.singletonList(standardEnv.getProperty(prefix + "name"));
     }
     

@@ -66,6 +66,17 @@ public final class SQLLogger {
             logNormalMode(routeUnits);
         }
     }
+
+    /**
+     * Print SQL log for shadow rule.
+     *
+     * @param shadowSQL shadow SQL
+     * @param dataSourceName data source name
+     */
+    public static void logShadowSQL(final String shadowSQL, final String dataSourceName) {
+        log("Rule Type: shadow");
+        log("SQL: {} ::: DataSources: {}", shadowSQL, dataSourceName);
+    }
     
     private static void logSimpleMode(final Collection<RouteUnit> routeUnits) {
         Set<String> dataSourceNames = new HashSet<>(routeUnits.size());

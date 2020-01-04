@@ -27,6 +27,7 @@ import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.dbtest.env.datasource.DataSourceUtil;
 import org.apache.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShadowDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
@@ -119,13 +120,18 @@ public abstract class BaseIT {
     }
     
     private DataSource createDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
-        return "masterslave".equals(shardingRuleType)
-                ? YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)))
-                : YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
+        switch (shardingRuleType) {
+            case "masterslave":
+                return YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
+            case "shadow":
+                return YamlShadowDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
+            default:
+                return YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
+        }
     }
     
     private Map<String, DataSource> createInstanceDataSourceMap() throws SQLException {
-        return "masterslave".equals(shardingRuleType) ? dataSourceMap : getShardingInstanceDataSourceMap();
+        return "masterslave".equals(shardingRuleType) || "shadow".equals(shardingRuleType) ? dataSourceMap : getShardingInstanceDataSourceMap();
     }
     
     private Map<String, DataSource> getShardingInstanceDataSourceMap() throws SQLException {
