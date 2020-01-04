@@ -247,8 +247,6 @@ public abstract class AbstractStatementExecutor {
     private TableMetaDataInitializerEntry createTableMetaDataInitializerEntry() {
         ShardingSphereProperties properties = connection.getRuntimeContext().getProperties();
         return new TableMetaDataInitializerEntry(connection.getRuntimeContext().getMetaData().getDataSources(), 
-                connection.getRuntimeContext().getExecutorEngine(), new JDBCConnectionManager(connection.getDataSourceMap()),
-                properties.<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
-                properties.<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
+                connection.getRuntimeContext().getExecutorEngine(), new JDBCConnectionManager(connection.getDataSourceMap()), properties);
     }
 }

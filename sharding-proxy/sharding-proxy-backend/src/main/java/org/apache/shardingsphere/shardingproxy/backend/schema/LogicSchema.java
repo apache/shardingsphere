@@ -32,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
@@ -100,10 +99,7 @@ public abstract class LogicSchema {
     
     protected final TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(final DataSourceMetas dataSourceMetas) {
         ShardingSphereProperties properties = ShardingProxyContext.getInstance().getProperties();
-        return new TableMetaDataInitializerEntry(
-                dataSourceMetas, BackendExecutorContext.getInstance().getExecutorEngine(), new ProxyConnectionManager(getBackendDataSource()),
-                properties.<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
-                properties.<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
+        return new TableMetaDataInitializerEntry(dataSourceMetas, BackendExecutorContext.getInstance().getExecutorEngine(), new ProxyConnectionManager(getBackendDataSource()), properties);
     }
     
     /**

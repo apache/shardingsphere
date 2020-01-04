@@ -20,6 +20,8 @@ package org.apache.shardingsphere.core.metadata;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.metadata.decorator.EncryptTableMetaDataDecorator;
 import org.apache.shardingsphere.sharding.execute.metadata.ShardingTableMetaDataInitializer;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
@@ -39,9 +41,10 @@ public final class TableMetaDataInitializerEntry {
     
     private final EncryptTableMetaDataDecorator encryptTableMetaDataDecorator;
     
-    public TableMetaDataInitializerEntry(final DataSourceMetas dataSourceMetas, final ExecutorEngine executorEngine,
-                                         final ConnectionManager connectionManager, final int maxConnectionsSizePerQuery, final boolean isCheckingMetaData) {
-        shardingTableMetaDataInitializer = new ShardingTableMetaDataInitializer(dataSourceMetas, executorEngine, connectionManager, maxConnectionsSizePerQuery, isCheckingMetaData);
+    public TableMetaDataInitializerEntry(final DataSourceMetas dataSourceMetas, 
+                                         final ExecutorEngine executorEngine, final ConnectionManager connectionManager, final ShardingSphereProperties properties) {
+        shardingTableMetaDataInitializer = new ShardingTableMetaDataInitializer(dataSourceMetas, executorEngine, connectionManager, 
+                properties.<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), properties.<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
         encryptTableMetaDataDecorator = new EncryptTableMetaDataDecorator();
     }
     
