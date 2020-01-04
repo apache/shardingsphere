@@ -24,6 +24,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.metadata.TableMetaDataInitializerEntry;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.encrypt.metadata.decorator.EncryptTableMetaDataDecorator;
+import org.apache.shardingsphere.sharding.execute.metadata.loader.ShardingTableMetaDataLoader;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
@@ -43,6 +46,8 @@ import org.apache.shardingsphere.underlying.common.constant.properties.Propertie
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializer;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
 import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 
@@ -51,8 +56,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -245,8 +252,15 @@ public abstract class AbstractStatementExecutor {
     }
     
     private TableMetaDataInitializerEntry createTableMetaDataInitializerEntry() {
+        ShardingRule shardingRule = connection.getRuntimeContext().getRule();
         ShardingSphereProperties properties = connection.getRuntimeContext().getProperties();
-        return new TableMetaDataInitializerEntry(connection.getRuntimeContext().getMetaData().getDataSources(), 
-                connection.getRuntimeContext().getExecutorEngine(), new JDBCConnectionManager(connection.getDataSourceMap()), properties);
+        Map<BaseRule, TableMetaDataInitializer> tableMetaDataInitializes = new HashMap<>(2, 1);
+        tableMetaDataInitializes.put(shardingRule, new ShardingTableMetaDataLoader(connection.getRuntimeContext().getMetaData().getDataSources(), connection.getRuntimeContext().getExecutorEngine(), 
+                new JDBCConnectionManager(connection.getDataSourceMap()),
+                properties.<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), properties.<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED)));
+        if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
+            tableMetaDataInitializes.put(shardingRule.getEncryptRule(), new EncryptTableMetaDataDecorator());
+        }
+        return new TableMetaDataInitializerEntry(tableMetaDataInitializes);
     }
 }

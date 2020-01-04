@@ -26,8 +26,8 @@ import org.apache.shardingsphere.underlying.common.metadata.column.loader.Column
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.loader.ConnectionManager;
-import org.apache.shardingsphere.underlying.common.metadata.table.loader.TableMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.ConnectionManager;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.TableMetaDataLoader;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

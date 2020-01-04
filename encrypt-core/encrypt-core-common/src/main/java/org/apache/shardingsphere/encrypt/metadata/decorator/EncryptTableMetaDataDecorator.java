@@ -22,7 +22,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.decorator.TableMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.decorator.TableMetaDataDecorator;
 
 import java.util.Collection;
 import java.util.HashMap;

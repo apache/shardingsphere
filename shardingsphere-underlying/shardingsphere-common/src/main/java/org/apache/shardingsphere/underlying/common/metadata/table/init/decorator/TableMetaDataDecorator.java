@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata.table.decorator;
+package org.apache.shardingsphere.underlying.common.metadata.table.init.decorator;
 
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializer;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 /**
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.underlying.common.rule.BaseRule;
  *
  * @author zhangliang
  */
-public interface TableMetaDataDecorator<T extends BaseRule> {
+public interface TableMetaDataDecorator<T extends BaseRule> extends TableMetaDataInitializer {
     
     /**
      * Decorate table metas.

@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata.table.loader;
+package org.apache.shardingsphere.underlying.common.metadata.table.init.loader;
 
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializer;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.sql.SQLException;
@@ -28,7 +29,7 @@ import java.sql.SQLException;
  *
  * @author zhangliang
  */
-public interface TableMetaDataLoader<T extends BaseRule> {
+public interface TableMetaDataLoader<T extends BaseRule> extends TableMetaDataInitializer {
     
     /**
      * Load table meta data.

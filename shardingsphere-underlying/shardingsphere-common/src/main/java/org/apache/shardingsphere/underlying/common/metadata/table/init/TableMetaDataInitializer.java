@@ -15,28 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.metadata;
-
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.ConnectionManager;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Map;
+package org.apache.shardingsphere.underlying.common.metadata.table.init;
 
 /**
- * Connection manager of JDBC.
+ * Table meta data initializer.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-public final class JDBCConnectionManager implements ConnectionManager {
-    
-    private final Map<String, DataSource> dataSourceMap;
-    
-    @Override
-    public Connection getConnection(final String dataSourceName) throws SQLException {
-        return dataSourceMap.get(dataSourceName).getConnection();
-    }
+public interface TableMetaDataInitializer {
 }

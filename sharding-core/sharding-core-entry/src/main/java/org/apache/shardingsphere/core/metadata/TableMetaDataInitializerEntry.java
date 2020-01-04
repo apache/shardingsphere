@@ -17,47 +17,61 @@
 
 package org.apache.shardingsphere.core.metadata;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.encrypt.metadata.decorator.EncryptTableMetaDataDecorator;
-import org.apache.shardingsphere.sharding.execute.metadata.loader.ShardingTableMetaDataLoader;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.loader.ConnectionManager;
-import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializer;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.decorator.TableMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.TableMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.sql.SQLException;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Table meta data initializer entry.
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public final class TableMetaDataInitializerEntry {
     
-    private final ShardingTableMetaDataLoader tableMetaDataLoader;
-    
-    private final EncryptTableMetaDataDecorator encryptTableMetaDataDecorator;
-    
-    public TableMetaDataInitializerEntry(final DataSourceMetas dataSourceMetas, 
-                                         final ExecutorEngine executorEngine, final ConnectionManager connectionManager, final ShardingSphereProperties properties) {
-        tableMetaDataLoader = new ShardingTableMetaDataLoader(dataSourceMetas, executorEngine, 
-                connectionManager, properties.<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), properties.<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
-        encryptTableMetaDataDecorator = new EncryptTableMetaDataDecorator();
-    }
+    private final Map<BaseRule, TableMetaDataInitializer> tableMetaDataInitializes;
     
     /**
      * Load table meta data.
      *
-     * @param logicTableName logic table name
+     * @param tableName table name
      * @param shardingRule sharding rule
      * @return table meta data
      * @throws SQLException SQL exception
      */
-    public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) throws SQLException {
-        return encryptTableMetaDataDecorator.decorate(tableMetaDataLoader.load(logicTableName, shardingRule), logicTableName, shardingRule.getEncryptRule());
+    @SuppressWarnings("unchecked")
+    public TableMetaData load(final String tableName, final ShardingRule shardingRule) throws SQLException {
+        return decorate(tableName, load0(tableName));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private TableMetaData load0(final String tableName) throws SQLException {
+        for (Entry<BaseRule, TableMetaDataInitializer> entry : tableMetaDataInitializes.entrySet()) {
+            if (entry.getValue() instanceof TableMetaDataLoader) {
+                return ((TableMetaDataLoader) entry.getValue()).load(tableName, entry.getKey());
+            }
+        }
+        throw new IllegalStateException("Cannot find class `TableMetaDataLoader`");
+    }
+    
+    @SuppressWarnings("unchecked")
+    private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData) {
+        TableMetaData result = tableMetaData;
+        for (Entry<BaseRule, TableMetaDataInitializer> entry : tableMetaDataInitializes.entrySet()) {
+            if (entry.getValue() instanceof TableMetaDataDecorator) {
+                result = ((TableMetaDataDecorator) entry.getValue()).decorate(result, tableName, entry.getKey());
+            }
+        }
+        return result;
     }
     
     /**
@@ -68,6 +82,27 @@ public final class TableMetaDataInitializerEntry {
      * @throws SQLException SQL exception
      */
     public TableMetas loadAll(final ShardingRule shardingRule) throws SQLException {
-        return encryptTableMetaDataDecorator.decorate(tableMetaDataLoader.loadAll(shardingRule), shardingRule.getEncryptRule());
+        return decorateAll(loadAll0());
+    }
+    
+    @SuppressWarnings("unchecked")
+    private TableMetas loadAll0() throws SQLException {
+        for (Entry<BaseRule, TableMetaDataInitializer> entry : tableMetaDataInitializes.entrySet()) {
+            if (entry.getValue() instanceof TableMetaDataLoader) {
+                return ((TableMetaDataLoader) entry.getValue()).loadAll(entry.getKey());
+            }
+        }
+        throw new IllegalStateException("Cannot find class `TableMetaDataLoader`");
+    }
+    
+    @SuppressWarnings("unchecked")
+    private TableMetas decorateAll(final TableMetas tableMetas) {
+        TableMetas result = tableMetas;
+        for (Entry<BaseRule, TableMetaDataInitializer> entry : tableMetaDataInitializes.entrySet()) {
+            if (entry.getValue() instanceof TableMetaDataDecorator) {
+                result = ((TableMetaDataDecorator) entry.getValue()).decorate(result, entry.getKey());
+            }
+        }
+        return result;
     }
 }
