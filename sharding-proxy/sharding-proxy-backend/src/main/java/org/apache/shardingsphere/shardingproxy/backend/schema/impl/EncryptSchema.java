@@ -60,7 +60,7 @@ public final class EncryptSchema extends LogicSchema {
     
     private ShardingSphereMetaData createMetaData() throws SQLException {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDatabaseAccessConfigurationMap());
-        TableMetas tableMetas = createTableMetaDataInitializerEntry(dataSourceMetas).load(shardingRule);
+        TableMetas tableMetas = createTableMetaDataInitializerEntry(dataSourceMetas).loadAll(shardingRule);
         return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
     }
     

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.metadata;
 
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.metadata.decorator.EncryptTableMetaDataDecorator;
-import org.apache.shardingsphere.sharding.execute.metadata.ShardingTableMetaDataInitializer;
+import org.apache.shardingsphere.sharding.execute.metadata.loader.ShardingTableMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
@@ -37,14 +37,14 @@ import java.sql.SQLException;
  */
 public final class TableMetaDataInitializerEntry {
     
-    private final ShardingTableMetaDataInitializer shardingTableMetaDataInitializer;
+    private final ShardingTableMetaDataLoader tableMetaDataLoader;
     
     private final EncryptTableMetaDataDecorator encryptTableMetaDataDecorator;
     
     public TableMetaDataInitializerEntry(final DataSourceMetas dataSourceMetas, 
                                          final ExecutorEngine executorEngine, final ConnectionManager connectionManager, final ShardingSphereProperties properties) {
-        shardingTableMetaDataInitializer = new ShardingTableMetaDataInitializer(dataSourceMetas, executorEngine, connectionManager, 
-                properties.<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), properties.<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
+        tableMetaDataLoader = new ShardingTableMetaDataLoader(dataSourceMetas, executorEngine, 
+                connectionManager, properties.<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), properties.<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
         encryptTableMetaDataDecorator = new EncryptTableMetaDataDecorator();
     }
     
@@ -57,7 +57,7 @@ public final class TableMetaDataInitializerEntry {
      * @throws SQLException SQL exception
      */
     public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) throws SQLException {
-        return encryptTableMetaDataDecorator.decorate(shardingTableMetaDataInitializer.load(logicTableName, shardingRule), logicTableName, shardingRule.getEncryptRule());
+        return encryptTableMetaDataDecorator.decorate(tableMetaDataLoader.load(logicTableName, shardingRule), logicTableName, shardingRule.getEncryptRule());
     }
     
     /**
@@ -67,7 +67,7 @@ public final class TableMetaDataInitializerEntry {
      * @return all table meta data
      * @throws SQLException SQL exception
      */
-    public TableMetas load(final ShardingRule shardingRule) throws SQLException {
-        return encryptTableMetaDataDecorator.decorate(shardingTableMetaDataInitializer.load(shardingRule), shardingRule.getEncryptRule());
+    public TableMetas loadAll(final ShardingRule shardingRule) throws SQLException {
+        return encryptTableMetaDataDecorator.decorate(tableMetaDataLoader.loadAll(shardingRule), shardingRule.getEncryptRule());
     }
 }

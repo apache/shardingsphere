@@ -30,6 +30,7 @@ import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaDat
 import org.apache.shardingsphere.underlying.common.metadata.column.loader.ColumnMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.loader.ConnectionManager;
 import org.apache.shardingsphere.underlying.common.metadata.table.loader.TableMetaDataLoader;
 import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
@@ -41,7 +42,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -185,5 +188,52 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
                 throw new ShardingSphereException("Cannot get uniformed table structure for `%s`. The different meta data of actual tables are as follows:\n%s\n%s.", logicTableName, sample, each);
             }
         }
+    }
+    
+    @Override
+    public TableMetas loadAll(final ShardingRule shardingRule) throws SQLException {
+        Map<String, TableMetaData> result = new HashMap<>();
+        result.putAll(loadShardingTables(shardingRule));
+        result.putAll(loadDefaultTables(shardingRule));
+        return new TableMetas(result);
+    }
+    
+    private Map<String, TableMetaData> loadShardingTables(final ShardingRule shardingRule) throws SQLException {
+        Map<String, TableMetaData> result = new HashMap<>(shardingRule.getTableRules().size(), 1);
+        for (TableRule each : shardingRule.getTableRules()) {
+            result.put(each.getLogicTable(), load(each.getLogicTable(), shardingRule));
+        }
+        return result;
+    }
+    
+    private Map<String, TableMetaData> loadDefaultTables(final ShardingRule shardingRule) throws SQLException {
+        Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
+        if (!actualDefaultDataSourceName.isPresent()) {
+            return Collections.emptyMap();
+        }
+        Collection<String> tableNames = loadAllTableNames(actualDefaultDataSourceName.get());
+        Map<String, TableMetaData> result = new HashMap<>(tableNames.size(), 1);
+        for (String each : tableNames) {
+            result.put(each, load(each, shardingRule));
+        }
+        return result;
+    }
+    
+    private Collection<String> loadAllTableNames(final String dataSourceName) throws SQLException {
+        Collection<String> result = new LinkedHashSet<>();
+        DataSourceMetaData dataSourceMetaData = dataSourceMetas.getDataSourceMetaData(dataSourceName);
+        String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getCatalog();
+        String schemaName = null == dataSourceMetaData ? null : dataSourceMetaData.getSchema();
+        try (
+                Connection connection = connectionManager.getConnection(dataSourceName);
+                ResultSet resultSet = connection.getMetaData().getTables(catalog, schemaName, null, new String[]{"TABLE"})) {
+            while (resultSet.next()) {
+                String tableName = resultSet.getString("TABLE_NAME");
+                if (!tableName.contains("$") && !tableName.contains("/")) {
+                    result.add(tableName);
+                }
+            }
+        }
+        return result;
     }
 }

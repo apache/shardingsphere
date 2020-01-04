@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.underlying.common.metadata.table.loader;
 
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.sql.SQLException;
@@ -38,4 +39,13 @@ public interface TableMetaDataLoader<T extends BaseRule> {
      * @throws SQLException SQL exception
      */
     TableMetaData load(String tableName, T rule) throws SQLException;
+    
+    /**
+     * Load all table metas.
+     *
+     * @param rule sharding rule
+     * @return Table metas
+     * @throws SQLException SQL exception
+     */
+    TableMetas loadAll(T rule) throws SQLException;
 }

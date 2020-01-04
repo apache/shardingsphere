@@ -25,13 +25,18 @@ import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaDat
 import org.apache.shardingsphere.underlying.common.metadata.column.loader.ColumnMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.loader.ConnectionManager;
 import org.apache.shardingsphere.underlying.common.metadata.table.loader.TableMetaDataLoader;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
 
 /**
  * Table meta data loader for encrypt.
@@ -72,5 +77,38 @@ public final class EncryptTableMetaDataLoader implements TableMetaDataLoader<Enc
         try (ResultSet resultSet = connection.getMetaData().getTables(catalog, null, tableName, null)) {
             return resultSet.next();
         }
+    }
+    
+    @Override
+    public TableMetas loadAll(final EncryptRule encryptRule) throws SQLException {
+        return new TableMetas(new HashMap<>(loadAllTables()));
+    }
+    
+    private Map<String, TableMetaData> loadAllTables() throws SQLException {
+        Collection<String> tableNames = loadAllTableNames();
+        Map<String, TableMetaData> result = new HashMap<>(tableNames.size(), 1);
+        for (String each : tableNames) {
+            result.put(each, load(each));
+        }
+        return result;
+    }
+    
+    private Collection<String> loadAllTableNames() throws SQLException {
+        Collection<String> result = new LinkedHashSet<>();
+        String dataSourceName = dataSourceMetas.getAllInstanceDataSourceNames().iterator().next();
+        DataSourceMetaData dataSourceMetaData = dataSourceMetas.getDataSourceMetaData(dataSourceName);
+        String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getCatalog();
+        String schemaName = null == dataSourceMetaData ? null : dataSourceMetaData.getSchema();
+        try (
+                Connection connection = connectionManager.getConnection(dataSourceName);
+                ResultSet resultSet = connection.getMetaData().getTables(catalog, schemaName, null, new String[]{"TABLE"})) {
+            while (resultSet.next()) {
+                String tableName = resultSet.getString("TABLE_NAME");
+                if (!tableName.contains("$") && !tableName.contains("/")) {
+                    result.add(tableName);
+                }
+            }
+        }
+        return result;
     }
 }
