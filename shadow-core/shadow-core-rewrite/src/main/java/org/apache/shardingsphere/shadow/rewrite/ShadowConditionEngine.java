@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shadow.rewrite;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.SimpleExpressionSegment;
@@ -31,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -95,10 +95,10 @@ public final class ShadowConditionEngine {
             return isSupportedOperator(compareRightValue.getOperator()) ? createCompareShadowCondition(predicateSegment, compareRightValue) : Optional.<ShadowCondition>absent();
         }
         if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
-            throw new ShardingException("The SQL clause 'IN...' is unsupported in shadow rule.");
+            throw new ShardingSphereException("The SQL clause 'IN...' is unsupported in shadow rule.");
         }
         if (predicateSegment.getRightValue() instanceof PredicateBetweenRightValue) {
-            throw new ShardingException("The SQL clause 'BETWEEN...AND...' is unsupported in shadow rule.");
+            throw new ShardingSphereException("The SQL clause 'BETWEEN...AND...' is unsupported in shadow rule.");
         }
         return Optional.absent();
     }

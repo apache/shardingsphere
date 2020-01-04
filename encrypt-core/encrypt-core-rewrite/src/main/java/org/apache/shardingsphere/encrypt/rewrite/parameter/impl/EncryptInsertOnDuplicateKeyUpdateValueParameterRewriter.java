@@ -21,15 +21,13 @@ import com.google.common.base.Optional;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
-import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
+import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.GroupedParameterBuilder;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RelationMetasAware;
 
 import java.util.Collection;
 import java.util.List;
@@ -40,9 +38,7 @@ import java.util.List;
  * @author chun.yang
  */
 @Setter
-public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter extends EncryptParameterRewriter implements RelationMetasAware, QueryWithCipherColumnAware {
-
-    private RelationMetas relationMetas;
+public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter extends EncryptParameterRewriter implements QueryWithCipherColumnAware {
 
     private boolean queryWithCipherColumn;
 
@@ -64,9 +60,9 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter exten
         for (ColumnSegment each : onDuplicateKeyColumnsSegments) {
             Object rewriteOnDuplicateKeyColumnValue = parameters.get(onDuplicateKeyColumnStartIndex);
             if (queryWithCipherColumn) {
-                Optional<ShardingEncryptor> shardingEncryptor = getEncryptRule().findShardingEncryptor(tableName, each.getName());
-                if (shardingEncryptor.isPresent()) {
-                    rewriteOnDuplicateKeyColumnValue = shardingEncryptor.get().encrypt(rewriteOnDuplicateKeyColumnValue);
+                Optional<Encryptor> encryptor = getEncryptRule().findEncryptor(tableName, each.getName());
+                if (encryptor.isPresent()) {
+                    rewriteOnDuplicateKeyColumnValue = encryptor.get().encrypt(rewriteOnDuplicateKeyColumnValue);
                 }
             }
             groupedParameterBuilder.getOnDuplicateKeyUpdateAddedParameters().add(rewriteOnDuplicateKeyColumnValue);

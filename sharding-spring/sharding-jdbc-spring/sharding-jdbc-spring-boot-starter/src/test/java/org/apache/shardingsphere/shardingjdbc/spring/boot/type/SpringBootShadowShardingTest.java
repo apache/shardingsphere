@@ -19,12 +19,12 @@ package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShadowDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -51,7 +51,7 @@ public class SpringBootShadowShardingTest {
     
     @Test
     public void assertSqlShow() {
-        assertTrue(((ShadowDataSource) dataSource).getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
+        assertTrue(((ShadowDataSource) dataSource).getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW));
     }
     
     @Test
@@ -67,10 +67,10 @@ public class SpringBootShadowShardingTest {
         for (DataSource each : ((ShardingDataSource) dataSource).getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(100));
         }
-        assertTrue(runtimeContext.getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
-        ShardingProperties shardingProperties = runtimeContext.getProps();
-        assertTrue((Boolean) shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
-        assertThat((Integer) shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE), is(100));
+        assertTrue(runtimeContext.getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW));
+        ShardingSphereProperties properties = runtimeContext.getProperties();
+        assertTrue((Boolean) properties.getValue(PropertiesConstant.SQL_SHOW));
+        assertThat((Integer) properties.getValue(PropertiesConstant.EXECUTOR_SIZE), is(100));
     }
     
     private void assertShadowDatasource() {
@@ -79,10 +79,10 @@ public class SpringBootShadowShardingTest {
         for (DataSource each : ((ShardingDataSource) dataSource).getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(10));
         }
-        assertTrue(runtimeContext.getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
-        ShardingProperties shardingProperties = runtimeContext.getProps();
-        assertTrue((Boolean) shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
-        assertThat((Integer) shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE), is(100));
+        assertTrue(runtimeContext.getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW));
+        ShardingSphereProperties properties = runtimeContext.getProperties();
+        assertTrue((Boolean) properties.getValue(PropertiesConstant.SQL_SHOW));
+        assertThat((Integer) properties.getValue(PropertiesConstant.EXECUTOR_SIZE), is(100));
     }
     
     @Test

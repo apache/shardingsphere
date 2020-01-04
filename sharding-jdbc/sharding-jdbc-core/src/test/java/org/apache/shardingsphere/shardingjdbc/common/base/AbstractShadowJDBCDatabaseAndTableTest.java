@@ -19,10 +19,10 @@ package org.apache.shardingsphere.shardingjdbc.common.base;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShadowDataSource;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -48,7 +48,7 @@ public abstract class AbstractShadowJDBCDatabaseAndTableTest extends AbstractSQL
     
     private static Properties createProperties() {
         Properties result = new Properties();
-        result.put(ShardingPropertiesConstant.SQL_SHOW.getKey(), true);
+        result.put(PropertiesConstant.SQL_SHOW.getKey(), true);
         return result;
     }
     

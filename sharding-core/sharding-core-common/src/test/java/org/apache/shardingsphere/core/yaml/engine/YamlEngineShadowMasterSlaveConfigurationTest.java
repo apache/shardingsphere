@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.yaml.engine;
 
 import org.apache.shardingsphere.core.yaml.config.shadow.YamlRootShadowConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
