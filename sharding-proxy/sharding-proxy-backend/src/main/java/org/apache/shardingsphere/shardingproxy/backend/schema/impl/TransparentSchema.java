@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.schema.impl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.core.metadata.TableMetaDataInitializerEntry;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializerEntry;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.execute.metadata.loader.ShardingTableMetaDataLoader;
 import org.apache.shardingsphere.shardingproxy.backend.executor.BackendExecutorContext;

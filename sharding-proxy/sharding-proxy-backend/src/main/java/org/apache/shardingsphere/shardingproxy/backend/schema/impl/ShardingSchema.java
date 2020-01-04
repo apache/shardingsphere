@@ -22,7 +22,7 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
-import org.apache.shardingsphere.core.metadata.TableMetaDataInitializerEntry;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializerEntry;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.metadata.decorator.EncryptTableMetaDataDecorator;

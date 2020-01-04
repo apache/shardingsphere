@@ -23,7 +23,7 @@ import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.metadata.TableMetaDataInitializerEntry;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializerEntry;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.metadata.decorator.EncryptTableMetaDataDecorator;
 import org.apache.shardingsphere.sharding.execute.metadata.loader.ShardingTableMetaDataLoader;
