@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.api;
 
+import java.util.Collections;
+import java.util.Map;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.constant.OrchestrationType;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
 import org.junit.Test;
 
@@ -71,9 +74,12 @@ public final class OrchestrationEncryptDataSourceFactoryTest {
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
-        RegistryCenterConfiguration registryCenterConfiguration = new RegistryCenterConfiguration("TestRegistryCenter");
-        registryCenterConfiguration.setNamespace("test_ms");
-        registryCenterConfiguration.setServerLists("localhost:3181");
-        return new OrchestrationConfiguration("test", registryCenterConfiguration, true);
+        InstanceConfiguration instanceConfiguration = new InstanceConfiguration("TestRegistryCenter");
+        String orchestrationType = OrchestrationType.REGISTRY_CENTER.getValue() + "," + OrchestrationType.CONFIG_CENTER.getValue();
+        instanceConfiguration.setOrchestrationType(orchestrationType);
+        instanceConfiguration.setNamespace("test_ms");
+        instanceConfiguration.setServerLists("localhost:3181");
+        Map<String, InstanceConfiguration> instanceConfigurationMap = Collections.singletonMap("test", instanceConfiguration);
+        return new OrchestrationConfiguration(instanceConfigurationMap);
     }
 }

@@ -19,18 +19,15 @@ package org.apache.shardingsphere.orchestration.internal.registry.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
+import org.apache.shardingsphere.orchestration.center.api.DistributedLockManagement;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.locks.ReentrantLock;
 
-public final class ForthTestRegistryCenter implements RegistryCenter {
+public final class ForthTestRegistryCenter implements DistributedLockManagement {
     
     private final Map<String, String> keys = new HashMap<>();
     
@@ -41,45 +38,17 @@ public final class ForthTestRegistryCenter implements RegistryCenter {
     private ReentrantLock lock = new ReentrantLock();
     
     @Override
-    public void init(final RegistryCenterConfiguration config) {
+    public void init(final InstanceConfiguration config) {
     }
     
     @Override
     public String get(final String key) {
-        return "";
-    }
-    
-    @Override
-    public String getDirectly(final String key) {
         return keys.get(key);
-    }
-    
-    @Override
-    public boolean isExisted(final String key) {
-        return keys.containsKey(key);
-    }
-    
-    @Override
-    public List<String> getChildrenKeys(final String key) {
-        return Collections.emptyList();
     }
     
     @Override
     public void persist(final String key, final String value) {
         keys.put(key, value);
-    }
-    
-    @Override
-    public void update(final String key, final String value) {
-        keys.put(key, value);
-    }
-    
-    @Override
-    public void persistEphemeral(final String key, final String value) {
-    }
-    
-    @Override
-    public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
     }
     
     @Override

@@ -36,8 +36,8 @@ import org.apache.shardingsphere.core.yaml.swapper.impl.AuthenticationYamlSwappe
 import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
 import org.apache.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.swapper.DataSourceConfigurationYamlSwapper;
 
@@ -51,16 +51,17 @@ import java.util.Properties;
  * @author caohao
  * @author zhangliang
  * @author panjuan
+ * @author wangguangyuan
  */
 public final class ConfigurationService {
     
     private final ConfigurationNode configNode;
     
-    private final RegistryCenter regCenter;
+    private final ConfigCenter configCenter;
     
-    public ConfigurationService(final String name, final RegistryCenter regCenter) {
+    public ConfigurationService(final String name, final ConfigCenter configCenter) {
         configNode = new ConfigurationNode(name);
-        this.regCenter = regCenter;
+        this.configCenter = configCenter;
     }
     
     /**
@@ -93,7 +94,7 @@ public final class ConfigurationService {
                         }
                     }
             );
-            regCenter.persist(configNode.getDataSourcePath(shardingSchemaName), YamlEngine.marshal(yamlDataSourceConfigurations));
+            configCenter.persist(configNode.getDataSourcePath(shardingSchemaName), YamlEngine.marshal(yamlDataSourceConfigurations));
         }
     }
     
@@ -104,7 +105,7 @@ public final class ConfigurationService {
      * @return has data source configuration or not
      */
     public boolean hasDataSourceConfiguration(final String shardingSchemaName) {
-        return !Strings.isNullOrEmpty(regCenter.get(configNode.getDataSourcePath(shardingSchemaName)));
+        return !Strings.isNullOrEmpty(configCenter.get(configNode.getDataSourcePath(shardingSchemaName)));
     }
     
     private void persistRuleConfiguration(final String shardingSchemaName, final RuleConfiguration ruleConfig, final boolean isOverwrite) {
@@ -126,45 +127,45 @@ public final class ConfigurationService {
      * @return has rule configuration or not
      */
     public boolean hasRuleConfiguration(final String shardingSchemaName) {
-        return !Strings.isNullOrEmpty(regCenter.get(configNode.getRulePath(shardingSchemaName)));
+        return !Strings.isNullOrEmpty(configCenter.get(configNode.getRulePath(shardingSchemaName)));
     }
     
     private void persistShardingRuleConfiguration(final String shardingSchemaName, final ShardingRuleConfiguration shardingRuleConfiguration) {
         Preconditions.checkState(null != shardingRuleConfiguration && !shardingRuleConfiguration.getTableRuleConfigs().isEmpty(),
                 "No available sharding rule configuration in `%s` for orchestration.", shardingSchemaName);
-        regCenter.persist(configNode.getRulePath(shardingSchemaName), YamlEngine.marshal(new ShardingRuleConfigurationYamlSwapper().swap(shardingRuleConfiguration)));
+        configCenter.persist(configNode.getRulePath(shardingSchemaName), YamlEngine.marshal(new ShardingRuleConfigurationYamlSwapper().swap(shardingRuleConfiguration)));
     }
     
     private void persistEncryptRuleConfiguration(final String shardingSchemaName, final EncryptRuleConfiguration encryptRuleConfiguration) {
         Preconditions.checkState(null != encryptRuleConfiguration && !encryptRuleConfiguration.getEncryptors().isEmpty(),
             "No available encrypt rule configuration in `%s` for orchestration.", shardingSchemaName);
-        regCenter.persist(configNode.getRulePath(shardingSchemaName), YamlEngine.marshal(new EncryptRuleConfigurationYamlSwapper().swap(encryptRuleConfiguration)));
+        configCenter.persist(configNode.getRulePath(shardingSchemaName), YamlEngine.marshal(new EncryptRuleConfigurationYamlSwapper().swap(encryptRuleConfiguration)));
     }
     
     private void persistMasterSlaveRuleConfiguration(final String shardingSchemaName, final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration) {
         Preconditions.checkState(null != masterSlaveRuleConfiguration && !masterSlaveRuleConfiguration.getMasterDataSourceName().isEmpty(),
                 "No available master-slave rule configuration in `%s` for orchestration.", shardingSchemaName);
-        regCenter.persist(configNode.getRulePath(shardingSchemaName), YamlEngine.marshal(new MasterSlaveRuleConfigurationYamlSwapper().swap(masterSlaveRuleConfiguration)));
+        configCenter.persist(configNode.getRulePath(shardingSchemaName), YamlEngine.marshal(new MasterSlaveRuleConfigurationYamlSwapper().swap(masterSlaveRuleConfiguration)));
     }
     
     private void persistAuthentication(final Authentication authentication, final boolean isOverwrite) {
         if (null != authentication && (isOverwrite || !hasAuthentication())) {
-            regCenter.persist(configNode.getAuthenticationPath(), YamlEngine.marshal(new AuthenticationYamlSwapper().swap(authentication)));
+            configCenter.persist(configNode.getAuthenticationPath(), YamlEngine.marshal(new AuthenticationYamlSwapper().swap(authentication)));
         }
     }
     
     private boolean hasAuthentication() {
-        return !Strings.isNullOrEmpty(regCenter.get(configNode.getAuthenticationPath()));
+        return !Strings.isNullOrEmpty(configCenter.get(configNode.getAuthenticationPath()));
     }
     
     private void persistProperties(final Properties props, final boolean isOverwrite) {
         if (isOverwrite || !hasProperties()) {
-            regCenter.persist(configNode.getPropsPath(), YamlEngine.marshal(props));
+            configCenter.persist(configNode.getPropsPath(), YamlEngine.marshal(props));
         }
     }
     
     private boolean hasProperties() {
-        return !Strings.isNullOrEmpty(regCenter.get(configNode.getPropsPath()));
+        return !Strings.isNullOrEmpty(configCenter.get(configNode.getPropsPath()));
     }
     
     /**
@@ -174,7 +175,7 @@ public final class ConfigurationService {
      * @return is sharding rule or not
      */
     public boolean isShardingRule(final String shardingSchemaName) {
-        return regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)).contains("tables:\n");
+        return configCenter.get(configNode.getRulePath(shardingSchemaName)).contains("tables:\n");
     }
     
     /**
@@ -183,7 +184,7 @@ public final class ConfigurationService {
      * @return is encrypt rule or not
      */
     public boolean isEncryptRule(final String shardingSchemaName) {
-        return regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)).contains("encryptors:\n");
+        return configCenter.get(configNode.getRulePath(shardingSchemaName)).contains("encryptors:\n");
     }
     
     /**
@@ -194,7 +195,7 @@ public final class ConfigurationService {
      */
     @SuppressWarnings("unchecked")
     public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String shardingSchemaName) {
-        Map<String, YamlDataSourceConfiguration> result = (Map) YamlEngine.unmarshal(regCenter.getDirectly(configNode.getDataSourcePath(shardingSchemaName)));
+        Map<String, YamlDataSourceConfiguration> result = (Map) YamlEngine.unmarshal(configCenter.get(configNode.getDataSourcePath(shardingSchemaName)));
         Preconditions.checkState(null != result && !result.isEmpty(), "No available data sources to load for orchestration.");
         return Maps.transformValues(result, new Function<YamlDataSourceConfiguration, DataSourceConfiguration>() {
             
@@ -212,7 +213,7 @@ public final class ConfigurationService {
      * @return sharding rule configuration
      */
     public ShardingRuleConfiguration loadShardingRuleConfiguration(final String shardingSchemaName) {
-        return new ShardingRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)), YamlShardingRuleConfiguration.class));
+        return new ShardingRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(configCenter.get(configNode.getRulePath(shardingSchemaName)), YamlShardingRuleConfiguration.class));
     }
     
     /**
@@ -222,7 +223,7 @@ public final class ConfigurationService {
      * @return master-slave rule configuration
      */
     public MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration(final String shardingSchemaName) {
-        return new MasterSlaveRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)), YamlMasterSlaveRuleConfiguration.class));
+        return new MasterSlaveRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(configCenter.get(configNode.getRulePath(shardingSchemaName)), YamlMasterSlaveRuleConfiguration.class));
     }
     
     /**
@@ -232,7 +233,7 @@ public final class ConfigurationService {
      * @return encrypt rule configuration
      */
     public EncryptRuleConfiguration loadEncryptRuleConfiguration(final String shardingSchemaName) {
-        return new EncryptRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)), YamlEncryptRuleConfiguration.class));
+        return new EncryptRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(configCenter.get(configNode.getRulePath(shardingSchemaName)), YamlEncryptRuleConfiguration.class));
     }
     
     /**
@@ -241,7 +242,7 @@ public final class ConfigurationService {
      * @return authentication
      */
     public Authentication loadAuthentication() {
-        return new AuthenticationYamlSwapper().swap(YamlEngine.unmarshal(regCenter.getDirectly(configNode.getAuthenticationPath()), YamlAuthenticationConfiguration.class));
+        return new AuthenticationYamlSwapper().swap(YamlEngine.unmarshal(configCenter.get(configNode.getAuthenticationPath()), YamlAuthenticationConfiguration.class));
     }
     
     /**
@@ -250,7 +251,7 @@ public final class ConfigurationService {
      * @return properties
      */
     public Properties loadProperties() {
-        return YamlEngine.unmarshalProperties(regCenter.getDirectly(configNode.getPropsPath()));
+        return YamlEngine.unmarshalProperties(configCenter.get(configNode.getPropsPath()));
     }
     
     /**
@@ -259,6 +260,6 @@ public final class ConfigurationService {
      * @return all sharding schema names
      */
     public Collection<String> getAllShardingSchemaNames() {
-        return regCenter.getChildrenKeys(configNode.getSchemaPath());
+        return configCenter.getChildrenKeys(configNode.getSchemaPath());
     }
 }

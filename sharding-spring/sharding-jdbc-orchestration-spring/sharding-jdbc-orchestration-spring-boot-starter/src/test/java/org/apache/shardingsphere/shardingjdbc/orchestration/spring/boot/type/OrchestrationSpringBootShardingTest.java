@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.strategy.route.inline.InlineShardingStrate
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
-import org.apache.shardingsphere.shardingjdbc.orchestration.temp.internal.datasource.OrchestrationShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -25,13 +25,14 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
-import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.constant.OrchestrationType;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.junit.BeforeClass;
@@ -66,10 +67,13 @@ public final class OrchestrationShardingDataSourceTest {
     }
     
     private static OrchestrationConfiguration getOrchestrationConfiguration() {
-        RegistryCenterConfiguration registryCenterConfiguration = new RegistryCenterConfiguration("TestRegistryCenter");
-        registryCenterConfiguration.setNamespace("test_sharding");
-        registryCenterConfiguration.setServerLists("localhost:3181");
-        return new OrchestrationConfiguration("test", registryCenterConfiguration, true);
+        InstanceConfiguration instanceConfiguration = new InstanceConfiguration("TestRegistryCenter3");
+        String orchestrationType = OrchestrationType.REGISTRY_CENTER.getValue() + "," + OrchestrationType.CONFIG_CENTER.getValue();
+        instanceConfiguration.setOrchestrationType(orchestrationType);
+        instanceConfiguration.setNamespace("test_sharding");
+        instanceConfiguration.setServerLists("localhost:3181");
+        Map<String, InstanceConfiguration> instanceConfigurationMap = Collections.singletonMap("test_sharding", instanceConfiguration);
+        return new OrchestrationConfiguration(instanceConfigurationMap);
     }
     
     @Test

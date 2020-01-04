@@ -34,6 +34,5 @@
         <module>sharding-orchestration-config</module>
         <module>sharding-orchestration-distributed-lock</module>
         <module>sharding-orchestration-center</module>
-        <module>sharding-orchestration-core-new</module>
     </modules>
 </project>

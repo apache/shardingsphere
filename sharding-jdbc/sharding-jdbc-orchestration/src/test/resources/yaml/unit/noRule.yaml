@@ -16,12 +16,17 @@
 #
 
 orchestration:
-  name: test
-  overwrite: true
-  registry:
-    type: TestRegistryCenter
-    namespace: test_encrypt
+  testname1:
+    orchestrationType: registry_center,config_center
+    instanceType: TestRegistryCenter
     serverLists: localhost:3181
+    namespace: test_encrypt
+    props:
+      overwrite: true
+      retryIntervalMilliseconds: 10
+      timeToLiveSeconds: 10
+      maxRetries: 10
+      operationTimeoutMilliseconds: 10
 
 dataSource: !!org.apache.commons.dbcp2.BasicDataSource
   driverClassName: org.h2.Driver

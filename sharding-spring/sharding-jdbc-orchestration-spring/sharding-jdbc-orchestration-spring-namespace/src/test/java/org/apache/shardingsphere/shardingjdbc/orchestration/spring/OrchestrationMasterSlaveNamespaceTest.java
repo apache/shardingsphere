@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDa
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringMasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.EmbedTestingServer;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.FieldValueUtil;
-import org.apache.shardingsphere.shardingjdbc.orchestration.temp.internal.datasource.OrchestrationMasterSlaveDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
 import org.junit.BeforeClass;
 import org.junit.Ignore;

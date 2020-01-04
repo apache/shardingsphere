@@ -92,9 +92,14 @@ shardingRule:
       loadBalanceAlgorithmType: ROUND_ROBIN
 
 orchestration:
-  name: demo_ds_ms
-  overwrite: true
-  registry:
-    type: TestRegistryCenter
+  testname1:
+    orchestrationType: registry_center,config_center
+    instanceType: TestRegistryCenter
     serverLists: localhost:3181
-    namespace: orchestration-yaml-test
+    namespace: test_encrypt
+    props:
+      overwrite: true
+      retryIntervalMilliseconds: 10
+      timeToLiveSeconds: 10
+      maxRetries: 10
+      operationTimeoutMilliseconds: 10
