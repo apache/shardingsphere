@@ -89,7 +89,7 @@ public final class ShardingSchema extends LogicSchema {
     
     private ShardingSphereMetaData createMetaData() throws SQLException {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDatabaseAccessConfigurationMap());
-        TableMetas tableMetas = createTableMetaDataInitializerEntry(dataSourceMetas).loadAll(shardingRule);
+        TableMetas tableMetas = createTableMetaDataInitializerEntry(dataSourceMetas).initAll();
         return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
     }
     
@@ -141,12 +141,12 @@ public final class ShardingSchema extends LogicSchema {
     
     private void refreshTableMetaDataForCreateTable(final SQLStatementContext sqlStatementContext) throws SQLException {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        getMetaData().getTables().put(tableName, createTableMetaDataInitializerEntry(metaData.getDataSources()).load(tableName, shardingRule));
+        getMetaData().getTables().put(tableName, createTableMetaDataInitializerEntry(metaData.getDataSources()).init(tableName));
     }
     
     private void refreshTableMetaDataForAlterTable(final SQLStatementContext sqlStatementContext) throws SQLException {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        getMetaData().getTables().put(tableName, createTableMetaDataInitializerEntry(metaData.getDataSources()).load(tableName, shardingRule));
+        getMetaData().getTables().put(tableName, createTableMetaDataInitializerEntry(metaData.getDataSources()).init(tableName));
     }
     
     private void refreshTableMetaDataForDropTable(final SQLStatementContext sqlStatementContext) {

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.metadata;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializer;
@@ -41,20 +40,18 @@ public final class TableMetaDataInitializerEntry {
     private final Map<BaseRule, TableMetaDataInitializer> tableMetaDataInitializes;
     
     /**
-     * Load table meta data.
+     * Initialize table meta data.
      *
      * @param tableName table name
-     * @param shardingRule sharding rule
      * @return table meta data
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings("unchecked")
-    public TableMetaData load(final String tableName, final ShardingRule shardingRule) throws SQLException {
-        return decorate(tableName, load0(tableName));
+    public TableMetaData init(final String tableName) throws SQLException {
+        return decorate(tableName, load(tableName));
     }
     
     @SuppressWarnings("unchecked")
-    private TableMetaData load0(final String tableName) throws SQLException {
+    private TableMetaData load(final String tableName) throws SQLException {
         for (Entry<BaseRule, TableMetaDataInitializer> entry : tableMetaDataInitializes.entrySet()) {
             if (entry.getValue() instanceof TableMetaDataLoader) {
                 return ((TableMetaDataLoader) entry.getValue()).load(tableName, entry.getKey());
@@ -75,18 +72,17 @@ public final class TableMetaDataInitializerEntry {
     }
     
     /**
-     * Load all table meta data.
+     * Initialize all table meta data.
      *
-     * @param shardingRule sharding rule
-     * @return all table meta data
+     * @return table metas
      * @throws SQLException SQL exception
      */
-    public TableMetas loadAll(final ShardingRule shardingRule) throws SQLException {
-        return decorateAll(loadAll0());
+    public TableMetas initAll() throws SQLException {
+        return decorateAll(loadAll());
     }
     
     @SuppressWarnings("unchecked")
-    private TableMetas loadAll0() throws SQLException {
+    private TableMetas loadAll() throws SQLException {
         for (Entry<BaseRule, TableMetaDataInitializer> entry : tableMetaDataInitializes.entrySet()) {
             if (entry.getValue() instanceof TableMetaDataLoader) {
                 return ((TableMetaDataLoader) entry.getValue()).loadAll(entry.getKey());

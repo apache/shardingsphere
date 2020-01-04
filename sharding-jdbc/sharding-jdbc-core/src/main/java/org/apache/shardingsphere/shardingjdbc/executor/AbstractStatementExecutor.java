@@ -197,12 +197,12 @@ public abstract class AbstractStatementExecutor {
     
     private void refreshTableMetaDataForCreateTable(final ShardingRuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) throws SQLException {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        runtimeContext.getMetaData().getTables().put(tableName, createTableMetaDataInitializerEntry().load(tableName, runtimeContext.getRule()));
+        runtimeContext.getMetaData().getTables().put(tableName, createTableMetaDataInitializerEntry().init(tableName));
     }
     
     private void refreshTableMetaDataForAlterTable(final ShardingRuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) throws SQLException {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        runtimeContext.getMetaData().getTables().put(tableName, createTableMetaDataInitializerEntry().load(tableName, runtimeContext.getRule()));
+        runtimeContext.getMetaData().getTables().put(tableName, createTableMetaDataInitializerEntry().init(tableName));
     }
     
     private void refreshTableMetaDataForDropTable(final ShardingRuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) {
