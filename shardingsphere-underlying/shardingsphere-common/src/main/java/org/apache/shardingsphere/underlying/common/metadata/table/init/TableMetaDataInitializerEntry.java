@@ -36,7 +36,7 @@ import java.util.Map.Entry;
 @RequiredArgsConstructor
 public final class TableMetaDataInitializerEntry {
     
-    private final Map<BaseRule, TableMetaDataInitializer> tableMetaDataInitializes;
+    private final Map<BaseRule, TableMetaDataInitializer> initializes;
     
     /**
      * Initialize table meta data.
@@ -51,7 +51,7 @@ public final class TableMetaDataInitializerEntry {
     
     @SuppressWarnings("unchecked")
     private TableMetaData load(final String tableName) throws SQLException {
-        for (Entry<BaseRule, TableMetaDataInitializer> entry : tableMetaDataInitializes.entrySet()) {
+        for (Entry<BaseRule, TableMetaDataInitializer> entry : initializes.entrySet()) {
             if (entry.getValue() instanceof TableMetaDataLoader) {
                 return ((TableMetaDataLoader) entry.getValue()).load(tableName, entry.getKey());
             }
@@ -62,7 +62,7 @@ public final class TableMetaDataInitializerEntry {
     @SuppressWarnings("unchecked")
     private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData) {
         TableMetaData result = tableMetaData;
-        for (Entry<BaseRule, TableMetaDataInitializer> entry : tableMetaDataInitializes.entrySet()) {
+        for (Entry<BaseRule, TableMetaDataInitializer> entry : initializes.entrySet()) {
             if (entry.getValue() instanceof TableMetaDataDecorator) {
                 result = ((TableMetaDataDecorator) entry.getValue()).decorate(result, tableName, entry.getKey());
             }
@@ -82,7 +82,7 @@ public final class TableMetaDataInitializerEntry {
     
     @SuppressWarnings("unchecked")
     private TableMetas loadAll() throws SQLException {
-        for (Entry<BaseRule, TableMetaDataInitializer> entry : tableMetaDataInitializes.entrySet()) {
+        for (Entry<BaseRule, TableMetaDataInitializer> entry : initializes.entrySet()) {
             if (entry.getValue() instanceof TableMetaDataLoader) {
                 return ((TableMetaDataLoader) entry.getValue()).loadAll(entry.getKey());
             }
@@ -93,7 +93,7 @@ public final class TableMetaDataInitializerEntry {
     @SuppressWarnings("unchecked")
     private TableMetas decorateAll(final TableMetas tableMetas) {
         TableMetas result = tableMetas;
-        for (Entry<BaseRule, TableMetaDataInitializer> entry : tableMetaDataInitializes.entrySet()) {
+        for (Entry<BaseRule, TableMetaDataInitializer> entry : initializes.entrySet()) {
             if (entry.getValue() instanceof TableMetaDataDecorator) {
                 result = ((TableMetaDataDecorator) entry.getValue()).decorate(result, entry.getKey());
             }
