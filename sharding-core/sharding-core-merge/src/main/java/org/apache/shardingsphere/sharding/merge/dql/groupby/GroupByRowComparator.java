@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.CompareUtil;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.underlying.merge.impl.MemoryQueryResultRow;
+import org.apache.shardingsphere.underlying.merge.result.impl.memory.MemoryQueryResultRow;
 
 import java.util.Collection;
 import java.util.Comparator;

@@ -21,7 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
@@ -75,7 +75,7 @@ public final class ComplexRoutingEngine implements RoutingEngine {
             }
         }
         if (result.isEmpty()) {
-            throw new ShardingException("Cannot find table rule and default data source with logic tables: '%s'", logicTables);
+            throw new ShardingSphereException("Cannot find table rule and default data source with logic tables: '%s'", logicTables);
         }
         if (1 == result.size()) {
             return result.iterator().next();

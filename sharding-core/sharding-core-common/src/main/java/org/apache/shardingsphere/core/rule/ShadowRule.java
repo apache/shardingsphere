@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 /**
  * Databases shadow rule.

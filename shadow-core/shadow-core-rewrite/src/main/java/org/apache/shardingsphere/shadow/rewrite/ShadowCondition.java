@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shadow.rewrite;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -45,9 +44,7 @@ public final class ShadowCondition {
     private final int startIndex;
 
     private final int stopIndex;
-
-    private final ShardingOperator operator;
-
+    
     private final Map<Integer, Integer> positionIndexMap = new LinkedHashMap<>();
 
     private final Map<Integer, Object> positionValueMap = new LinkedHashMap<>();
@@ -56,7 +53,6 @@ public final class ShadowCondition {
         this.columnName = columnName;
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
-        operator = ShardingOperator.EQUAL;
         putPositionMap(0, expressionSegment);
     }
 

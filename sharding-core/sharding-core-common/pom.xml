@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-spi</artifactId>
+            <artifactId>shardingsphere-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -40,6 +40,11 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-core-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>encrypt-core-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         

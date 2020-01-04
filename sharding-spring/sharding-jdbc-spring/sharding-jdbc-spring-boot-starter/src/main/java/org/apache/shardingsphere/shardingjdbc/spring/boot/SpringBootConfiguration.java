@@ -20,12 +20,10 @@ package org.apache.shardingsphere.shardingjdbc.spring.boot;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.config.inline.InlineExpressionParser;
-import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShadowRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.api.EncryptDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.ShadowDataSourceFactory;
@@ -43,6 +41,8 @@ import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSett
 import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetterHolder;
 import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
+import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -149,9 +149,9 @@ public class SpringBootConfiguration implements EnvironmentAware {
             try {
                 dataSourceMap.put(each, getDataSource(environment, prefix, each));
             } catch (final ReflectiveOperationException ex) {
-                throw new ShardingException("Can't find datasource type!", ex);
+                throw new ShardingSphereException("Can't find datasource type!", ex);
             } catch (final NamingException namingEx) {
-                throw new ShardingException("Can't find JNDI datasource!", namingEx);
+                throw new ShardingSphereException("Can't find JNDI datasource!", namingEx);
             }
         }
     }

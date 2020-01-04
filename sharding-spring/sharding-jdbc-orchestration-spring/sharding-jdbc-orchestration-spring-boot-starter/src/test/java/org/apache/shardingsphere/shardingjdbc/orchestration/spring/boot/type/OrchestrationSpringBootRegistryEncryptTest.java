@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.type;
 
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestRegistryCenter;

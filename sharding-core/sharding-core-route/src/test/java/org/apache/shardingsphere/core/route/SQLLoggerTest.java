@@ -103,14 +103,6 @@ public final class SQLLoggerTest {
         inOrder.verify(logger).info("SQL: {} ::: DataSources: {}", new Object[]{sql, Joiner.on(",").join(dataSourceNames)});
     }
     
-    @Test
-    public void assertLogSQLEncrypt() {
-        SQLLogger.logSQL(sql);
-        InOrder inOrder = inOrder(logger);
-        inOrder.verify(logger).info("Rule Type: encrypt", new Object[]{});
-        inOrder.verify(logger).info("SQL: {}", new Object[]{sql});
-    }
-    
     private Set<String> buildDataSourceNamesSet() {
         Set<String> dataSourceNamesSet = new HashSet<>(routeUnits.size());
         for (RouteUnit each : routeUnits) {

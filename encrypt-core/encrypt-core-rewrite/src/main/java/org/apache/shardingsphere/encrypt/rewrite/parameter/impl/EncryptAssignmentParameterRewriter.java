@@ -54,7 +54,7 @@ public final class EncryptAssignmentParameterRewriter extends EncryptParameterRe
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         for (AssignmentSegment each : getSetAssignmentsSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
-            if (each.getValue() instanceof ParameterMarkerExpressionSegment && getEncryptRule().findShardingEncryptor(tableName, each.getColumn().getName()).isPresent()) {
+            if (each.getValue() instanceof ParameterMarkerExpressionSegment && getEncryptRule().findEncryptor(tableName, each.getColumn().getName()).isPresent()) {
                 StandardParameterBuilder standardParameterBuilder = parameterBuilder instanceof StandardParameterBuilder
                         ? (StandardParameterBuilder) parameterBuilder : ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(0);
                 encryptParameters(standardParameterBuilder, tableName, each, parameters);

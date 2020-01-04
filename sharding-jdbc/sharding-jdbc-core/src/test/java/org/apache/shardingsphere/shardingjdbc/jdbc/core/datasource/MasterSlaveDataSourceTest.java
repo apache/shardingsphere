@@ -22,7 +22,7 @@ import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.route.router.masterslave.MasterVisitedManager;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.spi.database.H2DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;

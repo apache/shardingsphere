@@ -98,7 +98,7 @@ public final class ShadowConnection extends AbstractUnsupportedOperationConnecti
     }
 
     @Override
-    public boolean getAutoCommit() throws SQLException {
+    public boolean getAutoCommit() {
         return false;
     }
 
@@ -121,7 +121,7 @@ public final class ShadowConnection extends AbstractUnsupportedOperationConnecti
     }
 
     @Override
-    public boolean isClosed() throws SQLException {
+    public boolean isClosed() {
         return false;
     }
 
@@ -137,7 +137,7 @@ public final class ShadowConnection extends AbstractUnsupportedOperationConnecti
     }
 
     @Override
-    public boolean isReadOnly() throws SQLException {
+    public boolean isReadOnly() {
         return false;
     }
 
@@ -148,17 +148,17 @@ public final class ShadowConnection extends AbstractUnsupportedOperationConnecti
     }
 
     @Override
-    public int getTransactionIsolation() throws SQLException {
+    public int getTransactionIsolation() {
         return 0;
     }
 
     @Override
-    public SQLWarning getWarnings() throws SQLException {
+    public SQLWarning getWarnings() {
         return null;
     }
 
     @Override
-    public void clearWarnings() throws SQLException {
+    public void clearWarnings() {
 
     }
 
@@ -169,7 +169,7 @@ public final class ShadowConnection extends AbstractUnsupportedOperationConnecti
     }
 
     @Override
-    public int getHoldability() throws SQLException {
+    public int getHoldability() {
         return 0;
     }
 }

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
-import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
+import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.route.BatchRouteUnit;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLUnit;
@@ -122,9 +122,9 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     }
     
     private void setExecuteGroups(final List<PreparedStatement> preparedStatements) {
-        Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
+        Collection<InputGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
         List<StatementExecuteUnit> preparedStatementExecuteUnits = new LinkedList<>();
-        executeGroups.add(new ShardingExecuteGroup<>(preparedStatementExecuteUnits));
+        executeGroups.add(new InputGroup<>(preparedStatementExecuteUnits));
         Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
         for (PreparedStatement each : preparedStatements) {
             BatchRouteUnit batchRouteUnit = new BatchRouteUnit(new RouteUnit("ds_0", new SQLUnit(SQL, Collections.singletonList((Object) 1))));
@@ -137,8 +137,8 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     }
     
     @SneakyThrows
-    private void setFields(final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups, final Collection<BatchRouteUnit> routeUnits) {
-        Field field = BatchPreparedStatementExecutor.class.getSuperclass().getDeclaredField("executeGroups");
+    private void setFields(final Collection<InputGroup<StatementExecuteUnit>> executeGroups, final Collection<BatchRouteUnit> routeUnits) {
+        Field field = BatchPreparedStatementExecutor.class.getSuperclass().getDeclaredField("inputGroups");
         field.setAccessible(true);
         field.set(actual, executeGroups);
         field = BatchPreparedStatementExecutor.class.getDeclaredField("routeUnits");

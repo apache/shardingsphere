@@ -24,8 +24,8 @@ import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.config.ShardingConfigurationException;
-import org.apache.shardingsphere.core.fixture.PreciseShardingAlgorithmFixture;
+import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.core.shard.fixture.PreciseShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.strategy.keygen.SnowflakeShardingKeyGenerator;
 import org.apache.shardingsphere.core.strategy.keygen.fixture.IncrementShardingKeyGenerator;
 import org.apache.shardingsphere.core.strategy.route.inline.InlineShardingStrategy;
@@ -121,7 +121,7 @@ public final class ShardingRuleTest {
         assertThat(shardingRule.getTableRule("Default_Table").getLogicTable(), is("default_table"));
     }
     
-    @Test(expected = ShardingConfigurationException.class)
+    @Test(expected = ShardingSphereConfigurationException.class)
     public void assertGetTableRuleFailure() {
         createMinimumShardingRule().getTableRule("New_Table");
     }
@@ -283,7 +283,7 @@ public final class ShardingRuleTest {
         assertFalse(createMinimumShardingRule().findGenerateKeyColumnName("sub_logic_table").isPresent());
     }
     
-    @Test(expected = ShardingConfigurationException.class)
+    @Test(expected = ShardingSphereConfigurationException.class)
     public void assertGenerateKeyFailure() {
         createMaximumShardingRule().generateKey("table_0");
     }
@@ -347,7 +347,7 @@ public final class ShardingRuleTest {
         assertThat(createMaximumShardingRule().getDataNode("ds_1", "logic_table"), is(new DataNode("ds_1.table_0")));
     }
     
-    @Test(expected = ShardingConfigurationException.class)
+    @Test(expected = ShardingSphereConfigurationException.class)
     public void assertGetDataNodeByLogicTableFailureWithDataSourceName() {
         createMaximumShardingRule().getDataNode("ds_3", "logic_table");
     }

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
-import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShadowJDBCDatabaseAndTableTest;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,25 +35,25 @@ import static org.junit.Assert.assertThat;
 
 public final class ShadowPreparedStatementTest extends AbstractShadowJDBCDatabaseAndTableTest {
     
-    private static final String INIT_INSERT_SQL = "insert into t_encrypt (id, cipher_pwd, plain_pwd) values (99, 'cipher', 'plain')";
+    private static final String INIT_INSERT_SQL = "INSERT INTO t_encrypt (id, cipher_pwd, plain_pwd) VALUES (99, 'cipher', 'plain')";
     
-    private static final String INSERT_SQL = "insert into t_encrypt (id, cipher_pwd, plain_pwd) values (?, ?, ?)";
+    private static final String INSERT_SQL = "INSERT INTO t_encrypt (id, cipher_pwd, plain_pwd) VALUES (?, ?, ?)";
     
-    private static final String SHADOW_INSERT_SQL = "insert into t_encrypt (id, cipher_pwd, plain_pwd, shadow) values (?, ?, ?, ?)";
+    private static final String SHADOW_INSERT_SQL = "INSERT INTO t_encrypt (id, cipher_pwd, plain_pwd, shadow) VALUES (?, ?, ?, ?)";
     
-    private static final String DELETE_SQL = "delete from t_encrypt where plain_pwd = ?";
+    private static final String DELETE_SQL = "DELETE FROM t_encrypt WHERE plain_pwd = ?";
     
-    private static final String SHADOW_DELETE_SQL = "delete from t_encrypt where plain_pwd = ? and shadow = ?";
+    private static final String SHADOW_DELETE_SQL = "DELETE FROM t_encrypt WHERE plain_pwd = ? AND shadow = ?";
     
-    private static final String SELECT_SQL = "select id, cipher_pwd, plain_pwd from t_encrypt";
+    private static final String SELECT_SQL = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt";
     
-    private static final String SELECT_SQL_BY_ID = "select id, cipher_pwd, plain_pwd from t_encrypt where id = ?";
+    private static final String SELECT_SQL_BY_ID = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt WHERE id = ?";
     
-    private static final String CLEAN_SQL = "delete from t_encrypt";
+    private static final String CLEAN_SQL = "DELETE FROM t_encrypt";
     
-    private static final String UPDATE_SQL = "update t_encrypt set cipher_pwd = ? where id = ?";
+    private static final String UPDATE_SQL = "UPDATE t_encrypt SET cipher_pwd = ? WHERE id = ?";
     
-    private static final String SHADOW_UPDATE_SQL = "update t_encrypt set cipher_pwd = ? where id = ? and shadow = ?";
+    private static final String SHADOW_UPDATE_SQL = "UPDATE t_encrypt SET cipher_pwd = ? WHERE id = ? AND shadow = ?";
     
     @Test
     public void assertInsertWithExecute() throws SQLException {
@@ -130,7 +130,7 @@ public final class ShadowPreparedStatementTest extends AbstractShadowJDBCDatabas
         final Map<String, DataSource> dataMaps = getDatabaseTypeMap().get(DatabaseTypes.getActualDatabaseType("H2"));
         DataSource dataSource = isShadow ? dataMaps.get("jdbc_1") : dataMaps.get("jdbc_0");
         try (Statement statement = dataSource.getConnection().createStatement()) {
-            final ResultSet resultSet = statement.executeQuery(SELECT_SQL);
+            ResultSet resultSet = statement.executeQuery(SELECT_SQL);
             int count = 1;
             while (resultSet.next()) {
                 assertThat(resultSet.getObject("cipher_pwd"), is(cipherPwd));
@@ -145,7 +145,7 @@ public final class ShadowPreparedStatementTest extends AbstractShadowJDBCDatabas
         DataSource dataSource = isShadow ? dataMaps.get("jdbc_1") : dataMaps.get("jdbc_0");
         try (PreparedStatement statement = dataSource.getConnection().prepareStatement(SELECT_SQL_BY_ID)) {
             statement.setObject(1, id);
-            final ResultSet resultSet = statement.executeQuery();
+            ResultSet resultSet = statement.executeQuery();
             int count = 1;
             while (resultSet.next()) {
                 assertThat(resultSet.getObject("cipher_pwd"), is(cipherPwd));

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
@@ -104,8 +104,8 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     private boolean isQueryWithCipherColumn() {
         return statement instanceof ShardingPreparedStatement
-                ? ((ShardingPreparedStatement) statement).getConnection().getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN)
-                : ((ShardingStatement) statement).getConnection().getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
+                ? ((ShardingPreparedStatement) statement).getConnection().getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN)
+                : ((ShardingStatement) statement).getConnection().getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
     }
     
     @Override

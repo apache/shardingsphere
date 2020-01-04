@@ -84,7 +84,7 @@ public final class ShardingProxy {
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
-            BackendExecutorContext.getInstance().getExecuteEngine().close();
+            BackendExecutorContext.getInstance().getExecutorEngine().close();
         }
     }
     

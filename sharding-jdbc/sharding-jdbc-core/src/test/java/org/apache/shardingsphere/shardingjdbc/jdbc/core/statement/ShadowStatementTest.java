@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
-import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShadowJDBCDatabaseAndTableTest;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.junit.After;
 import org.junit.Test;
 
@@ -35,23 +35,23 @@ import static org.junit.Assert.assertTrue;
 
 public final class ShadowStatementTest extends AbstractShadowJDBCDatabaseAndTableTest {
     
-    private static final String INSERT_SQL = "insert into t_encrypt (id, cipher_pwd, plain_pwd) values (1, 'cipher', 'plain')";
+    private static final String INSERT_SQL = "INSERT INTO t_encrypt (id, cipher_pwd, plain_pwd) VALUES (1, 'cipher', 'plain')";
     
-    private static final String SHADOW_INSERT_SQL = "insert into t_encrypt (id, cipher_pwd, plain_pwd, shadow) values (1, 'cipher', 'plain', TRUE)";
+    private static final String SHADOW_INSERT_SQL = "INSERT INTO t_encrypt (id, cipher_pwd, plain_pwd, shadow) VALUES (1, 'cipher', 'plain', TRUE)";
     
-    private static final String INSERT_GENERATED_KEY_SQL = "insert into t_encrypt (cipher_pwd, plain_pwd) values ('cipher', 'plain')";
+    private static final String INSERT_GENERATED_KEY_SQL = "INSERT INTO t_encrypt (cipher_pwd, plain_pwd) VALUES ('cipher', 'plain')";
     
-    private static final String DELETE_SQL = "delete from t_encrypt where plain_pwd = 'plain'";
+    private static final String DELETE_SQL = "DELETE FROM t_encrypt WHERE plain_pwd = 'plain'";
     
-    private static final String SHADOW_DELETE_SQL = "delete from t_encrypt where plain_pwd = 'plain' and shadow = TRUE";
+    private static final String SHADOW_DELETE_SQL = "DELETE FROM t_encrypt WHERE plain_pwd = 'plain' AND shadow = TRUE";
     
-    private static final String SELECT_SQL = "select id, cipher_pwd, plain_pwd from t_encrypt where id = 1";
+    private static final String SELECT_SQL = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt WHERE id = 1";
     
-    private static final String CLEAN_SQL = "delete from t_encrypt";
+    private static final String CLEAN_SQL = "DELETE FROM t_encrypt";
     
-    private static final String UPDATE_SQL = "update t_encrypt set cipher_pwd ='cipher_pwd' where id = 1";
+    private static final String UPDATE_SQL = "UPDATE t_encrypt SET cipher_pwd ='cipher_pwd' WHERE id = 1";
     
-    private static final String SHADOW_UPDATE_SQL = "update t_encrypt set cipher_pwd ='cipher_pwd' where id = 1 and shadow = TRUE";
+    private static final String SHADOW_UPDATE_SQL = "UPDATE t_encrypt SET cipher_pwd ='cipher_pwd' WHERE id = 1 AND shadow = TRUE";
     
     @Test
     public void assertInsertWithExecute() throws SQLException {
@@ -87,7 +87,7 @@ public final class ShadowStatementTest extends AbstractShadowJDBCDatabaseAndTabl
         final Map<String, DataSource> dataMaps = getDatabaseTypeMap().get(DatabaseTypes.getActualDatabaseType("H2"));
         DataSource dataSource = isShadow ? dataMaps.get("jdbc_1") : dataMaps.get("jdbc_0");
         try (Statement statement = dataSource.getConnection().createStatement()) {
-            final ResultSet resultSet = statement.executeQuery(SELECT_SQL);
+            ResultSet resultSet = statement.executeQuery(SELECT_SQL);
             int count = 1;
             while (resultSet.next()) {
                 assertThat(resultSet.getObject("cipher_pwd"), is(cipherPwd));

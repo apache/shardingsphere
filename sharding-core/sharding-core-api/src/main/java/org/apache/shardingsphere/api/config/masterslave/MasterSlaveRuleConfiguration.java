@@ -20,7 +20,7 @@ package org.apache.shardingsphere.api.config.masterslave;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.api.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import java.util.List;
 
 /**

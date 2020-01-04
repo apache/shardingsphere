@@ -19,12 +19,12 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource
 
 import com.google.common.base.Optional;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.core.config.DataSourceConfiguration;
-import org.apache.shardingsphere.core.constant.ShardingConstant;
+import org.apache.shardingsphere.encrypt.api.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
+import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.EncryptRuleChangedEvent;
@@ -127,7 +127,7 @@ public final class OrchestrationEncryptDataSourceTest {
     @Test
     public void assertRenewProperties() {
         encryptDataSource.renew(getPropertiesChangedEvent());
-        assertThat(encryptDataSource.getDataSource().getRuntimeContext().getProps().getProps().getProperty("sql.show"), is("true"));
+        assertThat(encryptDataSource.getDataSource().getRuntimeContext().getProperties().getProps().getProperty("sql.show"), is("true"));
     }
     
     private PropertiesChangedEvent getPropertiesChangedEvent() {

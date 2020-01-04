@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.iterator;
 
-import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.sharding.merge.dql.DQLMergeEngine;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
+import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
@@ -27,8 +27,8 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.P
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
-import org.apache.shardingsphere.underlying.merge.MergedResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -56,8 +56,8 @@ public final class IteratorStreamMergedResultTest {
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
-        MergedResult actual = mergeEngine.merge();
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
+        MergedResult actual = resultMerger.merge(queryResults, selectSQLStatementContext, null);
         assertFalse(actual.next());
     }
     
@@ -67,8 +67,8 @@ public final class IteratorStreamMergedResultTest {
         for (QueryResult each : queryResults) {
             when(each.next()).thenReturn(true, false);
         }
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
-        MergedResult actual = mergeEngine.merge();
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
+        MergedResult actual = resultMerger.merge(queryResults, selectSQLStatementContext, null);
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -79,8 +79,8 @@ public final class IteratorStreamMergedResultTest {
     public void assertNextForFirstResultSetsNotEmptyOnly() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
         when(queryResults.get(0).next()).thenReturn(true, false);
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
-        MergedResult actual = mergeEngine.merge();
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
+        MergedResult actual = resultMerger.merge(queryResults, selectSQLStatementContext, null);
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
@@ -89,8 +89,8 @@ public final class IteratorStreamMergedResultTest {
     public void assertNextForMiddleResultSetsNotEmpty() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
         when(queryResults.get(1).next()).thenReturn(true, false);
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
-        MergedResult actual = mergeEngine.merge();
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
+        MergedResult actual = resultMerger.merge(queryResults, selectSQLStatementContext, null);
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
@@ -99,8 +99,8 @@ public final class IteratorStreamMergedResultTest {
     public void assertNextForLastResultSetsNotEmptyOnly() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
         when(queryResults.get(2).next()).thenReturn(true, false);
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
-        MergedResult actual = mergeEngine.merge();
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
+        MergedResult actual = resultMerger.merge(queryResults, selectSQLStatementContext, null);
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
@@ -112,8 +112,8 @@ public final class IteratorStreamMergedResultTest {
         when(queryResults.get(1).next()).thenReturn(true, false);
         when(queryResults.get(3).next()).thenReturn(true, false);
         when(queryResults.get(5).next()).thenReturn(true, false);
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), selectSQLStatementContext, queryResults);
-        MergedResult actual = mergeEngine.merge();
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
+        MergedResult actual = resultMerger.merge(queryResults, selectSQLStatementContext, null);
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertTrue(actual.next());

@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
-import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
-import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback;
-import org.apache.shardingsphere.core.execute.sql.execute.result.MemoryQueryResult;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
-import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
-import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
-import org.apache.shardingsphere.core.execute.sql.prepare.SQLExecutePrepareCallback;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
+import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
+import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteCallback;
+import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
+import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
+import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareCallback;
 import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
@@ -60,11 +60,11 @@ public final class StatementExecutor extends AbstractStatementExecutor {
      */
     public void init(final SQLRouteResult routeResult) throws SQLException {
         setSqlStatementContext(routeResult.getSqlStatementContext());
-        getExecuteGroups().addAll(obtainExecuteGroups(routeResult.getRouteUnits()));
+        getInputGroups().addAll(obtainExecuteGroups(routeResult.getRouteUnits()));
         cacheStatements();
     }
     
-    private Collection<ShardingExecuteGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<RouteUnit> routeUnits) throws SQLException {
+    private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<RouteUnit> routeUnits) throws SQLException {
         return getSqlExecutePrepareTemplate().getExecuteUnitGroups(routeUnits, new SQLExecutePrepareCallback() {
             
             @Override

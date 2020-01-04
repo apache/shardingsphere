@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
 
-import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShadowDataSource;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -46,7 +46,7 @@ public class SpringBootShadowTest {
     
     @Test
     public void assertSqlShow() {
-        assertTrue(((ShadowDataSource) dataSource).getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
+        assertTrue(((ShadowDataSource) dataSource).getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW));
     }
     
     @Test
