@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.underlying.merge.MergedResult;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
-import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.junit.Before;
@@ -71,7 +71,7 @@ public final class ShardingResultSetTest {
         mergeResultSet = mock(MergedResult.class);
         ShardingRuntimeContext shardingRuntimeContext = mock(ShardingRuntimeContext.class);
         when(shardingRuntimeContext.getRule()).thenReturn(mock(ShardingRule.class));
-        when(shardingRuntimeContext.getProps()).thenReturn(new ShardingProperties(new Properties()));
+        when(shardingRuntimeContext.getProperties()).thenReturn(new ShardingSphereProperties(new Properties()));
         shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement(), createSQLRouteResult());
     }
     
@@ -100,10 +100,10 @@ public final class ShardingResultSetTest {
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.singletonList("test"));
         EncryptRule encryptRule = mock(EncryptRule.class);
-        when(encryptRule.findShardingEncryptor(anyString(), anyString())).thenReturn(Optional.<ShardingEncryptor>absent());
+        when(encryptRule.findEncryptor(anyString(), anyString())).thenReturn(Optional.<Encryptor>absent());
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         when(runtimeContext.getRule()).thenReturn(shardingRule);
-        when(runtimeContext.getProps()).thenReturn(new ShardingProperties(new Properties()));
+        when(runtimeContext.getProperties()).thenReturn(new ShardingSphereProperties(new Properties()));
         when(shardingConnection.getRuntimeContext()).thenReturn(runtimeContext);
         ShardingStatement statement = mock(ShardingStatement.class);
         when(statement.getConnection()).thenReturn(shardingConnection);

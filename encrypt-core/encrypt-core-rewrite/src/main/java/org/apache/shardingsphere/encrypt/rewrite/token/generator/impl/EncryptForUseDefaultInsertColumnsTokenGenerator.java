@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
+import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
@@ -92,7 +92,7 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator extends BaseE
         Iterator<String> descendingColumnNames = sqlStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
-            if (encryptTable.findShardingEncryptor(columnName).isPresent()) {
+            if (encryptTable.findEncryptor(columnName).isPresent()) {
                 int columnIndex = result.indexOf(columnName);
                 addPlainColumn(result, encryptTable, columnName, columnIndex);
                 addAssistedQueryColumn(result, encryptTable, columnName, columnIndex);

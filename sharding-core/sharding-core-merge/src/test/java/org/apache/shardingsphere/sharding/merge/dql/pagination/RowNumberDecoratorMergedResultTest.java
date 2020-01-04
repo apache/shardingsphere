@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.pagination;
 
-import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.sharding.merge.dql.DQLMergeEngine;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
+import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
@@ -28,8 +28,8 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.P
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
-import org.apache.shardingsphere.underlying.merge.MergedResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -45,24 +45,22 @@ public final class RowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextForSkipAll() throws SQLException {
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("Oracle"));
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false), 
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()),
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, Integer.MAX_VALUE, true), null, Collections.emptyList()));
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), selectSQLStatementContext, 
-                Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult(), createQueryResult()));
-        MergedResult actual = mergeEngine.merge();
+        MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult(), createQueryResult()), selectSQLStatementContext, null);
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextWithoutOffsetWithoutRowCount() throws SQLException {
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("Oracle"));
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), selectSQLStatementContext, 
-                Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult(), createQueryResult()));
-        MergedResult actual = mergeEngine.merge();
+        MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult(), createQueryResult()), selectSQLStatementContext, null);
         for (int i = 0; i < 8; i++) {
             assertTrue(actual.next());
         }
@@ -71,13 +69,12 @@ public final class RowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextForRowCountBoundOpenedFalse() throws SQLException {
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("Oracle"));
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false), 
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()),
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 2, true), new NumberLiteralRowNumberValueSegment(0, 0, 4, false), Collections.emptyList()));
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), selectSQLStatementContext, 
-                Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult(), createQueryResult()));
-        MergedResult actual = mergeEngine.merge();
+        MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult(), createQueryResult()), selectSQLStatementContext, null);
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -85,13 +82,12 @@ public final class RowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextForRowCountBoundOpenedTrue() throws SQLException {
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("Oracle"));
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false), 
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()),
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 2, true), new NumberLiteralRowNumberValueSegment(0, 0, 4, true), Collections.emptyList()));
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("Oracle"), selectSQLStatementContext, 
-                Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult(), createQueryResult()));
-        MergedResult actual = mergeEngine.merge();
+        MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult(), createQueryResult()), selectSQLStatementContext, null);
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertTrue(actual.next());

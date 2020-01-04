@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.execute.engine.ShardingExecuteEngine;
-import org.apache.shardingsphere.core.rule.BaseRule;
-import org.apache.shardingsphere.core.config.log.ConfigurationLogger;
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
+import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.core.log.ConfigurationLogger;
+import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
 
@@ -42,19 +42,19 @@ public abstract class AbstractRuntimeContext<T extends BaseRule> implements Runt
     
     private final T rule;
     
-    private final ShardingProperties props;
+    private final ShardingSphereProperties properties;
     
     private final DatabaseType databaseType;
     
-    private final ShardingExecuteEngine executeEngine;
+    private final ExecutorEngine executorEngine;
     
     private final SQLParseEngine parseEngine;
     
     protected AbstractRuntimeContext(final T rule, final Properties props, final DatabaseType databaseType) {
         this.rule = rule;
-        this.props = new ShardingProperties(null == props ? new Properties() : props);
+        this.properties = new ShardingSphereProperties(null == props ? new Properties() : props);
         this.databaseType = databaseType;
-        executeEngine = new ShardingExecuteEngine(this.props.<Integer>getValue(ShardingPropertiesConstant.EXECUTOR_SIZE));
+        executorEngine = new ExecutorEngine(this.properties.<Integer>getValue(PropertiesConstant.EXECUTOR_SIZE));
         parseEngine = SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType));
         ConfigurationLogger.log(rule.getRuleConfiguration());
         ConfigurationLogger.log(props);
@@ -62,6 +62,6 @@ public abstract class AbstractRuntimeContext<T extends BaseRule> implements Runt
     
     @Override
     public void close() throws Exception {
-        executeEngine.close();
+        executorEngine.close();
     }
 }

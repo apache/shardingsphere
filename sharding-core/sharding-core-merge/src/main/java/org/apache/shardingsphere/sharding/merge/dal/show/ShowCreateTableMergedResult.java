@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sharding.merge.dal.show;
 
-import org.apache.shardingsphere.underlying.merge.impl.MemoryQueryResultRow;
+import org.apache.shardingsphere.underlying.merge.result.impl.memory.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 
 import java.sql.SQLException;
 import java.util.List;

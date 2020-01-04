@@ -21,12 +21,12 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.config.log.ConfigurationLogger;
+import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
@@ -68,7 +68,7 @@ public final class MasterSlaveSchema extends LogicSchema {
     
     private ShardingSphereMetaData createMetaData() throws SQLException {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDatabaseAccessConfigurationMap());
-        TableMetas tableMetas = new TableMetas(getTableMetaDataInitializer(dataSourceMetas).load(shardingRule));
+        TableMetas tableMetas = createTableMetaDataInitializerEntry(dataSourceMetas).load(shardingRule);
         return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
     }
     

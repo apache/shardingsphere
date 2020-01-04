@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.route.router.sharding.condition.engine;
 import com.google.common.base.Optional;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.core.route.router.sharding.condition.AlwaysFalseRouteValue;
@@ -129,7 +129,7 @@ public final class WhereClauseShardingConditionEngine {
                 }
                 result.getRouteValues().add(routeValue);
             } catch (final ClassCastException ex) {
-                throw new ShardingException("Found different types for sharding value `%s`.", entry.getKey());
+                throw new ShardingSphereException("Found different types for sharding value `%s`.", entry.getKey());
             }
         }
         return result;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 import lombok.Getter;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.spi.database.type.DatabaseType;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -39,8 +39,8 @@ public final class MasterSlaveRuntimeContext extends AbstractRuntimeContext<Mast
     
     private final DatabaseMetaData cachedDatabaseMetaData;
     
-    public MasterSlaveRuntimeContext(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule rule, final Properties props, final DatabaseType databaseType) throws SQLException {
-        super(rule, props, databaseType);
+    public MasterSlaveRuntimeContext(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule, final Properties props, final DatabaseType databaseType) throws SQLException {
+        super(masterSlaveRule, props, databaseType);
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
     }
     

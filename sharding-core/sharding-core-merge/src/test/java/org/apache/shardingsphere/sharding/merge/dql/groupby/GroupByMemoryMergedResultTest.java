@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
-import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.sharding.merge.dql.DQLMergeEngine;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
+import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
@@ -31,8 +31,8 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.i
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
-import org.apache.shardingsphere.underlying.merge.MergedResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -51,9 +51,8 @@ public final class GroupByMemoryMergedResultTest {
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(
-                DatabaseTypes.getActualDatabaseType("MySQL"), createSelectSQLStatementContext(), Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult()));
-        MergedResult actual = mergeEngine.merge();
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
+        MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult()), createSelectSQLStatementContext(), null);
         assertFalse(actual.next());
     }
     
@@ -74,8 +73,8 @@ public final class GroupByMemoryMergedResultTest {
         when(queryResult3.getValue(3, Object.class)).thenReturn(2, 3);
         when(queryResult3.getValue(4, Object.class)).thenReturn(2, 2, 3);
         when(queryResult3.getValue(5, Object.class)).thenReturn(20, 20, 30);
-        DQLMergeEngine mergeEngine = new DQLMergeEngine(DatabaseTypes.getActualDatabaseType("MySQL"), createSelectSQLStatementContext(), Arrays.asList(queryResult1, queryResult2, queryResult3));
-        MergedResult actual = mergeEngine.merge();
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
+        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectSQLStatementContext(), null);
         assertTrue(actual.next());
         assertThat((BigDecimal) actual.getValue(1, Object.class), is(new BigDecimal(30)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));

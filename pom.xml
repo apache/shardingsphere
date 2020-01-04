@@ -51,6 +51,7 @@
         
         <module>sharding-distribution</module>
         <module>sharding-integration-test</module>
+        <module>shadow-core</module>
     </modules>
     
     <properties>

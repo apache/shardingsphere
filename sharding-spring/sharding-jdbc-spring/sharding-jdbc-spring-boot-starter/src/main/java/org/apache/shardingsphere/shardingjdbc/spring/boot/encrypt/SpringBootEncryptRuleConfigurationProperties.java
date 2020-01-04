@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.boot.encrypt;
 
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**

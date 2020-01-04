@@ -19,12 +19,12 @@ package org.apache.shardingsphere.shardingjdbc.common.base;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.api.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.h2.tools.RunScript;
@@ -60,8 +60,8 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     
     private static Properties createProperties() {
         Properties result = new Properties();
-        result.put(ShardingPropertiesConstant.SQL_SHOW.getKey(), true);
-        result.put(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN.getKey(), false);
+        result.put(PropertiesConstant.SQL_SHOW.getKey(), true);
+        result.put(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN.getKey(), false);
         return result;
     }
     

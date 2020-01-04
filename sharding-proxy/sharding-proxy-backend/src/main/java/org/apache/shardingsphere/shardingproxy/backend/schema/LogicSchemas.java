@@ -20,15 +20,15 @@ package org.apache.shardingsphere.shardingproxy.backend.schema;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
-import org.apache.shardingsphere.api.config.RuleConfiguration;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.spi.database.type.DatabaseType;
 
 import java.sql.SQLException;
 import java.util.Collection;

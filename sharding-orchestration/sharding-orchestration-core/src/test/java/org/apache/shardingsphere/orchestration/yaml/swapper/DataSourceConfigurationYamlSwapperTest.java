@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.yaml.swapper;
 
-import org.apache.shardingsphere.core.config.DataSourceConfiguration;
+import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration;
 import org.junit.Test;
 

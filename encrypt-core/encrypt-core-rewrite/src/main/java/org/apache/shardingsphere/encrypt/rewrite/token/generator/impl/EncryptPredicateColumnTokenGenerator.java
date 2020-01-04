@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.core.strategy.encrypt.EncryptTable;
+import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
@@ -67,7 +67,7 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (PredicateSegment each : andPredicate.getPredicates()) {
             Optional<EncryptTable> encryptTable = findEncryptTable(sqlStatementContext, each);
-            if (!encryptTable.isPresent() || !encryptTable.get().findShardingEncryptor(each.getColumn().getName()).isPresent()) {
+            if (!encryptTable.isPresent() || !encryptTable.get().findEncryptor(each.getColumn().getName()).isPresent()) {
                 continue;
             }
             int startIndex = each.getColumn().getOwner().isPresent() ? each.getColumn().getOwner().get().getStopIndex() + 2 : each.getColumn().getStartIndex();

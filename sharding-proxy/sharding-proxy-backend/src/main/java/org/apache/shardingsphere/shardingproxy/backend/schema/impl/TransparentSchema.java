@@ -19,13 +19,13 @@ package org.apache.shardingsphere.shardingproxy.backend.schema.impl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
 
 import java.sql.SQLException;
 import java.util.Map;
@@ -51,7 +51,7 @@ public final class TransparentSchema extends LogicSchema {
     
     private ShardingSphereMetaData createMetaData() throws SQLException {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDatabaseAccessConfigurationMap());
-        TableMetas tableMetas = new TableMetas(getTableMetaDataInitializer(dataSourceMetas).load(shardingRule));
+        TableMetas tableMetas = createTableMetaDataInitializerEntry(dataSourceMetas).load(shardingRule);
         return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
     }
 }

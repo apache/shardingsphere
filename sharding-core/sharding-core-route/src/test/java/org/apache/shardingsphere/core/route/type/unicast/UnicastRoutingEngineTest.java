@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.route.type.unicast;
 
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.core.config.ShardingConfigurationException;
+import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
@@ -82,7 +82,7 @@ public final class UnicastRoutingEngineTest {
         assertThat(routingResult.getRoutingUnits().size(), is(1));
     }
     
-    @Test(expected = ShardingConfigurationException.class)
+    @Test(expected = ShardingSphereConfigurationException.class)
     public void assertRouteForWithNoIntersection() {
         Set<String> sets = new HashSet<>();
         sets.add("t_order");

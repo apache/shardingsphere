@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.execute.engine.ShardingExecuteGroup;
-import org.apache.shardingsphere.core.execute.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteTemplate;
-import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
-import org.apache.shardingsphere.core.execute.sql.prepare.SQLExecutePrepareTemplate;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
+import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
+import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
+import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
+import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareTemplate;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
@@ -66,9 +66,9 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     public JDBCExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
-        int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
         sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery);
-        sqlExecuteTemplate = new SQLExecuteTemplate(BackendExecutorContext.getInstance().getExecuteEngine(), backendConnection.isSerialExecute());
+        sqlExecuteTemplate = new SQLExecuteTemplate(BackendExecutorContext.getInstance().getExecutorEngine(), backendConnection.isSerialExecute());
     }
     
     @SuppressWarnings("unchecked")
@@ -77,9 +77,9 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         final SQLStatementContext sqlStatementContext = routeResult.getSqlStatementContext();
         boolean isReturnGeneratedKeys = sqlStatementContext.getSqlStatement() instanceof InsertStatement;
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        Collection<ShardingExecuteGroup<StatementExecuteUnit>> sqlExecuteGroups = sqlExecutePrepareTemplate.getExecuteUnitGroups(
+        Collection<InputGroup<StatementExecuteUnit>> inputGroups = sqlExecutePrepareTemplate.getExecuteUnitGroups(
                 routeResult.getRouteUnits(), new ProxyJDBCExecutePrepareCallback(backendConnection, jdbcExecutorWrapper, isReturnGeneratedKeys));
-        Collection<ExecuteResponse> executeResponses = sqlExecuteTemplate.executeGroup((Collection) sqlExecuteGroups, 
+        Collection<ExecuteResponse> executeResponses = sqlExecuteTemplate.execute((Collection) inputGroups, 
                 new ProxySQLExecuteCallback(backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true),
                 new ProxySQLExecuteCallback(backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false));
         ExecuteResponse executeResponse = executeResponses.iterator().next();

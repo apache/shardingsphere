@@ -22,6 +22,8 @@ import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfi
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.spi.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmServiceLoader;
 import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+
 import java.util.List;
 
 /**

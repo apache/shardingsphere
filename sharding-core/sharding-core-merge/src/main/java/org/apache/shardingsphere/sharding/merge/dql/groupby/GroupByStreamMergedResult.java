@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedR
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.underlying.execute.QueryResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

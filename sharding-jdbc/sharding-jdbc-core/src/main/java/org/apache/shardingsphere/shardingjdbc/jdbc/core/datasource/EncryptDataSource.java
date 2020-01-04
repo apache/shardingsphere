@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;

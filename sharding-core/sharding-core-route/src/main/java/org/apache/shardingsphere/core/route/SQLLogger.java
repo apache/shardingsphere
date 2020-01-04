@@ -49,16 +49,6 @@ public final class SQLLogger {
     }
     
     /**
-     * Print SQL log for encrypt rule.
-     * 
-     * @param encryptSQL encrypt SQL
-     */
-    public static void logSQL(final String encryptSQL) { 
-        log("Rule Type: encrypt");
-        log("SQL: {}", encryptSQL);
-    }
-    
-    /**
      * Print SQL log for sharding rule.
      * 
      * @param logicSQL logic SQL
@@ -75,6 +65,17 @@ public final class SQLLogger {
         } else {
             logNormalMode(routeUnits);
         }
+    }
+
+    /**
+     * Print SQL log for shadow rule.
+     *
+     * @param shadowSQL shadow SQL
+     * @param dataSourceName data source name
+     */
+    public static void logShadowSQL(final String shadowSQL, final String dataSourceName) {
+        log("Rule Type: shadow");
+        log("SQL: {} ::: DataSources: {}", shadowSQL, dataSourceName);
     }
     
     private static void logSimpleMode(final Collection<RouteUnit> routeUnits) {
