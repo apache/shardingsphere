@@ -84,16 +84,26 @@ public final class InsertClauseShardingConditionEngine {
         for (ExpressionSegment each : insertValueContext.getValueExpressions()) {
             String columnName = columnNames.next();
             if (shardingRule.isShardingColumn(columnName, tableName)) {
-                if (each instanceof SimpleExpressionSegment) {
-                    result.getRouteValues().add(new ListRouteValue<>(columnName, tableName, Collections.singletonList(getRouteValue((SimpleExpressionSegment) each, parameters))));
-                } else if (ExpressionConditionUtils.isNowExpression(each)) {
-                    result.getRouteValues().add(new ListRouteValue<>(columnName, tableName, Collections.singletonList(timeService.getTime())));
+                Comparable<?> routeValue = getRouteValue(each, parameters, timeService);
+                if (null == routeValue) {
+                    continue;
                 }
+                result.getRouteValues().add(new ListRouteValue<>(columnName, tableName, Collections.singletonList(routeValue)));
             }
         }
         return result;
     }
-    
+
+    private Comparable<?> getRouteValue(final ExpressionSegment expressionSegment, final List<Object> parameters, final SPITimeService timeService) {
+        Comparable<?> routeValue = null;
+        if (expressionSegment instanceof SimpleExpressionSegment) {
+            routeValue = getRouteValue((SimpleExpressionSegment) expressionSegment, parameters);
+        } else if (ExpressionConditionUtils.isNowExpression(expressionSegment)) {
+            routeValue = timeService.getTime();
+        }
+        return routeValue;
+    }
+
     private Comparable<?> getRouteValue(final SimpleExpressionSegment expressionSegment, final List<Object> parameters) {
         Object result;
         if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
@@ -101,10 +111,13 @@ public final class InsertClauseShardingConditionEngine {
         } else {
             result = ((LiteralExpressionSegment) expressionSegment).getLiterals();
         }
+        if (null == result) {
+            return null;
+        }
         Preconditions.checkArgument(result instanceof Comparable, "Sharding value must implements Comparable.");
         return (Comparable) result;
     }
-    
+
     private void appendGeneratedKeyCondition(final GeneratedKey generatedKey, final String tableName, final List<ShardingCondition> shardingConditions) {
         Iterator<Comparable<?>> generatedValues = generatedKey.getGeneratedValues().iterator();
         for (ShardingCondition each : shardingConditions) {
