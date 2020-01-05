@@ -85,10 +85,9 @@ public final class InsertClauseShardingConditionEngine {
             String columnName = columnNames.next();
             if (shardingRule.isShardingColumn(columnName, tableName)) {
                 Comparable<?> routeValue = getRouteValue(each, parameters, timeService);
-                if (null == routeValue) {
-                    continue;
+                if (null != routeValue) {
+                    result.getRouteValues().add(new ListRouteValue<>(columnName, tableName, Collections.singletonList(routeValue)));
                 }
-                result.getRouteValues().add(new ListRouteValue<>(columnName, tableName, Collections.singletonList(routeValue)));
             }
         }
         return result;
