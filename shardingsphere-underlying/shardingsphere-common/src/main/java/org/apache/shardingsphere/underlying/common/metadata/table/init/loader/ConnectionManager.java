@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata.table.loader;
+package org.apache.shardingsphere.underlying.common.metadata.table.init.loader;
 
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
-
+import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Table meta data loader.
+ * Connection manager.
  *
  * @author zhangliang
  */
-public interface TableMetaDataLoader<T extends BaseRule> {
+public interface ConnectionManager {
     
     /**
-     * Load table meta data.
-     *
-     * @param tableName table name
-     * @param rule rule
-     * @return table meta data
+     * Get connection.
+     * 
+     * @param dataSourceName data source name
+     * @return connection
      * @throws SQLException SQL exception
      */
-    TableMetaData load(String tableName, T rule) throws SQLException;
+    Connection getConnection(String dataSourceName) throws SQLException;
 }

@@ -21,10 +21,9 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.h2.tools.RunScript;
 import org.junit.Before;
 import org.springframework.test.context.TestExecutionListeners;
@@ -87,14 +86,14 @@ public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContex
     @SneakyThrows
     private void reInitMetaData() {
         Map<String, DataSource> dataSourceMap = (Map<String, DataSource>) getFieldValue(shardingDataSource.getRuntimeContext().getCachedDatabaseMetaData(), "dataSourceMap");
-        ShardingSphereMetaData newMetaData = (ShardingSphereMetaData) getCreateMetaDataMethod().invoke(shardingDataSource.getRuntimeContext(), dataSourceMap,
-            shardingDataSource.getRuntimeContext().getRule(), shardingDataSource.getRuntimeContext().getDatabaseType());
+        ShardingSphereMetaData newMetaData = (ShardingSphereMetaData) getCreateMetaDataMethod().invoke(
+                shardingDataSource.getRuntimeContext(), dataSourceMap, shardingDataSource.getRuntimeContext().getDatabaseType());
         setFieldValue(shardingDataSource.getRuntimeContext(), "metaData", newMetaData);
     }
     
     @SneakyThrows
     private Method getCreateMetaDataMethod() {
-        Method method = shardingDataSource.getRuntimeContext().getClass().getDeclaredMethod("createMetaData", Map.class, ShardingRule.class, DatabaseType.class);
+        Method method = shardingDataSource.getRuntimeContext().getClass().getDeclaredMethod("createMetaData", Map.class, DatabaseType.class);
         method.setAccessible(true);
         return method;
     }
