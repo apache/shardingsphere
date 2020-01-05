@@ -330,7 +330,7 @@ simpleExpr
     ;
 
 functionCall
-    : aggregationFunction | specialFunction_ | regularFunction_
+    : aggregationFunction | specialFunction_ | regularFunction_ 
     ;
 
 aggregationFunction
