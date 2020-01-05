@@ -102,16 +102,21 @@ public abstract class BaseShardingEngine {
     }
     
     private Collection<RouteUnit> rewriteAndConvert(final String sql, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(metaData.getRelationMetas(), sqlRouteResult.getSqlStatementContext(), sql, parameters);
-        new ShardingSQLRewriteContextDecorator(sqlRouteResult).decorate(shardingRule, properties, sqlRewriteContext);
-        new EncryptSQLRewriteContextDecorator().decorate(shardingRule.getEncryptRule(), properties, sqlRewriteContext);
-        sqlRewriteContext.generateSQLTokens();
         Collection<RouteUnit> result = new LinkedHashSet<>();
+        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sql, parameters, sqlRouteResult);
         for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
             ShardingSQLRewriteEngine sqlRewriteEngine = new ShardingSQLRewriteEngine(shardingRule, sqlRouteResult.getShardingConditions(), each);
             SQLRewriteResult sqlRewriteResult = sqlRewriteEngine.rewrite(sqlRewriteContext);
             result.add(new RouteUnit(each.getDataSourceName(), new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));
         }
+        return result;
+    }
+    
+    private SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
+        SQLRewriteContext result = new SQLRewriteContext(metaData.getRelationMetas(), sqlRouteResult.getSqlStatementContext(), sql, parameters);
+        new ShardingSQLRewriteContextDecorator(sqlRouteResult).decorate(shardingRule, properties, result);
+        new EncryptSQLRewriteContextDecorator().decorate(shardingRule.getEncryptRule(), properties, result);
+        result.generateSQLTokens();
         return result;
     }
 }
