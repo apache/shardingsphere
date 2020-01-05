@@ -134,7 +134,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-reg-api</artifactId>
+            <artifactId>sharding-orchestration-center-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
