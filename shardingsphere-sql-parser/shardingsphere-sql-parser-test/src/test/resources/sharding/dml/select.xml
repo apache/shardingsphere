@@ -1204,4 +1204,18 @@
             </shorthand-select-items>
         </select-items>
     </parser-result>
+
+    <parser-result sql-case-id="select_with_spatial_function">
+        <tables>
+            <table name="t_order"/>
+        </tables>
+        <tokens>
+            <table-token start-index="14" table-name="t_order" length="7" />
+        </tokens>
+        <select-items start-index="7" stop-index="7">
+            <shorthand-select-items>
+                <shorthand-select-item start-index="7" stop-index="7" text="*" />
+            </shorthand-select-items>
+        </select-items>
+    </parser-result>
 </parser-result-sets>
