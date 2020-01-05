@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.rewrite.parameterized;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlRootEncryptRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
@@ -63,9 +64,8 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
     protected Collection<SQLRewriteResult> createSQLRewriteResults() throws IOException {
         YamlRootEncryptRuleConfiguration ruleConfiguration = createRuleConfiguration();
         EncryptRule encryptRule = new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(ruleConfiguration.getEncryptRule()));
-        boolean isQueryWithCipherColumn = (boolean) ruleConfiguration.getProps().get("query.with.cipher.column");
         SQLRewriteContext sqlRewriteContext = createSQLRewriteContext();
-        new EncryptSQLRewriteContextDecorator(encryptRule, isQueryWithCipherColumn).decorate(sqlRewriteContext);
+        new EncryptSQLRewriteContextDecorator().decorate(encryptRule, new ShardingSphereProperties(ruleConfiguration.getProps()), sqlRewriteContext);
         sqlRewriteContext.generateSQLTokens();
         return Collections.singletonList(new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext));
     }

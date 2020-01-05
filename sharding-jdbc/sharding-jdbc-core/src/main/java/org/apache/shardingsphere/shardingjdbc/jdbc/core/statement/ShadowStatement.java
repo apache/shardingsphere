@@ -195,7 +195,7 @@ public final class ShadowStatement extends AbstractStatementAdapter {
 
     private String rewriteSql(final String sql) {
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(getRelationMetas(shadowConnection.getRuntimeContext().getTableMetas()), sqlStatementContext, sql, Collections.emptyList());
-        new ShadowSQLRewriteContextDecorator(shadowConnection.getRuntimeContext().getRule()).decorate(sqlRewriteContext);
+        new ShadowSQLRewriteContextDecorator().decorate(shadowConnection.getRuntimeContext().getRule(), shadowConnection.getRuntimeContext().getProperties(), sqlRewriteContext);
         sqlRewriteContext.generateSQLTokens();
         String result = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
         showSQL(result);
