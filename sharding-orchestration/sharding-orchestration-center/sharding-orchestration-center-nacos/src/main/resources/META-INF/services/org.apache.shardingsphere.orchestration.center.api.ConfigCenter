@@ -15,7 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.orchestration.internal.registry.fixture.FifthTestRegistryCenter
-org.apache.shardingsphere.orchestration.internal.registry.fixture.ThirdTestRegistryCenter
-org.apache.shardingsphere.orchestration.internal.registry.fixture.ForthTestRegistryCenter
-org.apache.shardingsphere.orchestration.center.instance.CuratorZookeeperInstance
+org.apache.shardingsphere.orchestration.center.instance.NacosInstance
