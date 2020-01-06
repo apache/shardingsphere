@@ -18,20 +18,55 @@
 package org.apache.shardingsphere.shardingscaling.core.util;
 
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 
 import javax.sql.DataSource;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Data source factory.
  *
  * @author avalon566
+ * @author ssxlulu
  */
+@NoArgsConstructor
 public final class DataSourceFactory {
-    
+
+    @Getter
     private final ConcurrentHashMap<JdbcDataSourceConfiguration, HikariDataSource> cachedDataSources = new ConcurrentHashMap<>();
+
+    public DataSourceFactory(final List<SyncConfiguration> syncConfigurations) {
+        createDatasources(syncConfigurations);
+    }
+
+    /**
+     * Use for check datasources, close after check.
+     *
+     * @param syncConfigurations syncConfigurations
+     */
+    private void createDatasources(final List<SyncConfiguration> syncConfigurations) {
+        //create reader datasources
+        for (SyncConfiguration syncConfiguration : syncConfigurations) {
+            JdbcDataSourceConfiguration jdbcDataSourceConfiguration = (JdbcDataSourceConfiguration) syncConfiguration.getReaderConfiguration().getDataSourceConfiguration();
+            HikariDataSource hikariDataSource = new HikariDataSource();
+            hikariDataSource.setJdbcUrl(jdbcDataSourceConfiguration.getJdbcUrl());
+            hikariDataSource.setUsername(jdbcDataSourceConfiguration.getUsername());
+            hikariDataSource.setPassword(jdbcDataSourceConfiguration.getPassword());
+            cachedDataSources.put(jdbcDataSourceConfiguration, hikariDataSource);
+        }
+        //create writer datasource
+        JdbcDataSourceConfiguration jdbcDataSourceConfiguration = (JdbcDataSourceConfiguration) syncConfigurations.get(0).getWriterConfiguration().getDataSourceConfiguration();
+        HikariDataSource hikariDataSource = new HikariDataSource();
+        hikariDataSource.setJdbcUrl(jdbcDataSourceConfiguration.getJdbcUrl());
+        hikariDataSource.setUsername(jdbcDataSourceConfiguration.getUsername());
+        hikariDataSource.setPassword(jdbcDataSourceConfiguration.getPassword());
+        cachedDataSources.put(jdbcDataSourceConfiguration, hikariDataSource);
+    }
 
     /**
      * Get data source by {@code DataSourceConfiguration}.
@@ -69,5 +104,6 @@ public final class DataSourceFactory {
                 each.close();
             }
         }
+        cachedDataSources.clear();
     }
 }
