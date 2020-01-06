@@ -337,7 +337,7 @@ gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin
 ### 投票阶段
 
 1. ShardingSphere社区投票，发起投票邮件到`dev@shardingsphere.apache.org`。PPMC需要先按照文档检查版本的正确性，然后再进行投票。
-经过至少72小时并统计到3个`+1 binding`票后（只有PPMC的票才是binding），即可进入下一阶段的投票。
+经过至少72小时并统计到3个`+1 PPMC member`票后，即可进入下一阶段的投票。
 
 2. Apache社区投票，发起投票邮件到`general@incubator.apache.org`。经过至少72小时并统计到3个`+1 binding`票后（只有IPMC的票才是binding），即可进行正式发布。
 

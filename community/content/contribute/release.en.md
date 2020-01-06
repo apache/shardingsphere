@@ -341,7 +341,7 @@ For the whole check list, please see [here](https://cwiki.apache.org/confluence/
 
 1. ShardingSphere community vote: send the vote e-mail to `dev@shardingsphere.apache.org`. 
 PPMC needs to check the rightness of the version according to the document before they vote. 
-After at least 72 hours and with at least 3 `+1 binding` votes (only PPMC's votes are binding), it can come to the next stage of the vote.
+After at least 72 hours and with at least 3 `+1 PPMC member` votes, it can come to the next stage of the vote.
 
 2. Apache community vote: send the vote e-mail to `general@incubator.apache.org`.
 After at least 72 hours and with at least 3 `+1 binding` votes (only IPMC's votes are binding), it can be officially released.
