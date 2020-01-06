@@ -332,17 +332,6 @@ gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin
 
 全部的检查列表参见[这里](https://cwiki.apache.org/confluence/display/INCUBATOR/Incubator+Release+Checklist)。
 
-### 检查依赖影响
-
-#### SkyWalking
-
-如果此版本存在以下接口的变更，则需要到SkyWalking项目提交最新版本的插件：
-
-- org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback.execute0
-- org.apache.shardingsphere.shardingjdbc.executor.AbstractStatementExecutor.executeCallback
-- org.apache.shardingsphere.core.route.router.sharding.ParsingSQLRouter.parse
-- org.apache.shardingsphere.shardingproxy.frontend.command.CommandExecutorTask.run
-
 ## 发起投票
 
 ### 投票阶段
