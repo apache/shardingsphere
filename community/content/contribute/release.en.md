@@ -407,7 +407,7 @@ Checklist for reference:
 
 [ ] DISCLAIMER is included.
 
-[ ] Source code artifacts have correct names matching the current release.
+[ ] Source code distributions have correct names matching the current release.
 
 [ ] LICENSE and NOTICE files are correct for each ShardingSphere repo.
 
@@ -525,7 +525,7 @@ Checklist for reference:
 
 [ ] DISCLAIMER is included.
 
-[ ] Source code artifacts have correct names matching the current release.
+[ ] Source code distributions have correct names matching the current release.
 
 [ ] LICENSE and NOTICE files are correct for each ShardingSphere repo.
 
