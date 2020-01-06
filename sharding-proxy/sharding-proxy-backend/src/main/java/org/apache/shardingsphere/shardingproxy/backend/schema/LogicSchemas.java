@@ -97,7 +97,8 @@ public final class LogicSchemas {
     private void initSchemas(final Collection<String> localSchemaNames, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, 
                              final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) throws SQLException {
         if (schemaRules.isEmpty()) {
-            logicSchemas.put(schemaDataSources.keySet().iterator().next(), LogicSchemaFactory.newInstance(schemaDataSources.keySet().iterator().next(), schemaDataSources, null, isUsingRegistry));
+            String schema = schemaDataSources.keySet().iterator().next();
+            logicSchemas.put(schema, LogicSchemaFactory.newInstance(schema, schemaDataSources, null, isUsingRegistry));
         }
         for (Entry<String, RuleConfiguration> entry : schemaRules.entrySet()) {
             if (localSchemaNames.isEmpty() || localSchemaNames.contains(entry.getKey())) {

@@ -17,16 +17,17 @@
 
 package org.apache.shardingsphere.underlying.common.metadata.datasource;
 
-import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.spi.database.metadata.MemorizedDataSourceMetaData;
+import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 /**
  * Data source metas.
@@ -76,7 +77,7 @@ public final class DataSourceMetas {
     
     private boolean isInSameDatabaseInstance(final DataSourceMetaData sample, final DataSourceMetaData target) {
         return sample instanceof MemorizedDataSourceMetaData
-                ? target.getSchema().equals(sample.getSchema()) : target.getHostName().equals(sample.getHostName()) && target.getPort() == sample.getPort();
+                ? Objects.equals(target.getSchema(), sample.getSchema()) : target.getHostName().equals(sample.getHostName()) && target.getPort() == sample.getPort();
     }
     
     /**

@@ -170,9 +170,10 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
     private SQLUnit getSQLUnit(final String sql) {
         ShadowConnection connection = preparedStatementGenerator.connection;
         SQLStatement sqlStatement = connection.getRuntimeContext().getParseEngine().parse(sql, true);
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(getRelationMetas(connection.getRuntimeContext().getTableMetas()), sql, getParameters(), sqlStatement);
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(
+                getRelationMetas(connection.getRuntimeContext().getMetaData().getTables()), sql, getParameters(), sqlStatement);
         shadowJudgementEngine = new PreparedJudgementEngine(connection.getRuntimeContext().getRule(), sqlStatementContext, getParameters());
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(getRelationMetas(connection.getRuntimeContext().getTableMetas()), sqlStatementContext, sql, getParameters());
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(getRelationMetas(connection.getRuntimeContext().getMetaData().getTables()), sqlStatementContext, sql, getParameters());
         new ShadowSQLRewriteContextDecorator().decorate(connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getProperties(), sqlRewriteContext);
         sqlRewriteContext.generateSQLTokens();
         SQLRewriteResult sqlRewriteResult = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);

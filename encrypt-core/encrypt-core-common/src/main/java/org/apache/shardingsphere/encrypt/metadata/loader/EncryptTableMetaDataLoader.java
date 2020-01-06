@@ -17,25 +17,18 @@
 
 package org.apache.shardingsphere.encrypt.metadata.loader;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.metadata.decorator.EncryptTableMetaDataDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.column.loader.ColumnMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.ConnectionManager;
 import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.TableMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.impl.DefaultTableMetaDataLoader;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 
 /**
@@ -44,71 +37,30 @@ import java.util.Map;
  * @author zhangliang
  * @author panjuan
  */
-@RequiredArgsConstructor
 public final class EncryptTableMetaDataLoader implements TableMetaDataLoader<EncryptRule> {
     
-    private final DataSourceMetas dataSourceMetas;
+    private final DefaultTableMetaDataLoader defaultTableMetaDataLoader;
     
-    private final ConnectionManager connectionManager;
+    private final EncryptTableMetaDataDecorator encryptTableMetaDataDecorator;
     
-    private final ColumnMetaDataLoader columnMetaDataLoader = new ColumnMetaDataLoader();
-    
-    private final EncryptTableMetaDataDecorator encryptTableMetaDataDecorator = new EncryptTableMetaDataDecorator();
+    public EncryptTableMetaDataLoader(final DataSourceMetas dataSourceMetas, final ConnectionManager connectionManager) {
+        defaultTableMetaDataLoader = new DefaultTableMetaDataLoader(dataSourceMetas, connectionManager);
+        encryptTableMetaDataDecorator = new EncryptTableMetaDataDecorator();
+    }
     
     @Override
     public TableMetaData load(final String tableName, final EncryptRule encryptRule) throws SQLException {
-        return encryptTableMetaDataDecorator.decorate(load(tableName), tableName, encryptRule);
-    }
-    
-    private TableMetaData load(final String tableName) throws SQLException {
-        try (Connection connection = connectionManager.getConnection(dataSourceMetas.getAllInstanceDataSourceNames().iterator().next())) {
-            return createTableMetaData(connection, dataSourceMetas.getDataSourceMetaData(dataSourceMetas.getAllInstanceDataSourceNames().iterator().next()), tableName);
-        }
-    }
-    
-    private TableMetaData createTableMetaData(final Connection connection, final DataSourceMetaData dataSourceMetaData, final String tableName) throws SQLException {
-        String catalog = dataSourceMetaData.getCatalog();
-        return isTableExist(connection, catalog, tableName)
-                ? new TableMetaData(columnMetaDataLoader.load(connection, catalog, tableName), Collections.<String>emptyList())
-                : new TableMetaData(Collections.<ColumnMetaData>emptyList(), Collections.<String>emptySet());
-    }
-    
-    private boolean isTableExist(final Connection connection, final String catalog, final String tableName) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(catalog, null, tableName, null)) {
-            return resultSet.next();
-        }
+        return encryptTableMetaDataDecorator.decorate(defaultTableMetaDataLoader.load(tableName, encryptRule), tableName, encryptRule);
     }
     
     @Override
     public TableMetas loadAll(final EncryptRule encryptRule) throws SQLException {
-        return new TableMetas(loadAllTables());
-    }
-    
-    private Map<String, TableMetaData> loadAllTables() throws SQLException {
-        Collection<String> tableNames = loadAllTableNames();
-        Map<String, TableMetaData> result = new HashMap<>(tableNames.size(), 1);
-        for (String each : tableNames) {
-            result.put(each, load(each));
+        TableMetas tableMetas = defaultTableMetaDataLoader.loadAll(encryptRule);
+        Collection<String> allTableNames = tableMetas.getAllTableNames();
+        Map<String, TableMetaData> result = new HashMap<>(allTableNames.size(), 1);
+        for (String each : allTableNames) {
+            result.put(each, encryptTableMetaDataDecorator.decorate(tableMetas.get(each), each, encryptRule));
         }
-        return result;
-    }
-    
-    private Collection<String> loadAllTableNames() throws SQLException {
-        Collection<String> result = new LinkedHashSet<>();
-        String dataSourceName = dataSourceMetas.getAllInstanceDataSourceNames().iterator().next();
-        DataSourceMetaData dataSourceMetaData = dataSourceMetas.getDataSourceMetaData(dataSourceName);
-        String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getCatalog();
-        String schemaName = null == dataSourceMetaData ? null : dataSourceMetaData.getSchema();
-        try (
-                Connection connection = connectionManager.getConnection(dataSourceName);
-                ResultSet resultSet = connection.getMetaData().getTables(catalog, schemaName, null, new String[]{"TABLE"})) {
-            while (resultSet.next()) {
-                String tableName = resultSet.getString("TABLE_NAME");
-                if (!tableName.contains("$") && !tableName.contains("/")) {
-                    result.add(tableName);
-                }
-            }
-        }
-        return result;
+        return new TableMetas(result);
     }
 }

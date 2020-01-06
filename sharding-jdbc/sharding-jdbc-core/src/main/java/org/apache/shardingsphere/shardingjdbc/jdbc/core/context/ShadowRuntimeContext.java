@@ -22,12 +22,18 @@ import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCDataSourceConnectionManager;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializer;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializerEntry;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.impl.DefaultTableMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import javax.sql.DataSource;
-import java.util.Collections;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -37,9 +43,7 @@ import java.util.Properties;
  * @author xiayan
  */
 @Getter
-public class ShadowRuntimeContext extends AbstractRuntimeContext<ShadowRule> {
-    
-    private final TableMetas tableMetas;
+public final class ShadowRuntimeContext extends SingleDataSourceRuntimeContext<ShadowRule> {
     
     private final DataSource actualDataSource;
     
@@ -47,21 +51,32 @@ public class ShadowRuntimeContext extends AbstractRuntimeContext<ShadowRule> {
     
     private final ShadowType shadowType;
     
-    public ShadowRuntimeContext(final DataSource actualDataSource, final DataSource shadowDataSource, final ShadowRule rule, final Properties props, final DatabaseType databaseType) {
-        super(rule, props, databaseType);
-        tableMetas = new TableMetas(Collections.<String, TableMetaData>emptyMap());
+    public ShadowRuntimeContext(final DataSource actualDataSource, final DataSource shadowDataSource, 
+                                final ShadowRule rule, final Properties props, final DatabaseType databaseType) throws SQLException {
+        super(actualDataSource, rule, props, databaseType);
         this.actualDataSource = actualDataSource;
         this.shadowDataSource = shadowDataSource;
-        
+        shadowType = getShadowType(actualDataSource);
+    }
+    
+    private ShadowType getShadowType(final DataSource actualDataSource) {
         if (actualDataSource instanceof MasterSlaveDataSource) {
-            shadowType = ShadowType.MASTER_SLAVE;
-        } else if (actualDataSource instanceof ShardingDataSource) {
-            shadowType = ShadowType.SHARDING;
-        } else if (actualDataSource instanceof EncryptDataSource) {
-            shadowType = ShadowType.ENCRYPT;
-        } else {
-            shadowType = ShadowType.RAW;
+            return ShadowType.MASTER_SLAVE;
         }
+        if (actualDataSource instanceof ShardingDataSource) {
+            return ShadowType.SHARDING;
+        }
+        if (actualDataSource instanceof EncryptDataSource) {
+            return ShadowType.ENCRYPT;
+        }
+        return ShadowType.RAW;
+    }
+    
+    @Override
+    protected TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(final DataSource dataSource, final DataSourceMetas dataSourceMetas) {
+        Map<BaseRule, TableMetaDataInitializer> tableMetaDataInitializes = new HashMap<>(1, 1);
+        tableMetaDataInitializes.put(getRule(), new DefaultTableMetaDataLoader(dataSourceMetas, new JDBCDataSourceConnectionManager(dataSource)));
+        return new TableMetaDataInitializerEntry(tableMetaDataInitializes);
     }
     
     public enum ShadowType {

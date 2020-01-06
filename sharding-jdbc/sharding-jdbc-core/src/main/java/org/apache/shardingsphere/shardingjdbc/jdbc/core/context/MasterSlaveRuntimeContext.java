@@ -20,12 +20,19 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 import lombok.Getter;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
+import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCDataSourceMapConnectionManager;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializer;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializerEntry;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.impl.DefaultTableMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -35,12 +42,12 @@ import java.util.Properties;
  * @author zhangliang
  */
 @Getter
-public final class MasterSlaveRuntimeContext extends AbstractRuntimeContext<MasterSlaveRule> {
+public final class MasterSlaveRuntimeContext extends MultipleDataSourcesRuntimeContext<MasterSlaveRule> {
     
     private final DatabaseMetaData cachedDatabaseMetaData;
     
     public MasterSlaveRuntimeContext(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule, final Properties props, final DatabaseType databaseType) throws SQLException {
-        super(masterSlaveRule, props, databaseType);
+        super(dataSourceMap, masterSlaveRule, props, databaseType);
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
     }
     
@@ -48,5 +55,12 @@ public final class MasterSlaveRuntimeContext extends AbstractRuntimeContext<Mast
         try (Connection connection = dataSourceMap.values().iterator().next().getConnection()) {
             return new CachedDatabaseMetaData(connection.getMetaData(), dataSourceMap, null);
         }
+    }
+    
+    @Override
+    protected TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(final Map<String, DataSource> dataSourceMap, final DataSourceMetas dataSourceMetas) {
+        Map<BaseRule, TableMetaDataInitializer> tableMetaDataInitializes = new HashMap<>(1, 1);
+        tableMetaDataInitializes.put(getRule(), new DefaultTableMetaDataLoader(dataSourceMetas, new JDBCDataSourceMapConnectionManager(dataSourceMap)));
+        return new TableMetaDataInitializerEntry(tableMetaDataInitializes);
     }
 }
