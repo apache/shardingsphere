@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.shard;
+package org.apache.shardingsphere.underlying.rewrite;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
