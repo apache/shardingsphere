@@ -42,6 +42,15 @@ public final class MySQLErrPacketFactoryTest {
     }
     
     @Test
+    public void assertNewInstanceWithSQLExceptionOfNullSqlState() {
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new SQLException(new RuntimeException("No reason")));
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getErrorCode(), is(0));
+        assertThat(actual.getSqlState(), is(""));
+        assertThat(actual.getErrorMessage(), is("java.lang.RuntimeException: No reason"));
+    }
+    
+    @Test
     public void assertNewInstanceWithInvalidShardingCTLFormatException() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new InvalidShardingCTLFormatException("test"));
         assertThat(actual.getSequenceId(), is(1));
