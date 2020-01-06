@@ -56,15 +56,20 @@ public final class ShadowRuntimeContext extends SingleDataSourceRuntimeContext<S
         super(actualDataSource, rule, props, databaseType);
         this.actualDataSource = actualDataSource;
         this.shadowDataSource = shadowDataSource;
+        shadowType = getShadowType(actualDataSource);
+    }
+    
+    private ShadowType getShadowType(final DataSource actualDataSource) {
         if (actualDataSource instanceof MasterSlaveDataSource) {
-            shadowType = ShadowType.MASTER_SLAVE;
-        } else if (actualDataSource instanceof ShardingDataSource) {
-            shadowType = ShadowType.SHARDING;
-        } else if (actualDataSource instanceof EncryptDataSource) {
-            shadowType = ShadowType.ENCRYPT;
-        } else {
-            shadowType = ShadowType.RAW;
+            return ShadowType.MASTER_SLAVE;
         }
+        if (actualDataSource instanceof ShardingDataSource) {
+            return ShadowType.SHARDING;
+        }
+        if (actualDataSource instanceof EncryptDataSource) {
+            return ShadowType.ENCRYPT;
+        }
+        return ShadowType.RAW;
     }
     
     @Override
