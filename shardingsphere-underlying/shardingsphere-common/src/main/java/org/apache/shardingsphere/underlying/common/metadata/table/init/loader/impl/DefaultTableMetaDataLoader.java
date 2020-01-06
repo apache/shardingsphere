@@ -87,6 +87,7 @@ public final class DefaultTableMetaDataLoader implements TableMetaDataLoader {
     public TableMetas loadAll(final BaseRule rule) throws SQLException {
         Collection<String> tableNames = loadAllTableNames();
         Map<String, TableMetaData> result = new HashMap<>(tableNames.size(), 1);
+        // TODO concurrency load via maxConnectionsSizePerQuery
         for (String each : tableNames) {
             result.put(each, load(each, rule));
         }
