@@ -73,7 +73,7 @@ public abstract class AbstractRuntimeContext<T extends BaseRule> implements Runt
         this.rule = rule;
         this.properties = new ShardingSphereProperties(null == props ? new Properties() : props);
         this.databaseType = databaseType;
-        executorEngine = new ExecutorEngine(this.properties.<Integer>getValue(PropertiesConstant.EXECUTOR_SIZE));
+        executorEngine = new ExecutorEngine(properties.<Integer>getValue(PropertiesConstant.EXECUTOR_SIZE));
         parseEngine = SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType));
         metaData = createMetaData(dataSourceMap, databaseType);
         ConfigurationLogger.log(rule.getRuleConfiguration());
