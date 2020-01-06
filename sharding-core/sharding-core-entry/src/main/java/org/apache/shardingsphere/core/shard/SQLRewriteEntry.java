@@ -18,15 +18,16 @@
 package org.apache.shardingsphere.core.shard;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
-import org.apache.shardingsphere.sharding.rewrite.context.ShardingSQLRewriteContextDecorator;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * SQL rewrite entry.
@@ -36,25 +37,31 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class SQLRewriteEntry {
     
-    private final ShardingRule shardingRule;
+    private final ShardingSphereMetaData metaData;
     
     private final ShardingSphereProperties properties;
-    
-    private final ShardingSphereMetaData metaData;
     
     /**
      * Create SQL rewrite context.
      * 
      * @param sql SQL
      * @param parameters parameters
-     * @param sqlRouteResult SQL route result
+     * @param sqlStatementContext SQL statement context
+     * @param decorators SQL rewrite context decorators
      * @return SQL rewrite context
      */
-    public SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        SQLRewriteContext result = new SQLRewriteContext(metaData.getRelationMetas(), sqlRouteResult.getSqlStatementContext(), sql, parameters);
-        new ShardingSQLRewriteContextDecorator(sqlRouteResult).decorate(shardingRule, properties, result);
-        new EncryptSQLRewriteContextDecorator().decorate(shardingRule.getEncryptRule(), properties, result);
+    public SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, 
+                                                     final SQLStatementContext sqlStatementContext, final Map<BaseRule, SQLRewriteContextDecorator> decorators) {
+        SQLRewriteContext result = new SQLRewriteContext(metaData.getRelationMetas(), sqlStatementContext, sql, parameters);
+        decorate(decorators, result);
         result.generateSQLTokens();
         return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void decorate(final Map<BaseRule, SQLRewriteContextDecorator> decorators, final SQLRewriteContext sqlRewriteContext) {
+        for (Entry<BaseRule, SQLRewriteContextDecorator> entry : decorators.entrySet()) {
+            entry.getValue().decorate(entry.getKey(), properties, sqlRewriteContext);
+        }
     }
 }

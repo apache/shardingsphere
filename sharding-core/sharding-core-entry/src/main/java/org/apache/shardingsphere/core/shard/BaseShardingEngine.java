@@ -26,16 +26,22 @@ import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
+import org.apache.shardingsphere.sharding.rewrite.context.ShardingSQLRewriteContextDecorator;
 import org.apache.shardingsphere.sharding.rewrite.engine.ShardingSQLRewriteEngine;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Base sharding engine.
@@ -101,11 +107,21 @@ public abstract class BaseShardingEngine {
     
     private Collection<RouteUnit> rewriteAndConvert(final String sql, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
         Collection<RouteUnit> result = new LinkedHashSet<>();
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(shardingRule, properties, metaData).createSQLRewriteContext(sql, parameters, sqlRouteResult);
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(
+                metaData, properties).createSQLRewriteContext(sql, parameters, sqlRouteResult.getSqlStatementContext(), createSQLRewriteContextDecorator(sqlRouteResult));
         for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
             ShardingSQLRewriteEngine sqlRewriteEngine = new ShardingSQLRewriteEngine(shardingRule, sqlRouteResult.getShardingConditions(), each);
             SQLRewriteResult sqlRewriteResult = sqlRewriteEngine.rewrite(sqlRewriteContext);
             result.add(new RouteUnit(each.getDataSourceName(), new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));
+        }
+        return result;
+    }
+    
+    private Map<BaseRule, SQLRewriteContextDecorator> createSQLRewriteContextDecorator(final SQLRouteResult sqlRouteResult) {
+        Map<BaseRule, SQLRewriteContextDecorator> result = new LinkedHashMap<>(2, 1);
+        result.put(shardingRule, new ShardingSQLRewriteContextDecorator(sqlRouteResult));
+        if (shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
+            result.put(shardingRule.getEncryptRule(), new EncryptSQLRewriteContextDecorator());
         }
         return result;
     }

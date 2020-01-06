@@ -31,7 +31,7 @@ import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.Parameter
  * @author zhyee
  */
 public final class ShadowSQLRewriteContextDecorator implements SQLRewriteContextDecorator<ShadowRule> {
-
+    
     @Override
     public void decorate(final ShadowRule shadowRule, final ShardingSphereProperties properties, final SQLRewriteContext sqlRewriteContext) {
         for (ParameterRewriter each : new ShadowParameterRewriterBuilder(shadowRule).getParameterRewriters(sqlRewriteContext.getRelationMetas())) {
