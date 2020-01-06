@@ -47,7 +47,7 @@ import java.util.Properties;
  * @author zhangliang
  */
 @Getter
-public final class ShardingRuntimeContext extends AbstractRuntimeContext<ShardingRule> {
+public final class ShardingRuntimeContext extends MultipleDataSourcesRuntimeContext<ShardingRule> {
     
     private final DatabaseMetaData cachedDatabaseMetaData;
     

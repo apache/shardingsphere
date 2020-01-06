@@ -42,7 +42,7 @@ import java.util.Properties;
  * @author zhangliang
  */
 @Getter
-public final class MasterSlaveRuntimeContext extends AbstractRuntimeContext<MasterSlaveRule> {
+public final class MasterSlaveRuntimeContext extends MultipleDataSourcesRuntimeContext<MasterSlaveRule> {
     
     private final DatabaseMetaData cachedDatabaseMetaData;
     

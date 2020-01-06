@@ -43,7 +43,7 @@ import java.util.Properties;
  * @author xiayan
  */
 @Getter
-public final class ShadowRuntimeContext extends AbstractRuntimeContext<ShadowRule> {
+public final class ShadowRuntimeContext extends SingleDataSourceRuntimeContext<ShadowRule> {
     
     private final DataSource actualDataSource;
     
@@ -68,9 +68,9 @@ public final class ShadowRuntimeContext extends AbstractRuntimeContext<ShadowRul
     }
     
     @Override
-    protected TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(final Map<String, DataSource> dataSourceMap, final DataSourceMetas dataSourceMetas) {
+    protected TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(final DataSource dataSource, final DataSourceMetas dataSourceMetas) {
         Map<BaseRule, TableMetaDataInitializer> tableMetaDataInitializes = new HashMap<>(1, 1);
-        tableMetaDataInitializes.put(getRule(), new DefaultTableMetaDataLoader(dataSourceMetas, new JDBCDataSourceConnectionManager(dataSourceMap.values().iterator().next())));
+        tableMetaDataInitializes.put(getRule(), new DefaultTableMetaDataLoader(dataSourceMetas, new JDBCDataSourceConnectionManager(dataSource)));
         return new TableMetaDataInitializerEntry(tableMetaDataInitializes);
     }
     

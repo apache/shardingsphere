@@ -37,16 +37,16 @@ import java.util.Properties;
  *
  * @author zhangliang
  */
-public final class EncryptRuntimeContext extends AbstractRuntimeContext<EncryptRule> {
+public final class EncryptRuntimeContext extends SingleDataSourceRuntimeContext<EncryptRule> {
     
     public EncryptRuntimeContext(final DataSource dataSource, final EncryptRule encryptRule, final Properties props, final DatabaseType databaseType) throws SQLException {
         super(dataSource, encryptRule, props, databaseType);
     }
     
     @Override
-    protected TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(final Map<String, DataSource> dataSourceMap, final DataSourceMetas dataSourceMetas) {
+    protected TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(final DataSource dataSource, final DataSourceMetas dataSourceMetas) {
         Map<BaseRule, TableMetaDataInitializer> initializes = new HashMap<>(1, 1);
-        initializes.put(getRule(), new EncryptTableMetaDataLoader(dataSourceMetas, new JDBCDataSourceConnectionManager(dataSourceMap.values().iterator().next())));
+        initializes.put(getRule(), new EncryptTableMetaDataLoader(dataSourceMetas, new JDBCDataSourceConnectionManager(dataSource)));
         return new TableMetaDataInitializerEntry(initializes);
     }
 }
