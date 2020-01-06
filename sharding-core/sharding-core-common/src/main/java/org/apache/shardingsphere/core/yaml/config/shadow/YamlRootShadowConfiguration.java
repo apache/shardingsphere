@@ -31,5 +31,4 @@ import org.apache.shardingsphere.core.yaml.config.common.YamlRootRuleConfigurati
 public final class YamlRootShadowConfiguration extends YamlRootRuleConfiguration {
     
     private YamlShadowRuleConfiguration shadowRule;
-    
 }

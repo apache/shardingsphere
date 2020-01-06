@@ -36,9 +36,9 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 public final class ShadowParameterRewriterBuilder implements ParameterRewriterBuilder {
-
+    
     private final ShadowRule shadowRule;
-
+    
     @Override
     public Collection<ParameterRewriter> getParameterRewriters(final RelationMetas relationMetas) {
         Collection<ParameterRewriter> result = getParameterRewriters();
@@ -47,7 +47,7 @@ public final class ShadowParameterRewriterBuilder implements ParameterRewriterBu
         }
         return result;
     }
-
+    
     private Collection<ParameterRewriter> getParameterRewriters() {
         Collection<ParameterRewriter> result = new LinkedList<>();
         result.add(new ShadowPredicateParameterRewriter());

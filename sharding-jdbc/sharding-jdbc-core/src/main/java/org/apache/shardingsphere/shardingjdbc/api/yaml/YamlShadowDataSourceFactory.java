@@ -38,7 +38,7 @@ import java.util.Map;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlShadowDataSourceFactory {
-
+    
     /**
      * Create shadow data source.
      *
@@ -51,7 +51,7 @@ public final class YamlShadowDataSourceFactory {
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfigurationYamlSwapper().swap(config.getShadowRule());
         return ShadowDataSourceFactory.createDataSource(config.getDataSources(), ruleConfig, config.getProps());
     }
-
+    
     /**
      * Create shadow data source.
      *
@@ -64,7 +64,7 @@ public final class YamlShadowDataSourceFactory {
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfigurationYamlSwapper().swap(config.getShadowRule());
         return ShadowDataSourceFactory.createDataSource(config.getDataSources(), ruleConfig, config.getProps());
     }
-
+    
     /**
      * Create shadow data source.
      *

@@ -38,24 +38,24 @@ import java.util.Map;
 @EqualsAndHashCode
 @ToString
 public final class ShadowCondition {
-
+    
     private final String columnName;
-
+    
     private final int startIndex;
-
+    
     private final int stopIndex;
     
     private final Map<Integer, Integer> positionIndexMap = new LinkedHashMap<>();
-
+    
     private final Map<Integer, Object> positionValueMap = new LinkedHashMap<>();
-
+    
     public ShadowCondition(final String columnName, final int startIndex, final int stopIndex, final ExpressionSegment expressionSegment) {
         this.columnName = columnName;
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         putPositionMap(0, expressionSegment);
     }
-
+    
     private void putPositionMap(final int position, final ExpressionSegment expressionSegment) {
         if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
             positionIndexMap.put(position, ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
@@ -63,7 +63,7 @@ public final class ShadowCondition {
             positionValueMap.put(position, ((LiteralExpressionSegment) expressionSegment).getLiterals());
         }
     }
-
+    
     /**
      * Get values.
      *

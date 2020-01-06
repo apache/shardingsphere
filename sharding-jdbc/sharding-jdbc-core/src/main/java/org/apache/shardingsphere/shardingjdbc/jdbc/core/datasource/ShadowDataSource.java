@@ -36,9 +36,9 @@ import java.util.Properties;
  */
 @Getter
 public class ShadowDataSource extends AbstractDataSourceAdapter {
-
+    
     private static final String ACTUAL_DATABASE = "actual";
-
+    
     private static final String SHADOW_DATABASE = "shadow";
     
     private final ShadowRuntimeContext runtimeContext;
