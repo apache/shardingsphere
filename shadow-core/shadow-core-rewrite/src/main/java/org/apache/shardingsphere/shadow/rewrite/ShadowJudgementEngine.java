@@ -22,11 +22,11 @@ package org.apache.shardingsphere.shadow.rewrite;
  *
  * @author zhyee
  */
-public abstract class ShadowJudgementEngine {
+public interface ShadowJudgementEngine {
     
     /**Judge the sql if is shadow.
      *
      * @return if the sql is shadow
      */
-    public abstract boolean isShadowSql();
+    boolean isShadowSql();
 }

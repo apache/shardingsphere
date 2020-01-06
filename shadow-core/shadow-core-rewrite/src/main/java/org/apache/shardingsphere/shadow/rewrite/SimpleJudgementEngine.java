@@ -36,12 +36,12 @@ import java.util.List;
  * @author zhyee
  */
 @RequiredArgsConstructor
-public final class SimpleJudgementEngine extends ShadowJudgementEngine {
-
+public final class SimpleJudgementEngine implements ShadowJudgementEngine {
+    
     private final ShadowRule shadowRule;
-
+    
     private final SQLStatementContext sqlStatementContext;
-
+    
     @Override
     public boolean isShadowSql() {
         if (sqlStatementContext.getSqlStatement() instanceof InsertStatement) {
@@ -62,7 +62,7 @@ public final class SimpleJudgementEngine extends ShadowJudgementEngine {
         }
         return false;
     }
-
+    
     private boolean judgeShadowSqlForInsert(final InsertValueContext insertValueContext, final InsertSQLStatementContext insertSQLStatementContext) {
         Iterator<String> descendingColumnNames = insertSQLStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {

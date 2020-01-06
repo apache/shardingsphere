@@ -41,14 +41,14 @@ import java.util.List;
  * @author zhyee
  */
 @RequiredArgsConstructor
-public final class PreparedJudgementEngine extends ShadowJudgementEngine {
-
+public final class PreparedJudgementEngine implements ShadowJudgementEngine {
+    
     private final ShadowRule shadowRule;
-
+    
     private final SQLStatementContext sqlStatementContext;
-
+    
     private final List<Object> parameters;
-
+    
     @Override
     public boolean isShadowSql() {
         if (sqlStatementContext.getSqlStatement() instanceof InsertStatement) {
@@ -75,7 +75,7 @@ public final class PreparedJudgementEngine extends ShadowJudgementEngine {
         }
         return false;
     }
-
+    
     private boolean judgePredicateSegments(final Collection<PredicateSegment> predicates) {
         for (PredicateSegment each : predicates) {
             if (each.getColumn().getName().equals(shadowRule.getColumn())) {
