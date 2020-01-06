@@ -48,7 +48,7 @@ public final class MySQLErrPacketFactory {
     public static MySQLErrPacket newInstance(final int sequenceId, final Exception cause) {
         if (cause instanceof SQLException) {
             SQLException sqlException = (SQLException) cause;
-            return new MySQLErrPacket(sequenceId, sqlException.getErrorCode(), sqlException.getSQLState() != null ? sqlException.getSQLState() : "", sqlException.getMessage());
+            return new MySQLErrPacket(sequenceId, sqlException.getErrorCode(), null != sqlException.getSQLState() ? sqlException.getSQLState() : "", sqlException.getMessage());
         }
         if (cause instanceof ShardingCTLException) {
             ShardingCTLException shardingCTLException = (ShardingCTLException) cause;
