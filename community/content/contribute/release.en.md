@@ -124,19 +124,6 @@ For encryption settings, please see [here](http://maven.apache.org/guides/mini/g
 </settings>
 ```
 
-### Inherit the Apache Parent POM
-
-This parent POM sets up the defaults for your \<distributionManagement\> section to use the correct release and snapshot repositories. 
-Be sure to remove \<distributionManagement\> section from your POM so they inherit correctly.
-
-```xml
-<parent>
-    <groupId>org.apache</groupId>
-    <artifactId>apache</artifactId>
-    <version>21</version>
-</parent>
-```
-
 ### Update Release Notes
 
 ```
