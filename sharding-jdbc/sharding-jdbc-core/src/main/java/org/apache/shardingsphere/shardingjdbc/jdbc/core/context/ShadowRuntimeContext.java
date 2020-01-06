@@ -19,26 +19,20 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShadowRule;
-import org.apache.shardingsphere.encrypt.metadata.loader.EncryptTableMetaDataLoader;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCDataSourceConnectionManager;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializer;
 import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializerEntry;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.impl.DefaultTableMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -49,22 +43,17 @@ import java.util.Properties;
  * @author xiayan
  */
 @Getter
-public class ShadowRuntimeContext extends AbstractRuntimeContext<ShadowRule> {
-    
-    private static final String DATA_SOURCE_NAME = "shadow_ds";
+public final class ShadowRuntimeContext extends AbstractRuntimeContext<ShadowRule> {
     
     private final DataSource actualDataSource;
     
     private final DataSource shadowDataSource;
     
-    private final ShardingSphereMetaData metaData;
-    
     private final ShadowType shadowType;
     
     public ShadowRuntimeContext(final DataSource actualDataSource, final DataSource shadowDataSource, 
                                 final ShadowRule rule, final Properties props, final DatabaseType databaseType) throws SQLException {
-        super(rule, props, databaseType);
-        metaData = createMetaData(actualDataSource, databaseType);
+        super(actualDataSource, rule, props, databaseType);
         this.actualDataSource = actualDataSource;
         this.shadowDataSource = shadowDataSource;
         if (actualDataSource instanceof MasterSlaveDataSource) {
@@ -78,24 +67,10 @@ public class ShadowRuntimeContext extends AbstractRuntimeContext<ShadowRule> {
         }
     }
     
-    private ShardingSphereMetaData createMetaData(final DataSource dataSource, final DatabaseType databaseType) throws SQLException {
-        DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDatabaseAccessConfigurationMap(dataSource));
-        TableMetas tableMetas = createTableMetaDataInitializerEntry(dataSource, dataSourceMetas).initAll();
-        return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
-    }
-    
-    private Map<String, DatabaseAccessConfiguration> getDatabaseAccessConfigurationMap(final DataSource dataSource) throws SQLException {
-        Map<String, DatabaseAccessConfiguration> result = new LinkedHashMap<>(1, 1);
-        try (Connection connection = dataSource.getConnection()) {
-            DatabaseMetaData metaData = connection.getMetaData();
-            result.put(DATA_SOURCE_NAME, new DatabaseAccessConfiguration(metaData.getURL(), metaData.getUserName(), null));
-        }
-        return result;
-    }
-    
-    private TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(final DataSource dataSource, final DataSourceMetas dataSourceMetas) {
+    @Override
+    protected TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(final Map<String, DataSource> dataSourceMap, final DataSourceMetas dataSourceMetas) {
         Map<BaseRule, TableMetaDataInitializer> tableMetaDataInitializes = new HashMap<>(1, 1);
-        tableMetaDataInitializes.put(getRule(), new EncryptTableMetaDataLoader(dataSourceMetas, new JDBCDataSourceConnectionManager(dataSource)));
+        tableMetaDataInitializes.put(getRule(), new DefaultTableMetaDataLoader(dataSourceMetas, new JDBCDataSourceConnectionManager(dataSourceMap.values().iterator().next())));
         return new TableMetaDataInitializerEntry(tableMetaDataInitializes);
     }
     
