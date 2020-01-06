@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 import lombok.Getter;
 import org.apache.shardingsphere.encrypt.metadata.loader.EncryptTableMetaDataLoader;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCConnectionManager;
+import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCDataSourceConnectionManager;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
@@ -58,14 +58,8 @@ public final class EncryptRuntimeContext extends AbstractRuntimeContext<EncryptR
     
     private ShardingSphereMetaData createMetaData(final DataSource dataSource, final DatabaseType databaseType) throws SQLException {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDatabaseAccessConfigurationMap(dataSource));
-        TableMetas tableMetas = createTableMetaDataInitializerEntry(getDataSourceMap(dataSource), dataSourceMetas).initAll();
+        TableMetas tableMetas = createTableMetaDataInitializerEntry(dataSource, dataSourceMetas).initAll();
         return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
-    }
-    
-    private Map<String, DataSource> getDataSourceMap(final DataSource dataSource) {
-        Map<String, DataSource> result = new HashMap<>(1, 1);
-        result.put(DATA_SOURCE_NAME, dataSource);
-        return result;
     }
     
     private Map<String, DatabaseAccessConfiguration> getDatabaseAccessConfigurationMap(final DataSource dataSource) throws SQLException {
@@ -77,9 +71,9 @@ public final class EncryptRuntimeContext extends AbstractRuntimeContext<EncryptR
         return result;
     }
     
-    private TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(final Map<String, DataSource> dataSourceMap, final DataSourceMetas dataSourceMetas) {
+    private TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(final DataSource dataSource, final DataSourceMetas dataSourceMetas) {
         Map<BaseRule, TableMetaDataInitializer> tableMetaDataInitializes = new HashMap<>(1, 1);
-        tableMetaDataInitializes.put(getRule(), new EncryptTableMetaDataLoader(dataSourceMetas, new JDBCConnectionManager(dataSourceMap)));
+        tableMetaDataInitializes.put(getRule(), new EncryptTableMetaDataLoader(dataSourceMetas, new JDBCDataSourceConnectionManager(dataSource)));
         return new TableMetaDataInitializerEntry(tableMetaDataInitializes);
     }
 }

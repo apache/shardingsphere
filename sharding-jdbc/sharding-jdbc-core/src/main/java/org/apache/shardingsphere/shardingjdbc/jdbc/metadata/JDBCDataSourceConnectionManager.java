@@ -23,20 +23,19 @@ import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.Co
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Map;
 
 /**
- * Connection manager of JDBC.
+ * JDBC connection manager with data source.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class JDBCConnectionManager implements ConnectionManager {
+public final class JDBCDataSourceConnectionManager implements ConnectionManager {
     
-    private final Map<String, DataSource> dataSourceMap;
+    private final DataSource dataSource;
     
     @Override
     public Connection getConnection(final String dataSourceName) throws SQLException {
-        return dataSourceMap.get(dataSourceName).getConnection();
+        return dataSource.getConnection();
     }
 }
