@@ -123,18 +123,6 @@ gpg --keyserver hkp://pool.sks-keyservers.net --send-key 700E6065
 </settings>
 ```
 
-### 继承Apache父POM
-
-Apache的父POM会为\<distributionManagement\>设置默认值，如果项目的POM中有这个标签，则需要删除。
-
-```xml
-<parent>
-  <groupId>org.apache</groupId>
-  <artifactId>apache</artifactId>
-  <version>21</version>
-</parent>
-```
-
 ### 更新版本说明
 
 ```
@@ -344,23 +332,12 @@ gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin
 
 全部的检查列表参见[这里](https://cwiki.apache.org/confluence/display/INCUBATOR/Incubator+Release+Checklist)。
 
-### 检查依赖影响
-
-#### SkyWalking
-
-如果此版本存在以下接口的变更，则需要到SkyWalking项目提交最新版本的插件：
-
-- org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback.execute0
-- org.apache.shardingsphere.shardingjdbc.executor.AbstractStatementExecutor.executeCallback
-- org.apache.shardingsphere.core.route.router.sharding.ParsingSQLRouter.parse
-- org.apache.shardingsphere.shardingproxy.frontend.command.CommandExecutorTask.run
-
 ## 发起投票
 
 ### 投票阶段
 
 1. ShardingSphere社区投票，发起投票邮件到`dev@shardingsphere.apache.org`。PPMC需要先按照文档检查版本的正确性，然后再进行投票。
-经过至少72小时并统计到3个`+1 binding`票后（只有PPMC的票才是binding），即可进入下一阶段的投票。
+经过至少72小时并统计到3个`+1 PPMC member`票后，即可进入下一阶段的投票。
 
 2. Apache社区投票，发起投票邮件到`general@incubator.apache.org`。经过至少72小时并统计到3个`+1 binding`票后（只有IPMC的票才是binding），即可进行正式发布。
 
@@ -424,7 +401,7 @@ Checklist for reference:
 
 [ ] DISCLAIMER is included.
 
-[ ] Source code artifacts have correct names matching the current release.
+[ ] Source code distributions have correct names matching the current release.
 
 [ ] LICENSE and NOTICE files are correct for each ShardingSphere repo.
 
@@ -541,7 +518,7 @@ Checklist for reference:
 
 [ ] DISCLAIMER is included.
 
-[ ] Source code artifacts have correct names matching the current release.
+[ ] Source code distributions have correct names matching the current release.
 
 [ ] LICENSE and NOTICE files are correct for each ShardingSphere repo.
 

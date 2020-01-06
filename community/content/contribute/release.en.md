@@ -124,19 +124,6 @@ For encryption settings, please see [here](http://maven.apache.org/guides/mini/g
 </settings>
 ```
 
-### Inherit the Apache Parent POM
-
-This parent POM sets up the defaults for your \<distributionManagement\> section to use the correct release and snapshot repositories. 
-Be sure to remove \<distributionManagement\> section from your POM so they inherit correctly.
-
-```xml
-<parent>
-    <groupId>org.apache</groupId>
-    <artifactId>apache</artifactId>
-    <version>21</version>
-</parent>
-```
-
 ### Update Release Notes
 
 ```
@@ -348,24 +335,13 @@ to check the following items:
 
 For the whole check list, please see [here](https://cwiki.apache.org/confluence/display/INCUBATOR/Incubator+Release+Checklist).
 
-### Check dependency impact
-
-#### SkyWalking
-
-If there are changes to the following interfaces in this version, you need to submit the latest version of the plugin to the SkyWalking project:
-
-- org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback.execute0
-- org.apache.shardingsphere.shardingjdbc.executor.AbstractStatementExecutor.executeCallback
-- org.apache.shardingsphere.core.route.router.sharding.ParsingSQLRouter.parse
-- org.apache.shardingsphere.shardingproxy.frontend.command.CommandExecutorTask.run
-
 ## Call for a Vote
 
 ### Vote procedure
 
 1. ShardingSphere community vote: send the vote e-mail to `dev@shardingsphere.apache.org`. 
 PPMC needs to check the rightness of the version according to the document before they vote. 
-After at least 72 hours and with at least 3 `+1 binding` votes (only PPMC's votes are binding), it can come to the next stage of the vote.
+After at least 72 hours and with at least 3 `+1 PPMC member` votes, it can come to the next stage of the vote.
 
 2. Apache community vote: send the vote e-mail to `general@incubator.apache.org`.
 After at least 72 hours and with at least 3 `+1 binding` votes (only IPMC's votes are binding), it can be officially released.
@@ -431,7 +407,7 @@ Checklist for reference:
 
 [ ] DISCLAIMER is included.
 
-[ ] Source code artifacts have correct names matching the current release.
+[ ] Source code distributions have correct names matching the current release.
 
 [ ] LICENSE and NOTICE files are correct for each ShardingSphere repo.
 
@@ -549,7 +525,7 @@ Checklist for reference:
 
 [ ] DISCLAIMER is included.
 
-[ ] Source code artifacts have correct names matching the current release.
+[ ] Source code distributions have correct names matching the current release.
 
 [ ] LICENSE and NOTICE files are correct for each ShardingSphere repo.
 
