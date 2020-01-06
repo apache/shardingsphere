@@ -7,7 +7,7 @@ weight = 5
 
 ## Target
 
-Performance test is classified as loss test and promotion test according to its verification target. Insert & update & delete which regarded as a set of associated operation and select which focus on sharding optimization are used to evaluate performance for the basic scenarios (single route, master slave & encrypt & sharding, full route). While another set of associated operation, Insert & select & delete, is used to evaluate performance for master slave.
+The performance of Sharding-JDBC，Sharding-Proxy and MySQL would be compared here. INSERT & UPDATE & DELETE which regarded as a set of associated operation and SELECT which focus on sharding optimization are used to evaluate performance for the basic scenarios (single route, master slave & encrypt & sharding, full route). While another set of associated operation, INSERT & SELECT & DELETE, is used to evaluate performance for master slave.
 To achieve the result better, these tests are performed based on a certain amount of data with 20 concurrent threads for 30 minutes.
 
 ## Test Scenarios
@@ -331,22 +331,22 @@ shardingRule:
 #### SQL Statement
  
 ```shell
-Insert+Update+Delete sql statements:
-insert into tbl(k, c, pad) values(1, '###-###-###', '###-###');
-update tbl set c='####-####-####', pad='####-####' where id=?;
-delete from tbl where id=?
+INSERT+UPDATE+DELETE sql statements:
+INSERT INTO tbl(k, c, pad) VALUES(1, '###-###-###', '###-###');
+UPDATE tbl SET c='####-####-####', pad='####-####' WHERE id=?;
+DELETE FROM tbl WHERE id=?
 
-Select sql statement for full route:
-select max(id) from tbl where id%4=1
+SELECT sql statement for full route:
+SELECT max(id) FROM tbl WHERE id%4=1
 
-Select sql statement for single route:
-select id, k from tbl ignore index(`PRIMARY`) where id=1 and k=1
+SELECT sql statement for single route:
+SELECT id, k FROM tbl ignore index(`PRIMARY`) WHERE id=1 AND k=1
 
-Insert+Select+Delete sql statements：
-insert into tbl1(k, c, pad) values(1, '###-###-###', '###-###');
-select count(id) from tbl1;
-select max(id) from tbl1 ignore index(`PRIMARY`);
-delete from tbl1 where id=?
+INSERT+SELECT+DELETE sql statements：
+INSERT INTO tbl1(k, c, pad) VALUES(1, '###-###-###', '###-###');
+SELECT count(id) FROM tbl1;
+SELECT max(id) FROM tbl1 ignore index(`PRIMARY`);
+DELETE FROM tbl1 WHERE id=?
 ```
 
 #### Jmeter Class
