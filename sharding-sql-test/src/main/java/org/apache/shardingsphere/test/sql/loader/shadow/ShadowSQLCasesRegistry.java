@@ -26,16 +26,16 @@ import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
  * @author zhyee
  */
 public final class ShadowSQLCasesRegistry {
-
+    
     private static final ShadowSQLCasesRegistry INSTANCE = new ShadowSQLCasesRegistry();
-
+    
     @Getter
     private SQLCasesLoader sqlCasesLoader;
-
+    
     private ShadowSQLCasesRegistry() {
         sqlCasesLoader = new SQLCasesLoader("sql/shadow");
     }
-
+    
     /**
      * Get singleton instance.
      *

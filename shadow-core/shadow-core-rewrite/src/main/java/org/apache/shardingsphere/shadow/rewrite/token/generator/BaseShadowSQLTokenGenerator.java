@@ -32,13 +32,13 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.SQLToken
 @Getter
 @Setter
 public abstract class BaseShadowSQLTokenGenerator implements SQLTokenGenerator, ShadowRuleAware {
-
+    
     private ShadowRule shadowRule;
-
+    
     @Override
     public final boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return isGenerateSQLTokenForShadow(sqlStatementContext);
     }
-
+    
     protected abstract boolean isGenerateSQLTokenForShadow(SQLStatementContext sqlStatementContext);
 }

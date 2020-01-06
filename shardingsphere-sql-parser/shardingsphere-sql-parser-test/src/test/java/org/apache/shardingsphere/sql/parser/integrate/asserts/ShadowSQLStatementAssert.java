@@ -33,15 +33,15 @@ import org.apache.shardingsphere.test.sql.loader.shadow.ShadowSQLCasesRegistry;
  * @author zhyee
  */
 public final class ShadowSQLStatementAssert {
-
+    
     private final SQLStatement actual;
-
+    
     private final ParserResult expected;
-
+    
     private final TableAssert tableAssert;
-
+    
     private final InsertNamesAndValuesAssert insertNamesAndValuesAssert;
-
+    
     public ShadowSQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(
                 ShadowSQLCasesRegistry.getInstance().getSqlCasesLoader(), ShadowParserResultSetRegistry.getInstance().getRegistry(), sqlCaseId, sqlCaseType);
@@ -50,7 +50,7 @@ public final class ShadowSQLStatementAssert {
         tableAssert = new TableAssert(assertMessage);
         insertNamesAndValuesAssert = new InsertNamesAndValuesAssert(assertMessage, sqlCaseType);
     }
-
+    
     /**
      * Assert SQL statement.
      */

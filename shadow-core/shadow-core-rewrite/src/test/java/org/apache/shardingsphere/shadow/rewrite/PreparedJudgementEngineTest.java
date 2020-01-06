@@ -49,6 +49,6 @@ public class PreparedJudgementEngineTest {
         InsertSQLStatementContext insertSQLStatementContext = new InsertSQLStatementContext(relationMetas, Arrays.<Object>asList(1, "Tom", 2, "Jerry", 3, true), insertStatement);
         PreparedJudgementEngine preparedJudgementEngine = new PreparedJudgementEngine(shadowRule, insertSQLStatementContext, Arrays.<Object>asList(1, "Tom", true));
         
-        Assert.assertTrue("should be shadow", preparedJudgementEngine.isShadowSql());
+        Assert.assertTrue("should be shadow", preparedJudgementEngine.isShadowSQL());
     }
 }

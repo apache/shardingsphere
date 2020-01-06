@@ -42,9 +42,9 @@ import java.util.HashSet;
  */
 @RequiredArgsConstructor
 public final class ShadowConditionEngine {
-
+    
     private final ShadowRule shadowRule;
-
+    
     /**
      * Create shadow conditions.
      *
@@ -75,7 +75,7 @@ public final class ShadowConditionEngine {
         }
         return Optional.absent();
     }
-
+    
     private Optional<ShadowCondition> createShadowCondition(final AndPredicate andPredicate) {
         for (PredicateSegment predicate : andPredicate.getPredicates()) {
             Collection<Integer> stopIndexes = new HashSet<>();
@@ -88,7 +88,7 @@ public final class ShadowConditionEngine {
         }
         return Optional.absent();
     }
-
+    
     private Optional<ShadowCondition> createShadowCondition(final PredicateSegment predicateSegment) {
         if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
             PredicateCompareRightValue compareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
@@ -102,14 +102,14 @@ public final class ShadowConditionEngine {
         }
         return Optional.absent();
     }
-
+    
     private static Optional<ShadowCondition> createCompareShadowCondition(final PredicateSegment predicateSegment, final PredicateCompareRightValue compareRightValue) {
         return compareRightValue.getExpression() instanceof SimpleExpressionSegment
                 ? Optional.of(new ShadowCondition(predicateSegment.getColumn().getName(), compareRightValue.getExpression().getStartIndex(),
                 predicateSegment.getStopIndex(), compareRightValue.getExpression()))
                 : Optional.<ShadowCondition>absent();
     }
-
+    
     private boolean isSupportedOperator(final String operator) {
         return "=".equals(operator);
     }

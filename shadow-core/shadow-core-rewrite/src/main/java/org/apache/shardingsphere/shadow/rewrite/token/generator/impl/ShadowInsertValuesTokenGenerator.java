@@ -39,17 +39,17 @@ import java.util.Iterator;
  */
 @Setter
 public final class ShadowInsertValuesTokenGenerator extends BaseShadowSQLTokenGenerator implements OptionalSQLTokenGenerator {
-
+    
     @Override
     protected boolean isGenerateSQLTokenForShadow(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof InsertSQLStatementContext && ((InsertStatement) sqlStatementContext.getSqlStatement()).getColumnNames().contains(getShadowRule().getColumn());
     }
-
+    
     @Override
     public InsertValuesToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
         return generateNewSQLToken((InsertSQLStatementContext) sqlStatementContext);
     }
-
+    
     private InsertValuesToken generateNewSQLToken(final InsertSQLStatementContext sqlStatementContext) {
         Collection<InsertValuesSegment> insertValuesSegments = sqlStatementContext.getSqlStatement().findSQLSegments(InsertValuesSegment.class);
         InsertValuesToken result = new ShadowInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
@@ -66,12 +66,12 @@ public final class ShadowInsertValuesTokenGenerator extends BaseShadowSQLTokenGe
         }
         return result;
     }
-
+    
     private void removeValueToken(final InsertValue insertValueToken, final InsertSQLStatementContext sqlStatementContext, final String columnName) {
         int columnIndex = sqlStatementContext.getColumnNames().indexOf(columnName);
         insertValueToken.getValues().remove(columnIndex);
     }
-
+    
     private int getStartIndex(final Collection<InsertValuesSegment> segments) {
         int result = segments.iterator().next().getStartIndex();
         for (InsertValuesSegment each : segments) {
@@ -79,7 +79,7 @@ public final class ShadowInsertValuesTokenGenerator extends BaseShadowSQLTokenGe
         }
         return result;
     }
-
+    
     private int getStopIndex(final Collection<InsertValuesSegment> segments) {
         int result = segments.iterator().next().getStopIndex();
         for (InsertValuesSegment each : segments) {

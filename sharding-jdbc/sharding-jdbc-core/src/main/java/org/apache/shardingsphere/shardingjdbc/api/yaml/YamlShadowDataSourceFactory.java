@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.api.yaml;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.shadow.YamlRootShadowConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShadowRuleConfigurationYamlSwapper;
@@ -28,6 +27,8 @@ import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 import javax.sql.DataSource;
 import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Map;
 
 
@@ -38,42 +39,45 @@ import java.util.Map;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlShadowDataSourceFactory {
-
+    
     /**
      * Create shadow data source.
      *
      * @param yamlFile YAML file for encrypt rule configuration with data sources
      * @return shadow data source
+     * @throws IOException IO exception
+     * @throws SQLException SQL exception
      */
-    @SneakyThrows
-    public static DataSource createDataSource(final File yamlFile) {
+    public static DataSource createDataSource(final File yamlFile) throws IOException, SQLException {
         YamlRootShadowConfiguration config = YamlEngine.unmarshal(yamlFile, YamlRootShadowConfiguration.class);
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfigurationYamlSwapper().swap(config.getShadowRule());
         return ShadowDataSourceFactory.createDataSource(config.getDataSources(), ruleConfig, config.getProps());
     }
-
+    
     /**
      * Create shadow data source.
      *
      * @param yamlBytes YAML bytes for encrypt rule configuration with data sources
      * @return shadow data source
+     * @throws IOException IO exception
+     * @throws SQLException SQL exception
      */
-    @SneakyThrows
-    public static DataSource createDataSource(final byte[] yamlBytes) {
+    public static DataSource createDataSource(final byte[] yamlBytes) throws IOException, SQLException {
         YamlRootShadowConfiguration config = YamlEngine.unmarshal(yamlBytes, YamlRootShadowConfiguration.class);
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfigurationYamlSwapper().swap(config.getShadowRule());
         return ShadowDataSourceFactory.createDataSource(config.getDataSources(), ruleConfig, config.getProps());
     }
-
+    
     /**
      * Create shadow data source.
      *
      * @param dataSourceMap the data sources map
      * @param yamlFile YAML file for encrypt rule configuration with data sources
      * @return shadow data source
+     * @throws IOException IO exception
+     * @throws SQLException SQL exception
      */
-    @SneakyThrows
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) {
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws IOException, SQLException {
         YamlRootShadowConfiguration config = YamlEngine.unmarshal(yamlFile, YamlRootShadowConfiguration.class);
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfigurationYamlSwapper().swap(config.getShadowRule());
         return ShadowDataSourceFactory.createDataSource(dataSourceMap, ruleConfig, config.getProps());

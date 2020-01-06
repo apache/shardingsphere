@@ -34,12 +34,12 @@ import java.util.List;
  * @author zhyee
  */
 public final class ShadowInsertValueParameterRewriter extends ShadowParameterRewriter {
-
+    
     @Override
     protected boolean isNeedRewriteForShadow(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof InsertSQLStatementContext && ((InsertStatement) sqlStatementContext.getSqlStatement()).getColumnNames().contains(getShadowRule().getColumn());
     }
-
+    
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
         String columnName = getShadowRule().getColumn();
@@ -53,7 +53,7 @@ public final class ShadowInsertValueParameterRewriter extends ShadowParameterRew
             count++;
         }
     }
-
+    
     private int getColumnIndex(final GroupedParameterBuilder parameterBuilder, final InsertSQLStatementContext sqlStatementContext, final String shadowColumnName) {
         List<String> columnNames;
         if (parameterBuilder.getDerivedColumnName().isPresent()) {

@@ -38,12 +38,12 @@ import java.util.LinkedList;
  */
 @Setter
 public final class ShadowPredicateColumnTokenGenerator extends BaseShadowSQLTokenGenerator implements CollectionSQLTokenGenerator {
-
+    
     @Override
     protected boolean isGenerateSQLTokenForShadow(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext.getSqlStatement() instanceof WhereSegmentAvailable && ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().isPresent();
     }
-
+    
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Preconditions.checkState(((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().isPresent());
@@ -53,7 +53,7 @@ public final class ShadowPredicateColumnTokenGenerator extends BaseShadowSQLToke
         }
         return result;
     }
-
+    
     private Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final AndPredicate andPredicate) {
         Collection<SQLToken> result = new LinkedList<>();
         LinkedList<PredicateSegment> predicates = (LinkedList<PredicateSegment>) andPredicate.getPredicates();
