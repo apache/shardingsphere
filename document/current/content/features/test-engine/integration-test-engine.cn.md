@@ -13,8 +13,6 @@ Junit 中的 `Parameterized` 会聚合起所有的测试数据，并将测试数
 
 ### 配置
 
-为了使测试更容易上手，集成测试引擎无需修改任何 **Java** 代码，只需要配置以下几类文件即可运行断言：
-
   - 环境类文件
     - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env.properties
     - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/`SQL-TYPE`/dataset.xml
@@ -93,7 +91,8 @@ oracle.password=jdbc
 
 ### 断言配置
 
-`env.properties` 与 `dataset.xml ` 确定了什么SQL在什么环境执行，下面是断言数据的配置
+`env.properties` 与 `dataset.xml ` 确定了什么SQL在什么环境执行，下面是断言数据的配置：
+
 断言的配置，需要两种文件，第一类文件位于 `/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/SQL-TYPE-integrate-test-cases.xml`
 这个文件类似于一个索引，定义了要执行的SQL，参数以及期待的数据的文件位置。这里的 test-case 引用的就是`sharding-sql-test`中 SQL 对应的`sql-case-id`，例子如下：
 

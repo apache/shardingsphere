@@ -11,9 +11,7 @@ The `Parameterized` in JUnit will collect all test data, and pass to test method
 ![](https://shardingsphere.apache.org/document/current/img/test-engine/integration-test.jpg)
 
 ### Configuration
-
-In order to make test engine easier to setup, integration-test is designed to modify the following configuration files to execute all assertions without any **Java** code modification:
-
+ 
   - environment type
     - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env.properties
     - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/`SQL-TYPE`/dataset.xml
@@ -121,8 +119,8 @@ This file is very like the dataset.xml mentioned before, and the difference is t
     <row data-node="db_0.t_order" values="2001, 20, init" />
 </dataset>
 ```
-Util now, all config files are ready, just need to launch the corresponding test case. With no need for modify any Java code, just set up some config files.
-this will reduce the difficulty for ShardingSphere testing
+Util now, all config files are ready, just launch the corresponding test case is fine.With no need to modify any Java code, only set up some config files.
+This will reduce the difficulty for ShardingSphere testing.
 
 ## Notice
 

@@ -188,7 +188,7 @@ weight = 4
         <prop key="aes.key.value">123456</prop>
     </bean:properties>
     
-    <encrypt:data-source id="encryptDataSource" data-source-name="db" >
+    <encrypt:data-source id="encryptDataSource" data-source-name="ds" >
         <encrypt:encrypt-rule>
             <encrypt:tables>
                 <encrypt:table name="t_order">

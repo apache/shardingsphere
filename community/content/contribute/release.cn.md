@@ -548,9 +548,19 @@ Checklist for reference:
 [ ] All files have license headers if necessary.
 
 [ ] No compiled archives bundled in source archive.
+
+The following votes are carried over from ShardingSphere dev mailing list,
+
++1 binding, xxx
++1 binding, xxx
+
++1 non-binding, xxx
++1 non-binding, xxx
 ```
 
 4. 宣布投票结果模板：
+
+**注意：计算投票结果时，社区投票结果也需要包含在内。**
 
 正文：
 

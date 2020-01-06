@@ -5,15 +5,18 @@ title = "SQL Case"
 weight = 1
 +++
 
-## Configuration
+## Target
 
-After setup environment and initial data, developer need to define SQL test cases.
-the SQL to be asserted in file `/sharding-sql-test/src/main/resources/sql/sharding/SQL-TYPE/*.xml`. For example: 
+The code for SQL case is in module `sharding-sql-test`.There are two targets for this module:
+  
+  1. Test the wildcard replacement by unit test.
+  2. Share the SQL resource in `resources` folder.
 
 ```xml
 <sql-cases>
-    <sql-case id="update_without_parameters" value="UPDATE t_order SET status = 'update' WHERE order_id = 1000 AND user_id = 10" />
-    <sql-case id="update_with_alias" value="UPDATE t_order AS o SET o.status = ? WHERE o.order_id = ? AND o.user_id = ?" db-types="MySQL,H2" />
+    <sql-case id="select_constant_without_table" value="SELECT 1 as a" />
+    <sql-case id="select_with_same_table_name_and_alias" value="SELECT t_order.* FROM t_order t_order WHERE user_id = ? AND order_id = ?" />
+    <sql-case id="select_with_same_table_name_and_alias_column_with_owner" value="SELECT t_order.order_id,t_order.user_id,status FROM t_order t_order WHERE t_order.user_id = ? AND order_id = ?" db-types="MySQL,H2"/>
 </sql-cases>
 ```
 

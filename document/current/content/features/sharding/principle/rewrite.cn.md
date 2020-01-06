@@ -137,7 +137,7 @@ SELECT AVG(price) FROM t_order WHERE user_id=1;
 需要改写为：
 
 ```sql
-SELECT COUNT(price) AS AVG_DERIVED_COUNT_0, SUM(price) AS AVG_DERIVED_ SUM _0 FROM t_order WHERE user_id=1;
+SELECT COUNT(price) AS AVG_DERIVED_COUNT_0, SUM(price) AS AVG_DERIVED_SUM_0 FROM t_order WHERE user_id=1;
 ```
 
 然后才能够通过结果归并正确的计算平均值。

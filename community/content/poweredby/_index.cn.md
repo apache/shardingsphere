@@ -31,7 +31,9 @@ chapter = true
 1. 百果园 http://www.pagoda.com.cn/ 
 1. 百姓网 https://www.baixing.com/ 
 1. 百畅科技 http://www.sdbaichang.com/ 
+1. 佰裕行科技（深圳）有限公司 https://innoways.com/
 1. 北京环球网校 http://www.hqwx.com/ 
+1. 北京千丁互联科技有限公司 http://caas.com.cn/
 1. 哔哩哔哩弹幕网 https://www.bilibili.com/ 
 1. 策赢平台 https://www.cypfintech.com/ 
 1. 超级蓝领 https://www.chaojilanling.cn/ 
@@ -45,6 +47,7 @@ chapter = true
 1. 东奥教育集团 http://edu.dongao.com/ 
 1. 东方车联 http://www.dongfang789.com/ 
 1. 斗鱼TV https://www.douyu.com/ 
+1. 对啊网 https://www.duia.com/
 1. 非凡之星 http://www.ffzxnet.com/ 
 1. 蜂网 https://www.newbeescm.com/ 
 1. 凤凰汽车 https://auto.ifeng.com/ 
@@ -53,6 +56,9 @@ chapter = true
 1. 瓜子二手车 https://www.guazi.com/ 
 1. 光云科技 https://www.raycloud.com/ 
 1. 广西壮族自治区国土资源信息中心 http://z.gxdlr.gov.cn/ 
+1. 广州理德物联网科技有限公司 http://www.iotlead.com/
+1. 广州码码高信息科技有限公司 http://www.mamagao.cn/
+1. 哈啰出行 https://www.helloglobal.com/
 1. 海典软件 http://www.hydee.cn/ 
 1. 海尔消费金融 https://www.haiercash.com/ 
 1. 海康威视 https://www.hikvision.com/ 
@@ -74,23 +80,29 @@ chapter = true
 1. 玖富数科 https://www.9fgroup.com/ 
 1. 均瑶集团 http://www.juneyao.com/ 
 1. 开课啦 https://www.kaike.la/
+1. 开通金融 https://www.ktjr.com/
 1. 康帕斯科技 http://www.compasshz.com/ 
 1. 科大讯飞 https://www.iflytek.com/ 
 1. 客如云 https://www.keruyun.com/
+1. 快捷通支付服务有限公司 https://www.kjtpay.com/
 1. 丽人丽妆 https://www.lrlz.com/ 
 1. 马蜂窝 https://www.mafengwo.cn/ 
+1. 马上金融 https://www.msxf.com/
 1. 每日优鲜便利购 https://www.missfresh.cn/ 
 1. 美利车金融 https://www.mljr.com/ 
 1. 秒卖房 https://www.miaomaifang.com/ 
 1. 魔力耳朵 https://magicears.com.cn/ 
 1. 男衣库 https://www.nanyiku.com/
 1. 南潮信息科技 https://ruff.io/ 
+1. 南京爱福路汽车科技 http://www.f6car.com/
 1. 你我金融 https://www.niiwoo.com/ 
 1. 拍拍贷 https://www.ppdai.com/ 
 1. 汽车之家  https://www.autohome.com.cn/ 
 1. 权大师 https://www.quandashi.com/ 
 1. 赛特斯CertusNet http://www.certusnet.com.cn/ 
 1. 三只松鼠 http://www.3songshu.com/
+1. 上海社宝信息科技有限公司 https://www.shebaotong.com/
+1. 上海 soul app https://www.soulapp.cn/
 1. 视觉中国 https://500px.me/ 
 1. 首汽约车 https://www.01zhuanche.com/
 1. 搜好货 https://www.912688.com/
@@ -98,7 +110,9 @@ chapter = true
 1. 速珂智能 https://www.supersoco.com/ 
 1. 随手记 https://www.sui.com/ 
 1. 特微智能 https://www.trawe.cn/
+1. 天威诚信 https://www.itrus.com.cn/
 1. 天涯社区 https://www.tianya.cn/
+1. 途家民宿 https://www.tujia.com/
 1. 兔展 https://www.rabbitpre.com/ 
 1. 团贷网 https://www.tuandai.com/ 
 1. 微脉 https://www.myweimai.com/
@@ -109,6 +123,7 @@ chapter = true
 1. 小牛在线 https://www.xiaoniu88.com/ 
 1. 携程旅游 https://www.ctrip.com/ 
 1. 新脉远望 http://www.cyberplus.com.cn/ 
+1. 亚朵 http://www.yaduo.com/
 1. 一点资讯 https://www.yidianzixun.com/ 
 1. 义乌购 https://www.yiwugou.com/ 
 1. 易车网 https://www.yiche.com/ 
@@ -120,6 +135,7 @@ chapter = true
 1. 中策车空间 http://www.zcckj.com/ 
 1. 中辰软件 http://jszcrj.com/ 
 1. 中国电信翼支付（甜橙金融） https://www.bestpay.com.cn/
+1. 中国民生银行股份有限公司 http://www.cmbc.com.cn/
 1. 中通快递 https://www.zto.com/
 1. 转转 https://www.zhuanzhuan.com/ 
 1. 啄木鸟网络科技 https://www.zmn.cn/ 

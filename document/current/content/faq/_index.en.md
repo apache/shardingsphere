@@ -197,16 +197,28 @@ tar zxvf apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.
 
 #### 15.  How to solve `Type is required` error?
 
-Answer：
+Answer:
 
 In Apache ShardingSphere, many functionality implementation are uploaded through [SPI](https://shardingsphere.apache.org/document/current/en/features/spi/), such as Distributed Primary Key. These functions load SPI implementation by configuring the `type`，so the `type` must be specified in the configuration file.
 
 #### 16. Why does my custom distributed primary key do not work after implementing `ShardingKeyGenerator` interface and configuring `type` property?
 
-Answer：
+Answer:
 
 [Service Provider Interface (SPI)](https://docs.oracle.com/javase/tutorial/sound/SPI-intro.html) is a kind of API for the third party to implement or expand. Except implementing interface, you also need to create a corresponding file in `META-INF/services` to make the JVM load these SPI implementations.
 
 More detail for SPI usage, please search by yourself.
 
 Other ShardingSphere [functionality implementation](https://shardingsphere.apache.org/document/current/en/features/spi/) will take effect in the same way.
+
+#### 17. How to solve that `DATA MASKING` can't work with JPA?
+
+Answer:
+
+Because DDL for data masking has not yet finished, JPA Entity cannot meet the DDL and DML at the same time, when JPA that automatically generates DDL is used with data masking.
+
+The solutions are as follows: 
+
+1. Create JPA Entity with logicColumn which needs to encrypt.
+2. Disable JPA auto-ddl, For example setting auto-ddl=none.
+3. Create table manually. Table structure should use `cipherColumn`,`plainColumn` and `assistedQueryColumn` to replace the logicColumn.

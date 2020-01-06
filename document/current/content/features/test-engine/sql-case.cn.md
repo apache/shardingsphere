@@ -5,15 +5,20 @@ title = "SQL测试用例"
 weight = 1
 +++
 
-## 配置
+## 目标
 
-设置好集成测试的相关环境以及初始化的数据之后，接下来开发者需要定义待测试的 SQL。
+SQL测试用例的代码位于 `sharding-sql-test` 模块下。该测试用例的作用主要有两个：
+  
+  1. 通过单元测试，测试通配符的替换以及 `SQLCasesLoader` 的稳定性。
+  2. 将SQL测试用例中 `resources` 下定义的所有 SQL 共享给其他项目。
+
 待测试的 SQL 存放在 `/sharding-sql-test/src/main/resources/sql/sharding/SQL-TYPE/*.xml`文件中。例如：
 
 ```xml
 <sql-cases>
-    <sql-case id="update_without_parameters" value="UPDATE t_order SET status = 'update' WHERE order_id = 1000 AND user_id = 10" />
-    <sql-case id="update_with_alias" value="UPDATE t_order AS o SET o.status = ? WHERE o.order_id = ? AND o.user_id = ?" db-types="MySQL,H2" />
+    <sql-case id="select_constant_without_table" value="SELECT 1 as a" />
+    <sql-case id="select_with_same_table_name_and_alias" value="SELECT t_order.* FROM t_order t_order WHERE user_id = ? AND order_id = ?" />
+    <sql-case id="select_with_same_table_name_and_alias_column_with_owner" value="SELECT t_order.order_id,t_order.user_id,status FROM t_order t_order WHERE t_order.user_id = ? AND order_id = ?" db-types="MySQL,H2"/>
 </sql-cases>
 ```
 

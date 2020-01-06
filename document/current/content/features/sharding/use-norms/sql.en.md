@@ -72,6 +72,20 @@ Due to the restriction of merger, sub-query that contains aggregation function i
 
 Do not support SQL that contains schema, for the concept of ShardingSphere is to use multiple data source as one data source, so all the SQL visits are based on one logic schema.
 
+### Operation for shardingColumn
+
+ShardingColumn in expressions and functions will lead to full routing.
+
+The following SQL is unavailable to single sharding, if `create_time` is shardingColumn:
+
+```sql
+SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
+```
+
+ShardingSphere extract the value of ShardingColumn through `literal` of SQL, so ShardingSphere can not calculate the sharding value from the SQL because the data inside the expression is in database.
+
+When shardingColumn in expressions and functions, ShardingSphere will use full routing to get results.
+
 ## Example
 
 ### Supported SQL
@@ -109,6 +123,7 @@ Do not support SQL that contains schema, for the concept of ShardingSphere is to
 | SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                  | UNION ALL                                           |
 | SELECT * FROM ds.tbl_name1                                                                 | Contain schema                                      |
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                         | See DISTINCT availability detail                    |
+| SELECT * FROM tbl_name WHERE to_date(create_time, 'yyyy-mm-dd') = ?                        | Lead to full routing                                |
 
 ## DISTINCT Availability Explanation
 
