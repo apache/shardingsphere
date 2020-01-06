@@ -562,8 +562,8 @@ The following votes are carried over from ShardingSphere dev mailing list,
 +1 binding, xxx
 +1 binding, xxx
 
-+1 unbinding, xxx
-+1 unbinding, xxx
++1 non-binding, xxx
++1 non-binding, xxx
 
 ```
 
