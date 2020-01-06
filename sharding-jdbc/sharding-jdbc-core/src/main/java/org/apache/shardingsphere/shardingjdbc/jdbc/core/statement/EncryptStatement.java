@@ -93,7 +93,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     @SuppressWarnings("unchecked")
     private String getRewriteSQL(final String sql) {
         SQLStatement sqlStatement = connection.getRuntimeContext().getParseEngine().parse(sql, false);
-        RelationMetas relationMetas = getRelationMetas(connection.getRuntimeContext().getTableMetas());
+        RelationMetas relationMetas = getRelationMetas(connection.getRuntimeContext().getMetaData().getTables());
         sqlStatementContext = SQLStatementContextFactory.newInstance(relationMetas, sql, Collections.emptyList(), sqlStatement);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(relationMetas, sqlStatementContext, sql, Collections.emptyList());
         new EncryptSQLRewriteContextDecorator().decorate(connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getProperties(), sqlRewriteContext);

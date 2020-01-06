@@ -81,7 +81,7 @@ public final class EncryptTableMetaDataLoader implements TableMetaDataLoader<Enc
     
     @Override
     public TableMetas loadAll(final EncryptRule encryptRule) throws SQLException {
-        return new TableMetas(new HashMap<>(loadAllTables()));
+        return new TableMetas(loadAllTables());
     }
     
     private Map<String, TableMetaData> loadAllTables() throws SQLException {

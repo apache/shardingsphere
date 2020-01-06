@@ -163,7 +163,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     private SQLUnit getSQLUnit(final String sql) {
         EncryptConnection connection = preparedStatementGenerator.connection;
         SQLStatement sqlStatement = connection.getRuntimeContext().getParseEngine().parse(sql, true);
-        RelationMetas relationMetas = getRelationMetas(connection.getRuntimeContext().getTableMetas());
+        RelationMetas relationMetas = getRelationMetas(connection.getRuntimeContext().getMetaData().getTables());
         sqlStatementContext = SQLStatementContextFactory.newInstance(relationMetas, sql, getParameters(), sqlStatement);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(relationMetas, sqlStatementContext, sql, getParameters());
         new EncryptSQLRewriteContextDecorator().decorate(connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getProperties(), sqlRewriteContext);
