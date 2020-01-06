@@ -50,7 +50,7 @@ public final class PreparedJudgementEngine implements ShadowJudgementEngine {
     private final List<Object> parameters;
     
     @Override
-    public boolean isShadowSql() {
+    public boolean isShadowSQL() {
         if (sqlStatementContext.getSqlStatement() instanceof InsertStatement) {
             LinkedList<ColumnSegment> columnSegments = (LinkedList<ColumnSegment>) ((InsertStatement) sqlStatementContext.getSqlStatement()).getColumns();
             for (int i = 0; i < columnSegments.size(); i++) {

@@ -224,14 +224,14 @@ public final class ShadowStatement extends AbstractStatementAdapter {
         
         private Statement createStatement(final ShadowJudgementEngine shadowJudgementEngine) throws SQLException {
             if (-1 != resultSetType && -1 != resultSetConcurrency && -1 != resultSetHoldability) {
-                return shadowJudgementEngine.isShadowSql() ? connection.getShadowConnection().createStatement(resultSetType, resultSetConcurrency, resultSetHoldability)
+                return shadowJudgementEngine.isShadowSQL() ? connection.getShadowConnection().createStatement(resultSetType, resultSetConcurrency, resultSetHoldability)
                         : connection.getActualConnection().createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
             }
             if (-1 != resultSetType && -1 != resultSetConcurrency) {
-                return shadowJudgementEngine.isShadowSql() ? connection.getShadowConnection().createStatement(resultSetType, resultSetConcurrency)
+                return shadowJudgementEngine.isShadowSQL() ? connection.getShadowConnection().createStatement(resultSetType, resultSetConcurrency)
                         : connection.getActualConnection().createStatement(resultSetType, resultSetConcurrency);
             }
-            return shadowJudgementEngine.isShadowSql() ? connection.getShadowConnection().createStatement()
+            return shadowJudgementEngine.isShadowSQL() ? connection.getShadowConnection().createStatement()
                     : connection.getActualConnection().createStatement();
         }
     }

@@ -43,7 +43,7 @@ public final class SimpleJudgementEngine implements ShadowJudgementEngine {
     private final SQLStatementContext sqlStatementContext;
     
     @Override
-    public boolean isShadowSql() {
+    public boolean isShadowSQL() {
         if (sqlStatementContext.getSqlStatement() instanceof InsertStatement) {
             for (InsertValueContext each : ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts()) {
                 if (judgeShadowSqlForInsert(each, (InsertSQLStatementContext) sqlStatementContext)) {

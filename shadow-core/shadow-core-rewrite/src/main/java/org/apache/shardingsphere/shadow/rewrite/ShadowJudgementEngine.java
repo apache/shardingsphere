@@ -24,9 +24,10 @@ package org.apache.shardingsphere.shadow.rewrite;
  */
 public interface ShadowJudgementEngine {
     
-    /**Judge the sql if is shadow.
+    /**
+     * Judge whether SQL is shadow.
      *
-     * @return if the sql is shadow
+     * @return SQL is shadow or not
      */
-    boolean isShadowSql();
+    boolean isShadowSQL();
 }
