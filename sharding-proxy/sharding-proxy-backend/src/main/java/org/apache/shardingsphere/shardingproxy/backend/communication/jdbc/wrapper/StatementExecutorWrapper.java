@@ -100,8 +100,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         RelationMetas relationMetas = logicSchema.getMetaData().getRelationMetas();
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(relationMetas, sql, new LinkedList<>(), sqlStatement);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(relationMetas, sqlStatementContext, sql, Collections.emptyList());
-        boolean isQueryWithCipherColumn = ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
-        new EncryptSQLRewriteContextDecorator(encryptSchema.getEncryptRule(), isQueryWithCipherColumn).decorate(sqlRewriteContext);
+        new EncryptSQLRewriteContextDecorator().decorate(encryptSchema.getEncryptRule(), ShardingProxyContext.getInstance().getProperties(), sqlRewriteContext);
         sqlRewriteContext.generateSQLTokens();
         SQLRouteResult result = new SQLRouteResult(sqlStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         result.getRouteUnits().add(

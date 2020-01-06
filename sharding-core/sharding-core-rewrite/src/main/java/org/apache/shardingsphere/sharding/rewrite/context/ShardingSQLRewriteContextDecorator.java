@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rewrite.parameter.ShardingParameterRewriterBuilder;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.ShardingTokenGenerateBuilder;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
@@ -32,14 +33,12 @@ import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.Parameter
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ShardingSQLRewriteContextDecorator implements SQLRewriteContextDecorator {
-    
-    private final ShardingRule shardingRule;
+public final class ShardingSQLRewriteContextDecorator implements SQLRewriteContextDecorator<ShardingRule> {
     
     private final SQLRouteResult sqlRouteResult;
     
     @Override
-    public void decorate(final SQLRewriteContext sqlRewriteContext) {
+    public void decorate(final ShardingRule shardingRule, final ShardingSphereProperties properties, final SQLRewriteContext sqlRewriteContext) {
         for (ParameterRewriter each : new ShardingParameterRewriterBuilder(shardingRule, sqlRouteResult).getParameterRewriters(sqlRewriteContext.getRelationMetas())) {
             if (!sqlRewriteContext.getParameters().isEmpty() && each.isNeedRewrite(sqlRewriteContext.getSqlStatementContext())) {
                 each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());

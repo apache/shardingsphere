@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.context;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriterBuilder;
 import org.apache.shardingsphere.encrypt.rewrite.token.EncryptTokenGenerateBuilder;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
 
 /**
@@ -30,15 +31,11 @@ import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.Parameter
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
-public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContextDecorator {
-    
-    private final EncryptRule encryptRule;
-    
-    private final boolean isQueryWithCipherColumn;
+public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContextDecorator<EncryptRule> {
     
     @Override
-    public void decorate(final SQLRewriteContext sqlRewriteContext) {
+    public void decorate(final EncryptRule encryptRule, final ShardingSphereProperties properties, final SQLRewriteContext sqlRewriteContext) {
+        boolean isQueryWithCipherColumn = properties.<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         for (ParameterRewriter each : new EncryptParameterRewriterBuilder(encryptRule, isQueryWithCipherColumn).getParameterRewriters(sqlRewriteContext.getRelationMetas())) {
             if (!sqlRewriteContext.getParameters().isEmpty() && each.isNeedRewrite(sqlRewriteContext.getSqlStatementContext())) {
                 each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());

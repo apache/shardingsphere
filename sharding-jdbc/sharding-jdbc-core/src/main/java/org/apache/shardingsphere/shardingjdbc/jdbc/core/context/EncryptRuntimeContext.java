@@ -19,15 +19,19 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.encrypt.metadata.EncryptColumnMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -52,12 +56,27 @@ public final class EncryptRuntimeContext extends AbstractRuntimeContext<EncryptR
     private static final String TYPE_NAME = "TYPE_NAME";
     
     private static final String INDEX_NAME = "INDEX_NAME";
-
-    private final TableMetas tableMetas;
+    
+    private final ShardingSphereMetaData metaData;
     
     public EncryptRuntimeContext(final DataSource dataSource, final EncryptRule encryptRule, final Properties props, final DatabaseType databaseType) throws SQLException {
         super(encryptRule, props, databaseType);
-        tableMetas = createEncryptTableMetas(dataSource, encryptRule);
+        metaData = createMetaData(dataSource, encryptRule, databaseType);
+    }
+    
+    private ShardingSphereMetaData createMetaData(final DataSource dataSource, final EncryptRule encryptRule, final DatabaseType databaseType) throws SQLException {
+        DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDatabaseAccessConfigurationMap(dataSource));
+        TableMetas tableMetas = createEncryptTableMetas(dataSource, encryptRule);
+        return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
+    }
+    
+    private Map<String, DatabaseAccessConfiguration> getDatabaseAccessConfigurationMap(final DataSource dataSource) throws SQLException {
+        Map<String, DatabaseAccessConfiguration> result = new LinkedHashMap<>(1, 1);
+        try (Connection connection = dataSource.getConnection()) {
+            DatabaseMetaData metaData = connection.getMetaData();
+            result.put("encrypt_ds", new DatabaseAccessConfiguration(metaData.getURL(), metaData.getUserName(), null));
+        }
+        return result;
     }
     
     private TableMetas createEncryptTableMetas(final DataSource dataSource, final EncryptRule encryptRule) throws SQLException {
