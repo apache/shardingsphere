@@ -20,13 +20,12 @@ package org.apache.shardingsphere.shardingscaling.core.execute.executor.writer;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import org.apache.shardingsphere.shardingscaling.core.metadata.ColumnMetaData;
+import org.apache.shardingsphere.shardingscaling.core.util.DbMetaDataUtil;
 
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
-import org.apache.shardingsphere.shardingscaling.core.util.DbMetaDataUtil;
-import org.apache.shardingsphere.shardingscaling.core.metadata.ColumnMetaData;
 
 /**
  * Sql builder.
@@ -34,22 +33,23 @@ import org.apache.shardingsphere.shardingscaling.core.metadata.ColumnMetaData;
  * @author avalon566
  */
 public final class SqlBuilder {
-    
-    private static final String LEFT_ESCAPE_QUOTE = "`";
-
-    private static final String RIGHT_ESCAPE_QUOTE = "`";
 
     private static final String INSERT_SQL_CACHE_KEY_PREFIX = "INSERT_";
 
     private static final String UPDATE_SQL_CACHE_KEY_PREFIX = "UPDATE_";
 
     private static final String DELETE_SQL_CACHE_KEY_PREFIX = "DELETE_";
+    
+    private String leftIdentifierQuoteString;
+    
+    private String rightIdentifierQuoteString;
 
     private final LoadingCache<String, String> sqlCache;
-
+    
     private final DbMetaDataUtil dbMetaDataUtil;
 
-    public SqlBuilder(final DataSource dataSource) {
+    public SqlBuilder(final String databaseType, final DataSource dataSource) {
+        initIdentifierQuoteString(databaseType);
         this.dbMetaDataUtil = new DbMetaDataUtil(dataSource);
         sqlCache = CacheBuilder.newBuilder()
                 .maximumSize(64)
@@ -65,6 +65,23 @@ public final class SqlBuilder {
                         }
                     }
                 });
+    }
+    
+    private void initIdentifierQuoteString(final String databaseType) {
+        switch (databaseType) {
+            case "MySQL":
+                leftIdentifierQuoteString = "`";
+                rightIdentifierQuoteString = "`";
+                break;
+            case "PostgreSQL":
+                leftIdentifierQuoteString = "\"";
+                rightIdentifierQuoteString = "\"";
+                break;
+            default:
+                leftIdentifierQuoteString = "";
+                rightIdentifierQuoteString = "";
+                break;
+        }
     }
 
     /**
@@ -114,31 +131,31 @@ public final class SqlBuilder {
         StringBuilder columns = new StringBuilder();
         StringBuilder holder = new StringBuilder();
         for (ColumnMetaData each : metaData) {
-            columns.append(String.format("%s%s%s,", LEFT_ESCAPE_QUOTE, each.getColumnName(), RIGHT_ESCAPE_QUOTE));
+            columns.append(String.format("%s%s%s,", leftIdentifierQuoteString, each.getColumnName(), rightIdentifierQuoteString));
             holder.append("?,");
         }
         columns.setLength(columns.length() - 1);
         holder.setLength(holder.length() - 1);
-        return String.format("INSERT INTO %s%s%s(%s) VALUES(%s)", LEFT_ESCAPE_QUOTE, tableName, RIGHT_ESCAPE_QUOTE, columns.toString(), holder.toString());
+        return String.format("INSERT INTO %s%s%s(%s) VALUES(%s)", leftIdentifierQuoteString, tableName, rightIdentifierQuoteString, columns.toString(), holder.toString());
     }
 
     private String buildDeleteSqlInternal(final String tableName) {
         List<String> primaryKeys = dbMetaDataUtil.getPrimaryKeys(tableName);
         StringBuilder where = new StringBuilder();
         for (String each : primaryKeys) {
-            where.append(String.format("%s%s%s = ?,", LEFT_ESCAPE_QUOTE, each, RIGHT_ESCAPE_QUOTE));
+            where.append(String.format("%s%s%s = ?,", leftIdentifierQuoteString, each, rightIdentifierQuoteString));
         }
         where.setLength(where.length() - 1);
-        return String.format("DELETE FROM %s%s%s WHERE %s", LEFT_ESCAPE_QUOTE, tableName, RIGHT_ESCAPE_QUOTE, where.toString());
+        return String.format("DELETE FROM %s%s%s WHERE %s", leftIdentifierQuoteString, tableName, rightIdentifierQuoteString, where.toString());
     }
 
     private String buildUpdateSqlInternal(final String tableName) {
         List<String> primaryKeys = dbMetaDataUtil.getPrimaryKeys(tableName);
         StringBuilder where = new StringBuilder();
         for (String each : primaryKeys) {
-            where.append(String.format("%s%s%s = ?,", LEFT_ESCAPE_QUOTE, each, RIGHT_ESCAPE_QUOTE));
+            where.append(String.format("%s%s%s = ?,", leftIdentifierQuoteString, each, rightIdentifierQuoteString));
         }
         where.setLength(where.length() - 1);
-        return String.format("UPDATE %s%s%s SET %%s WHERE %s", LEFT_ESCAPE_QUOTE, tableName, RIGHT_ESCAPE_QUOTE, where.toString());
+        return String.format("UPDATE %s%s%s SET %%s WHERE %s", leftIdentifierQuoteString, tableName, rightIdentifierQuoteString, where.toString());
     }
 }
