@@ -89,7 +89,7 @@ public final class InsertClauseShardingConditionEngine {
                     result.getRouteValues().add(new ListRouteValue<>(columnName, tableName, Collections.singletonList(getRouteValue((SimpleExpressionSegment) each, parameters))));
                 } else if (ExpressionConditionUtils.isNowExpression(each)) {
                     result.getRouteValues().add(new ListRouteValue<>(columnName, tableName, Collections.singletonList(timeService.getTime())));
-                } else if(ExpressionConditionUtils.isNullExpression(each)) {
+                } else if (ExpressionConditionUtils.isNullExpression(each)) {
                     throw new ShardingSphereException("Insert clause sharding column can't be null.");
                 }
             }
