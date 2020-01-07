@@ -45,9 +45,9 @@ public final class MySQLErrPacketFactoryTest {
     public void assertNewInstanceWithSQLExceptionOfNullSqlState() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new SQLException(new RuntimeException("No reason")));
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(0));
-        assertThat(actual.getSqlState(), is(""));
-        assertThat(actual.getErrorMessage(), is("java.lang.RuntimeException: No reason"));
+        assertThat(actual.getErrorCode(), is(1815));
+        assertThat(actual.getSqlState(), is("HY000"));
+        assertThat(actual.getErrorMessage(), is("Internal error: No reason"));
     }
     
     @Test
