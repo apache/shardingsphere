@@ -21,6 +21,7 @@ import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.underlying.route.RouteUnit;
 
@@ -35,6 +36,7 @@ import java.util.Map;
  * 
  * @author panjuan
  */
+@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode(of = { "routeUnit" })
 @ToString
@@ -46,10 +48,6 @@ public final class BatchRouteUnit {
     
     @Getter(AccessLevel.NONE)
     private int actualCallAddBatchTimes;
-    
-    public BatchRouteUnit(final RouteUnit routeUnit) {
-        this.routeUnit = routeUnit;
-    }
     
     /**
      * Map times of use JDBC API call addBatch and times of actual call addBatch after route.
