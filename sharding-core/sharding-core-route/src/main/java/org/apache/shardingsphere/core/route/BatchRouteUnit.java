@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;

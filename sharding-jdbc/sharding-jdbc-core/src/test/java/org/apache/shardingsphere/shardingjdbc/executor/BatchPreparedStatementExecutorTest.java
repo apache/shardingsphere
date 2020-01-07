@@ -22,8 +22,8 @@ import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.core.route.BatchRouteUnit;
-import org.apache.shardingsphere.core.route.RouteUnit;
-import org.apache.shardingsphere.core.route.SQLUnit;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
+import org.apache.shardingsphere.underlying.route.SQLUnit;
 import org.junit.Test;
 
 import java.lang.reflect.Field;

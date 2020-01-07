@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execu
 
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.core.route.RouteUnit;
-import org.apache.shardingsphere.core.route.SQLUnit;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
+import org.apache.shardingsphere.underlying.route.SQLUnit;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.junit.Test;

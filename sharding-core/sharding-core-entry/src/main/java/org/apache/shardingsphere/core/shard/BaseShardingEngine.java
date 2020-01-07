@@ -19,10 +19,10 @@ package org.apache.shardingsphere.core.shard;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.route.RouteUnit;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.route.SQLUnit;
+import org.apache.shardingsphere.underlying.route.SQLUnit;
 import org.apache.shardingsphere.core.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;

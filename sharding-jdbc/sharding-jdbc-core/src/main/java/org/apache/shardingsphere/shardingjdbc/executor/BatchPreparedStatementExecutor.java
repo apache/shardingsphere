@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteCallback
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareCallback;
 import org.apache.shardingsphere.core.route.BatchRouteUnit;
-import org.apache.shardingsphere.core.route.RouteUnit;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
 import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 

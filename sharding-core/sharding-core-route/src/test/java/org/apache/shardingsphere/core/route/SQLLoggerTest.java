@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.core.route;
 
 import com.google.common.base.Joiner;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
+import org.apache.shardingsphere.underlying.route.SQLUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
