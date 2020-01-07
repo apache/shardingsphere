@@ -82,7 +82,7 @@
         <curator.version>2.10.0</curator.version>
         <opentracing.version>0.30.0</opentracing.version>
         
-        <lombok.version>1.16.4</lombok.version>
+        <lombok.version>1.16.20</lombok.version>
         
         <springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
         <spring-boot.version>[1.5.0.RELEASE,2.0.0.M1)</spring-boot.version>
