@@ -178,8 +178,6 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         sqlStatementContext = SQLStatementContextFactory.newInstance(relationMetas, sql, getParameters(), sqlStatement);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(runtimeContext.getMetaData(), 
                 runtimeContext.getProperties()).createSQLRewriteContext(sql, getParameters(), sqlStatementContext, createSQLRewriteContextDecorator(runtimeContext.getRule()));
-        new EncryptSQLRewriteContextDecorator().decorate(runtimeContext.getRule(), runtimeContext.getProperties(), sqlRewriteContext);
-        sqlRewriteContext.generateSQLTokens();
         SQLRewriteResult sqlRewriteResult = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
         showSQL(sqlRewriteResult.getSql());
         return new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters());

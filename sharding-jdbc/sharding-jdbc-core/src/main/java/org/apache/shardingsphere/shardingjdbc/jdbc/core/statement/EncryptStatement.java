@@ -108,8 +108,6 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
         sqlStatementContext = SQLStatementContextFactory.newInstance(relationMetas, sql, Collections.emptyList(), sqlStatement);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(runtimeContext.getMetaData(), 
                 runtimeContext.getProperties()).createSQLRewriteContext(sql, Collections.emptyList(), sqlStatementContext, createSQLRewriteContextDecorator(runtimeContext.getRule()));
-        new EncryptSQLRewriteContextDecorator().decorate(runtimeContext.getRule(), runtimeContext.getProperties(), sqlRewriteContext);
-        sqlRewriteContext.generateSQLTokens();
         String result = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
         showSQL(result);
         return result;
