@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.route.SQLLogger;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.route.SQLUnit;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.rewrite.PreparedJudgementEngine;
@@ -56,6 +56,7 @@ import java.util.Map;
  *
  * @author zhyee
  */
+@Slf4j
 public final class ShadowPreparedStatement extends AbstractShardingPreparedStatementAdapter {
     
     @Getter
@@ -205,8 +206,9 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
     private void showSQL(final String sql) {
         boolean showSQL = connection.getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW);
         if (showSQL) {
-            //todo
-            SQLLogger.logShadowSQL(sql, "");
+            // TODO add shadow data source
+            log.info("Rule Type: shadow");
+            log.info("SQL: {} ::: DataSources: {}", sql, "");
         }
     }
     
