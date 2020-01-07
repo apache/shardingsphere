@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.route.SQLUnit;
+import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.rewrite.PreparedJudgementEngine;
 import org.apache.shardingsphere.shadow.rewrite.ShadowJudgementEngine;
 import org.apache.shardingsphere.shadow.rewrite.context.ShadowSQLRewriteContextDecorator;
@@ -33,7 +34,10 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.impl.DefaultSQLRewriteEngine;
 
@@ -173,9 +177,8 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(
                 getRelationMetas(connection.getRuntimeContext().getMetaData().getTables()), sql, getParameters(), sqlStatement);
         shadowJudgementEngine = new PreparedJudgementEngine(connection.getRuntimeContext().getRule(), sqlStatementContext, getParameters());
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(getRelationMetas(connection.getRuntimeContext().getMetaData().getTables()), sqlStatementContext, sql, getParameters());
-        new ShadowSQLRewriteContextDecorator().decorate(connection.getRuntimeContext().getRule(), connection.getRuntimeContext().getProperties(), sqlRewriteContext);
-        sqlRewriteContext.generateSQLTokens();
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(connection.getRuntimeContext().getMetaData(), connection.getRuntimeContext().getProperties())
+                .createSQLRewriteContext(sql, getParameters(), sqlStatementContext, createSQLRewriteContextDecorator(connection.getRuntimeContext().getRule()));
         SQLRewriteResult sqlRewriteResult = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
         showSQL(sqlRewriteResult.getSql());
         return new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters());
@@ -188,6 +191,12 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
             result.put(each, new RelationMetaData(tableMetaData.getColumns().keySet()));
         }
         return new RelationMetas(result);
+    }
+    
+    private Map<BaseRule, SQLRewriteContextDecorator> createSQLRewriteContextDecorator(final ShadowRule shadowRule) {
+        Map<BaseRule, SQLRewriteContextDecorator> result = new HashMap<>(1, 1);
+        result.put(shadowRule, new ShadowSQLRewriteContextDecorator());
+        return result;
     }
     
     private void showSQL(final String sql) {
