@@ -99,9 +99,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         this(connection, sql, resultSetType, resultSetConcurrency, resultSetHoldability, false);
     }
     
-    private ShardingPreparedStatement(
-            final ShardingConnection connection, final String sql, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys)
-            throws SQLException {
+    private ShardingPreparedStatement(final ShardingConnection connection, final String sql, 
+                                      final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys) throws SQLException {
         if (Strings.isNullOrEmpty(sql)) {
             throw new SQLException(SQLExceptionConstant.SQL_STRING_NULL_OR_EMPTY);
         }
