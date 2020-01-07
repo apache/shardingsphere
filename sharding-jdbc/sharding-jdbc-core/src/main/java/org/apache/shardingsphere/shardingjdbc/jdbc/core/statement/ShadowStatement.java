@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.rule.ShadowRule;
@@ -39,7 +40,6 @@ import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.engine.impl.DefaultSQLRewriteEngine;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -56,6 +56,7 @@ import java.util.Map;
  */
 public final class ShadowStatement extends AbstractStatementAdapter {
     
+    @Getter
     private final ShadowConnection connection;
     
     private final ShadowStatementGenerator shadowStatementGenerator;
@@ -77,7 +78,7 @@ public final class ShadowStatement extends AbstractStatementAdapter {
     public ShadowStatement(final ShadowConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(Statement.class);
         this.connection = connection;
-        shadowStatementGenerator = new ShadowStatementGenerator(connection, resultSetType, resultSetConcurrency, resultSetHoldability);
+        shadowStatementGenerator = new ShadowStatementGenerator(resultSetType, resultSetConcurrency, resultSetHoldability);
     }
     
     @Override
@@ -155,11 +156,6 @@ public final class ShadowStatement extends AbstractStatementAdapter {
     }
     
     @Override
-    public Connection getConnection() {
-        return shadowStatementGenerator.connection;
-    }
-    
-    @Override
     public int getResultSetHoldability() {
         return shadowStatementGenerator.resultSetHoldability;
     }
@@ -214,15 +210,13 @@ public final class ShadowStatement extends AbstractStatementAdapter {
     private void showSQL(final String sql) {
         boolean showSQL = connection.getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW);
         if (showSQL) {
-            //todo
+            // TODO
             SQLLogger.logShadowSQL(sql, "");
         }
     }
     
     @RequiredArgsConstructor
     private final class ShadowStatementGenerator {
-        
-        private final ShadowConnection connection;
         
         private final int resultSetType;
         
