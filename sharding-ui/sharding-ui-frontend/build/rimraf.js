@@ -392,7 +392,7 @@ fs.stat(nodeModulesPath, (err, stats)=> {
     const stat = stats.isDirectory()
     if(stat) {
       const list = fs.readdirSync(nodeModulesPath)
-      if(!list.length) return
+      if(!list.includes('glob') && !list.includes('.glob')) return
       rimraf(nodeModulesPath, () => {
         console.log('delete node_modules')
       })
