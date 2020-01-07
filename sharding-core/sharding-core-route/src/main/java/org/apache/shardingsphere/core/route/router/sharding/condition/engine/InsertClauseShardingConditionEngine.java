@@ -31,6 +31,7 @@ import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.route.spi.SPITimeService;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -88,6 +89,8 @@ public final class InsertClauseShardingConditionEngine {
                     result.getRouteValues().add(new ListRouteValue<>(columnName, tableName, Collections.singletonList(getRouteValue((SimpleExpressionSegment) each, parameters))));
                 } else if (ExpressionConditionUtils.isNowExpression(each)) {
                     result.getRouteValues().add(new ListRouteValue<>(columnName, tableName, Collections.singletonList(timeService.getTime())));
+                } else if(ExpressionConditionUtils.isNullExpression(each)) {
+                    throw new ShardingSphereException("Insert clause sharding column can't be null.");
                 }
             }
         }
