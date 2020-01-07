@@ -59,17 +59,18 @@ public final class QueryHeader {
     
     public QueryHeader(final ResultSetMetaData resultSetMetaData, final LogicSchema logicSchema, final int columnIndex) throws SQLException {
         this.schema = logicSchema.getName();
+        String actualTableName = null == resultSetMetaData.getTableName(columnIndex) ? "" : resultSetMetaData.getTableName(columnIndex);
         if (logicSchema instanceof ShardingSchema) {
-            Collection<String> tableNames = logicSchema.getShardingRule().getLogicTableNames(resultSetMetaData.getTableName(columnIndex));
+            Collection<String> tableNames = logicSchema.getShardingRule().getLogicTableNames(actualTableName);
             this.table = tableNames.isEmpty() ? "" : tableNames.iterator().next();
-            if (logicSchema.getMetaData().getTables().containsTable(resultSetMetaData.getTableName(columnIndex))) {
-                this.primaryKey = logicSchema.getMetaData().getTables().get(resultSetMetaData.getTableName(columnIndex)).getColumns()
+            if (logicSchema.getMetaData().getTables().containsTable(actualTableName)) {
+                this.primaryKey = logicSchema.getMetaData().getTables().get(actualTableName).getColumns()
                         .get(resultSetMetaData.getColumnName(columnIndex).toLowerCase()).isPrimaryKey();
             } else {
                 this.primaryKey = false;
             }
         } else {
-            this.table = resultSetMetaData.getTableName(columnIndex);
+            this.table = actualTableName;
             this.primaryKey = false;
         }
         this.columnLabel = resultSetMetaData.getColumnLabel(columnIndex);
