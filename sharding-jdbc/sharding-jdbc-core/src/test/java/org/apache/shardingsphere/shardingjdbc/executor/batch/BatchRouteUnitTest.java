@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route;
+package org.apache.shardingsphere.shardingjdbc.executor.batch;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.underlying.route.RouteUnit;
@@ -28,7 +28,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class BatchRouteUnitTest {
+public final class BatchRouteUnitTest {
     
     private static final String DATA_SOURCE_NAME = "ds";
     

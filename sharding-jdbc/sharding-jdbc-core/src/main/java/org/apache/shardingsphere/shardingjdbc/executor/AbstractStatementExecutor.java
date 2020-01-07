@@ -154,14 +154,19 @@ public abstract class AbstractStatementExecutor {
         return result;
     }
     
-    protected final boolean isAccumulate() {
+    /**
+     * is accumulate.
+     * 
+     * @return accumulate or not
+     */
+    public final boolean isAccumulate() {
         return !connection.getRuntimeContext().getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames());
     }
     
     /**
      * Clear data.
      *
-     * @throws SQLException sql exception
+     * @throws SQLException SQL exception
      */
     public void clear() throws SQLException {
         clearStatements();

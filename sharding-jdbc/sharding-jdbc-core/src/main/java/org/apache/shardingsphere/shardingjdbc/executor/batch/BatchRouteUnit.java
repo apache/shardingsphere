@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route;
+package org.apache.shardingsphere.shardingjdbc.executor.batch;
 
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
