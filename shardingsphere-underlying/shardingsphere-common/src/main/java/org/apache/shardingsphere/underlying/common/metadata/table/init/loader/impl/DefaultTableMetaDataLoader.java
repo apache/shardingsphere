@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.underlying.common.metadata.table.init.loader.impl;
 
-import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
@@ -67,7 +66,6 @@ public final class DefaultTableMetaDataLoader implements TableMetaDataLoader {
     
     private String getDataSourceName() {
         Collection<String> allInstanceDataSourceNames = dataSourceMetas.getAllInstanceDataSourceNames();
-        Preconditions.checkState(1 == allInstanceDataSourceNames.size());
         return allInstanceDataSourceNames.iterator().next();
     }
     
