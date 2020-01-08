@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.checker;
 
+import javax.sql.DataSource;
+import java.util.Collection;
+
 /**
  * DatasourceChecker.
  *
@@ -27,11 +30,14 @@ public interface DatasourceChecker {
     /**
      * Check datasource connections.
      *
+     * @param dataSources datasource connections
      */
-    void checkConnection();
+    void checkConnection(Collection<DataSource> dataSources);
 
     /**
      * Check user's privileges.
+     *
+     * @param dataSources datasource connections
      */
-    void checkPrivilege();
+    void checkPrivilege(Collection<DataSource> dataSources);
 }

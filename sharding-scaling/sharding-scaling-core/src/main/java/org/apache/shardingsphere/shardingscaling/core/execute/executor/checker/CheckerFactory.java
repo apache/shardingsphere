@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingscaling.core.execute.executor.checker;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntryLoader;
-import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 
 /**
  * DatasourceChecker factory.
@@ -33,12 +32,11 @@ public class CheckerFactory {
      * New instance of checker.
      *
      * @param databaseType database type
-     * @param dataSourceFactory data source
      * @return checker
      */
     @SneakyThrows
-    public static DatasourceChecker newInstanceDatasourceChecker(final String databaseType, final DataSourceFactory dataSourceFactory) {
+    public static DatasourceChecker newInstanceDatasourceChecker(final String databaseType) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
-        return scalingEntry.getCheckerClass().getConstructor(DataSourceFactory.class).newInstance(dataSourceFactory);
+        return scalingEntry.getCheckerClass().getConstructor().newInstance();
     }
 }

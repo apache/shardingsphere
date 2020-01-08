@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.checker;
 
-import com.zaxxer.hikari.HikariDataSource;
-import lombok.AccessLevel;
-import lombok.Getter;
 import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
-import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * generic checker implement.
@@ -32,18 +30,11 @@ import java.sql.SQLException;
  */
 public abstract class AbstractDatasourceChecker implements DatasourceChecker {
 
-    @Getter(AccessLevel.PROTECTED)
-    private final DataSourceFactory dataSourceFactory;
-
-    public AbstractDatasourceChecker(final DataSourceFactory dataSourceFactory) {
-        this.dataSourceFactory = dataSourceFactory;
-    }
-
     @Override
-    public final void checkConnection() {
+    public final void checkConnection(final Collection<DataSource> dataSources) {
         try {
-            for (HikariDataSource hikariDataSource : dataSourceFactory.getCachedDataSources().values()) {
-                hikariDataSource.getConnection();
+            for (DataSource dataSource : dataSources) {
+                dataSource.getConnection();
             }
         } catch (SQLException e) {
             throw new DatasourceCheckFailedException("Datasources check failed!");

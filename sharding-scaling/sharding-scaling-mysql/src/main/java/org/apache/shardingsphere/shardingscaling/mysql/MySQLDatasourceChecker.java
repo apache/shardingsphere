@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.AbstractDatasourceChecker;
-import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * Datasource checker for MySQL.
@@ -33,17 +33,12 @@ import java.sql.SQLException;
  */
 public class MySQLDatasourceChecker extends AbstractDatasourceChecker {
 
-    public MySQLDatasourceChecker(final DataSourceFactory dataSourceFactory) {
-        super(dataSourceFactory);
-    }
-
     @Override
-    public final void checkPrivilege() {
-        DataSourceFactory dataSourceFactory = getDataSourceFactory();
+    public final void checkPrivilege(final Collection<DataSource> dataSources) {
         try {
-            for (HikariDataSource hikariDataSource : dataSourceFactory.getSourceDatasources().values()) {
+            for (DataSource dataSource : dataSources) {
                 String tableName;
-                Connection connection = hikariDataSource.getConnection();
+                Connection connection = dataSource.getConnection();
                 ResultSet tables = connection.getMetaData().getTables(connection.getCatalog(), null, "%", new String[]{"TABLE"});
                 if (tables.next()) {
                     tableName = tables.getString(3);

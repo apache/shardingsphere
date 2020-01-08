@@ -46,6 +46,9 @@ import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 import org.apache.shardingsphere.shardingscaling.core.web.util.ResponseContentUtil;
 import org.apache.shardingsphere.shardingscaling.core.web.util.SyncConfigurationUtil;
 
+import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -115,10 +118,13 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     private void checkDatasources(final List<SyncConfiguration> syncConfigurations, final DataSourceFactory dataSourceFactory) {
         try {
             DatasourceChecker datasourceChecker = CheckerFactory.newInstanceDatasourceChecker(
-                    syncConfigurations.get(0).getReaderConfiguration().getDataSourceConfiguration().getDatabaseType().getName(),
-                    dataSourceFactory);
-            datasourceChecker.checkConnection();
-            datasourceChecker.checkPrivilege();
+                    syncConfigurations.get(0).getReaderConfiguration().getDataSourceConfiguration().getDatabaseType().getName());
+            Collection<DataSource> dataSourceCollection = new ArrayList<>();
+            dataSourceCollection.addAll(dataSourceFactory.getCachedDataSources().values());
+            datasourceChecker.checkConnection(dataSourceCollection);
+            Collection<DataSource> sourcesDatasourceCollection = new ArrayList<>();
+            sourcesDatasourceCollection.addAll(dataSourceFactory.getSourceDatasources().values());
+            datasourceChecker.checkPrivilege(sourcesDatasourceCollection);
         } finally {
             dataSourceFactory.close();
         }

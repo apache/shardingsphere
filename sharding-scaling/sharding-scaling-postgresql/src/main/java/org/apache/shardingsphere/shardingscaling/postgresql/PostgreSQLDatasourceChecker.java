@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.shardingscaling.postgresql;
 
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.AbstractDatasourceChecker;
-import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
+
+import javax.sql.DataSource;
+import java.util.Collection;
 
 /**
  * Datasource checker for PostgreSQL.
@@ -27,12 +29,8 @@ import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
  */
 public class PostgreSQLDatasourceChecker extends AbstractDatasourceChecker {
 
-    public PostgreSQLDatasourceChecker(final DataSourceFactory dataSourceFactory) {
-        super(dataSourceFactory);
-    }
-
     @Override
-    public void checkPrivilege() {
+    public void checkPrivilege(final Collection<DataSource> dataSources) {
 
     }
 }
