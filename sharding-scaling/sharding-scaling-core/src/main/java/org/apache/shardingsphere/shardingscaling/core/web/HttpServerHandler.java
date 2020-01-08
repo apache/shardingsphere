@@ -86,7 +86,7 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
             getJobProgress(channelHandlerContext, requestPath);
             return;
         }
-        if ("/shardingscaling/job/list".equalsIgnoreCase(requestPath) && method.equals(HttpMethod.POST)) {
+        if ("/shardingscaling/job/list".equalsIgnoreCase(requestPath) && method.equals(HttpMethod.GET)) {
             listAllJobs(channelHandlerContext);
             return;
         }
