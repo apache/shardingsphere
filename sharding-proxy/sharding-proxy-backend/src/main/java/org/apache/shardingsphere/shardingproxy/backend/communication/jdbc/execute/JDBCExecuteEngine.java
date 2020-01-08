@@ -18,15 +18,11 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute;
 
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
+import org.apache.shardingsphere.core.route.RouteResult;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareTemplate;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback.ProxyJDBCExecutePrepareCallback;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback.ProxySQLExecuteCallback;
@@ -39,6 +35,10 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeade
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -73,7 +73,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     
     @SuppressWarnings("unchecked")
     @Override
-    public BackendResponse execute(final SQLRouteResult routeResult) throws SQLException {
+    public BackendResponse execute(final RouteResult routeResult) throws SQLException {
         final SQLStatementContext sqlStatementContext = routeResult.getSqlStatementContext();
         boolean isReturnGeneratedKeys = sqlStatementContext.getSqlStatement() instanceof InsertStatement;
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();

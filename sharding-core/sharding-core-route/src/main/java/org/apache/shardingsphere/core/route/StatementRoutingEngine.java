@@ -49,7 +49,7 @@ public final class StatementRoutingEngine {
      * @param logicSQL logic SQL
      * @return route result
      */
-    public SQLRouteResult route(final String logicSQL) {
+    public ShardingRouteResult route(final String logicSQL) {
         SQLStatement sqlStatement = shardingRouter.parse(logicSQL, false);
         return masterSlaveRouter.route(shardingRouter.route(logicSQL, Collections.emptyList(), sqlStatement));
     }

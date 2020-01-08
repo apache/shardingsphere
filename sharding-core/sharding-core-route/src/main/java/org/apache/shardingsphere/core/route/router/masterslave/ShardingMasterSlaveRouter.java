@@ -19,11 +19,12 @@ package org.apache.shardingsphere.core.route.router.masterslave;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.RouteResult;
+import org.apache.shardingsphere.core.route.ShardingRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,23 +46,23 @@ public final class ShardingMasterSlaveRouter {
      * @param sqlRouteResult SQL route result
      * @return route result
      */
-    public SQLRouteResult route(final SQLRouteResult sqlRouteResult) {
+    public ShardingRouteResult route(final ShardingRouteResult sqlRouteResult) {
         for (MasterSlaveRule each : masterSlaveRules) {
             route(each, sqlRouteResult);
         }
         return sqlRouteResult;
     }
     
-    private void route(final MasterSlaveRule masterSlaveRule, final SQLRouteResult sqlRouteResult) {
+    private void route(final MasterSlaveRule masterSlaveRule, final RouteResult routeResult) {
         Collection<RoutingUnit> toBeRemoved = new LinkedList<>();
         Collection<RoutingUnit> toBeAdded = new LinkedList<>();
-        for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
+        for (RoutingUnit each : routeResult.getRoutingResult().getRoutingUnits()) {
             if (!masterSlaveRule.getName().equalsIgnoreCase(each.getDataSourceName())) {
                 continue;
             }
             toBeRemoved.add(each);
             String actualDataSourceName;
-            if (isMasterRoute(sqlRouteResult.getSqlStatementContext().getSqlStatement())) {
+            if (isMasterRoute(routeResult.getSqlStatementContext().getSqlStatement())) {
                 MasterVisitedManager.setMasterVisited();
                 actualDataSourceName = masterSlaveRule.getMasterDataSourceName();
             } else {
@@ -70,8 +71,8 @@ public final class ShardingMasterSlaveRouter {
             }
             toBeAdded.add(createNewRoutingUnit(actualDataSourceName, each));
         }
-        sqlRouteResult.getRoutingResult().getRoutingUnits().removeAll(toBeRemoved);
-        sqlRouteResult.getRoutingResult().getRoutingUnits().addAll(toBeAdded);
+        routeResult.getRoutingResult().getRoutingUnits().removeAll(toBeRemoved);
+        routeResult.getRoutingResult().getRoutingUnits().addAll(toBeAdded);
     }
     
     private boolean isMasterRoute(final SQLStatement sqlStatement) {

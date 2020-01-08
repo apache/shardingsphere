@@ -15,21 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.aware;
+package org.apache.shardingsphere.core.route;
 
-import org.apache.shardingsphere.core.route.SQLRouteResult;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.core.route.type.RoutingResult;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
+
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
 /**
- * SQL route result aware.
- *
+ * SQL route result.
+ * 
+ * @author gaohongtao
  * @author zhangliang
+ * @author zhaojun
  */
-public interface SQLRouteResultAware {
+@RequiredArgsConstructor
+@Getter
+@Setter
+public class RouteResult {
     
-    /**
-     * Set SQL route result.
-     * 
-     * @param sqlRouteResult SQL route result
-     */
-    void setSqlRouteResult(SQLRouteResult sqlRouteResult);
+    private final SQLStatementContext sqlStatementContext;
+    
+    private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
+    
+    private RoutingResult routingResult;
 }

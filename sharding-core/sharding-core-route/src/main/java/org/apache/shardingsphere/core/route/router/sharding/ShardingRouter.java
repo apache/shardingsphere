@@ -22,7 +22,7 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.ShardingRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.router.sharding.condition.engine.InsertClauseShardingConditionEngine;
@@ -95,7 +95,7 @@ public final class ShardingRouter {
      * @return parse result
      */
     @SuppressWarnings("unchecked")
-    public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
+    public ShardingRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
         Optional<ShardingStatementValidator> shardingStatementValidator = ShardingStatementValidatorFactory.newInstance(sqlStatement);
         if (shardingStatementValidator.isPresent()) {
             shardingStatementValidator.get().validate(shardingRule, sqlStatement, parameters);
@@ -114,7 +114,7 @@ public final class ShardingRouter {
         if (needMergeShardingValues) {
             Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");
         }
-        SQLRouteResult result = new SQLRouteResult(sqlStatementContext, shardingConditions, generatedKey.orNull());
+        ShardingRouteResult result = new ShardingRouteResult(sqlStatementContext, shardingConditions, generatedKey.orNull());
         result.setRoutingResult(routingResult);
         if (sqlStatementContext instanceof InsertSQLStatementContext) {
             setGeneratedValues(result);
@@ -201,11 +201,11 @@ public final class ShardingRouter {
         }
     }
     
-    private void setGeneratedValues(final SQLRouteResult sqlRouteResult) {
-        if (sqlRouteResult.getGeneratedKey().isPresent()) {
-            generatedValues.addAll(sqlRouteResult.getGeneratedKey().get().getGeneratedValues());
-            sqlRouteResult.getGeneratedKey().get().getGeneratedValues().clear();
-            sqlRouteResult.getGeneratedKey().get().getGeneratedValues().addAll(generatedValues);
+    private void setGeneratedValues(final ShardingRouteResult shardingRouteResult) {
+        if (shardingRouteResult.getGeneratedKey().isPresent()) {
+            generatedValues.addAll(shardingRouteResult.getGeneratedKey().get().getGeneratedValues());
+            shardingRouteResult.getGeneratedKey().get().getGeneratedValues().clear();
+            shardingRouteResult.getGeneratedKey().get().getGeneratedValues().addAll(generatedValues);
         }
     }
 }

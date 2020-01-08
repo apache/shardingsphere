@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.parameterized;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.ShardingRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.ShardingRouter;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -77,7 +77,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());
         ShardingRouter shardingRouter = new ShardingRouter(shardingRule, createShardingSphereMetaData(), parseEngine);
         SQLStatement sqlStatement = shardingRouter.parse(getTestParameters().getInputSQL(), false);
-        SQLRouteResult sqlRouteResult = shardingRouter.route(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatement);
+        ShardingRouteResult sqlRouteResult = shardingRouter.route(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatement);
         ShardingSphereProperties properties = new ShardingSphereProperties(ruleConfiguration.getProps());
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(
                 mock(RelationMetas.class), sqlRouteResult.getSqlStatementContext(), getTestParameters().getInputSQL(), getTestParameters().getInputParameters());

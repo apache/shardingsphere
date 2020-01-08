@@ -25,7 +25,7 @@ import org.apache.shardingsphere.underlying.common.constant.properties.Propertie
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.route.RouteUnit;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.ShardingRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
@@ -53,15 +53,15 @@ public abstract class BaseShardingEngineTest {
         return new ShardingSphereProperties(result);
     }
     
-    protected final SQLRouteResult createSQLRouteResult() {
-        SQLRouteResult result = new SQLRouteResult(new CommonSQLStatementContext(new DALStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+    protected final ShardingRouteResult createSQLRouteResult() {
+        ShardingRouteResult result = new ShardingRouteResult(new CommonSQLStatementContext(new DALStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
         result.setRoutingResult(routingResult);
         return result;
     }
     
-    protected final void assertSQLRouteResult(final SQLRouteResult actual) {
+    protected final void assertSQLRouteResult(final ShardingRouteResult actual) {
         assertThat(actual.getRouteUnits().size(), is(1));
         RouteUnit actualRouteUnit = actual.getRouteUnits().iterator().next();
         assertThat(actualRouteUnit.getDataSourceName(), is("ds"));

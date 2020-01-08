@@ -56,7 +56,7 @@ public final class PreparedStatementRoutingEngine {
      * @param parameters parameters of SQL placeholder
      * @return route result
      */
-    public SQLRouteResult route(final List<Object> parameters) {
+    public ShardingRouteResult route(final List<Object> parameters) {
         if (null == sqlStatement) {
             sqlStatement = shardingRouter.parse(logicSQL, true);
         }
