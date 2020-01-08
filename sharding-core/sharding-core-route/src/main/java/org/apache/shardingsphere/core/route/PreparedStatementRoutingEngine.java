@@ -54,6 +54,6 @@ public final class PreparedStatementRoutingEngine {
      * @return route result
      */
     public ShardingRouteResult route(final List<Object> parameters) {
-        return masterSlaveRouter.route(shardingRouter.route(logicSQL, parameters, shardingRouter.parse(logicSQL, true)));
+        return masterSlaveRouter.route(shardingRouter.route(logicSQL, parameters, true));
     }
 }

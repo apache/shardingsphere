@@ -72,30 +72,16 @@ public final class ShardingRouter {
     private final List<Comparable<?>> generatedValues = new LinkedList<>();
     
     /**
-     * Parse SQL.
-     * To make sure SkyWalking will be available at the next release of ShardingSphere,
-     * a new plugin should be provided to SkyWalking project if this API changed.
-     *
-     * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
-     *
-     * @param logicSQL logic SQL
-     * @param useCache use cache to save SQL parse result or not
-     * @return parse result
-     */
-    public SQLStatement parse(final String logicSQL, final boolean useCache) {
-        return parseEngine.parse(logicSQL, useCache);
-    }
-    
-    /**
      * Route SQL.
      *
      * @param logicSQL logic SQL
      * @param parameters SQL parameters
-     * @param sqlStatement SQL statement
+     * @param useCache use cache to save SQL parse result or not
      * @return parse result
      */
     @SuppressWarnings("unchecked")
-    public ShardingRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
+    public ShardingRouteResult route(final String logicSQL, final List<Object> parameters, final boolean useCache) {
+        SQLStatement sqlStatement = parse(logicSQL, useCache);
         Optional<ShardingStatementValidator> shardingStatementValidator = ShardingStatementValidatorFactory.newInstance(sqlStatement);
         if (shardingStatementValidator.isPresent()) {
             shardingStatementValidator.get().validate(shardingRule, sqlStatement, parameters);
@@ -120,6 +106,17 @@ public final class ShardingRouter {
             setGeneratedValues(result);
         }
         return result;
+    }
+    
+    /*
+     * To make sure SkyWalking will be available at the next release of ShardingSphere,
+     * a new plugin should be provided to SkyWalking project if this API changed.
+     *
+     * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
+     *
+     */
+    private SQLStatement parse(final String logicSQL, final boolean useCache) {
+        return parseEngine.parse(logicSQL, useCache);
     }
     
     private ShardingConditions getShardingConditions(final List<Object> parameters, final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey, final RelationMetas relationMetas) {
