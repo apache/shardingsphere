@@ -19,7 +19,10 @@ package org.apache.shardingsphere.shardingscaling.mysql;
 
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.AbstractJdbcWriter;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.SqlBuilder;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
+
+import javax.sql.DataSource;
 
 /**
  * MySQL writer.
@@ -27,9 +30,25 @@ import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
  * @author avalon566
  * @author yangyi
  */
-public class MySQLWriter extends AbstractJdbcWriter {
-
+public final class MySQLWriter extends AbstractJdbcWriter {
+    
     public MySQLWriter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
         super(rdbmsConfiguration, dataSourceFactory);
+    }
+    
+    @Override
+    public SqlBuilder createSqlBuilder(final DataSource dataSource) {
+        return new SqlBuilder(dataSource) {
+            
+            @Override
+            public String getLeftIdentifierQuoteString() {
+                return "`";
+            }
+            
+            @Override
+            public String getRightIdentifierQuoteString() {
+                return "`";
+            }
+        };
     }
 }

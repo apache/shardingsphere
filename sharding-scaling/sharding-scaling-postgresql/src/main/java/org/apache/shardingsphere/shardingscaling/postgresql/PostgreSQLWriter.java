@@ -19,17 +19,36 @@ package org.apache.shardingsphere.shardingscaling.postgresql;
 
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.AbstractJdbcWriter;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.SqlBuilder;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
+
+import javax.sql.DataSource;
 
 /**
  * postgreSQL writer.
  *
  * @author avalon566
  */
-public class PostgreSQLWriter extends AbstractJdbcWriter {
+public final class PostgreSQLWriter extends AbstractJdbcWriter {
 
     public PostgreSQLWriter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
         super(rdbmsConfiguration, dataSourceFactory);
+    }
+    
+    @Override
+    public SqlBuilder createSqlBuilder(final DataSource dataSource) {
+        return new SqlBuilder(dataSource) {
+            
+            @Override
+            public String getLeftIdentifierQuoteString() {
+                return "\"";
+            }
+    
+            @Override
+            public String getRightIdentifierQuoteString() {
+                return "\"";
+            }
+        };
     }
 }
 

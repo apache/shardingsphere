@@ -32,7 +32,7 @@ import java.util.concurrent.ExecutionException;
  *
  * @author avalon566
  */
-public final class SqlBuilder {
+public abstract class SqlBuilder {
 
     private static final String INSERT_SQL_CACHE_KEY_PREFIX = "INSERT_";
 
@@ -40,16 +40,11 @@ public final class SqlBuilder {
 
     private static final String DELETE_SQL_CACHE_KEY_PREFIX = "DELETE_";
     
-    private String leftIdentifierQuoteString;
-    
-    private String rightIdentifierQuoteString;
-
     private final LoadingCache<String, String> sqlCache;
     
     private final DbMetaDataUtil dbMetaDataUtil;
 
-    public SqlBuilder(final String databaseType, final DataSource dataSource) {
-        initIdentifierQuoteString(databaseType);
+    public SqlBuilder(final DataSource dataSource) {
         this.dbMetaDataUtil = new DbMetaDataUtil(dataSource);
         sqlCache = CacheBuilder.newBuilder()
                 .maximumSize(64)
@@ -67,22 +62,19 @@ public final class SqlBuilder {
                 });
     }
     
-    private void initIdentifierQuoteString(final String databaseType) {
-        switch (databaseType) {
-            case "MySQL":
-                leftIdentifierQuoteString = "`";
-                rightIdentifierQuoteString = "`";
-                break;
-            case "PostgreSQL":
-                leftIdentifierQuoteString = "\"";
-                rightIdentifierQuoteString = "\"";
-                break;
-            default:
-                leftIdentifierQuoteString = "";
-                rightIdentifierQuoteString = "";
-                break;
-        }
-    }
+    /**
+     * Get left identifier quote string.
+     *
+     * @return string
+     */
+    public abstract String getLeftIdentifierQuoteString();
+    
+    /**
+     * Get right identifier quote string.
+     *
+     * @return string
+     */
+    public abstract String getRightIdentifierQuoteString();
 
     /**
      * Build insert sql.
@@ -131,31 +123,31 @@ public final class SqlBuilder {
         StringBuilder columns = new StringBuilder();
         StringBuilder holder = new StringBuilder();
         for (ColumnMetaData each : metaData) {
-            columns.append(String.format("%s%s%s,", leftIdentifierQuoteString, each.getColumnName(), rightIdentifierQuoteString));
+            columns.append(String.format("%s%s%s,", getLeftIdentifierQuoteString(), each.getColumnName(), getRightIdentifierQuoteString()));
             holder.append("?,");
         }
         columns.setLength(columns.length() - 1);
         holder.setLength(holder.length() - 1);
-        return String.format("INSERT INTO %s%s%s(%s) VALUES(%s)", leftIdentifierQuoteString, tableName, rightIdentifierQuoteString, columns.toString(), holder.toString());
+        return String.format("INSERT INTO %s%s%s(%s) VALUES(%s)", getLeftIdentifierQuoteString(), tableName, getRightIdentifierQuoteString(), columns.toString(), holder.toString());
     }
 
     private String buildDeleteSqlInternal(final String tableName) {
         List<String> primaryKeys = dbMetaDataUtil.getPrimaryKeys(tableName);
         StringBuilder where = new StringBuilder();
         for (String each : primaryKeys) {
-            where.append(String.format("%s%s%s = ?,", leftIdentifierQuoteString, each, rightIdentifierQuoteString));
+            where.append(String.format("%s%s%s = ?,", getLeftIdentifierQuoteString(), each, getRightIdentifierQuoteString()));
         }
         where.setLength(where.length() - 1);
-        return String.format("DELETE FROM %s%s%s WHERE %s", leftIdentifierQuoteString, tableName, rightIdentifierQuoteString, where.toString());
+        return String.format("DELETE FROM %s%s%s WHERE %s", getLeftIdentifierQuoteString(), tableName, getRightIdentifierQuoteString(), where.toString());
     }
 
     private String buildUpdateSqlInternal(final String tableName) {
         List<String> primaryKeys = dbMetaDataUtil.getPrimaryKeys(tableName);
         StringBuilder where = new StringBuilder();
         for (String each : primaryKeys) {
-            where.append(String.format("%s%s%s = ?,", leftIdentifierQuoteString, each, rightIdentifierQuoteString));
+            where.append(String.format("%s%s%s = ?,", getLeftIdentifierQuoteString(), each, getRightIdentifierQuoteString()));
         }
         where.setLength(where.length() - 1);
-        return String.format("UPDATE %s%s%s SET %%s WHERE %s", leftIdentifierQuoteString, tableName, rightIdentifierQuoteString, where.toString());
+        return String.format("UPDATE %s%s%s SET %%s WHERE %s", getLeftIdentifierQuoteString(), tableName, getRightIdentifierQuoteString(), where.toString());
     }
 }

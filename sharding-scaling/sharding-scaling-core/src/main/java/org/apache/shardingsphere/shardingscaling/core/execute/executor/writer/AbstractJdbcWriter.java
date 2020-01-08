@@ -62,10 +62,18 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
     public AbstractJdbcWriter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
         this.rdbmsConfiguration = rdbmsConfiguration;
         this.dataSourceFactory = dataSourceFactory;
-        this.dbMetaDataUtil = new DbMetaDataUtil(dataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()));
-        this.sqlBuilder = new SqlBuilder(rdbmsConfiguration.getDataSourceConfiguration().getDatabaseType().getName(),
-                dataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()));
+        DataSource dataSource = dataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
+        dbMetaDataUtil = new DbMetaDataUtil(dataSource);
+        sqlBuilder = createSqlBuilder(dataSource);
     }
+    
+    /**
+     * Create sql builder.
+     *
+     * @param dataSource data source
+     * @return sql builder
+     */
+    public abstract SqlBuilder createSqlBuilder(DataSource dataSource);
     
     @Override
     public final void run() {
