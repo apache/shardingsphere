@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.core.fixture;
 
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.Checker;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.JdbcReader;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.LogReader;
@@ -44,7 +45,12 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
     public Class<? extends Writer> getWriterClass() {
         return FixtureNopWriter.class;
     }
-    
+
+    @Override
+    public Class<? extends Checker> getCheckerClass() {
+        return null;
+    }
+
     @Override
     public String getDatabaseType() {
         return "H2";

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql;
 
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.Checker;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.JdbcReader;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.LogReader;
@@ -49,7 +50,12 @@ public final class MySQLScalingEntry implements ScalingEntry {
     public Class<? extends Writer> getWriterClass() {
         return MySQLWriter.class;
     }
-    
+
+    @Override
+    public Class<? extends Checker> getCheckerClass() {
+        return MySQLChecker.class;
+    }
+
     @Override
     public String getDatabaseType() {
         return "MySQL";

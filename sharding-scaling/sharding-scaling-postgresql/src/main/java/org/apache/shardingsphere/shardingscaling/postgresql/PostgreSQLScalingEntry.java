@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.postgresql;
 
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.Checker;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.JdbcReader;
@@ -49,7 +50,12 @@ public final class PostgreSQLScalingEntry implements ScalingEntry {
     public Class<? extends Writer> getWriterClass() {
         return PostgreSQLWriter.class;
     }
-    
+
+    @Override
+    public Class<? extends Checker> getCheckerClass() {
+        return null;
+    }
+
     @Override
     public String getDatabaseType() {
         return "PostgreSQL";
