@@ -40,7 +40,7 @@ import org.apache.shardingsphere.shardingscaling.core.controller.ScalingJobContr
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
 import org.apache.shardingsphere.shardingscaling.core.exception.ScalingJobNotFoundException;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.Checker;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DatasourceChecker;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.CheckerFactory;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 import org.apache.shardingsphere.shardingscaling.core.web.util.ResponseContentUtil;
@@ -114,11 +114,11 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
 
     private void checkDatasources(final List<SyncConfiguration> syncConfigurations, final DataSourceFactory dataSourceFactory) {
         try {
-            Checker checker = CheckerFactory.newInstanceChecker(
+            DatasourceChecker datasourceChecker = CheckerFactory.newInstanceDatasourceChecker(
                     syncConfigurations.get(0).getReaderConfiguration().getDataSourceConfiguration().getDatabaseType().getName(),
                     dataSourceFactory);
-            checker.checkConnection();
-            checker.checkPrivilege();
+            datasourceChecker.checkConnection();
+            datasourceChecker.checkPrivilege();
         } finally {
             dataSourceFactory.close();
         }

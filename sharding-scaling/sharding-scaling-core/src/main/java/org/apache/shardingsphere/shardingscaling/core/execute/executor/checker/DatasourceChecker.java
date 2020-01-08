@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.checker;
 
 /**
- * Checker.
+ * DatasourceChecker.
  *
  * @author ssxlulu
  */
-public interface Checker {
+public interface DatasourceChecker {
 
     /**
      * Check datasource connections.

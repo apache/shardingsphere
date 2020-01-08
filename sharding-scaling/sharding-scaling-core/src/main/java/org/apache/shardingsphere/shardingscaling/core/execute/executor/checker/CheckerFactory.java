@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntryLoader;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 
 /**
- * Checker factory.
+ * DatasourceChecker factory.
  *
  * @author ssxlulu
  */
@@ -37,7 +37,7 @@ public class CheckerFactory {
      * @return checker
      */
     @SneakyThrows
-    public static Checker newInstanceChecker(final String databaseType, final DataSourceFactory dataSourceFactory) {
+    public static DatasourceChecker newInstanceDatasourceChecker(final String databaseType, final DataSourceFactory dataSourceFactory) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
         return scalingEntry.getCheckerClass().getConstructor(DataSourceFactory.class).newInstance(dataSourceFactory);
     }

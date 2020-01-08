@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingscaling.mysql;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.AbstractChecker;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.AbstractDatasourceChecker;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 
 import java.sql.Connection;
@@ -31,9 +31,9 @@ import java.sql.SQLException;
  *
  * @author ssxlulu
  */
-public class MySQLChecker extends AbstractChecker {
+public class MySQLDatasourceChecker extends AbstractDatasourceChecker {
 
-    public MySQLChecker(final DataSourceFactory dataSourceFactory) {
+    public MySQLDatasourceChecker(final DataSourceFactory dataSourceFactory) {
         super(dataSourceFactory);
     }
 

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.postgresql;
 
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.AbstractChecker;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.AbstractDatasourceChecker;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 
 /**
@@ -25,9 +25,9 @@ import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
  *
  * @author ssxlulu
  */
-public class PostgreSQLChecker extends AbstractChecker {
+public class PostgreSQLDatasourceChecker extends AbstractDatasourceChecker {
 
-    public PostgreSQLChecker(final DataSourceFactory dataSourceFactory) {
+    public PostgreSQLDatasourceChecker(final DataSourceFactory dataSourceFactory) {
         super(dataSourceFactory);
     }
 

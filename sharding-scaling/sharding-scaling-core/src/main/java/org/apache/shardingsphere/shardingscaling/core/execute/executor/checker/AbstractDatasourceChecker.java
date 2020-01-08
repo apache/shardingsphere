@@ -30,12 +30,12 @@ import java.sql.SQLException;
  *
  * @author ssxlulu
  */
-public abstract class AbstractChecker implements Checker {
+public abstract class AbstractDatasourceChecker implements DatasourceChecker {
 
     @Getter(AccessLevel.PROTECTED)
     private final DataSourceFactory dataSourceFactory;
 
-    public AbstractChecker(final DataSourceFactory dataSourceFactory) {
+    public AbstractDatasourceChecker(final DataSourceFactory dataSourceFactory) {
         this.dataSourceFactory = dataSourceFactory;
     }
 

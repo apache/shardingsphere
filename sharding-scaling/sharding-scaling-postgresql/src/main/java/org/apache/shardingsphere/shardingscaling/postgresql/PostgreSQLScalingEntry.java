@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.postgresql;
 
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.Checker;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DatasourceChecker;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.JdbcReader;
@@ -52,7 +52,7 @@ public final class PostgreSQLScalingEntry implements ScalingEntry {
     }
 
     @Override
-    public Class<? extends Checker> getCheckerClass() {
+    public Class<? extends DatasourceChecker> getCheckerClass() {
         return null;
     }
 
