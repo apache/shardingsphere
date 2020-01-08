@@ -67,6 +67,8 @@ public final class ShadowStatement extends AbstractStatementAdapter {
     private Statement statement;
     
     private ResultSet resultSet;
+
+    private boolean isShadowSql;
     
     public ShadowStatement(final ShadowConnection connection) {
         this(connection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
@@ -181,7 +183,8 @@ public final class ShadowStatement extends AbstractStatementAdapter {
         SQLStatement sqlStatement = connection.getRuntimeContext().getParseEngine().parse(sql, false);
         sqlStatementContext = SQLStatementContextFactory.newInstance(getRelationMetas(connection.getRuntimeContext().getMetaData().getTables()), sql, Collections.emptyList(), sqlStatement);
         ShadowJudgementEngine shadowJudgementEngine = new SimpleJudgementEngine(connection.getRuntimeContext().getRule(), sqlStatementContext);
-        statement = shadowStatementGenerator.createStatement(shadowJudgementEngine);
+        isShadowSql = shadowJudgementEngine.isShadowSQL();
+        statement = shadowStatementGenerator.createStatement();
         return statement;
     }
     
@@ -211,9 +214,8 @@ public final class ShadowStatement extends AbstractStatementAdapter {
     private void showSQL(final String sql) {
         boolean showSQL = connection.getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW);
         if (showSQL) {
-            // TODO add shadow data source
             log.info("Rule Type: shadow");
-            log.info("SQL: {} ::: DataSources: {}", sql, "");
+            log.info("SQL: {} ::: IsShadowSql: {}", sql, isShadowSql);
         }
     }
     
@@ -226,17 +228,16 @@ public final class ShadowStatement extends AbstractStatementAdapter {
         
         private final int resultSetHoldability;
         
-        private Statement createStatement(final ShadowJudgementEngine shadowJudgementEngine) throws SQLException {
+        private Statement createStatement() throws SQLException {
             if (-1 != resultSetType && -1 != resultSetConcurrency && -1 != resultSetHoldability) {
-                return shadowJudgementEngine.isShadowSQL() ? connection.getShadowConnection().createStatement(resultSetType, resultSetConcurrency, resultSetHoldability)
+                return isShadowSql ? connection.getShadowConnection().createStatement(resultSetType, resultSetConcurrency, resultSetHoldability)
                         : connection.getActualConnection().createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
             }
             if (-1 != resultSetType && -1 != resultSetConcurrency) {
-                return shadowJudgementEngine.isShadowSQL() ? connection.getShadowConnection().createStatement(resultSetType, resultSetConcurrency)
+                return isShadowSql ? connection.getShadowConnection().createStatement(resultSetType, resultSetConcurrency)
                         : connection.getActualConnection().createStatement(resultSetType, resultSetConcurrency);
             }
-            return shadowJudgementEngine.isShadowSQL() ? connection.getShadowConnection().createStatement()
-                    : connection.getActualConnection().createStatement();
+            return isShadowSql ? connection.getShadowConnection().createStatement() : connection.getActualConnection().createStatement();
         }
     }
 }

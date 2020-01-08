@@ -27,6 +27,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupport
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
@@ -45,6 +46,14 @@ public final class ShadowConnection extends AbstractUnsupportedOperationConnecti
     private final Connection shadowConnection;
     
     private final ShadowRuntimeContext runtimeContext;
+
+    private boolean autoCommit = true;
+
+    private boolean readOnly = true;
+
+    private volatile boolean closed;
+
+    private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
     
     @Override
     public Statement createStatement() {
@@ -93,13 +102,14 @@ public final class ShadowConnection extends AbstractUnsupportedOperationConnecti
     
     @Override
     public void setAutoCommit(final boolean autoCommit) throws SQLException {
+        this.autoCommit = autoCommit;
         actualConnection.setAutoCommit(autoCommit);
         shadowConnection.setAutoCommit(autoCommit);
     }
     
     @Override
     public boolean getAutoCommit() {
-        return false;
+        return autoCommit;
     }
     
     @Override
@@ -116,13 +126,14 @@ public final class ShadowConnection extends AbstractUnsupportedOperationConnecti
     
     @Override
     public void close() throws SQLException {
+        closed = true;
         actualConnection.close();
         shadowConnection.close();
     }
     
     @Override
     public boolean isClosed() {
-        return false;
+        return closed;
     }
     
     @Override
@@ -132,24 +143,26 @@ public final class ShadowConnection extends AbstractUnsupportedOperationConnecti
     
     @Override
     public void setReadOnly(final boolean readOnly) throws SQLException {
+        this.readOnly = readOnly;
         actualConnection.setReadOnly(readOnly);
         shadowConnection.setReadOnly(readOnly);
     }
     
     @Override
     public boolean isReadOnly() {
-        return false;
+        return readOnly;
     }
 
     @Override
     public void setTransactionIsolation(final int level) throws SQLException {
+        transactionIsolation = level;
         actualConnection.setTransactionIsolation(level);
         shadowConnection.setTransactionIsolation(level);
     }
     
     @Override
     public int getTransactionIsolation() {
-        return 0;
+        return transactionIsolation;
     }
     
     @Override
@@ -169,6 +182,6 @@ public final class ShadowConnection extends AbstractUnsupportedOperationConnecti
     
     @Override
     public int getHoldability() {
-        return 0;
+        return ResultSet.CLOSE_CURSORS_AT_COMMIT;
     }
 }
