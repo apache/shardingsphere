@@ -37,7 +37,7 @@ public class CheckerFactory {
      * @return checker
      */
     @SneakyThrows
-    public static Checker newInstanceJdbcReader(final String databaseType, final DataSourceFactory dataSourceFactory) {
+    public static Checker newInstanceChecker(final String databaseType, final DataSourceFactory dataSourceFactory) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
         return scalingEntry.getCheckerClass().getConstructor(DataSourceFactory.class).newInstance(dataSourceFactory);
     }
