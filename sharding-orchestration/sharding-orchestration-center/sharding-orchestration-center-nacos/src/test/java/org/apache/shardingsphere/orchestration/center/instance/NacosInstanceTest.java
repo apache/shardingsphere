@@ -29,8 +29,8 @@ import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventL
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.mockito.AdditionalAnswers;
+import org.mockito.stubbing.VoidAnswer3;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -55,7 +55,7 @@ public class NacosInstanceTest {
         properties.setProperty("group", group);
         properties.setProperty("timeout", "3000");
         InstanceConfiguration configuration = new InstanceConfiguration(nacosConfigCenter.getType(), properties);
-        configuration.setServerLists("x.x.x.:8848");
+        configuration.setServerLists("127.0.0.1:8848");
         nacosConfigCenter.init(configuration);
         setConfigService(configService);
     }
@@ -88,7 +88,9 @@ public class NacosInstanceTest {
     public void assertWatch() {
         final String expectValue = "expectValue";
         final String[] actualValue = {null};
-        doAnswer(getListenerAnswer(expectValue)).when(configService).addListener(anyString(), anyString(), any(Listener.class));
+        doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(expectValue)))
+            .when(configService)
+            .addListener(anyString(), anyString(), any(Listener.class));
         DataChangedEventListener listener = new DataChangedEventListener() {
             @Override
             public void onChange(final DataChangedEvent dataChangedEvent) {
@@ -99,13 +101,11 @@ public class NacosInstanceTest {
         Assert.assertEquals(expectValue, actualValue[0]);
     }
     
-    private Answer getListenerAnswer(final String expectValue) {
-        return new Answer() {
+    private VoidAnswer3 getListenerAnswer(final String expectValue) {
+        return new VoidAnswer3<String, String, Listener>() {
             @Override
-            public Object answer(final InvocationOnMock invocation) {
-                Listener listener = invocation.getArgument(2);
+            public void answer(final String dataId, final String group, final Listener listener) {
                 listener.receiveConfigInfo(expectValue);
-                return null;
             }
         };
     }
