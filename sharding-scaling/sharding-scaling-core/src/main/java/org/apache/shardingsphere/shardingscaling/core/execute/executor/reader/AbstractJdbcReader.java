@@ -38,7 +38,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Types;
 
 /**
  * generic jdbc reader implement.
@@ -84,13 +83,7 @@ public abstract class AbstractJdbcReader extends AbstractSyncRunner implements J
                 record.setType("bootstrap-insert");
                 record.setTableName(rdbmsConfiguration.getTableNameMap().get(rdbmsConfiguration.getTableName()));
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                    if ("MySQL".equals(rdbmsConfiguration.getDataSourceConfiguration().getDatabaseType().getName())
-                            && isDateTimeValue(rs.getMetaData().getColumnType(i))) {
-                        // fix: jdbc Time objects represent a wall-clock time and not a duration as MySQL treats them
-                        record.addColumn(new Column(rs.getString(i), true));
-                    } else {
-                        record.addColumn(new Column(rs.getObject(i), true));
-                    }
+                    record.addColumn(new Column(readValue(rs, i), true));
                 }
                 pushRecord(record);
             }
@@ -101,10 +94,16 @@ public abstract class AbstractJdbcReader extends AbstractSyncRunner implements J
         }
     }
     
-    private boolean isDateTimeValue(final int columnType) {
-        return Types.TIME == columnType
-                || Types.DATE == columnType
-                || Types.TIMESTAMP == columnType;
+    /**
+     * Read value from {@code ResultSet}.
+     *
+     * @param resultSet result set
+     * @param index of read column
+     * @return value
+     * @throws SQLException sql exception
+     */
+    public Object readValue(final ResultSet resultSet, final int index) throws SQLException {
+        return resultSet.getObject(index);
     }
     
     private void pushRecord(final Record record) {
