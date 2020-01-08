@@ -43,6 +43,6 @@ public final class ExpressionConditionUtils {
      * @return true or false
      */
     public static boolean isNullExpression(final ExpressionSegment segment) {
-        return segment instanceof CommonExpressionSegment && ((CommonExpressionSegment) segment).getText() == null;
+        return segment instanceof CommonExpressionSegment && "null".equalsIgnoreCase(((CommonExpressionSegment) segment).getText());
     }
 }
