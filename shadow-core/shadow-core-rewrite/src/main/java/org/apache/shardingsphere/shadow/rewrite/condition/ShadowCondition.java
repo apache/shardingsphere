@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.rewrite;
+package org.apache.shardingsphere.shadow.rewrite.condition;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -53,14 +53,14 @@ public final class ShadowCondition {
         this.columnName = columnName;
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
-        putPositionMap(0, expressionSegment);
+        putPositionMap(expressionSegment);
     }
     
-    private void putPositionMap(final int position, final ExpressionSegment expressionSegment) {
+    private void putPositionMap(final ExpressionSegment expressionSegment) {
         if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
-            positionIndexMap.put(position, ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
+            positionIndexMap.put(0, ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
         } else if (expressionSegment instanceof LiteralExpressionSegment) {
-            positionValueMap.put(position, ((LiteralExpressionSegment) expressionSegment).getLiterals());
+            positionValueMap.put(0, ((LiteralExpressionSegment) expressionSegment).getLiterals());
         }
     }
     

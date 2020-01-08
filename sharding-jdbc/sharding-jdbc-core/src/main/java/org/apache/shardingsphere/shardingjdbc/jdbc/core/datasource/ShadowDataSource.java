@@ -44,7 +44,7 @@ public class ShadowDataSource extends AbstractDataSourceAdapter {
     private final ShadowRuntimeContext runtimeContext;
     
     public ShadowDataSource(final DataSource actualDataSource, final DataSource shadowDataSource, final ShadowRule shadowRule, final Properties props) throws SQLException {
-        super(ImmutableMap.of("actual", actualDataSource, "shadow", shadowDataSource));
+        super(ImmutableMap.of(ACTUAL_DATABASE, actualDataSource, SHADOW_DATABASE, shadowDataSource));
         runtimeContext = new ShadowRuntimeContext(actualDataSource, shadowDataSource, shadowRule, props, getDatabaseType());
     }
     

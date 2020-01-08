@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shadow.rewrite.parameter.impl;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.shadow.rewrite.ShadowCondition;
-import org.apache.shardingsphere.shadow.rewrite.ShadowConditionEngine;
+import org.apache.shardingsphere.shadow.rewrite.condition.ShadowCondition;
+import org.apache.shardingsphere.shadow.rewrite.condition.ShadowConditionEngine;
 import org.apache.shardingsphere.shadow.rewrite.parameter.ShadowParameterRewriter;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
