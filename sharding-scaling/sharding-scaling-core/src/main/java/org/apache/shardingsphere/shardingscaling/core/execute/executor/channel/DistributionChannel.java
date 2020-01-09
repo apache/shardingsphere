@@ -24,11 +24,12 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Pl
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -54,7 +55,7 @@ public final class DistributionChannel implements Channel {
     
     private final AckCallback ackCallback;
     
-    private List<Record> toBeAcknowledgeRecords = new LinkedList<>();
+    private Queue<Record> toBeAcknowledgeRecords = new ConcurrentLinkedQueue<>();
     
     private Map<LogPosition, Record> pendingAcknowledgeRecords = new ConcurrentHashMap<>();
     
@@ -82,13 +83,12 @@ public final class DistributionChannel implements Channel {
     
     private void ackRecords0() {
         synchronized (DistributionChannel.this) {
-            Iterator<Record> iterator = toBeAcknowledgeRecords.iterator();
             List<Record> result = new LinkedList<>();
-            while (iterator.hasNext()) {
-                Record record = iterator.next();
+            while (!toBeAcknowledgeRecords.isEmpty()) {
+                Record record = toBeAcknowledgeRecords.peek();
                 if (pendingAcknowledgeRecords.containsKey(record.getLogPosition())) {
                     result.add(record);
-                    iterator.remove();
+                    toBeAcknowledgeRecords.poll();
                     pendingAcknowledgeRecords.remove(record.getLogPosition());
                 } else {
                     break;
@@ -101,7 +101,7 @@ public final class DistributionChannel implements Channel {
     }
     
     @Override
-    public synchronized void pushRecord(final Record record) throws InterruptedException {
+    public void pushRecord(final Record record) throws InterruptedException {
         if (FinishedRecord.class.equals(record.getClass())) {
             // broadcast
             for (Map.Entry<String, MemoryChannel> entry : channels.entrySet()) {
@@ -127,7 +127,7 @@ public final class DistributionChannel implements Channel {
     }
     
     @Override
-    public synchronized void ack() {
+    public void ack() {
         findChannel().ack();
     }
     
@@ -149,11 +149,17 @@ public final class DistributionChannel implements Channel {
     private void checkAssignment(final String threadId) {
         if (!channelAssignment.containsKey(threadId)) {
             synchronized (this) {
-                for (Map.Entry<String, MemoryChannel> entry : channels.entrySet()) {
-                    if (!channelAssignment.containsValue(entry.getKey())) {
-                        channelAssignment.put(threadId, entry.getKey());
-                    }
+                if (!channelAssignment.containsKey(threadId)) {
+                    assignmentChannel(threadId);
                 }
+            }
+        }
+    }
+    
+    private void assignmentChannel(final String threadId) {
+        for (Map.Entry<String, MemoryChannel> entry : channels.entrySet()) {
+            if (!channelAssignment.containsValue(entry.getKey())) {
+                channelAssignment.put(threadId, entry.getKey());
             }
         }
     }

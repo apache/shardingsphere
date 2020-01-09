@@ -23,6 +23,9 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.Ab
 import org.apache.shardingsphere.shardingscaling.core.metadata.JdbcUri;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Map;
 
 /**
@@ -31,13 +34,13 @@ import java.util.Map;
  * @author avalon566
  */
 public final class MySQLJdbcReader extends AbstractJdbcReader {
-
+    
     public MySQLJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
         super(rdbmsConfiguration, dataSourceFactory);
         JdbcDataSourceConfiguration jdbcDataSourceConfiguration = (JdbcDataSourceConfiguration) getRdbmsConfiguration().getDataSourceConfiguration();
         jdbcDataSourceConfiguration.setJdbcUrl(fixMysqlUrl(jdbcDataSourceConfiguration.getJdbcUrl()));
     }
-
+    
     private String formatMysqlParams(final Map<String, String> params) {
         StringBuilder result = new StringBuilder();
         for (Map.Entry<String, String> entry : params.entrySet()) {
@@ -50,16 +53,32 @@ public final class MySQLJdbcReader extends AbstractJdbcReader {
         result.deleteCharAt(result.length() - 1);
         return result.toString();
     }
-
+    
     private String fixMysqlUrl(final String url) {
         JdbcUri uri = new JdbcUri(url);
         return String.format("jdbc:%s://%s/%s?%s", uri.getScheme(), uri.getHost(), uri.getDatabase(), fixMysqlParams(uri.getParameters()));
     }
-
+    
     private String fixMysqlParams(final Map<String, String> parameters) {
         if (!parameters.containsKey("yearIsDateType")) {
             parameters.put("yearIsDateType", "false");
         }
         return formatMysqlParams(parameters);
+    }
+    
+    @Override
+    public Object readValue(final ResultSet resultSet, final int index) throws SQLException {
+        if (isDateTimeValue(resultSet.getMetaData().getColumnType(index))) {
+            // fix: jdbc Time objects represent a wall-clock time and not a duration as MySQL treats them
+            return resultSet.getString(index);
+        } else {
+            return resultSet.getObject(index);
+        }
+    }
+    
+    private boolean isDateTimeValue(final int columnType) {
+        return Types.TIME == columnType
+                || Types.DATE == columnType
+                || Types.TIMESTAMP == columnType;
     }
 }

@@ -38,7 +38,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Types;
 
 /**
  * generic jdbc reader implement.
@@ -48,15 +47,15 @@ import java.sql.Types;
  */
 @Slf4j
 public abstract class AbstractJdbcReader extends AbstractSyncRunner implements JdbcReader {
-
+    
     @Getter(AccessLevel.PROTECTED)
     private final RdbmsConfiguration rdbmsConfiguration;
     
     private final DataSourceFactory dataSourceFactory;
-
+    
     @Setter
     private Channel channel;
-
+    
     public AbstractJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
         if (!JdbcDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
             throw new UnsupportedOperationException("AbstractJdbcReader only support JdbcDataSourceConfiguration");
@@ -64,20 +63,19 @@ public abstract class AbstractJdbcReader extends AbstractSyncRunner implements J
         this.rdbmsConfiguration = rdbmsConfiguration;
         this.dataSourceFactory = dataSourceFactory;
     }
-
+    
     @Override
     public final void run() {
         start();
         read(channel);
     }
-
+    
     @Override
     public final void read(final Channel channel) {
         try (Connection conn = dataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()).getConnection()) {
             String sql = String.format("select * from %s %s", rdbmsConfiguration.getTableName(), rdbmsConfiguration.getWhereCondition());
             PreparedStatement ps = conn.prepareStatement(sql, java.sql.ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            ps.setFetchSize(100);
-            ps.setFetchDirection(ResultSet.FETCH_REVERSE);
+            ps.setFetchSize(Integer.MIN_VALUE);
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData metaData = rs.getMetaData();
             while (isRunning() && rs.next()) {
@@ -85,14 +83,7 @@ public abstract class AbstractJdbcReader extends AbstractSyncRunner implements J
                 record.setType("bootstrap-insert");
                 record.setTableName(rdbmsConfiguration.getTableNameMap().get(rdbmsConfiguration.getTableName()));
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                    if (Types.TIME == rs.getMetaData().getColumnType(i)
-                            || Types.DATE == rs.getMetaData().getColumnType(i)
-                            || Types.TIMESTAMP == rs.getMetaData().getColumnType(i)) {
-                        // fix: jdbc Time objects represent a wall-clock time and not a duration as MySQL treats them
-                        record.addColumn(new Column(rs.getString(i), true));
-                    } else {
-                        record.addColumn(new Column(rs.getObject(i), true));
-                    }
+                    record.addColumn(new Column(readValue(rs, i), true));
                 }
                 pushRecord(record);
             }
@@ -102,7 +93,19 @@ public abstract class AbstractJdbcReader extends AbstractSyncRunner implements J
             pushRecord(new FinishedRecord(new NopLogPosition()));
         }
     }
-
+    
+    /**
+     * Read value from {@code ResultSet}.
+     *
+     * @param resultSet result set
+     * @param index of read column
+     * @return value
+     * @throws SQLException sql exception
+     */
+    protected Object readValue(final ResultSet resultSet, final int index) throws SQLException {
+        return resultSet.getObject(index);
+    }
+    
     private void pushRecord(final Record record) {
         try {
             channel.pushRecord(record);

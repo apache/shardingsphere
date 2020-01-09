@@ -47,31 +47,40 @@ import java.util.List;
  */
 @Slf4j
 public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements Writer {
-
+    
     private final RdbmsConfiguration rdbmsConfiguration;
     
     private final DataSourceFactory dataSourceFactory;
-
-    private final SqlBuilder sqlBuilder;
-
+    
+    private final AbstractSqlBuilder sqlBuilder;
+    
     private DbMetaDataUtil dbMetaDataUtil;
-
+    
     @Setter
     private Channel channel;
-
+    
     public AbstractJdbcWriter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
         this.rdbmsConfiguration = rdbmsConfiguration;
         this.dataSourceFactory = dataSourceFactory;
-        this.dbMetaDataUtil = new DbMetaDataUtil(dataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()));
-        this.sqlBuilder = new SqlBuilder(dataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()));
+        DataSource dataSource = dataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
+        dbMetaDataUtil = new DbMetaDataUtil(dataSource);
+        sqlBuilder = createSqlBuilder(dataSource);
     }
-
+    
+    /**
+     * Create sql builder.
+     *
+     * @param dataSource data source
+     * @return sql builder
+     */
+    public abstract AbstractSqlBuilder createSqlBuilder(DataSource dataSource);
+    
     @Override
     public final void run() {
         start();
         write(channel);
     }
-
+    
     @Override
     public final void write(final Channel channel) {
         try {
@@ -90,7 +99,7 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
             throw new SyncTaskExecuteException(ex);
         }
     }
-
+    
     private void flush(final DataSource dataSource, final List<Record> buffer) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
@@ -110,7 +119,7 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
             connection.commit();
         }
     }
-
+    
     private void executeInsert(final Connection connection, final DataRecord record) throws SQLException {
         String insertSql = sqlBuilder.buildInsertSql(record.getTableName());
         PreparedStatement ps = connection.prepareStatement(insertSql);
@@ -124,7 +133,7 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
             // ignore
         }
     }
-
+    
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
         List<ColumnMetaData> metaData = dbMetaDataUtil.getColumnNames(record.getTableName());
         List<String> primaryKeys = dbMetaDataUtil.getPrimaryKeys(record.getTableName());
@@ -148,7 +157,7 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
         }
         ps.execute();
     }
-
+    
     private void executeDelete(final Connection connection, final DataRecord record) throws SQLException {
         List<ColumnMetaData> metaData = dbMetaDataUtil.getColumnNames(record.getTableName());
         List<String> primaryKeys = dbMetaDataUtil.getPrimaryKeys(record.getTableName());
