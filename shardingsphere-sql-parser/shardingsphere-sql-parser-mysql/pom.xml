@@ -49,7 +49,7 @@
                         <id>antlr</id>
                         <configuration>
                             <libDirectory>src/main/antlr4/imports/mysql/</libDirectory>
-                            <listener>true</listener>
+                            <listener>false</listener>
                             <visitor>true</visitor>
                         </configuration>
                         <goals>
