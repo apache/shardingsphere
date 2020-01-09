@@ -43,12 +43,12 @@ public final class ShardingMasterSlaveRouter implements DateNodeRouteDecorator {
     @Override
     public RouteResult decorate(final RouteResult routeResult) {
         for (MasterSlaveRule each : masterSlaveRules) {
-            route(each, routeResult);
+            decorate(each, routeResult);
         }
         return routeResult;
     }
     
-    private void route(final MasterSlaveRule masterSlaveRule, final RouteResult routeResult) {
+    private void decorate(final MasterSlaveRule masterSlaveRule, final RouteResult routeResult) {
         Collection<RoutingUnit> toBeRemoved = new LinkedList<>();
         Collection<RoutingUnit> toBeAdded = new LinkedList<>();
         for (RoutingUnit each : routeResult.getRoutingResult().getRoutingUnits()) {
