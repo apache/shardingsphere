@@ -18,18 +18,18 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
+import org.apache.shardingsphere.core.route.RouteResult;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;
-import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareCallback;
-import org.apache.shardingsphere.core.route.RouteUnit;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -64,7 +64,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      * @param routeResult route result
      * @throws SQLException SQL exception
      */
-    public void init(final SQLRouteResult routeResult) throws SQLException {
+    public void init(final RouteResult routeResult) throws SQLException {
         setSqlStatementContext(routeResult.getSqlStatementContext());
         getInputGroups().addAll(obtainExecuteGroups(routeResult.getRouteUnits()));
         cacheStatements();

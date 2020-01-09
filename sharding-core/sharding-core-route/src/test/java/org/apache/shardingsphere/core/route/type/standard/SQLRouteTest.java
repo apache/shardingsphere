@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.route.type.standard;
 
-import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.RouteResult;
 import org.junit.Test;
 
 import java.util.LinkedList;
@@ -41,7 +41,7 @@ public final class SQLRouteTest extends AbstractSQLRouteTest {
         String sql = "SELECT id,name from t_other where id = ?";
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
-        SQLRouteResult result = assertRoute(sql, parameters);
+        RouteResult result = assertRoute(sql, parameters);
         assertThat("assert default datasource name", result.getRoutingResult().getRoutingUnits().iterator().next().getDataSourceName(), is("main"));
     }
     

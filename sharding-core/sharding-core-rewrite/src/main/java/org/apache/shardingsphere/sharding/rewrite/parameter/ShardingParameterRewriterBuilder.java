@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.sharding.rewrite.parameter;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.ShardingRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingGeneratedKeyInsertValueParameterRewriter;
 import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingPaginationParameterRewriter;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriterBuilder;
-import org.apache.shardingsphere.sharding.rewrite.aware.SQLRouteResultAware;
+import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRouteResultAware;
 import org.apache.shardingsphere.core.rule.aware.ShardingRuleAware;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RelationMetasAware;
 
@@ -42,7 +42,7 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
     
     private final ShardingRule shardingRule;
     
-    private final SQLRouteResult sqlRouteResult;
+    private final ShardingRouteResult shardingRouteResult;
     
     @Override
     public Collection<ParameterRewriter> getParameterRewriters(final RelationMetas relationMetas) {
@@ -67,8 +67,8 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
         if (parameterRewriter instanceof ShardingRuleAware) {
             ((ShardingRuleAware) parameterRewriter).setShardingRule(shardingRule);
         }
-        if (parameterRewriter instanceof SQLRouteResultAware) {
-            ((SQLRouteResultAware) parameterRewriter).setSqlRouteResult(sqlRouteResult);
+        if (parameterRewriter instanceof ShardingRouteResultAware) {
+            ((ShardingRouteResultAware) parameterRewriter).setShardingRouteResult(shardingRouteResult);
         }
     }
 }

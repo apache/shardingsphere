@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.core.route;
 
-import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.sql.parser.SQLParseEngine;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.core.route.router.masterslave.ShardingMasterSlaveRouter;
 import org.apache.shardingsphere.core.route.router.sharding.ShardingRouter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.SQLParseEngine;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 
 import java.util.List;
 
@@ -40,8 +39,6 @@ public final class PreparedStatementRoutingEngine {
     
     private final ShardingMasterSlaveRouter masterSlaveRouter;
     
-    private SQLStatement sqlStatement;
-    
     public PreparedStatementRoutingEngine(final String logicSQL, final ShardingRule shardingRule, final ShardingSphereMetaData metaData, final SQLParseEngine sqlParseEngine) {
         this.logicSQL = logicSQL;
         shardingRouter = new ShardingRouter(shardingRule, metaData, sqlParseEngine);
@@ -56,10 +53,7 @@ public final class PreparedStatementRoutingEngine {
      * @param parameters parameters of SQL placeholder
      * @return route result
      */
-    public SQLRouteResult route(final List<Object> parameters) {
-        if (null == sqlStatement) {
-            sqlStatement = shardingRouter.parse(logicSQL, true);
-        }
-        return masterSlaveRouter.route(shardingRouter.route(logicSQL, parameters, sqlStatement));
+    public ShardingRouteResult route(final List<Object> parameters) {
+        return (ShardingRouteResult) masterSlaveRouter.decorate(shardingRouter.route(logicSQL, parameters, true));
     }
 }

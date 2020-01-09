@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.aware;
+package org.apache.shardingsphere.core.route.router;
 
-import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.RouteResult;
 
 /**
- * SQL route result aware.
+ * Data node route decorator.
  *
  * @author zhangliang
  */
-public interface SQLRouteResultAware {
+public interface DateNodeRouteDecorator {
     
     /**
-     * Set SQL route result.
-     * 
-     * @param sqlRouteResult SQL route result
+     * Decorate route result.
+     *
+     * @param routeResult route result
+     * @return decorated route result
      */
-    void setSqlRouteResult(SQLRouteResult sqlRouteResult);
+    RouteResult decorate(RouteResult routeResult);
 }
