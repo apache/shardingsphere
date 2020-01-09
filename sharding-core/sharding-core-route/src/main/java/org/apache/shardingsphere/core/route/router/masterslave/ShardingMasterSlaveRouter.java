@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.route.router.masterslave;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.route.RouteResult;
-import org.apache.shardingsphere.core.route.ShardingRouteResult;
+import org.apache.shardingsphere.core.route.router.DateNodeRouteDecorator;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
@@ -36,21 +36,16 @@ import java.util.LinkedList;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ShardingMasterSlaveRouter {
+public final class ShardingMasterSlaveRouter implements DateNodeRouteDecorator {
     
     private final Collection<MasterSlaveRule> masterSlaveRules;
     
-    /**
-     * Route Master slave after sharding.
-     * 
-     * @param sqlRouteResult SQL route result
-     * @return route result
-     */
-    public ShardingRouteResult route(final ShardingRouteResult sqlRouteResult) {
+    @Override
+    public RouteResult decorate(final RouteResult routeResult) {
         for (MasterSlaveRule each : masterSlaveRules) {
-            route(each, sqlRouteResult);
+            route(each, routeResult);
         }
-        return sqlRouteResult;
+        return routeResult;
     }
     
     private void route(final MasterSlaveRule masterSlaveRule, final RouteResult routeResult) {

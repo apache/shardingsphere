@@ -49,6 +49,6 @@ public final class StatementRoutingEngine {
      * @return route result
      */
     public ShardingRouteResult route(final String logicSQL) {
-        return masterSlaveRouter.route(shardingRouter.route(logicSQL, Collections.emptyList(), false));
+        return (ShardingRouteResult) masterSlaveRouter.decorate(shardingRouter.route(logicSQL, Collections.emptyList(), false));
     }
 }
