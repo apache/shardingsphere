@@ -20,10 +20,10 @@ package org.apache.shardingsphere.sql.parser.core.extractor.impl.dml.insert;
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.sql.parser.core.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.sql.parser.core.extractor.impl.common.column.ColumnExtractor;
+import org.apache.shardingsphere.sql.parser.core.extractor.impl.dml.update.AssignmentExtractor;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 
 import java.util.Collection;
@@ -36,8 +36,8 @@ import java.util.Map;
  * @author zhangliang
  */
 public final class OnDuplicateKeyColumnsExtractor implements OptionalSQLSegmentExtractor {
-    
-    private final ColumnExtractor columnExtractor = new ColumnExtractor();
+
+    private final AssignmentExtractor assignmentExtractor = new AssignmentExtractor();
     
     @Override
     public Optional<OnDuplicateKeyColumnsSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
@@ -45,18 +45,14 @@ public final class OnDuplicateKeyColumnsExtractor implements OptionalSQLSegmentE
         if (!onDuplicateKeyClauseNode.isPresent()) {
             return Optional.absent();
         }
-        return Optional.of(new OnDuplicateKeyColumnsSegment(onDuplicateKeyClauseNode.get().getStart().getStartIndex(), onDuplicateKeyClauseNode.get().getStop().getStopIndex(), 
-                extractColumnSegments(onDuplicateKeyClauseNode.get(), parameterMarkerIndexes)));
-    }
-    
-    private Collection<ColumnSegment> extractColumnSegments(final ParserRuleContext onDuplicateKeyClauseNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Collection<ColumnSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(onDuplicateKeyClauseNode, RuleName.COLUMN_NAME)) {
-            Optional<ColumnSegment> columnSegment = columnExtractor.extract(each, parameterMarkerIndexes);
-            if (columnSegment.isPresent()) {
-                result.add(columnSegment.get());
+        Collection<AssignmentSegment> assignmentSegments = new LinkedList<>();
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.ASSIGNMENT)) {
+            Optional<AssignmentSegment> assignmentSegment = assignmentExtractor.extract(each, parameterMarkerIndexes);
+            if (assignmentSegment.isPresent()) {
+                assignmentSegments.add(assignmentSegment.get());
             }
         }
-        return result;
+        return Optional.of(new OnDuplicateKeyColumnsSegment(onDuplicateKeyClauseNode.get().getStart().getStartIndex(), onDuplicateKeyClauseNode.get().getStop().getStopIndex(),
+                assignmentSegments));
     }
 }
