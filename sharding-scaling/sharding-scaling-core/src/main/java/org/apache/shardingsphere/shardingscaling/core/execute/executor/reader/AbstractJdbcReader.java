@@ -102,7 +102,7 @@ public abstract class AbstractJdbcReader extends AbstractSyncRunner implements J
      * @return value
      * @throws SQLException sql exception
      */
-    public Object readValue(final ResultSet resultSet, final int index) throws SQLException {
+    protected Object readValue(final ResultSet resultSet, final int index) throws SQLException {
         return resultSet.getObject(index);
     }
     

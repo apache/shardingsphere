@@ -52,7 +52,7 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
     
     private final DataSourceFactory dataSourceFactory;
     
-    private final SqlBuilder sqlBuilder;
+    private final AbstractSqlBuilder sqlBuilder;
     
     private DbMetaDataUtil dbMetaDataUtil;
     
@@ -73,7 +73,7 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
      * @param dataSource data source
      * @return sql builder
      */
-    public abstract SqlBuilder createSqlBuilder(DataSource dataSource);
+    public abstract AbstractSqlBuilder createSqlBuilder(DataSource dataSource);
     
     @Override
     public final void run() {

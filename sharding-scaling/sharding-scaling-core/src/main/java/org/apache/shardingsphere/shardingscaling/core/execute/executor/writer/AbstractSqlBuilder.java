@@ -28,11 +28,11 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Sql builder.
+ * Abstract sql builder.
  *
  * @author avalon566
  */
-public abstract class SqlBuilder {
+public abstract class AbstractSqlBuilder {
 
     private static final String INSERT_SQL_CACHE_KEY_PREFIX = "INSERT_";
 
@@ -44,7 +44,7 @@ public abstract class SqlBuilder {
     
     private final DbMetaDataUtil dbMetaDataUtil;
 
-    public SqlBuilder(final DataSource dataSource) {
+    public AbstractSqlBuilder(final DataSource dataSource) {
         this.dbMetaDataUtil = new DbMetaDataUtil(dataSource);
         sqlCache = CacheBuilder.newBuilder()
                 .maximumSize(64)
@@ -67,14 +67,14 @@ public abstract class SqlBuilder {
      *
      * @return string
      */
-    public abstract String getLeftIdentifierQuoteString();
+    protected abstract String getLeftIdentifierQuoteString();
     
     /**
      * Get right identifier quote string.
      *
      * @return string
      */
-    public abstract String getRightIdentifierQuoteString();
+    protected abstract String getRightIdentifierQuoteString();
 
     /**
      * Build insert sql.
