@@ -40,6 +40,9 @@ public final class DataSourceFactory {
     @Getter
     private final ConcurrentHashMap<JdbcDataSourceConfiguration, HikariDataSource> cachedDataSources = new ConcurrentHashMap<>();
 
+    @Getter
+    private final ConcurrentHashMap<JdbcDataSourceConfiguration, HikariDataSource> sourceDatasources = new ConcurrentHashMap<>();
+
     public DataSourceFactory(final List<SyncConfiguration> syncConfigurations) {
         createDatasources(syncConfigurations);
     }
@@ -58,6 +61,7 @@ public final class DataSourceFactory {
             hikariDataSource.setUsername(jdbcDataSourceConfiguration.getUsername());
             hikariDataSource.setPassword(jdbcDataSourceConfiguration.getPassword());
             cachedDataSources.put(jdbcDataSourceConfiguration, hikariDataSource);
+            sourceDatasources.put(jdbcDataSourceConfiguration, hikariDataSource);
         }
         //create writer datasource
         JdbcDataSourceConfiguration jdbcDataSourceConfiguration = (JdbcDataSourceConfiguration) syncConfigurations.get(0).getWriterConfiguration().getDataSourceConfiguration();
@@ -105,5 +109,6 @@ public final class DataSourceFactory {
             }
         }
         cachedDataSources.clear();
+        sourceDatasources.clear();
     }
 }
