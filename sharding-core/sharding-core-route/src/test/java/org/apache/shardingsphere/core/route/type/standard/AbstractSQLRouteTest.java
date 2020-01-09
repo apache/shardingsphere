@@ -17,6 +17,12 @@
 
 package org.apache.shardingsphere.core.route.type.standard;
 
+import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
+import org.apache.shardingsphere.core.route.RouteResult;
+import org.apache.shardingsphere.core.route.fixture.AbstractRoutingEngineTest;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.SQLParseEngine;
+import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
@@ -24,12 +30,6 @@ import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaDat
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.route.fixture.AbstractRoutingEngineTest;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.SQLParseEngine;
-import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -42,12 +42,12 @@ import static org.junit.Assert.assertThat;
 
 public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     
-    protected final SQLRouteResult assertRoute(final String sql, final List<Object> parameters) {
+    protected final RouteResult assertRoute(final String sql, final List<Object> parameters) {
         ShardingRule shardingRule = createAllShardingRule();
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildTableMetas());
         SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine("MySQL");
         PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(sql, shardingRule, metaData, parseEngine);
-        SQLRouteResult result = engine.route(parameters);
+        RouteResult result = engine.route(parameters);
         assertThat(result.getRoutingResult().getRoutingUnits().size(), is(1));
         return result;
     }

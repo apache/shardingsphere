@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.parameterized;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.ShardingRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.ShardingRouter;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sharding.rewrite.engine.ShardingSQLRewriteEngin
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
@@ -76,8 +75,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         ShardingRule shardingRule = new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(ruleConfiguration.getShardingRule()), ruleConfiguration.getDataSources().keySet());
         SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());
         ShardingRouter shardingRouter = new ShardingRouter(shardingRule, createShardingSphereMetaData(), parseEngine);
-        SQLStatement sqlStatement = shardingRouter.parse(getTestParameters().getInputSQL(), false);
-        SQLRouteResult sqlRouteResult = shardingRouter.route(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatement);
+        ShardingRouteResult sqlRouteResult = shardingRouter.route(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), false);
         ShardingSphereProperties properties = new ShardingSphereProperties(ruleConfiguration.getProps());
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(
                 mock(RelationMetas.class), sqlRouteResult.getSqlStatementContext(), getTestParameters().getInputSQL(), getTestParameters().getInputParameters());

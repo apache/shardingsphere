@@ -15,37 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.hook;
+package org.apache.shardingsphere.underlying.route;
 
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.route.ShardingRouteResult;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+
+import java.util.List;
 
 /**
- * Routing hook.
+ * SQL unit.
  *
- * @author zhaojun
+ * @author maxiaoguang
+ * @author panjuan
  */
-public interface RoutingHook {
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode(of = { "sql" })
+@ToString
+public final class SQLUnit {
     
-    /**
-     * Handle when routing started.
-     *
-     * @param sql SQL to be routing
-     */
-    void start(String sql);
+    private final String sql;
     
-    /**
-     * Handle when routing finished success.
-     *
-     * @param shardingRouteResult sharding route result
-     * @param tableMetas table metas
-     */
-    void finishSuccess(ShardingRouteResult shardingRouteResult, TableMetas tableMetas);
-    
-    /**
-     * Handle when routing finished failure.
-     * 
-     * @param cause failure cause
-     */
-    void finishFailure(Exception cause);
+    private final List<Object> parameters;
 }

@@ -18,12 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.route.RouteUnit;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.route.SQLUnit;
+import org.apache.shardingsphere.core.route.RouteResult;
 import org.apache.shardingsphere.core.route.router.masterslave.MasterSlaveRouter;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.shard.PreparedQueryShardingEngine;
 import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -44,6 +40,8 @@ import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.impl.DefaultSQLRewriteEngine;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
+import org.apache.shardingsphere.underlying.route.SQLUnit;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -70,7 +68,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     private final List<Object> parameters;
     
     @Override
-    public SQLRouteResult route(final String sql) {
+    public RouteResult route(final String sql) {
         if (logicSchema instanceof ShardingSchema) {
             return doShardingRoute(sql);
         }
@@ -83,28 +81,28 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         return doTransparentRoute(sql);
     }
     
-    private SQLRouteResult doShardingRoute(final String sql) {
+    private RouteResult doShardingRoute(final String sql) {
         PreparedQueryShardingEngine shardingEngine = new PreparedQueryShardingEngine(
                 sql, logicSchema.getShardingRule(), ShardingProxyContext.getInstance().getProperties(), logicSchema.getMetaData(), logicSchema.getParseEngine());
         return shardingEngine.shard(sql, parameters);
     }
     
-    private SQLRouteResult doMasterSlaveRoute(final String sql) {
+    private RouteResult doMasterSlaveRoute(final String sql) {
         SQLStatement sqlStatement = logicSchema.getParseEngine().parse(sql, true);
         CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(logicSchema.getMetaData().getRelationMetas(), sqlStatementContext, sql, parameters);
         sqlRewriteContext.generateSQLTokens();
         String rewriteSQL = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
-        SQLRouteResult result = new SQLRouteResult(sqlStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        for (String each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), logicSchema.getParseEngine(),
-                SHARDING_PROXY_CONTEXT.getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW)).route(rewriteSQL, true)) {
-            result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(rewriteSQL, parameters)));
+        RouteResult result = new RouteResult(sqlStatementContext);
+        for (RouteUnit each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), logicSchema.getParseEngine(),
+                SHARDING_PROXY_CONTEXT.getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW)).route(rewriteSQL, parameters, true).getRouteUnits()) {
+            result.getRouteUnits().add(new RouteUnit(each.getDataSourceName(), new SQLUnit(rewriteSQL, parameters)));
         }
         return result;
     }
     
     @SuppressWarnings("unchecked")
-    private SQLRouteResult doEncryptRoute(final String sql) {
+    private RouteResult doEncryptRoute(final String sql) {
         EncryptSchema encryptSchema = (EncryptSchema) logicSchema;
         SQLStatement sqlStatement = encryptSchema.getParseEngine().parse(sql, true);
         RelationMetas relationMetas = logicSchema.getMetaData().getRelationMetas();
@@ -112,7 +110,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(logicSchema.getMetaData(), ShardingProxyContext.getInstance().getProperties())
                 .createSQLRewriteContext(sql, parameters, sqlStatementContext, createSQLRewriteContextDecorator(encryptSchema.getEncryptRule()));
         SQLRewriteResult sqlRewriteResult = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
-        SQLRouteResult result = new SQLRouteResult(sqlStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+        RouteResult result = new RouteResult(sqlStatementContext);
         result.getRouteUnits().add(
             new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));
         return result;
@@ -124,9 +122,9 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         return result;
     }
     
-    private SQLRouteResult doTransparentRoute(final String sql) {
+    private RouteResult doTransparentRoute(final String sql) {
         SQLStatement sqlStatement = logicSchema.getParseEngine().parse(sql, false);
-        SQLRouteResult result = new SQLRouteResult(new CommonSQLStatementContext(sqlStatement), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+        RouteResult result = new RouteResult(new CommonSQLStatementContext(sqlStatement));
         result.getRouteUnits().add(new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sql, Collections.emptyList())));
         return result;
     }
