@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.core.rule.fixture;
 
 import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 
@@ -35,6 +36,11 @@ public final class TestParserEntry implements SQLParserEntry {
     
     @Override
     public Class<? extends SQLParser> getParserClass() {
+        return null;
+    }
+    
+    @Override
+    public Class<? extends ParseTreeVisitor> getVisitorClass() {
         return null;
     }
 }

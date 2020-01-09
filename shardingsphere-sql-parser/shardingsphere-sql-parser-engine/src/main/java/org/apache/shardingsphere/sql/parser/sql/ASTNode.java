@@ -15,21 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser;
-
-import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser;
-import org.apache.shardingsphere.sql.parser.api.SQLParser;
+package org.apache.shardingsphere.sql.parser.sql;
 
 /**
- * SQL parser for PostgreSQL.
- * 
- * @author duhongjun
+ * AST note.
+ *
  * @author panjuan
  */
-public final class PostgreSQLParser extends PostgreSQLStatementParser implements SQLParser {
-    
-    public PostgreSQLParser(final TokenStream input) {
-        super(input);
-    }
+public interface ASTNode {
 }

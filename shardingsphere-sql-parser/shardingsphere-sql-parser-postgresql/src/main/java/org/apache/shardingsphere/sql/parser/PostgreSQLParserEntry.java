@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser;
 
 import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementLexer;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
  * SQL parser entry for PostgreSQL.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class PostgreSQLParserEntry implements SQLParserEntry {
     
@@ -42,5 +44,10 @@ public final class PostgreSQLParserEntry implements SQLParserEntry {
     @Override
     public Class<? extends SQLParser> getParserClass() {
         return PostgreSQLParser.class;
+    }
+    
+    @Override
+    public Class<? extends ParseTreeVisitor> getVisitorClass() {
+        return PostgreSQLVisitor.class;
     }
 }

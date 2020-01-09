@@ -17,37 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser;
 
-import org.antlr.v4.runtime.Lexer;
-import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import org.apache.shardingsphere.sql.parser.api.SQLParser;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementLexer;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementBaseVisitor;
 
 /**
- * SQL parser entry for MySQL.
+ * SQL server visitor.
  *
- * @author zhangliang
  * @author panjuan
  */
-public final class MySQLParserEntry implements SQLParserEntry {
-    
-    @Override
-    public String getDatabaseTypeName() {
-        return "MySQL";
-    }
-    
-    @Override
-    public Class<? extends Lexer> getLexerClass() {
-        return MySQLStatementLexer.class;
-    }
-    
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return MySQLParser.class;
-    }
-    
-    @Override
-    public Class<? extends ParseTreeVisitor> getVisitorClass() {
-        return MySQLVisitor.class;
-    }
+public final class SQLServerVisitor extends SQLServerStatementBaseVisitor {
 }
