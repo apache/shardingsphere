@@ -21,8 +21,8 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.core.route.ShardingRouteResult;
+import org.apache.shardingsphere.core.route.router.DateNodeRouter;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.router.sharding.condition.engine.InsertClauseShardingConditionEngine;
@@ -47,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLSta
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -61,7 +62,7 @@ import java.util.List;
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
-public final class ShardingRouter {
+public final class ShardingRouter implements DateNodeRouter {
     
     private final ShardingRule shardingRule;
     
@@ -74,19 +75,19 @@ public final class ShardingRouter {
     /**
      * Route SQL.
      *
-     * @param logicSQL logic SQL
+     * @param sql SQL
      * @param parameters SQL parameters
      * @param useCache use cache to save SQL parse result or not
      * @return parse result
      */
     @SuppressWarnings("unchecked")
-    public ShardingRouteResult route(final String logicSQL, final List<Object> parameters, final boolean useCache) {
-        SQLStatement sqlStatement = parse(logicSQL, useCache);
+    public ShardingRouteResult route(final String sql, final List<Object> parameters, final boolean useCache) {
+        SQLStatement sqlStatement = parse(sql, useCache);
         Optional<ShardingStatementValidator> shardingStatementValidator = ShardingStatementValidatorFactory.newInstance(sqlStatement);
         if (shardingStatementValidator.isPresent()) {
             shardingStatementValidator.get().validate(shardingRule, sqlStatement, parameters);
         }
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getRelationMetas(), logicSQL, parameters, sqlStatement);
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getRelationMetas(), sql, parameters, sqlStatement);
         Optional<GeneratedKey> generatedKey = sqlStatement instanceof InsertStatement
                 ? GeneratedKey.getGenerateKey(shardingRule, metaData.getTables(), parameters, (InsertStatement) sqlStatement) : Optional.<GeneratedKey>absent();
         ShardingConditions shardingConditions = getShardingConditions(parameters, sqlStatementContext, generatedKey.orNull(), metaData.getRelationMetas());
@@ -115,8 +116,8 @@ public final class ShardingRouter {
      * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
      *
      */
-    private SQLStatement parse(final String logicSQL, final boolean useCache) {
-        return parseEngine.parse(logicSQL, useCache);
+    private SQLStatement parse(final String sql, final boolean useCache) {
+        return parseEngine.parse(sql, useCache);
     }
     
     private ShardingConditions getShardingConditions(final List<Object> parameters, final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey, final RelationMetas relationMetas) {
