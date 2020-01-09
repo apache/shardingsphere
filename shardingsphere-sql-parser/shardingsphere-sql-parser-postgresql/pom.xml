@@ -49,8 +49,8 @@
                         <id>antlr</id>
                         <configuration>
                             <libDirectory>src/main/antlr4/imports/postgresql/</libDirectory>
-                            <listener>false</listener>
-                            <visitor>false</visitor>
+                            <listener>true</listener>
+                            <visitor>true</visitor>
                         </configuration>
                         <goals>
                             <goal>antlr4</goal>

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser;
 
 import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementLexer;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
  * SQL parser entry for SQL92.
  *
  * @author zhangyonglun
+ * @author panjuan
  */
 public final class SQL92ParserEntry implements SQLParserEntry {
     
@@ -42,5 +44,10 @@ public final class SQL92ParserEntry implements SQLParserEntry {
     @Override
     public Class<? extends SQLParser> getParserClass() {
         return SQL92Parser.class;
+    }
+    
+    @Override
+    public Class<? extends ParseTreeVisitor> getVisitorClass() {
+        return SQL92Visitor.class;
     }
 }

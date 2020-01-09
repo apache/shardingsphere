@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.sql.parser.spi;
 
 import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
 
 /**
  * SQL parser entry.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public interface SQLParserEntry {
     
@@ -47,4 +49,11 @@ public interface SQLParserEntry {
      * @return SQL parser class type
      */
     Class<? extends SQLParser> getParserClass();
+    
+    /**
+     * Get SQL visitor class type.
+     *
+     * @return SQL visitor class type
+     */
+    Class<? extends ParseTreeVisitor> getVisitorClass();
 }

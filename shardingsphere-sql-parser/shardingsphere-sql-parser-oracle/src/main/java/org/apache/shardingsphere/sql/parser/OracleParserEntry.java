@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser;
 
 import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementLexer;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
  * SQL parser entry for Oracle.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class OracleParserEntry implements SQLParserEntry {
     
@@ -42,5 +44,10 @@ public final class OracleParserEntry implements SQLParserEntry {
     @Override
     public Class<? extends SQLParser> getParserClass() {
         return OracleParser.class;
+    }
+
+    @Override
+    public Class<? extends ParseTreeVisitor> getVisitorClass() {
+        return OracleVisitor.class;
     }
 }
