@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.route;
 
 import org.apache.shardingsphere.core.route.router.masterslave.MasterSlaveRouteDecorator;
 import org.apache.shardingsphere.core.route.router.sharding.ShardingRouter;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
@@ -35,25 +36,27 @@ public final class PreparedStatementRoutingEngine {
     
     private final String logicSQL;
     
-    private final ShardingRouter shardingRouter;
+    private final ShardingRule shardingRule;
     
-    private final MasterSlaveRouteDecorator masterSlaveRouteDecorator;
+    private final ShardingRouter shardingRouter;
     
     public PreparedStatementRoutingEngine(final String logicSQL, final ShardingRule shardingRule, final ShardingSphereMetaData metaData, final SQLParseEngine sqlParseEngine) {
         this.logicSQL = logicSQL;
+        this.shardingRule = shardingRule;
         shardingRouter = new ShardingRouter(shardingRule, metaData, sqlParseEngine);
-        masterSlaveRouteDecorator = new MasterSlaveRouteDecorator(shardingRule.getMasterSlaveRules());
     }
     
     /**
      * SQL route.
      * 
-     * <p>First routing time will parse SQL, after second time will reuse first parsed result.</p>
-     * 
-     * @param parameters parameters of SQL placeholder
+     * @param parameters SQL parameters
      * @return route result
      */
     public ShardingRouteResult route(final List<Object> parameters) {
-        return (ShardingRouteResult) masterSlaveRouteDecorator.decorate(shardingRouter.route(logicSQL, parameters, true));
+        ShardingRouteResult result = shardingRouter.route(logicSQL, parameters, true);
+        for (MasterSlaveRule each : shardingRule.getMasterSlaveRules()) {
+            result = (ShardingRouteResult) new MasterSlaveRouteDecorator(each).decorate(result);
+        }
+        return result;
     }
 }

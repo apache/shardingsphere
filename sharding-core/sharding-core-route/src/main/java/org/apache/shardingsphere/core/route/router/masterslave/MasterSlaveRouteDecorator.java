@@ -34,28 +34,21 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 public final class MasterSlaveRouteDecorator implements DateNodeRouteDecorator {
     
-    private final Collection<MasterSlaveRule> masterSlaveRules;
+    private final MasterSlaveRule masterSlaveRule;
     
     @Override
     public RouteResult decorate(final RouteResult routeResult) {
-        for (MasterSlaveRule each : masterSlaveRules) {
-            decorate(each, routeResult);
-        }
-        return routeResult;
-    }
-    
-    private void decorate(final MasterSlaveRule masterSlaveRule, final RouteResult routeResult) {
         Collection<RoutingUnit> toBeRemoved = new LinkedList<>();
         Collection<RoutingUnit> toBeAdded = new LinkedList<>();
         for (RoutingUnit each : routeResult.getRoutingResult().getRoutingUnits()) {
-            if (!masterSlaveRule.getName().equalsIgnoreCase(each.getDataSourceName())) {
-                continue;
+            if (masterSlaveRule.getName().equalsIgnoreCase(each.getDataSourceName())) {
+                toBeRemoved.add(each);
+                toBeAdded.add(createNewRoutingUnit(new MasterSlaveDataSourceRouter(masterSlaveRule).route(routeResult.getSqlStatementContext().getSqlStatement()), each));
             }
-            toBeRemoved.add(each);
-            toBeAdded.add(createNewRoutingUnit(new MasterSlaveDataSourceRouter(masterSlaveRule).route(routeResult.getSqlStatementContext().getSqlStatement()), each));
         }
         routeResult.getRoutingResult().getRoutingUnits().removeAll(toBeRemoved);
         routeResult.getRoutingResult().getRoutingUnits().addAll(toBeAdded);
+        return routeResult;
     }
     
     private RoutingUnit createNewRoutingUnit(final String actualDataSourceName, final RoutingUnit originalTableUnit) {

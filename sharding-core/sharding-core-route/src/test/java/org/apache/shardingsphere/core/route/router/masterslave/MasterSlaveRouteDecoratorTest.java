@@ -72,7 +72,7 @@ public final class MasterSlaveRouteDecoratorTest {
     
     @Before
     public void setUp() {
-        routeDecorator = new MasterSlaveRouteDecorator(Lists.newArrayList(masterSlaveRule));
+        routeDecorator = new MasterSlaveRouteDecorator(masterSlaveRule);
         when(masterSlaveRule.getName()).thenReturn(DATASOURCE_NAME);
         when(masterSlaveRule.getMasterDataSourceName()).thenReturn(MASTER_DATASOURCE);
         when(masterSlaveRule.getSlaveDataSourceNames()).thenReturn(Lists.newArrayList(SLAVE_DATASOURCE));
