@@ -33,7 +33,7 @@ public interface DateNodeRouter {
      *
      * @param sql SQL
      * @param parameters SQL parameters
-     * @param useCache use cache to save SQL parse result or not
+     * @param useCache whether use cache to save SQL parse result
      * @return parse result
      */
     RouteResult route(String sql, List<Object> parameters, boolean useCache);
