@@ -18,15 +18,11 @@
 package org.apache.shardingsphere.core.route.router.masterslave;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.route.RouteResult;
 import org.apache.shardingsphere.core.route.router.DateNodeRouteDecorator;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -56,26 +52,10 @@ public final class ShardingMasterSlaveRouter implements DateNodeRouteDecorator {
                 continue;
             }
             toBeRemoved.add(each);
-            String actualDataSourceName;
-            if (isMasterRoute(routeResult.getSqlStatementContext().getSqlStatement())) {
-                MasterVisitedManager.setMasterVisited();
-                actualDataSourceName = masterSlaveRule.getMasterDataSourceName();
-            } else {
-                actualDataSourceName = masterSlaveRule.getLoadBalanceAlgorithm().getDataSource(
-                        masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), new ArrayList<>(masterSlaveRule.getSlaveDataSourceNames()));
-            }
-            toBeAdded.add(createNewRoutingUnit(actualDataSourceName, each));
+            toBeAdded.add(createNewRoutingUnit(new MasterSlaveDataSourceRouter(masterSlaveRule).route(routeResult.getSqlStatementContext().getSqlStatement()), each));
         }
         routeResult.getRoutingResult().getRoutingUnits().removeAll(toBeRemoved);
         routeResult.getRoutingResult().getRoutingUnits().addAll(toBeAdded);
-    }
-    
-    private boolean isMasterRoute(final SQLStatement sqlStatement) {
-        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || MasterVisitedManager.isMasterVisited() || HintManager.isMasterRouteOnly();
-    }
-
-    private boolean containsLockSegment(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof SelectStatement && ((SelectStatement) sqlStatement).getLock().isPresent();
     }
     
     private RoutingUnit createNewRoutingUnit(final String actualDataSourceName, final RoutingUnit originalTableUnit) {
