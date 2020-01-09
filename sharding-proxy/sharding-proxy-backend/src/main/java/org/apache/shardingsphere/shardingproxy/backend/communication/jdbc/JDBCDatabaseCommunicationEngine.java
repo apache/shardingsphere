@@ -19,8 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.merge.MergeEntry;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.RouteResult;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.sharding.merge.ShardingResultMergerEngine;
@@ -49,6 +48,7 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.merge.MergeEntry;
 import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
@@ -84,14 +84,14 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     @Override
     public BackendResponse execute() {
         try {
-            SQLRouteResult routeResult = executeEngine.getJdbcExecutorWrapper().route(sql);
+            RouteResult routeResult = executeEngine.getJdbcExecutorWrapper().route(sql);
             return execute(routeResult);
         } catch (final SQLException ex) {
             return new ErrorResponse(ex);
         }
     }
     
-    private BackendResponse execute(final SQLRouteResult routeResult) throws SQLException {
+    private BackendResponse execute(final RouteResult routeResult) throws SQLException {
         if (routeResult.getRouteUnits().isEmpty()) {
             return new UpdateResponse();
         }
@@ -112,7 +112,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return TransactionType.XA == connection.getTransactionType() && sqlStatement instanceof DDLStatement && ConnectionStatus.TRANSACTION == connection.getStateHandler().getStatus();
     }
     
-    private BackendResponse merge(final SQLRouteResult routeResult) throws SQLException {
+    private BackendResponse merge(final RouteResult routeResult) throws SQLException {
         if (response instanceof UpdateResponse) {
             mergeUpdateCount(routeResult);
             return response;
@@ -122,7 +122,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return response;
     }
     
-    private void mergeUpdateCount(final SQLRouteResult routeResult) {
+    private void mergeUpdateCount(final RouteResult routeResult) {
         if (!isAllBroadcastTables(routeResult.getSqlStatementContext())) {
             ((UpdateResponse) response).mergeUpdateCount();
         }
@@ -132,7 +132,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return logicSchema instanceof ShardingSchema && logicSchema.getShardingRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames());
     }
     
-    private MergedResult createMergedResult(final SQLRouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
+    private MergedResult createMergedResult(final RouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
         Map<BaseRule, ResultProcessEngine> engines = new HashMap<>(2, 1);
         engines.put(logicSchema.getShardingRule(), new ShardingResultMergerEngine());
         EncryptRule encryptRule = getEncryptRule();
@@ -144,7 +144,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return mergeEntry.process(queryResults, routeResult.getSqlStatementContext());
     }
     
-    private void handleColumnsForQueryHeader(final SQLRouteResult routeResult) {
+    private void handleColumnsForQueryHeader(final RouteResult routeResult) {
         removeDerivedColumns();
         removeAssistedQueryColumns(routeResult);
         setLogicColumns();
@@ -161,7 +161,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         queryHeaders.removeAll(toRemove);
     }
     
-    private void removeAssistedQueryColumns(final SQLRouteResult routeResult) {
+    private void removeAssistedQueryColumns(final RouteResult routeResult) {
         List<QueryHeader> toRemove = new LinkedList<>();
         List<QueryHeader> queryHeaders = ((QueryResponse) response).getQueryHeaders();
         Collection<String> assistedQueryColumns = getAssistedQueryColumns(routeResult);
@@ -173,7 +173,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         queryHeaders.removeAll(toRemove);
     }
     
-    private Collection<String> getAssistedQueryColumns(final SQLRouteResult routeResult) {
+    private Collection<String> getAssistedQueryColumns(final RouteResult routeResult) {
         Collection<String> result = new LinkedList<>();
         EncryptRule encryptRule = getEncryptRule();
         for (String each : routeResult.getSqlStatementContext().getTablesContext().getTableNames()) {

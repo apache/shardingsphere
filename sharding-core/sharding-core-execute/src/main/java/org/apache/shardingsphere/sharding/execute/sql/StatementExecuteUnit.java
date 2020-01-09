@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.execute.sql;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.core.route.RouteUnit;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
 
 import java.sql.Statement;
 

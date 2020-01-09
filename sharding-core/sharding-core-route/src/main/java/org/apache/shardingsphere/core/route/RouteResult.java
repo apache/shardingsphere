@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.core.route;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
-import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -39,28 +37,11 @@ import java.util.LinkedHashSet;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class SQLRouteResult {
+public class RouteResult {
     
     private final SQLStatementContext sqlStatementContext;
-    
-    private final ShardingConditions shardingConditions;
-    
-    private final GeneratedKey generatedKey;
     
     private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
     
     private RoutingResult routingResult;
-    
-    public SQLRouteResult(final SQLStatementContext sqlStatementContext, final ShardingConditions shardingConditions) {
-        this(sqlStatementContext, shardingConditions, null);
-    }
-    
-    /**
-     * Get generated key.
-     * 
-     * @return generated key
-     */
-    public Optional<GeneratedKey> getGeneratedKey() {
-        return Optional.fromNullable(generatedKey);
-    }
 }

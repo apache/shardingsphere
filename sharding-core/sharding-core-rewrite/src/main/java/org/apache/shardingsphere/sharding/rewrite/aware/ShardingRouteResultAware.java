@@ -15,37 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.hook;
+package org.apache.shardingsphere.sharding.rewrite.aware;
 
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.route.ShardingRouteResult;
 
 /**
- * Routing hook.
+ * Sharding route result aware.
  *
- * @author zhaojun
+ * @author zhangliang
  */
-public interface RoutingHook {
+public interface ShardingRouteResultAware {
     
     /**
-     * Handle when routing started.
-     *
-     * @param sql SQL to be routing
-     */
-    void start(String sql);
-    
-    /**
-     * Handle when routing finished success.
-     *
-     * @param shardingRouteResult sharding route result
-     * @param tableMetas table metas
-     */
-    void finishSuccess(ShardingRouteResult shardingRouteResult, TableMetas tableMetas);
-    
-    /**
-     * Handle when routing finished failure.
+     * Set sharding route result.
      * 
-     * @param cause failure cause
+     * @param shardingRouteResult sharding route result
      */
-    void finishFailure(Exception cause);
+    void setShardingRouteResult(ShardingRouteResult shardingRouteResult);
 }

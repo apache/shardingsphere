@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.core.route;
 
-import com.google.common.base.Joiner;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
+import org.apache.shardingsphere.underlying.route.SQLUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -97,10 +98,10 @@ public final class SQLLoggerTest {
     
     @Test
     public void assertLogSQLMasterSlave() {
-        SQLLogger.logSQL(sql, dataSourceNames);
+        SQLLogger.logSQL(sql, "ms_ds");
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Rule Type: master-slave", new Object[]{});
-        inOrder.verify(logger).info("SQL: {} ::: DataSources: {}", new Object[]{sql, Joiner.on(",").join(dataSourceNames)});
+        inOrder.verify(logger).info("SQL: {} ::: DataSource: {}", new Object[]{sql, "ms_ds"});
     }
     
     private Set<String> buildDataSourceNamesSet() {

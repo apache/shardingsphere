@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.sharding.rewrite.token.pojo.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.ShardingRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.OffsetTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.RowCountTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.aware.SQLRouteResultAware;
+import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRouteResultAware;
 import org.apache.shardingsphere.core.rule.aware.ShardingRuleAware;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.AggregationDistinctTokenGenerator;
@@ -52,7 +52,7 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
     
     private final ShardingRule shardingRule;
     
-    private final SQLRouteResult sqlRouteResult;
+    private final ShardingRouteResult shardingRouteResult;
     
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
@@ -61,8 +61,8 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
             if (each instanceof ShardingRuleAware) {
                 ((ShardingRuleAware) each).setShardingRule(shardingRule);
             }
-            if (each instanceof SQLRouteResultAware) {
-                ((SQLRouteResultAware) each).setSqlRouteResult(sqlRouteResult);
+            if (each instanceof ShardingRouteResultAware) {
+                ((ShardingRouteResultAware) each).setShardingRouteResult(shardingRouteResult);
             }
         }
         return result;
@@ -87,7 +87,7 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
     }
     
     private void addSQLTokenGenerator(final Collection<SQLTokenGenerator> sqlTokenGenerators, final SQLTokenGenerator toBeAddedSQLTokenGenerator) {
-        if (toBeAddedSQLTokenGenerator instanceof IgnoreForSingleRoute && sqlRouteResult.getRoutingResult().isSingleRouting()) {
+        if (toBeAddedSQLTokenGenerator instanceof IgnoreForSingleRoute && shardingRouteResult.getRoutingResult().isSingleRouting()) {
             return;
         }
         sqlTokenGenerators.add(toBeAddedSQLTokenGenerator);
