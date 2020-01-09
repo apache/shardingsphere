@@ -27,12 +27,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Sharding with master-slave router interface.
+ * Route decorator for master-slave.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ShardingMasterSlaveRouter implements DateNodeRouteDecorator {
+public final class MasterSlaveRouteDecorator implements DateNodeRouteDecorator {
     
     private final Collection<MasterSlaveRule> masterSlaveRules;
     

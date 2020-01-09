@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.route;
 
-import org.apache.shardingsphere.core.route.router.masterslave.ShardingMasterSlaveRouter;
+import org.apache.shardingsphere.core.route.router.masterslave.MasterSlaveRouteDecorator;
 import org.apache.shardingsphere.core.route.router.sharding.ShardingRouter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
@@ -37,12 +37,12 @@ public final class PreparedStatementRoutingEngine {
     
     private final ShardingRouter shardingRouter;
     
-    private final ShardingMasterSlaveRouter masterSlaveRouter;
+    private final MasterSlaveRouteDecorator masterSlaveRouteDecorator;
     
     public PreparedStatementRoutingEngine(final String logicSQL, final ShardingRule shardingRule, final ShardingSphereMetaData metaData, final SQLParseEngine sqlParseEngine) {
         this.logicSQL = logicSQL;
         shardingRouter = new ShardingRouter(shardingRule, metaData, sqlParseEngine);
-        masterSlaveRouter = new ShardingMasterSlaveRouter(shardingRule.getMasterSlaveRules());
+        masterSlaveRouteDecorator = new MasterSlaveRouteDecorator(shardingRule.getMasterSlaveRules());
     }
     
     /**
@@ -54,6 +54,6 @@ public final class PreparedStatementRoutingEngine {
      * @return route result
      */
     public ShardingRouteResult route(final List<Object> parameters) {
-        return (ShardingRouteResult) masterSlaveRouter.decorate(shardingRouter.route(logicSQL, parameters, true));
+        return (ShardingRouteResult) masterSlaveRouteDecorator.decorate(shardingRouter.route(logicSQL, parameters, true));
     }
 }
