@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.route;
 
-import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,11 +41,11 @@ public final class SQLLogger {
      * Print SQL log for master slave rule.
      *
      * @param logicSQL logic SQL
-     * @param dataSourceNames data source names
+     * @param dataSourceName data source name
      */
-    public static void logSQL(final String logicSQL, final Collection<String> dataSourceNames) {
+    public static void logSQL(final String logicSQL, final String dataSourceName) {
         log("Rule Type: master-slave");
-        log("SQL: {} ::: DataSources: {}", logicSQL, Joiner.on(",").join(dataSourceNames));
+        log("SQL: {} ::: DataSource: {}", logicSQL, dataSourceName);
     }
     
     /**

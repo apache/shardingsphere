@@ -30,8 +30,6 @@ import org.apache.shardingsphere.underlying.route.RouteUnit;
 import org.apache.shardingsphere.underlying.route.SQLUnit;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -51,24 +49,22 @@ public final class MasterSlaveRouter implements DateNodeRouter {
     
     @Override
     public RouteResult route(final String sql, final List<Object> parameters, final boolean useCache) {
-        Collection<String> dataSourceNames = route(parseEngine.parse(sql, useCache));
+        String dataSourceName = getDataSourceName(parseEngine.parse(sql, useCache));
         if (showSQL) {
-            SQLLogger.logSQL(sql, dataSourceNames);
+            SQLLogger.logSQL(sql, dataSourceName);
         }
         RouteResult result = new RouteResult(null);
-        for (String each : dataSourceNames) {
-            result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(sql, parameters)));
-        }
+        result.getRouteUnits().add(new RouteUnit(dataSourceName, new SQLUnit(sql, parameters)));
         return result;
     }
     
-    private Collection<String> route(final SQLStatement sqlStatement) {
+    private String getDataSourceName(final SQLStatement sqlStatement) {
         if (isMasterRoute(sqlStatement)) {
             MasterVisitedManager.setMasterVisited();
-            return Collections.singletonList(masterSlaveRule.getMasterDataSourceName());
+            return masterSlaveRule.getMasterDataSourceName();
         }
-        return Collections.singletonList(masterSlaveRule.getLoadBalanceAlgorithm().getDataSource(
-                masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), new ArrayList<>(masterSlaveRule.getSlaveDataSourceNames())));
+        return masterSlaveRule.getLoadBalanceAlgorithm().getDataSource(
+                masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), new ArrayList<>(masterSlaveRule.getSlaveDataSourceNames()));
     }
     
     private boolean isMasterRoute(final SQLStatement sqlStatement) {
