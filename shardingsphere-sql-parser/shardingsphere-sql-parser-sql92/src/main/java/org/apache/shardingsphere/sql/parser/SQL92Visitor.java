@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser;
 
+import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 
 /**
  * SQL92 visitor.
  *
  * @author panjuan
  */
-public final class SQL92Visitor extends SQL92StatementBaseVisitor {
+public final class SQL92Visitor extends SQL92StatementBaseVisitor<ASTNode> implements SQLVisitor {
 }
