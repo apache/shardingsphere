@@ -45,6 +45,14 @@ public final class ShadowConnection extends AbstractUnsupportedOperationConnecti
     private final Connection shadowConnection;
     
     private final ShadowRuntimeContext runtimeContext;
+
+    private boolean autoCommit = true;
+
+    private boolean readOnly = true;
+
+    private volatile boolean closed;
+
+    private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
     
     @Override
     public Statement createStatement() {
@@ -93,13 +101,14 @@ public final class ShadowConnection extends AbstractUnsupportedOperationConnecti
     
     @Override
     public void setAutoCommit(final boolean autoCommit) throws SQLException {
+        this.autoCommit = autoCommit;
         actualConnection.setAutoCommit(autoCommit);
         shadowConnection.setAutoCommit(autoCommit);
     }
     
     @Override
     public boolean getAutoCommit() {
-        return false;
+        return autoCommit;
     }
     
     @Override
@@ -116,13 +125,9 @@ public final class ShadowConnection extends AbstractUnsupportedOperationConnecti
     
     @Override
     public void close() throws SQLException {
+        closed = true;
         actualConnection.close();
         shadowConnection.close();
-    }
-    
-    @Override
-    public boolean isClosed() {
-        return false;
     }
     
     @Override
@@ -132,24 +137,16 @@ public final class ShadowConnection extends AbstractUnsupportedOperationConnecti
     
     @Override
     public void setReadOnly(final boolean readOnly) throws SQLException {
+        this.readOnly = readOnly;
         actualConnection.setReadOnly(readOnly);
         shadowConnection.setReadOnly(readOnly);
     }
     
     @Override
-    public boolean isReadOnly() {
-        return false;
-    }
-
-    @Override
     public void setTransactionIsolation(final int level) throws SQLException {
+        transactionIsolation = level;
         actualConnection.setTransactionIsolation(level);
         shadowConnection.setTransactionIsolation(level);
-    }
-    
-    @Override
-    public int getTransactionIsolation() {
-        return 0;
     }
     
     @Override
@@ -168,7 +165,7 @@ public final class ShadowConnection extends AbstractUnsupportedOperationConnecti
     }
     
     @Override
-    public int getHoldability() {
-        return 0;
+    public int getHoldability() throws SQLException {
+        return actualConnection.getHoldability();
     }
 }

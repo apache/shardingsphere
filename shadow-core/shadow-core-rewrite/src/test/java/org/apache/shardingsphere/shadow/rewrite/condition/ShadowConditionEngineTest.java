@@ -15,19 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.rewrite;
+package org.apache.shardingsphere.shadow.rewrite.condition;
 
-/**
- * Shadow judgement engine.
- *
- * @author zhyee
- */
-public interface ShadowJudgementEngine {
-    
-    /**
-     * Judge whether SQL is shadow.
-     *
-     * @return SQL is shadow or not
-     */
-    boolean isShadowSQL();
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.junit.Test;
+
+import java.util.Collections;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public class ShadowConditionEngineTest {
+
+    @Test
+    public void assertGetConditionValues() {
+        List<Object> actual = new ShadowCondition("col", 0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());
+        assertThat(actual.size(), is(1));
+        assertThat((Integer) actual.get(0), is(1));
+    }
 }

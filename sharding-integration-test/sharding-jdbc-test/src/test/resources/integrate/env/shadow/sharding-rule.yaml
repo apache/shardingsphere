@@ -37,6 +37,3 @@ shadowRule:
     defaultDataSourceName: db
     defaultTableStrategy:
       none:
-
-props:
-  sql.show: true

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.rewrite;
+package org.apache.shardingsphere.shadow.rewrite.condition;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
