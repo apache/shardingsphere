@@ -36,7 +36,7 @@ import java.util.Map;
  * @author zhangliang
  */
 public final class OnDuplicateKeyColumnsExtractor implements OptionalSQLSegmentExtractor {
-
+    
     private final AssignmentExtractor assignmentExtractor = new AssignmentExtractor();
     
     @Override
