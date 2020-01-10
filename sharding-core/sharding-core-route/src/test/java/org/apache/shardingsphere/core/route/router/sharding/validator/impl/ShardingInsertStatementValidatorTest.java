@@ -17,20 +17,22 @@
 
 package org.apache.shardingsphere.core.route.router.sharding.validator.impl;
 
-import static org.mockito.Mockito.when;
-
-import java.util.Collections;
-
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Collections;
+
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ShardingInsertStatementValidatorTest {
@@ -54,7 +56,8 @@ public final class ShardingInsertStatementValidatorTest {
         InsertStatement result = new InsertStatement();
         result.setTable(new TableSegment(0, 0, "user"));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
-        result.getAllSQLSegments().add(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(columnSegment)));
+        AssignmentSegment assignmentSegment = new AssignmentSegment(0, 0, columnSegment, new ParameterMarkerExpressionSegment(0, 0, 1));
+        result.getAllSQLSegments().add(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(assignmentSegment)));
         return result;
     }
 }
