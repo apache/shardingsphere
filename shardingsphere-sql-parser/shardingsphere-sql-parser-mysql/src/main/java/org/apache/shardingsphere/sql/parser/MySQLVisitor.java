@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser;
 
+import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 
 /**
  * MySQL visitor.
  *
  * @author panjuan
  */
-public final class MySQLVisitor extends MySQLStatementBaseVisitor {
+public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
 }

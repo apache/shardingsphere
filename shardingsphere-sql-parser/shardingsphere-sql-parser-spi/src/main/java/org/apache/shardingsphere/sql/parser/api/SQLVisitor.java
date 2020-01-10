@@ -15,32 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.rule.fixture;
+package org.apache.shardingsphere.sql.parser.api;
 
-import org.antlr.v4.runtime.Lexer;
-import org.apache.shardingsphere.sql.parser.api.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
+import org.antlr.v4.runtime.tree.ParseTree;
 
-public final class TestParserEntry implements SQLParserEntry {
+/**
+ * SQL visitor.
+ *
+ * @author panjuan
+ */
+public interface SQLVisitor<T> {
     
-    @Override
-    public String getDatabaseTypeName() {
-        return "MySQL";
-    }
-    
-    @Override
-    public Class<? extends Lexer> getLexerClass() {
-        return null;
-    }
-    
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return null;
-    }
-    
-    @Override
-    public Class<? extends SQLVisitor> getVisitorClass() {
-        return null;
-    }
+    /**
+     * Visit.
+     * 
+     * @param tree parse tree
+     * @return visited result.
+     */
+    T visit(ParseTree tree);
 }
