@@ -25,6 +25,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
+import org.apache.shardingsphere.underlying.common.util.StringUtil;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -43,44 +44,47 @@ import java.util.Properties;
 @Getter
 @Setter
 public final class AESEncryptor implements Encryptor {
-    
+
     private static final String AES_KEY = "aes.key.value";
-    
+
     private Properties properties = new Properties();
-    
+
     @Override
     public String getType() {
         return "AES";
     }
-    
+
     @Override
     public void init() {
     }
-    
+
     @Override
     @SneakyThrows
     public String encrypt(final Object plaintext) {
+        if (StringUtil.isNullOrEmpty(plaintext)) {
+            return (String) plaintext;
+        }
         byte[] result = getCipher(Cipher.ENCRYPT_MODE).doFinal(StringUtils.getBytesUtf8(String.valueOf(plaintext)));
         return Base64.encodeBase64String(result);
     }
-    
+
     @Override
     @SneakyThrows
     public Object decrypt(final String ciphertext) {
-        if (null == ciphertext) {
-            return null;
+        if (StringUtil.isNullOrEmpty(ciphertext)) {
+            return ciphertext;
         }
         byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(Base64.decodeBase64(String.valueOf(ciphertext)));
         return new String(result, StandardCharsets.UTF_8);
     }
-    
+
     private Cipher getCipher(final int decryptMode) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         Preconditions.checkArgument(properties.containsKey(AES_KEY), "No available secret key for `%s`.", AESEncryptor.class.getName());
         Cipher result = Cipher.getInstance(getType());
         result.init(decryptMode, new SecretKeySpec(createSecretKey(), getType()));
         return result;
     }
-    
+
     private byte[] createSecretKey() {
         Preconditions.checkArgument(null != properties.get(AES_KEY), String.format("%s can not be null.", AES_KEY));
         return Arrays.copyOf(DigestUtils.sha1(properties.get(AES_KEY).toString()), 16);

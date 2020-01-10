@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
+import org.apache.shardingsphere.underlying.common.util.StringUtil;
 
 import java.util.Properties;
 
@@ -32,23 +33,26 @@ import java.util.Properties;
 @Getter
 @Setter
 public final class MD5Encryptor implements Encryptor {
-    
+
     private Properties properties = new Properties();
-    
+
     @Override
     public String getType() {
         return "MD5";
     }
-    
+
     @Override
     public void init() {
     }
-    
+
     @Override
     public String encrypt(final Object plaintext) {
+        if (StringUtil.isNullOrEmpty(plaintext)) {
+            return (String) plaintext;
+        }
         return DigestUtils.md5Hex(String.valueOf(plaintext));
     }
-    
+
     @Override
     public Object decrypt(final String ciphertext) {
         return ciphertext;
