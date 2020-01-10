@@ -56,7 +56,7 @@ public final class RoutingResult {
     public Collection<String> getDataSourceNames() {
         Collection<String> result = new HashSet<>(routingUnits.size(), 1);
         for (RoutingUnit each : routingUnits) {
-            result.add(each.getDataSourceName());
+            result.add(each.getActualDataSourceName());
         }
         return result;
     }
@@ -102,7 +102,7 @@ public final class RoutingResult {
     private Set<String> getActualTableNames(final String dataSourceName, final String logicTableName) {
         Set<String> result = new HashSet<>();
         for (RoutingUnit each : routingUnits) {
-            if (dataSourceName.equalsIgnoreCase(each.getDataSourceName())) {
+            if (dataSourceName.equalsIgnoreCase(each.getActualDataSourceName())) {
                 result.addAll(each.getActualTableNames(logicTableName));
             }
         }
@@ -129,7 +129,7 @@ public final class RoutingResult {
     private Set<String> getLogicTableNames(final String dataSourceName) {
         Set<String> result = new HashSet<>();
         for (RoutingUnit each : routingUnits) {
-            if (dataSourceName.equalsIgnoreCase(each.getDataSourceName())) {
+            if (dataSourceName.equalsIgnoreCase(each.getActualDataSourceName())) {
                 result.addAll(each.getLogicTableNames());
             }
         }

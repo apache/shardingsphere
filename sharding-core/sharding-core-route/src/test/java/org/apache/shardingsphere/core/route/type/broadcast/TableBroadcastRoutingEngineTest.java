@@ -117,7 +117,7 @@ public final class TableBroadcastRoutingEngineTest {
     }
     
     private void assertRoutingUnit(final RoutingUnit routingUnit, final String dataSourceName, final String actualTableName) {
-        assertThat(routingUnit.getDataSourceName(), is(dataSourceName));
+        assertThat(routingUnit.getActualDataSourceName(), is(dataSourceName));
         assertThat(routingUnit.getTableUnits().size(), is(1));
         assertThat(routingUnit.getTableUnits().get(0), is(new TableUnit("t_order", actualTableName)));
     }

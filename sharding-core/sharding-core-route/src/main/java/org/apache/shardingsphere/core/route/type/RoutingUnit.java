@@ -41,15 +41,15 @@ import java.util.Set;
 @ToString
 public final class RoutingUnit {
     
-    private final String dataSourceName;
+    private final String logicDataSourceName;
     
-    private final String masterSlaveLogicDataSourceName;
+    private final String actualDataSourceName;
     
     private final List<TableUnit> tableUnits = new LinkedList<>();
     
     public RoutingUnit(final String dataSourceName) {
-        this.dataSourceName = dataSourceName;
-        masterSlaveLogicDataSourceName = dataSourceName;
+        logicDataSourceName = dataSourceName;
+        actualDataSourceName = dataSourceName;
     }
     
     /**
@@ -61,7 +61,7 @@ public final class RoutingUnit {
      */
     public Optional<TableUnit> getTableUnit(final String dataSourceName, final String actualTableName) {
         for (TableUnit each : tableUnits) {
-            if (dataSourceName.equalsIgnoreCase(masterSlaveLogicDataSourceName) && actualTableName.equalsIgnoreCase(each.getActualTableName())) {
+            if (dataSourceName.equalsIgnoreCase(logicDataSourceName) && actualTableName.equalsIgnoreCase(each.getActualTableName())) {
                 return Optional.of(each);
             }
         }
