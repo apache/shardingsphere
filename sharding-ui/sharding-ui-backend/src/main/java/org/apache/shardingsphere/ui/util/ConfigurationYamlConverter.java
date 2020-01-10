@@ -36,8 +36,8 @@ import org.apache.shardingsphere.core.yaml.swapper.impl.AuthenticationYamlSwappe
 import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration;
-import org.apache.shardingsphere.orchestration.yaml.swapper.DataSourceConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.temp.yaml.config.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.orchestration.temp.yaml.swapper.DataSourceConfigurationYamlSwapper;
 import java.util.Map;
 import java.util.Properties;
 
