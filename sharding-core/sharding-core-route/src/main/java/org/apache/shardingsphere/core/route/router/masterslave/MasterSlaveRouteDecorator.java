@@ -18,64 +18,37 @@
 package org.apache.shardingsphere.core.route.router.masterslave;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.route.RouteResult;
 import org.apache.shardingsphere.core.route.router.DateNodeRouteDecorator;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Sharding with master-slave router interface.
+ * Route decorator for master-slave.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ShardingMasterSlaveRouter implements DateNodeRouteDecorator {
+public final class MasterSlaveRouteDecorator implements DateNodeRouteDecorator {
     
-    private final Collection<MasterSlaveRule> masterSlaveRules;
+    private final MasterSlaveRule masterSlaveRule;
     
     @Override
     public RouteResult decorate(final RouteResult routeResult) {
-        for (MasterSlaveRule each : masterSlaveRules) {
-            route(each, routeResult);
-        }
-        return routeResult;
-    }
-    
-    private void route(final MasterSlaveRule masterSlaveRule, final RouteResult routeResult) {
         Collection<RoutingUnit> toBeRemoved = new LinkedList<>();
         Collection<RoutingUnit> toBeAdded = new LinkedList<>();
         for (RoutingUnit each : routeResult.getRoutingResult().getRoutingUnits()) {
-            if (!masterSlaveRule.getName().equalsIgnoreCase(each.getDataSourceName())) {
-                continue;
+            if (masterSlaveRule.getName().equalsIgnoreCase(each.getDataSourceName())) {
+                toBeRemoved.add(each);
+                toBeAdded.add(createNewRoutingUnit(new MasterSlaveDataSourceRouter(masterSlaveRule).route(routeResult.getSqlStatementContext().getSqlStatement()), each));
             }
-            toBeRemoved.add(each);
-            String actualDataSourceName;
-            if (isMasterRoute(routeResult.getSqlStatementContext().getSqlStatement())) {
-                MasterVisitedManager.setMasterVisited();
-                actualDataSourceName = masterSlaveRule.getMasterDataSourceName();
-            } else {
-                actualDataSourceName = masterSlaveRule.getLoadBalanceAlgorithm().getDataSource(
-                        masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), new ArrayList<>(masterSlaveRule.getSlaveDataSourceNames()));
-            }
-            toBeAdded.add(createNewRoutingUnit(actualDataSourceName, each));
         }
         routeResult.getRoutingResult().getRoutingUnits().removeAll(toBeRemoved);
         routeResult.getRoutingResult().getRoutingUnits().addAll(toBeAdded);
-    }
-    
-    private boolean isMasterRoute(final SQLStatement sqlStatement) {
-        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || MasterVisitedManager.isMasterVisited() || HintManager.isMasterRouteOnly();
-    }
-
-    private boolean containsLockSegment(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof SelectStatement && ((SelectStatement) sqlStatement).getLock().isPresent();
+        return routeResult;
     }
     
     private RoutingUnit createNewRoutingUnit(final String actualDataSourceName, final RoutingUnit originalTableUnit) {

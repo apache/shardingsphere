@@ -72,14 +72,7 @@ public final class ShardingRouter implements DateNodeRouter {
     
     private final List<Comparable<?>> generatedValues = new LinkedList<>();
     
-    /**
-     * Route SQL.
-     *
-     * @param sql SQL
-     * @param parameters SQL parameters
-     * @param useCache use cache to save SQL parse result or not
-     * @return parse result
-     */
+    @Override
     @SuppressWarnings("unchecked")
     public ShardingRouteResult route(final String sql, final List<Object> parameters, final boolean useCache) {
         SQLStatement sqlStatement = parse(sql, useCache);

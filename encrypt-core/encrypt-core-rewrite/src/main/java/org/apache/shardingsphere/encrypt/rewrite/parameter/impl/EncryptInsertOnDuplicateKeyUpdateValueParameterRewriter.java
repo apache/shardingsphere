@@ -24,8 +24,10 @@ import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewri
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 
@@ -51,22 +53,28 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter exten
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(OnDuplicateKeyColumnsSegment.class).get();
-        Collection<ColumnSegment> onDuplicateKeyColumnsSegments = onDuplicateKeyColumnsSegment.getColumns();
+        Collection<AssignmentSegment> onDuplicateKeyColumnsSegments = onDuplicateKeyColumnsSegment.getColumns();
         if (onDuplicateKeyColumnsSegments.isEmpty()) {
             return;
         }
         GroupedParameterBuilder groupedParameterBuilder = (GroupedParameterBuilder) parameterBuilder;
-        int onDuplicateKeyColumnStartIndex = parameters.size() - onDuplicateKeyColumnsSegments.size();
-        for (ColumnSegment each : onDuplicateKeyColumnsSegments) {
-            Object rewriteOnDuplicateKeyColumnValue = parameters.get(onDuplicateKeyColumnStartIndex);
+        for (AssignmentSegment each : onDuplicateKeyColumnsSegments) {
+            ExpressionSegment expressionSegment = each.getValue();
+            Object cipherColumnValue = null;
+            Object plainColumnValue = null;
+            if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
+                plainColumnValue = parameters.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
+            }
             if (queryWithCipherColumn) {
-                Optional<Encryptor> encryptor = getEncryptRule().findEncryptor(tableName, each.getName());
+                Optional<Encryptor> encryptor = getEncryptRule().findEncryptor(tableName, each.getColumn().getName());
                 if (encryptor.isPresent()) {
-                    rewriteOnDuplicateKeyColumnValue = encryptor.get().encrypt(rewriteOnDuplicateKeyColumnValue);
+                    cipherColumnValue = encryptor.get().encrypt(plainColumnValue);
+                    groupedParameterBuilder.getOnDuplicateKeyUpdateAddedParameters().add(cipherColumnValue);
                 }
             }
-            groupedParameterBuilder.getOnDuplicateKeyUpdateAddedParameters().add(rewriteOnDuplicateKeyColumnValue);
-            onDuplicateKeyColumnStartIndex++;
+            if (null != plainColumnValue) {
+                groupedParameterBuilder.getOnDuplicateKeyUpdateAddedParameters().add(plainColumnValue);
+            }
         }
     }
 }

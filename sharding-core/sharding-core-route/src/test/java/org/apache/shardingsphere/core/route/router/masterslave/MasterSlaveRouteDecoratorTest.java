@@ -46,7 +46,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ShardingMasterSlaveRouterTest {
+public final class MasterSlaveRouteDecoratorTest {
     
     private static final String DATASOURCE_NAME = "ds";
     
@@ -68,11 +68,11 @@ public final class ShardingMasterSlaveRouterTest {
     @Mock
     private SelectStatement selectStatement;
     
-    private ShardingMasterSlaveRouter shardingMasterSlaveRouter;
+    private MasterSlaveRouteDecorator routeDecorator;
     
     @Before
     public void setUp() {
-        shardingMasterSlaveRouter = new ShardingMasterSlaveRouter(Lists.newArrayList(masterSlaveRule));
+        routeDecorator = new MasterSlaveRouteDecorator(masterSlaveRule);
         when(masterSlaveRule.getName()).thenReturn(DATASOURCE_NAME);
         when(masterSlaveRule.getMasterDataSourceName()).thenReturn(MASTER_DATASOURCE);
         when(masterSlaveRule.getSlaveDataSourceNames()).thenReturn(Lists.newArrayList(SLAVE_DATASOURCE));
@@ -87,7 +87,7 @@ public final class ShardingMasterSlaveRouterTest {
     @Test
     public void assertDecorateToMaster() {
         RouteResult routeResult = mockSQLRouteResult(insertStatement);
-        RouteResult actual = shardingMasterSlaveRouter.decorate(routeResult);
+        RouteResult actual = routeDecorator.decorate(routeResult);
         Iterator<String> routedDataSourceNames = actual.getRoutingResult().getDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_MASTER_SLAVE_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(MASTER_DATASOURCE));
@@ -97,7 +97,7 @@ public final class ShardingMasterSlaveRouterTest {
     public void assertDecorateToSlave() {
         RouteResult routeResult = mockSQLRouteResult(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.<LockSegment>absent());
-        RouteResult actual = shardingMasterSlaveRouter.decorate(routeResult);
+        RouteResult actual = routeDecorator.decorate(routeResult);
         Iterator<String> routedDataSourceNames = actual.getRoutingResult().getDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_MASTER_SLAVE_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(SLAVE_DATASOURCE));
@@ -107,7 +107,7 @@ public final class ShardingMasterSlaveRouterTest {
     public void assertLockDecorateToMaster() {
         RouteResult routeResult = mockSQLRouteResult(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.of(mock(LockSegment.class)));
-        RouteResult actual = shardingMasterSlaveRouter.decorate(routeResult);
+        RouteResult actual = routeDecorator.decorate(routeResult);
         Iterator<String> routedDataSourceNames = actual.getRoutingResult().getDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_MASTER_SLAVE_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(MASTER_DATASOURCE));
