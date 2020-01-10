@@ -311,6 +311,7 @@ Decompress `apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip` and che
 *   The release files have the word `incubating` in their name
 *   `DISCLAIMER` file exists
 *   `LICENSE` and `NOTICE` files exist
+*   Correct year in `NOTICE` file
 *   There is only text files but no binary files
 *   All source files have ASF headers
 *   Codes can be compiled and pass the unit tests (mvn install)
@@ -326,6 +327,7 @@ to check the following items:
 *   The release files have the word `incubating` in their name
 *   `DISCLAIMER` file exists
 *   `LICENSE` and `NOTICE` files exist
+*   Correct year in `NOTICE` file
 *   All text files have ASF headers
 *   Check the third party dependency license:
     *   The software have a compatible license
