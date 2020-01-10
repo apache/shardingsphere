@@ -131,11 +131,6 @@ public final class ShadowConnection extends AbstractUnsupportedOperationConnecti
     }
     
     @Override
-    public boolean isClosed() {
-        return closed;
-    }
-    
-    @Override
     public DatabaseMetaData getMetaData() throws SQLException {
         return actualConnection.getMetaData();
     }
@@ -148,20 +143,10 @@ public final class ShadowConnection extends AbstractUnsupportedOperationConnecti
     }
     
     @Override
-    public boolean isReadOnly() {
-        return readOnly;
-    }
-
-    @Override
     public void setTransactionIsolation(final int level) throws SQLException {
         transactionIsolation = level;
         actualConnection.setTransactionIsolation(level);
         shadowConnection.setTransactionIsolation(level);
-    }
-    
-    @Override
-    public int getTransactionIsolation() {
-        return transactionIsolation;
     }
     
     @Override
