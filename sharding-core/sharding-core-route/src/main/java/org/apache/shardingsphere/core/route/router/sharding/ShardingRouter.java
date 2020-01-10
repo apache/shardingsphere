@@ -50,7 +50,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -69,8 +68,6 @@ public final class ShardingRouter implements DateNodeRouter {
     private final ShardingSphereMetaData metaData;
     
     private final SQLParseEngine parseEngine;
-    
-    private final List<Comparable<?>> generatedValues = new LinkedList<>();
     
     @Override
     @SuppressWarnings("unchecked")
@@ -96,9 +93,6 @@ public final class ShardingRouter implements DateNodeRouter {
         }
         ShardingRouteResult result = new ShardingRouteResult(sqlStatementContext, shardingConditions, generatedKey.orNull());
         result.setRoutingResult(routingResult);
-        if (sqlStatementContext instanceof InsertSQLStatementContext) {
-            setGeneratedValues(result);
-        }
         return result;
     }
     
@@ -189,14 +183,6 @@ public final class ShardingRouter implements DateNodeRouter {
             ShardingCondition shardingCondition = shardingConditions.getConditions().remove(shardingConditions.getConditions().size() - 1);
             shardingConditions.getConditions().clear();
             shardingConditions.getConditions().add(shardingCondition);
-        }
-    }
-    
-    private void setGeneratedValues(final ShardingRouteResult shardingRouteResult) {
-        if (shardingRouteResult.getGeneratedKey().isPresent()) {
-            generatedValues.addAll(shardingRouteResult.getGeneratedKey().get().getGeneratedValues());
-            shardingRouteResult.getGeneratedKey().get().getGeneratedValues().clear();
-            shardingRouteResult.getGeneratedKey().get().getGeneratedValues().addAll(generatedValues);
         }
     }
 }
