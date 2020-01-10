@@ -19,17 +19,18 @@ package org.apache.shardingsphere.core.route.router.masterslave;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.RouteResult;
+import org.apache.shardingsphere.core.route.ShardingRouteResult;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.route.type.TableUnit;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +46,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ShardingMasterSlaveRouterTest {
+public final class MasterSlaveRouteDecoratorTest {
     
     private static final String DATASOURCE_NAME = "ds";
     
@@ -67,11 +68,11 @@ public final class ShardingMasterSlaveRouterTest {
     @Mock
     private SelectStatement selectStatement;
     
-    private ShardingMasterSlaveRouter shardingMasterSlaveRouter;
+    private MasterSlaveRouteDecorator routeDecorator;
     
     @Before
     public void setUp() {
-        shardingMasterSlaveRouter = new ShardingMasterSlaveRouter(Lists.newArrayList(masterSlaveRule));
+        routeDecorator = new MasterSlaveRouteDecorator(masterSlaveRule);
         when(masterSlaveRule.getName()).thenReturn(DATASOURCE_NAME);
         when(masterSlaveRule.getMasterDataSourceName()).thenReturn(MASTER_DATASOURCE);
         when(masterSlaveRule.getSlaveDataSourceNames()).thenReturn(Lists.newArrayList(SLAVE_DATASOURCE));
@@ -84,37 +85,37 @@ public final class ShardingMasterSlaveRouterTest {
     }
     
     @Test
-    public void assertRouteToMaster() {
-        SQLRouteResult sqlRouteResult = mockSQLRouteResult(insertStatement);
-        SQLRouteResult actual = shardingMasterSlaveRouter.route(sqlRouteResult);
+    public void assertDecorateToMaster() {
+        RouteResult routeResult = mockSQLRouteResult(insertStatement);
+        RouteResult actual = routeDecorator.decorate(routeResult);
         Iterator<String> routedDataSourceNames = actual.getRoutingResult().getDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_MASTER_SLAVE_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(MASTER_DATASOURCE));
     }
     
     @Test
-    public void assertRouteToSlave() {
-        SQLRouteResult sqlRouteResult = mockSQLRouteResult(selectStatement);
+    public void assertDecorateToSlave() {
+        RouteResult routeResult = mockSQLRouteResult(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.<LockSegment>absent());
-        SQLRouteResult actual = shardingMasterSlaveRouter.route(sqlRouteResult);
+        RouteResult actual = routeDecorator.decorate(routeResult);
         Iterator<String> routedDataSourceNames = actual.getRoutingResult().getDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_MASTER_SLAVE_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(SLAVE_DATASOURCE));
     }
 
     @Test
-    public void assertLockRouteToMaster() {
-        SQLRouteResult sqlRouteResult = mockSQLRouteResult(selectStatement);
+    public void assertLockDecorateToMaster() {
+        RouteResult routeResult = mockSQLRouteResult(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.of(mock(LockSegment.class)));
-        SQLRouteResult actual = shardingMasterSlaveRouter.route(sqlRouteResult);
+        RouteResult actual = routeDecorator.decorate(routeResult);
         Iterator<String> routedDataSourceNames = actual.getRoutingResult().getDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_MASTER_SLAVE_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(MASTER_DATASOURCE));
     }
     
-    private SQLRouteResult mockSQLRouteResult(final SQLStatement sqlStatement) {
+    private ShardingRouteResult mockSQLRouteResult(final SQLStatement sqlStatement) {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        SQLRouteResult result = new SQLRouteResult(sqlStatementContext, null, null);
+        ShardingRouteResult result = new ShardingRouteResult(sqlStatementContext, null, null);
         result.setRoutingResult(mockRoutingResult());
         return result;
     }

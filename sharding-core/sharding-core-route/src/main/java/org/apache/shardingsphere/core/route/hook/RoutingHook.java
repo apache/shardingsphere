@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.route.hook;
 
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
+import org.apache.shardingsphere.core.route.ShardingRouteResult;
 
 /**
  * Routing hook.
@@ -37,10 +37,10 @@ public interface RoutingHook {
     /**
      * Handle when routing finished success.
      *
-     * @param sqlRouteResult sql route result
+     * @param shardingRouteResult sharding route result
      * @param tableMetas table metas
      */
-    void finishSuccess(SQLRouteResult sqlRouteResult, TableMetas tableMetas);
+    void finishSuccess(ShardingRouteResult shardingRouteResult, TableMetas tableMetas);
     
     /**
      * Handle when routing finished failure.

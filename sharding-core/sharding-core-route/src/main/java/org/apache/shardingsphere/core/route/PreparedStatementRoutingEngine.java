@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.core.route;
 
-import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.sql.parser.SQLParseEngine;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.route.router.masterslave.ShardingMasterSlaveRouter;
+import org.apache.shardingsphere.core.route.router.masterslave.MasterSlaveRouteDecorator;
 import org.apache.shardingsphere.core.route.router.sharding.ShardingRouter;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.SQLParseEngine;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 
 import java.util.List;
 
@@ -36,30 +36,27 @@ public final class PreparedStatementRoutingEngine {
     
     private final String logicSQL;
     
+    private final ShardingRule shardingRule;
+    
     private final ShardingRouter shardingRouter;
-    
-    private final ShardingMasterSlaveRouter masterSlaveRouter;
-    
-    private SQLStatement sqlStatement;
     
     public PreparedStatementRoutingEngine(final String logicSQL, final ShardingRule shardingRule, final ShardingSphereMetaData metaData, final SQLParseEngine sqlParseEngine) {
         this.logicSQL = logicSQL;
+        this.shardingRule = shardingRule;
         shardingRouter = new ShardingRouter(shardingRule, metaData, sqlParseEngine);
-        masterSlaveRouter = new ShardingMasterSlaveRouter(shardingRule.getMasterSlaveRules());
     }
     
     /**
      * SQL route.
      * 
-     * <p>First routing time will parse SQL, after second time will reuse first parsed result.</p>
-     * 
-     * @param parameters parameters of SQL placeholder
+     * @param parameters SQL parameters
      * @return route result
      */
-    public SQLRouteResult route(final List<Object> parameters) {
-        if (null == sqlStatement) {
-            sqlStatement = shardingRouter.parse(logicSQL, true);
+    public ShardingRouteResult route(final List<Object> parameters) {
+        ShardingRouteResult result = shardingRouter.route(logicSQL, parameters, true);
+        for (MasterSlaveRule each : shardingRule.getMasterSlaveRules()) {
+            result = (ShardingRouteResult) new MasterSlaveRouteDecorator(each).decorate(result);
         }
-        return masterSlaveRouter.route(shardingRouter.route(logicSQL, parameters, sqlStatement));
+        return result;
     }
 }

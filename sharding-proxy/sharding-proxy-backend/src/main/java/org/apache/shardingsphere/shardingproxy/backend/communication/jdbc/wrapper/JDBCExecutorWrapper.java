@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper;
 
-import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.route.SQLUnit;
+import org.apache.shardingsphere.core.route.RouteResult;
+import org.apache.shardingsphere.underlying.route.SQLUnit;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -35,9 +35,9 @@ public interface JDBCExecutorWrapper {
      * Route SQL.
      * 
      * @param sql SQL to be routed
-     * @return SQL route result
+     * @return route result
      */
-    SQLRouteResult route(String sql);
+    RouteResult route(String sql);
     
     /**
      * Create statement.

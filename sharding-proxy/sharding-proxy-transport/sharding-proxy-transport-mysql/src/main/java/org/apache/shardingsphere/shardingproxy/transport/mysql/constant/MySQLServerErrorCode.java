@@ -40,6 +40,8 @@ public enum MySQLServerErrorCode implements SQLErrorCode {
     
     ER_BAD_DB_ERROR(1049, "42000", "Unknown database '%s'"),
     
+    ER_INTERNAL_ERROR(1815, "HY000", "Internal error: %s"),
+    
     ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE(3176, "HY000", 
             "Please do not modify the %s table with an XA transaction. This is an internal system table used to store GTIDs for committed transactions. " 
                     + "Although modifying it can lead to an inconsistent GTID state, if neccessary you can modify it with a non-XA transaction.");

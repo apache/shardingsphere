@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.aware;
+package org.apache.shardingsphere.shardingjdbc.jdbc.metadata;
 
-import org.apache.shardingsphere.core.route.SQLRouteResult;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.ConnectionManager;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
- * SQL route result aware.
+ * JDBC connection manager with data source.
  *
  * @author zhangliang
  */
-public interface SQLRouteResultAware {
+@RequiredArgsConstructor
+public final class JDBCDataSourceConnectionManager implements ConnectionManager {
     
-    /**
-     * Set SQL route result.
-     * 
-     * @param sqlRouteResult SQL route result
-     */
-    void setSqlRouteResult(SQLRouteResult sqlRouteResult);
+    private final DataSource dataSource;
+    
+    @Override
+    public Connection getConnection(final String dataSourceName) throws SQLException {
+        return dataSource.getConnection();
+    }
 }

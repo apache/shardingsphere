@@ -25,12 +25,12 @@ import lombok.Getter;
  * @author zhyee
  */
 public final class ShadowParserResultSetRegistry {
-
+    
     private static final ShadowParserResultSetRegistry INSTANCE = new ShadowParserResultSetRegistry();
-
+    
     @Getter
     private final ParserResultSetRegistry registry = new ParserResultSetRegistry("shadow/");
-
+    
     /**
      * Get singleton instance.
      *

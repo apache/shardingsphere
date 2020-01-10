@@ -15,28 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route;
+package org.apache.shardingsphere.core.route.router;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.apache.shardingsphere.core.route.RouteResult;
 
 import java.util.List;
 
 /**
- * SQL unit.
+ * Data node router.
  *
- * @author maxiaoguang
- * @author panjuan
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode(of = { "sql" })
-@ToString
-public final class SQLUnit {
+public interface DateNodeRouter {
     
-    private final String sql;
-    
-    private final List<Object> parameters;
+    /**
+     * Route SQL.
+     *
+     * @param sql SQL
+     * @param parameters SQL parameters
+     * @param useCache whether use cache to save SQL parse result
+     * @return parse result
+     */
+    RouteResult route(String sql, List<Object> parameters, boolean useCache);
 }

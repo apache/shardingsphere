@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.core.route;
 
-import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.sql.parser.SQLParseEngine;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.route.router.masterslave.ShardingMasterSlaveRouter;
+import org.apache.shardingsphere.core.route.router.masterslave.MasterSlaveRouteDecorator;
 import org.apache.shardingsphere.core.route.router.sharding.ShardingRouter;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.SQLParseEngine;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 
 import java.util.Collections;
 
@@ -34,13 +34,13 @@ import java.util.Collections;
  */
 public final class StatementRoutingEngine {
     
+    private final ShardingRule shardingRule;
+    
     private final ShardingRouter shardingRouter;
     
-    private final ShardingMasterSlaveRouter masterSlaveRouter;
-    
     public StatementRoutingEngine(final ShardingRule shardingRule, final ShardingSphereMetaData metaData, final SQLParseEngine sqlParseEngine) {
+        this.shardingRule = shardingRule;
         shardingRouter = new ShardingRouter(shardingRule, metaData, sqlParseEngine);
-        masterSlaveRouter = new ShardingMasterSlaveRouter(shardingRule.getMasterSlaveRules());
     }
     
     /**
@@ -49,8 +49,11 @@ public final class StatementRoutingEngine {
      * @param logicSQL logic SQL
      * @return route result
      */
-    public SQLRouteResult route(final String logicSQL) {
-        SQLStatement sqlStatement = shardingRouter.parse(logicSQL, false);
-        return masterSlaveRouter.route(shardingRouter.route(logicSQL, Collections.emptyList(), sqlStatement));
+    public ShardingRouteResult route(final String logicSQL) {
+        ShardingRouteResult result = shardingRouter.route(logicSQL, Collections.emptyList(), false);
+        for (MasterSlaveRule each : shardingRule.getMasterSlaveRules()) {
+            result = (ShardingRouteResult) new MasterSlaveRouteDecorator(each).decorate(result);
+        }
+        return result;
     }
 }

@@ -15,28 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.metadata;
+package org.apache.shardingsphere.core.route;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.ConnectionManager;
+import lombok.Setter;
+import org.apache.shardingsphere.core.route.type.RoutingResult;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Map;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
 /**
- * Connection manager of JDBC.
- *
+ * SQL route result.
+ * 
+ * @author gaohongtao
  * @author zhangliang
+ * @author zhaojun
  */
 @RequiredArgsConstructor
-public final class JDBCConnectionManager implements ConnectionManager {
+@Getter
+@Setter
+public class RouteResult {
     
-    private final Map<String, DataSource> dataSourceMap;
+    private final SQLStatementContext sqlStatementContext;
     
-    @Override
-    public Connection getConnection(final String dataSourceName) throws SQLException {
-        return dataSourceMap.get(dataSourceName).getConnection();
-    }
+    private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
+    
+    private RoutingResult routingResult;
 }

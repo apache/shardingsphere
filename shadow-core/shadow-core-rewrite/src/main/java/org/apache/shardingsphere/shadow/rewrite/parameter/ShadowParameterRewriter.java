@@ -32,13 +32,13 @@ import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.Parameter
 @Getter
 @Setter
 public abstract class ShadowParameterRewriter implements ParameterRewriter, ShadowRuleAware {
-
+    
     private ShadowRule shadowRule;
-
+    
     @Override
     public final boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
         return isNeedRewriteForShadow(sqlStatementContext);
     }
-
+    
     protected abstract boolean isNeedRewriteForShadow(SQLStatementContext sqlStatementContext);
 }

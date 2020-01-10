@@ -18,10 +18,13 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import com.google.common.base.Strings;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultSet;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 import org.apache.shardingsphere.sql.parser.relation.SQLStatementContextFactory;
@@ -32,10 +35,12 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.engine.impl.DefaultSQLRewriteEngine;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
@@ -52,27 +57,33 @@ import java.util.Map;
 @Slf4j
 public final class EncryptStatement extends AbstractUnsupportedOperationStatement {
     
+    @Getter
     private final EncryptConnection connection;
     
     private final Statement statement;
+    
+    private final EncryptRuntimeContext runtimeContext;
     
     private SQLStatementContext sqlStatementContext;
     
     private EncryptResultSet resultSet;
     
     public EncryptStatement(final EncryptConnection connection) throws SQLException {
-        statement = connection.getConnection().createStatement();
-        this.connection = connection;
+        this(connection, connection.getConnection().createStatement());
     }
     
     public EncryptStatement(final EncryptConnection connection, final int resultSetType, final int resultSetConcurrency) throws SQLException {
-        statement = connection.getConnection().createStatement(resultSetType, resultSetConcurrency);
-        this.connection = connection;
+        this(connection, connection.getConnection().createStatement(resultSetType, resultSetConcurrency));
     }
     
     public EncryptStatement(final EncryptConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
-        statement = connection.getConnection().createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
+        this(connection, connection.getConnection().createStatement(resultSetType, resultSetConcurrency, resultSetHoldability));
+    }
+    
+    private EncryptStatement(final EncryptConnection connection, final Statement statement) {
         this.connection = connection;
+        this.statement = statement;
+        runtimeContext = connection.getRuntimeContext();
     }
     
     @Override
@@ -81,7 +92,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
             throw new SQLException(SQLExceptionConstant.SQL_STRING_NULL_OR_EMPTY);
         }
         ResultSet resultSet = statement.executeQuery(getRewriteSQL(sql));
-        this.resultSet = new EncryptResultSet(connection.getRuntimeContext(), sqlStatementContext, this, resultSet);
+        this.resultSet = new EncryptResultSet(runtimeContext, sqlStatementContext, this, resultSet);
         return this.resultSet;
     }
     
@@ -92,13 +103,11 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     
     @SuppressWarnings("unchecked")
     private String getRewriteSQL(final String sql) {
-        SQLStatement sqlStatement = connection.getRuntimeContext().getParseEngine().parse(sql, false);
-        RelationMetas relationMetas = getRelationMetas(connection.getRuntimeContext().getTableMetas());
+        SQLStatement sqlStatement = runtimeContext.getParseEngine().parse(sql, false);
+        RelationMetas relationMetas = getRelationMetas(runtimeContext.getMetaData().getTables());
         sqlStatementContext = SQLStatementContextFactory.newInstance(relationMetas, sql, Collections.emptyList(), sqlStatement);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(relationMetas, sqlStatementContext, sql, Collections.emptyList());
-        boolean isQueryWithCipherColumn = connection.getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
-        new EncryptSQLRewriteContextDecorator(connection.getRuntimeContext().getRule(), isQueryWithCipherColumn).decorate(sqlRewriteContext);
-        sqlRewriteContext.generateSQLTokens();
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(runtimeContext.getMetaData(), 
+                runtimeContext.getProperties()).createSQLRewriteContext(sql, Collections.emptyList(), sqlStatementContext, createSQLRewriteContextDecorator(runtimeContext.getRule()));
         String result = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
         showSQL(result);
         return result;
@@ -113,8 +122,14 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
         return new RelationMetas(result);
     }
     
+    private Map<BaseRule, SQLRewriteContextDecorator> createSQLRewriteContextDecorator(final EncryptRule encryptRule) {
+        Map<BaseRule, SQLRewriteContextDecorator> result = new HashMap<>(1, 1);
+        result.put(encryptRule, new EncryptSQLRewriteContextDecorator());
+        return result;
+    }
+    
     private void showSQL(final String sql) {
-        boolean showSQL = connection.getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW);
+        boolean showSQL = runtimeContext.getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW);
         if (showSQL) {
             log.info("Rule Type: encrypt");
             log.info("SQL: {}", sql);
@@ -170,7 +185,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     }
     
     private EncryptResultSet createEncryptResultSet(final Statement statement) throws SQLException {
-        return null == statement.getResultSet() ? null : new EncryptResultSet(connection.getRuntimeContext(), sqlStatementContext, this, statement.getResultSet());
+        return null == statement.getResultSet() ? null : new EncryptResultSet(runtimeContext, sqlStatementContext, this, statement.getResultSet());
     }
     
     @Override
@@ -261,11 +276,6 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     @Override
     public int getResultSetType() throws SQLException {
         return statement.getResultSetType();
-    }
-    
-    @Override
-    public Connection getConnection() {
-        return connection;
     }
     
     @Override

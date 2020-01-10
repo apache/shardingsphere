@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.core.route;
 
-import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -41,11 +41,11 @@ public final class SQLLogger {
      * Print SQL log for master slave rule.
      *
      * @param logicSQL logic SQL
-     * @param dataSourceNames data source names
+     * @param dataSourceName data source name
      */
-    public static void logSQL(final String logicSQL, final Collection<String> dataSourceNames) {
+    public static void logSQL(final String logicSQL, final String dataSourceName) {
         log("Rule Type: master-slave");
-        log("SQL: {} ::: DataSources: {}", logicSQL, Joiner.on(",").join(dataSourceNames));
+        log("SQL: {} ::: DataSource: {}", logicSQL, dataSourceName);
     }
     
     /**
@@ -65,17 +65,6 @@ public final class SQLLogger {
         } else {
             logNormalMode(routeUnits);
         }
-    }
-
-    /**
-     * Print SQL log for shadow rule.
-     *
-     * @param shadowSQL shadow SQL
-     * @param dataSourceName data source name
-     */
-    public static void logShadowSQL(final String shadowSQL, final String dataSourceName) {
-        log("Rule Type: shadow");
-        log("SQL: {} ::: DataSources: {}", shadowSQL, dataSourceName);
     }
     
     private static void logSimpleMode(final Collection<RouteUnit> routeUnits) {

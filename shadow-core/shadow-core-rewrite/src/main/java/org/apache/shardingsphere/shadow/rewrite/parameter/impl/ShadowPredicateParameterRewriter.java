@@ -34,12 +34,12 @@ import java.util.Map;
  * @author zhyee
  */
 public final class ShadowPredicateParameterRewriter extends ShadowParameterRewriter {
-
+    
     @Override
     protected boolean isNeedRewriteForShadow(final SQLStatementContext sqlStatementContext) {
         return true;
     }
-
+    
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
         Optional<ShadowCondition> shadowCondition = new ShadowConditionEngine(getShadowRule()).createShadowCondition(sqlStatementContext);
@@ -47,7 +47,7 @@ public final class ShadowPredicateParameterRewriter extends ShadowParameterRewri
             replaceShadowParameter(parameterBuilder, shadowCondition.get().getPositionIndexMap());
         }
     }
-
+    
     private void replaceShadowParameter(final ParameterBuilder parameterBuilder, final Map<Integer, Integer> positionIndexes) {
         if (!positionIndexes.isEmpty()) {
             for (Map.Entry<Integer, Integer> entry : positionIndexes.entrySet()) {

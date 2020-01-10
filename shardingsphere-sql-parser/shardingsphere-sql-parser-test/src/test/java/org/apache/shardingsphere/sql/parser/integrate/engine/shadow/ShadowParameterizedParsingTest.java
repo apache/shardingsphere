@@ -39,23 +39,23 @@ import static org.junit.Assert.assertThat;
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
 public final class ShadowParameterizedParsingTest {
-
+    
     private static SQLCasesLoader sqlCasesLoader = ShadowSQLCasesRegistry.getInstance().getSqlCasesLoader();
-
+    
     private static ParserResultSetRegistry parserResultSetRegistry = ShadowParserResultSetRegistry.getInstance().getRegistry();
-
+    
     private final String sqlCaseId;
-
+    
     private final String databaseType;
-
+    
     private final SQLCaseType sqlCaseType;
-
+    
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
         assertThat(sqlCasesLoader.countAllSQLCases(), is(parserResultSetRegistry.countAllTestCases()));
         return sqlCasesLoader.getSQLTestParameters();
     }
-
+    
     @Test
     public void assertSupportedSQL() {
         String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());

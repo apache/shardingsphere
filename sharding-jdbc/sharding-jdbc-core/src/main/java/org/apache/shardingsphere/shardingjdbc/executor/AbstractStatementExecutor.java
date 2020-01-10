@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate
 import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCConnectionManager;
+import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCDataSourceMapConnectionManager;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
@@ -154,14 +154,19 @@ public abstract class AbstractStatementExecutor {
         return result;
     }
     
-    protected final boolean isAccumulate() {
+    /**
+     * is accumulate.
+     * 
+     * @return accumulate or not
+     */
+    public final boolean isAccumulate() {
         return !connection.getRuntimeContext().getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames());
     }
     
     /**
      * Clear data.
      *
-     * @throws SQLException sql exception
+     * @throws SQLException SQL exception
      */
     public void clear() throws SQLException {
         clearStatements();
@@ -256,7 +261,7 @@ public abstract class AbstractStatementExecutor {
         ShardingSphereProperties properties = connection.getRuntimeContext().getProperties();
         Map<BaseRule, TableMetaDataInitializer> tableMetaDataInitializes = new HashMap<>(2, 1);
         tableMetaDataInitializes.put(shardingRule, new ShardingTableMetaDataLoader(connection.getRuntimeContext().getMetaData().getDataSources(), connection.getRuntimeContext().getExecutorEngine(), 
-                new JDBCConnectionManager(connection.getDataSourceMap()),
+                new JDBCDataSourceMapConnectionManager(connection.getDataSourceMap()),
                 properties.<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), properties.<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED)));
         if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
             tableMetaDataInitializes.put(shardingRule.getEncryptRule(), new EncryptTableMetaDataDecorator());

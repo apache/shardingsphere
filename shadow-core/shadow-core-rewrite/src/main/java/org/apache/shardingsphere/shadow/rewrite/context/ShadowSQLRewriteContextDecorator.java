@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.shadow.rewrite.context;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shadow.rewrite.parameter.ShadowParameterRewriterBuilder;
 import org.apache.shardingsphere.core.rule.ShadowRule;
+import org.apache.shardingsphere.shadow.rewrite.parameter.ShadowParameterRewriterBuilder;
 import org.apache.shardingsphere.shadow.rewrite.token.ShadowTokenGenerateBuilder;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
@@ -30,13 +30,10 @@ import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.Parameter
  *
  * @author zhyee
  */
-@RequiredArgsConstructor
-public final class ShadowSQLRewriteContextDecorator implements SQLRewriteContextDecorator {
-
-    private final ShadowRule shadowRule;
-
+public final class ShadowSQLRewriteContextDecorator implements SQLRewriteContextDecorator<ShadowRule> {
+    
     @Override
-    public void decorate(final SQLRewriteContext sqlRewriteContext) {
+    public void decorate(final ShadowRule shadowRule, final ShardingSphereProperties properties, final SQLRewriteContext sqlRewriteContext) {
         for (ParameterRewriter each : new ShadowParameterRewriterBuilder(shadowRule).getParameterRewriters(sqlRewriteContext.getRelationMetas())) {
             if (!sqlRewriteContext.getParameters().isEmpty() && each.isNeedRewrite(sqlRewriteContext.getSqlStatementContext())) {
                 each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());
