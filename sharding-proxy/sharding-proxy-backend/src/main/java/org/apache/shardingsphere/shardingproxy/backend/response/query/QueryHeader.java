@@ -71,7 +71,7 @@ public final class QueryHeader {
         String actualTableName = resultSetMetaData.getTableName(columnIndex);
         if (null != actualTableName && logicSchema instanceof ShardingSchema) {
             Collection<String> logicTableNames = logicSchema.getShardingRule().getLogicTableNames(actualTableName);
-            table = logicTableNames.isEmpty()? "" : logicTableNames.iterator().next();
+            table = logicTableNames.isEmpty() ? "" : logicTableNames.iterator().next();
             TableMetaData tableMetaData = logicSchema.getMetaData().getTables().get(table);
             primaryKey = null != tableMetaData && tableMetaData.getColumns().get(resultSetMetaData.getColumnName(columnIndex).toLowerCase())
                     .isPrimaryKey();
