@@ -25,6 +25,7 @@ import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * Query header.
@@ -69,7 +70,8 @@ public final class QueryHeader {
         autoIncrement = resultSetMetaData.isAutoIncrement(columnIndex);
         String actualTableName = resultSetMetaData.getTableName(columnIndex);
         if (null != actualTableName && logicSchema instanceof ShardingSchema) {
-            table = logicSchema.getShardingRule().getLogicTableNames(actualTableName).iterator().next();
+            Collection<String> logicTableNames = logicSchema.getShardingRule().getLogicTableNames(actualTableName);
+            table = logicTableNames.isEmpty()? null : logicTableNames.iterator().next();
             TableMetaData tableMetaData = logicSchema.getMetaData().getTables().get(table);
             primaryKey = null != tableMetaData && tableMetaData.getColumns().get(resultSetMetaData.getColumnName(columnIndex).toLowerCase())
                     .isPrimaryKey();
