@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.Execut
 import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareCallback;
 import org.apache.shardingsphere.shardingjdbc.executor.AbstractStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 import org.apache.shardingsphere.underlying.route.RouteUnit;
@@ -72,11 +73,11 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     /**
      * Initialize executor.
      *
-     * @param routeResult route result
+     * @param sqlStatementContext SQL statement context
      * @throws SQLException SQL exception
      */
-    public void init(final RouteResult routeResult) throws SQLException {
-        setSqlStatementContext(routeResult.getSqlStatementContext());
+    public void init(final SQLStatementContext sqlStatementContext) throws SQLException {
+        setSqlStatementContext(sqlStatementContext);
         getInputGroups().addAll(obtainExecuteGroups(routeUnits));
     }
     

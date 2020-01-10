@@ -255,7 +255,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private void initBatchPreparedStatementExecutor() throws SQLException {
-        batchPreparedStatementExecutor.init(shardingRouteResult);
+        batchPreparedStatementExecutor.init(shardingRouteResult.getSqlStatementContext());
         setBatchParametersForStatements();
     }
     
