@@ -382,7 +382,7 @@ public class ShardingRule implements BaseRule {
     }
     
     /**
-     * Get logic table names base on actual table name.
+     * Get logic table names based on actual table name.
      *
      * @param actualTableName actual table name
      * @return logic table name
