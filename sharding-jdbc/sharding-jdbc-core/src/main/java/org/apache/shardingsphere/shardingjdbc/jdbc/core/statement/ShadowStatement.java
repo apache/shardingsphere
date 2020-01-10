@@ -184,8 +184,9 @@ public final class ShadowStatement extends AbstractStatementAdapter {
         sqlStatementContext = SQLStatementContextFactory.newInstance(getRelationMetas(connection.getRuntimeContext().getMetaData().getTables()), sql, Collections.emptyList(), sqlStatement);
         ShadowJudgementEngine shadowJudgementEngine = new SimpleJudgementEngine(connection.getRuntimeContext().getRule(), sqlStatementContext);
         isShadowSQL = shadowJudgementEngine.isShadowSQL();
-        statement = shadowStatementGenerator.createStatement();
-        return statement;
+        Statement result = shadowStatementGenerator.createStatement();
+        statement = result;
+        return result;
     }
     
     private String rewriteSQL(final String sql) {

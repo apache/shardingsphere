@@ -27,7 +27,6 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupport
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
@@ -181,7 +180,7 @@ public final class ShadowConnection extends AbstractUnsupportedOperationConnecti
     }
     
     @Override
-    public int getHoldability() {
-        return ResultSet.CLOSE_CURSORS_AT_COMMIT;
+    public int getHoldability() throws SQLException {
+        return actualConnection.getHoldability();
     }
 }
