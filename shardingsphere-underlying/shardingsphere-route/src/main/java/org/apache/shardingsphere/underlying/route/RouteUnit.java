@@ -17,16 +17,23 @@
 
 package org.apache.shardingsphere.underlying.route;
 
+import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 /**
  * Route unit.
  * 
- * @author gaohongtao
+ * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
@@ -34,7 +41,59 @@ import lombok.ToString;
 @ToString
 public final class RouteUnit {
     
-    private final String dataSourceName;
+    private final String logicDataSourceName;
     
-    private final SQLUnit sqlUnit;
+    private final String actualDataSourceName;
+    
+    private final List<TableUnit> tableUnits = new LinkedList<>();
+    
+    public RouteUnit(final String dataSourceName) {
+        logicDataSourceName = dataSourceName;
+        actualDataSourceName = dataSourceName;
+    }
+    
+    /**
+     * Get routing table unit via data source name and actual table name.
+     *
+     * @param dataSourceName data source name
+     * @param actualTableName actual table name
+     * @return routing table unit
+     */
+    public Optional<TableUnit> getTableUnit(final String dataSourceName, final String actualTableName) {
+        for (TableUnit each : tableUnits) {
+            if (dataSourceName.equalsIgnoreCase(logicDataSourceName) && actualTableName.equalsIgnoreCase(each.getActualTableName())) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.absent();
+    }
+    
+    /**
+     * Get actual tables' names via data source name.
+     *
+     * @param logicTableName logic table name
+     * @return  actual tables' names
+     */
+    public Set<String> getActualTableNames(final String logicTableName) {
+        Set<String> result = new HashSet<>();
+        for (TableUnit each : tableUnits) {
+            if (logicTableName.equalsIgnoreCase(each.getLogicTableName())) {
+                result.add(each.getActualTableName());
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Get logic tables' names via data source name.
+     *
+     * @return  logic tables' names
+     */
+    public Set<String> getLogicTableNames() {
+        Set<String> result = new HashSet<>(tableUnits.size(), 1);
+        for (TableUnit each : tableUnits) {
+            result.add(each.getLogicTableName());
+        }
+        return result;
+    }
 }

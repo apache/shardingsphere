@@ -52,10 +52,10 @@ public final class PreparedStatementRoutingEngine {
      * @param parameters SQL parameters
      * @return route result
      */
-    public ShardingRouteResult route(final List<Object> parameters) {
-        ShardingRouteResult result = shardingRouter.route(logicSQL, parameters, true);
+    public ShardingRouteContext route(final List<Object> parameters) {
+        ShardingRouteContext result = shardingRouter.route(logicSQL, parameters, true);
         for (MasterSlaveRule each : shardingRule.getMasterSlaveRules()) {
-            result = (ShardingRouteResult) new MasterSlaveRouteDecorator(each).decorate(result);
+            result = (ShardingRouteContext) new MasterSlaveRouteDecorator(each).decorate(result);
         }
         return result;
     }

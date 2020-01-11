@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.route.fixture;
 
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.route.ShardingRouteResult;
+import org.apache.shardingsphere.core.route.ShardingRouteContext;
 import org.apache.shardingsphere.core.route.hook.RoutingHook;
 
 import lombok.Getter;
@@ -28,7 +28,7 @@ public final class RoutingHookFixture implements RoutingHook {
     
     private String sql;
     
-    private ShardingRouteResult sqlRouteResult;
+    private ShardingRouteContext routeContext;
     
     private TableMetas tableMetas;
     
@@ -40,8 +40,8 @@ public final class RoutingHookFixture implements RoutingHook {
     }
     
     @Override
-    public void finishSuccess(final ShardingRouteResult shardingRouteResult, final TableMetas tableMetas) {
-        this.sqlRouteResult = shardingRouteResult;
+    public void finishSuccess(final ShardingRouteContext shardingRouteContext, final TableMetas tableMetas) {
+        this.routeContext = shardingRouteContext;
         this.tableMetas = tableMetas;
     }
     

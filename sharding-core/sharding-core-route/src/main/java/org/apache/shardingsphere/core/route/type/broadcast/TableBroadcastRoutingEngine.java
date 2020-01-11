@@ -25,9 +25,9 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
-import org.apache.shardingsphere.core.route.type.RoutingResult;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
-import org.apache.shardingsphere.core.route.type.TableUnit;
+import org.apache.shardingsphere.underlying.route.RouteResult;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
+import org.apache.shardingsphere.underlying.route.TableUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
@@ -52,10 +52,10 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     private final SQLStatementContext sqlStatementContext;
     
     @Override
-    public RoutingResult route() {
-        RoutingResult result = new RoutingResult();
+    public RouteResult route() {
+        RouteResult result = new RouteResult();
         for (String each : getLogicTableNames()) {
-            result.getRoutingUnits().addAll(getAllRoutingUnits(each));
+            result.getRouteUnits().addAll(getAllRouteUnits(each));
         }
         return result;
     }
@@ -84,13 +84,13 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
         return Optional.absent();
     }
     
-    private Collection<RoutingUnit> getAllRoutingUnits(final String logicTableName) {
-        Collection<RoutingUnit> result = new LinkedList<>();
+    private Collection<RouteUnit> getAllRouteUnits(final String logicTableName) {
+        Collection<RouteUnit> result = new LinkedList<>();
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         for (DataNode each : tableRule.getActualDataNodes()) {
-            RoutingUnit routingUnit = new RoutingUnit(each.getDataSourceName());
-            routingUnit.getTableUnits().add(new TableUnit(logicTableName, each.getTableName()));
-            result.add(routingUnit);
+            RouteUnit routeUnit = new RouteUnit(each.getDataSourceName());
+            routeUnit.getTableUnits().add(new TableUnit(logicTableName, each.getTableName()));
+            result.add(routeUnit);
         }
         return result;
     }

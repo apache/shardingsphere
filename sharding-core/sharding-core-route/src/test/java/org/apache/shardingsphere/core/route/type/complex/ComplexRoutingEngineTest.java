@@ -27,8 +27,8 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.P
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.fixture.AbstractRoutingEngineTest;
-import org.apache.shardingsphere.core.route.type.RoutingResult;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.RouteResult;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Test;
 
@@ -51,10 +51,10 @@ public final class ComplexRoutingEngineTest extends AbstractRoutingEngineTest {
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()),
                 new PaginationContext(null, null, Collections.emptyList()));
         ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(shardingRule, Arrays.asList("t_order", "t_order_item"), selectSQLStatementContext, createShardingConditions("t_order"));
-        RoutingResult routingResult = complexRoutingEngine.route();
-        List<RoutingUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits());
-        assertThat(routingResult, instanceOf(RoutingResult.class));
-        assertThat(routingResult.getRoutingUnits().size(), is(1));
+        RouteResult routeResult = complexRoutingEngine.route();
+        List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
+        assertThat(routeResult, instanceOf(RouteResult.class));
+        assertThat(routeResult.getRouteUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_1"));
         assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order_1"));
@@ -69,10 +69,10 @@ public final class ComplexRoutingEngineTest extends AbstractRoutingEngineTest {
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()),
                 new PaginationContext(null, null, Collections.emptyList()));
         ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(shardingRule, Arrays.asList("t_order", "t_config"), selectSQLStatementContext, createShardingConditions("t_order"));
-        RoutingResult routingResult = complexRoutingEngine.route();
-        List<RoutingUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits());
-        assertThat(routingResult, instanceOf(RoutingResult.class));
-        assertThat(routingResult.getRoutingUnits().size(), is(1));
+        RouteResult routeResult = complexRoutingEngine.route();
+        List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
+        assertThat(routeResult, instanceOf(RouteResult.class));
+        assertThat(routeResult.getRouteUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_1"));
         assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order_1"));

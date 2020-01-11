@@ -21,7 +21,7 @@ import org.apache.shardingsphere.underlying.common.constant.properties.ShardingS
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
-import org.apache.shardingsphere.core.route.ShardingRouteResult;
+import org.apache.shardingsphere.core.route.ShardingRouteContext;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public final class PreparedQueryShardingEngine extends BaseShardingEngine {
     }
     
     @Override
-    protected ShardingRouteResult route(final String sql, final List<Object> parameters) {
+    protected ShardingRouteContext route(final String sql, final List<Object> parameters) {
         return routingEngine.route(parameters);
     }
 }

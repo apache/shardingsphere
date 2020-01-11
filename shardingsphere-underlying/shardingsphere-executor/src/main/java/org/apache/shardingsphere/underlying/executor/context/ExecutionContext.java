@@ -15,21 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.aware;
+package org.apache.shardingsphere.underlying.executor.context;
 
-import org.apache.shardingsphere.core.route.ShardingRouteResult;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
 /**
- * Sharding route result aware.
+ * Execution context.
  *
  * @author zhangliang
  */
-public interface ShardingRouteResultAware {
+@RequiredArgsConstructor
+@Getter
+public class ExecutionContext {
     
-    /**
-     * Set sharding route result.
-     * 
-     * @param shardingRouteResult sharding route result
-     */
-    void setShardingRouteResult(ShardingRouteResult shardingRouteResult);
+    private final SQLStatementContext sqlStatementContext;
+    
+    private final Collection<ExecutionUnit> executionUnits = new LinkedHashSet<>();
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.shard.result.ExecutionContext;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.sharding.merge.ShardingResultMergerEngine;
@@ -92,7 +92,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private BackendResponse execute(final ExecutionContext executionContext) throws SQLException {
-        if (executionContext.getRouteUnits().isEmpty()) {
+        if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponse();
         }
         SQLStatementContext sqlStatementContext = executionContext.getSqlStatementContext();

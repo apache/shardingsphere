@@ -25,7 +25,7 @@ import org.apache.shardingsphere.underlying.common.exception.ShardingSphereExcep
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
-import org.apache.shardingsphere.core.route.type.RoutingResult;
+import org.apache.shardingsphere.underlying.route.RouteResult;
 import org.apache.shardingsphere.core.route.type.standard.StandardRoutingEngine;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -53,8 +53,8 @@ public final class ComplexRoutingEngine implements RoutingEngine {
     private final ShardingConditions shardingConditions;
     
     @Override
-    public RoutingResult route() {
-        Collection<RoutingResult> result = new ArrayList<>(logicTables.size());
+    public RouteResult route() {
+        Collection<RouteResult> result = new ArrayList<>(logicTables.size());
         Collection<String> bindingTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (String each : logicTables) {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);

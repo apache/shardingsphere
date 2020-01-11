@@ -22,21 +22,18 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.List;
-
 /**
- * SQL unit.
- *
+ * Table unit.
+ * 
  * @author maxiaoguang
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(of = { "sql" })
+@EqualsAndHashCode
 @ToString
-public final class SQLUnit {
+public final class TableUnit {
     
-    private final String sql;
+    private final String logicTableName;
     
-    private final List<Object> parameters;
+    private final String actualTableName;
 }

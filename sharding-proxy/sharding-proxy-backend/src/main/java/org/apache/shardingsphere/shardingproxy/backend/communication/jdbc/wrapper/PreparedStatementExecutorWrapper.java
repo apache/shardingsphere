@@ -19,9 +19,9 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapp
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.router.masterslave.MasterSlaveRouter;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
 import org.apache.shardingsphere.core.shard.PreparedQueryShardingEngine;
-import org.apache.shardingsphere.core.shard.result.ExecutionContext;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
@@ -41,8 +41,8 @@ import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.impl.DefaultSQLRewriteEngine;
-import org.apache.shardingsphere.underlying.route.RouteUnit;
-import org.apache.shardingsphere.underlying.route.SQLUnit;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -95,9 +95,9 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         sqlRewriteContext.generateSQLTokens();
         String rewriteSQL = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
         ExecutionContext result = new ExecutionContext(sqlStatementContext);
-        for (RoutingUnit each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), logicSchema.getParseEngine(),
-                SHARDING_PROXY_CONTEXT.getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW)).route(rewriteSQL, parameters, true).getRoutingResult().getRoutingUnits()) {
-            result.getRouteUnits().add(new RouteUnit(each.getActualDataSourceName(), new SQLUnit(rewriteSQL, parameters)));
+        for (RouteUnit each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), logicSchema.getParseEngine(),
+                SHARDING_PROXY_CONTEXT.getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW)).route(rewriteSQL, parameters, true).getRouteResult().getRouteUnits()) {
+            result.getExecutionUnits().add(new ExecutionUnit(each.getActualDataSourceName(), new SQLUnit(rewriteSQL, parameters)));
         }
         return result;
     }
@@ -112,8 +112,8 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
                 .createSQLRewriteContext(sql, parameters, sqlStatementContext, createSQLRewriteContextDecorator(encryptSchema.getEncryptRule()));
         SQLRewriteResult sqlRewriteResult = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
         ExecutionContext result = new ExecutionContext(sqlStatementContext);
-        result.getRouteUnits().add(
-            new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));
+        result.getExecutionUnits().add(
+            new ExecutionUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));
         return result;
     }
     
@@ -126,7 +126,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     private ExecutionContext doTransparentRoute(final String sql) {
         SQLStatement sqlStatement = logicSchema.getParseEngine().parse(sql, false);
         ExecutionContext result = new ExecutionContext(new CommonSQLStatementContext(sqlStatement));
-        result.getRouteUnits().add(new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sql, Collections.emptyList())));
+        result.getExecutionUnits().add(new ExecutionUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sql, Collections.emptyList())));
         return result;
     }
     

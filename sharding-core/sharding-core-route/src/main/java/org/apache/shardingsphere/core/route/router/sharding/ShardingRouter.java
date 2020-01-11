@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.route.ShardingRouteResult;
+import org.apache.shardingsphere.core.route.ShardingRouteContext;
 import org.apache.shardingsphere.core.route.router.DateNodeRouter;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.route.router.sharding.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.core.route.router.sharding.validator.ShardingStatementValidatorFactory;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
-import org.apache.shardingsphere.core.route.type.RoutingResult;
+import org.apache.shardingsphere.underlying.route.RouteResult;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
@@ -71,7 +71,7 @@ public final class ShardingRouter implements DateNodeRouter {
     
     @Override
     @SuppressWarnings("unchecked")
-    public ShardingRouteResult route(final String sql, final List<Object> parameters, final boolean useCache) {
+    public ShardingRouteContext route(final String sql, final List<Object> parameters, final boolean useCache) {
         SQLStatement sqlStatement = parse(sql, useCache);
         Optional<ShardingStatementValidator> shardingStatementValidator = ShardingStatementValidatorFactory.newInstance(sqlStatement);
         if (shardingStatementValidator.isPresent()) {
@@ -87,13 +87,11 @@ public final class ShardingRouter implements DateNodeRouter {
             mergeShardingConditions(shardingConditions);
         }
         RoutingEngine routingEngine = RoutingEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions);
-        RoutingResult routingResult = routingEngine.route();
+        RouteResult routeResult = routingEngine.route();
         if (needMergeShardingValues) {
-            Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");
+            Preconditions.checkState(1 == routeResult.getRouteUnits().size(), "Must have one sharding with subquery.");
         }
-        ShardingRouteResult result = new ShardingRouteResult(sqlStatementContext, shardingConditions, generatedKey.orNull());
-        result.setRoutingResult(routingResult);
-        return result;
+        return new ShardingRouteContext(sqlStatementContext, routeResult, shardingConditions, generatedKey.orNull());
     }
     
     /*

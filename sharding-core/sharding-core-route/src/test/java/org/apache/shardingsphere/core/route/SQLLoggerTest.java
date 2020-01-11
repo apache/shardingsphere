@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.core.route;
 
-import org.apache.shardingsphere.underlying.route.RouteUnit;
-import org.apache.shardingsphere.underlying.route.SQLUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,103 +27,29 @@ import org.slf4j.Logger;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 import static org.mockito.Mockito.inOrder;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SQLLoggerTest {
     
-    private String sql;
-    
-    private Collection<String> dataSourceNames;
-    
-    private Collection<RouteUnit> routeUnits;
+    private static final String SQL = "SELECT * FROM t_user";
     
     @Mock
     private Logger logger;
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        this.sql = "select * from user";
-        this.dataSourceNames = Arrays.asList("db1", "db2", "db3");
-        this.routeUnits = mockRouteUnits(dataSourceNames, sql);
         Field field = SQLLogger.class.getDeclaredField("log");
         setFinalStatic(field, logger);
     }
     
     @Test
-    public void assertLogSQLShard() {
-        SQLLogger.logSQL(sql, false, null, routeUnits);
-        InOrder inOrder = inOrder(logger);
-        inOrder.verify(logger).info("Rule Type: sharding", new Object[]{});
-        inOrder.verify(logger).info("Logic SQL: {}", new Object[]{sql});
-        inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
-        inOrder.verify(logger).info("Actual SQL: {} ::: {}", new Object[]{"db1", sql});
-        inOrder.verify(logger).info("Actual SQL: {} ::: {}", new Object[]{"db2", sql});
-        inOrder.verify(logger).info("Actual SQL: {} ::: {}", new Object[]{"db3", sql});
-    }
-    
-    @Test
-    public void assertLogSQLShardWithParameters() {
-        List<Object> parameters = routeUnits.iterator().next().getSqlUnit().getParameters();
-        parameters.add("parameter");
-        SQLLogger.logSQL(sql, false, null, routeUnits);
-        InOrder inOrder = inOrder(logger);
-        inOrder.verify(logger).info("Rule Type: sharding", new Object[]{});
-        inOrder.verify(logger).info("Logic SQL: {}", new Object[]{sql});
-        inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
-        inOrder.verify(logger).info("Actual SQL: {} ::: {} ::: {}", "db1", sql, parameters);
-        inOrder.verify(logger).info("Actual SQL: {} ::: {}", new Object[]{"db2", sql});
-        inOrder.verify(logger).info("Actual SQL: {} ::: {}", new Object[]{"db3", sql});
-    }
-    
-    @Test
-    public void assertLogSQLShardSimple() {
-        SQLLogger.logSQL(sql, true, null, routeUnits);
-        InOrder inOrder = inOrder(logger);
-        inOrder.verify(logger).info("Rule Type: sharding", new Object[]{});
-        inOrder.verify(logger).info("Logic SQL: {}", new Object[]{sql});
-        inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
-        inOrder.verify(logger).info("Actual SQL(simple): {} ::: {}", new Object[]{buildDataSourceNamesSet(), routeUnits.size()});
-    }
-    
-    @Test
     public void assertLogSQLMasterSlave() {
-        SQLLogger.logSQL(sql, "ms_ds");
+        SQLLogger.logSQL(SQL, "ms_ds");
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Rule Type: master-slave", new Object[]{});
-        inOrder.verify(logger).info("SQL: {} ::: DataSource: {}", new Object[]{sql, "ms_ds"});
-    }
-    
-    private Set<String> buildDataSourceNamesSet() {
-        Set<String> dataSourceNamesSet = new HashSet<>(routeUnits.size());
-        for (RouteUnit each : routeUnits) {
-            dataSourceNamesSet.add(each.getDataSourceName());
-        }
-        return dataSourceNamesSet;
-    }
-    
-    private Collection<RouteUnit> mockRouteUnits(final Collection<String> dataSourceNames, final String sql) {
-        List<RouteUnit> results = new LinkedList<>();
-        for (String dsName : dataSourceNames) {
-            results.addAll(mockOneShard(dsName, 1, sql));
-        }
-        return results;
-    }
-    
-    private Collection<RouteUnit> mockOneShard(final String dsName, final int size, final String sql) {
-        Collection<RouteUnit> result = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            result.add(new RouteUnit(dsName, new SQLUnit(sql, new ArrayList<>())));
-        }
-        return result;
+        inOrder.verify(logger).info("SQL: {} ::: DataSource: {}", new Object[]{SQL, "ms_ds"});
     }
     
     private static void setFinalStatic(final Field field, final Object newValue) throws NoSuchFieldException, IllegalAccessException {

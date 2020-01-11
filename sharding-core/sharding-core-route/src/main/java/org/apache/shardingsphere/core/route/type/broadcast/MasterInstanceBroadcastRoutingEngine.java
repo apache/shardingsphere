@@ -21,8 +21,8 @@ import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
-import org.apache.shardingsphere.core.route.type.RoutingResult;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.RouteResult;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -39,13 +39,13 @@ public final class MasterInstanceBroadcastRoutingEngine implements RoutingEngine
     private final DataSourceMetas dataSourceMetas;
     
     @Override
-    public RoutingResult route() {
-        RoutingResult result = new RoutingResult();
+    public RouteResult route() {
+        RouteResult result = new RouteResult();
         for (String each : shardingRule.getShardingDataSourceNames().getDataSourceNames()) {
             if (dataSourceMetas.getAllInstanceDataSourceNames().contains(each)) {
                 Optional<MasterSlaveRule> masterSlaveRule = shardingRule.findMasterSlaveRule(each);
                 if (!masterSlaveRule.isPresent() || masterSlaveRule.get().getMasterDataSourceName().equals(each)) {
-                    result.getRoutingUnits().add(new RoutingUnit(each));
+                    result.getRouteUnits().add(new RouteUnit(each));
                 }
             }
         }

@@ -19,11 +19,11 @@ package org.apache.shardingsphere.sharding.rewrite.parameter.impl;
 
 import com.google.common.base.Optional;
 import lombok.Setter;
-import org.apache.shardingsphere.core.route.ShardingRouteResult;
+import org.apache.shardingsphere.core.route.ShardingRouteContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRouteResultAware;
+import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRouteContextAware;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
@@ -36,26 +36,26 @@ import java.util.List;
  * @author zhangliang
  */
 @Setter
-public final class ShardingPaginationParameterRewriter implements ParameterRewriter, ShardingRouteResultAware {
+public final class ShardingPaginationParameterRewriter implements ParameterRewriter, ShardingRouteContextAware {
     
-    private ShardingRouteResult shardingRouteResult;
+    private ShardingRouteContext shardingRouteContext;
     
     @Override
     public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
-        return shardingRouteResult.getSqlStatementContext() instanceof SelectSQLStatementContext
-                && ((SelectSQLStatementContext) shardingRouteResult.getSqlStatementContext()).getPaginationContext().isHasPagination() && !shardingRouteResult.getRoutingResult().isSingleRouting();
+        return sqlStatementContext instanceof SelectSQLStatementContext
+                && ((SelectSQLStatementContext) sqlStatementContext).getPaginationContext().isHasPagination() && !shardingRouteContext.getRouteResult().isSingleRouting();
     }
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        PaginationContext pagination = ((SelectSQLStatementContext) shardingRouteResult.getSqlStatementContext()).getPaginationContext();
+        PaginationContext pagination = ((SelectSQLStatementContext) sqlStatementContext).getPaginationContext();
         Optional<Integer> offsetParameterIndex = pagination.getOffsetParameterIndex();
         if (offsetParameterIndex.isPresent()) {
             rewriteOffset(pagination, offsetParameterIndex.get(), (StandardParameterBuilder) parameterBuilder);
         }
         Optional<Integer> rowCountParameterIndex = pagination.getRowCountParameterIndex();
         if (rowCountParameterIndex.isPresent()) {
-            rewriteRowCount(pagination, rowCountParameterIndex.get(), (StandardParameterBuilder) parameterBuilder);
+            rewriteRowCount(pagination, rowCountParameterIndex.get(), (StandardParameterBuilder) parameterBuilder, sqlStatementContext);
         }
     }
     
@@ -63,7 +63,8 @@ public final class ShardingPaginationParameterRewriter implements ParameterRewri
         parameterBuilder.addReplacedParameters(offsetParameterIndex, pagination.getRevisedOffset());
     }
     
-    private void rewriteRowCount(final PaginationContext pagination, final int rowCountParameterIndex, final StandardParameterBuilder parameterBuilder) {
-        parameterBuilder.addReplacedParameters(rowCountParameterIndex, pagination.getRevisedRowCount((SelectSQLStatementContext) shardingRouteResult.getSqlStatementContext()));
+    private void rewriteRowCount(final PaginationContext pagination, 
+                                 final int rowCountParameterIndex, final StandardParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext) {
+        parameterBuilder.addReplacedParameters(rowCountParameterIndex, pagination.getRevisedRowCount((SelectSQLStatementContext) sqlStatementContext));
     }
 }

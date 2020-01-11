@@ -49,10 +49,10 @@ public final class StatementRoutingEngine {
      * @param logicSQL logic SQL
      * @return route result
      */
-    public ShardingRouteResult route(final String logicSQL) {
-        ShardingRouteResult result = shardingRouter.route(logicSQL, Collections.emptyList(), false);
+    public ShardingRouteContext route(final String logicSQL) {
+        ShardingRouteContext result = shardingRouter.route(logicSQL, Collections.emptyList(), false);
         for (MasterSlaveRule each : shardingRule.getMasterSlaveRules()) {
-            result = (ShardingRouteResult) new MasterSlaveRouteDecorator(each).decorate(result);
+            result = (ShardingRouteContext) new MasterSlaveRouteDecorator(each).decorate(result);
         }
         return result;
     }

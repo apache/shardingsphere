@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.route.type.ignore;
 
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
-import org.apache.shardingsphere.core.route.type.RoutingResult;
+import org.apache.shardingsphere.underlying.route.RouteResult;
 
 /**
  * Ignore routing engine.
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.route.type.RoutingResult;
 public final class IgnoreRoutingEngine implements RoutingEngine {
     
     @Override
-    public RoutingResult route() {
-        return new RoutingResult();
+    public RouteResult route() {
+        return new RouteResult();
     }
 }

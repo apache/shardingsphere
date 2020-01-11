@@ -15,22 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.pojo;
+package org.apache.shardingsphere.underlying.executor.context;
 
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
- * Routing unit aware.
- *
- * @author zhangliang
+ * Execution unit.
+ * 
+ * @author gaohongtao
+ * @author maxiaoguang
  */
-public interface RoutingUnitAware {
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
+@ToString
+public final class ExecutionUnit {
     
-    /**
-     * To string.
-     * 
-     * @param routingUnit routing unit
-     * @return literal
-     */
-    String toString(RoutingUnit routingUnit);
+    private final String dataSourceName;
+    
+    private final SQLUnit sqlUnit;
 }

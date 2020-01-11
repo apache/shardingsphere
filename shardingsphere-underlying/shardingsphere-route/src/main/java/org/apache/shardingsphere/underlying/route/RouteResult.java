@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.type;
+package org.apache.shardingsphere.underlying.route;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
@@ -30,14 +30,14 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Routing result.
+ * Route result.
  * 
  * @author zhangliang
  */
 @Getter
-public final class RoutingResult {
+public final class RouteResult {
     
-    private final Collection<RoutingUnit> routingUnits = new LinkedHashSet<>();
+    private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
     
     /**
      * Judge is route for single database and table only or not.
@@ -45,7 +45,7 @@ public final class RoutingResult {
      * @return is route for single database and table only or not
      */
     public boolean isSingleRouting() {
-        return 1 == routingUnits.size();
+        return 1 == routeUnits.size();
     }
     
     /**
@@ -54,8 +54,8 @@ public final class RoutingResult {
      * @return all data source names
      */
     public Collection<String> getDataSourceNames() {
-        Collection<String> result = new HashSet<>(routingUnits.size(), 1);
-        for (RoutingUnit each : routingUnits) {
+        Collection<String> result = new HashSet<>(routeUnits.size(), 1);
+        for (RouteUnit each : routeUnits) {
             result.add(each.getActualDataSourceName());
         }
         return result;
@@ -69,7 +69,7 @@ public final class RoutingResult {
      * @return routing table unit
      */
     public Optional<TableUnit> getTableUnit(final String dataSourceName, final String actualTableName) {
-        for (RoutingUnit each : routingUnits) {
+        for (RouteUnit each : routeUnits) {
             Optional<TableUnit> result = each.getTableUnit(dataSourceName, actualTableName);
             if (result.isPresent()) {
                 return result;
@@ -101,7 +101,7 @@ public final class RoutingResult {
     
     private Set<String> getActualTableNames(final String dataSourceName, final String logicTableName) {
         Set<String> result = new HashSet<>();
-        for (RoutingUnit each : routingUnits) {
+        for (RouteUnit each : routeUnits) {
             if (dataSourceName.equalsIgnoreCase(each.getActualDataSourceName())) {
                 result.addAll(each.getActualTableNames(logicTableName));
             }
@@ -128,7 +128,7 @@ public final class RoutingResult {
     
     private Set<String> getLogicTableNames(final String dataSourceName) {
         Set<String> result = new HashSet<>();
-        for (RoutingUnit each : routingUnits) {
+        for (RouteUnit each : routeUnits) {
             if (dataSourceName.equalsIgnoreCase(each.getActualDataSourceName())) {
                 result.addAll(each.getLogicTableNames());
             }

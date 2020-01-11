@@ -68,8 +68,8 @@ public final class PreparedQueryShardingEngineTest extends BaseShardingEngineTes
     }
     
     protected void assertShard() {
-        when(routingEngine.route(getParameters())).thenReturn(createSQLRouteResult());
-        assertSQLRouteResult(shardingEngine.shard(getSql(), getParameters()));
+        when(routingEngine.route(getParameters())).thenReturn(createSQLRouteContext());
+        assertExecutionContext(shardingEngine.shard(getSql(), getParameters()));
     }
     
     @Test(expected = SQLException.class)

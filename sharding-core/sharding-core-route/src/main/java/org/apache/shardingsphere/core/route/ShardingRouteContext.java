@@ -22,29 +22,31 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.route.RouteContext;
+import org.apache.shardingsphere.underlying.route.RouteResult;
 
 /**
- * SQL route result.
+ * SQL route context.
  * 
  * @author gaohongtao
  * @author zhangliang
  * @author zhaojun
  */
 @Getter
-public final class ShardingRouteResult extends RouteResult {
+public final class ShardingRouteContext extends RouteContext {
     
     private final ShardingConditions shardingConditions;
     
     private final GeneratedKey generatedKey;
     
-    public ShardingRouteResult(final SQLStatementContext sqlStatementContext, final ShardingConditions shardingConditions, final GeneratedKey generatedKey) {
-        super(sqlStatementContext);
+    public ShardingRouteContext(final SQLStatementContext sqlStatementContext, final RouteResult routeResult, final ShardingConditions shardingConditions, final GeneratedKey generatedKey) {
+        super(sqlStatementContext, routeResult);
         this.shardingConditions = shardingConditions;
         this.generatedKey = generatedKey;
     }
     
-    public ShardingRouteResult(final SQLStatementContext sqlStatementContext, final ShardingConditions shardingConditions) {
-        this(sqlStatementContext, shardingConditions, null);
+    public ShardingRouteContext(final SQLStatementContext sqlStatementContext, final RouteResult routeResult, final ShardingConditions shardingConditions) {
+        this(sqlStatementContext, routeResult, shardingConditions, null);
     }
     
     /**

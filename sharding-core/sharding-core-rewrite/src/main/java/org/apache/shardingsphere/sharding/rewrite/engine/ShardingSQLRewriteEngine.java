@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rewrite.engine;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
@@ -46,11 +46,11 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     
     private final ShardingConditions shardingConditions;
     
-    private final RoutingUnit routingUnit;
+    private final RouteUnit routeUnit;
     
     @Override
     public SQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
-        return new SQLRewriteResult(new ShardingSQLBuilder(sqlRewriteContext, shardingRule, routingUnit).toSQL(), getParameters(sqlRewriteContext.getParameterBuilder()));
+        return new SQLRewriteResult(new ShardingSQLBuilder(sqlRewriteContext, shardingRule, routeUnit).toSQL(), getParameters(sqlRewriteContext.getParameterBuilder()));
     }
     
     private List<Object> getParameters(final ParameterBuilder parameterBuilder) {
@@ -73,7 +73,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
             return true;
         }
         for (DataNode each : shardingCondition.getDataNodes()) {
-            if (routingUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
+            if (routeUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
                 return true;
             }
         }

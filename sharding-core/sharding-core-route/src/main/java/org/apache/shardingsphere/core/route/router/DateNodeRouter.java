@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.route.router;
 
-import org.apache.shardingsphere.core.route.RouteResult;
+import org.apache.shardingsphere.underlying.route.RouteContext;
 
 import java.util.List;
 
@@ -36,5 +36,5 @@ public interface DateNodeRouter {
      * @param useCache whether use cache to save SQL parse result
      * @return parse result
      */
-    RouteResult route(String sql, List<Object> parameters, boolean useCache);
+    RouteContext route(String sql, List<Object> parameters, boolean useCache);
 }

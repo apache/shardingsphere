@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.route.router;
 
-import org.apache.shardingsphere.core.route.RouteResult;
+import org.apache.shardingsphere.underlying.route.RouteContext;
 
 /**
  * Data node route decorator.
@@ -29,8 +29,8 @@ public interface DateNodeRouteDecorator {
     /**
      * Decorate route result.
      *
-     * @param routeResult route result
+     * @param routeContext route context
      * @return decorated route result
      */
-    RouteResult decorate(RouteResult routeResult);
+    RouteContext decorate(RouteContext routeContext);
 }

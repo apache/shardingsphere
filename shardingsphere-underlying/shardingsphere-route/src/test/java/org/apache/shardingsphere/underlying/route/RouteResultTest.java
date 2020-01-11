@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.type;
+package org.apache.shardingsphere.underlying.route;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -34,7 +34,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class RoutingResultTest {
+public final class RouteResultTest {
     
     private static final String DATASOURCE_NAME_0 = "ds0";
     
@@ -44,43 +44,43 @@ public final class RoutingResultTest {
     
     private static final String ACTUAL_TABLE = "table_0";
     
-    private RoutingResult singleRoutingResult;
+    private RouteResult singleRouteResult;
     
-    private RoutingResult multiRoutingResult;
+    private RouteResult multiRouteResult;
     
     @Before
     public void setUp() {
-        singleRoutingResult = new RoutingResult();
-        multiRoutingResult = new RoutingResult();
-        multiRoutingResult.getRoutingUnits().addAll(mockRoutingUnits());
-        singleRoutingResult.getRoutingUnits().add(mockRoutingUnit(DATASOURCE_NAME_0));
+        singleRouteResult = new RouteResult();
+        multiRouteResult = new RouteResult();
+        multiRouteResult.getRouteUnits().addAll(mockRouteUnits());
+        singleRouteResult.getRouteUnits().add(mockRouteUnit(DATASOURCE_NAME_0));
     }
     
-    private Collection<RoutingUnit> mockRoutingUnits() {
-        List<RoutingUnit> result = Lists.newArrayList();
-        result.add(mockRoutingUnit(DATASOURCE_NAME_0));
-        result.add(mockRoutingUnit(DATASOURCE_NAME_1));
+    private Collection<RouteUnit> mockRouteUnits() {
+        List<RouteUnit> result = Lists.newArrayList();
+        result.add(mockRouteUnit(DATASOURCE_NAME_0));
+        result.add(mockRouteUnit(DATASOURCE_NAME_1));
         return result;
     }
     
-    private RoutingUnit mockRoutingUnit(final String datasourceName) {
-        RoutingUnit result = new RoutingUnit(datasourceName);
+    private RouteUnit mockRouteUnit(final String datasourceName) {
+        RouteUnit result = new RouteUnit(datasourceName);
         result.getTableUnits().add(new TableUnit(LOGIC_TABLE, ACTUAL_TABLE));
         return result;
     }
     
     @Test
     public void assertIsSingleRouting() {
-        assertTrue(singleRoutingResult.isSingleRouting());
-        assertFalse(multiRoutingResult.isSingleRouting());
+        assertTrue(singleRouteResult.isSingleRouting());
+        assertFalse(multiRouteResult.isSingleRouting());
     }
     
     @Test
     public void assertGetDataSourceNames() {
-        Collection<String> actual = singleRoutingResult.getDataSourceNames();
+        Collection<String> actual = singleRouteResult.getDataSourceNames();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(DATASOURCE_NAME_0));
-        actual = multiRoutingResult.getDataSourceNames();
+        actual = multiRouteResult.getDataSourceNames();
         assertThat(actual.size(), is(2));
         Iterator<String> iterator = actual.iterator();
         assertThat(iterator.next(), is(DATASOURCE_NAME_0));
@@ -89,14 +89,14 @@ public final class RoutingResultTest {
     
     @Test
     public void assertGetTableUnit() {
-        Optional<TableUnit> actual = multiRoutingResult.getTableUnit(DATASOURCE_NAME_1, ACTUAL_TABLE);
+        Optional<TableUnit> actual = multiRouteResult.getTableUnit(DATASOURCE_NAME_1, ACTUAL_TABLE);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(new TableUnit(LOGIC_TABLE, ACTUAL_TABLE)));
     }
     
     @Test
     public void assertGetTableUnitNonExist() {
-        Optional<TableUnit> actual = singleRoutingResult.getTableUnit(DATASOURCE_NAME_1, ACTUAL_TABLE);
+        Optional<TableUnit> actual = singleRouteResult.getTableUnit(DATASOURCE_NAME_1, ACTUAL_TABLE);
         assertFalse(actual.isPresent());
     }
     
@@ -104,7 +104,7 @@ public final class RoutingResultTest {
     public void assertGetActualTableNameGroups() {
         Set<String> logicTableSet = new HashSet<>();
         logicTableSet.add(LOGIC_TABLE);
-        List<Set<String>> actual = multiRoutingResult.getActualTableNameGroups(DATASOURCE_NAME_1, logicTableSet);
+        List<Set<String>> actual = multiRouteResult.getActualTableNameGroups(DATASOURCE_NAME_1, logicTableSet);
         assertThat(actual.size(), is(1));
         assertTrue(actual.get(0).contains(ACTUAL_TABLE));
     }
@@ -112,7 +112,7 @@ public final class RoutingResultTest {
     @Test
     public void assertGetDataSourceLogicTablesMap() {
         List<String> dataSources = Lists.newArrayList(DATASOURCE_NAME_0, DATASOURCE_NAME_1);
-        Map<String, Set<String>> actual = multiRoutingResult.getDataSourceLogicTablesMap(dataSources);
+        Map<String, Set<String>> actual = multiRouteResult.getDataSourceLogicTablesMap(dataSources);
         assertThat(actual.size(), is(2));
         assertThat(actual.get(DATASOURCE_NAME_0).size(), is(1));
         assertThat(actual.get(DATASOURCE_NAME_0).iterator().next(), is(LOGIC_TABLE));

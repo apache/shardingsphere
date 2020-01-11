@@ -21,9 +21,9 @@ import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
-import org.apache.shardingsphere.core.route.type.RoutingResult;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
-import org.apache.shardingsphere.core.route.type.TableUnit;
+import org.apache.shardingsphere.underlying.route.RouteResult;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
+import org.apache.shardingsphere.underlying.route.TableUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
@@ -48,28 +48,28 @@ public final class UnicastRoutingEngine implements RoutingEngine {
     private final Collection<String> logicTables;
     
     @Override
-    public RoutingResult route() {
-        RoutingResult result = new RoutingResult();
+    public RouteResult route() {
+        RouteResult result = new RouteResult();
         if (shardingRule.isAllBroadcastTables(logicTables)) {
             List<TableUnit> tableUnits = new ArrayList<>(logicTables.size());
             for (String each : logicTables) {
                 tableUnits.add(new TableUnit(each, each));
             }
-            RoutingUnit routingUnit = new RoutingUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName());
-            routingUnit.getTableUnits().addAll(tableUnits);
-            result.getRoutingUnits().add(routingUnit);
+            RouteUnit routeUnit = new RouteUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName());
+            routeUnit.getTableUnits().addAll(tableUnits);
+            result.getRouteUnits().add(routeUnit);
         } else if (logicTables.isEmpty()) {
-            result.getRoutingUnits().add(new RoutingUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName()));
+            result.getRouteUnits().add(new RouteUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName()));
         } else if (1 == logicTables.size()) {
             String logicTableName = logicTables.iterator().next();
             if (!shardingRule.findTableRule(logicTableName).isPresent()) {
-                result.getRoutingUnits().add(new RoutingUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName()));
+                result.getRouteUnits().add(new RouteUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName()));
                 return result;
             }
             DataNode dataNode = shardingRule.getDataNode(logicTableName);
-            RoutingUnit routingUnit = new RoutingUnit(dataNode.getDataSourceName());
-            routingUnit.getTableUnits().add(new TableUnit(logicTableName, dataNode.getTableName()));
-            result.getRoutingUnits().add(routingUnit);
+            RouteUnit routeUnit = new RouteUnit(dataNode.getDataSourceName());
+            routeUnit.getTableUnits().add(new TableUnit(logicTableName, dataNode.getTableName()));
+            result.getRouteUnits().add(routeUnit);
         } else {
             List<TableUnit> tableUnits = new ArrayList<>(logicTables.size());
             Set<String> availableDatasourceNames = null;
@@ -92,9 +92,9 @@ public final class UnicastRoutingEngine implements RoutingEngine {
             if (availableDatasourceNames.isEmpty()) {
                 throw new ShardingSphereConfigurationException("Cannot find actual datasource intersection for logic tables: %s", logicTables);
             }
-            RoutingUnit routingUnit = new RoutingUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName(availableDatasourceNames));
-            routingUnit.getTableUnits().addAll(tableUnits);
-            result.getRoutingUnits().add(routingUnit);
+            RouteUnit routeUnit = new RouteUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName(availableDatasourceNames));
+            routeUnit.getTableUnits().addAll(tableUnits);
+            result.getRouteUnits().add(routeUnit);
         }
         return result;
     }

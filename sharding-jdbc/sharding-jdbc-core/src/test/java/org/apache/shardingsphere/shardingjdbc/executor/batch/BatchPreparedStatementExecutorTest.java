@@ -22,8 +22,8 @@ import org.apache.shardingsphere.shardingjdbc.executor.AbstractBaseExecutorTest;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.route.RouteUnit;
-import org.apache.shardingsphere.underlying.route.SQLUnit;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -127,11 +127,11 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         executeGroups.add(new InputGroup<>(preparedStatementExecuteUnits));
         Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
         for (PreparedStatement each : preparedStatements) {
-            BatchRouteUnit batchRouteUnit = new BatchRouteUnit(new RouteUnit("ds_0", new SQLUnit(SQL, Collections.singletonList((Object) 1))));
+            BatchRouteUnit batchRouteUnit = new BatchRouteUnit(new ExecutionUnit("ds_0", new SQLUnit(SQL, Collections.singletonList((Object) 1))));
             batchRouteUnit.mapAddBatchCount(0);
             batchRouteUnit.mapAddBatchCount(1);
             routeUnits.add(batchRouteUnit);
-            preparedStatementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", new SQLUnit(SQL, Collections.singletonList((Object) 1))), each, ConnectionMode.MEMORY_STRICTLY));
+            preparedStatementExecuteUnits.add(new StatementExecuteUnit(new ExecutionUnit("ds_0", new SQLUnit(SQL, Collections.singletonList((Object) 1))), each, ConnectionMode.MEMORY_STRICTLY));
         }
         setFields(executeGroups, routeUnits);
     }

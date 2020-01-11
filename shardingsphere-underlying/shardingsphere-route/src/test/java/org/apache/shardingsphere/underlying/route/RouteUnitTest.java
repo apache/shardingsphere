@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.type;
+package org.apache.shardingsphere.underlying.route;
 
 import com.google.common.base.Optional;
 import org.junit.Before;
 import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -30,7 +31,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class RoutingUnitTest {
+public final class RouteUnitTest {
     
     private static final String DATASOURCE_NAME = "ds";
     
@@ -40,12 +41,12 @@ public final class RoutingUnitTest {
     
     private static final String SHARD_TABLE_1 = "table_1";
     
-    private RoutingUnit routingUnit;
+    private RouteUnit routeUnit;
     
     @Before
     public void setUp() {
-        routingUnit = new RoutingUnit(DATASOURCE_NAME);
-        routingUnit.getTableUnits().addAll(mockTableUnits());
+        routeUnit = new RouteUnit(DATASOURCE_NAME);
+        routeUnit.getTableUnits().addAll(mockTableUnits());
     }
     
     private Collection<TableUnit> mockTableUnits() {
@@ -57,7 +58,7 @@ public final class RoutingUnitTest {
     
     @Test
     public void assertGetTableUnit() {
-        Optional<TableUnit> actual = routingUnit.getTableUnit(DATASOURCE_NAME, SHARD_TABLE_0);
+        Optional<TableUnit> actual = routeUnit.getTableUnit(DATASOURCE_NAME, SHARD_TABLE_0);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getLogicTableName(), is(LOGIC_TABLE));
         assertThat(actual.get().getActualTableName(), is(SHARD_TABLE_0));
@@ -65,13 +66,13 @@ public final class RoutingUnitTest {
     
     @Test
     public void assertGetTableUnitNonExist() {
-        Optional<TableUnit> actual = routingUnit.getTableUnit(DATASOURCE_NAME, "");
+        Optional<TableUnit> actual = routeUnit.getTableUnit(DATASOURCE_NAME, "");
         assertFalse(actual.isPresent());
     }
     
     @Test
     public void assertGetActualTableNames() {
-        Set<String> actual = routingUnit.getActualTableNames(LOGIC_TABLE);
+        Set<String> actual = routeUnit.getActualTableNames(LOGIC_TABLE);
         assertThat(actual.size(), is(2));
         assertTrue(actual.contains(SHARD_TABLE_0));
         assertTrue(actual.contains(SHARD_TABLE_1));
@@ -79,32 +80,32 @@ public final class RoutingUnitTest {
     
     @Test
     public void assertGetLogicTableNames() {
-        Set<String> actual = routingUnit.getLogicTableNames();
+        Set<String> actual = routeUnit.getLogicTableNames();
         assertThat(actual.size(), is(1));
         assertTrue(actual.contains(LOGIC_TABLE));
     }
     
     @Test
     public void assertGetDataSourceName() {
-        assertThat(routingUnit.getActualDataSourceName(), is(DATASOURCE_NAME));
+        assertThat(routeUnit.getActualDataSourceName(), is(DATASOURCE_NAME));
     }
     
     @Test
     public void assertGetMasterSlaveLogicDataSourceName() {
-        assertThat(routingUnit.getLogicDataSourceName(), is(DATASOURCE_NAME));
+        assertThat(routeUnit.getLogicDataSourceName(), is(DATASOURCE_NAME));
     }
     
     @Test
     public void assertEquals() {
-        RoutingUnit expected = new RoutingUnit(DATASOURCE_NAME, DATASOURCE_NAME);
+        RouteUnit expected = new RouteUnit(DATASOURCE_NAME, DATASOURCE_NAME);
         expected.getTableUnits().addAll(mockTableUnits());
-        assertTrue(expected.equals(routingUnit));
+        assertTrue(expected.equals(routeUnit));
     }
     
     @Test
     public void assertToString() {
-        assertThat(routingUnit.toString(), is(String.format(
-            "RoutingUnit(logicDataSourceName=%s, actualDataSourceName=%s, tableUnits=[TableUnit(logicTableName=%s, actualTableName=%s), TableUnit(logicTableName=%s, actualTableName=%s)])",
+        assertThat(routeUnit.toString(), is(String.format(
+            "RouteUnit(logicDataSourceName=%s, actualDataSourceName=%s, tableUnits=[TableUnit(logicTableName=%s, actualTableName=%s), TableUnit(logicTableName=%s, actualTableName=%s)])",
             DATASOURCE_NAME, DATASOURCE_NAME, LOGIC_TABLE, SHARD_TABLE_0, LOGIC_TABLE, SHARD_TABLE_1)));
     }
 }
