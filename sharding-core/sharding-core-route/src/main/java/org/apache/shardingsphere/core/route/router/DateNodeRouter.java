@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.route.router;
 
-import org.apache.shardingsphere.underlying.route.RouteResult;
+import org.apache.shardingsphere.underlying.route.result.RouteResult;
 
 import java.util.List;
 

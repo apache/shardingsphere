@@ -23,14 +23,14 @@ import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.route.ShardingRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
-import org.apache.shardingsphere.underlying.route.RoutingResult;
-import org.apache.shardingsphere.underlying.route.RoutingUnit;
-import org.apache.shardingsphere.underlying.route.ExecutionContext;
+import org.apache.shardingsphere.underlying.route.result.RoutingResult;
+import org.apache.shardingsphere.underlying.route.result.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.context.ExecutionContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.route.ExecutionUnit;
+import org.apache.shardingsphere.underlying.route.context.ExecutionUnit;
 import org.junit.Test;
 
 import java.util.Collections;

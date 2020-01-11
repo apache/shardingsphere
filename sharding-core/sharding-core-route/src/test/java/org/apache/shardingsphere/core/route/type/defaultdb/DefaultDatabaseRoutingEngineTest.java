@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.route.type.defaultdb;
 
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.underlying.route.RoutingResult;
-import org.apache.shardingsphere.underlying.route.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.result.RoutingResult;
+import org.apache.shardingsphere.underlying.route.result.RoutingUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;

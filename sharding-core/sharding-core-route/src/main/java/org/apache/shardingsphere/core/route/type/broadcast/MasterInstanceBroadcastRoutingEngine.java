@@ -21,8 +21,8 @@ import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
-import org.apache.shardingsphere.underlying.route.RoutingResult;
-import org.apache.shardingsphere.underlying.route.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.result.RoutingResult;
+import org.apache.shardingsphere.underlying.route.result.RoutingUnit;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 

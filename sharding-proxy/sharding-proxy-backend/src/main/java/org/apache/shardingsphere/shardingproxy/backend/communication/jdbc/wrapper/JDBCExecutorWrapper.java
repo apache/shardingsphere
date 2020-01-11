@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper;
 
-import org.apache.shardingsphere.underlying.route.ExecutionContext;
-import org.apache.shardingsphere.underlying.route.SQLUnit;
+import org.apache.shardingsphere.underlying.route.context.ExecutionContext;
+import org.apache.shardingsphere.underlying.route.context.SQLUnit;
 
 import java.sql.Connection;
 import java.sql.SQLException;

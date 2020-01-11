@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.route.type.ignore;
 
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
-import org.apache.shardingsphere.underlying.route.RoutingResult;
+import org.apache.shardingsphere.underlying.route.result.RoutingResult;
 
 /**
  * Ignore routing engine.

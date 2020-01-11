@@ -19,9 +19,9 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapp
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.router.masterslave.MasterSlaveRouter;
-import org.apache.shardingsphere.underlying.route.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.result.RoutingUnit;
 import org.apache.shardingsphere.core.shard.SimpleQueryShardingEngine;
-import org.apache.shardingsphere.underlying.route.ExecutionContext;
+import org.apache.shardingsphere.underlying.route.context.ExecutionContext;
 import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
@@ -41,8 +41,8 @@ import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.impl.DefaultSQLRewriteEngine;
-import org.apache.shardingsphere.underlying.route.ExecutionUnit;
-import org.apache.shardingsphere.underlying.route.SQLUnit;
+import org.apache.shardingsphere.underlying.route.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.route.context.SQLUnit;
 
 import java.sql.Connection;
 import java.sql.SQLException;

@@ -15,25 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.route;
+package org.apache.shardingsphere.underlying.route.context;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import lombok.ToString;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.List;
 
 /**
- * Execution context.
+ * SQL unit.
  *
- * @author zhangliang
+ * @author maxiaoguang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public class ExecutionContext {
+@EqualsAndHashCode(of = { "sql" })
+@ToString
+public final class SQLUnit {
     
-    private final SQLStatementContext sqlStatementContext;
+    private final String sql;
     
-    private final Collection<ExecutionUnit> executionUnits = new LinkedHashSet<>();
+    private final List<Object> parameters;
 }

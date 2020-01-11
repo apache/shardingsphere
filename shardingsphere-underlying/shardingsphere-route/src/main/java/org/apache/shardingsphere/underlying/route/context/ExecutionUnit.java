@@ -15,28 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.route;
+package org.apache.shardingsphere.underlying.route.context;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.List;
-
 /**
- * SQL unit.
- *
+ * Execution unit.
+ * 
+ * @author gaohongtao
  * @author maxiaoguang
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(of = { "sql" })
+@EqualsAndHashCode
 @ToString
-public final class SQLUnit {
+public final class ExecutionUnit {
     
-    private final String sql;
+    private final String dataSourceName;
     
-    private final List<Object> parameters;
+    private final SQLUnit sqlUnit;
 }

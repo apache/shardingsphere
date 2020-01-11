@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingjdbc.executor.batch;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.underlying.route.ExecutionUnit;
-import org.apache.shardingsphere.underlying.route.SQLUnit;
+import org.apache.shardingsphere.underlying.route.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.route.context.SQLUnit;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import java.util.List;

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.route;
 
-import org.apache.shardingsphere.underlying.route.ExecutionUnit;
-import org.apache.shardingsphere.underlying.route.SQLUnit;
+import org.apache.shardingsphere.underlying.route.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.route.context.SQLUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
