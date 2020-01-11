@@ -22,10 +22,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.route.RouteUnit;
-
-import java.util.Collection;
-import java.util.LinkedHashSet;
 
 /**
  * SQL route result.
@@ -40,8 +36,6 @@ import java.util.LinkedHashSet;
 public class RouteResult {
     
     private final SQLStatementContext sqlStatementContext;
-    
-    private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
     
     private RoutingResult routingResult;
 }
