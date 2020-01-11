@@ -29,6 +29,6 @@
     
     <modules>
         <module>sharding-jdbc-core</module>
-        <module>sharding-jdbc-orchestration-new</module>
+        <module>sharding-jdbc-orchestration</module>
     </modules>
 </project>

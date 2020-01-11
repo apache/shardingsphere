@@ -34,11 +34,11 @@ import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropTableStatement
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.util.ConfigurationLogger;
-import org.apache.shardingsphere.orchestration.temp.internal.registry.config.event.ShardingRuleChangedEvent;
-import org.apache.shardingsphere.orchestration.temp.internal.registry.state.event.DisabledStateChangedEvent;
-import org.apache.shardingsphere.orchestration.temp.internal.registry.state.schema.OrchestrationShardingSchema;
-import org.apache.shardingsphere.orchestration.temp.internal.rule.OrchestrationMasterSlaveRule;
-import org.apache.shardingsphere.orchestration.temp.internal.rule.OrchestrationShardingRule;
+import org.apache.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
+import org.apache.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
+import org.apache.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
+import org.apache.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
