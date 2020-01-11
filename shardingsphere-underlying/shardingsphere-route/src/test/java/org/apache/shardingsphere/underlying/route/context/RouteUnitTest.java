@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.route;
+package org.apache.shardingsphere.underlying.route.context;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.underlying.route.context.TableUnit;
 import org.junit.Before;
 import org.junit.Test;
 
