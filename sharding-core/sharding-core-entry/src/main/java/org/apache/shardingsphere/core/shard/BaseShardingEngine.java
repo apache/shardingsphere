@@ -19,12 +19,10 @@ package org.apache.shardingsphere.core.shard;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.route.ShardingRouteContext;
 import org.apache.shardingsphere.core.route.hook.SPIRoutingHook;
-import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.underlying.route.context.ExecutionContext;
+import org.apache.shardingsphere.core.shard.log.ShardingSQLLogger;
 import org.apache.shardingsphere.core.shard.result.ShardingExecutionContext;
 import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.sharding.rewrite.context.ShardingSQLRewriteContextDecorator;
@@ -37,8 +35,10 @@ import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
+import org.apache.shardingsphere.underlying.route.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.route.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.route.context.SQLUnit;
+import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -78,7 +78,7 @@ public abstract class BaseShardingEngine {
         boolean showSQL = properties.getValue(PropertiesConstant.SQL_SHOW);
         if (showSQL) {
             boolean showSimple = properties.getValue(PropertiesConstant.SQL_SIMPLE);
-            SQLLogger.logSQL(sql, showSimple, result.getSqlStatementContext(), result.getExecutionUnits());
+            ShardingSQLLogger.logSQL(sql, showSimple, result.getSqlStatementContext(), result.getExecutionUnits());
         }
         return result;
     }

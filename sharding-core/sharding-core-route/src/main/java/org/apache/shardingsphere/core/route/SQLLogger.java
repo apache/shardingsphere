@@ -20,12 +20,6 @@ package org.apache.shardingsphere.core.route;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.route.context.ExecutionUnit;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * SQL logger.
@@ -46,43 +40,6 @@ public final class SQLLogger {
     public static void logSQL(final String logicSQL, final String dataSourceName) {
         log("Rule Type: master-slave");
         log("SQL: {} ::: DataSource: {}", logicSQL, dataSourceName);
-    }
-    
-    /**
-     * Print SQL log for sharding rule.
-     * 
-     * @param logicSQL logic SQL
-     * @param showSimple whether show SQL in simple style
-     * @param sqlStatementContext SQL statement context
-     * @param executionUnits execution units
-     */
-    public static void logSQL(final String logicSQL, final boolean showSimple, final SQLStatementContext sqlStatementContext, final Collection<ExecutionUnit> executionUnits) {
-        log("Rule Type: sharding");
-        log("Logic SQL: {}", logicSQL);
-        log("SQLStatement: {}", sqlStatementContext);
-        if (showSimple) {
-            logSimpleMode(executionUnits);
-        } else {
-            logNormalMode(executionUnits);
-        }
-    }
-    
-    private static void logSimpleMode(final Collection<ExecutionUnit> executionUnits) {
-        Set<String> dataSourceNames = new HashSet<>(executionUnits.size());
-        for (ExecutionUnit each : executionUnits) {
-            dataSourceNames.add(each.getDataSourceName());
-        }
-        log("Actual SQL(simple): {} ::: {}", dataSourceNames, executionUnits.size());
-    }
-    
-    private static void logNormalMode(final Collection<ExecutionUnit> executionUnits) {
-        for (ExecutionUnit each : executionUnits) {
-            if (each.getSqlUnit().getParameters().isEmpty()) {
-                log("Actual SQL: {} ::: {}", each.getDataSourceName(), each.getSqlUnit().getSql());
-            } else {
-                log("Actual SQL: {} ::: {} ::: {}", each.getDataSourceName(), each.getSqlUnit().getSql(), each.getSqlUnit().getParameters());
-            }
-        }
     }
     
     private static void log(final String pattern, final Object... arguments) {
