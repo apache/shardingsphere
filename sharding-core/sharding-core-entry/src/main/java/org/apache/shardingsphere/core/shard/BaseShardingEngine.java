@@ -68,7 +68,7 @@ public abstract class BaseShardingEngine {
      *
      * @param sql SQL
      * @param parameters parameters of SQL
-     * @return sharding result
+     * @return execution context
      */
     public ExecutionContext shard(final String sql, final List<Object> parameters) {
         List<Object> clonedParameters = cloneParameters(parameters);
