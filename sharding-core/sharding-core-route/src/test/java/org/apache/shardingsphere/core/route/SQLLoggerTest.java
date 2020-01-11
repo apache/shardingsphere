@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.route;
 
-import org.apache.shardingsphere.underlying.route.RouteUnit;
+import org.apache.shardingsphere.underlying.route.ExecutionUnit;
 import org.apache.shardingsphere.underlying.route.SQLUnit;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +46,7 @@ public final class SQLLoggerTest {
     
     private Collection<String> dataSourceNames;
     
-    private Collection<RouteUnit> routeUnits;
+    private Collection<ExecutionUnit> executionUnits;
     
     @Mock
     private Logger logger;
@@ -55,14 +55,14 @@ public final class SQLLoggerTest {
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
         this.sql = "select * from user";
         this.dataSourceNames = Arrays.asList("db1", "db2", "db3");
-        this.routeUnits = mockRouteUnits(dataSourceNames, sql);
+        this.executionUnits = mockExecutionUnits(dataSourceNames, sql);
         Field field = SQLLogger.class.getDeclaredField("log");
         setFinalStatic(field, logger);
     }
     
     @Test
     public void assertLogSQLShard() {
-        SQLLogger.logSQL(sql, false, null, routeUnits);
+        SQLLogger.logSQL(sql, false, null, executionUnits);
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Rule Type: sharding", new Object[]{});
         inOrder.verify(logger).info("Logic SQL: {}", new Object[]{sql});
@@ -74,9 +74,9 @@ public final class SQLLoggerTest {
     
     @Test
     public void assertLogSQLShardWithParameters() {
-        List<Object> parameters = routeUnits.iterator().next().getSqlUnit().getParameters();
+        List<Object> parameters = executionUnits.iterator().next().getSqlUnit().getParameters();
         parameters.add("parameter");
-        SQLLogger.logSQL(sql, false, null, routeUnits);
+        SQLLogger.logSQL(sql, false, null, executionUnits);
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Rule Type: sharding", new Object[]{});
         inOrder.verify(logger).info("Logic SQL: {}", new Object[]{sql});
@@ -88,12 +88,12 @@ public final class SQLLoggerTest {
     
     @Test
     public void assertLogSQLShardSimple() {
-        SQLLogger.logSQL(sql, true, null, routeUnits);
+        SQLLogger.logSQL(sql, true, null, executionUnits);
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Rule Type: sharding", new Object[]{});
         inOrder.verify(logger).info("Logic SQL: {}", new Object[]{sql});
         inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
-        inOrder.verify(logger).info("Actual SQL(simple): {} ::: {}", new Object[]{buildDataSourceNamesSet(), routeUnits.size()});
+        inOrder.verify(logger).info("Actual SQL(simple): {} ::: {}", new Object[]{buildDataSourceNamesSet(), executionUnits.size()});
     }
     
     @Test
@@ -105,25 +105,25 @@ public final class SQLLoggerTest {
     }
     
     private Set<String> buildDataSourceNamesSet() {
-        Set<String> dataSourceNamesSet = new HashSet<>(routeUnits.size());
-        for (RouteUnit each : routeUnits) {
+        Set<String> dataSourceNamesSet = new HashSet<>(executionUnits.size());
+        for (ExecutionUnit each : executionUnits) {
             dataSourceNamesSet.add(each.getDataSourceName());
         }
         return dataSourceNamesSet;
     }
     
-    private Collection<RouteUnit> mockRouteUnits(final Collection<String> dataSourceNames, final String sql) {
-        List<RouteUnit> results = new LinkedList<>();
+    private Collection<ExecutionUnit> mockExecutionUnits(final Collection<String> dataSourceNames, final String sql) {
+        List<ExecutionUnit> result = new LinkedList<>();
         for (String dsName : dataSourceNames) {
-            results.addAll(mockOneShard(dsName, 1, sql));
+            result.addAll(mockOneShard(dsName, 1, sql));
         }
-        return results;
+        return result;
     }
     
-    private Collection<RouteUnit> mockOneShard(final String dsName, final int size, final String sql) {
-        Collection<RouteUnit> result = new ArrayList<>(size);
+    private Collection<ExecutionUnit> mockOneShard(final String dataSourceName, final int size, final String sql) {
+        Collection<ExecutionUnit> result = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
-            result.add(new RouteUnit(dsName, new SQLUnit(sql, new ArrayList<>())));
+            result.add(new ExecutionUnit(dataSourceName, new SQLUnit(sql, new ArrayList<>())));
         }
         return result;
     }

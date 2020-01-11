@@ -37,7 +37,7 @@ import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
-import org.apache.shardingsphere.underlying.route.RouteUnit;
+import org.apache.shardingsphere.underlying.route.ExecutionUnit;
 import org.apache.shardingsphere.underlying.route.SQLUnit;
 
 import java.util.Collection;
@@ -74,11 +74,11 @@ public abstract class BaseShardingEngine {
         List<Object> clonedParameters = cloneParameters(parameters);
         ShardingRouteResult shardingRouteResult = executeRoute(sql, clonedParameters);
         ShardingExecutionContext result = new ShardingExecutionContext(shardingRouteResult.getSqlStatementContext(), shardingRouteResult.getGeneratedKey().orNull());
-        result.getRouteUnits().addAll(HintManager.isDatabaseShardingOnly() ? convert(sql, clonedParameters, shardingRouteResult) : rewriteAndConvert(sql, clonedParameters, shardingRouteResult));
+        result.getExecutionUnits().addAll(HintManager.isDatabaseShardingOnly() ? convert(sql, clonedParameters, shardingRouteResult) : rewriteAndConvert(sql, clonedParameters, shardingRouteResult));
         boolean showSQL = properties.getValue(PropertiesConstant.SQL_SHOW);
         if (showSQL) {
             boolean showSimple = properties.getValue(PropertiesConstant.SQL_SIMPLE);
-            SQLLogger.logSQL(sql, showSimple, result.getSqlStatementContext(), result.getRouteUnits());
+            SQLLogger.logSQL(sql, showSimple, result.getSqlStatementContext(), result.getExecutionUnits());
         }
         return result;
     }
@@ -101,22 +101,22 @@ public abstract class BaseShardingEngine {
         }
     }
     
-    private Collection<RouteUnit> convert(final String sql, final List<Object> parameters, final ShardingRouteResult shardingRouteResult) {
-        Collection<RouteUnit> result = new LinkedHashSet<>();
+    private Collection<ExecutionUnit> convert(final String sql, final List<Object> parameters, final ShardingRouteResult shardingRouteResult) {
+        Collection<ExecutionUnit> result = new LinkedHashSet<>();
         for (RoutingUnit each : shardingRouteResult.getRoutingResult().getRoutingUnits()) {
-            result.add(new RouteUnit(each.getActualDataSourceName(), new SQLUnit(sql, parameters)));
+            result.add(new ExecutionUnit(each.getActualDataSourceName(), new SQLUnit(sql, parameters)));
         }
         return result;
     }
     
-    private Collection<RouteUnit> rewriteAndConvert(final String sql, final List<Object> parameters, final ShardingRouteResult shardingRouteResult) {
-        Collection<RouteUnit> result = new LinkedHashSet<>();
+    private Collection<ExecutionUnit> rewriteAndConvert(final String sql, final List<Object> parameters, final ShardingRouteResult shardingRouteResult) {
+        Collection<ExecutionUnit> result = new LinkedHashSet<>();
         SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(
                 metaData, properties).createSQLRewriteContext(sql, parameters, shardingRouteResult.getSqlStatementContext(), createSQLRewriteContextDecorator(shardingRouteResult));
         for (RoutingUnit each : shardingRouteResult.getRoutingResult().getRoutingUnits()) {
             ShardingSQLRewriteEngine sqlRewriteEngine = new ShardingSQLRewriteEngine(shardingRule, shardingRouteResult.getShardingConditions(), each);
             SQLRewriteResult sqlRewriteResult = sqlRewriteEngine.rewrite(sqlRewriteContext);
-            result.add(new RouteUnit(each.getActualDataSourceName(), new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));
+            result.add(new ExecutionUnit(each.getActualDataSourceName(), new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));
         }
         return result;
     }

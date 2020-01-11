@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.route.RouteUnit;
+import org.apache.shardingsphere.underlying.route.ExecutionUnit;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -54,29 +54,29 @@ public final class SQLLogger {
      * @param logicSQL logic SQL
      * @param showSimple whether show SQL in simple style
      * @param sqlStatementContext SQL statement context
-     * @param routeUnits route units
+     * @param executionUnits execution units
      */
-    public static void logSQL(final String logicSQL, final boolean showSimple, final SQLStatementContext sqlStatementContext, final Collection<RouteUnit> routeUnits) {
+    public static void logSQL(final String logicSQL, final boolean showSimple, final SQLStatementContext sqlStatementContext, final Collection<ExecutionUnit> executionUnits) {
         log("Rule Type: sharding");
         log("Logic SQL: {}", logicSQL);
         log("SQLStatement: {}", sqlStatementContext);
         if (showSimple) {
-            logSimpleMode(routeUnits);
+            logSimpleMode(executionUnits);
         } else {
-            logNormalMode(routeUnits);
+            logNormalMode(executionUnits);
         }
     }
     
-    private static void logSimpleMode(final Collection<RouteUnit> routeUnits) {
-        Set<String> dataSourceNames = new HashSet<>(routeUnits.size());
-        for (RouteUnit each : routeUnits) {
+    private static void logSimpleMode(final Collection<ExecutionUnit> executionUnits) {
+        Set<String> dataSourceNames = new HashSet<>(executionUnits.size());
+        for (ExecutionUnit each : executionUnits) {
             dataSourceNames.add(each.getDataSourceName());
         }
-        log("Actual SQL(simple): {} ::: {}", dataSourceNames, routeUnits.size());
+        log("Actual SQL(simple): {} ::: {}", dataSourceNames, executionUnits.size());
     }
     
-    private static void logNormalMode(final Collection<RouteUnit> routeUnits) {
-        for (RouteUnit each : routeUnits) {
+    private static void logNormalMode(final Collection<ExecutionUnit> executionUnits) {
+        for (ExecutionUnit each : executionUnits) {
             if (each.getSqlUnit().getParameters().isEmpty()) {
                 log("Actual SQL: {} ::: {}", each.getDataSourceName(), each.getSqlUnit().getSql());
             } else {

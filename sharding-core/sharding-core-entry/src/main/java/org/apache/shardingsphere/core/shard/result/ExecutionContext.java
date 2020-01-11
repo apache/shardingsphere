@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.shard.result;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.route.RouteUnit;
+import org.apache.shardingsphere.underlying.route.ExecutionUnit;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -36,5 +36,5 @@ public class ExecutionContext {
     
     private final SQLStatementContext sqlStatementContext;
     
-    private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
+    private final Collection<ExecutionUnit> executionUnits = new LinkedHashSet<>();
 }

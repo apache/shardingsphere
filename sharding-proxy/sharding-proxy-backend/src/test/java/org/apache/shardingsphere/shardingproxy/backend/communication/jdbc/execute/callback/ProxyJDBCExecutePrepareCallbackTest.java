@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execu
 
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.route.RouteUnit;
+import org.apache.shardingsphere.underlying.route.ExecutionUnit;
 import org.apache.shardingsphere.underlying.route.SQLUnit;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
@@ -58,7 +58,7 @@ public final class ProxyJDBCExecutePrepareCallbackTest {
         when(jdbcExecutorWrapper.createStatement((Connection) any(), (SQLUnit) any(), anyBoolean())).thenReturn(mock(Statement.class));
         ProxyJDBCExecutePrepareCallback proxyJDBCExecutePrepareCallback = new ProxyJDBCExecutePrepareCallback(mock(BackendConnection.class), jdbcExecutorWrapper, false);
         assertThat(proxyJDBCExecutePrepareCallback.createStatementExecuteUnit(
-                null, new RouteUnit("ds", new SQLUnit("SELECT 1", Collections.emptyList())), ConnectionMode.CONNECTION_STRICTLY), instanceOf(StatementExecuteUnit.class));
+                null, new ExecutionUnit("ds", new SQLUnit("SELECT 1", Collections.emptyList())), ConnectionMode.CONNECTION_STRICTLY), instanceOf(StatementExecuteUnit.class));
     }
     
     @Test
@@ -67,6 +67,6 @@ public final class ProxyJDBCExecutePrepareCallbackTest {
         when(jdbcExecutorWrapper.createStatement((Connection) any(), (SQLUnit) any(), anyBoolean())).thenReturn(mock(Statement.class));
         ProxyJDBCExecutePrepareCallback proxyJDBCExecutePrepareCallback = new ProxyJDBCExecutePrepareCallback(mock(BackendConnection.class), jdbcExecutorWrapper, false);
         assertThat(proxyJDBCExecutePrepareCallback.createStatementExecuteUnit(
-                null, new RouteUnit("ds", new SQLUnit("SELECT 1", Collections.emptyList())), ConnectionMode.MEMORY_STRICTLY), instanceOf(StatementExecuteUnit.class));
+                null, new ExecutionUnit("ds", new SQLUnit("SELECT 1", Collections.emptyList())), ConnectionMode.MEMORY_STRICTLY), instanceOf(StatementExecuteUnit.class));
     }
 }

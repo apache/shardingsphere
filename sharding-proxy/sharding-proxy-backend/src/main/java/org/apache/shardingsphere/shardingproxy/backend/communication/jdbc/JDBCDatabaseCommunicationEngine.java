@@ -92,7 +92,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private BackendResponse execute(final ExecutionContext executionContext) throws SQLException {
-        if (executionContext.getRouteUnits().isEmpty()) {
+        if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponse();
         }
         SQLStatementContext sqlStatementContext = executionContext.getSqlStatementContext();

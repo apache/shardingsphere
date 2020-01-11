@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.relation.statement.impl.CommonSQLSta
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.route.RouteUnit;
+import org.apache.shardingsphere.underlying.route.ExecutionUnit;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -63,11 +63,11 @@ public abstract class BaseShardingEngineTest {
     }
     
     protected final void assertSQLRouteResult(final ExecutionContext actual) {
-        assertThat(actual.getRouteUnits().size(), is(1));
-        RouteUnit actualRouteUnit = actual.getRouteUnits().iterator().next();
-        assertThat(actualRouteUnit.getDataSourceName(), is("ds"));
-        assertThat(actualRouteUnit.getSqlUnit().getSql(), is(sql));
-        assertThat(actualRouteUnit.getSqlUnit().getParameters(), is(parameters));
+        assertThat(actual.getExecutionUnits().size(), is(1));
+        ExecutionUnit actualExecutionUnit = actual.getExecutionUnits().iterator().next();
+        assertThat(actualExecutionUnit.getDataSourceName(), is("ds"));
+        assertThat(actualExecutionUnit.getSqlUnit().getSql(), is(sql));
+        assertThat(actualExecutionUnit.getSqlUnit().getParameters(), is(parameters));
     }
     
     @Test
