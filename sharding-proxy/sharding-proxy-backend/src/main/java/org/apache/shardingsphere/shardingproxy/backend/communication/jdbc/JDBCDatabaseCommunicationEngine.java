@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.route.RouteResult;
+import org.apache.shardingsphere.core.shard.result.ExecutionContext;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.sharding.merge.ShardingResultMergerEngine;
@@ -84,27 +84,27 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     @Override
     public BackendResponse execute() {
         try {
-            RouteResult routeResult = executeEngine.getJdbcExecutorWrapper().route(sql);
-            return execute(routeResult);
+            ExecutionContext executionContext = executeEngine.getJdbcExecutorWrapper().route(sql);
+            return execute(executionContext);
         } catch (final SQLException ex) {
             return new ErrorResponse(ex);
         }
     }
     
-    private BackendResponse execute(final RouteResult routeResult) throws SQLException {
-        if (routeResult.getRouteUnits().isEmpty()) {
+    private BackendResponse execute(final ExecutionContext executionContext) throws SQLException {
+        if (executionContext.getRouteUnits().isEmpty()) {
             return new UpdateResponse();
         }
-        SQLStatementContext sqlStatementContext = routeResult.getSqlStatementContext();
+        SQLStatementContext sqlStatementContext = executionContext.getSqlStatementContext();
         if (isExecuteDDLInXATransaction(sqlStatementContext.getSqlStatement())) {
             return new ErrorResponse(new TableModifyInTransactionException(
                     sqlStatementContext.getTablesContext().isSingleTable() ? sqlStatementContext.getTablesContext().getSingleTableName() : "unknown_table"));
         }
-        response = executeEngine.execute(routeResult);
+        response = executeEngine.execute(executionContext);
         if (logicSchema instanceof ShardingSchema) {
-            logicSchema.refreshTableMetaData(routeResult.getSqlStatementContext());
+            logicSchema.refreshTableMetaData(executionContext.getSqlStatementContext());
         }
-        return merge(routeResult.getSqlStatementContext());
+        return merge(executionContext.getSqlStatementContext());
     }
     
     private boolean isExecuteDDLInXATransaction(final SQLStatement sqlStatement) {
