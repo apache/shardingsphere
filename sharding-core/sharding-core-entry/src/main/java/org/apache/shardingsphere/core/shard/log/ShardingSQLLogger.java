@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.route.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 
 import java.util.Collection;
 import java.util.HashSet;

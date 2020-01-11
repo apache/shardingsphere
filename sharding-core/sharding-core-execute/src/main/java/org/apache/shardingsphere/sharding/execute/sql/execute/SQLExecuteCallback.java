@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sharding.execute.sql.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.engine.GroupedCallback;
 import org.apache.shardingsphere.sharding.execute.sql.hook.SQLExecutionHook;
-import org.apache.shardingsphere.underlying.route.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 

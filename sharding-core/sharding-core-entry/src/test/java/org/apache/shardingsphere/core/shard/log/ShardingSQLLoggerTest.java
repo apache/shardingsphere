@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.shard.log;
 
-import org.apache.shardingsphere.underlying.route.context.ExecutionUnit;
-import org.apache.shardingsphere.underlying.route.context.SQLUnit;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
