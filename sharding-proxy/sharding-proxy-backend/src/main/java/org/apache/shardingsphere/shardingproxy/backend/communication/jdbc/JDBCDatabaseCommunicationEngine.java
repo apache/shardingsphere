@@ -114,7 +114,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private BackendResponse merge(final RouteResult routeResult) throws SQLException {
         if (response instanceof UpdateResponse) {
-            mergeUpdateCount(routeResult);
+            mergeUpdateCount(routeResult.getSqlStatementContext());
             return response;
         }
         this.mergedResult = createMergedResult(routeResult, ((QueryResponse) response).getQueryResults());
@@ -122,8 +122,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return response;
     }
     
-    private void mergeUpdateCount(final RouteResult routeResult) {
-        if (!isAllBroadcastTables(routeResult.getSqlStatementContext())) {
+    private void mergeUpdateCount(final SQLStatementContext sqlStatementContext) {
+        if (!isAllBroadcastTables(sqlStatementContext)) {
             ((UpdateResponse) response).mergeUpdateCount();
         }
     }
