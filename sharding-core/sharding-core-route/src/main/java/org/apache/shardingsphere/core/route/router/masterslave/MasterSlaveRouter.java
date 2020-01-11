@@ -49,10 +49,8 @@ public final class MasterSlaveRouter implements DateNodeRouter {
         if (showSQL) {
             SQLLogger.logSQL(sql, dataSourceName);
         }
-        RouteResult result = new RouteResult(null);
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRoutingUnits().add(new RoutingUnit(dataSourceName));
-        result.setRoutingResult(routingResult);
-        return result;
+        return new RouteResult(null, routingResult);
     }
 }

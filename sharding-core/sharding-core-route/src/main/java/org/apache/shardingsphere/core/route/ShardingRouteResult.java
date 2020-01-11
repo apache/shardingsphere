@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCo
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.route.result.RouteResult;
+import org.apache.shardingsphere.underlying.route.result.RoutingResult;
 
 /**
  * SQL route result.
@@ -38,14 +39,14 @@ public final class ShardingRouteResult extends RouteResult {
     
     private final GeneratedKey generatedKey;
     
-    public ShardingRouteResult(final SQLStatementContext sqlStatementContext, final ShardingConditions shardingConditions, final GeneratedKey generatedKey) {
-        super(sqlStatementContext);
+    public ShardingRouteResult(final SQLStatementContext sqlStatementContext, final RoutingResult routingResult, final ShardingConditions shardingConditions, final GeneratedKey generatedKey) {
+        super(sqlStatementContext, routingResult);
         this.shardingConditions = shardingConditions;
         this.generatedKey = generatedKey;
     }
     
-    public ShardingRouteResult(final SQLStatementContext sqlStatementContext, final ShardingConditions shardingConditions) {
-        this(sqlStatementContext, shardingConditions, null);
+    public ShardingRouteResult(final SQLStatementContext sqlStatementContext, final RoutingResult routingResult, final ShardingConditions shardingConditions) {
+        this(sqlStatementContext, routingResult, shardingConditions, null);
     }
     
     /**

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.underlying.route.result;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 /**
@@ -31,10 +30,9 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 public class RouteResult {
     
     private final SQLStatementContext sqlStatementContext;
     
-    private RoutingResult routingResult;
+    private final RoutingResult routingResult;
 }

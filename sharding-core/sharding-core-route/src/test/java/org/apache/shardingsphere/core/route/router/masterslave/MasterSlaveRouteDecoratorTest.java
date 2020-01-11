@@ -115,9 +115,7 @@ public final class MasterSlaveRouteDecoratorTest {
     
     private ShardingRouteResult mockSQLRouteResult(final SQLStatement sqlStatement) {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        ShardingRouteResult result = new ShardingRouteResult(sqlStatementContext, null, null);
-        result.setRoutingResult(mockRoutingResult());
-        return result;
+        return new ShardingRouteResult(sqlStatementContext, mockRoutingResult(), null, null);
     }
     
     private RoutingResult mockRoutingResult() {
