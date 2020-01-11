@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapp
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.router.masterslave.MasterSlaveRouter;
+import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.shard.PreparedQueryShardingEngine;
 import org.apache.shardingsphere.core.shard.result.ExecutionContext;
 import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
@@ -94,9 +95,9 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         sqlRewriteContext.generateSQLTokens();
         String rewriteSQL = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
         ExecutionContext result = new ExecutionContext(sqlStatementContext);
-        for (RouteUnit each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), logicSchema.getParseEngine(),
-                SHARDING_PROXY_CONTEXT.getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW)).route(rewriteSQL, parameters, true).getRouteUnits()) {
-            result.getRouteUnits().add(new RouteUnit(each.getDataSourceName(), new SQLUnit(rewriteSQL, parameters)));
+        for (RoutingUnit each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), logicSchema.getParseEngine(),
+                SHARDING_PROXY_CONTEXT.getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW)).route(rewriteSQL, parameters, true).getRoutingResult().getRoutingUnits()) {
+            result.getRouteUnits().add(new RouteUnit(each.getActualDataSourceName(), new SQLUnit(rewriteSQL, parameters)));
         }
         return result;
     }
