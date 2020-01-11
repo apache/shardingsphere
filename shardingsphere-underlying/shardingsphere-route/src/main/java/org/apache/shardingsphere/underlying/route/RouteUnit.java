@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.route.result;
+package org.apache.shardingsphere.underlying.route;
 
 import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;

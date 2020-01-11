@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.route.type.standard;
 
-import org.apache.shardingsphere.underlying.route.result.RouteContext;
+import org.apache.shardingsphere.underlying.route.RouteContext;
 import org.junit.Test;
 
 import java.util.LinkedList;

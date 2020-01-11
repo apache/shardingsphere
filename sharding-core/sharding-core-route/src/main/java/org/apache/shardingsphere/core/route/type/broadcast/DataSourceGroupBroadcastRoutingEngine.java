@@ -21,8 +21,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
-import org.apache.shardingsphere.underlying.route.result.RouteResult;
-import org.apache.shardingsphere.underlying.route.result.RouteUnit;
+import org.apache.shardingsphere.underlying.route.RouteResult;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 

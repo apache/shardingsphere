@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapp
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.router.masterslave.MasterSlaveRouter;
-import org.apache.shardingsphere.underlying.route.result.RouteUnit;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
 import org.apache.shardingsphere.core.shard.SimpleQueryShardingEngine;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;

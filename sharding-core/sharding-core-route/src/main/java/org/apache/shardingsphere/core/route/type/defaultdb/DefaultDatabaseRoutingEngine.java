@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.route.type.defaultdb;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
-import org.apache.shardingsphere.underlying.route.result.RouteResult;
-import org.apache.shardingsphere.underlying.route.result.TableUnit;
-import org.apache.shardingsphere.underlying.route.result.RouteUnit;
+import org.apache.shardingsphere.underlying.route.RouteResult;
+import org.apache.shardingsphere.underlying.route.TableUnit;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.ArrayList;

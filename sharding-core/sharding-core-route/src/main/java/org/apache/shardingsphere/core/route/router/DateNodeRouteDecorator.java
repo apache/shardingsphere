@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.route.router;
 
-import org.apache.shardingsphere.underlying.route.result.RouteContext;
+import org.apache.shardingsphere.underlying.route.RouteContext;
 
 /**
  * Data node route decorator.

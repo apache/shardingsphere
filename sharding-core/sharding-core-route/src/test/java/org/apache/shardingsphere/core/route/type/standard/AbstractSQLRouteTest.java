@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.route.type.standard;
 
 import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
-import org.apache.shardingsphere.underlying.route.result.RouteContext;
+import org.apache.shardingsphere.underlying.route.RouteContext;
 import org.apache.shardingsphere.core.route.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;

@@ -25,9 +25,9 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
-import org.apache.shardingsphere.underlying.route.result.RouteResult;
-import org.apache.shardingsphere.underlying.route.result.RouteUnit;
-import org.apache.shardingsphere.underlying.route.result.TableUnit;
+import org.apache.shardingsphere.underlying.route.RouteResult;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
+import org.apache.shardingsphere.underlying.route.TableUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;

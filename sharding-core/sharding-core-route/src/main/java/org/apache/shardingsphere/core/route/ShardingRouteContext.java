@@ -22,8 +22,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.route.result.RouteContext;
-import org.apache.shardingsphere.underlying.route.result.RouteResult;
+import org.apache.shardingsphere.underlying.route.RouteContext;
+import org.apache.shardingsphere.underlying.route.RouteResult;
 
 /**
  * SQL route context.

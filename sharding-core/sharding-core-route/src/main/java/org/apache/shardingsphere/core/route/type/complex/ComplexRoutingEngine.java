@@ -25,7 +25,7 @@ import org.apache.shardingsphere.underlying.common.exception.ShardingSphereExcep
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
-import org.apache.shardingsphere.underlying.route.result.RouteResult;
+import org.apache.shardingsphere.underlying.route.RouteResult;
 import org.apache.shardingsphere.core.route.type.standard.StandardRoutingEngine;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;

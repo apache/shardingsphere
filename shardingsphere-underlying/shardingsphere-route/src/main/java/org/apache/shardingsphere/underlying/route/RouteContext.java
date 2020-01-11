@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.route.result;
+package org.apache.shardingsphere.underlying.route;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
