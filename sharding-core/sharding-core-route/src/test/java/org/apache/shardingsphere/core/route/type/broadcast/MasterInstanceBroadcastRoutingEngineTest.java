@@ -67,6 +67,6 @@ public final class MasterInstanceBroadcastRoutingEngineTest {
     public void assertRoute() {
         RoutingResult actual = masterInstanceBroadcastRoutingEngine.route();
         assertThat(actual.getRoutingUnits().size(), is(1));
-        assertThat(actual.getRoutingUnits().iterator().next().getDataSourceName(), is(DATASOURCE_NAME));
+        assertThat(actual.getRoutingUnits().iterator().next().getActualDataSourceName(), is(DATASOURCE_NAME));
     }
 }

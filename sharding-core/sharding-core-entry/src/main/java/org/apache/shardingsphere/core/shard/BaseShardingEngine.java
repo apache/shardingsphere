@@ -101,7 +101,7 @@ public abstract class BaseShardingEngine {
     private Collection<RouteUnit> convert(final String sql, final List<Object> parameters, final ShardingRouteResult shardingRouteResult) {
         Collection<RouteUnit> result = new LinkedHashSet<>();
         for (RoutingUnit each : shardingRouteResult.getRoutingResult().getRoutingUnits()) {
-            result.add(new RouteUnit(each.getDataSourceName(), new SQLUnit(sql, parameters)));
+            result.add(new RouteUnit(each.getActualDataSourceName(), new SQLUnit(sql, parameters)));
         }
         return result;
     }
@@ -113,7 +113,7 @@ public abstract class BaseShardingEngine {
         for (RoutingUnit each : shardingRouteResult.getRoutingResult().getRoutingUnits()) {
             ShardingSQLRewriteEngine sqlRewriteEngine = new ShardingSQLRewriteEngine(shardingRule, shardingRouteResult.getShardingConditions(), each);
             SQLRewriteResult sqlRewriteResult = sqlRewriteEngine.rewrite(sqlRewriteContext);
-            result.add(new RouteUnit(each.getDataSourceName(), new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));
+            result.add(new RouteUnit(each.getActualDataSourceName(), new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));
         }
         return result;
     }

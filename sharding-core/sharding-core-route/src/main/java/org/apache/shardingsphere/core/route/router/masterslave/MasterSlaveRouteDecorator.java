@@ -41,7 +41,7 @@ public final class MasterSlaveRouteDecorator implements DateNodeRouteDecorator {
         Collection<RoutingUnit> toBeRemoved = new LinkedList<>();
         Collection<RoutingUnit> toBeAdded = new LinkedList<>();
         for (RoutingUnit each : routeResult.getRoutingResult().getRoutingUnits()) {
-            if (masterSlaveRule.getName().equalsIgnoreCase(each.getDataSourceName())) {
+            if (masterSlaveRule.getName().equalsIgnoreCase(each.getActualDataSourceName())) {
                 toBeRemoved.add(each);
                 toBeAdded.add(createNewRoutingUnit(new MasterSlaveDataSourceRouter(masterSlaveRule).route(routeResult.getSqlStatementContext().getSqlStatement()), each));
             }
@@ -52,7 +52,7 @@ public final class MasterSlaveRouteDecorator implements DateNodeRouteDecorator {
     }
     
     private RoutingUnit createNewRoutingUnit(final String actualDataSourceName, final RoutingUnit originalTableUnit) {
-        RoutingUnit result = new RoutingUnit(actualDataSourceName, originalTableUnit.getDataSourceName());
+        RoutingUnit result = new RoutingUnit(originalTableUnit.getLogicDataSourceName(), actualDataSourceName);
         result.getTableUnits().addAll(originalTableUnit.getTableUnits());
         return result;
     }

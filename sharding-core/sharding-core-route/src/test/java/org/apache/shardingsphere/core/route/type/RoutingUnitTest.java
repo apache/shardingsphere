@@ -86,12 +86,12 @@ public final class RoutingUnitTest {
     
     @Test
     public void assertGetDataSourceName() {
-        assertThat(routingUnit.getDataSourceName(), is(DATASOURCE_NAME));
+        assertThat(routingUnit.getActualDataSourceName(), is(DATASOURCE_NAME));
     }
     
     @Test
     public void assertGetMasterSlaveLogicDataSourceName() {
-        assertThat(routingUnit.getMasterSlaveLogicDataSourceName(), is(DATASOURCE_NAME));
+        assertThat(routingUnit.getLogicDataSourceName(), is(DATASOURCE_NAME));
     }
     
     @Test
@@ -104,7 +104,7 @@ public final class RoutingUnitTest {
     @Test
     public void assertToString() {
         assertThat(routingUnit.toString(), is(String.format(
-            "RoutingUnit(dataSourceName=%s, masterSlaveLogicDataSourceName=%s, tableUnits=[TableUnit(logicTableName=%s, actualTableName=%s), TableUnit(logicTableName=%s, actualTableName=%s)])",
+            "RoutingUnit(logicDataSourceName=%s, actualDataSourceName=%s, tableUnits=[TableUnit(logicTableName=%s, actualTableName=%s), TableUnit(logicTableName=%s, actualTableName=%s)])",
             DATASOURCE_NAME, DATASOURCE_NAME, LOGIC_TABLE, SHARD_TABLE_0, LOGIC_TABLE, SHARD_TABLE_1)));
     }
 }

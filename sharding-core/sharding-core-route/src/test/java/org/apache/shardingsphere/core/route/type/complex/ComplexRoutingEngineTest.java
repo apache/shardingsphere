@@ -55,7 +55,7 @@ public final class ComplexRoutingEngineTest extends AbstractRoutingEngineTest {
         List<RoutingUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
         assertThat(routingResult.getRoutingUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getDataSourceName(), is("ds_1"));
+        assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_1"));
         assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order_1"));
         assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_order"));
@@ -73,7 +73,7 @@ public final class ComplexRoutingEngineTest extends AbstractRoutingEngineTest {
         List<RoutingUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
         assertThat(routingResult.getRoutingUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getDataSourceName(), is("ds_1"));
+        assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_1"));
         assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order_1"));
         assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_order"));

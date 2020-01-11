@@ -89,9 +89,9 @@ public final class DataSourceGroupBroadcastRoutingEngineTest {
         RoutingResult actual = dataSourceGroupBroadcastRoutingEngine.route();
         assertThat(actual.getRoutingUnits().size(), is(3));
         Iterator<RoutingUnit> iterator = actual.getRoutingUnits().iterator();
-        assertThat(iterator.next().getDataSourceName(), is("ds3"));
-        assertThat(Arrays.asList("ds9", "ds10", "ds11"), hasItems(iterator.next().getDataSourceName()));
-        assertThat(iterator.next().getDataSourceName(), is("default"));
+        assertThat(iterator.next().getActualDataSourceName(), is("ds3"));
+        assertThat(Arrays.asList("ds9", "ds10", "ds11"), hasItems(iterator.next().getActualDataSourceName()));
+        assertThat(iterator.next().getActualDataSourceName(), is("default"));
     }
     
     @Test
@@ -105,6 +105,6 @@ public final class DataSourceGroupBroadcastRoutingEngineTest {
         RoutingResult actual = dataSourceGroupBroadcastRoutingEngine.route();
         assertThat(actual.getRoutingUnits().size(), is(1));
         Iterator<RoutingUnit> iterator = actual.getRoutingUnits().iterator();
-        assertThat(Arrays.asList("ds1", "ds2", "ds3"), hasItems(iterator.next().getDataSourceName()));
+        assertThat(Arrays.asList("ds1", "ds2", "ds3"), hasItems(iterator.next().getActualDataSourceName()));
     }
 }

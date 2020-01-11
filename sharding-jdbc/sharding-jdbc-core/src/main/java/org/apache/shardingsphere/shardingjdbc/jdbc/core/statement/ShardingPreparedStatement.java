@@ -23,15 +23,14 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.merge.MergeEntry;
 import org.apache.shardingsphere.core.route.ShardingRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.shard.PreparedQueryShardingEngine;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.sharding.merge.ShardingResultMergerEngine;
-import org.apache.shardingsphere.shardingjdbc.executor.batch.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.executor.PreparedStatementExecutor;
+import org.apache.shardingsphere.shardingjdbc.executor.batch.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
@@ -44,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.merge.MergeEntry;
 import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
@@ -54,6 +54,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -77,6 +78,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     private final PreparedStatementExecutor preparedStatementExecutor;
     
     private final BatchPreparedStatementExecutor batchPreparedStatementExecutor;
+    
+    private final Collection<Comparable<?>> generatedValues = new LinkedList<>();
     
     private ShardingRouteResult shardingRouteResult;
     
@@ -194,7 +197,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         Optional<GeneratedKey> generatedKey = getGeneratedKey();
         if (preparedStatementExecutor.isReturnGeneratedKeys() && generatedKey.isPresent()) {
             Preconditions.checkState(shardingRouteResult.getGeneratedKey().isPresent());
-            return new GeneratedKeysResultSet(shardingRouteResult.getGeneratedKey().get().getGeneratedValues().iterator(), generatedKey.get().getColumnName(), this);
+            return new GeneratedKeysResultSet(generatedValues.iterator(), generatedKey.get().getColumnName(), this);
         }
         if (1 == preparedStatementExecutor.getStatements().size()) {
             return preparedStatementExecutor.getStatements().iterator().next().getGeneratedKeys();
@@ -234,6 +237,10 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         try {
             shard();
             batchPreparedStatementExecutor.addBatchForRouteUnits(shardingRouteResult);
+            Optional<GeneratedKey> generatedKey = shardingRouteResult.getGeneratedKey();
+            if (generatedKey.isPresent()) {
+                generatedValues.add(generatedKey.get().getGeneratedValues().getLast());
+            }
         } finally {
             currentResultSet = null;
             clearParameters();
@@ -255,7 +262,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private void initBatchPreparedStatementExecutor() throws SQLException {
-        batchPreparedStatementExecutor.init(shardingRouteResult);
+        batchPreparedStatementExecutor.init(shardingRouteResult.getSqlStatementContext());
         setBatchParametersForStatements();
     }
     
