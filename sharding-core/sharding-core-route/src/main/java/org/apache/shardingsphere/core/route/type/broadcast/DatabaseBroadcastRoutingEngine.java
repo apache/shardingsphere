@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.route.type.broadcast;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
-import org.apache.shardingsphere.core.route.type.RoutingResult;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.RoutingResult;
+import org.apache.shardingsphere.underlying.route.RoutingUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**

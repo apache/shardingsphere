@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.rewrite.sql;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
-import org.apache.shardingsphere.core.route.type.TableUnit;
+import org.apache.shardingsphere.underlying.route.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.TableUnit;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;

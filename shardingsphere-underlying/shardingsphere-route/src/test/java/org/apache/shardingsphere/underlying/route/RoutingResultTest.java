@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.type;
+package org.apache.shardingsphere.underlying.route;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;

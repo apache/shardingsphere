@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.core.route.router.masterslave;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.route.RouteResult;
+import org.apache.shardingsphere.underlying.route.RouteResult;
 import org.apache.shardingsphere.core.route.router.DateNodeRouteDecorator;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.RoutingUnit;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 
 import java.util.Collection;

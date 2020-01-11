@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.route.type.ignore;
 
-import org.apache.shardingsphere.core.route.type.RoutingResult;
+import org.apache.shardingsphere.underlying.route.RoutingResult;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

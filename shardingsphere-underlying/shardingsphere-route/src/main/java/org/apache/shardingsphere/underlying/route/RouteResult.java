@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route;
+package org.apache.shardingsphere.underlying.route;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 /**
