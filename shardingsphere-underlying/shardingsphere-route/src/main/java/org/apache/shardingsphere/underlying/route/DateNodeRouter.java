@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.router;
-
-import org.apache.shardingsphere.underlying.route.RouteContext;
+package org.apache.shardingsphere.underlying.route;
 
 import java.util.List;
 
