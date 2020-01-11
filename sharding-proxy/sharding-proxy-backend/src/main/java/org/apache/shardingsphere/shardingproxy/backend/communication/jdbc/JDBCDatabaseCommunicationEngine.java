@@ -118,7 +118,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             return response;
         }
         this.mergedResult = createMergedResult(routeResult, ((QueryResponse) response).getQueryResults());
-        handleColumnsForQueryHeader(routeResult);
+        handleColumnsForQueryHeader(routeResult.getSqlStatementContext());
         return response;
     }
     
@@ -144,9 +144,9 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return mergeEntry.process(queryResults, routeResult.getSqlStatementContext());
     }
     
-    private void handleColumnsForQueryHeader(final RouteResult routeResult) {
+    private void handleColumnsForQueryHeader(final SQLStatementContext sqlStatementContext) {
         removeDerivedColumns();
-        removeAssistedQueryColumns(routeResult);
+        removeAssistedQueryColumns(sqlStatementContext);
         setLogicColumns();
     } 
     
@@ -161,10 +161,10 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         queryHeaders.removeAll(toRemove);
     }
     
-    private void removeAssistedQueryColumns(final RouteResult routeResult) {
+    private void removeAssistedQueryColumns(final SQLStatementContext sqlStatementContext) {
         List<QueryHeader> toRemove = new LinkedList<>();
         List<QueryHeader> queryHeaders = ((QueryResponse) response).getQueryHeaders();
-        Collection<String> assistedQueryColumns = getAssistedQueryColumns(routeResult);
+        Collection<String> assistedQueryColumns = getAssistedQueryColumns(sqlStatementContext);
         for (QueryHeader each : queryHeaders) {
             if (assistedQueryColumns.contains(each.getColumnName())) {
                 toRemove.add(each);
@@ -173,10 +173,10 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         queryHeaders.removeAll(toRemove);
     }
     
-    private Collection<String> getAssistedQueryColumns(final RouteResult routeResult) {
+    private Collection<String> getAssistedQueryColumns(final SQLStatementContext sqlStatementContext) {
         Collection<String> result = new LinkedList<>();
         EncryptRule encryptRule = getEncryptRule();
-        for (String each : routeResult.getSqlStatementContext().getTablesContext().getTableNames()) {
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             result.addAll(encryptRule.getAssistedQueryColumns(each));
         }
         return result;
