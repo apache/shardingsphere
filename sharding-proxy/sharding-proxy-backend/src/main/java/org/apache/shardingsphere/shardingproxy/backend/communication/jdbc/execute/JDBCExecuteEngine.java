@@ -74,7 +74,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     @SuppressWarnings("unchecked")
     @Override
     public BackendResponse execute(final RouteResult routeResult) throws SQLException {
-        final SQLStatementContext sqlStatementContext = routeResult.getSqlStatementContext();
+        SQLStatementContext sqlStatementContext = routeResult.getSqlStatementContext();
         boolean isReturnGeneratedKeys = sqlStatementContext.getSqlStatement() instanceof InsertStatement;
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Collection<InputGroup<StatementExecuteUnit>> inputGroups = sqlExecutePrepareTemplate.getExecuteUnitGroups(
