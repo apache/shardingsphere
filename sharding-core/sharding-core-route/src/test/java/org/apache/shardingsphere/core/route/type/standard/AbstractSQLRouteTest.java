@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.route.type.standard;
 
 import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
-import org.apache.shardingsphere.underlying.route.result.RouteResult;
+import org.apache.shardingsphere.underlying.route.result.RouteContext;
 import org.apache.shardingsphere.core.route.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
@@ -42,12 +42,12 @@ import static org.junit.Assert.assertThat;
 
 public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     
-    protected final RouteResult assertRoute(final String sql, final List<Object> parameters) {
+    protected final RouteContext assertRoute(final String sql, final List<Object> parameters) {
         ShardingRule shardingRule = createAllShardingRule();
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildTableMetas());
         SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine("MySQL");
         PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(sql, shardingRule, metaData, parseEngine);
-        RouteResult result = engine.route(parameters);
+        RouteContext result = engine.route(parameters);
         assertThat(result.getRoutingResult().getRouteUnits().size(), is(1));
         return result;
     }

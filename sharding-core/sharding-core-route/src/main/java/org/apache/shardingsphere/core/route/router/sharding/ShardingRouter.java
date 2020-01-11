@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.route.ShardingRouteResult;
+import org.apache.shardingsphere.core.route.ShardingRouteContext;
 import org.apache.shardingsphere.core.route.router.DateNodeRouter;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
@@ -71,7 +71,7 @@ public final class ShardingRouter implements DateNodeRouter {
     
     @Override
     @SuppressWarnings("unchecked")
-    public ShardingRouteResult route(final String sql, final List<Object> parameters, final boolean useCache) {
+    public ShardingRouteContext route(final String sql, final List<Object> parameters, final boolean useCache) {
         SQLStatement sqlStatement = parse(sql, useCache);
         Optional<ShardingStatementValidator> shardingStatementValidator = ShardingStatementValidatorFactory.newInstance(sqlStatement);
         if (shardingStatementValidator.isPresent()) {
@@ -91,7 +91,7 @@ public final class ShardingRouter implements DateNodeRouter {
         if (needMergeShardingValues) {
             Preconditions.checkState(1 == routingResult.getRouteUnits().size(), "Must have one sharding with subquery.");
         }
-        return new ShardingRouteResult(sqlStatementContext, routingResult, shardingConditions, generatedKey.orNull());
+        return new ShardingRouteContext(sqlStatementContext, routingResult, shardingConditions, generatedKey.orNull());
     }
     
     /*

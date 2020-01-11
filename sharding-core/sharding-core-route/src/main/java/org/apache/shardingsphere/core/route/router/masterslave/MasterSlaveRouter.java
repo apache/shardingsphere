@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.route.router.masterslave;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.route.result.RouteResult;
+import org.apache.shardingsphere.underlying.route.result.RouteContext;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.route.router.DateNodeRouter;
 import org.apache.shardingsphere.underlying.route.result.RoutingResult;
@@ -44,13 +44,13 @@ public final class MasterSlaveRouter implements DateNodeRouter {
     private final boolean showSQL;
     
     @Override
-    public RouteResult route(final String sql, final List<Object> parameters, final boolean useCache) {
+    public RouteContext route(final String sql, final List<Object> parameters, final boolean useCache) {
         String dataSourceName = new MasterSlaveDataSourceRouter(masterSlaveRule).route(parseEngine.parse(sql, useCache));
         if (showSQL) {
             SQLLogger.logSQL(sql, dataSourceName);
         }
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRouteUnits().add(new RouteUnit(dataSourceName));
-        return new RouteResult(null, routingResult);
+        return new RouteContext(null, routingResult);
     }
 }

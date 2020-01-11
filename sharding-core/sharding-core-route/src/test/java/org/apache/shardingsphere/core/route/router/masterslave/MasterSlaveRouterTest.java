@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.route.router.masterslave;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.underlying.route.result.RouteResult;
+import org.apache.shardingsphere.underlying.route.result.RouteContext;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
@@ -84,21 +84,21 @@ public final class MasterSlaveRouterTest {
     
     @Test
     public void assertRouteToMaster() {
-        RouteResult actual = masterSlaveRouter.route(INSERT_SQL, Collections.emptyList(), false);
+        RouteContext actual = masterSlaveRouter.route(INSERT_SQL, Collections.emptyList(), false);
         assertThat(actual.getRoutingResult().getRouteUnits().size(), is(1));
         assertThat(actual.getRoutingResult().getRouteUnits().iterator().next().getActualDataSourceName(), is(MASTER_DATASOURCE));
     }
     
     @Test
     public void assertRouteToSlave() {
-        RouteResult actual = masterSlaveRouter.route(QUERY_SQL, Collections.emptyList(), false);
+        RouteContext actual = masterSlaveRouter.route(QUERY_SQL, Collections.emptyList(), false);
         assertThat(actual.getRoutingResult().getRouteUnits().size(), is(1));
         assertThat(actual.getRoutingResult().getRouteUnits().iterator().next().getActualDataSourceName(), is(SLAVE_DATASOURCE));
     }
     
     @Test
     public void assertLockRouteToMaster() {
-        RouteResult actual = masterSlaveRouter.route(QUERY_SQL_LOCK, Collections.emptyList(), false);
+        RouteContext actual = masterSlaveRouter.route(QUERY_SQL_LOCK, Collections.emptyList(), false);
         assertThat(actual.getRoutingResult().getRouteUnits().size(), is(1));
         assertThat(actual.getRoutingResult().getRouteUnits().iterator().next().getActualDataSourceName(), is(MASTER_DATASOURCE));
     }

@@ -67,7 +67,7 @@ public final class DatabaseTest {
     public void assertDatabaseAllRoutingSQL() {
         String originSQL = "select * from tesT";
         SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine("MySQL");
-        ShardingRouteResult actual = new StatementRoutingEngine(shardingRule, getMetaDataForAllRoutingSQL(), parseEngine).route(originSQL);
+        ShardingRouteContext actual = new StatementRoutingEngine(shardingRule, getMetaDataForAllRoutingSQL(), parseEngine).route(originSQL);
         assertThat(actual.getRoutingResult().getRouteUnits().size(), is(1));
         Collection<String> actualDataSources = actual.getRoutingResult().getDataSourceNames();
         assertThat(actualDataSources.size(), is(1));
@@ -88,7 +88,7 @@ public final class DatabaseTest {
     public void assertDatabaseSelectSQLPagination() {
         String originSQL = "select user_id from tbl_pagination limit 0,5";
         SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine("MySQL");
-        ShardingRouteResult actual = new StatementRoutingEngine(shardingRule, getMetaDataForPagination(), parseEngine).route(originSQL);
+        ShardingRouteContext actual = new StatementRoutingEngine(shardingRule, getMetaDataForPagination(), parseEngine).route(originSQL);
         assertThat(((SelectSQLStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualOffset(), is(0L));
         assertThat(((SelectSQLStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualRowCount().orNull(), is(5L));
         originSQL = "select user_id from tbl_pagination limit 5,5";
@@ -127,7 +127,7 @@ public final class DatabaseTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.getTables()).thenReturn(mock(TableMetas.class));
         SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine("MySQL");
-        ShardingRouteResult actual = new PreparedStatementRoutingEngine(originSQL, rule, metaData, parseEngine).route(Lists.<Object>newArrayList(13, 173));
+        ShardingRouteContext actual = new PreparedStatementRoutingEngine(originSQL, rule, metaData, parseEngine).route(Lists.<Object>newArrayList(13, 173));
         assertThat(((SelectSQLStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualOffset(), is(5L));
         assertThat(((SelectSQLStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualRowCount().orNull(), is(10L));
         assertThat(actual.getRoutingResult().getRouteUnits().size(), is(1));

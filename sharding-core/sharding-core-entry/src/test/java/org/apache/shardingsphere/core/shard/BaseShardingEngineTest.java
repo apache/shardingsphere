@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.shard;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.route.ShardingRouteResult;
+import org.apache.shardingsphere.core.route.ShardingRouteContext;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.underlying.route.result.RoutingResult;
@@ -54,13 +54,13 @@ public abstract class BaseShardingEngineTest {
         return new ShardingSphereProperties(result);
     }
     
-    protected final ShardingRouteResult createSQLRouteResult() {
+    protected final ShardingRouteContext createSQLRouteContext() {
         RoutingResult routingResult = new RoutingResult();
         routingResult.getRouteUnits().add(new RouteUnit("ds"));
-        return new ShardingRouteResult(new CommonSQLStatementContext(new DALStatement()), routingResult, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+        return new ShardingRouteContext(new CommonSQLStatementContext(new DALStatement()), routingResult, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
     }
     
-    protected final void assertSQLRouteResult(final ExecutionContext actual) {
+    protected final void assertExecutionContext(final ExecutionContext actual) {
         assertThat(actual.getExecutionUnits().size(), is(1));
         ExecutionUnit actualExecutionUnit = actual.getExecutionUnits().iterator().next();
         assertThat(actualExecutionUnit.getDataSourceName(), is("ds"));

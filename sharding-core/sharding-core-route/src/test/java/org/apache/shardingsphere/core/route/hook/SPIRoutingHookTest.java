@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.route.hook;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.route.ShardingRouteResult;
+import org.apache.shardingsphere.core.route.ShardingRouteContext;
 import org.apache.shardingsphere.core.route.fixture.RoutingHookFixture;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +38,7 @@ public final class SPIRoutingHookTest {
     private final SPIRoutingHook spiRoutingHook = new SPIRoutingHook();
     
     @Mock
-    private ShardingRouteResult sqlRouteResult;
+    private ShardingRouteContext routeContext;
     
     @Mock
     private TableMetas tableMetas;
@@ -57,10 +57,10 @@ public final class SPIRoutingHookTest {
     
     @Test
     public void assertFinishSuccess() {
-        spiRoutingHook.finishSuccess(sqlRouteResult, tableMetas);
+        spiRoutingHook.finishSuccess(routeContext, tableMetas);
         RoutingHook routingHook = getFixtureHook();
         assertThat(routingHook, instanceOf(RoutingHookFixture.class));
-        assertThat(((RoutingHookFixture) routingHook).getSqlRouteResult(), is(sqlRouteResult));
+        assertThat(((RoutingHookFixture) routingHook).getRouteContext(), is(routeContext));
         assertThat(((RoutingHookFixture) routingHook).getTableMetas(), is(tableMetas));
     }
     

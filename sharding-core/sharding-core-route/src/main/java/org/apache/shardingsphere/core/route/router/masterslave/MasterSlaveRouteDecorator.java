@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.route.router.masterslave;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.route.result.RouteResult;
+import org.apache.shardingsphere.underlying.route.result.RouteContext;
 import org.apache.shardingsphere.core.route.router.DateNodeRouteDecorator;
 import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
@@ -37,18 +37,18 @@ public final class MasterSlaveRouteDecorator implements DateNodeRouteDecorator {
     private final MasterSlaveRule masterSlaveRule;
     
     @Override
-    public RouteResult decorate(final RouteResult routeResult) {
+    public RouteContext decorate(final RouteContext routeContext) {
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
-        for (RouteUnit each : routeResult.getRoutingResult().getRouteUnits()) {
+        for (RouteUnit each : routeContext.getRoutingResult().getRouteUnits()) {
             if (masterSlaveRule.getName().equalsIgnoreCase(each.getActualDataSourceName())) {
                 toBeRemoved.add(each);
-                toBeAdded.add(createNewRouteUnit(new MasterSlaveDataSourceRouter(masterSlaveRule).route(routeResult.getSqlStatementContext().getSqlStatement()), each));
+                toBeAdded.add(createNewRouteUnit(new MasterSlaveDataSourceRouter(masterSlaveRule).route(routeContext.getSqlStatementContext().getSqlStatement()), each));
             }
         }
-        routeResult.getRoutingResult().getRouteUnits().removeAll(toBeRemoved);
-        routeResult.getRoutingResult().getRouteUnits().addAll(toBeAdded);
-        return routeResult;
+        routeContext.getRoutingResult().getRouteUnits().removeAll(toBeRemoved);
+        routeContext.getRoutingResult().getRouteUnits().addAll(toBeAdded);
+        return routeContext;
     }
     
     private RouteUnit createNewRouteUnit(final String actualDataSourceName, final RouteUnit originalTableUnit) {

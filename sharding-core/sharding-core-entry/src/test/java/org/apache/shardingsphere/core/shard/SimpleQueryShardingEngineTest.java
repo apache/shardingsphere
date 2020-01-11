@@ -66,7 +66,7 @@ public final class SimpleQueryShardingEngineTest extends BaseShardingEngineTest 
     }
     
     protected void assertShard() {
-        when(routingEngine.route(getSql())).thenReturn(createSQLRouteResult());
-        assertSQLRouteResult(shardingEngine.shard(getSql(), getParameters()));
+        when(routingEngine.route(getSql())).thenReturn(createSQLRouteContext());
+        assertExecutionContext(shardingEngine.shard(getSql(), getParameters()));
     }
 }
