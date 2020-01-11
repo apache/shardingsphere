@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser;
 
 import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Identifier_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnreservedWord_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
@@ -35,7 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
 public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
     @Override
-    public ASTNode visitIdentifier_(final Identifier_Context ctx) {
+    public ASTNode visitIdentifier(final IdentifierContext ctx) {
         UnreservedWord_Context unreservedWord = ctx.unreservedWord_();
         if (null != unreservedWord) {
             return visit(unreservedWord);
@@ -50,7 +50,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     
     @Override
     public ASTNode visitSchemaName(final SchemaNameContext ctx) {
-        return visit(ctx.identifier_());
+        return visit(ctx.identifier());
     }
     
     @Override

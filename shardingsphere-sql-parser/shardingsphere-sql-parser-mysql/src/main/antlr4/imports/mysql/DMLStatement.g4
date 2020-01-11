@@ -101,7 +101,7 @@ select
     ;
 
 callStatement
-    : CALL identifier_ (LP_ (identifier_ | expr)? RP_)?
+    : CALL identifier (LP_ (identifier | expr)? RP_)?
     ;
 
 doStatement
@@ -113,11 +113,11 @@ handlerStatement
     ;
 
 handlerOpenStatement
-    : HANDLER tableName OPEN (AS? identifier_)?
+    : HANDLER tableName OPEN (AS? identifier)?
     ;
 
 handlerReadIndexStatement
-    : HANDLER tableName READ identifier_ ( comparisonOperator LP_ identifier_ RP_ | (FIRST | NEXT | PREV | LAST) ) 
+    : HANDLER tableName READ identifier ( comparisonOperator LP_ identifier RP_ | (FIRST | NEXT | PREV | LAST) ) 
     (WHERE expr)? (LIMIT numberLiterals)?
     ;
 
@@ -140,12 +140,12 @@ loadDataStatement
       INFILE STRING_
       (REPLACE | IGNORE)?
       INTO TABLE tableName
-      (PARTITION LP_ identifier_ (COMMA_ identifier_)* RP_ )?
-      (CHARACTER SET identifier_)?
+      (PARTITION LP_ identifier (COMMA_ identifier)* RP_ )?
+      (CHARACTER SET identifier)?
       ( (FIELDS | COLUMNS) selectFieldsInto_+ )?
       ( LINES selectLinesInto_+ )?
       ( IGNORE numberLiterals (LINES | ROWS) )?
-      ( LP_ identifier_ (COMMA_ identifier_)* RP_ )?
+      ( LP_ identifier (COMMA_ identifier)* RP_ )?
       (setAssignmentsClause)?
     ;
 
@@ -155,10 +155,10 @@ loadXmlStatement
       INFILE STRING_
       (REPLACE | IGNORE)?
       INTO TABLE tableName
-      (CHARACTER SET identifier_)?
+      (CHARACTER SET identifier)?
       (ROWS IDENTIFIED BY LT_ STRING_ GT_)?
       ( IGNORE numberLiterals (LINES | ROWS) )?
-      ( LP_ identifier_ (COMMA_ identifier_)* RP_ )?
+      ( LP_ identifier (COMMA_ identifier)* RP_ )?
       (setAssignmentsClause)?
     ;
 
@@ -195,7 +195,7 @@ selectItem
     ;
 
 alias
-    : identifier_ | STRING_
+    : identifier | STRING_
     ;
 
 unqualifiedShorthand
@@ -203,7 +203,7 @@ unqualifiedShorthand
     ;
 
 qualifiedShorthand
-    : identifier_ DOT_ASTERISK_
+    : identifier DOT_ASTERISK_
     ;
 
 fromClause
@@ -227,7 +227,7 @@ tableFactor
     ;
 
 partitionNames_ 
-    : PARTITION LP_ identifier_ (COMMA_ identifier_)* RP_
+    : PARTITION LP_ identifier (COMMA_ identifier)* RP_
     ;
 
 indexHintList_
@@ -293,7 +293,7 @@ selectFieldsInto_
     ;
 
 selectIntoExpression_
-    : INTO identifier_ (COMMA_ identifier_ )* | INTO DUMPFILE STRING_
+    : INTO identifier (COMMA_ identifier )* | INTO DUMPFILE STRING_
     | (INTO OUTFILE STRING_ (CHARACTER SET IDENTIFIER_)?((FIELDS | COLUMNS) selectFieldsInto_+)? (LINES selectLinesInto_+)?)
     ;
 
