@@ -295,7 +295,7 @@ renameConstraint
     ;
 
 renameTableSpecification_
-    : RENAME TO identifier_
+    : RENAME TO identifier
     ;
 
 indexExistClause_
