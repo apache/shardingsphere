@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.underlying.route.result.RoutingResult;
 import org.apache.shardingsphere.underlying.route.result.TableUnit;
-import org.apache.shardingsphere.underlying.route.result.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,7 +54,7 @@ public final class CartesianRoutingEngine implements RoutingEngine {
         for (Entry<String, Set<String>> entry : getDataSourceLogicTablesMap().entrySet()) {
             List<Set<String>> actualTableGroups = getActualTableGroups(entry.getKey(), entry.getValue());
             List<Set<TableUnit>> routingTableGroups = toRoutingTableGroups(entry.getKey(), actualTableGroups);
-            result.getRoutingUnits().addAll(getRoutingUnits(entry.getKey(), Sets.cartesianProduct(routingTableGroups)));
+            result.getRouteUnits().addAll(getRouteUnits(entry.getKey(), Sets.cartesianProduct(routingTableGroups)));
         }
         return result;
     }
@@ -117,12 +117,12 @@ public final class CartesianRoutingEngine implements RoutingEngine {
         throw new IllegalStateException(String.format("Cannot found routing table factor, data source: %s, actual table: %s", dataSource, actualTable));
     }
     
-    private Collection<RoutingUnit> getRoutingUnits(final String dataSource, final Set<List<TableUnit>> cartesianRoutingTableGroups) {
-        Collection<RoutingUnit> result = new LinkedHashSet<>();
+    private Collection<RouteUnit> getRouteUnits(final String dataSource, final Set<List<TableUnit>> cartesianRoutingTableGroups) {
+        Collection<RouteUnit> result = new LinkedHashSet<>();
         for (List<TableUnit> each : cartesianRoutingTableGroups) {
-            RoutingUnit routingUnit = new RoutingUnit(dataSource);
-            routingUnit.getTableUnits().addAll(each);
-            result.add(routingUnit);
+            RouteUnit routeUnit = new RouteUnit(dataSource);
+            routeUnit.getTableUnits().addAll(each);
+            result.add(routeUnit);
         }
         return result;
     }

@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import org.apache.shardingsphere.underlying.route.result.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 
 /**
- * Routing unit aware.
+ * Route unit aware.
  *
  * @author zhangliang
  */
-public interface RoutingUnitAware {
+public interface RouteUnitAware {
     
     /**
      * To string.
      * 
-     * @param routingUnit routing unit
+     * @param routeUnit route unit
      * @return literal
      */
-    String toString(RoutingUnit routingUnit);
+    String toString(RouteUnit routeUnit);
 }

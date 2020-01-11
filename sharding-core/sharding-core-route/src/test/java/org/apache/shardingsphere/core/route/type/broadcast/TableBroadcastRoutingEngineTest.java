@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.underlying.route.result.RoutingResult;
-import org.apache.shardingsphere.underlying.route.result.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.underlying.route.result.TableUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
@@ -106,19 +106,19 @@ public final class TableBroadcastRoutingEngineTest {
     
     private void assertRoutingResult(final RoutingResult actual) {
         assertThat(actual.getDataSourceNames().size(), is(2));
-        assertThat(actual.getRoutingUnits().size(), is(6));
-        Iterator<RoutingUnit> routingUnitIterator = actual.getRoutingUnits().iterator();
-        assertRoutingUnit(routingUnitIterator.next(), "ds0", "t_order_0");
-        assertRoutingUnit(routingUnitIterator.next(), "ds0", "t_order_1");
-        assertRoutingUnit(routingUnitIterator.next(), "ds0", "t_order_2");
-        assertRoutingUnit(routingUnitIterator.next(), "ds1", "t_order_0");
-        assertRoutingUnit(routingUnitIterator.next(), "ds1", "t_order_1");
-        assertRoutingUnit(routingUnitIterator.next(), "ds1", "t_order_2");
+        assertThat(actual.getRouteUnits().size(), is(6));
+        Iterator<RouteUnit> routeUnits = actual.getRouteUnits().iterator();
+        assertRouteUnit(routeUnits.next(), "ds0", "t_order_0");
+        assertRouteUnit(routeUnits.next(), "ds0", "t_order_1");
+        assertRouteUnit(routeUnits.next(), "ds0", "t_order_2");
+        assertRouteUnit(routeUnits.next(), "ds1", "t_order_0");
+        assertRouteUnit(routeUnits.next(), "ds1", "t_order_1");
+        assertRouteUnit(routeUnits.next(), "ds1", "t_order_2");
     }
     
-    private void assertRoutingUnit(final RoutingUnit routingUnit, final String dataSourceName, final String actualTableName) {
-        assertThat(routingUnit.getActualDataSourceName(), is(dataSourceName));
-        assertThat(routingUnit.getTableUnits().size(), is(1));
-        assertThat(routingUnit.getTableUnits().get(0), is(new TableUnit("t_order", actualTableName)));
+    private void assertRouteUnit(final RouteUnit routeUnit, final String dataSourceName, final String actualTableName) {
+        assertThat(routeUnit.getActualDataSourceName(), is(dataSourceName));
+        assertThat(routeUnit.getTableUnits().size(), is(1));
+        assertThat(routeUnit.getTableUnits().get(0), is(new TableUnit("t_order", actualTableName)));
     }
 }

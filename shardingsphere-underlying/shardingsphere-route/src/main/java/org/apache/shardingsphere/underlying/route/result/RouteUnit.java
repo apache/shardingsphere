@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Routing unit.
+ * Route unit.
  * 
  * @author zhangliang
  * @author maxiaoguang
@@ -39,7 +39,7 @@ import java.util.Set;
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class RoutingUnit {
+public final class RouteUnit {
     
     private final String logicDataSourceName;
     
@@ -47,7 +47,7 @@ public final class RoutingUnit {
     
     private final List<TableUnit> tableUnits = new LinkedList<>();
     
-    public RoutingUnit(final String dataSourceName) {
+    public RouteUnit(final String dataSourceName) {
         logicDataSourceName = dataSourceName;
         actualDataSourceName = dataSourceName;
     }

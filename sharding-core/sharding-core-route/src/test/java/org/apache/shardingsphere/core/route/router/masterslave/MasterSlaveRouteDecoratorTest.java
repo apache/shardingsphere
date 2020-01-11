@@ -22,7 +22,7 @@ import com.google.common.collect.Lists;
 import org.apache.shardingsphere.underlying.route.result.RouteResult;
 import org.apache.shardingsphere.core.route.ShardingRouteResult;
 import org.apache.shardingsphere.underlying.route.result.RoutingResult;
-import org.apache.shardingsphere.underlying.route.result.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.underlying.route.result.TableUnit;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
@@ -120,10 +120,10 @@ public final class MasterSlaveRouteDecoratorTest {
     
     private RoutingResult mockRoutingResult() {
         RoutingResult result = new RoutingResult();
-        RoutingUnit routingUnit = new RoutingUnit(DATASOURCE_NAME);
-        routingUnit.getTableUnits().add(new TableUnit("table", "table_0"));
-        result.getRoutingUnits().add(routingUnit);
-        result.getRoutingUnits().add(new RoutingUnit(NON_MASTER_SLAVE_DATASOURCE_NAME));
+        RouteUnit routeUnit = new RouteUnit(DATASOURCE_NAME);
+        routeUnit.getTableUnits().add(new TableUnit("table", "table_0"));
+        result.getRouteUnits().add(routeUnit);
+        result.getRouteUnits().add(new RouteUnit(NON_MASTER_SLAVE_DATASOURCE_NAME));
         return result;
     }
 }

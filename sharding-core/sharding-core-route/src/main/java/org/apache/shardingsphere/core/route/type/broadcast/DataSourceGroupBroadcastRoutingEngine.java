@@ -22,7 +22,7 @@ import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.underlying.route.result.RoutingResult;
-import org.apache.shardingsphere.underlying.route.result.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 
@@ -46,7 +46,7 @@ public final class DataSourceGroupBroadcastRoutingEngine implements RoutingEngin
         RoutingResult result = new RoutingResult();
         Collection<Set<String>> broadcastDataSourceGroup = getBroadcastDataSourceGroup(getDataSourceGroup());
         for (Set<String> each : broadcastDataSourceGroup) {
-            result.getRoutingUnits().add(new RoutingUnit(getRandomDataSourceName(each)));
+            result.getRouteUnits().add(new RouteUnit(getRandomDataSourceName(each)));
         }
         return result;
     }

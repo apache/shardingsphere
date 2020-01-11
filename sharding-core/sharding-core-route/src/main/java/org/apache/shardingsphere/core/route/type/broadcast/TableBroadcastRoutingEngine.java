@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.underlying.route.result.RoutingResult;
-import org.apache.shardingsphere.underlying.route.result.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.underlying.route.result.TableUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -55,7 +55,7 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     public RoutingResult route() {
         RoutingResult result = new RoutingResult();
         for (String each : getLogicTableNames()) {
-            result.getRoutingUnits().addAll(getAllRoutingUnits(each));
+            result.getRouteUnits().addAll(getAllRouteUnits(each));
         }
         return result;
     }
@@ -84,13 +84,13 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
         return Optional.absent();
     }
     
-    private Collection<RoutingUnit> getAllRoutingUnits(final String logicTableName) {
-        Collection<RoutingUnit> result = new LinkedList<>();
+    private Collection<RouteUnit> getAllRouteUnits(final String logicTableName) {
+        Collection<RouteUnit> result = new LinkedList<>();
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         for (DataNode each : tableRule.getActualDataNodes()) {
-            RoutingUnit routingUnit = new RoutingUnit(each.getDataSourceName());
-            routingUnit.getTableUnits().add(new TableUnit(logicTableName, each.getTableName()));
-            result.add(routingUnit);
+            RouteUnit routeUnit = new RouteUnit(each.getDataSourceName());
+            routeUnit.getTableUnits().add(new TableUnit(logicTableName, each.getTableName()));
+            result.add(routeUnit);
         }
         return result;
     }

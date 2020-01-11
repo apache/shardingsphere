@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLSta
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.underlying.route.result.RoutingResult;
-import org.apache.shardingsphere.underlying.route.result.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Test;
 
@@ -52,9 +52,9 @@ public final class ComplexRoutingEngineTest extends AbstractRoutingEngineTest {
                 new PaginationContext(null, null, Collections.emptyList()));
         ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(shardingRule, Arrays.asList("t_order", "t_order_item"), selectSQLStatementContext, createShardingConditions("t_order"));
         RoutingResult routingResult = complexRoutingEngine.route();
-        List<RoutingUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits());
+        List<RouteUnit> tableUnitList = new ArrayList<>(routingResult.getRouteUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
-        assertThat(routingResult.getRoutingUnits().size(), is(1));
+        assertThat(routingResult.getRouteUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_1"));
         assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order_1"));
@@ -70,9 +70,9 @@ public final class ComplexRoutingEngineTest extends AbstractRoutingEngineTest {
                 new PaginationContext(null, null, Collections.emptyList()));
         ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(shardingRule, Arrays.asList("t_order", "t_config"), selectSQLStatementContext, createShardingConditions("t_order"));
         RoutingResult routingResult = complexRoutingEngine.route();
-        List<RoutingUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits());
+        List<RouteUnit> tableUnitList = new ArrayList<>(routingResult.getRouteUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
-        assertThat(routingResult.getRoutingUnits().size(), is(1));
+        assertThat(routingResult.getRouteUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_1"));
         assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order_1"));

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.underlying.route.result.RouteResult;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.route.router.DateNodeRouter;
 import org.apache.shardingsphere.underlying.route.result.RoutingResult;
-import org.apache.shardingsphere.underlying.route.result.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 
@@ -50,7 +50,7 @@ public final class MasterSlaveRouter implements DateNodeRouter {
             SQLLogger.logSQL(sql, dataSourceName);
         }
         RoutingResult routingResult = new RoutingResult();
-        routingResult.getRoutingUnits().add(new RoutingUnit(dataSourceName));
+        routingResult.getRouteUnits().add(new RouteUnit(dataSourceName));
         return new RouteResult(null, routingResult);
     }
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rewrite.parameterized;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.route.ShardingRouteResult;
 import org.apache.shardingsphere.core.route.router.sharding.ShardingRouter;
-import org.apache.shardingsphere.underlying.route.result.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
@@ -82,7 +82,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         new ShardingSQLRewriteContextDecorator(sqlRouteResult).decorate(shardingRule, properties, sqlRewriteContext);
         sqlRewriteContext.generateSQLTokens();
         Collection<SQLRewriteResult> result = new LinkedList<>();
-        for (RoutingUnit each : sqlRouteResult.getRoutingResult().getRoutingUnits()) {
+        for (RouteUnit each : sqlRouteResult.getRoutingResult().getRouteUnits()) {
             result.add(new ShardingSQLRewriteEngine(shardingRule, sqlRouteResult.getShardingConditions(), each).rewrite(sqlRewriteContext));
         }
         return result;

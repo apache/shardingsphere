@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.route.router.masterslave;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.route.result.RouteResult;
 import org.apache.shardingsphere.core.route.router.DateNodeRouteDecorator;
-import org.apache.shardingsphere.underlying.route.result.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 
 import java.util.Collection;
@@ -38,21 +38,21 @@ public final class MasterSlaveRouteDecorator implements DateNodeRouteDecorator {
     
     @Override
     public RouteResult decorate(final RouteResult routeResult) {
-        Collection<RoutingUnit> toBeRemoved = new LinkedList<>();
-        Collection<RoutingUnit> toBeAdded = new LinkedList<>();
-        for (RoutingUnit each : routeResult.getRoutingResult().getRoutingUnits()) {
+        Collection<RouteUnit> toBeRemoved = new LinkedList<>();
+        Collection<RouteUnit> toBeAdded = new LinkedList<>();
+        for (RouteUnit each : routeResult.getRoutingResult().getRouteUnits()) {
             if (masterSlaveRule.getName().equalsIgnoreCase(each.getActualDataSourceName())) {
                 toBeRemoved.add(each);
-                toBeAdded.add(createNewRoutingUnit(new MasterSlaveDataSourceRouter(masterSlaveRule).route(routeResult.getSqlStatementContext().getSqlStatement()), each));
+                toBeAdded.add(createNewRouteUnit(new MasterSlaveDataSourceRouter(masterSlaveRule).route(routeResult.getSqlStatementContext().getSqlStatement()), each));
             }
         }
-        routeResult.getRoutingResult().getRoutingUnits().removeAll(toBeRemoved);
-        routeResult.getRoutingResult().getRoutingUnits().addAll(toBeAdded);
+        routeResult.getRoutingResult().getRouteUnits().removeAll(toBeRemoved);
+        routeResult.getRoutingResult().getRouteUnits().addAll(toBeAdded);
         return routeResult;
     }
     
-    private RoutingUnit createNewRoutingUnit(final String actualDataSourceName, final RoutingUnit originalTableUnit) {
-        RoutingUnit result = new RoutingUnit(originalTableUnit.getLogicDataSourceName(), actualDataSourceName);
+    private RouteUnit createNewRouteUnit(final String actualDataSourceName, final RouteUnit originalTableUnit) {
+        RouteUnit result = new RouteUnit(originalTableUnit.getLogicDataSourceName(), actualDataSourceName);
         result.getTableUnits().addAll(originalTableUnit.getTableUnits());
         return result;
     }

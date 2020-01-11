@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.route.type.defaultdb;
 
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.underlying.route.result.RoutingResult;
-import org.apache.shardingsphere.underlying.route.result.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,9 +49,9 @@ public final class DefaultDatabaseRoutingEngineTest {
     @Test
     public void assertRoute() {
         RoutingResult routingResult = defaultDatabaseRoutingEngine.route();
-        List<RoutingUnit> tableUnitList = new ArrayList<>(routingResult.getRoutingUnits());
+        List<RouteUnit> tableUnitList = new ArrayList<>(routingResult.getRouteUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
-        assertThat(routingResult.getRoutingUnits().size(), is(1));
+        assertThat(routingResult.getRouteUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_0"));
         assertThat(tableUnitList.get(0).getTableUnits().size(), is(2));
         assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order"));

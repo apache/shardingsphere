@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCo
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.underlying.route.result.RoutingResult;
-import org.apache.shardingsphere.underlying.route.result.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.underlying.route.result.TableUnit;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.DataNode;
@@ -82,9 +82,9 @@ public final class StandardRoutingEngine implements RoutingEngine {
     private RoutingResult generateRoutingResult(final Collection<DataNode> routedDataNodes) {
         RoutingResult result = new RoutingResult();
         for (DataNode each : routedDataNodes) {
-            RoutingUnit routingUnit = new RoutingUnit(each.getDataSourceName());
-            routingUnit.getTableUnits().add(new TableUnit(logicTableName, each.getTableName()));
-            result.getRoutingUnits().add(routingUnit);
+            RouteUnit routeUnit = new RouteUnit(each.getDataSourceName());
+            routeUnit.getTableUnits().add(new TableUnit(logicTableName, each.getTableName()));
+            result.getRouteUnits().add(routeUnit);
         }
         return result;
     }

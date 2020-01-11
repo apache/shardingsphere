@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.sharding.rewrite.sql;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.underlying.route.result.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.underlying.route.result.TableUnit;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.LogicAndActualTablesAware;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.RoutingUnitAware;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.RouteUnitAware;
 import org.apache.shardingsphere.underlying.rewrite.sql.impl.AbstractSQLBuilder;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 
@@ -42,18 +42,18 @@ public final class ShardingSQLBuilder extends AbstractSQLBuilder {
     
     private final ShardingRule shardingRule;
     
-    private final RoutingUnit routingUnit;
+    private final RouteUnit routeUnit;
     
-    public ShardingSQLBuilder(final SQLRewriteContext context, final ShardingRule shardingRule, final RoutingUnit routingUnit) {
+    public ShardingSQLBuilder(final SQLRewriteContext context, final ShardingRule shardingRule, final RouteUnit routeUnit) {
         super(context);
         this.shardingRule = shardingRule;
-        this.routingUnit = routingUnit;
+        this.routeUnit = routeUnit;
     }
     
     @Override
     protected String getSQLTokenText(final SQLToken sqlToken) {
-        if (sqlToken instanceof RoutingUnitAware) {
-            return ((RoutingUnitAware) sqlToken).toString(routingUnit);
+        if (sqlToken instanceof RouteUnitAware) {
+            return ((RouteUnitAware) sqlToken).toString(routeUnit);
         }
         if (sqlToken instanceof LogicAndActualTablesAware) {
             return ((LogicAndActualTablesAware) sqlToken).toString(getLogicAndActualTables());
@@ -64,10 +64,10 @@ public final class ShardingSQLBuilder extends AbstractSQLBuilder {
     private Map<String, String> getLogicAndActualTables() {
         Map<String, String> result = new HashMap<>();
         Collection<String> tableNames = getContext().getSqlStatementContext().getTablesContext().getTableNames();
-        for (TableUnit each : routingUnit.getTableUnits()) {
+        for (TableUnit each : routeUnit.getTableUnits()) {
             String logicTableName = each.getLogicTableName().toLowerCase();
             result.put(logicTableName, each.getActualTableName());
-            result.putAll(getLogicAndActualTablesFromBindingTable(routingUnit.getLogicDataSourceName(), each, tableNames));
+            result.putAll(getLogicAndActualTablesFromBindingTable(routeUnit.getLogicDataSourceName(), each, tableNames));
         }
         return result;
     }

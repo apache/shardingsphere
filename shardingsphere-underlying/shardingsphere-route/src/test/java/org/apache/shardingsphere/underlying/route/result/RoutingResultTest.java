@@ -52,19 +52,19 @@ public final class RoutingResultTest {
     public void setUp() {
         singleRoutingResult = new RoutingResult();
         multiRoutingResult = new RoutingResult();
-        multiRoutingResult.getRoutingUnits().addAll(mockRoutingUnits());
-        singleRoutingResult.getRoutingUnits().add(mockRoutingUnit(DATASOURCE_NAME_0));
+        multiRoutingResult.getRouteUnits().addAll(mockRouteUnits());
+        singleRoutingResult.getRouteUnits().add(mockRouteUnit(DATASOURCE_NAME_0));
     }
     
-    private Collection<RoutingUnit> mockRoutingUnits() {
-        List<RoutingUnit> result = Lists.newArrayList();
-        result.add(mockRoutingUnit(DATASOURCE_NAME_0));
-        result.add(mockRoutingUnit(DATASOURCE_NAME_1));
+    private Collection<RouteUnit> mockRouteUnits() {
+        List<RouteUnit> result = Lists.newArrayList();
+        result.add(mockRouteUnit(DATASOURCE_NAME_0));
+        result.add(mockRouteUnit(DATASOURCE_NAME_1));
         return result;
     }
     
-    private RoutingUnit mockRoutingUnit(final String datasourceName) {
-        RoutingUnit result = new RoutingUnit(datasourceName);
+    private RouteUnit mockRouteUnit(final String datasourceName) {
+        RouteUnit result = new RouteUnit(datasourceName);
         result.getTableUnits().add(new TableUnit(LOGIC_TABLE, ACTUAL_TABLE));
         return result;
     }

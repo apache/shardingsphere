@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
 import org.apache.shardingsphere.underlying.route.result.RoutingResult;
-import org.apache.shardingsphere.underlying.route.result.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.underlying.route.result.TableUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -55,21 +55,21 @@ public final class UnicastRoutingEngine implements RoutingEngine {
             for (String each : logicTables) {
                 tableUnits.add(new TableUnit(each, each));
             }
-            RoutingUnit routingUnit = new RoutingUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName());
-            routingUnit.getTableUnits().addAll(tableUnits);
-            result.getRoutingUnits().add(routingUnit);
+            RouteUnit routeUnit = new RouteUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName());
+            routeUnit.getTableUnits().addAll(tableUnits);
+            result.getRouteUnits().add(routeUnit);
         } else if (logicTables.isEmpty()) {
-            result.getRoutingUnits().add(new RoutingUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName()));
+            result.getRouteUnits().add(new RouteUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName()));
         } else if (1 == logicTables.size()) {
             String logicTableName = logicTables.iterator().next();
             if (!shardingRule.findTableRule(logicTableName).isPresent()) {
-                result.getRoutingUnits().add(new RoutingUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName()));
+                result.getRouteUnits().add(new RouteUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName()));
                 return result;
             }
             DataNode dataNode = shardingRule.getDataNode(logicTableName);
-            RoutingUnit routingUnit = new RoutingUnit(dataNode.getDataSourceName());
-            routingUnit.getTableUnits().add(new TableUnit(logicTableName, dataNode.getTableName()));
-            result.getRoutingUnits().add(routingUnit);
+            RouteUnit routeUnit = new RouteUnit(dataNode.getDataSourceName());
+            routeUnit.getTableUnits().add(new TableUnit(logicTableName, dataNode.getTableName()));
+            result.getRouteUnits().add(routeUnit);
         } else {
             List<TableUnit> tableUnits = new ArrayList<>(logicTables.size());
             Set<String> availableDatasourceNames = null;
@@ -92,9 +92,9 @@ public final class UnicastRoutingEngine implements RoutingEngine {
             if (availableDatasourceNames.isEmpty()) {
                 throw new ShardingSphereConfigurationException("Cannot find actual datasource intersection for logic tables: %s", logicTables);
             }
-            RoutingUnit routingUnit = new RoutingUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName(availableDatasourceNames));
-            routingUnit.getTableUnits().addAll(tableUnits);
-            result.getRoutingUnits().add(routingUnit);
+            RouteUnit routeUnit = new RouteUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName(availableDatasourceNames));
+            routeUnit.getTableUnits().addAll(tableUnits);
+            result.getRouteUnits().add(routeUnit);
         }
         return result;
     }

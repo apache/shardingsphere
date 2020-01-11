@@ -22,7 +22,7 @@ import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.route.SQLLogger;
 import org.apache.shardingsphere.core.route.ShardingRouteResult;
 import org.apache.shardingsphere.core.route.hook.SPIRoutingHook;
-import org.apache.shardingsphere.underlying.route.result.RoutingUnit;
+import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.underlying.route.context.ExecutionContext;
 import org.apache.shardingsphere.core.shard.result.ShardingExecutionContext;
@@ -103,7 +103,7 @@ public abstract class BaseShardingEngine {
     
     private Collection<ExecutionUnit> convert(final String sql, final List<Object> parameters, final ShardingRouteResult shardingRouteResult) {
         Collection<ExecutionUnit> result = new LinkedHashSet<>();
-        for (RoutingUnit each : shardingRouteResult.getRoutingResult().getRoutingUnits()) {
+        for (RouteUnit each : shardingRouteResult.getRoutingResult().getRouteUnits()) {
             result.add(new ExecutionUnit(each.getActualDataSourceName(), new SQLUnit(sql, parameters)));
         }
         return result;
@@ -113,7 +113,7 @@ public abstract class BaseShardingEngine {
         Collection<ExecutionUnit> result = new LinkedHashSet<>();
         SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(
                 metaData, properties).createSQLRewriteContext(sql, parameters, shardingRouteResult.getSqlStatementContext(), createSQLRewriteContextDecorator(shardingRouteResult));
-        for (RoutingUnit each : shardingRouteResult.getRoutingResult().getRoutingUnits()) {
+        for (RouteUnit each : shardingRouteResult.getRoutingResult().getRouteUnits()) {
             ShardingSQLRewriteEngine sqlRewriteEngine = new ShardingSQLRewriteEngine(shardingRule, shardingRouteResult.getShardingConditions(), each);
             SQLRewriteResult sqlRewriteResult = sqlRewriteEngine.rewrite(sqlRewriteContext);
             result.add(new ExecutionUnit(each.getActualDataSourceName(), new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));

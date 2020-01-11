@@ -89,7 +89,7 @@ public final class ShardingRouter implements DateNodeRouter {
         RoutingEngine routingEngine = RoutingEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions);
         RoutingResult routingResult = routingEngine.route();
         if (needMergeShardingValues) {
-            Preconditions.checkState(1 == routingResult.getRoutingUnits().size(), "Must have one sharding with subquery.");
+            Preconditions.checkState(1 == routingResult.getRouteUnits().size(), "Must have one sharding with subquery.");
         }
         return new ShardingRouteResult(sqlStatementContext, routingResult, shardingConditions, generatedKey.orNull());
     }
