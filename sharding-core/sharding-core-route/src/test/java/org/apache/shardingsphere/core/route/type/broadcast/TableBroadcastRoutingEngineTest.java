@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.underlying.route.result.RoutingResult;
+import org.apache.shardingsphere.underlying.route.result.RouteResult;
 import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.underlying.route.result.TableUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -79,8 +79,8 @@ public final class TableBroadcastRoutingEngineTest {
     public void assertRouteForNormalDDL() {
         DDLStatement ddlStatement = mock(DDLStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(ddlStatement);
-        RoutingResult actual = tableBroadcastRoutingEngine.route();
-        assertRoutingResult(actual);
+        RouteResult actual = tableBroadcastRoutingEngine.route();
+        assertRouteResult(actual);
     }
     
     @Test(expected = IllegalStateException.class)
@@ -100,11 +100,11 @@ public final class TableBroadcastRoutingEngineTest {
         when(indexSegment.getName()).thenReturn("index_name");
         when(indexStatement.getIndexes()).thenReturn(Lists.newArrayList(indexSegment));
         when(sqlStatementContext.getSqlStatement()).thenReturn(indexStatement);
-        RoutingResult actual = tableBroadcastRoutingEngine.route();
-        assertRoutingResult(actual);
+        RouteResult actual = tableBroadcastRoutingEngine.route();
+        assertRouteResult(actual);
     }
     
-    private void assertRoutingResult(final RoutingResult actual) {
+    private void assertRouteResult(final RouteResult actual) {
         assertThat(actual.getDataSourceNames().size(), is(2));
         assertThat(actual.getRouteUnits().size(), is(6));
         Iterator<RouteUnit> routeUnits = actual.getRouteUnits().iterator();

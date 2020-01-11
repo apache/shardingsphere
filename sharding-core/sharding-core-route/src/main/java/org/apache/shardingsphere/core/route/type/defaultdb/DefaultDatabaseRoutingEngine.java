@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.route.type.defaultdb;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
-import org.apache.shardingsphere.underlying.route.result.RoutingResult;
+import org.apache.shardingsphere.underlying.route.result.RouteResult;
 import org.apache.shardingsphere.underlying.route.result.TableUnit;
 import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -41,8 +41,8 @@ public final class DefaultDatabaseRoutingEngine implements RoutingEngine {
     private final Collection<String> logicTables;
     
     @Override
-    public RoutingResult route() {
-        RoutingResult result = new RoutingResult();
+    public RouteResult route() {
+        RouteResult result = new RouteResult();
         List<TableUnit> routingTables = new ArrayList<>(logicTables.size());
         for (String each : logicTables) {
             routingTables.add(new TableUnit(each, each));

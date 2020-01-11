@@ -23,7 +23,7 @@ import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.route.ShardingRouteContext;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
-import org.apache.shardingsphere.underlying.route.result.RoutingResult;
+import org.apache.shardingsphere.underlying.route.result.RouteResult;
 import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.underlying.route.context.ExecutionContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.CommonSQLStatementContext;
@@ -55,9 +55,9 @@ public abstract class BaseShardingEngineTest {
     }
     
     protected final ShardingRouteContext createSQLRouteContext() {
-        RoutingResult routingResult = new RoutingResult();
-        routingResult.getRouteUnits().add(new RouteUnit("ds"));
-        return new ShardingRouteContext(new CommonSQLStatementContext(new DALStatement()), routingResult, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+        RouteResult routeResult = new RouteResult();
+        routeResult.getRouteUnits().add(new RouteUnit("ds"));
+        return new ShardingRouteContext(new CommonSQLStatementContext(new DALStatement()), routeResult, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
     }
     
     protected final void assertExecutionContext(final ExecutionContext actual) {

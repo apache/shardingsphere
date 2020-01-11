@@ -48,7 +48,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine("MySQL");
         PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(sql, shardingRule, metaData, parseEngine);
         RouteContext result = engine.route(parameters);
-        assertThat(result.getRoutingResult().getRouteUnits().size(), is(1));
+        assertThat(result.getRouteResult().getRouteUnits().size(), is(1));
         return result;
     }
     

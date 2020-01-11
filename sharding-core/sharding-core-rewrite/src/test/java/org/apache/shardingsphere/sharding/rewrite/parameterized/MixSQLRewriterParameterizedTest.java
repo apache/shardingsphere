@@ -84,7 +84,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
         new EncryptSQLRewriteContextDecorator().decorate(shardingRule.getEncryptRule(), properties, sqlRewriteContext);
         sqlRewriteContext.generateSQLTokens();
         Collection<SQLRewriteResult> result = new LinkedList<>();
-        for (RouteUnit each : shardingRouteContext.getRoutingResult().getRouteUnits()) {
+        for (RouteUnit each : shardingRouteContext.getRouteResult().getRouteUnits()) {
             result.add(new ShardingSQLRewriteEngine(shardingRule, shardingRouteContext.getShardingConditions(), each).rewrite(sqlRewriteContext));
         }
         return result;

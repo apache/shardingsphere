@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.route.type.broadcast;
 
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.underlying.route.result.RoutingResult;
+import org.apache.shardingsphere.underlying.route.result.RouteResult;
 import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingDataSourceNames;
@@ -86,7 +86,7 @@ public final class DataSourceGroupBroadcastRoutingEngineTest {
         List<TableRule> tableRules = mockTableRules(shards);
         when(shardingRule.getTableRules()).thenReturn(tableRules);
         when(shardingDataSourceNames.getDefaultDataSourceName()).thenReturn("default");
-        RoutingResult actual = dataSourceGroupBroadcastRoutingEngine.route();
+        RouteResult actual = dataSourceGroupBroadcastRoutingEngine.route();
         assertThat(actual.getRouteUnits().size(), is(3));
         Iterator<RouteUnit> iterator = actual.getRouteUnits().iterator();
         assertThat(iterator.next().getActualDataSourceName(), is("ds3"));
@@ -102,7 +102,7 @@ public final class DataSourceGroupBroadcastRoutingEngineTest {
         shards.add(Arrays.asList("ds1", "ds2", "ds3"));
         List<TableRule> tableRules = mockTableRules(shards);
         when(shardingRule.getTableRules()).thenReturn(tableRules);
-        RoutingResult actual = dataSourceGroupBroadcastRoutingEngine.route();
+        RouteResult actual = dataSourceGroupBroadcastRoutingEngine.route();
         assertThat(actual.getRouteUnits().size(), is(1));
         Iterator<RouteUnit> iterator = actual.getRouteUnits().iterator();
         assertThat(Arrays.asList("ds1", "ds2", "ds3"), hasItems(iterator.next().getActualDataSourceName()));

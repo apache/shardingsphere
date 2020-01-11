@@ -43,7 +43,7 @@ public final class ShardingPaginationParameterRewriter implements ParameterRewri
     @Override
     public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof SelectSQLStatementContext
-                && ((SelectSQLStatementContext) sqlStatementContext).getPaginationContext().isHasPagination() && !shardingRouteContext.getRoutingResult().isSingleRouting();
+                && ((SelectSQLStatementContext) sqlStatementContext).getPaginationContext().isHasPagination() && !shardingRouteContext.getRouteResult().isSingleRouting();
     }
     
     @Override

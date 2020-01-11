@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.route.type.broadcast;
 
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.underlying.route.result.RoutingResult;
+import org.apache.shardingsphere.underlying.route.result.RouteResult;
 import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
@@ -47,10 +47,10 @@ public final class DatabaseBroadcastRoutingEngineTest {
     
     @Test
     public void assertRoute() {
-        RoutingResult routingResult = databaseBroadcastRoutingEngine.route();
-        List<RouteUnit> tableUnitList = new ArrayList<>(routingResult.getRouteUnits());
-        assertThat(routingResult, instanceOf(RoutingResult.class));
-        assertThat(routingResult.getRouteUnits().size(), is(2));
+        RouteResult routeResult = databaseBroadcastRoutingEngine.route();
+        List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
+        assertThat(routeResult, instanceOf(RouteResult.class));
+        assertThat(routeResult.getRouteUnits().size(), is(2));
         assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds0"));
         assertThat(tableUnitList.get(1).getActualDataSourceName(), is("ds1"));
     }

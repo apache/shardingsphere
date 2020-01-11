@@ -34,5 +34,5 @@ public class RouteContext {
     
     private final SQLStatementContext sqlStatementContext;
     
-    private final RoutingResult routingResult;
+    private final RouteResult routeResult;
 }

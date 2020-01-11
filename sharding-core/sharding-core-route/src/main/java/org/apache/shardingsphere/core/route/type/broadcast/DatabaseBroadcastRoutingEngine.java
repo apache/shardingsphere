@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.route.type.broadcast;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
-import org.apache.shardingsphere.underlying.route.result.RoutingResult;
+import org.apache.shardingsphere.underlying.route.result.RouteResult;
 import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -35,8 +35,8 @@ public final class DatabaseBroadcastRoutingEngine implements RoutingEngine {
     private final ShardingRule shardingRule;
     
     @Override
-    public RoutingResult route() {
-        RoutingResult result = new RoutingResult();
+    public RouteResult route() {
+        RouteResult result = new RouteResult();
         for (String each : shardingRule.getShardingDataSourceNames().getDataSourceNames()) {
             result.getRouteUnits().add(new RouteUnit(each));
         }

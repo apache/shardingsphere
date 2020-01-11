@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCo
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.route.result.RouteContext;
-import org.apache.shardingsphere.underlying.route.result.RoutingResult;
+import org.apache.shardingsphere.underlying.route.result.RouteResult;
 
 /**
  * SQL route context.
@@ -39,14 +39,14 @@ public final class ShardingRouteContext extends RouteContext {
     
     private final GeneratedKey generatedKey;
     
-    public ShardingRouteContext(final SQLStatementContext sqlStatementContext, final RoutingResult routingResult, final ShardingConditions shardingConditions, final GeneratedKey generatedKey) {
-        super(sqlStatementContext, routingResult);
+    public ShardingRouteContext(final SQLStatementContext sqlStatementContext, final RouteResult routeResult, final ShardingConditions shardingConditions, final GeneratedKey generatedKey) {
+        super(sqlStatementContext, routeResult);
         this.shardingConditions = shardingConditions;
         this.generatedKey = generatedKey;
     }
     
-    public ShardingRouteContext(final SQLStatementContext sqlStatementContext, final RoutingResult routingResult, final ShardingConditions shardingConditions) {
-        this(sqlStatementContext, routingResult, shardingConditions, null);
+    public ShardingRouteContext(final SQLStatementContext sqlStatementContext, final RouteResult routeResult, final ShardingConditions shardingConditions) {
+        this(sqlStatementContext, routeResult, shardingConditions, null);
     }
     
     /**

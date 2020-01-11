@@ -103,7 +103,7 @@ public abstract class BaseShardingEngine {
     
     private Collection<ExecutionUnit> convert(final String sql, final List<Object> parameters, final ShardingRouteContext shardingRouteContext) {
         Collection<ExecutionUnit> result = new LinkedHashSet<>();
-        for (RouteUnit each : shardingRouteContext.getRoutingResult().getRouteUnits()) {
+        for (RouteUnit each : shardingRouteContext.getRouteResult().getRouteUnits()) {
             result.add(new ExecutionUnit(each.getActualDataSourceName(), new SQLUnit(sql, parameters)));
         }
         return result;
@@ -113,7 +113,7 @@ public abstract class BaseShardingEngine {
         Collection<ExecutionUnit> result = new LinkedHashSet<>();
         SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(
                 metaData, properties).createSQLRewriteContext(sql, parameters, shardingRouteContext.getSqlStatementContext(), createSQLRewriteContextDecorator(shardingRouteContext));
-        for (RouteUnit each : shardingRouteContext.getRoutingResult().getRouteUnits()) {
+        for (RouteUnit each : shardingRouteContext.getRouteResult().getRouteUnits()) {
             ShardingSQLRewriteEngine sqlRewriteEngine = new ShardingSQLRewriteEngine(shardingRule, shardingRouteContext.getShardingConditions(), each);
             SQLRewriteResult sqlRewriteResult = sqlRewriteEngine.rewrite(sqlRewriteContext);
             result.add(new ExecutionUnit(each.getActualDataSourceName(), new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));

@@ -30,12 +30,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Routing result.
+ * Route result.
  * 
  * @author zhangliang
  */
 @Getter
-public final class RoutingResult {
+public final class RouteResult {
     
     private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
     

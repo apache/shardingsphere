@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.route.type.ignore;
 
-import org.apache.shardingsphere.underlying.route.result.RoutingResult;
+import org.apache.shardingsphere.underlying.route.result.RouteResult;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -29,6 +29,6 @@ public final class IgnoreRoutingEngineTest {
     public void assertRoute() {
         IgnoreRoutingEngine ignoreRoutingEngine = new IgnoreRoutingEngine();
         ignoreRoutingEngine.route();
-        assertThat(ignoreRoutingEngine.route(), instanceOf(RoutingResult.class));
+        assertThat(ignoreRoutingEngine.route(), instanceOf(RouteResult.class));
     }
 }

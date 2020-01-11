@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.route.type.broadcast;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.underlying.route.result.RoutingResult;
+import org.apache.shardingsphere.underlying.route.result.RouteResult;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingDataSourceNames;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -65,7 +65,7 @@ public final class MasterInstanceBroadcastRoutingEngineTest {
     
     @Test
     public void assertRoute() {
-        RoutingResult actual = masterInstanceBroadcastRoutingEngine.route();
+        RouteResult actual = masterInstanceBroadcastRoutingEngine.route();
         assertThat(actual.getRouteUnits().size(), is(1));
         assertThat(actual.getRouteUnits().iterator().next().getActualDataSourceName(), is(DATASOURCE_NAME));
     }

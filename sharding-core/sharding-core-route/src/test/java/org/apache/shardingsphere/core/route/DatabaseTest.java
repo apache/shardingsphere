@@ -68,8 +68,8 @@ public final class DatabaseTest {
         String originSQL = "select * from tesT";
         SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine("MySQL");
         ShardingRouteContext actual = new StatementRoutingEngine(shardingRule, getMetaDataForAllRoutingSQL(), parseEngine).route(originSQL);
-        assertThat(actual.getRoutingResult().getRouteUnits().size(), is(1));
-        Collection<String> actualDataSources = actual.getRoutingResult().getDataSourceNames();
+        assertThat(actual.getRouteResult().getRouteUnits().size(), is(1));
+        Collection<String> actualDataSources = actual.getRouteResult().getDataSourceNames();
         assertThat(actualDataSources.size(), is(1));
     }
     
@@ -130,7 +130,7 @@ public final class DatabaseTest {
         ShardingRouteContext actual = new PreparedStatementRoutingEngine(originSQL, rule, metaData, parseEngine).route(Lists.<Object>newArrayList(13, 173));
         assertThat(((SelectSQLStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualOffset(), is(5L));
         assertThat(((SelectSQLStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualRowCount().orNull(), is(10L));
-        assertThat(actual.getRoutingResult().getRouteUnits().size(), is(1));
+        assertThat(actual.getRouteResult().getRouteUnits().size(), is(1));
         originSQL = "select city_id from t_user where city_id in (?,?) limit 5,10";
         actual = new PreparedStatementRoutingEngine(originSQL, rule, metaData, parseEngine).route(Lists.<Object>newArrayList(89, 84));
         assertThat(((SelectSQLStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualOffset(), is(5L));

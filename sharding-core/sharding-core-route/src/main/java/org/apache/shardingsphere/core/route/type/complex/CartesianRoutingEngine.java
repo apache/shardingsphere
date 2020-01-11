@@ -23,7 +23,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
-import org.apache.shardingsphere.underlying.route.result.RoutingResult;
+import org.apache.shardingsphere.underlying.route.result.RouteResult;
 import org.apache.shardingsphere.underlying.route.result.TableUnit;
 import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 
@@ -46,11 +46,11 @@ import java.util.Set;
 @RequiredArgsConstructor
 public final class CartesianRoutingEngine implements RoutingEngine {
     
-    private final Collection<RoutingResult> routingResults;
+    private final Collection<RouteResult> routeResults;
     
     @Override
-    public RoutingResult route() {
-        RoutingResult result = new RoutingResult();
+    public RouteResult route() {
+        RouteResult result = new RouteResult();
         for (Entry<String, Set<String>> entry : getDataSourceLogicTablesMap().entrySet()) {
             List<Set<String>> actualTableGroups = getActualTableGroups(entry.getKey(), entry.getValue());
             List<Set<TableUnit>> routingTableGroups = toRoutingTableGroups(entry.getKey(), actualTableGroups);
@@ -61,8 +61,8 @@ public final class CartesianRoutingEngine implements RoutingEngine {
     
     private Map<String, Set<String>> getDataSourceLogicTablesMap() {
         Collection<String> intersectionDataSources = getIntersectionDataSources();
-        Map<String, Set<String>> result = new HashMap<>(routingResults.size());
-        for (RoutingResult each : routingResults) {
+        Map<String, Set<String>> result = new HashMap<>(routeResults.size());
+        for (RouteResult each : routeResults) {
             for (Entry<String, Set<String>> entry : each.getDataSourceLogicTablesMap(intersectionDataSources).entrySet()) {
                 if (result.containsKey(entry.getKey())) {
                     result.get(entry.getKey()).addAll(entry.getValue());
@@ -76,7 +76,7 @@ public final class CartesianRoutingEngine implements RoutingEngine {
     
     private Collection<String> getIntersectionDataSources() {
         Collection<String> result = new HashSet<>();
-        for (RoutingResult each : routingResults) {
+        for (RouteResult each : routeResults) {
             if (result.isEmpty()) {
                 result.addAll(each.getDataSourceNames());
             }
@@ -87,7 +87,7 @@ public final class CartesianRoutingEngine implements RoutingEngine {
     
     private List<Set<String>> getActualTableGroups(final String dataSourceName, final Set<String> logicTables) {
         List<Set<String>> result = new ArrayList<>(logicTables.size());
-        for (RoutingResult each : routingResults) {
+        for (RouteResult each : routeResults) {
             result.addAll(each.getActualTableNameGroups(dataSourceName, logicTables));
         }
         return result;
@@ -108,7 +108,7 @@ public final class CartesianRoutingEngine implements RoutingEngine {
     }
     
     private TableUnit findRoutingTable(final String dataSource, final String actualTable) {
-        for (RoutingResult each : routingResults) {
+        for (RouteResult each : routeResults) {
             Optional<TableUnit> result = each.getTableUnit(dataSource, actualTable);
             if (result.isPresent()) {
                 return result.get();

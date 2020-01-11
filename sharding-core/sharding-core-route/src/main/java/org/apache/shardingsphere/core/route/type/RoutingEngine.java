@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.route.type;
 
-import org.apache.shardingsphere.underlying.route.result.RoutingResult;
+import org.apache.shardingsphere.underlying.route.result.RouteResult;
 
 /**
  * Routing engine interface.
@@ -31,5 +31,5 @@ public interface RoutingEngine {
      *
      * @return routing result
      */
-    RoutingResult route();
+    RouteResult route();
 }

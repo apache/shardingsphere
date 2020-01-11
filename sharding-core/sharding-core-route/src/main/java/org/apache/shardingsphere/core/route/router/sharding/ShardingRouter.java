@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.route.router.sharding.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.core.route.router.sharding.validator.ShardingStatementValidatorFactory;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
-import org.apache.shardingsphere.underlying.route.result.RoutingResult;
+import org.apache.shardingsphere.underlying.route.result.RouteResult;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
@@ -87,11 +87,11 @@ public final class ShardingRouter implements DateNodeRouter {
             mergeShardingConditions(shardingConditions);
         }
         RoutingEngine routingEngine = RoutingEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions);
-        RoutingResult routingResult = routingEngine.route();
+        RouteResult routeResult = routingEngine.route();
         if (needMergeShardingValues) {
-            Preconditions.checkState(1 == routingResult.getRouteUnits().size(), "Must have one sharding with subquery.");
+            Preconditions.checkState(1 == routeResult.getRouteUnits().size(), "Must have one sharding with subquery.");
         }
-        return new ShardingRouteContext(sqlStatementContext, routingResult, shardingConditions, generatedKey.orNull());
+        return new ShardingRouteContext(sqlStatementContext, routeResult, shardingConditions, generatedKey.orNull());
     }
     
     /*

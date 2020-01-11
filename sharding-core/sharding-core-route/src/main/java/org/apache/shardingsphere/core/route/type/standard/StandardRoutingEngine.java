@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
-import org.apache.shardingsphere.underlying.route.result.RoutingResult;
+import org.apache.shardingsphere.underlying.route.result.RouteResult;
 import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.underlying.route.result.TableUnit;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
@@ -68,19 +68,19 @@ public final class StandardRoutingEngine implements RoutingEngine {
     private final ShardingConditions shardingConditions;
     
     @Override
-    public RoutingResult route() {
+    public RouteResult route() {
         if (isDMLForModify(sqlStatementContext.getSqlStatement()) && !sqlStatementContext.getTablesContext().isSingleTable()) {
             throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sqlStatementContext.getSqlStatement());
         }
-        return generateRoutingResult(getDataNodes(shardingRule.getTableRule(logicTableName)));
+        return generateRouteResult(getDataNodes(shardingRule.getTableRule(logicTableName)));
     }
     
     private boolean isDMLForModify(final SQLStatement sqlStatement) {
         return sqlStatement instanceof InsertStatement || sqlStatement instanceof UpdateStatement || sqlStatement instanceof DeleteStatement;
     }
     
-    private RoutingResult generateRoutingResult(final Collection<DataNode> routedDataNodes) {
-        RoutingResult result = new RoutingResult();
+    private RouteResult generateRouteResult(final Collection<DataNode> routedDataNodes) {
+        RouteResult result = new RouteResult();
         for (DataNode each : routedDataNodes) {
             RouteUnit routeUnit = new RouteUnit(each.getDataSourceName());
             routeUnit.getTableUnits().add(new TableUnit(logicTableName, each.getTableName()));

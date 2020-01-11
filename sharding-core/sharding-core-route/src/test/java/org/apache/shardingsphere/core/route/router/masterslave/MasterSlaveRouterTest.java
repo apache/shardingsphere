@@ -85,21 +85,21 @@ public final class MasterSlaveRouterTest {
     @Test
     public void assertRouteToMaster() {
         RouteContext actual = masterSlaveRouter.route(INSERT_SQL, Collections.emptyList(), false);
-        assertThat(actual.getRoutingResult().getRouteUnits().size(), is(1));
-        assertThat(actual.getRoutingResult().getRouteUnits().iterator().next().getActualDataSourceName(), is(MASTER_DATASOURCE));
+        assertThat(actual.getRouteResult().getRouteUnits().size(), is(1));
+        assertThat(actual.getRouteResult().getRouteUnits().iterator().next().getActualDataSourceName(), is(MASTER_DATASOURCE));
     }
     
     @Test
     public void assertRouteToSlave() {
         RouteContext actual = masterSlaveRouter.route(QUERY_SQL, Collections.emptyList(), false);
-        assertThat(actual.getRoutingResult().getRouteUnits().size(), is(1));
-        assertThat(actual.getRoutingResult().getRouteUnits().iterator().next().getActualDataSourceName(), is(SLAVE_DATASOURCE));
+        assertThat(actual.getRouteResult().getRouteUnits().size(), is(1));
+        assertThat(actual.getRouteResult().getRouteUnits().iterator().next().getActualDataSourceName(), is(SLAVE_DATASOURCE));
     }
     
     @Test
     public void assertLockRouteToMaster() {
         RouteContext actual = masterSlaveRouter.route(QUERY_SQL_LOCK, Collections.emptyList(), false);
-        assertThat(actual.getRoutingResult().getRouteUnits().size(), is(1));
-        assertThat(actual.getRoutingResult().getRouteUnits().iterator().next().getActualDataSourceName(), is(MASTER_DATASOURCE));
+        assertThat(actual.getRouteResult().getRouteUnits().size(), is(1));
+        assertThat(actual.getRouteResult().getRouteUnits().iterator().next().getActualDataSourceName(), is(MASTER_DATASOURCE));
     }
 }

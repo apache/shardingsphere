@@ -40,14 +40,14 @@ public final class MasterSlaveRouteDecorator implements DateNodeRouteDecorator {
     public RouteContext decorate(final RouteContext routeContext) {
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
-        for (RouteUnit each : routeContext.getRoutingResult().getRouteUnits()) {
+        for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
             if (masterSlaveRule.getName().equalsIgnoreCase(each.getActualDataSourceName())) {
                 toBeRemoved.add(each);
                 toBeAdded.add(createNewRouteUnit(new MasterSlaveDataSourceRouter(masterSlaveRule).route(routeContext.getSqlStatementContext().getSqlStatement()), each));
             }
         }
-        routeContext.getRoutingResult().getRouteUnits().removeAll(toBeRemoved);
-        routeContext.getRoutingResult().getRouteUnits().addAll(toBeAdded);
+        routeContext.getRouteResult().getRouteUnits().removeAll(toBeRemoved);
+        routeContext.getRouteResult().getRouteUnits().addAll(toBeAdded);
         return routeContext;
     }
     

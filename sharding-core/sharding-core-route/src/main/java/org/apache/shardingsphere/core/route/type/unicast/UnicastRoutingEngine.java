@@ -21,7 +21,7 @@ import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.core.route.type.RoutingEngine;
-import org.apache.shardingsphere.underlying.route.result.RoutingResult;
+import org.apache.shardingsphere.underlying.route.result.RouteResult;
 import org.apache.shardingsphere.underlying.route.result.RouteUnit;
 import org.apache.shardingsphere.underlying.route.result.TableUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
@@ -48,8 +48,8 @@ public final class UnicastRoutingEngine implements RoutingEngine {
     private final Collection<String> logicTables;
     
     @Override
-    public RoutingResult route() {
-        RoutingResult result = new RoutingResult();
+    public RouteResult route() {
+        RouteResult result = new RouteResult();
         if (shardingRule.isAllBroadcastTables(logicTables)) {
             List<TableUnit> tableUnits = new ArrayList<>(logicTables.size());
             for (String each : logicTables) {
