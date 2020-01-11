@@ -15,25 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.route;
+package org.apache.shardingsphere.underlying.route.context;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 /**
- * Table unit.
+ * Route context.
  * 
- * @author maxiaoguang
+ * @author gaohongtao
+ * @author zhangliang
+ * @author zhaojun
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-@ToString
-public final class TableUnit {
+public class RouteContext {
     
-    private final String logicTableName;
+    private final SQLStatementContext sqlStatementContext;
     
-    private final String actualTableName;
+    private final RouteResult routeResult;
 }

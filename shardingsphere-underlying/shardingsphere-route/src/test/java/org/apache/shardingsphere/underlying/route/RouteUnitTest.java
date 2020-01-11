@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.underlying.route;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.underlying.route.context.RouteUnit;
+import org.apache.shardingsphere.underlying.route.context.TableUnit;
 import org.junit.Before;
 import org.junit.Test;
 

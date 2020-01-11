@@ -19,6 +19,9 @@ package org.apache.shardingsphere.underlying.route;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import org.apache.shardingsphere.underlying.route.context.RouteResult;
+import org.apache.shardingsphere.underlying.route.context.RouteUnit;
+import org.apache.shardingsphere.underlying.route.context.TableUnit;
 import org.junit.Before;
 import org.junit.Test;
 
