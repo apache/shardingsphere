@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.shard.result;
+package org.apache.shardingsphere.underlying.route;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.route.ExecutionUnit;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;

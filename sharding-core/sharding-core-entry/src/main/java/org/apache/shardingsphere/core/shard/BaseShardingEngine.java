@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.route.ShardingRouteResult;
 import org.apache.shardingsphere.core.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.shard.result.ExecutionContext;
+import org.apache.shardingsphere.underlying.route.ExecutionContext;
 import org.apache.shardingsphere.core.shard.result.ShardingExecutionContext;
 import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.sharding.rewrite.context.ShardingSQLRewriteContextDecorator;

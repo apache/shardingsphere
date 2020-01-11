@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCo
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
 import org.apache.shardingsphere.core.route.type.RoutingResult;
 import org.apache.shardingsphere.core.route.type.RoutingUnit;
-import org.apache.shardingsphere.core.shard.result.ExecutionContext;
+import org.apache.shardingsphere.underlying.route.ExecutionContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
