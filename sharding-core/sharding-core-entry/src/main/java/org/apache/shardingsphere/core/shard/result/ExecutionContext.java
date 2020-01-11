@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute;
+package org.apache.shardingsphere.core.shard.result;
 
-import org.apache.shardingsphere.core.shard.result.ExecutionContext;
-import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.route.RouteUnit;
 
-import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
 /**
- * SQL Execute engine.
+ * Execution context.
  *
  * @author zhangliang
  */
-public interface SQLExecuteEngine {
+@RequiredArgsConstructor
+@Getter
+public class ExecutionContext {
     
-    /**
-     * Execute SQL.
-     *
-     * @param executionContext execution context
-     * @return execute response
-     * @throws SQLException SQL exception
-     */
-    BackendResponse execute(ExecutionContext executionContext) throws SQLException;
+    private final SQLStatementContext sqlStatementContext;
+    
+    private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
 }

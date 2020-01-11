@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.route.RouteResult;
+import org.apache.shardingsphere.core.shard.result.ShardingExecutionContext;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;
@@ -61,12 +61,12 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     /**
      * Initialize executor.
      *
-     * @param routeResult route result
+     * @param shardingExecutionContext sharding execution context
      * @throws SQLException SQL exception
      */
-    public void init(final RouteResult routeResult) throws SQLException {
-        setSqlStatementContext(routeResult.getSqlStatementContext());
-        getInputGroups().addAll(obtainExecuteGroups(routeResult.getRouteUnits()));
+    public void init(final ShardingExecutionContext shardingExecutionContext) throws SQLException {
+        setSqlStatementContext(shardingExecutionContext.getSqlStatementContext());
+        getInputGroups().addAll(obtainExecuteGroups(shardingExecutionContext.getRouteUnits()));
         cacheStatements();
     }
     

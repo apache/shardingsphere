@@ -24,7 +24,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import lombok.Getter;
-import org.apache.shardingsphere.core.route.RouteResult;
+import org.apache.shardingsphere.core.shard.result.ShardingExecutionContext;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
@@ -111,11 +111,11 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     /**
      * Add batch for route units.
      *
-     * @param routeResult route result
+     * @param shardingExecutionContext sharding execution context
      */
-    public void addBatchForRouteUnits(final RouteResult routeResult) {
-        handleOldRouteUnits(createBatchRouteUnits(routeResult.getRouteUnits()));
-        handleNewRouteUnits(createBatchRouteUnits(routeResult.getRouteUnits()));
+    public void addBatchForRouteUnits(final ShardingExecutionContext shardingExecutionContext) {
+        handleOldRouteUnits(createBatchRouteUnits(shardingExecutionContext.getRouteUnits()));
+        handleNewRouteUnits(createBatchRouteUnits(shardingExecutionContext.getRouteUnits()));
         batchCount++;
     }
     

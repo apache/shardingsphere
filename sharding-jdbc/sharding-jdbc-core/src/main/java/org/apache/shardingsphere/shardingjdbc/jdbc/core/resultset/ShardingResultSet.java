@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import org.apache.shardingsphere.core.route.RouteResult;
+import org.apache.shardingsphere.core.shard.result.ShardingExecutionContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractResultSetAdapter;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
@@ -52,8 +52,8 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     private final Map<String, Integer> columnLabelAndIndexMap;
     
-    public ShardingResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final RouteResult routeResult) throws SQLException {
-        super(resultSets, statement, routeResult);
+    public ShardingResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final ShardingExecutionContext executionContext) throws SQLException {
+        super(resultSets, statement, executionContext);
         this.mergeResultSet = mergeResultSet;
         columnLabelAndIndexMap = createColumnLabelAndIndexMap(resultSets.get(0).getMetaData());
     }

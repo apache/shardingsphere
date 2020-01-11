@@ -15,26 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute;
+package org.apache.shardingsphere.core.shard.result;
 
-import org.apache.shardingsphere.core.shard.result.ExecutionContext;
-import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
-
-import java.sql.SQLException;
+import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 
 /**
- * SQL Execute engine.
+ * Sharding execution context.
  *
  * @author zhangliang
  */
-public interface SQLExecuteEngine {
+public final class ShardingExecutionContext extends ExecutionContext {
+    
+    private final GeneratedKey generatedKey;
+    
+    public ShardingExecutionContext(final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
+        super(sqlStatementContext);
+        this.generatedKey = generatedKey;
+    }
     
     /**
-     * Execute SQL.
-     *
-     * @param executionContext execution context
-     * @return execute response
-     * @throws SQLException SQL exception
+     * Get generated key.
+     * 
+     * @return generated key
      */
-    BackendResponse execute(ExecutionContext executionContext) throws SQLException;
+    public Optional<GeneratedKey> getGeneratedKey() {
+        return Optional.fromNullable(generatedKey);
+    }
 }
