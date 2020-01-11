@@ -104,7 +104,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (logicSchema instanceof ShardingSchema) {
             logicSchema.refreshTableMetaData(routeResult.getSqlStatementContext());
         }
-        return merge(routeResult);
+        return merge(routeResult.getSqlStatementContext());
     }
     
     private boolean isExecuteDDLInXATransaction(final SQLStatement sqlStatement) {
@@ -112,13 +112,13 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return TransactionType.XA == connection.getTransactionType() && sqlStatement instanceof DDLStatement && ConnectionStatus.TRANSACTION == connection.getStateHandler().getStatus();
     }
     
-    private BackendResponse merge(final RouteResult routeResult) throws SQLException {
+    private BackendResponse merge(final SQLStatementContext sqlStatementContext) throws SQLException {
         if (response instanceof UpdateResponse) {
-            mergeUpdateCount(routeResult.getSqlStatementContext());
+            mergeUpdateCount(sqlStatementContext);
             return response;
         }
-        this.mergedResult = createMergedResult(routeResult, ((QueryResponse) response).getQueryResults());
-        handleColumnsForQueryHeader(routeResult.getSqlStatementContext());
+        this.mergedResult = createMergedResult(sqlStatementContext, ((QueryResponse) response).getQueryResults());
+        handleColumnsForQueryHeader(sqlStatementContext);
         return response;
     }
     
@@ -132,7 +132,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return logicSchema instanceof ShardingSchema && logicSchema.getShardingRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames());
     }
     
-    private MergedResult createMergedResult(final RouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
+    private MergedResult createMergedResult(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         Map<BaseRule, ResultProcessEngine> engines = new HashMap<>(2, 1);
         engines.put(logicSchema.getShardingRule(), new ShardingResultMergerEngine());
         EncryptRule encryptRule = getEncryptRule();
@@ -141,7 +141,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
         MergeEntry mergeEntry = new MergeEntry(
                 LogicSchemas.getInstance().getDatabaseType(), logicSchema.getMetaData().getRelationMetas(), ShardingProxyContext.getInstance().getProperties(), engines);
-        return mergeEntry.process(queryResults, routeResult.getSqlStatementContext());
+        return mergeEntry.process(queryResults, sqlStatementContext);
     }
     
     private void handleColumnsForQueryHeader(final SQLStatementContext sqlStatementContext) {
