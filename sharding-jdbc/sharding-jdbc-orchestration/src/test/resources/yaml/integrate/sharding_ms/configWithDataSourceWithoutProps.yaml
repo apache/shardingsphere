@@ -92,11 +92,22 @@ shardingRule:
       loadBalanceAlgorithmType: ROUND_ROBIN
 
 orchestration:
-  testname1:
-    orchestrationType: registry_center,config_center
+  test_sharding_ms_registry_name:
+    orchestrationType: registry_center
     instanceType: TestRegistryCenter
     serverLists: localhost:3181
-    namespace: test_encrypt
+    namespace: test_sharding_ms_registry
+    props:
+      overwrite: true
+      retryIntervalMilliseconds: 10
+      timeToLiveSeconds: 10
+      maxRetries: 10
+      operationTimeoutMilliseconds: 10
+  test_sharding_ms_config_name:
+    orchestrationType: config_center
+    instanceType: TestConfigCenter
+    serverLists: localhost:3181
+    namespace: test_sharding_ms_config
     props:
       overwrite: true
       retryIntervalMilliseconds: 10

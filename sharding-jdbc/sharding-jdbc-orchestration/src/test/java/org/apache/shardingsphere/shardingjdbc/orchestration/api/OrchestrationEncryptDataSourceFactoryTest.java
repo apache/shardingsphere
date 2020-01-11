@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.api;
 
-import java.util.Collections;
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
+import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
@@ -27,10 +30,6 @@ import org.apache.shardingsphere.orchestration.center.configuration.Orchestratio
 import org.apache.shardingsphere.orchestration.constant.OrchestrationType;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
 import org.junit.Test;
-
-import javax.sql.DataSource;
-import java.sql.SQLException;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -74,12 +73,25 @@ public final class OrchestrationEncryptDataSourceFactoryTest {
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
-        InstanceConfiguration instanceConfiguration = new InstanceConfiguration("TestRegistryCenter");
-        String orchestrationType = OrchestrationType.REGISTRY_CENTER.getValue() + "," + OrchestrationType.CONFIG_CENTER.getValue();
-        instanceConfiguration.setOrchestrationType(orchestrationType);
-        instanceConfiguration.setNamespace("test_ms");
-        instanceConfiguration.setServerLists("localhost:3181");
-        Map<String, InstanceConfiguration> instanceConfigurationMap = Collections.singletonMap("test", instanceConfiguration);
+        Map<String, InstanceConfiguration> instanceConfigurationMap = new HashMap<>();
+        instanceConfigurationMap.put("test_encrypt_registry_name", getRegistryCenterConfiguration());
+        instanceConfigurationMap.put("test_encrypt_config_name", getConfigCenterConfiguration());
         return new OrchestrationConfiguration(instanceConfigurationMap);
+    }
+    
+    private InstanceConfiguration getRegistryCenterConfiguration() {
+        InstanceConfiguration result = new InstanceConfiguration("TestRegistryCenter");
+        result.setOrchestrationType(OrchestrationType.REGISTRY_CENTER.getValue());
+        result.setNamespace("test_encrypt_registry");
+        result.setServerLists("localhost:3181");
+        return result;
+    }
+    
+    private InstanceConfiguration getConfigCenterConfiguration() {
+        InstanceConfiguration result = new InstanceConfiguration("TestConfigCenter");
+        result.setOrchestrationType(OrchestrationType.CONFIG_CENTER.getValue());
+        result.setNamespace("test_encrypt_config");
+        result.setServerLists("localhost:3181");
+        return result;
     }
 }

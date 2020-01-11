@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
+import java.util.HashMap;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
@@ -67,13 +68,26 @@ public final class OrchestrationShardingDataSourceTest {
     }
     
     private static OrchestrationConfiguration getOrchestrationConfiguration() {
-        InstanceConfiguration instanceConfiguration = new InstanceConfiguration("TestRegistryCenter3");
-        String orchestrationType = OrchestrationType.REGISTRY_CENTER.getValue() + "," + OrchestrationType.CONFIG_CENTER.getValue();
-        instanceConfiguration.setOrchestrationType(orchestrationType);
-        instanceConfiguration.setNamespace("test_sharding");
-        instanceConfiguration.setServerLists("localhost:3181");
-        Map<String, InstanceConfiguration> instanceConfigurationMap = Collections.singletonMap("test_sharding", instanceConfiguration);
+        Map<String, InstanceConfiguration> instanceConfigurationMap = new HashMap<>();
+        instanceConfigurationMap.put("test_sharding_registry_name", getRegistryCenterConfiguration());
+        instanceConfigurationMap.put("test_sharding_config_name", getConfigCenterConfiguration());
         return new OrchestrationConfiguration(instanceConfigurationMap);
+    }
+    
+    private static InstanceConfiguration getRegistryCenterConfiguration() {
+        InstanceConfiguration result = new InstanceConfiguration("TestRegistryCenter3");
+        result.setOrchestrationType(OrchestrationType.REGISTRY_CENTER.getValue());
+        result.setNamespace("test_sharding_registry");
+        result.setServerLists("localhost:3181");
+        return result;
+    }
+    
+    private static InstanceConfiguration getConfigCenterConfiguration() {
+        InstanceConfiguration result = new InstanceConfiguration("TestConfigCenter3");
+        result.setOrchestrationType(OrchestrationType.CONFIG_CENTER.getValue());
+        result.setNamespace("test_sharding_config");
+        result.setServerLists("localhost:3181");
+        return result;
     }
     
     @Test

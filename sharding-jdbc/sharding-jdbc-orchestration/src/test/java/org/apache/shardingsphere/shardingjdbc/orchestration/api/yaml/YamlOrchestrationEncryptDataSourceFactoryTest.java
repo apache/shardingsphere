@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml;
 
-import lombok.SneakyThrows;
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
-import org.junit.Test;
-
-import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
+import javax.sql.DataSource;
+import lombok.SneakyThrows;
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
+import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;

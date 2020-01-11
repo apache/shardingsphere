@@ -17,6 +17,15 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
@@ -38,15 +47,6 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.con
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Properties;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -66,13 +66,26 @@ public final class OrchestrationMasterSlaveDataSourceTest {
     }
     
     private static OrchestrationConfiguration getOrchestrationConfiguration() {
-        InstanceConfiguration instanceConfiguration = new InstanceConfiguration("TestRegistryCenter2");
-        String orchestrationType = OrchestrationType.REGISTRY_CENTER.getValue() + "," + OrchestrationType.CONFIG_CENTER.getValue();
-        instanceConfiguration.setOrchestrationType(orchestrationType);
-        instanceConfiguration.setNamespace("test_ms");
-        instanceConfiguration.setServerLists("localhost:3181");
-        Map<String, InstanceConfiguration> instanceConfigurationMap = Collections.singletonMap("test_ms", instanceConfiguration);
+        Map<String, InstanceConfiguration> instanceConfigurationMap = new HashMap<>();
+        instanceConfigurationMap.put("test_ms_registry_name", getRegistryCenterConfiguration());
+        instanceConfigurationMap.put("test_ms_config_name", getConfigCenterConfiguration());
         return new OrchestrationConfiguration(instanceConfigurationMap);
+    }
+    
+    private static InstanceConfiguration getRegistryCenterConfiguration() {
+        InstanceConfiguration result = new InstanceConfiguration("TestRegistryCenter2");
+        result.setOrchestrationType(OrchestrationType.REGISTRY_CENTER.getValue());
+        result.setNamespace("test_ms_registry");
+        result.setServerLists("localhost:3181");
+        return result;
+    }
+    
+    private static InstanceConfiguration getConfigCenterConfiguration() {
+        InstanceConfiguration result = new InstanceConfiguration("TestConfigCenter2");
+        result.setOrchestrationType(OrchestrationType.CONFIG_CENTER.getValue());
+        result.setNamespace("test_ms_config");
+        result.setServerLists("localhost:3181");
+        return result;
     }
     
     @Test

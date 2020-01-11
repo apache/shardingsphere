@@ -15,66 +15,60 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.internal.registry.fixture;
+package org.apache.shardingsphere.shardingjdbc.orchestration.util;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.orchestration.center.api.DistributedLockManagement;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.locks.ReentrantLock;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 
-public final class FifthTestRegistryCenter implements DistributedLockManagement {
+public final class TestConfigCenter implements ConfigCenter {
     
-    private final Map<String, String> keys = new HashMap<>();
+    private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
     @Getter
     @Setter
-    private Properties properties = new Properties();
-    
-    private ReentrantLock lock = new ReentrantLock();
+    private Properties properties;
     
     @Override
     public void init(final InstanceConfiguration config) {
-        keys.put("/leaf_snowflake/specialService/time", String.valueOf(System.currentTimeMillis()));
-        keys.put("/leaf_snowflake/specialService/work-id", "1");
-        keys.put("/leaf_snowflake/current-max-work-id", "1");
     }
     
     @Override
     public String get(final String key) {
-        return keys.get(key);
+        final String s = REGISTRY_DATA.get(key);
+        System.out.println("get=>\nkey=" + key + "\nvalue=" + s);
+        return s;
+    }
+    
+    @Override
+    public List<String> getChildrenKeys(final String key) {
+        return Collections.emptyList();
     }
     
     @Override
     public void persist(final String key, final String value) {
-        keys.put(key, value);
+        System.out.println("put=>\nkey=" + key + "\nvalue=" + value);
+        REGISTRY_DATA.put(key, value);
+    }
+    
+    @Override
+    public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
     }
     
     @Override
     public void close() {
+        REGISTRY_DATA.clear();
     }
     
     @Override
     public String getType() {
-        return "FifthTestRegistryCenter";
-    }
-    
-    @Override
-    public void initLock(final String key) {
-        lock = new ReentrantLock();
-    }
-    
-    @Override
-    public boolean tryLock() {
-        return lock.tryLock();
-    }
-    
-    @Override
-    public void tryRelease() {
-        lock.unlock();
+        return "TestConfigCenter";
     }
 }

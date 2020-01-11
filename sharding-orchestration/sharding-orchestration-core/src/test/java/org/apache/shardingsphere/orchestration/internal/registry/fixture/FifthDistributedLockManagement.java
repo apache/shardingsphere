@@ -27,18 +27,21 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.locks.ReentrantLock;
 
-public final class ThirdTestRegistryCenter implements DistributedLockManagement {
+public final class FifthDistributedLockManagement implements DistributedLockManagement {
     
     private final Map<String, String> keys = new HashMap<>();
     
     @Getter
     @Setter
     private Properties properties = new Properties();
-
+    
     private ReentrantLock lock = new ReentrantLock();
     
     @Override
     public void init(final InstanceConfiguration config) {
+        keys.put("/leaf_snowflake/specialService/time", String.valueOf(System.currentTimeMillis()));
+        keys.put("/leaf_snowflake/specialService/work-id", "1");
+        keys.put("/leaf_snowflake/current-max-work-id", "1");
     }
     
     @Override
@@ -57,19 +60,19 @@ public final class ThirdTestRegistryCenter implements DistributedLockManagement 
     
     @Override
     public String getType() {
-        return "ThirdTestRegistryCenter";
+        return "FifthDistributedLockManagement";
     }
-
+    
     @Override
     public void initLock(final String key) {
         lock = new ReentrantLock();
     }
-
+    
     @Override
     public boolean tryLock() {
         return lock.tryLock();
     }
-
+    
     @Override
     public void tryRelease() {
         lock.unlock();
