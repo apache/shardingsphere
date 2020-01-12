@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.route.time.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.route.spi.TimeService;
+import org.apache.shardingsphere.sharding.route.spi.TimeService;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.rewrite.aware;
 
-import org.apache.shardingsphere.core.route.ShardingRouteContext;
+import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 
 /**
  * Sharding route context aware.
