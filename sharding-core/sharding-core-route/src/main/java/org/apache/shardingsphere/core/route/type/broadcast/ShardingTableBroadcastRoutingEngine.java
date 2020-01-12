@@ -24,7 +24,7 @@ import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.core.route.type.RoutingEngine;
+import org.apache.shardingsphere.core.route.type.ShardingRouteEngine;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.apache.shardingsphere.underlying.route.context.TableUnit;
@@ -36,26 +36,24 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Broadcast routing engine for tables.
+ * Sharding broadcast routing engine for tables.
  * 
  * @author zhangliang
  * @author maxiaoguang
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class TableBroadcastRoutingEngine implements RoutingEngine {
-    
-    private final ShardingRule shardingRule;
+public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteEngine {
     
     private final TableMetas tableMetas;
     
     private final SQLStatementContext sqlStatementContext;
     
     @Override
-    public RouteResult route() {
+    public RouteResult route(final ShardingRule shardingRule) {
         RouteResult result = new RouteResult();
         for (String each : getLogicTableNames()) {
-            result.getRouteUnits().addAll(getAllRouteUnits(each));
+            result.getRouteUnits().addAll(getAllRouteUnits(shardingRule, each));
         }
         return result;
     }
@@ -84,7 +82,7 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
         return Optional.absent();
     }
     
-    private Collection<RouteUnit> getAllRouteUnits(final String logicTableName) {
+    private Collection<RouteUnit> getAllRouteUnits(final ShardingRule shardingRule, final String logicTableName) {
         Collection<RouteUnit> result = new LinkedList<>();
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         for (DataNode each : tableRule.getActualDataNodes()) {

@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.type;
+package org.apache.shardingsphere.core.route.type.broadcast;
 
+import org.apache.shardingsphere.core.route.type.ShardingRouteEngine;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
+import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
 /**
- * Routing engine interface.
- *
+ * Sharding broadcast routing engine for databases.
+ * 
  * @author zhangliang
+ * @author maxiaoguang
  */
-public interface RoutingEngine {
+public final class ShardingDatabaseBroadcastRoutingEngine implements ShardingRouteEngine {
     
-    /**
-     * Route.
-     *
-     * @return routing result
-     */
-    RouteResult route();
+    @Override
+    public RouteResult route(final ShardingRule shardingRule) {
+        RouteResult result = new RouteResult();
+        for (String each : shardingRule.getShardingDataSourceNames().getDataSourceNames()) {
+            result.getRouteUnits().add(new RouteUnit(each));
+        }
+        return result;
+    }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.shard.result;
+package org.apache.shardingsphere.sharding.execute.context;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;

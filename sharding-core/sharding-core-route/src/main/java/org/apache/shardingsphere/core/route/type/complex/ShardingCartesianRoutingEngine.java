@@ -22,10 +22,11 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.route.type.RoutingEngine;
+import org.apache.shardingsphere.core.route.type.ShardingRouteEngine;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
-import org.apache.shardingsphere.underlying.route.context.TableUnit;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
+import org.apache.shardingsphere.underlying.route.context.TableUnit;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,18 +39,18 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 /**
- * cartesian routing engine.
+ * Sharding cartesian routing engine.
  * 
  * @author zhangliang
  * @author maxiaoguang
  */
 @RequiredArgsConstructor
-public final class CartesianRoutingEngine implements RoutingEngine {
+public final class ShardingCartesianRoutingEngine implements ShardingRouteEngine {
     
     private final Collection<RouteResult> routeResults;
     
     @Override
-    public RouteResult route() {
+    public RouteResult route(final ShardingRule shardingRule) {
         RouteResult result = new RouteResult();
         for (Entry<String, Set<String>> entry : getDataSourceLogicTablesMap().entrySet()) {
             List<Set<String>> actualTableGroups = getActualTableGroups(entry.getKey(), entry.getValue());

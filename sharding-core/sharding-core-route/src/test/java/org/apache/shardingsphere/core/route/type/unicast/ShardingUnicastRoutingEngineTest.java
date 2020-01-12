@@ -34,7 +34,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class UnicastRoutingEngineTest {
+public final class ShardingUnicastRoutingEngineTest {
     
     private ShardingRule shardingRule;
     
@@ -49,24 +49,24 @@ public final class UnicastRoutingEngineTest {
     
     @Test
     public void assertRoutingForShardingTable() {
-        UnicastRoutingEngine unicastRoutingEngine = new UnicastRoutingEngine(shardingRule, Collections.singleton("t_order"));
-        RouteResult routeResult = unicastRoutingEngine.route();
+        ShardingUnicastRoutingEngine unicastRoutingEngine = new ShardingUnicastRoutingEngine(Collections.singleton("t_order"));
+        RouteResult routeResult = unicastRoutingEngine.route(shardingRule);
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
     }
 
     @Test
     public void assertRoutingForBroadcastTable() {
-        UnicastRoutingEngine unicastRoutingEngine = new UnicastRoutingEngine(shardingRule, Collections.singleton("t_config"));
-        RouteResult routeResult = unicastRoutingEngine.route();
+        ShardingUnicastRoutingEngine unicastRoutingEngine = new ShardingUnicastRoutingEngine(Collections.singleton("t_config"));
+        RouteResult routeResult = unicastRoutingEngine.route(shardingRule);
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
     }
 
     @Test
     public void assertRoutingForNoTable() {
-        UnicastRoutingEngine unicastRoutingEngine = new UnicastRoutingEngine(shardingRule, Collections.<String>emptyList());
-        RouteResult routeResult = unicastRoutingEngine.route();
+        ShardingUnicastRoutingEngine unicastRoutingEngine = new ShardingUnicastRoutingEngine(Collections.<String>emptyList());
+        RouteResult routeResult = unicastRoutingEngine.route(shardingRule);
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
     }
@@ -76,8 +76,8 @@ public final class UnicastRoutingEngineTest {
         Set<String> sets = new HashSet<>();
         sets.add("t_order");
         sets.add("t_config");
-        UnicastRoutingEngine unicastRoutingEngine = new UnicastRoutingEngine(shardingRule, sets);
-        RouteResult routeResult = unicastRoutingEngine.route();
+        ShardingUnicastRoutingEngine unicastRoutingEngine = new ShardingUnicastRoutingEngine(sets);
+        RouteResult routeResult = unicastRoutingEngine.route(shardingRule);
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
     }
@@ -88,14 +88,14 @@ public final class UnicastRoutingEngineTest {
         sets.add("t_order");
         sets.add("t_config");
         sets.add("t_product");
-        UnicastRoutingEngine unicastRoutingEngine = new UnicastRoutingEngine(shardingRule, sets);
-        unicastRoutingEngine.route();
+        ShardingUnicastRoutingEngine unicastRoutingEngine = new ShardingUnicastRoutingEngine(sets);
+        unicastRoutingEngine.route(shardingRule);
     }
     
     @Test
     public void assertRoutingForTableWithoutTableRule() {
-        UnicastRoutingEngine unicastRoutingEngine = new UnicastRoutingEngine(shardingRule, Collections.singleton("t_other"));
-        RouteResult routeResult = unicastRoutingEngine.route();
+        ShardingUnicastRoutingEngine unicastRoutingEngine = new ShardingUnicastRoutingEngine(Collections.singleton("t_other"));
+        RouteResult routeResult = unicastRoutingEngine.route(shardingRule);
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
     }

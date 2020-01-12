@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.route.type.unicast;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.core.route.type.RoutingEngine;
+import org.apache.shardingsphere.core.route.type.ShardingRouteEngine;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.apache.shardingsphere.underlying.route.context.TableUnit;
@@ -35,20 +35,18 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Unicast routing engine.
+ * Sharding unicast routing engine.
  *
  * @author zhangliang
  * @author maxiaoguang
  */
 @RequiredArgsConstructor
-public final class UnicastRoutingEngine implements RoutingEngine {
-    
-    private final ShardingRule shardingRule;
+public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
     
     private final Collection<String> logicTables;
     
     @Override
-    public RouteResult route() {
+    public RouteResult route(final ShardingRule shardingRule) {
         RouteResult result = new RouteResult();
         if (shardingRule.isAllBroadcastTables(logicTables)) {
             List<TableUnit> tableUnits = new ArrayList<>(logicTables.size());

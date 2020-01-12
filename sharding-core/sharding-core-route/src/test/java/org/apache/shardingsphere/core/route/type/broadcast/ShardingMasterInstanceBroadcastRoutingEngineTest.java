@@ -35,7 +35,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MasterInstanceBroadcastRoutingEngineTest {
+public final class ShardingMasterInstanceBroadcastRoutingEngineTest {
     
     private static final String DATASOURCE_NAME = "ds";
     
@@ -51,7 +51,7 @@ public final class MasterInstanceBroadcastRoutingEngineTest {
     @Mock
     private DataSourceMetas dataSourceMetas;
     
-    private MasterInstanceBroadcastRoutingEngine masterInstanceBroadcastRoutingEngine;
+    private ShardingMasterInstanceBroadcastRoutingEngine masterInstanceBroadcastRoutingEngine;
     
     @Before
     public void setUp() {
@@ -60,12 +60,12 @@ public final class MasterInstanceBroadcastRoutingEngineTest {
         when(masterSlaveRule.getMasterDataSourceName()).thenReturn(DATASOURCE_NAME);
         when(dataSourceMetas.getAllInstanceDataSourceNames()).thenReturn(Lists.newArrayList(DATASOURCE_NAME));
         when(shardingDataSourceNames.getDataSourceNames()).thenReturn(Lists.newArrayList(DATASOURCE_NAME));
-        masterInstanceBroadcastRoutingEngine = new MasterInstanceBroadcastRoutingEngine(shardingRule, dataSourceMetas);
+        masterInstanceBroadcastRoutingEngine = new ShardingMasterInstanceBroadcastRoutingEngine(dataSourceMetas);
     }
     
     @Test
     public void assertRoute() {
-        RouteResult actual = masterInstanceBroadcastRoutingEngine.route();
+        RouteResult actual = masterInstanceBroadcastRoutingEngine.route(shardingRule);
         assertThat(actual.getRouteUnits().size(), is(1));
         assertThat(actual.getRouteUnits().iterator().next().getActualDataSourceName(), is(DATASOURCE_NAME));
     }

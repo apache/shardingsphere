@@ -24,9 +24,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
-import org.apache.shardingsphere.core.route.type.RoutingEngine;
+import org.apache.shardingsphere.core.route.type.ShardingRouteEngine;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
-import org.apache.shardingsphere.core.route.type.standard.StandardRoutingEngine;
+import org.apache.shardingsphere.core.route.type.standard.ShardingStandardRoutingEngine;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
@@ -36,15 +36,13 @@ import java.util.Collection;
 import java.util.TreeSet;
 
 /**
- * Complex routing engine.
+ * Sharding complex routing engine.
  * 
  * @author gaohongtao
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class ComplexRoutingEngine implements RoutingEngine {
-    
-    private final ShardingRule shardingRule;
+public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
     
     private final Collection<String> logicTables;
     
@@ -53,14 +51,14 @@ public final class ComplexRoutingEngine implements RoutingEngine {
     private final ShardingConditions shardingConditions;
     
     @Override
-    public RouteResult route() {
+    public RouteResult route(final ShardingRule shardingRule) {
         Collection<RouteResult> result = new ArrayList<>(logicTables.size());
         Collection<String> bindingTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (String each : logicTables) {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
             if (tableRule.isPresent()) {
                 if (!bindingTableNames.contains(each)) {
-                    result.add(new StandardRoutingEngine(shardingRule, tableRule.get().getLogicTable(), sqlStatementContext, shardingConditions).route());
+                    result.add(new ShardingStandardRoutingEngine(tableRule.get().getLogicTable(), sqlStatementContext, shardingConditions).route(shardingRule));
                 }
                 Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(each);
                 if (bindingTableRule.isPresent()) {
@@ -80,6 +78,6 @@ public final class ComplexRoutingEngine implements RoutingEngine {
         if (1 == result.size()) {
             return result.iterator().next();
         }
-        return new CartesianRoutingEngine(result).route();
+        return new ShardingCartesianRoutingEngine(result).route(shardingRule);
     }
 }
