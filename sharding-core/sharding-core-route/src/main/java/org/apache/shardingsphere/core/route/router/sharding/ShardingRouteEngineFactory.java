@@ -48,12 +48,12 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import java.util.Collection;
 
 /**
- * Routing engine factory.
+ * Sharding routing engine factory.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RoutingEngineFactory {
+public final class ShardingRouteEngineFactory {
     
     /**
      * Create new instance of routing engine.
