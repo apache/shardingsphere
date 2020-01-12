@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.core.shard.fixture;
 
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.route.ShardingRouteContext;
-import org.apache.shardingsphere.core.route.hook.RoutingHook;
+import org.apache.shardingsphere.sharding.route.ShardingRouteContext;
+import org.apache.shardingsphere.sharding.route.hook.RoutingHook;
 
 /**
  * Routing hook fixture.

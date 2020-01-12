@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rewrite.parameter.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import lombok.Setter;
-import org.apache.shardingsphere.core.route.ShardingRouteContext;
+import org.apache.shardingsphere.sharding.route.ShardingRouteContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRouteContextAware;

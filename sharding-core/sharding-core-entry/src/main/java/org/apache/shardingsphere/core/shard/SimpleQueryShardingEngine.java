@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.shard;
 
-import org.apache.shardingsphere.core.route.ShardingRouteContext;
+import org.apache.shardingsphere.sharding.route.ShardingRouteContext;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
