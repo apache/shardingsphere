@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import org.apache.shardingsphere.core.shard.result.ShardingExecutionContext;
+import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractResultSetAdapter;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 

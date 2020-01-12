@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.shard.result.ShardingExecutionContext;
+import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;

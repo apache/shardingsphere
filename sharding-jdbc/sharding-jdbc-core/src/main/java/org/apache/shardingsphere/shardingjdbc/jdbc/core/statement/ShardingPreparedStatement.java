@@ -26,7 +26,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.route.router.sharding.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.shard.BaseShardingEngine;
 import org.apache.shardingsphere.core.shard.PreparedQueryShardingEngine;
-import org.apache.shardingsphere.core.shard.result.ShardingExecutionContext;
+import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.sharding.merge.ShardingResultMergerEngine;

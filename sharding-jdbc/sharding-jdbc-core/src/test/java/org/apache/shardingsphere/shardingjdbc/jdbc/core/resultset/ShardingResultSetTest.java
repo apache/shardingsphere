@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.shard.result.ShardingExecutionContext;
+import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;

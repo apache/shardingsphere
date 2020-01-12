@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.shard.result.ShardingExecutionContext;
+import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSetMetaData;
