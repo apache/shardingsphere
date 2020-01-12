@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.route.engine.impl;
+package org.apache.shardingsphere.masterslave.route.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.masterslave.route.engine.MasterSlaveDataSourceRouter;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
+import org.apache.shardingsphere.masterslave.route.engine.impl.MasterSlaveDataSourceRouter;
 import org.apache.shardingsphere.masterslave.route.log.MasterSlaveSQLLogger;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.underlying.route.DateNodeRouter;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 
 import java.util.List;
 
