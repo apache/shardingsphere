@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
-import org.apache.shardingsphere.sharding.route.ShardingRouteContext;
+import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sharding.route.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.sharding.route.engine.ShardingRouter;
 import org.apache.shardingsphere.core.rule.ShardingRule;

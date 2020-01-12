@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.hook;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
-import org.apache.shardingsphere.sharding.route.ShardingRouteContext;
+import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sharding.route.fixture.RoutingHookFixture;
 import org.junit.Test;
 import org.junit.runner.RunWith;

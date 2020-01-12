@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route;
+package org.apache.shardingsphere.sharding.route.engine.context;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
