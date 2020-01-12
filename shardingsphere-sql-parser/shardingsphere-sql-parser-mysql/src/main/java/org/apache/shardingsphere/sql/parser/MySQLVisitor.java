@@ -21,9 +21,11 @@ import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SchemaNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnreservedWord_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
 
@@ -33,6 +35,24 @@ import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
  * @author panjuan
  */
 public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+    
+    @Override
+    public ASTNode visitUse(final UseContext ctx) {
+        LiteralValue schema = (LiteralValue) visit(ctx.schemaName());
+        UseStatement useStatement = new UseStatement();
+        useStatement.setSchema(schema.getLiteral());
+        return useStatement;
+    }
+    
+    @Override
+    public ASTNode visitShowTableStatus(final ShowTableStatusContext ctx) {
+        return new ShowTableStatusStatement();
+    }
+    
+    @Override
+    public ASTNode visitSchemaName(final SchemaNameContext ctx) {
+        return visit(ctx.identifier());
+    }
     
     @Override
     public ASTNode visitIdentifier(final IdentifierContext ctx) {
@@ -46,18 +66,5 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     @Override
     public ASTNode visitUnreservedWord_(final UnreservedWord_Context ctx) {
         return new LiteralValue(ctx.getText());
-    }
-    
-    @Override
-    public ASTNode visitSchemaName(final SchemaNameContext ctx) {
-        return visit(ctx.identifier());
-    }
-    
-    @Override
-    public ASTNode visitUse(final UseContext ctx) {
-        LiteralValue schema = (LiteralValue) visit(ctx.schemaName());
-        UseStatement useStatement = new UseStatement();
-        useStatement.setSchema(schema.getLiteral());
-        return useStatement;
     }
 }
