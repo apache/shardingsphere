@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.core.shard;
 
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.sql.parser.SQLParseEngine;
-import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
 import org.apache.shardingsphere.core.route.ShardingRouteContext;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.SQLParseEngine;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,12 +40,8 @@ import java.util.List;
  */
 public final class PreparedQueryShardingEngine extends BaseShardingEngine {
     
-    private final PreparedStatementRoutingEngine routingEngine;
-    
-    public PreparedQueryShardingEngine(final String sql,
-                                       final ShardingRule shardingRule, final ShardingSphereProperties properties, final ShardingSphereMetaData metaData, final SQLParseEngine sqlParseEngine) {
-        super(shardingRule, properties, metaData);
-        routingEngine = new PreparedStatementRoutingEngine(sql, shardingRule, metaData, sqlParseEngine);
+    public PreparedQueryShardingEngine(final ShardingRule shardingRule, final ShardingSphereProperties properties, final ShardingSphereMetaData metaData, final SQLParseEngine sqlParseEngine) {
+        super(shardingRule, properties, metaData, sqlParseEngine);
     }
     
     @Override
@@ -56,6 +51,6 @@ public final class PreparedQueryShardingEngine extends BaseShardingEngine {
     
     @Override
     protected ShardingRouteContext route(final String sql, final List<Object> parameters) {
-        return routingEngine.route(parameters);
+        return getShardingRouter().route(sql, parameters, true);
     }
 }

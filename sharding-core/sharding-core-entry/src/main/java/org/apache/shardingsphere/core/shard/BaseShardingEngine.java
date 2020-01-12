@@ -17,27 +17,32 @@
 
 package org.apache.shardingsphere.core.shard;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.route.ShardingRouteContext;
 import org.apache.shardingsphere.core.route.hook.SPIRoutingHook;
+import org.apache.shardingsphere.core.route.router.masterslave.MasterSlaveRouteDecorator;
+import org.apache.shardingsphere.core.route.router.sharding.ShardingRouter;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.shard.log.ShardingSQLLogger;
-import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
 import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
+import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
 import org.apache.shardingsphere.sharding.rewrite.context.ShardingSQLRewriteContextDecorator;
 import org.apache.shardingsphere.sharding.rewrite.engine.ShardingSQLRewriteEngine;
+import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
-import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
-import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
-import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
 import java.util.Collection;
@@ -61,13 +66,24 @@ public abstract class BaseShardingEngine {
     
     private final ShardingSphereMetaData metaData;
     
-    private final SPIRoutingHook routingHook = new SPIRoutingHook();
+    @Getter
+    private final ShardingRouter shardingRouter;
+    
+    private final SPIRoutingHook routingHook;
+    
+    public BaseShardingEngine(final ShardingRule shardingRule, final ShardingSphereProperties properties, final ShardingSphereMetaData metaData, final SQLParseEngine sqlParseEngine) {
+        this.shardingRule = shardingRule;
+        this.properties = properties;
+        this.metaData = metaData;
+        shardingRouter = new ShardingRouter(shardingRule, metaData, sqlParseEngine);
+        routingHook = new SPIRoutingHook();
+    }
     
     /**
      * Shard.
      *
      * @param sql SQL
-     * @param parameters parameters of SQL
+     * @param parameters SQL parameters
      * @return execution context
      */
     public ExecutionContext shard(final String sql, final List<Object> parameters) {
@@ -90,7 +106,7 @@ public abstract class BaseShardingEngine {
     private ShardingRouteContext executeRoute(final String sql, final List<Object> clonedParameters) {
         routingHook.start(sql);
         try {
-            ShardingRouteContext result = route(sql, clonedParameters);
+            ShardingRouteContext result = decorate(route(sql, clonedParameters));
             routingHook.finishSuccess(result, metaData.getTables());
             return result;
             // CHECKSTYLE:OFF
@@ -99,6 +115,14 @@ public abstract class BaseShardingEngine {
             routingHook.finishFailure(ex);
             throw ex;
         }
+    }
+    
+    private ShardingRouteContext decorate(final ShardingRouteContext shardingRouteContext) {
+        ShardingRouteContext result = shardingRouteContext;
+        for (MasterSlaveRule each : shardingRule.getMasterSlaveRules()) {
+            result = (ShardingRouteContext) new MasterSlaveRouteDecorator(each).decorate(result);
+        }
+        return result;
     }
     
     private Collection<ExecutionUnit> convert(final String sql, final List<Object> parameters, final ShardingRouteContext shardingRouteContext) {
