@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.router.masterslave;
+package org.apache.shardingsphere.masterslave.route.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
-import org.apache.shardingsphere.core.route.SQLLogger;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
+import org.apache.shardingsphere.masterslave.route.engine.impl.MasterSlaveDataSourceRouter;
+import org.apache.shardingsphere.masterslave.route.log.MasterSlaveSQLLogger;
+import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.underlying.route.DateNodeRouter;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 
 import java.util.List;
 
@@ -47,7 +48,7 @@ public final class MasterSlaveRouter implements DateNodeRouter {
     public RouteContext route(final String sql, final List<Object> parameters, final boolean useCache) {
         String dataSourceName = new MasterSlaveDataSourceRouter(masterSlaveRule).route(parseEngine.parse(sql, useCache));
         if (showSQL) {
-            SQLLogger.logSQL(sql, dataSourceName);
+            MasterSlaveSQLLogger.logSQL(sql, dataSourceName);
         }
         RouteResult routeResult = new RouteResult();
         routeResult.getRouteUnits().add(new RouteUnit(dataSourceName));

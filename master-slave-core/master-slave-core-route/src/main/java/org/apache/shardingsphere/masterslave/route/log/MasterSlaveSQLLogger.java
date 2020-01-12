@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route;
+package org.apache.shardingsphere.masterslave.route.log;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * SQL logger.
+ * SQL logger for master-slave.
  * 
  * @author zhangliang
  * @author maxiaoguang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j(topic = "ShardingSphere-SQL")
-public final class SQLLogger {
+public final class MasterSlaveSQLLogger {
     
     /**
      * Print SQL log for master slave rule.

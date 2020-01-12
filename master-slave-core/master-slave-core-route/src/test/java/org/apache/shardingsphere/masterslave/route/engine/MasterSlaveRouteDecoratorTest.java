@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.router.masterslave;
+package org.apache.shardingsphere.masterslave.route.engine;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
-import org.apache.shardingsphere.core.route.ShardingRouteContext;
-import org.apache.shardingsphere.underlying.route.context.RouteResult;
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.underlying.route.context.TableUnit;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.underlying.route.context.RouteResult;
+import org.apache.shardingsphere.underlying.route.context.RouteUnit;
+import org.apache.shardingsphere.underlying.route.context.TableUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -113,9 +113,9 @@ public final class MasterSlaveRouteDecoratorTest {
         assertThat(routedDataSourceNames.next(), is(MASTER_DATASOURCE));
     }
     
-    private ShardingRouteContext mockSQLRouteContext(final SQLStatement sqlStatement) {
+    private RouteContext mockSQLRouteContext(final SQLStatement sqlStatement) {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        return new ShardingRouteContext(sqlStatementContext, mockRouteResult(), null, null);
+        return new RouteContext(sqlStatementContext, mockRouteResult());
     }
     
     private RouteResult mockRouteResult() {

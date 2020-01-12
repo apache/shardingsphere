@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route;
+package org.apache.shardingsphere.masterslave.route.log;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +31,7 @@ import java.lang.reflect.Modifier;
 import static org.mockito.Mockito.inOrder;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SQLLoggerTest {
+public final class MasterSlaveSQLLoggerTest {
     
     private static final String SQL = "SELECT * FROM t_user";
     
@@ -40,13 +40,13 @@ public final class SQLLoggerTest {
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        Field field = SQLLogger.class.getDeclaredField("log");
+        Field field = MasterSlaveSQLLogger.class.getDeclaredField("log");
         setFinalStatic(field, logger);
     }
     
     @Test
     public void assertLogSQLMasterSlave() {
-        SQLLogger.logSQL(SQL, "ms_ds");
+        MasterSlaveSQLLogger.logSQL(SQL, "ms_ds");
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Rule Type: master-slave", new Object[]{});
         inOrder.verify(logger).info("SQL: {} ::: DataSource: {}", new Object[]{SQL, "ms_ds"});
