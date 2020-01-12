@@ -60,7 +60,7 @@ public final class SimpleQueryShardingEngineTest extends BaseShardingEngineTest 
     
     @SneakyThrows
     private void setRoutingEngine() {
-        Field field = SimpleQueryShardingEngine.class.getDeclaredField("shardingRouter");
+        Field field = BaseShardingEngine.class.getDeclaredField("shardingRouter");
         field.setAccessible(true);
         field.set(shardingEngine, shardingRouter);
     }
