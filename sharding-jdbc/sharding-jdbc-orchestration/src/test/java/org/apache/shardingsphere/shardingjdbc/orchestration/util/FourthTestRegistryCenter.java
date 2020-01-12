@@ -17,18 +17,20 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.util;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 
-public final class TestConfigCenter implements ConfigCenter {
+public final class FourthTestRegistryCenter implements RegistryCenter, ConfigCenter {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
@@ -42,9 +44,7 @@ public final class TestConfigCenter implements ConfigCenter {
     
     @Override
     public String get(final String key) {
-        final String s = REGISTRY_DATA.get(key);
-        System.out.println("get=>\nkey=" + key + "\nvalue=" + s);
-        return s;
+        return REGISTRY_DATA.get(key);
     }
     
     @Override
@@ -54,7 +54,11 @@ public final class TestConfigCenter implements ConfigCenter {
     
     @Override
     public void persist(final String key, final String value) {
-        System.out.println("put=>\nkey=" + key + "\nvalue=" + value);
+        REGISTRY_DATA.put(key, value);
+    }
+    
+    @Override
+    public void persistEphemeral(final String key, final String value) {
         REGISTRY_DATA.put(key, value);
     }
     
@@ -69,6 +73,6 @@ public final class TestConfigCenter implements ConfigCenter {
     
     @Override
     public String getType() {
-        return "TestConfigCenter";
+        return "FourthTestRegistryCenter";
     }
 }

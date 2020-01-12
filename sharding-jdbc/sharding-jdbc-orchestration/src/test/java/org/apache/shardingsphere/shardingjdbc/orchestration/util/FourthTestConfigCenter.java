@@ -28,7 +28,7 @@ import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 
-public final class TestConfigCenter3 implements ConfigCenter {
+public final class FourthTestConfigCenter implements ConfigCenter {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
@@ -66,6 +66,6 @@ public final class TestConfigCenter3 implements ConfigCenter {
     
     @Override
     public String getType() {
-        return "TestConfigCenter3";
+        return "FourthTestConfigCenter";
     }
 }

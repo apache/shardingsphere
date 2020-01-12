@@ -75,7 +75,7 @@ public final class OrchestrationShardingDataSourceTest {
     }
     
     private static InstanceConfiguration getRegistryCenterConfiguration() {
-        InstanceConfiguration result = new InstanceConfiguration("TestRegistryCenter3");
+        InstanceConfiguration result = new InstanceConfiguration("FourthTestRegistryCenter");
         result.setOrchestrationType(OrchestrationType.REGISTRY_CENTER.getValue());
         result.setNamespace("test_sharding_registry");
         result.setServerLists("localhost:3181");
@@ -83,7 +83,7 @@ public final class OrchestrationShardingDataSourceTest {
     }
     
     private static InstanceConfiguration getConfigCenterConfiguration() {
-        InstanceConfiguration result = new InstanceConfiguration("TestConfigCenter3");
+        InstanceConfiguration result = new InstanceConfiguration("FourthTestConfigCenter");
         result.setOrchestrationType(OrchestrationType.CONFIG_CENTER.getValue());
         result.setNamespace("test_sharding_config");
         result.setServerLists("localhost:3181");

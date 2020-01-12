@@ -73,7 +73,7 @@ public final class OrchestrationMasterSlaveDataSourceTest {
     }
     
     private static InstanceConfiguration getRegistryCenterConfiguration() {
-        InstanceConfiguration result = new InstanceConfiguration("TestRegistryCenter2");
+        InstanceConfiguration result = new InstanceConfiguration("ThirdTestRegistryCenter");
         result.setOrchestrationType(OrchestrationType.REGISTRY_CENTER.getValue());
         result.setNamespace("test_ms_registry");
         result.setServerLists("localhost:3181");
@@ -81,7 +81,7 @@ public final class OrchestrationMasterSlaveDataSourceTest {
     }
     
     private static InstanceConfiguration getConfigCenterConfiguration() {
-        InstanceConfiguration result = new InstanceConfiguration("TestConfigCenter2");
+        InstanceConfiguration result = new InstanceConfiguration("ThirdTestConfigCenter");
         result.setOrchestrationType(OrchestrationType.CONFIG_CENTER.getValue());
         result.setNamespace("test_ms_config");
         result.setServerLists("localhost:3181");

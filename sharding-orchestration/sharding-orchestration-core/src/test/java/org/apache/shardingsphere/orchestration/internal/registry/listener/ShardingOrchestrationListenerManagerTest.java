@@ -48,7 +48,7 @@ public final class ShardingOrchestrationListenerManagerTest {
     
     @Test
     public void assertInitListeners() {
-        ShardingOrchestrationListenerManager actual = new ShardingOrchestrationListenerManager("testRegCenter", regCenter, "testConfigCenter", configCenter, Collections.<String>emptyList());
+        ShardingOrchestrationListenerManager actual = new ShardingOrchestrationListenerManager("testRegCenter", regCenter, "FirstTestConfigCenter", configCenter, Collections.<String>emptyList());
         FieldUtil.setField(actual, "configurationChangedListenerManager", configurationChangedListenerManager);
         FieldUtil.setField(actual, "stateChangedListenerManager", stateChangedListenerManager);
         actual.initListeners();

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 
-public final class TestRegistryCenter implements RegistryCenter, ConfigCenter {
+public final class FirstTestRegistryCenter implements RegistryCenter, ConfigCenter {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
@@ -72,6 +72,6 @@ public final class TestRegistryCenter implements RegistryCenter, ConfigCenter {
     
     @Override
     public String getType() {
-        return "TestRegistryCenter";
+        return "FirstTestRegistryCenter";
     }
 }

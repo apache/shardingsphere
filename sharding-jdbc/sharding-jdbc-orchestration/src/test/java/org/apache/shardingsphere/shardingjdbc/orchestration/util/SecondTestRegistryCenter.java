@@ -17,18 +17,20 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.util;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 
-public final class TestConfigCenter1 implements ConfigCenter {
+public final class SecondTestRegistryCenter implements RegistryCenter, ConfigCenter {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
@@ -56,6 +58,11 @@ public final class TestConfigCenter1 implements ConfigCenter {
     }
     
     @Override
+    public void persistEphemeral(final String key, final String value) {
+        REGISTRY_DATA.put(key, value);
+    }
+    
+    @Override
     public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
     }
     
@@ -66,6 +73,6 @@ public final class TestConfigCenter1 implements ConfigCenter {
     
     @Override
     public String getType() {
-        return "TestConfigCenter1";
+        return "SecondTestRegistryCenter";
     }
 }

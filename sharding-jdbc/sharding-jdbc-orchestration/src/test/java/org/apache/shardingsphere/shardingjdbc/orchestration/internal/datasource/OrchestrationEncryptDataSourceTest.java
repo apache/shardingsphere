@@ -72,7 +72,7 @@ public final class OrchestrationEncryptDataSourceTest {
     }
     
     private InstanceConfiguration getRegistryCenterConfiguration() {
-        InstanceConfiguration result = new InstanceConfiguration("TestRegistryCenter1");
+        InstanceConfiguration result = new InstanceConfiguration("SecondTestRegistryCenter");
         result.setOrchestrationType(OrchestrationType.REGISTRY_CENTER.getValue());
         result.setNamespace("test_encrypt_registry");
         result.setServerLists("localhost:3181");
@@ -80,7 +80,7 @@ public final class OrchestrationEncryptDataSourceTest {
     }
     
     private InstanceConfiguration getConfigCenterConfiguration() {
-        InstanceConfiguration result = new InstanceConfiguration("TestConfigCenter1");
+        InstanceConfiguration result = new InstanceConfiguration("SecondTestConfigCenter");
         result.setOrchestrationType(OrchestrationType.CONFIG_CENTER.getValue());
         result.setNamespace("test_encrypt_config");
         result.setServerLists("localhost:3181");
