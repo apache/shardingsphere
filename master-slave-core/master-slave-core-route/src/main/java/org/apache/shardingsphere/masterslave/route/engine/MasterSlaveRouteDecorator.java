@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.route.router;
+package org.apache.shardingsphere.masterslave.route.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
