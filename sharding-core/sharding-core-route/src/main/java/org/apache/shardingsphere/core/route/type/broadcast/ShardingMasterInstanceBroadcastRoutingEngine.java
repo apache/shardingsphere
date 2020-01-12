@@ -20,26 +20,24 @@ package org.apache.shardingsphere.core.route.type.broadcast;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.core.route.type.RoutingEngine;
+import org.apache.shardingsphere.core.route.type.ShardingRouteEngine;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Broadcast routing engine for master instance of databases.
+ * Sharding broadcast routing engine for master instance of databases.
  * 
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class MasterInstanceBroadcastRoutingEngine implements RoutingEngine {
-    
-    private final ShardingRule shardingRule;
+public final class ShardingMasterInstanceBroadcastRoutingEngine implements ShardingRouteEngine {
     
     private final DataSourceMetas dataSourceMetas;
     
     @Override
-    public RouteResult route() {
+    public RouteResult route(final ShardingRule shardingRule) {
         RouteResult result = new RouteResult();
         for (String each : shardingRule.getShardingDataSourceNames().getDataSourceNames()) {
             if (dataSourceMetas.getAllInstanceDataSourceNames().contains(each)) {

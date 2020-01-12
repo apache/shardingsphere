@@ -43,7 +43,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DataSourceGroupBroadcastRoutingEngineTest {
+public final class ShardingDataSourceGroupBroadcastRoutingEngineTest {
+    
+    private final ShardingDataSourceGroupBroadcastRoutingEngine shardingDataSourceGroupBroadcastRoutingEngine = new ShardingDataSourceGroupBroadcastRoutingEngine();
     
     @Mock
     private ShardingRule shardingRule;
@@ -51,12 +53,9 @@ public final class DataSourceGroupBroadcastRoutingEngineTest {
     @Mock
     private ShardingDataSourceNames shardingDataSourceNames;
     
-    private DataSourceGroupBroadcastRoutingEngine dataSourceGroupBroadcastRoutingEngine;
-    
     @Before
     public void setUp() {
         when(shardingRule.getShardingDataSourceNames()).thenReturn(shardingDataSourceNames);
-        dataSourceGroupBroadcastRoutingEngine = new DataSourceGroupBroadcastRoutingEngine(shardingRule);
     }
     
     private List<TableRule> mockTableRules(final List<List<String>> shards) {
@@ -86,7 +85,7 @@ public final class DataSourceGroupBroadcastRoutingEngineTest {
         List<TableRule> tableRules = mockTableRules(shards);
         when(shardingRule.getTableRules()).thenReturn(tableRules);
         when(shardingDataSourceNames.getDefaultDataSourceName()).thenReturn("default");
-        RouteResult actual = dataSourceGroupBroadcastRoutingEngine.route();
+        RouteResult actual = shardingDataSourceGroupBroadcastRoutingEngine.route(shardingRule);
         assertThat(actual.getRouteUnits().size(), is(3));
         Iterator<RouteUnit> iterator = actual.getRouteUnits().iterator();
         assertThat(iterator.next().getActualDataSourceName(), is("ds3"));
@@ -102,7 +101,7 @@ public final class DataSourceGroupBroadcastRoutingEngineTest {
         shards.add(Arrays.asList("ds1", "ds2", "ds3"));
         List<TableRule> tableRules = mockTableRules(shards);
         when(shardingRule.getTableRules()).thenReturn(tableRules);
-        RouteResult actual = dataSourceGroupBroadcastRoutingEngine.route();
+        RouteResult actual = shardingDataSourceGroupBroadcastRoutingEngine.route(shardingRule);
         assertThat(actual.getRouteUnits().size(), is(1));
         Iterator<RouteUnit> iterator = actual.getRouteUnits().iterator();
         assertThat(Arrays.asList("ds1", "ds2", "ds3"), hasItems(iterator.next().getActualDataSourceName()));

@@ -40,18 +40,18 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
-public final class ComplexRoutingEngineTest extends AbstractRoutingEngineTest {
+public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngineTest {
     
     @Test
     public void assertRoutingForBindingTables() {
-        ShardingRule shardingRule = createBindingShardingRule();
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(),
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false), 
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()),
                 new PaginationContext(null, null, Collections.emptyList()));
-        ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(shardingRule, Arrays.asList("t_order", "t_order_item"), selectSQLStatementContext, createShardingConditions("t_order"));
-        RouteResult routeResult = complexRoutingEngine.route();
+        ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(Arrays.asList("t_order", "t_order_item"), selectSQLStatementContext, createShardingConditions("t_order"));
+        RouteResult routeResult = complexRoutingEngine.route(createBindingShardingRule());
         List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
@@ -63,13 +63,12 @@ public final class ComplexRoutingEngineTest extends AbstractRoutingEngineTest {
     
     @Test
     public void assertRoutingForShardingTableJoinBroadcastTable() {
-        ShardingRule shardingRule = createBroadcastShardingRule();
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(),
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false), 
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()),
                 new PaginationContext(null, null, Collections.emptyList()));
-        ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(shardingRule, Arrays.asList("t_order", "t_config"), selectSQLStatementContext, createShardingConditions("t_order"));
-        RouteResult routeResult = complexRoutingEngine.route();
+        ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(Arrays.asList("t_order", "t_config"), selectSQLStatementContext, createShardingConditions("t_order"));
+        RouteResult routeResult = complexRoutingEngine.route(createBroadcastShardingRule());
         List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
@@ -81,7 +80,7 @@ public final class ComplexRoutingEngineTest extends AbstractRoutingEngineTest {
     
     @Test(expected = ShardingSphereException.class)
     public void assertRoutingForNonLogicTable() {
-        ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(null, Collections.<String>emptyList(), null, createShardingConditions("t_order"));
-        complexRoutingEngine.route();
+        ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(Collections.<String>emptyList(), null, createShardingConditions("t_order"));
+        complexRoutingEngine.route(mock(ShardingRule.class));
     }
 }

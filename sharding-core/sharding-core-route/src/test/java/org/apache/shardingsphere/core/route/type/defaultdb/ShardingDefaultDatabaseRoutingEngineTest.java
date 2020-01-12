@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.type.broadcast;
+package org.apache.shardingsphere.core.route.type.defaultdb;
 
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -33,25 +31,24 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class DatabaseBroadcastRoutingEngineTest {
+public final class ShardingDefaultDatabaseRoutingEngineTest {
     
-    private DatabaseBroadcastRoutingEngine databaseBroadcastRoutingEngine;
-    
-    @Before
-    public void setEngineContext() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..2}"));
-        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1"));
-        databaseBroadcastRoutingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
-    }
+    private final ShardingDefaultDatabaseRoutingEngine shardingDefaultDatabaseRoutingEngine = new ShardingDefaultDatabaseRoutingEngine(Arrays.asList("t_order", "t_order_item"));
     
     @Test
     public void assertRoute() {
-        RouteResult routeResult = databaseBroadcastRoutingEngine.route();
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.setDefaultDataSourceName("ds_0");
+        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
+        RouteResult routeResult = shardingDefaultDatabaseRoutingEngine.route(shardingRule);
         List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
-        assertThat(routeResult.getRouteUnits().size(), is(2));
-        assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds0"));
-        assertThat(tableUnitList.get(1).getActualDataSourceName(), is("ds1"));
+        assertThat(routeResult.getRouteUnits().size(), is(1));
+        assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_0"));
+        assertThat(tableUnitList.get(0).getTableUnits().size(), is(2));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_order"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(1).getActualTableName(), is("t_order_item"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(1).getLogicTableName(), is("t_order_item"));
     }
 }

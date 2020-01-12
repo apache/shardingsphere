@@ -17,18 +17,19 @@
 
 package org.apache.shardingsphere.core.route.type.ignore;
 
-import org.apache.shardingsphere.core.route.type.RoutingEngine;
+import org.apache.shardingsphere.core.route.type.ShardingRouteEngine;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 
 /**
- * Ignore routing engine.
+ * Sharding ignore routing engine.
  * 
  * @author zhangliang
  */
-public final class IgnoreRoutingEngine implements RoutingEngine {
+public final class ShardingIgnoreRoutingEngine implements ShardingRouteEngine {
     
     @Override
-    public RouteResult route() {
+    public RouteResult route(final ShardingRule shardingRule) {
         return new RouteResult();
     }
 }

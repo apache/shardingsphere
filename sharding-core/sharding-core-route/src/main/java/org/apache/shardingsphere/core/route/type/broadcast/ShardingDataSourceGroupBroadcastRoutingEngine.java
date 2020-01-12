@@ -19,12 +19,11 @@ package org.apache.shardingsphere.core.route.type.broadcast;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.route.type.RoutingEngine;
-import org.apache.shardingsphere.underlying.route.context.RouteResult;
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
+import org.apache.shardingsphere.core.route.type.ShardingRouteEngine;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.underlying.route.context.RouteResult;
+import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -32,19 +31,16 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Data source group broadcast routing engine.
+ * Sharding data source group broadcast routing engine.
  *
  * @author zhaojun
  */
-@RequiredArgsConstructor
-public final class DataSourceGroupBroadcastRoutingEngine implements RoutingEngine {
-    
-    private final ShardingRule shardingRule;
+public final class ShardingDataSourceGroupBroadcastRoutingEngine implements ShardingRouteEngine {
     
     @Override
-    public RouteResult route() {
+    public RouteResult route(final ShardingRule shardingRule) {
         RouteResult result = new RouteResult();
-        Collection<Set<String>> broadcastDataSourceGroup = getBroadcastDataSourceGroup(getDataSourceGroup());
+        Collection<Set<String>> broadcastDataSourceGroup = getBroadcastDataSourceGroup(getDataSourceGroup(shardingRule));
         for (Set<String> each : broadcastDataSourceGroup) {
             result.getRouteUnits().add(new RouteUnit(getRandomDataSourceName(each)));
         }
@@ -59,7 +55,7 @@ public final class DataSourceGroupBroadcastRoutingEngine implements RoutingEngin
         return result;
     }
     
-    private Collection<Set<String>> getDataSourceGroup() {
+    private Collection<Set<String>> getDataSourceGroup(final ShardingRule shardingRule) {
         Collection<Set<String>> result = new LinkedList<>();
         for (TableRule each : shardingRule.getTableRules()) {
             result.add(each.getDataNodeGroups().keySet());
