@@ -43,7 +43,7 @@ import java.util.List;
  * @author zhangliang
  */
 public final class ShardingUpdateStatementValidator implements ShardingStatementValidator<UpdateStatement> {
-
+    
     @Override
     public void validate(final ShardingRule shardingRule, final UpdateStatement sqlStatement, final List<Object> parameters) {
         String tableName = new TablesContext(sqlStatement).getSingleTableName();
@@ -63,7 +63,7 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
             }
         }
     }
-
+    
     private Optional<Object> getShardingColumnSetAssignmentValue(final AssignmentSegment assignmentSegment, final List<Object> parameters) {
         ExpressionSegment segment = assignmentSegment.getValue();
         int shardingSetAssignIndex = -1;
@@ -78,14 +78,14 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
         }
         return Optional.of(parameters.get(shardingSetAssignIndex));
     }
-
+    
     private Optional<Object> getShardingValue(final WhereSegment whereSegment, final List<Object> parameters, final String shardingColumn) {
         for (AndPredicate each : whereSegment.getAndPredicates()) {
             return getShardingValue(each, parameters, shardingColumn);
         }
         return Optional.absent();
     }
-
+    
     private Optional<Object> getShardingValue(final AndPredicate andPredicate, final List<Object> parameters, final String shardingColumn) {
         for (PredicateSegment each : andPredicate.getPredicates()) {
             if (!shardingColumn.equalsIgnoreCase(each.getColumn().getName())) {
@@ -94,18 +94,18 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
             PredicateRightValue rightValue = each.getRightValue();
             if (rightValue instanceof PredicateCompareRightValue) {
                 ExpressionSegment segment = ((PredicateCompareRightValue) rightValue).getExpression();
-                return getPredicateCompareShardingValue(segment, parameters, shardingColumn);
+                return getPredicateCompareShardingValue(segment, parameters);
             }
             if (rightValue instanceof PredicateInRightValue) {
                 Collection<ExpressionSegment> segments = ((PredicateInRightValue) rightValue).getSqlExpressions();
-                return getPredicateInShardingValue(segments, parameters, shardingColumn);
+                return getPredicateInShardingValue(segments, parameters);
             }
         }
         return Optional.absent();
     }
-
-    private Optional<Object> getPredicateCompareShardingValue(final ExpressionSegment segment, final List<Object> parameters, final String shardingColumn) {
-        int shardingValueParameterMarkerIndex = -1;
+    
+    private Optional<Object> getPredicateCompareShardingValue(final ExpressionSegment segment, final List<Object> parameters) {
+        int shardingValueParameterMarkerIndex;
         if (segment instanceof ParameterMarkerExpressionSegment) {
             shardingValueParameterMarkerIndex = ((ParameterMarkerExpressionSegment) segment).getParameterMarkerIndex();
             if (-1 == shardingValueParameterMarkerIndex || shardingValueParameterMarkerIndex > parameters.size() - 1) {
@@ -118,9 +118,9 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
         }
         return Optional.absent();
     }
-
-    private Optional<Object> getPredicateInShardingValue(final Collection<ExpressionSegment> segments, final List<Object> parameters, final String shardingColumn) {
-        int shardingColumnWhereIndex = -1;
+    
+    private Optional<Object> getPredicateInShardingValue(final Collection<ExpressionSegment> segments, final List<Object> parameters) {
+        int shardingColumnWhereIndex;
         for (ExpressionSegment each : segments) {
             if (each instanceof ParameterMarkerExpressionSegment) {
                 shardingColumnWhereIndex = ((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex();
