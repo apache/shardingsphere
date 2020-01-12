@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.core.route.router.masterslave.MasterSlaveRouter;
+import org.apache.shardingsphere.masterslave.route.router.MasterSlaveRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractMasterSlavePreparedStatementAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;

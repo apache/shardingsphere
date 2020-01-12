@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.router.masterslave;
+package org.apache.shardingsphere.masterslave.route.router;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

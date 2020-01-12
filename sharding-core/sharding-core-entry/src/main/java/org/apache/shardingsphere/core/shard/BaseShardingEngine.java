@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.route.ShardingRouteContext;
 import org.apache.shardingsphere.core.route.hook.SPIRoutingHook;
-import org.apache.shardingsphere.core.route.router.masterslave.MasterSlaveRouteDecorator;
+import org.apache.shardingsphere.masterslave.route.router.MasterSlaveRouteDecorator;
 import org.apache.shardingsphere.core.route.router.sharding.ShardingRouter;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;

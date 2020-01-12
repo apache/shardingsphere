@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.router.masterslave;
+package org.apache.shardingsphere.masterslave.route.router;
 
 /**
  * Master data source visited manager.

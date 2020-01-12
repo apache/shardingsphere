@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.route.router.masterslave.MasterSlaveRouter;
+import org.apache.shardingsphere.masterslave.route.router.MasterSlaveRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.apache.shardingsphere.core.shard.SimpleQueryShardingEngine;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;

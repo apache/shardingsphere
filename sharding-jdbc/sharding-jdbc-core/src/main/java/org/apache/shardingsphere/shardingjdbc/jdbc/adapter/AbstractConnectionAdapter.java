@@ -24,7 +24,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.common.hook.RootInvokeHook;
 import org.apache.shardingsphere.underlying.common.hook.SPIRootInvokeHook;
-import org.apache.shardingsphere.core.route.router.masterslave.MasterVisitedManager;
+import org.apache.shardingsphere.masterslave.route.router.MasterVisitedManager;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
