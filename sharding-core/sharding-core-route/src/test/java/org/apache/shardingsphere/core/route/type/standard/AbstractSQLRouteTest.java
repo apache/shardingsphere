@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.core.route.type.standard;
 
-import org.apache.shardingsphere.core.route.PreparedStatementRoutingEngine;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.core.route.ShardingRouteContext;
 import org.apache.shardingsphere.core.route.fixture.AbstractRoutingEngineTest;
+import org.apache.shardingsphere.core.route.router.sharding.ShardingRouter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
@@ -30,6 +30,7 @@ import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaDat
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,8 +47,8 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         ShardingRule shardingRule = createAllShardingRule();
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildTableMetas());
         SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine("MySQL");
-        PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(sql, shardingRule, metaData, parseEngine);
-        RouteContext result = engine.route(parameters);
+        ShardingRouter shardingRouter = new ShardingRouter(shardingRule, metaData, parseEngine);
+        ShardingRouteContext result = shardingRouter.route(sql, parameters, false);
         assertThat(result.getRouteResult().getRouteUnits().size(), is(1));
         return result;
     }
