@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.route.sharding.keygen.GeneratedKey;
+import org.apache.shardingsphere.sharding.route.engine.keygen.GeneratedKey;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.GeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.LiteralGeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.ParameterMarkerGeneratedKeyAssignmentToken;

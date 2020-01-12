@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.shard;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.sharding.route.sharding.ShardingRouter;
+import org.apache.shardingsphere.sharding.route.engine.ShardingRouter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;

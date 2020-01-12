@@ -23,7 +23,7 @@ import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.sharding.route.ShardingRouteContext;
 import org.apache.shardingsphere.sharding.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.masterslave.route.engine.MasterSlaveRouteDecorator;
-import org.apache.shardingsphere.sharding.route.sharding.ShardingRouter;
+import org.apache.shardingsphere.sharding.route.engine.ShardingRouter;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.shard.log.ShardingSQLLogger;

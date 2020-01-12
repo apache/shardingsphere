@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.rewrite.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.route.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.sharding.route.sharding.condition.ShardingConditions;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;

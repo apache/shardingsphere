@@ -31,8 +31,8 @@ import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLSta
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sharding.route.fixture.AbstractRoutingEngineTest;
-import org.apache.shardingsphere.sharding.route.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.sharding.route.sharding.condition.ShardingConditions;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;

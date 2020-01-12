@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.type.standard;
 
 import org.apache.shardingsphere.sharding.route.ShardingRouteContext;
 import org.apache.shardingsphere.sharding.route.fixture.AbstractRoutingEngineTest;
-import org.apache.shardingsphere.sharding.route.sharding.ShardingRouter;
+import org.apache.shardingsphere.sharding.route.engine.ShardingRouter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;

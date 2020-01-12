@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.execute.context;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.sharding.route.sharding.keygen.GeneratedKey;
+import org.apache.shardingsphere.sharding.route.engine.keygen.GeneratedKey;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 
