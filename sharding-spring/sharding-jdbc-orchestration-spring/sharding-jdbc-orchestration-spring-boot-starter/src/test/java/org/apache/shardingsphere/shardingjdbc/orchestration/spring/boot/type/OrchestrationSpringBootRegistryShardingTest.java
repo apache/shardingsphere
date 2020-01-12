@@ -32,7 +32,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeC
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenter;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
-import org.apache.shardingsphere.shardingjdbc.orchestration.temp.internal.datasource.OrchestrationShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,21 +59,21 @@ public class OrchestrationSpringBootRegistryShardingTest {
     public static void init() {
         EmbedTestingServer.start();
         TestCenter testCenter = new TestCenter();
-        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource", "ds: !!org.apache.shardingsphere.orchestration.temp.yaml.config.YamlDataSourceConfiguration\n"
+        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource", "ds: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
             + "  properties:\n"
             + "    url: jdbc:h2:mem:ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
             + "    maxTotal: 16\n"
             + "    password: ''\n"
             + "    username: sa\n"
-            + "ds_0: !!org.apache.shardingsphere.orchestration.temp.yaml.config.YamlDataSourceConfiguration\n"
+            + "ds_0: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
             + "  properties:\n"
             + "    url: jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
             + "    maxTotal: 16\n"
             + "    password: ''\n"
             + "    username: sa\n"
-            + "ds_1: !!org.apache.shardingsphere.orchestration.temp.yaml.config.YamlDataSourceConfiguration\n"
+            + "ds_1: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
             + "  properties:\n"
             + "    url: jdbc:h2:mem:ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"

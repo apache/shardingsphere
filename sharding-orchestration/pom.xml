@@ -29,6 +29,6 @@
     
     <modules>
         <module>sharding-orchestration-center</module>
-        <module>sharding-orchestration-core-new</module>
+        <module>sharding-orchestration-core</module>
     </modules>
 </project>

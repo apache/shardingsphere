@@ -109,7 +109,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-jdbc-orchestration-new</artifactId>
+            <artifactId>sharding-jdbc-orchestration</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -179,7 +179,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-core-new</artifactId>
+            <artifactId>sharding-orchestration-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
