@@ -24,6 +24,7 @@ import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStra
 import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
+import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
 
@@ -55,7 +56,10 @@ public final class InlineShardingStrategy implements ShardingStrategy {
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues) {
         RouteValue shardingValue = shardingValues.iterator().next();
-        Preconditions.checkState(shardingValue instanceof ListRouteValue, "Inline strategy cannot support range sharding.");
+        if (shardingValue instanceof RangeRouteValue) {
+            return availableTargetNames;
+        }
+        Preconditions.checkState(shardingValue instanceof ListRouteValue, "Inline strategy cannot support this type sharding:" + shardingValue.toString());
         Collection<String> shardingResult = doSharding((ListRouteValue) shardingValue);
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (String each : shardingResult) {
