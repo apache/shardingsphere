@@ -17,23 +17,20 @@
 
 package org.apache.shardingsphere.underlying.route;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 /**
- * Table unit.
- * 
- * @author maxiaoguang
+ * Data node route decorator.
+ *
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-@ToString
-public final class TableUnit {
+public interface DateNodeRouteDecorator {
     
-    private final String logicTableName;
-    
-    private final String actualTableName;
+    /**
+     * Decorate route result.
+     *
+     * @param routeContext route context
+     * @return decorated route result
+     */
+    RouteContext decorate(RouteContext routeContext);
 }

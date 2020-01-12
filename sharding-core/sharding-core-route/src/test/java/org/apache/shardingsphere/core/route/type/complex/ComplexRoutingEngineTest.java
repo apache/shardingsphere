@@ -27,8 +27,8 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.P
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.core.route.fixture.AbstractRoutingEngineTest;
-import org.apache.shardingsphere.underlying.route.RouteResult;
-import org.apache.shardingsphere.underlying.route.RouteUnit;
+import org.apache.shardingsphere.underlying.route.context.RouteResult;
+import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Test;
 

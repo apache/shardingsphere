@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.route.router;
+package org.apache.shardingsphere.underlying.route.context;
 
-import org.apache.shardingsphere.underlying.route.RouteContext;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
- * Data node route decorator.
- *
- * @author zhangliang
+ * Table unit.
+ * 
+ * @author maxiaoguang
  */
-public interface DateNodeRouteDecorator {
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
+@ToString
+public final class TableUnit {
     
-    /**
-     * Decorate route result.
-     *
-     * @param routeContext route context
-     * @return decorated route result
-     */
-    RouteContext decorate(RouteContext routeContext);
+    private final String logicTableName;
+    
+    private final String actualTableName;
 }
