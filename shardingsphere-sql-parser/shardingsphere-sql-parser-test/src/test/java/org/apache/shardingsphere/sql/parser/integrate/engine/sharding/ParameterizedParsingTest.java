@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.integrate.engine.sharding;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.ShardingSQLStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistry;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.ShardingParserResultSetRegistry;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
@@ -60,6 +60,6 @@ public final class ParameterizedParsingTest {
     public void assertSupportedSQL() {
         String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());
         SQLStatement sqlStatement = SQLParseEngineFactory.getSQLParseEngine("H2".equals(databaseType) ? "MySQL" : databaseType).parse(sql, false);
-        new ShardingSQLStatementAssert(sqlStatement, sqlCaseId, sqlCaseType, databaseType).assertSQLStatement();
+        new SQLStatementAssert(sqlStatement, sqlCaseId, sqlCaseType, databaseType).assertSQLStatement();
     }
 }
