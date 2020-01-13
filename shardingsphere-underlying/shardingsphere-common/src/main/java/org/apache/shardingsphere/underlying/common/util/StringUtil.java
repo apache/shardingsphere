@@ -52,14 +52,4 @@ public final class StringUtil {
             return false;
         }
     }
-
-    /**
-     * Judge is Null value or empty.
-     *
-     * @param value to be judged string value
-     * @return is long value or not
-     */
-    public static boolean isNullOrEmpty(final Object value) {
-        return value == null || "".equals(value.toString());
-    }
 }

@@ -61,8 +61,8 @@ public final class AESEncryptor implements Encryptor {
     @Override
     @SneakyThrows
     public String encrypt(final Object plaintext) {
-        if (StringUtil.isNullOrEmpty(plaintext)) {
-            return (String) plaintext;
+        if(null == plaintext) {
+            return null;
         }
         byte[] result = getCipher(Cipher.ENCRYPT_MODE).doFinal(StringUtils.getBytesUtf8(String.valueOf(plaintext)));
         return Base64.encodeBase64String(result);
@@ -71,10 +71,10 @@ public final class AESEncryptor implements Encryptor {
     @Override
     @SneakyThrows
     public Object decrypt(final String ciphertext) {
-        if (StringUtil.isNullOrEmpty(ciphertext)) {
-            return ciphertext;
+        if (null == ciphertext) {
+            return null;
         }
-        byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(Base64.decodeBase64(String.valueOf(ciphertext)));
+        byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(Base64.decodeBase64(ciphertext));
         return new String(result, StandardCharsets.UTF_8);
     }
 
