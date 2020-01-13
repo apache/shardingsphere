@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
-import org.apache.shardingsphere.test.sql.loader.sharding.ShardingUnsupportedSQLCasesRegistry;
+import org.apache.shardingsphere.test.sql.loader.UnsupportedSQLCasesRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -33,9 +33,9 @@ import java.util.Collections;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class ShardingParameterizedUnsupportedParsingTest {
+public final class ParameterizedUnsupportedParsingTest {
     
-    private static SQLCasesLoader sqlCasesLoader = ShardingUnsupportedSQLCasesRegistry.getInstance().getSqlCasesLoader();
+    private static SQLCasesLoader sqlCasesLoader = UnsupportedSQLCasesRegistry.getInstance().getSqlCasesLoader();
     
     private final String sqlCaseId;
     

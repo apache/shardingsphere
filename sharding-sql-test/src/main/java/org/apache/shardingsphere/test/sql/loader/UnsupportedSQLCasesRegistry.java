@@ -15,25 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.loader.sharding;
+package org.apache.shardingsphere.test.sql.loader;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
 
 /**
- * SQL cases registry for sharding.
+ * Unsupported SQL cases registry.
  * 
  * @author zhangliang 
  */
-public final class ShardingSQLCasesRegistry {
+public final class UnsupportedSQLCasesRegistry {
     
-    private static final ShardingSQLCasesRegistry INSTANCE = new ShardingSQLCasesRegistry();
+    private static final UnsupportedSQLCasesRegistry INSTANCE = new UnsupportedSQLCasesRegistry();
     
     @Getter
     private SQLCasesLoader sqlCasesLoader;
     
-    private ShardingSQLCasesRegistry() {
-        sqlCasesLoader = new SQLCasesLoader("sql/sharding");
+    private UnsupportedSQLCasesRegistry() {
+        sqlCasesLoader = new SQLCasesLoader("sql/unsupported");
     }
     
     /**
@@ -41,7 +40,7 @@ public final class ShardingSQLCasesRegistry {
      * 
      * @return singleton instance
      */
-    public static ShardingSQLCasesRegistry getInstance() {
+    public static UnsupportedSQLCasesRegistry getInstance() {
         return INSTANCE;
     }
 }
