@@ -36,7 +36,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -137,11 +137,11 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
         List<ColumnMetaData> metaData = dbMetaDataUtil.getColumnNames(record.getTableName());
         List<String> primaryKeys = dbMetaDataUtil.getPrimaryKeys(record.getTableName());
-        StringBuilder updatedColumns = new StringBuilder();
-        List<Column> values = new ArrayList<>();
+        List<ColumnMetaData> updatedColumns = new LinkedList<>();
+        List<Column> values = new LinkedList<>();
         for (int i = 0; i < metaData.size(); i++) {
             if (record.getColumn(i).isUpdated()) {
-                updatedColumns.append(String.format("%s = ?,", metaData.get(i).getColumnName()));
+                updatedColumns.add(metaData.get(i));
                 values.add(record.getColumn(i));
             }
         }
@@ -149,9 +149,8 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
             int index = DbMetaDataUtil.findColumnIndex(metaData, primaryKey);
             values.add(record.getColumn(index));
         }
-        String updateSql = sqlBuilder.buildUpdateSql(record.getTableName());
-        String sql = String.format(updateSql, updatedColumns.substring(0, updatedColumns.length() - 1));
-        PreparedStatement ps = connection.prepareStatement(sql);
+        String updateSql = sqlBuilder.buildUpdateSql(record.getTableName(), updatedColumns);
+        PreparedStatement ps = connection.prepareStatement(updateSql);
         for (int i = 0; i < values.size(); i++) {
             ps.setObject(i + 1, values.get(i).getValue());
         }

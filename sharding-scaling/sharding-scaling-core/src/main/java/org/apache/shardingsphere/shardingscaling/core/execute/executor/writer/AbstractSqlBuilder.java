@@ -20,6 +20,8 @@ package org.apache.shardingsphere.shardingscaling.core.execute.executor.writer;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.shardingsphere.shardingscaling.core.metadata.ColumnMetaData;
 import org.apache.shardingsphere.shardingscaling.core.util.DbMetaDataUtil;
 
@@ -33,17 +35,18 @@ import java.util.concurrent.ExecutionException;
  * @author avalon566
  */
 public abstract class AbstractSqlBuilder {
-
+    
     private static final String INSERT_SQL_CACHE_KEY_PREFIX = "INSERT_";
-
+    
     private static final String UPDATE_SQL_CACHE_KEY_PREFIX = "UPDATE_";
-
+    
     private static final String DELETE_SQL_CACHE_KEY_PREFIX = "DELETE_";
     
     private final LoadingCache<String, String> sqlCache;
     
+    @Getter(value = AccessLevel.PROTECTED)
     private final DbMetaDataUtil dbMetaDataUtil;
-
+    
     public AbstractSqlBuilder(final DataSource dataSource) {
         this.dbMetaDataUtil = new DbMetaDataUtil(dataSource);
         sqlCache = CacheBuilder.newBuilder()
@@ -75,7 +78,7 @@ public abstract class AbstractSqlBuilder {
      * @return string
      */
     protected abstract String getRightIdentifierQuoteString();
-
+    
     /**
      * Build insert sql.
      *
@@ -89,21 +92,26 @@ public abstract class AbstractSqlBuilder {
             throw new RuntimeException(e);
         }
     }
-
+    
     /**
      * Build update sql.
      *
      * @param tableName table name
+     * @param updatedColumns of updated
      * @return sql
      */
-    public String buildUpdateSql(final String tableName) {
+    public String buildUpdateSql(final String tableName, final List<ColumnMetaData> updatedColumns) {
         try {
-            return sqlCache.get(UPDATE_SQL_CACHE_KEY_PREFIX + tableName);
+            StringBuilder updatedColumnString = new StringBuilder();
+            for (ColumnMetaData columnMetaData : updatedColumns) {
+                updatedColumnString.append(String.format("%s%s%s = ?,", getLeftIdentifierQuoteString(), columnMetaData.getColumnName(), getRightIdentifierQuoteString()));
+            }
+            return String.format(sqlCache.get(UPDATE_SQL_CACHE_KEY_PREFIX + tableName), updatedColumnString.substring(0, updatedColumnString.length() - 1));
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
-
+    
     /**
      * Build delete sql.
      *
@@ -117,7 +125,7 @@ public abstract class AbstractSqlBuilder {
             throw new RuntimeException(e);
         }
     }
-
+    
     private String buildInsertSqlInternal(final String tableName) {
         List<ColumnMetaData> metaData = dbMetaDataUtil.getColumnNames(tableName);
         StringBuilder columns = new StringBuilder();
@@ -130,7 +138,7 @@ public abstract class AbstractSqlBuilder {
         holder.setLength(holder.length() - 1);
         return String.format("INSERT INTO %s%s%s(%s) VALUES(%s)", getLeftIdentifierQuoteString(), tableName, getRightIdentifierQuoteString(), columns.toString(), holder.toString());
     }
-
+    
     private String buildDeleteSqlInternal(final String tableName) {
         List<String> primaryKeys = dbMetaDataUtil.getPrimaryKeys(tableName);
         StringBuilder where = new StringBuilder();
@@ -140,7 +148,7 @@ public abstract class AbstractSqlBuilder {
         where.setLength(where.length() - 1);
         return String.format("DELETE FROM %s%s%s WHERE %s", getLeftIdentifierQuoteString(), tableName, getRightIdentifierQuoteString(), where.toString());
     }
-
+    
     private String buildUpdateSqlInternal(final String tableName) {
         List<String> primaryKeys = dbMetaDataUtil.getPrimaryKeys(tableName);
         StringBuilder where = new StringBuilder();

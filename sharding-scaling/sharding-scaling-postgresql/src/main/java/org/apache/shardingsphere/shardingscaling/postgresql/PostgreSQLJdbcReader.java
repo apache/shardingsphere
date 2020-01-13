@@ -21,6 +21,11 @@ import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.AbstractJdbcReader;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * PostgreSQL JDBC reader.
  *
@@ -30,5 +35,12 @@ public final class PostgreSQLJdbcReader extends AbstractJdbcReader {
 
     public PostgreSQLJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
         super(rdbmsConfiguration, dataSourceFactory);
+    }
+    
+    @Override
+    protected PreparedStatement createPreparedStatement(final Connection conn, final String sql) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        ps.setFetchSize(1);
+        return ps;
     }
 }

@@ -23,6 +23,8 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.Ab
 import org.apache.shardingsphere.shardingscaling.core.metadata.JdbcUri;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -80,5 +82,12 @@ public final class MySQLJdbcReader extends AbstractJdbcReader {
         return Types.TIME == columnType
                 || Types.DATE == columnType
                 || Types.TIMESTAMP == columnType;
+    }
+    
+    @Override
+    protected PreparedStatement createPreparedStatement(final Connection conn, final String sql) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        ps.setFetchSize(Integer.MIN_VALUE);
+        return ps;
     }
 }
