@@ -60,6 +60,6 @@ public final class ShardingParameterizedParsingTest {
     public void assertSupportedSQL() {
         String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());
         SQLStatement sqlStatement = SQLParseEngineFactory.getSQLParseEngine("H2".equals(databaseType) ? "MySQL" : databaseType).parse(sql, false);
-        new ShardingSQLStatementAssert(sqlStatement, sqlCaseId, sqlCaseType).assertSQLStatement();
+        new ShardingSQLStatementAssert(sqlStatement, sqlCaseId, sqlCaseType, databaseType).assertSQLStatement();
     }
 }
