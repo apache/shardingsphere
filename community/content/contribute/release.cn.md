@@ -564,10 +564,12 @@ I will process to publish the release and send ANNOUNCE.
 
 ## 完成发布
 
-1. 将源码和二进制包从svn的dev目录移动到release目录
+1. 将源码、二进制包以及KEYS从svn的dev目录移动到release目录
 
 ```shell
-svn mv https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION} https://dist.apache.org/repos/dist/release/incubator/shardingsphere/
+svn mv https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION} https://dist.apache.org/repos/dist/release/incubator/shardingsphere/ -m "transfer packages for ${RELEASE.VERSION}"
+svn delete https://dist.apache.org/repos/dist/release/incubator/shardingsphere/KEYS -m "delete KEYS"
+svn cp https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/KEYS https://dist.apache.org/repos/dist/release/incubator/shardingsphere/ -m "transfer KEYS for ${RELEASE.VERSION}"
 ```
 
 2. 在Apache Staging仓库找到ShardingSphere并点击`Release`

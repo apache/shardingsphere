@@ -573,10 +573,12 @@ I will process to publish the release and send ANNOUNCE.
 
 ## Finish the Release
 
-1. Move source packages and binary packages from the `dev` directory to `release` directory
+1. Move source packages, binary packages and KEYS from the `dev` directory to `release` directory
 
 ```shell
-svn mv https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION} https://dist.apache.org/repos/dist/release/incubator/shardingsphere/
+svn mv https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION} https://dist.apache.org/repos/dist/release/incubator/shardingsphere/ -m "transfer packages for ${RELEASE.VERSION}"
+svn delete https://dist.apache.org/repos/dist/release/incubator/shardingsphere/KEYS -m "delete KEYS"
+svn cp https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/KEYS https://dist.apache.org/repos/dist/release/incubator/shardingsphere/ -m "transfer KEYS for ${RELEASE.VERSION}"
 ```
 
 2. Find ShardingSphere in staging repository and click `Release`
