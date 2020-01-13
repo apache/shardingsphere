@@ -15,33 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.loader.sharding;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
 
 /**
- * SQL cases registry for sharding.
- * 
- * @author zhangliang 
+ * Parser result set registry factory.
+ *
+ * @author zhangliang
  */
-public final class ShardingSQLCasesRegistry {
+public final class ParserResultSetRegistryFactory {
     
-    private static final ShardingSQLCasesRegistry INSTANCE = new ShardingSQLCasesRegistry();
+    private static final ParserResultSetRegistryFactory INSTANCE = new ParserResultSetRegistryFactory();
     
     @Getter
-    private SQLCasesLoader sqlCasesLoader;
-    
-    private ShardingSQLCasesRegistry() {
-        sqlCasesLoader = new SQLCasesLoader("sql/sharding");
-    }
+    private final ParserResultSetRegistry registry = new ParserResultSetRegistry("sql/");
     
     /**
      * Get singleton instance.
-     * 
+     *
      * @return singleton instance
      */
-    public static ShardingSQLCasesRegistry getInstance() {
+    public static ParserResultSetRegistryFactory getInstance() {
         return INSTANCE;
     }
 }

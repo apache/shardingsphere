@@ -15,31 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.engine.encrypt;
+package org.apache.shardingsphere.sql.parser.integrate.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.EncryptSQLStatementAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.EncryptParserResultSetRegistry;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistry;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
-import org.apache.shardingsphere.test.sql.loader.encrypt.EncryptSQLCasesRegistry;
+import org.apache.shardingsphere.test.sql.loader.UnsupportedSQLCasesRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
+import java.util.Collections;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class EncryptParameterizedParsingTest {
+public final class UnsupportedSQLParserParameterizedTest {
     
-    private static SQLCasesLoader sqlCasesLoader = EncryptSQLCasesRegistry.getInstance().getSqlCasesLoader();
-    
-    private static ParserResultSetRegistry parserResultSetRegistry = EncryptParserResultSetRegistry.getInstance().getRegistry();
+    private static SQLCasesLoader sqlCasesLoader = UnsupportedSQLCasesRegistry.getInstance().getSqlCasesLoader();
     
     private final String sqlCaseId;
     
@@ -52,10 +48,9 @@ public final class EncryptParameterizedParsingTest {
         return sqlCasesLoader.getSQLTestParameters();
     }
     
-    @Test
-    public void assertSupportedSQL() {
-        String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());
-        SQLStatement sqlStatement = SQLParseEngineFactory.getSQLParseEngine("H2".equals(databaseType) ? "MySQL" : databaseType).parse(sql, false);
-        new EncryptSQLStatementAssert(sqlStatement, sqlCaseId, sqlCaseType).assertSQLStatement();
+    @Test(expected = SQLParsingException.class)
+    public void assertUnsupportedSQL() {
+        String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
+        SQLParseEngineFactory.getSQLParseEngine("H2".equals(databaseType) ? "MySQL" : databaseType).parse(sql, false);
     }
 }

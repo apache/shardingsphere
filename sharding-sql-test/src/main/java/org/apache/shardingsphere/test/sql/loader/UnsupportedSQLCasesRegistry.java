@@ -15,28 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb;
+package org.apache.shardingsphere.test.sql.loader;
 
 import lombok.Getter;
 
 /**
- * Encrypt parser result set registry.
- *
- * @author zhangliang
+ * Unsupported SQL cases registry.
+ * 
+ * @author zhangliang 
  */
-public final class EncryptParserResultSetRegistry {
+public final class UnsupportedSQLCasesRegistry {
     
-    private static final EncryptParserResultSetRegistry INSTANCE = new EncryptParserResultSetRegistry();
+    private static final UnsupportedSQLCasesRegistry INSTANCE = new UnsupportedSQLCasesRegistry();
     
     @Getter
-    private final ParserResultSetRegistry registry = new ParserResultSetRegistry("encrypt/");
+    private SQLCasesLoader sqlCasesLoader;
+    
+    private UnsupportedSQLCasesRegistry() {
+        sqlCasesLoader = new SQLCasesLoader("sql/unsupported");
+    }
     
     /**
      * Get singleton instance.
-     *
+     * 
      * @return singleton instance
      */
-    public static EncryptParserResultSetRegistry getInstance() {
+    public static UnsupportedSQLCasesRegistry getInstance() {
         return INSTANCE;
     }
 }

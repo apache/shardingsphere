@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.engine.sharding;
+package org.apache.shardingsphere.sql.parser.integrate.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.ShardingSQLStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistry;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.ShardingParserResultSetRegistry;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistryFactory;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
-import org.apache.shardingsphere.test.sql.loader.sharding.ShardingSQLCasesRegistry;
+import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -38,11 +38,11 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class ShardingParameterizedParsingTest {
+public final class SQLParserParameterizedTest {
     
-    private static SQLCasesLoader sqlCasesLoader = ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader();
+    private static SQLCasesLoader sqlCasesLoader = SQLCasesRegistry.getInstance().getSqlCasesLoader();
     
-    private static ParserResultSetRegistry parserResultSetRegistry = ShardingParserResultSetRegistry.getInstance().getRegistry();
+    private static ParserResultSetRegistry parserResultSetRegistry = ParserResultSetRegistryFactory.getInstance().getRegistry();
     
     private final String sqlCaseId;
     
@@ -60,6 +60,6 @@ public final class ShardingParameterizedParsingTest {
     public void assertSupportedSQL() {
         String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());
         SQLStatement sqlStatement = SQLParseEngineFactory.getSQLParseEngine("H2".equals(databaseType) ? "MySQL" : databaseType).parse(sql, false);
-        new ShardingSQLStatementAssert(sqlStatement, sqlCaseId, sqlCaseType, databaseType).assertSQLStatement();
+        new SQLStatementAssert(sqlStatement, sqlCaseId, sqlCaseType, databaseType).assertSQLStatement();
     }
 }

@@ -15,28 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb;
+package org.apache.shardingsphere.test.sql.loader;
 
 import lombok.Getter;
 
 /**
- * Shadow parser result set registry.
- *
- * @author zhyee
+ * SQL cases registry.
+ * 
+ * @author zhangliang 
  */
-public final class ShadowParserResultSetRegistry {
+public final class SQLCasesRegistry {
     
-    private static final ShadowParserResultSetRegistry INSTANCE = new ShadowParserResultSetRegistry();
+    private static final SQLCasesRegistry INSTANCE = new SQLCasesRegistry();
     
     @Getter
-    private final ParserResultSetRegistry registry = new ParserResultSetRegistry("shadow/");
+    private SQLCasesLoader sqlCasesLoader;
+    
+    private SQLCasesRegistry() {
+        sqlCasesLoader = new SQLCasesLoader("sql/supported");
+    }
     
     /**
      * Get singleton instance.
-     *
+     * 
      * @return singleton instance
      */
-    public static ShadowParserResultSetRegistry getInstance() {
+    public static SQLCasesRegistry getInstance() {
         return INSTANCE;
     }
 }

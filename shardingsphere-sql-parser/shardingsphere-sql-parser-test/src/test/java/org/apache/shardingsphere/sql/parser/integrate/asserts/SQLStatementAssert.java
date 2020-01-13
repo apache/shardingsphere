@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.predicate.Predicat
 import org.apache.shardingsphere.sql.parser.integrate.asserts.selectitem.SelectItemAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.table.AlterTableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.ShardingParserResultSetRegistry;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistryFactory;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
@@ -42,17 +42,17 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.loader.sharding.ShardingSQLCasesRegistry;
+import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * SQL statement assert for sharding.
+ * SQL statement assert.
  *
  * @author zhangliang
  */
-public final class ShardingSQLStatementAssert {
+public final class SQLStatementAssert {
     
     private final SQLStatement actual;
     
@@ -78,11 +78,11 @@ public final class ShardingSQLStatementAssert {
     
     private final String databaseType;
     
-    public ShardingSQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
+    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(
-                ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader(), ShardingParserResultSetRegistry.getInstance().getRegistry(), sqlCaseId, sqlCaseType);
+                SQLCasesRegistry.getInstance().getSqlCasesLoader(), ParserResultSetRegistryFactory.getInstance().getRegistry(), sqlCaseId, sqlCaseType);
         this.actual = actual;
-        expected = ShardingParserResultSetRegistry.getInstance().getRegistry().get(sqlCaseId);
+        expected = ParserResultSetRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
         tableAssert = new TableAssert(assertMessage);
         indexAssert = new IndexAssert(sqlCaseType, assertMessage);
         groupByAssert = new GroupByAssert(assertMessage);
