@@ -45,27 +45,39 @@ public final class SQLStatementAssertMessage {
     /**
      * Get message text.
      * 
-     * @param assertFailureMessage assert failure message
+     * @param failureMessage failure message
      * @return message text
      */
-    public String getText(final String assertFailureMessage) {
+    public String getText(final String failureMessage) {
         StringBuilder result = new StringBuilder(System.getProperty("line.separator"));
-        result.append("SQL Case ID : ");
-        result.append(sqlCaseId);
-        result.append(System.getProperty("line.separator"));
-        result.append("SQL         : ");
-        if (SQLCaseType.Placeholder == sqlCaseType) {
-            result.append(sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList()));
-            result.append(System.getProperty("line.separator"));
-            result.append("SQL Params  : ");
-            result.append(parserResultSetRegistry.get(sqlCaseId).getParameters());
-            result.append(System.getProperty("line.separator"));
-        } else {
-            result.append(sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters()));
-        }
-        result.append(System.getProperty("line.separator"));
-        result.append(assertFailureMessage);
-        result.append(System.getProperty("line.separator"));
+        appendSQLCaseId(result);
+        appendSQL(result);
+        appendFailureMessage(failureMessage, result);
         return result.toString();
+    }
+    
+    private void appendSQLCaseId(final StringBuilder builder) {
+        builder.append("SQL Case ID : ");
+        builder.append(sqlCaseId);
+        builder.append(System.getProperty("line.separator"));
+    }
+    
+    private void appendSQL(final StringBuilder builder) {
+        builder.append("SQL         : ");
+        if (SQLCaseType.Placeholder == sqlCaseType) {
+            builder.append(sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList()));
+            builder.append(System.getProperty("line.separator"));
+            builder.append("SQL Params  : ");
+            builder.append(parserResultSetRegistry.get(sqlCaseId).getParameters());
+            builder.append(System.getProperty("line.separator"));
+        } else {
+            builder.append(sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters()));
+        }
+    }
+    
+    private void appendFailureMessage(final String failureMessage, final StringBuilder builder) {
+        builder.append(System.getProperty("line.separator"));
+        builder.append(failureMessage);
+        builder.append(System.getProperty("line.separator"));
     }
 }
