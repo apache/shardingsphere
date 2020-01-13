@@ -59,7 +59,7 @@ public final class SQLParserParameterizedTest {
     @Test
     public void assertSupportedSQL() {
         String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());
-        SQLStatement sqlStatement = SQLParseEngineFactory.getSQLParseEngine("H2".equals(databaseType) ? "MySQL" : databaseType).parse(sql, false);
-        new SQLStatementAssert(sqlStatement, sqlCaseId, sqlCaseType, databaseType).assertSQLStatement();
+        SQLStatement actual = SQLParseEngineFactory.getSQLParseEngine("H2".equals(databaseType) ? "MySQL" : databaseType).parse(sql, false);
+        new SQLStatementAssert(actual, sqlCaseId, sqlCaseType, databaseType).assertSQLStatement();
     }
 }

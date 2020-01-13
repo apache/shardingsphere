@@ -42,7 +42,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -79,9 +78,8 @@ public final class SQLStatementAssert {
     private final String databaseType;
     
     public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
-        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(
-                SQLCasesRegistry.getInstance().getSqlCasesLoader(), ParserResultSetRegistryFactory.getInstance().getRegistry(), sqlCaseId, sqlCaseType);
         this.actual = actual;
+        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlCaseId, sqlCaseType);
         expected = ParserResultSetRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
         tableAssert = new TableAssert(assertMessage);
         indexAssert = new IndexAssert(sqlCaseType, assertMessage);

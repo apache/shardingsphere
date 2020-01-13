@@ -19,8 +19,10 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistry;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistryFactory;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
 
 import java.util.Collections;
 
@@ -32,13 +34,13 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class SQLStatementAssertMessage {
     
-    private final SQLCasesLoader sqlCasesLoader;
-    
-    private final ParserResultSetRegistry parserResultSetRegistry;
-    
     private final String sqlCaseId;
     
     private final SQLCaseType sqlCaseType;
+    
+    private final SQLCasesLoader sqlCasesLoader = SQLCasesRegistry.getInstance().getSqlCasesLoader();
+    
+    private final ParserResultSetRegistry parserResultSetRegistry = ParserResultSetRegistryFactory.getInstance().getRegistry();
     
     /**
      * Get full assert message.
