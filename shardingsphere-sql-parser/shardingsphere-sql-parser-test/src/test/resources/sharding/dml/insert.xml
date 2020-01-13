@@ -21,6 +21,15 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <insert-columns-and-values column-names="order_id,user_id,status">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="init"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
@@ -40,6 +49,17 @@
         <tables>
             <table name="t_order_item" />
         </tables>
+        <insert-columns-and-values column-names="item_id,order_id,user_id,status,creation_date">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="init"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="insert"/>
+                    <assignment type-for-literal="CommonExpressionSegment" text-for-literal="now()"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="12" />
         </tokens>
@@ -59,6 +79,15 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <insert-columns-and-values column-names="order_id,user_id,status">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="insert"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
@@ -78,6 +107,20 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <insert-columns-and-values column-names="order_id,user_id,status">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="insert"/>
+                </insert-value>
+                <insert-value>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="2"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="2"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="insert2"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
@@ -105,6 +148,15 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <insert-columns-and-values column-names="order_id,user_id,status">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="insert"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_order" left-delimiter="`" right-delimiter="`" length="9" />
         </tokens>
@@ -124,6 +176,15 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <insert-columns-and-values column-names="order_id,user_id,status">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="insert"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="33" table-name="t_order" length="7" />
         </tokens>
@@ -143,6 +204,15 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <insert-columns-and-values column-names="order_id,user_id,status">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="init"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
             <table-token start-index="21" table-name="t_order" length="7" />
@@ -165,6 +235,15 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <insert-columns-and-values>
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="init"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
@@ -204,6 +283,15 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <insert-columns-and-values column-names="order_id,user_id,status">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="insert"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
@@ -243,6 +331,17 @@
         <tables>
             <table name="t_order_item" />
         </tables>
+        <insert-columns-and-values column-names="item_id,order_id,user_id,status,creation_date">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="10000"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="1000"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="10"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="insert"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="2017-08-08"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_order_item" length="12" />
         </tokens>
@@ -265,6 +364,16 @@
         <tables>
             <table name="t_order_item" />
         </tables>
+        <insert-columns-and-values column-names="order_id,user_id,status,creation_date">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1000"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="10"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="insert"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="2017-08-08"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_order_item" length="12" />
         </tokens>
@@ -327,6 +436,15 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <insert-columns-and-values column-names="order_id,user_id,status">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="init"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
@@ -393,6 +511,20 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <insert-columns-and-values column-names="order_id,user_id,status">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1000"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="10"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="init"/>
+                </insert-value>
+                <insert-value>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="3" type-for-literal="LiteralExpressionSegment" text-for-literal="1100"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="4" type-for-literal="LiteralExpressionSegment" text-for-literal="11"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="5" type-for-literal="LiteralExpressionSegment" text-for-literal="init"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
@@ -420,6 +552,20 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <insert-columns-and-values column-names="order_id,user_id,status">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="insert"/>
+                </insert-value>
+                <insert-value>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="2"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="2"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="3" type-for-literal="LiteralExpressionSegment" text-for-literal="init"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
@@ -474,6 +620,24 @@
         <tables>
             <table name="t_order_item" />
         </tables>
+        <insert-columns-and-values column-names="item_id,order_id,user_id,status,creation_date">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="10000"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="1000"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="10"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="insert"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="2017-08-08"/>
+                </insert-value>
+                <insert-value>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="3" type-for-literal="LiteralExpressionSegment" text-for-literal="10010"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="4" type-for-literal="LiteralExpressionSegment" text-for-literal="1001"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="5" type-for-literal="LiteralExpressionSegment" text-for-literal="10"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="insert"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="2017-08-08"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_order_item" length="12" />
         </tokens>
@@ -534,6 +698,16 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <insert-columns-and-values column-names="user_id,order_id,start_point,rule">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="7"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="200"/>
+                    <assignment type-for-literal="CommonExpressionSegment" text-for-literal="ST_GeographyFromText('SRID=4326;POINT(100 200)')"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="{&quot;rule&quot;:&quot;null&quot;}'::json"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
@@ -553,6 +727,17 @@
         <tables>
             <table name="t_order_item" />
         </tables>
+        <insert-columns-and-values>
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="10000"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="1000"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="10"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="insert"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="2017-08-08"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_order_item" length="12" />
         </tokens>
@@ -575,6 +760,16 @@
         <tables>
             <table name="t_order_item" />
         </tables>
+        <insert-columns-and-values>
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1000"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="10"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="insert"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="2017-08-08"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_order_item" length="12" />
         </tokens>
@@ -604,6 +799,11 @@
         <tables>
             <table name="t_auto_increment_table" />
         </tables>
+        <insert-columns-and-values>
+            <insert-values>
+                <insert-value />
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_auto_increment_table" length="22" />
         </tokens>
@@ -615,6 +815,13 @@
         <tables>
             <table name="t_double_test" />
         </tables>
+        <insert-columns-and-values column-names="col1">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="1.22"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_double_test" length="13" />
         </tokens>
@@ -627,6 +834,13 @@
         <tables>
             <table name="t_null_value_test" />
         </tables>
+        <insert-columns-and-values column-names="col1">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-literal="CommonExpressionSegment" text-for-literal="null"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_null_value_test" length="17" />
         </tokens>
@@ -639,6 +853,13 @@
         <tables>
             <table name="t_blob_value_test" />
         </tables>
+        <insert-columns-and-values column-names="col1">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-literal="CommonExpressionSegment" text-for-literal="_BINARY'This is a binary value.'"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_blob_value_test" length="17" />
         </tokens>
@@ -651,6 +872,15 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <insert-columns-and-values column-names="current_date,order_id,user_id">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-literal="CommonExpressionSegment" text-for-literal="curdate()"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="1000"/>
+                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="10"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
@@ -670,6 +900,16 @@
         <tables>
             <table name="emp" />
         </tables>
+        <insert-columns-and-values column-names="order_id,emp_id,age,salary">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="2"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="45"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="3" type-for-literal="LiteralExpressionSegment" text-for-literal="2000"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="emp" length="3" />
         </tokens>
@@ -695,6 +935,16 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <insert-columns-and-values column-names="status,order_id,user_id">
+            <insert-values>
+                <insert-value>
+                    <!-- FIXME  text-for-placeholder="unix_timestamp(?)" and text-for-literal="unix_timestamp(2019-10-19)" has problem -->
+                    <assignment type-for-placeholder="CommonExpressionSegment" text-for-placeholder="unix_timestamp(?)" type-for-literal="CommonExpressionSegment" text-for-literal="unix_timestamp(2019-10-19)"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="1000"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="10"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
@@ -717,6 +967,15 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <insert-columns-and-values column-names="order_id,user_id,count">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
@@ -736,6 +995,16 @@
         <tables>
             <table name="t_order" />
         </tables>
+        <insert-columns-and-values column-names="current_date,order_id,user_id">
+            <insert-values>
+                <insert-value>
+                    <!-- FIXME  text-for-placeholder="str_to_date(?,'%Y-%m-%d')" and text-for-literal="str_to_date(2019-12-10,'%Y-%m-%d') has problem -->
+                    <assignment type-for-placeholder="CommonExpressionSegment" text-for-placeholder="str_to_date(?,'%Y-%m-%d')" type-for-literal="CommonExpressionSegment" text-for-literal="str_to_date(2019-12-10,'%Y-%m-%d')"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="12" table-name="t_order" length="7" />
         </tokens>
@@ -773,11 +1042,20 @@
             </and-condition>
         </sharding-conditions>
     </parser-result>
-
+    
     <parser-result sql-case-id="insert_all_with_all_placeholders" parameters="1, 1, 'init', 1, 1, 'init', 1, 1, 'init'">
         <tables>
             <table name="t_order" />
         </tables>
+        <insert-columns-and-values>
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1" />
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="1" />
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="init" />
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
         <tokens>
             <table-token start-index="16" table-name="t_order" length="7" />
         </tokens>
