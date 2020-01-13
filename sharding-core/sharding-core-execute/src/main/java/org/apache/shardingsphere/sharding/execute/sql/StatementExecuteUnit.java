@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.execute.sql;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.underlying.route.RouteUnit;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 
 import java.sql.Statement;
 
@@ -34,7 +34,7 @@ import java.sql.Statement;
 @Getter
 public final class StatementExecuteUnit {
     
-    private final RouteUnit routeUnit;
+    private final ExecutionUnit executionUnit;
     
     private final Statement statement;
     

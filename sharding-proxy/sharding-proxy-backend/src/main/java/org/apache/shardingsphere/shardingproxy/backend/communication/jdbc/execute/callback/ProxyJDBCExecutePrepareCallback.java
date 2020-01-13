@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareCallback;
-import org.apache.shardingsphere.underlying.route.RouteUnit;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
@@ -57,8 +57,8 @@ public final class ProxyJDBCExecutePrepareCallback implements SQLExecutePrepareC
     }
     
     @Override
-    public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
-        Statement statement = jdbcExecutorWrapper.createStatement(connection, routeUnit.getSqlUnit(), isReturnGeneratedKeys);
+    public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final ExecutionUnit executionUnit, final ConnectionMode connectionMode) throws SQLException {
+        Statement statement = jdbcExecutorWrapper.createStatement(connection, executionUnit.getSqlUnit(), isReturnGeneratedKeys);
         if (connectionMode.equals(ConnectionMode.MEMORY_STRICTLY)) {
             if (LogicSchemas.getInstance().getDatabaseType() instanceof MySQLDatabaseType) {
                 statement.setFetchSize(MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME);
@@ -66,6 +66,6 @@ public final class ProxyJDBCExecutePrepareCallback implements SQLExecutePrepareC
                 statement.setFetchSize(POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME);
             }
         }
-        return new StatementExecuteUnit(routeUnit, statement, connectionMode);
+        return new StatementExecuteUnit(executionUnit, statement, connectionMode);
     }
 }

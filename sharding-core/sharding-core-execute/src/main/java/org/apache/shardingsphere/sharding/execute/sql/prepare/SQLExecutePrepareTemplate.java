@@ -22,8 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.route.RouteUnit;
-import org.apache.shardingsphere.underlying.route.SQLUnit;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -50,18 +50,18 @@ public final class SQLExecutePrepareTemplate {
     /**
      * Get execute unit groups.
      *
-     * @param routeUnits route units
+     * @param executionUnits execution units
      * @param callback SQL execute prepare callback
      * @return statement execute unit groups
      * @throws SQLException SQL exception
      */
-    public Collection<InputGroup<StatementExecuteUnit>> getExecuteUnitGroups(final Collection<RouteUnit> routeUnits, final SQLExecutePrepareCallback callback) throws SQLException {
-        return getSynchronizedExecuteUnitGroups(routeUnits, callback);
+    public Collection<InputGroup<StatementExecuteUnit>> getExecuteUnitGroups(final Collection<ExecutionUnit> executionUnits, final SQLExecutePrepareCallback callback) throws SQLException {
+        return getSynchronizedExecuteUnitGroups(executionUnits, callback);
     }
     
     private Collection<InputGroup<StatementExecuteUnit>> getSynchronizedExecuteUnitGroups(
-            final Collection<RouteUnit> routeUnits, final SQLExecutePrepareCallback callback) throws SQLException {
-        Map<String, List<SQLUnit>> sqlUnitGroups = getSQLUnitGroups(routeUnits);
+            final Collection<ExecutionUnit> executionUnits, final SQLExecutePrepareCallback callback) throws SQLException {
+        Map<String, List<SQLUnit>> sqlUnitGroups = getSQLUnitGroups(executionUnits);
         Collection<InputGroup<StatementExecuteUnit>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
             result.addAll(getSQLExecuteGroups(entry.getKey(), entry.getValue(), callback));
@@ -69,9 +69,9 @@ public final class SQLExecutePrepareTemplate {
         return result;
     }
     
-    private Map<String, List<SQLUnit>> getSQLUnitGroups(final Collection<RouteUnit> routeUnits) {
-        Map<String, List<SQLUnit>> result = new LinkedHashMap<>(routeUnits.size(), 1);
-        for (RouteUnit each : routeUnits) {
+    private Map<String, List<SQLUnit>> getSQLUnitGroups(final Collection<ExecutionUnit> executionUnits) {
+        Map<String, List<SQLUnit>> result = new LinkedHashMap<>(executionUnits.size(), 1);
+        for (ExecutionUnit each : executionUnits) {
             if (!result.containsKey(each.getDataSourceName())) {
                 result.put(each.getDataSourceName(), new LinkedList<SQLUnit>());
             }
@@ -98,7 +98,7 @@ public final class SQLExecutePrepareTemplate {
                                                                 final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final SQLExecutePrepareCallback callback) throws SQLException {
         List<StatementExecuteUnit> result = new LinkedList<>();
         for (SQLUnit each : sqlUnitGroup) {
-            result.add(callback.createStatementExecuteUnit(connection, new RouteUnit(dataSourceName, each), connectionMode));
+            result.add(callback.createStatementExecuteUnit(connection, new ExecutionUnit(dataSourceName, each), connectionMode));
         }
         return new InputGroup<>(result);
     }

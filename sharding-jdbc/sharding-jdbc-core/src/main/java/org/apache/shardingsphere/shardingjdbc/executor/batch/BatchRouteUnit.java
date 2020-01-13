@@ -23,7 +23,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.underlying.route.RouteUnit;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -38,11 +38,11 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(of = { "routeUnit" })
+@EqualsAndHashCode(of = { "executionUnit" })
 @ToString
 public final class BatchRouteUnit {
     
-    private final RouteUnit routeUnit;
+    private final ExecutionUnit executionUnit;
     
     private final Map<Integer, Integer> jdbcAndActualAddBatchCallTimesMap = new LinkedHashMap<>();
     
@@ -65,10 +65,10 @@ public final class BatchRouteUnit {
      */
     public List<List<Object>> getParameterSets() {
         List<List<Object>> result = new LinkedList<>();
-        if (routeUnit.getSqlUnit().getParameters().isEmpty() || 0 == actualCallAddBatchTimes) {
+        if (executionUnit.getSqlUnit().getParameters().isEmpty() || 0 == actualCallAddBatchTimes) {
             result.add(Collections.emptyList());
         } else {
-            result.addAll(Lists.partition(routeUnit.getSqlUnit().getParameters(), routeUnit.getSqlUnit().getParameters().size() / actualCallAddBatchTimes));
+            result.addAll(Lists.partition(executionUnit.getSqlUnit().getParameters(), executionUnit.getSqlUnit().getParameters().size() / actualCallAddBatchTimes));
         }
         return result;
     }

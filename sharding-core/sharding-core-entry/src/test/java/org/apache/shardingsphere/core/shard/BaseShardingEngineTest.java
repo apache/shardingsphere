@@ -20,16 +20,17 @@ package org.apache.shardingsphere.core.shard;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
+import org.apache.shardingsphere.underlying.route.context.RouteResult;
+import org.apache.shardingsphere.underlying.route.context.RouteUnit;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.underlying.route.RouteUnit;
-import org.apache.shardingsphere.core.route.ShardingRouteResult;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
-import org.apache.shardingsphere.core.route.type.RoutingResult;
-import org.apache.shardingsphere.core.route.type.RoutingUnit;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -53,20 +54,18 @@ public abstract class BaseShardingEngineTest {
         return new ShardingSphereProperties(result);
     }
     
-    protected final ShardingRouteResult createSQLRouteResult() {
-        ShardingRouteResult result = new ShardingRouteResult(new CommonSQLStatementContext(new DALStatement()), new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        RoutingResult routingResult = new RoutingResult();
-        routingResult.getRoutingUnits().add(new RoutingUnit("ds"));
-        result.setRoutingResult(routingResult);
-        return result;
+    protected final ShardingRouteContext createSQLRouteContext() {
+        RouteResult routeResult = new RouteResult();
+        routeResult.getRouteUnits().add(new RouteUnit("ds"));
+        return new ShardingRouteContext(new CommonSQLStatementContext(new DALStatement()), routeResult, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
     }
     
-    protected final void assertSQLRouteResult(final ShardingRouteResult actual) {
-        assertThat(actual.getRouteUnits().size(), is(1));
-        RouteUnit actualRouteUnit = actual.getRouteUnits().iterator().next();
-        assertThat(actualRouteUnit.getDataSourceName(), is("ds"));
-        assertThat(actualRouteUnit.getSqlUnit().getSql(), is(sql));
-        assertThat(actualRouteUnit.getSqlUnit().getParameters(), is(parameters));
+    protected final void assertExecutionContext(final ExecutionContext actual) {
+        assertThat(actual.getExecutionUnits().size(), is(1));
+        ExecutionUnit actualExecutionUnit = actual.getExecutionUnits().iterator().next();
+        assertThat(actualExecutionUnit.getDataSourceName(), is("ds"));
+        assertThat(actualExecutionUnit.getSqlUnit().getSql(), is(sql));
+        assertThat(actualExecutionUnit.getSqlUnit().getParameters(), is(parameters));
     }
     
     @Test

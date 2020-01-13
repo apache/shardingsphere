@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.core.shard;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.sharding.route.engine.ShardingRouter;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
-import org.apache.shardingsphere.sql.parser.SQLParseEngine;
-import org.apache.shardingsphere.core.route.StatementRoutingEngine;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 public final class SimpleQueryShardingEngineTest extends BaseShardingEngineTest {
     
     @Mock
-    private StatementRoutingEngine routingEngine;
+    private ShardingRouter shardingRouter;
     
     private SimpleQueryShardingEngine shardingEngine;
     
@@ -60,13 +60,13 @@ public final class SimpleQueryShardingEngineTest extends BaseShardingEngineTest 
     
     @SneakyThrows
     private void setRoutingEngine() {
-        Field field = SimpleQueryShardingEngine.class.getDeclaredField("routingEngine");
+        Field field = BaseShardingEngine.class.getDeclaredField("shardingRouter");
         field.setAccessible(true);
-        field.set(shardingEngine, routingEngine);
+        field.set(shardingEngine, shardingRouter);
     }
     
     protected void assertShard() {
-        when(routingEngine.route(getSql())).thenReturn(createSQLRouteResult());
-        assertSQLRouteResult(shardingEngine.shard(getSql(), getParameters()));
+        when(shardingRouter.route(getSql(), Collections.emptyList(), false)).thenReturn(createSQLRouteContext());
+        assertExecutionContext(shardingEngine.shard(getSql(), getParameters()));
     }
 }

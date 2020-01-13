@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.route.RouteResult;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.sharding.merge.ShardingResultMergerEngine;
@@ -84,27 +84,27 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     @Override
     public BackendResponse execute() {
         try {
-            RouteResult routeResult = executeEngine.getJdbcExecutorWrapper().route(sql);
-            return execute(routeResult);
+            ExecutionContext executionContext = executeEngine.getJdbcExecutorWrapper().route(sql);
+            return execute(executionContext);
         } catch (final SQLException ex) {
             return new ErrorResponse(ex);
         }
     }
     
-    private BackendResponse execute(final RouteResult routeResult) throws SQLException {
-        if (routeResult.getRouteUnits().isEmpty()) {
+    private BackendResponse execute(final ExecutionContext executionContext) throws SQLException {
+        if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponse();
         }
-        SQLStatementContext sqlStatementContext = routeResult.getSqlStatementContext();
+        SQLStatementContext sqlStatementContext = executionContext.getSqlStatementContext();
         if (isExecuteDDLInXATransaction(sqlStatementContext.getSqlStatement())) {
             return new ErrorResponse(new TableModifyInTransactionException(
                     sqlStatementContext.getTablesContext().isSingleTable() ? sqlStatementContext.getTablesContext().getSingleTableName() : "unknown_table"));
         }
-        response = executeEngine.execute(routeResult);
+        response = executeEngine.execute(executionContext);
         if (logicSchema instanceof ShardingSchema) {
-            logicSchema.refreshTableMetaData(routeResult.getSqlStatementContext());
+            logicSchema.refreshTableMetaData(executionContext.getSqlStatementContext());
         }
-        return merge(routeResult);
+        return merge(executionContext.getSqlStatementContext());
     }
     
     private boolean isExecuteDDLInXATransaction(final SQLStatement sqlStatement) {
@@ -112,18 +112,18 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return TransactionType.XA == connection.getTransactionType() && sqlStatement instanceof DDLStatement && ConnectionStatus.TRANSACTION == connection.getStateHandler().getStatus();
     }
     
-    private BackendResponse merge(final RouteResult routeResult) throws SQLException {
+    private BackendResponse merge(final SQLStatementContext sqlStatementContext) throws SQLException {
         if (response instanceof UpdateResponse) {
-            mergeUpdateCount(routeResult);
+            mergeUpdateCount(sqlStatementContext);
             return response;
         }
-        this.mergedResult = createMergedResult(routeResult, ((QueryResponse) response).getQueryResults());
-        handleColumnsForQueryHeader(routeResult);
+        this.mergedResult = createMergedResult(sqlStatementContext, ((QueryResponse) response).getQueryResults());
+        handleColumnsForQueryHeader(sqlStatementContext);
         return response;
     }
     
-    private void mergeUpdateCount(final RouteResult routeResult) {
-        if (!isAllBroadcastTables(routeResult.getSqlStatementContext())) {
+    private void mergeUpdateCount(final SQLStatementContext sqlStatementContext) {
+        if (!isAllBroadcastTables(sqlStatementContext)) {
             ((UpdateResponse) response).mergeUpdateCount();
         }
     }
@@ -132,7 +132,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return logicSchema instanceof ShardingSchema && logicSchema.getShardingRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames());
     }
     
-    private MergedResult createMergedResult(final RouteResult routeResult, final List<QueryResult> queryResults) throws SQLException {
+    private MergedResult createMergedResult(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         Map<BaseRule, ResultProcessEngine> engines = new HashMap<>(2, 1);
         engines.put(logicSchema.getShardingRule(), new ShardingResultMergerEngine());
         EncryptRule encryptRule = getEncryptRule();
@@ -141,12 +141,12 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
         MergeEntry mergeEntry = new MergeEntry(
                 LogicSchemas.getInstance().getDatabaseType(), logicSchema.getMetaData().getRelationMetas(), ShardingProxyContext.getInstance().getProperties(), engines);
-        return mergeEntry.process(queryResults, routeResult.getSqlStatementContext());
+        return mergeEntry.process(queryResults, sqlStatementContext);
     }
     
-    private void handleColumnsForQueryHeader(final RouteResult routeResult) {
+    private void handleColumnsForQueryHeader(final SQLStatementContext sqlStatementContext) {
         removeDerivedColumns();
-        removeAssistedQueryColumns(routeResult);
+        removeAssistedQueryColumns(sqlStatementContext);
         setLogicColumns();
     } 
     
@@ -161,10 +161,10 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         queryHeaders.removeAll(toRemove);
     }
     
-    private void removeAssistedQueryColumns(final RouteResult routeResult) {
+    private void removeAssistedQueryColumns(final SQLStatementContext sqlStatementContext) {
         List<QueryHeader> toRemove = new LinkedList<>();
         List<QueryHeader> queryHeaders = ((QueryResponse) response).getQueryHeaders();
-        Collection<String> assistedQueryColumns = getAssistedQueryColumns(routeResult);
+        Collection<String> assistedQueryColumns = getAssistedQueryColumns(sqlStatementContext);
         for (QueryHeader each : queryHeaders) {
             if (assistedQueryColumns.contains(each.getColumnName())) {
                 toRemove.add(each);
@@ -173,10 +173,10 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         queryHeaders.removeAll(toRemove);
     }
     
-    private Collection<String> getAssistedQueryColumns(final RouteResult routeResult) {
+    private Collection<String> getAssistedQueryColumns(final SQLStatementContext sqlStatementContext) {
         Collection<String> result = new LinkedList<>();
         EncryptRule encryptRule = getEncryptRule();
-        for (String each : routeResult.getSqlStatementContext().getTablesContext().getTableNames()) {
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             result.addAll(encryptRule.getAssistedQueryColumns(each));
         }
         return result;
