@@ -569,7 +569,7 @@ I will process to publish the release and send ANNOUNCE.
 ```shell
 svn mv https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION} https://dist.apache.org/repos/dist/release/incubator/shardingsphere/ -m "transfer packages for ${RELEASE.VERSION}"
 svn delete https://dist.apache.org/repos/dist/release/incubator/shardingsphere/KEYS -m "delete KEYS"
-svn mv https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/KEYS https://dist.apache.org/repos/dist/release/incubator/shardingsphere/ -m "transfer KEYS for ${RELEASE.VERSION}"
+svn cp https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/KEYS https://dist.apache.org/repos/dist/release/incubator/shardingsphere/ -m "transfer KEYS for ${RELEASE.VERSION}"
 ```
 
 2. 在Apache Staging仓库找到ShardingSphere并点击`Release`
