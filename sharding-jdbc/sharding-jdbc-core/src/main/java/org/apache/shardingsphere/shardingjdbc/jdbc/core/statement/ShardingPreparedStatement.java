@@ -238,10 +238,6 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         try {
             shard();
             batchPreparedStatementExecutor.addBatchForRouteUnits(shardingExecutionContext);
-            Optional<GeneratedKey> generatedKey = shardingExecutionContext.getGeneratedKey();
-            if (generatedKey.isPresent()) {
-                generatedValues.add(generatedKey.get().getGeneratedValues().getLast());
-            }
         } finally {
             currentResultSet = null;
             clearParameters();
@@ -250,6 +246,10 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private void shard() {
         shardingExecutionContext = (ShardingExecutionContext) shardingEngine.shard(sql, getParameters());
+        Optional<GeneratedKey> generatedKey = shardingExecutionContext.getGeneratedKey();
+        if (generatedKey.isPresent()) {
+            generatedValues.add(generatedKey.get().getGeneratedValues().getLast());
+        }
     }
     
     @Override
