@@ -541,6 +541,12 @@ The following votes are carried over from ShardingSphere dev mailing list,
 
 **注意：计算投票结果时，社区投票结果也需要包含在内。**
 
+标题：
+
+```
+[RESULT][VOTE] Release Apache ShardingSphere (Incubating) ${RELEASE.VERSION}
+```
+
 正文：
 
 ```
