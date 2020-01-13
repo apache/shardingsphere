@@ -38,7 +38,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class ShardingParameterizedParsingTest {
+public final class ParameterizedParsingTest {
     
     private static SQLCasesLoader sqlCasesLoader = SQLCasesRegistry.getInstance().getSqlCasesLoader();
     
