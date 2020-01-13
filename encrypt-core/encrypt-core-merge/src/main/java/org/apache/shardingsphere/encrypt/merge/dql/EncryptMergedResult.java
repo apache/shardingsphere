@@ -44,15 +44,15 @@ public final class EncryptMergedResult implements MergedResult {
     public boolean next() throws SQLException {
         return mergedResult.next();
     }
-    
+
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        Object value = mergedResult.getValue(columnIndex, type);
-        if (null == value || !queryWithCipherColumn) {
-            return value;
+        Optional<Encryptor> encryptor;
+        if (!queryWithCipherColumn || !(encryptor = metaData.findEncryptor(columnIndex)).isPresent()) {
+            return mergedResult.getValue(columnIndex, type);
         }
-        Optional<Encryptor> encryptor = metaData.findEncryptor(columnIndex);
-        return encryptor.isPresent() ? encryptor.get().decrypt(value.toString()) : value;
+        String ciphertext = (String) mergedResult.getValue(columnIndex, String.class);
+        return null == ciphertext ? null : encryptor.get().decrypt(ciphertext);
     }
     
     @Override
