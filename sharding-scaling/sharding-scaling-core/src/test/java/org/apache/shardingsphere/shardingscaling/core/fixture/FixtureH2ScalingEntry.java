@@ -48,7 +48,7 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
 
     @Override
     public Class<? extends DatasourceChecker> getCheckerClass() {
-        return null;
+        return FixtureH2DatasourceChecker.class;
     }
 
     @Override
