@@ -24,7 +24,7 @@ import java.util.List;
  *
  * @author yangyi
  */
-public interface SyncProcessGroup extends SyncProgress {
+public interface SyncProgressGroup extends SyncProgress {
     
     /**
      * Get all sync progress in group.

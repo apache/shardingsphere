@@ -31,10 +31,10 @@ import java.util.Collection;
  *
  * @author ssxlulu
  */
-public class MySQLDatasourceChecker extends AbstractDatasourceChecker {
+public final class MySQLDatasourceChecker extends AbstractDatasourceChecker {
 
     @Override
-    public final void checkPrivilege(final Collection<DataSource> dataSources) {
+    public void checkPrivilege(final Collection<DataSource> dataSources) {
         try {
             for (DataSource dataSource : dataSources) {
                 String tableName;

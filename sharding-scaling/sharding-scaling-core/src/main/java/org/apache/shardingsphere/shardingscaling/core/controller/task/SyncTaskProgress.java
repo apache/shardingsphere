@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.core.controller.task;
 
-import org.apache.shardingsphere.shardingscaling.core.controller.SyncProcessGroup;
+import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgressGroup;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 
 import java.util.LinkedList;
@@ -51,8 +51,8 @@ public final class SyncTaskProgress implements SyncProgress {
      * @param historySyncTaskProgress history sync task progress
      */
     public void setHistorySyncTaskProgress(final SyncProgress historySyncTaskProgress) {
-        if (historySyncTaskProgress instanceof SyncProcessGroup) {
-            this.historySyncTaskProgress.addAll(((SyncProcessGroup) historySyncTaskProgress).getSyncProgresses());
+        if (historySyncTaskProgress instanceof SyncProgressGroup) {
+            this.historySyncTaskProgress.addAll(((SyncProgressGroup) historySyncTaskProgress).getSyncProgresses());
         } else {
             this.historySyncTaskProgress.add(historySyncTaskProgress);
         }
