@@ -148,7 +148,7 @@ public abstract class BaseShardingEngine {
     private Map<BaseRule, SQLRewriteContextDecorator> createSQLRewriteContextDecorator(final ShardingRouteContext shardingRouteContext) {
         Map<BaseRule, SQLRewriteContextDecorator> result = new LinkedHashMap<>(2, 1);
         result.put(shardingRule, new ShardingSQLRewriteContextDecorator(shardingRouteContext));
-        if (shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
+        if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
             result.put(shardingRule.getEncryptRule(), new EncryptSQLRewriteContextDecorator());
         }
         return result;
