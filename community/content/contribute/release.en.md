@@ -549,6 +549,12 @@ The following votes are carried over from ShardingSphere dev mailing list,
 
 **Notice: Please include the votes from ShardingSphere community above.**
 
+Title：
+
+```
+[RESULT][VOTE] Release Apache ShardingSphere (Incubating) ${RELEASE.VERSION}
+```
+
 Body:
 
 ```
