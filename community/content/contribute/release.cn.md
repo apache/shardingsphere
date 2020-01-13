@@ -564,7 +564,7 @@ I will process to publish the release and send ANNOUNCE.
 
 ## 完成发布
 
-1. 将源码、二进制包以及KEYS从svn的dev目录移动到release目录
+### 将源码、二进制包以及KEYS从svn的dev目录移动到release目录
 
 ```shell
 svn mv https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION} https://dist.apache.org/repos/dist/release/incubator/shardingsphere/ -m "transfer packages for ${RELEASE.VERSION}"
@@ -572,9 +572,9 @@ svn delete https://dist.apache.org/repos/dist/release/incubator/shardingsphere/K
 svn cp https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/KEYS https://dist.apache.org/repos/dist/release/incubator/shardingsphere/ -m "transfer KEYS for ${RELEASE.VERSION}"
 ```
 
-2. 在Apache Staging仓库找到ShardingSphere并点击`Release`
+### 在Apache Staging仓库找到ShardingSphere并点击`Release`
 
-3. 合并Github的release分支到`dev`, 合并完成后删除release分支
+### 合并Github的release分支到`dev`, 合并完成后删除release分支
 
 ```shell
 git checkout dev
@@ -583,51 +583,55 @@ git push
 git push --delete origin ${RELEASE.VERSION}-release
 ```
 
-4. 更新下载页面
+### 更新下载页面
 
-```
 https://shardingsphere.apache.org/document/current/en/downloads/
-https://shardingsphere.apache.org/document/current/cn/downloads/
-```
 
-5. 修改READEME文件
+https://shardingsphere.apache.org/document/current/cn/downloads/
+
+### 修改READEME文件
 
 将README.md和README_ZH.md里的${PREVIOUS.RELEASE.VERSION}修改为${LATEST.RELEASE.VERSION}
 
-6. 发布Docker
+### 发布Docker
 
-```
-0 准备工作
-0.1 本地安装Docker，并将Docker service启动起来
-0.2 进入到 ~/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/src/main/docker/
-vim Dockerfile，将`ENV CURRENT_VERSION `${LEGACY.RELEASE.VERSION}` 改为 `${LATEST.RELEASE.VERSION}`
-```
+#### 准备工作
 
-```
-1 编译Docker Image
-1.1 进入到 ~/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/
-1.2 执行 `mvn clean package docker:build`
+本地安装Docker，并将Docker service启动起来
+
+```shell
+cd ~/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/src/main/docker/
+vim Dockerfile  # 将`ENV CURRENT_VERSION `${LEGACY.RELEASE.VERSION}` 改为 `${LATEST.RELEASE.VERSION}`
 ```
 
-```
-2 给本地Docker Image打上Tag
-2.1 通过`docker images`查看到IMAGE ID，例如为：e9ea51023687
-2.2 执行`docker tag e9ea51023687 apache/sharding-proxy:latest`
-2.3 执行`docker tag e9ea51023687 apache/sharding-proxy:${LATEST.RELEASE.VERSION}`
+#### 编译Docker Image
+
+```shell
+cd ~/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/
+mvn clean package docker:build
 ```
 
-```
-3 发布Docker Image
-3.1 执行`docker push apache/sharding-proxy:latest`
-3.2 执行`docker push apache/sharding-proxy:${RELEASE_VERSION}`
+#### 给本地Docker Image打上Tag
+
+通过`docker images`查看到IMAGE ID，例如为：e9ea51023687
+
+```shell
+docker tag e9ea51023687 apache/sharding-proxy:latest
+docker tag e9ea51023687 apache/sharding-proxy:${LATEST.RELEASE.VERSION}
 ```
 
-```
-4 确认发布成功
-4.1 登录[Docker Hub](https://hub.docker.com/r/apache/sharding-proxy/)查看是否有发布的Images
+#### 发布Docker Image
+
+```shell
+docker push apache/sharding-proxy:latest
+docker push apache/sharding-proxy:${RELEASE_VERSION}
 ```
 
-7. 发送邮件到`general@incubator.apache.org`和`dev@shardingsphere.apache.org`通知完成版本发布。
+#### 确认发布成功
+
+登录[Docker Hub](https://hub.docker.com/r/apache/sharding-proxy/)查看是否有发布的Images
+
+### 发送邮件到`general@incubator.apache.org`和`dev@shardingsphere.apache.org`通知完成版本发布
 
 通知邮件模板：
 
@@ -676,3 +680,7 @@ While incubation status is not necessarily a reflection of the completeness or s
 it does indicate that the project has yet to be fully endorsed by the ASF.
 
 ```
+
+### 为ShardingSphere的Example项目打Tag
+
+https://github.com/apache/incubator-shardingsphere-example
