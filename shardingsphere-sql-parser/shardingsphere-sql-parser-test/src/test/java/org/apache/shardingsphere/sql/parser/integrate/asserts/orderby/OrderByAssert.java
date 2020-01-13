@@ -46,7 +46,7 @@ public final class OrderByAssert {
      * @param expected expected order by items
      */
     public void assertOrderByItems(final Collection<OrderByItemSegment> actual, final List<ExpectedOrderByColumn> expected) {
-        assertThat(assertMessage.getFullAssertMessage("Order by items size error: "), actual.size(), is(expected.size()));
+        assertThat(assertMessage.getText("Order by items size error: "), actual.size(), is(expected.size()));
         int count = 0;
         for (OrderByItemSegment each : actual) {
             if (each instanceof ColumnOrderByItemSegment) {
@@ -57,10 +57,10 @@ public final class OrderByAssert {
     }
     
     private void assertOrderByItem(final ColumnOrderByItemSegment actual, final ExpectedOrderByColumn expected) {
-        assertThat(assertMessage.getFullAssertMessage("Order by item owner assertion error: "),
+        assertThat(assertMessage.getText("Order by item owner assertion error: "),
                 actual.getColumn().getOwner().isPresent() ? actual.getColumn().getOwner().get().getTableName() : null, is(expected.getOwner()));
-        assertThat(assertMessage.getFullAssertMessage("Order by item name assertion error: "), actual.getColumn().getName(), is(expected.getName()));
-        assertThat(assertMessage.getFullAssertMessage("Order by item order direction assertion error: "), actual.getOrderDirection().name(), is(expected.getOrderDirection()));
+        assertThat(assertMessage.getText("Order by item name assertion error: "), actual.getColumn().getName(), is(expected.getName()));
+        assertThat(assertMessage.getText("Order by item order direction assertion error: "), actual.getOrderDirection().name(), is(expected.getOrderDirection()));
         // TODO assert nullOrderDirection
     }
 }

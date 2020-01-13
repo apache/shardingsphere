@@ -43,12 +43,12 @@ public final class SQLStatementAssertMessage {
     private final ParserResultSetRegistry parserResultSetRegistry = ParserResultSetRegistryFactory.getInstance().getRegistry();
     
     /**
-     * Get full assert message.
+     * Get message text.
      * 
-     * @param assertMessage assert message
-     * @return full assert message
+     * @param assertFailureMessage assert failure message
+     * @return message text
      */
-    public String getFullAssertMessage(final String assertMessage) {
+    public String getText(final String assertFailureMessage) {
         StringBuilder result = new StringBuilder(System.getProperty("line.separator"));
         result.append("SQL Case ID : ");
         result.append(sqlCaseId);
@@ -64,7 +64,7 @@ public final class SQLStatementAssertMessage {
             result.append(sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters()));
         }
         result.append(System.getProperty("line.separator"));
-        result.append(assertMessage);
+        result.append(assertFailureMessage);
         result.append(System.getProperty("line.separator"));
         return result.toString();
     }
