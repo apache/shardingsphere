@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.engine.sharding;
+package org.apache.shardingsphere.sql.parser.integrate.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistry;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.ShardingParserResultSetRegistry;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistryFactory;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
@@ -38,11 +38,11 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class ParameterizedParsingTest {
+public final class SQLParserParameterizedTest {
     
     private static SQLCasesLoader sqlCasesLoader = SQLCasesRegistry.getInstance().getSqlCasesLoader();
     
-    private static ParserResultSetRegistry parserResultSetRegistry = ShardingParserResultSetRegistry.getInstance().getRegistry();
+    private static ParserResultSetRegistry parserResultSetRegistry = ParserResultSetRegistryFactory.getInstance().getRegistry();
     
     private final String sqlCaseId;
     

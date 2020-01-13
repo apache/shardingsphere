@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.engine.sharding;
+package org.apache.shardingsphere.sql.parser.integrate.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
@@ -33,7 +33,7 @@ import java.util.Collections;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class ParameterizedUnsupportedParsingTest {
+public final class UnsupportedSQLParserParameterizedTest {
     
     private static SQLCasesLoader sqlCasesLoader = UnsupportedSQLCasesRegistry.getInstance().getSqlCasesLoader();
     

@@ -20,23 +20,23 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb;
 import lombok.Getter;
 
 /**
- * Sharding parser result set registry.
+ * Parser result set registry factory.
  *
  * @author zhangliang
  */
-public final class ShardingParserResultSetRegistry {
+public final class ParserResultSetRegistryFactory {
     
-    private static final ShardingParserResultSetRegistry INSTANCE = new ShardingParserResultSetRegistry();
+    private static final ParserResultSetRegistryFactory INSTANCE = new ParserResultSetRegistryFactory();
     
     @Getter
-    private final ParserResultSetRegistry registry = new ParserResultSetRegistry("sharding/");
+    private final ParserResultSetRegistry registry = new ParserResultSetRegistry("sql/");
     
     /**
      * Get singleton instance.
      *
      * @return singleton instance
      */
-    public static ShardingParserResultSetRegistry getInstance() {
+    public static ParserResultSetRegistryFactory getInstance() {
         return INSTANCE;
     }
 }
