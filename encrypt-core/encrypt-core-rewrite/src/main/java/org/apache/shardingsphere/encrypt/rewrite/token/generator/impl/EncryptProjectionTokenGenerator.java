@@ -34,6 +34,8 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.Subst
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Projection token generator for encrypt.
@@ -59,14 +61,22 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         Optional<SelectItemsSegment> selectItemsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(SelectItemsSegment.class);
         Preconditions.checkState(selectItemsSegment.isPresent());
-        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
-        if (!encryptTable.isPresent()) {
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        Map<String,EncryptTable> encryptTableMap=new HashMap<>();
+        for(String tableName:tableNames){
+            Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
+            if(encryptTable.isPresent()){
+                encryptTableMap.put(tableName,encryptTable.get());
+            }
+        }
+        if (encryptTableMap.isEmpty()) {
             return Collections.emptyList();
         }
         for (SelectItemSegment each : selectItemsSegment.get().getSelectItems()) {
-            if (isEncryptLogicColumn(each, encryptTable.get())) {
-                result.add(generateSQLToken((ColumnSelectItemSegment) each, tableName));
+            for(Map.Entry<String, EncryptTable> encryptTableEntry:encryptTableMap.entrySet()){
+                if (isEncryptLogicColumn(each, encryptTableEntry.getValue())) {
+                    result.add(generateSQLToken((ColumnSelectItemSegment) each, encryptTableEntry.getKey()));
+                }
             }
         }
         return result;
