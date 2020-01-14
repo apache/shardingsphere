@@ -954,7 +954,7 @@
         <tables>
             <table name="t_order" start-index="16" stop-index="22" />
         </tables>
-        <insert-columns-and-values>
+        <insert-columns-and-values column-names="order_id,user_id,status">
             <insert-values>
                 <insert-value>
                     <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1" />
