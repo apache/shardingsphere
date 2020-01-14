@@ -19,13 +19,9 @@
 <parser-result-sets>
     <parser-result sql-case-id="select_pagination_with_offset" parameters="1, 2, 9, 10, 5">
         <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
+            <table name="t_order" alias="o" start-index="16" stop-index="22" />
+            <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
         </tables>
-        <tokens>
-            <table-token start-index="16" table-name="t_order" length="7" />
-            <table-token start-index="31" table-name="t_order_item" length="12" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -53,13 +49,9 @@
     
     <parser-result sql-case-id="select_pagination_with_row_count" parameters="1, 2, 9, 10, 5">
         <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
+            <table name="t_order" alias="o" start-index="16" stop-index="22" />
+            <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
         </tables>
-        <tokens>
-            <table-token start-index="16" table-name="t_order" length="7" />
-            <table-token start-index="31" table-name="t_order_item" length="12" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -87,13 +79,9 @@
     
     <parser-result sql-case-id="select_pagination_with_limit_with_back_quotes" parameters="1, 2, 9, 10, 5, 3">
         <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
+            <table name="t_order" alias="o" start-index="16" stop-index="24" />
+            <table name="t_order_item" alias="i" start-index="33" stop-index="46" />
         </tables>
-        <tokens>
-            <table-token start-index="16" table-name="t_order" left-delimiter="`" right-delimiter="`" length="9" />
-            <table-token start-index="33" table-name="t_order_item" left-delimiter="`" right-delimiter="`" length="14" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -122,13 +110,9 @@
     
     <parser-result sql-case-id="select_pagination_with_limit_and_offset_keyword" parameters="1, 2, 9, 10, 3, 5">
         <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
+            <table name="t_order" alias="o" start-index="16" stop-index="24" />
+            <table name="t_order_item" alias="i" start-index="33" stop-index="46" />
         </tables>
-        <tokens>
-            <table-token start-index="16" table-name="t_order" left-delimiter="`" right-delimiter="`" length="9" />
-            <table-token start-index="33" table-name="t_order_item" left-delimiter="`" right-delimiter="`" length="14" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -157,13 +141,9 @@
     
     <parser-result sql-case-id="select_pagination_with_top" parameters="3, 1, 2, 9, 10">
         <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
+            <table name="t_order" alias="o" start-index="167" stop-index="173" />
+            <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
         </tables>
-        <tokens>
-            <table-token start-index="167" table-name="t_order" length="7" />
-            <table-token start-index="182" table-name="t_order_item" length="12" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -197,13 +177,9 @@
     
     <parser-result sql-case-id="select_pagination_with_offset_and_limit" parameters="1, 2, 9, 10, 5, 3">
         <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
+            <table name="t_order" alias="o" start-index="16" stop-index="22" />
+            <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
         </tables>
-        <tokens>
-            <table-token start-index="16" table-name="t_order" length="7" />
-            <table-token start-index="31" table-name="t_order_item" length="12" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -232,13 +208,9 @@
     
     <parser-result sql-case-id="select_pagination_with_top_for_greater_than" parameters="3, 1, 2, 9, 10, 6">
         <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
+            <table name="t_order" alias="o" start-index="167" stop-index="173" />
+            <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
         </tables>
-        <tokens>
-            <table-token start-index="167" table-name="t_order" length="7" />
-            <table-token start-index="182" table-name="t_order_item" length="12" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -272,13 +244,9 @@
     
     <parser-result sql-case-id="select_pagination_with_top_for_greater_than_and_equal" parameters="3, 1, 2, 9, 10, 6">
         <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
+            <table name="t_order" alias="o" start-index="167" stop-index="173" />
+            <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
         </tables>
-        <tokens>
-            <table-token start-index="167" table-name="t_order" length="7" />
-            <table-token start-index="182" table-name="t_order_item" length="12" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -312,13 +280,9 @@
     
     <parser-result sql-case-id="select_pagination_with_row_number" parameters="1, 2, 9, 10, 3">
         <tables>
-            <table name="t_order" alias="order0_" />
-            <table name="t_order_item" alias="i" />
+            <table name="t_order" alias="order0_" start-index="146" stop-index="152" />
+            <table name="t_order_item" alias="i" start-index="167" stop-index="178" />
         </tables>
-        <tokens>
-            <table-token start-index="146" table-name="t_order" length="7" />
-            <table-token start-index="167" table-name="t_order_item" length="12" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -352,13 +316,9 @@
     
     <parser-result sql-case-id="select_pagination_with_row_number_for_greater_than" parameters="1, 2, 9, 10, 5, 3">
         <tables>
-            <table name="t_order" alias="order0_" />
-            <table name="t_order_item" alias="i" />
+            <table name="t_order" alias="order0_" start-index="146" stop-index="152" />
+            <table name="t_order_item" alias="i" start-index="167" stop-index="178" />
         </tables>
-        <tokens>
-            <table-token start-index="146" table-name="t_order" length="7" />
-            <table-token start-index="167" table-name="t_order_item" length="12" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -393,13 +353,9 @@
     
     <parser-result sql-case-id="select_pagination_with_row_number_for_greater_than_and_equal" parameters="1, 2, 9, 10, 5, 3">
         <tables>
-            <table name="t_order" alias="order0_" />
-            <table name="t_order_item" alias="i" />
+            <table name="t_order" alias="order0_" start-index="146" stop-index="152" />
+            <table name="t_order_item" alias="i" start-index="167" stop-index="178" />
         </tables>
-        <tokens>
-            <table-token start-index="146" table-name="t_order" length="7" />
-            <table-token start-index="167" table-name="t_order_item" length="12" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -434,11 +390,8 @@
     
     <parser-result sql-case-id="select_pagination_with_row_number_not_at_end" parameters="20">
         <tables>
-            <table name="t_order"/>
+            <table name="t_order" start-index="14" stop-index="20" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="7">
             <shorthand-select-items>
                 <shorthand-select-item start-index="7" stop-index="7" text="*" />
@@ -449,14 +402,11 @@
         </order-by-columns>
         <row-count value="20" parameter-index="0" />
     </parser-result>
-
+    
     <parser-result sql-case-id="select_pagination_with_offset_fetch" parameters="20">
         <tables>
-            <table name="t_order"/>
+            <table name="t_order" start-index="14" stop-index="20" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="7">
             <shorthand-select-items>
                 <shorthand-select-item start-index="7" stop-index="7" text="*" />

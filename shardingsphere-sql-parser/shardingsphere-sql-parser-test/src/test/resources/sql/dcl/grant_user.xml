@@ -19,205 +19,154 @@
 <parser-result-sets>
     <parser-result sql-case-id="grant_user_without_hostname">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="40" stop-index="46" />
         </tables>
-        <tokens>
-            <table-token start-index="40" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
+    
     <parser-result sql-case-id="grant_user_with_grant">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="40" stop-index="46" />
         </tables>
-        <tokens>
-            <table-token start-index="40" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
+    
     <parser-result sql-case-id="grant_role" />
     <parser-result sql-case-id="grant_user_with_admin" />
     <parser-result sql-case-id="grant_user_on_db" />
+    
     <parser-result sql-case-id="grant_user_on_table">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="13" stop-index="19" />
         </tables>
-        <tokens>
-            <table-token start-index="13" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
+    
     <parser-result sql-case-id="grant_user_on_db_and_table">
         <tables>
-            <table name="t_order" />
+            <!--  TODO should be 25, because table name should start from real table name, not start from schema name. Need change ID definition of g4 -->
+            <table name="t_order" start-index="13" stop-index="31" />
         </tables>
-        <tokens>
-            <!--  TODO should be 25, because table name should start from real table name, not start from schema name. Need change ID definition of g4
-            <table-token start-index="25" table-name="t_order" length="19" />
-            -->
-            <table-token start-index="13" table-name="t_order" length="19" />
-        </tokens>
     </parser-result>
+    
     <parser-result sql-case-id="grant_user_with_hostname">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="24" stop-index="30" />
         </tables>
-        <tokens>
-            <table-token start-index="24" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
+    
     <parser-result sql-case-id="grant_select" />
+    
     <parser-result sql-case-id="grant_select_column">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="27" stop-index="38" />
         </tables>
-        <tokens>
-            <table-token start-index="27" table-name="t_order" length="12" />
-        </tokens>
     </parser-result>
+    
     <parser-result sql-case-id="grant_select_to_local_user" />
     <parser-result sql-case-id="grant_crud" />
     <parser-result sql-case-id="grant_all" />
     <parser-result sql-case-id="grant_all_on_schema" />
+    
     <parser-result sql-case-id="grant_all_on_table">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="24" stop-index="35" />
         </tables>
-        <tokens>
-            <table-token start-index="24" table-name="t_order" length="12" />
-        </tokens>
     </parser-result>
+    
     <parser-result sql-case-id="grant_role_to_user" />
     <parser-result sql-case-id="grant_roles_to_users" />
     <parser-result sql-case-id="grant_system_privilege" />
     <parser-result sql-case-id="grant_system_privileges" />
     <parser-result sql-case-id="grant_all_system_privileges" />
     <parser-result sql-case-id="grant_system_privilege_to_users" />
+    
     <parser-result sql-case-id="grant_object_privilege">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="16" stop-index="27" />
         </tables>
-        <tokens>
-            <table-token start-index="16" table-name="t_order" length="12" />
-        </tokens>
     </parser-result>
+    
     <parser-result sql-case-id="grant_object_privileges">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="40" stop-index="51" />
         </tables>
-        <tokens>
-            <table-token start-index="40" table-name="t_order" length="12" />
-        </tokens>
     </parser-result>
+    
     <parser-result sql-case-id="grant_all_object_privileges">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="24" stop-index="35" />
         </tables>
-        <tokens>
-            <table-token start-index="24" table-name="t_order" length="12" />
-        </tokens>
     </parser-result>
+    
     <parser-result sql-case-id="grant_object_privilege_to_users">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="16" stop-index="27" />
         </tables>
-        <tokens>
-            <table-token start-index="16" table-name="t_order" length="12" />
-        </tokens>
     </parser-result>
+    
     <parser-result sql-case-id="grant_object_privilege_column">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="27" stop-index="38" />
         </tables>
-        <tokens>
-            <table-token start-index="27" table-name="t_order" length="12" />
-        </tokens>
     </parser-result>
+    
     <parser-result sql-case-id="grant_program" />
     <parser-result sql-case-id="grant_roles_to_programs" />
     
     <parser-result sql-case-id="grant_all_on_table_to_roles">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="30" stop-index="36" />
         </tables>
-        <tokens>
-            <table-token start-index="30" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="grant_all_on_table_to_current_user">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="30" stop-index="36" />
         </tables>
-        <tokens>
-            <table-token start-index="30" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="grant_select_on_table">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="22" stop-index="28" />
         </tables>
-        <tokens>
-            <table-token start-index="22" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="grant_select_on_tables">
         <tables>
-            <table name="t_order" />
-            <table name="t_order_item" />
+            <table name="t_order" start-index="22" stop-index="28" />
+            <table name="t_order_item" start-index="31" stop-index="42" />
         </tables>
-        <tokens>
-            <table-token start-index="22" table-name="t_order" length="7" />
-            <table-token start-index="31" table-name="t_order_item" length="12" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="grant_select_on_all_tables"/>
     
     <parser-result sql-case-id="grant_all_column_on_table">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="41" stop-index="47" />
         </tables>
-        <tokens>
-            <table-token start-index="41" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="grant_all_column_on_table_to_roles">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="41" stop-index="47" />
         </tables>
-        <tokens>
-            <table-token start-index="41" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="grant_all_column_on_table_to_current_user">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="41" stop-index="47" />
         </tables>
-        <tokens>
-            <table-token start-index="41" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="grant_select_column_on_table">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="33" stop-index="39" />
         </tables>
-        <tokens>
-            <table-token start-index="33" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="grant_select_column_on_tables">
         <tables>
-            <table name="t_order" />
-            <table name="t_order_item" />
+            <table name="t_order" start-index="33" stop-index="39" />
+            <table name="t_order_item" start-index="42" stop-index="53" />
         </tables>
-        <tokens>
-            <table-token start-index="33" table-name="t_order" length="7" />
-            <table-token start-index="42" table-name="t_order_item" length="12" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="grant_all_on_sequence" />
@@ -281,19 +230,13 @@
     
     <parser-result sql-case-id="grant_select_on_table">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="16" stop-index="22" />
         </tables>
-        <tokens>
-            <table-token start-index="16" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="grant_select_to_users">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="27" stop-index="33" />
         </tables>
-        <tokens>
-            <table-token start-index="27" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
 </parser-result-sets>

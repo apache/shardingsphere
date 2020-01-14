@@ -19,11 +19,8 @@
 <parser-result-sets>
     <parser-result sql-case-id="select_with_expression">
         <tables>
-            <table name="t_order" alias="o"/>
+            <table name="t_order" alias="o" start-index="38" stop-index="44" />
         </tables>
-        <tokens>
-            <table-token start-index="38" table-name="t_order" length="7" />
-        </tokens>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
@@ -36,11 +33,8 @@
     
     <parser-result sql-case-id="select_with_date_function">
         <tables>
-            <table name="t_order_item" alias="i"/>
+            <table name="t_order_item" alias="i" start-index="51" stop-index="64" />
         </tables>
-        <tokens>
-            <table-token start-index="51" table-name="t_order_item" left-delimiter="`" right-delimiter="`" length="14" />
-        </tokens>
         <order-by-columns>
             <order-by-column name="DATE(i.creation_date)" order-direction="DESC" />
         </order-by-columns>
@@ -53,11 +47,8 @@
     
     <parser-result sql-case-id="select_with_regexp" parameters="'init', 1, 2">
         <tables>
-            <table name="t_order_item" alias="t"/>
+            <table name="t_order_item" alias="t" start-index="14" stop-index="25" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order_item" length="12" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="item_id" table-name="t_order_item" operator="IN">
