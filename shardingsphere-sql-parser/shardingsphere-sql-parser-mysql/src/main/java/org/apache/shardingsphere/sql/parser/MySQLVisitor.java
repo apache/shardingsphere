@@ -19,12 +19,17 @@ package org.apache.shardingsphere.sql.parser;
 
 import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SchemaNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowLikeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StringLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnreservedWord_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromSchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
@@ -36,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
  */
 public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
+    // DAL
     @Override
     public ASTNode visitUse(final UseContext ctx) {
         LiteralValue schema = (LiteralValue) visit(ctx.schemaName());
@@ -46,12 +52,40 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     
     @Override
     public ASTNode visitShowTableStatus(final ShowTableStatusContext ctx) {
-        return new ShowTableStatusStatement();
+        ShowTableStatusStatement showTableStatusStatement = new ShowTableStatusStatement();
+        FromSchemaContext fromSchemaContext = ctx.fromSchema();
+        ShowLikeContext showLikeContext = ctx.showLike();
+        if (null != fromSchemaContext) {
+            FromSchemaSegment fromSchemaSegment = (FromSchemaSegment) visit(ctx.fromSchema());
+            showTableStatusStatement.getAllSQLSegments().add(fromSchemaSegment);
+        }
+        if (null != showLikeContext) {
+            ShowLikeSegment showLikeSegment = (ShowLikeSegment) visit(ctx.showLike());
+            showTableStatusStatement.getAllSQLSegments().add(showLikeSegment);
+        }
+        return showTableStatusStatement;
     }
     
     @Override
+    public ASTNode visitFromSchema(final FromSchemaContext ctx) {
+        return new FromSchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+    }
+    
+    @Override
+    public ASTNode visitShowLike(final ShowLikeContext ctx) {
+        LiteralValue literalValue = (LiteralValue) visit(ctx.stringLiterals());
+        return new ShowLikeSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), literalValue.getLiteral());
+    }
+    
+    // BaseRule
+    @Override
     public ASTNode visitSchemaName(final SchemaNameContext ctx) {
         return visit(ctx.identifier());
+    }
+    
+    @Override
+    public ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
+        return new LiteralValue(ctx.STRING_().getText());
     }
     
     @Override
