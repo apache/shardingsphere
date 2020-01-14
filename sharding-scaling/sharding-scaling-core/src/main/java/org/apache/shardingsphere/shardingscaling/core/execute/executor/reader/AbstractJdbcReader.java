@@ -74,8 +74,7 @@ public abstract class AbstractJdbcReader extends AbstractSyncRunner implements J
     public final void read(final Channel channel) {
         try (Connection conn = dataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()).getConnection()) {
             String sql = String.format("select * from %s %s", rdbmsConfiguration.getTableName(), rdbmsConfiguration.getWhereCondition());
-            PreparedStatement ps = conn.prepareStatement(sql, java.sql.ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            ps.setFetchSize(Integer.MIN_VALUE);
+            PreparedStatement ps = createPreparedStatement(conn, sql);
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData metaData = rs.getMetaData();
             while (isRunning() && rs.next()) {
@@ -93,6 +92,8 @@ public abstract class AbstractJdbcReader extends AbstractSyncRunner implements J
             pushRecord(new FinishedRecord(new NopLogPosition()));
         }
     }
+    
+    protected abstract PreparedStatement createPreparedStatement(Connection conn, String sql) throws SQLException;
     
     /**
      * Read value from {@code ResultSet}.

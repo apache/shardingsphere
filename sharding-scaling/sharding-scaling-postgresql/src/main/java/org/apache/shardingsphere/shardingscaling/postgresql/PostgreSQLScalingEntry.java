@@ -43,7 +43,7 @@ public final class PostgreSQLScalingEntry implements ScalingEntry {
 
     @Override
     public Class<? extends LogPositionManager> getLogPositionManager() {
-        throw new UnsupportedOperationException();
+        return PostgreSQLLogPositionManager.class;
     }
 
     @Override
@@ -53,7 +53,7 @@ public final class PostgreSQLScalingEntry implements ScalingEntry {
 
     @Override
     public Class<? extends DatasourceChecker> getCheckerClass() {
-        return null;
+        return PostgreSQLDatasourceChecker.class;
     }
 
     @Override
