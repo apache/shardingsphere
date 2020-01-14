@@ -75,9 +75,7 @@ public final class SQLStatementAssert {
     
     private final InsertNamesAndValuesAssert insertNamesAndValuesAssert;
     
-    private final String databaseType;
-    
-    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
+    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
         this.actual = actual;
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlCaseId, sqlCaseType);
         expected = ParserResultSetRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
@@ -90,7 +88,6 @@ public final class SQLStatementAssert {
         selectItemAssert = new SelectItemAssert(sqlCaseType, assertMessage);
         predicateAssert = new PredicateAssert(sqlCaseType, assertMessage);
         insertNamesAndValuesAssert = new InsertNamesAndValuesAssert(assertMessage, sqlCaseType);
-        this.databaseType = databaseType;
     }
     
     /**
@@ -103,7 +100,7 @@ public final class SQLStatementAssert {
             assertSelectStatement((SelectStatement) actual);
         }
         if (actual instanceof InsertStatement) {
-            assertInsertStatement((InsertStatement) actual, databaseType);
+            assertInsertStatement((InsertStatement) actual);
         }
         if (actual instanceof AlterTableStatement) {
             assertAlterTableStatement((AlterTableStatement) actual);
@@ -137,11 +134,7 @@ public final class SQLStatementAssert {
         }
     }
     
-    private void assertInsertStatement(final InsertStatement actual, final String databaseType) {
-        // TODO remove it when oracle fix for column names extract
-        if ("oracle".equalsIgnoreCase(databaseType)) {
-            return;
-        }
+    private void assertInsertStatement(final InsertStatement actual) {
         insertNamesAndValuesAssert.assertInsertNamesAndValues(actual, expected.getInsertColumnsAndValues());
     }
     
