@@ -48,11 +48,11 @@ conditionalInsertElsePart
     ;
 
 insertIntoClause
-    : INTO tableName (AS? alias)? columnNames?
+    : INTO tableName (AS? alias)?
     ;
 
 insertValuesClause
-    : VALUES assignmentValues (COMMA_ assignmentValues)*
+    : columnNames? VALUES assignmentValues (COMMA_ assignmentValues)*
     ;
 
 update
