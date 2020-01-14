@@ -19,13 +19,9 @@
 <parser-result-sets>
     <parser-result sql-case-id="select_inner_join_related_with_alias" parameters="1000">
         <tables>
-            <table name="t_order" alias="o"/>
-            <table name="t_order_item" alias="i" />
+            <table name="t_order" alias="o" start-index="16" stop-index="22" />
+            <table name="t_order_item" alias="i" start-index="37" stop-index="48" />
         </tables>
-        <tokens>
-            <table-token start-index="16" table-name="t_order" length="7" />
-            <table-token start-index="37" table-name="t_order_item" length="12" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -44,17 +40,14 @@
     
     <parser-result sql-case-id="select_inner_join_related_with_name" parameters="1000">
         <tables>
-            <table name="t_order" />
-            <table name="t_order_item" />
+            <!-- FIXME -->
+            <table name="t_order" start-index="27" stop-index="33" />
+            <table name="t_order_item" start-index="40" stop-index="51" />
+            <!--<table name="t_order_item" start-index="7" stop-index="18" />-->
+            <!--<table name="t_order" start-index="56" stop-index="62" />-->
+            <!--<table name="t_order_item" start-index="75" stop-index="86" />-->
+            <!--<table name="t_order" start-index="103" stop-index="109" />-->
         </tables>
-        <tokens>
-            <table-token start-index="7" table-name="t_order_item" length="12" />
-            <table-token start-index="27" table-name="t_order" length="7" />
-            <table-token start-index="40" table-name="t_order_item" length="12" />
-            <table-token start-index="56" table-name="t_order" length="7" />
-            <table-token start-index="75" table-name="t_order_item" length="12" />
-            <table-token start-index="103" table-name="t_order" length="7" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -73,13 +66,9 @@
     
     <parser-result sql-case-id="select_join_using" parameters="1000">
         <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i"/>
+            <table name="t_order" alias="o" start-index="16" stop-index="22" />
+            <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
         </tables>
-        <tokens>
-            <table-token start-index="16" table-name="t_order" length="7" />
-            <table-token start-index="31" table-name="t_order_item" length="12" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">

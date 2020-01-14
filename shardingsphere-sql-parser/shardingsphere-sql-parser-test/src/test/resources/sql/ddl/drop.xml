@@ -19,65 +19,46 @@
 <parser-result-sets>
     <parser-result sql-case-id="drop_table">
         <tables>
-            <table name="t_log" />
+            <table name="t_log" start-index="11" stop-index="15" />
         </tables>
-        <tokens>
-            <table-token start-index="11" table-name="t_log" length="5" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_table_if_exists">
         <tables>
-            <table name="t_log" />
+            <table name="t_log" start-index="21" stop-index="25" />
         </tables>
-        <tokens>
-            <table-token start-index="21" table-name="t_log" length="5" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_temporary_table_if_exists">
         <tables>
-            <table name="t_temp_log" />
+            <table name="t_temp_log" start-index="31" stop-index="40" />
         </tables>
-        <tokens>
-            <table-token start-index="31" table-name="t_temp_log" length="10" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_table_restrict">
         <tables>
-            <table name="t_log" />
+            <table name="t_log" start-index="11" stop-index="15" />
         </tables>
-        <tokens>
-            <table-token start-index="11" table-name="t_log" length="5" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_table_cascade">
         <tables>
-            <table name="t_log" />
+            <table name="t_log" start-index="11" stop-index="15" />
         </tables>
-        <tokens>
-            <table-token start-index="11" table-name="t_log" length="5" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_table_cascade_constraints_and_purge">
         <tables>
-            <table name="t_log" />
+            <table name="t_log" start-index="11" stop-index="15" />
         </tables>
-        <tokens>
-            <table-token start-index="11" table-name="t_log" length="5" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_index">
         <tables>
-            <table name="t_log" />
+            <table name="t_log" start-index="26" stop-index="30" />
         </tables>
         <tokens>
             <index-token start-index="11" stop-index="21" table-name="t_log" />
-            <table-token start-index="26" table-name="t_log" length="5" />
         </tokens>
     </parser-result>
     
@@ -95,49 +76,35 @@
     
     <parser-result sql-case-id="drop_table_with_space">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="23" stop-index="29" />
         </tables>
-        <tokens>
-            <table-token start-index="23" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_table_with_back_quota">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="11" stop-index="19" />
         </tables>
-        <tokens>
-            <table-token start-index="11" table-name="t_order" left-delimiter="`" right-delimiter="`" length="9" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_tables">
         <tables>
-            <table name="t_order_item" />
-            <table name="t_order" />
+            <table name="t_order_item" start-index="11" stop-index="22" />
+            <table name="t_order" start-index="25" stop-index="31" />
         </tables>
-        <tokens>
-            <table-token start-index="11" table-name="t_order_item" length="12" />
-            <table-token start-index="25" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_temporary_table">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="21" stop-index="27" />
         </tables>
-        <tokens>
-            <table-token start-index="21" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_index_with_space">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="50" stop-index="56" />
         </tables>
         <tokens>
             <index-token start-index="23" stop-index="33" table-name="t_order" />
-            <table-token start-index="50" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
     
@@ -149,21 +116,17 @@
     
     <parser-result sql-case-id="drop_index_with_back_quota">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="28" stop-index="36" />
         </tables>
         <tokens>
             <index-token start-index="11" stop-index="23" table-name="t_order"/>
-            <table-token start-index="28" table-name="t_order" left-delimiter="`" right-delimiter="`" length="9" />
         </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_table_with_quota">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="11" stop-index="19" />
         </tables>
-        <tokens>
-            <table-token start-index="11" table-name="t_order" left-delimiter="&quot;" right-delimiter="&quot;" length="9" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_index_with_quota">
@@ -174,11 +137,8 @@
     
     <parser-result sql-case-id="drop_table_with_double_quota">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="11" stop-index="19" />
         </tables>
-        <tokens>
-            <table-token start-index="11" table-name="t_order" left-delimiter="&quot;" right-delimiter="&quot;" length="9" />
-        </tokens>
     </parser-result>
     
         <parser-result sql-case-id="drop_index_with_double_quota">
@@ -195,30 +155,25 @@
     
     <parser-result sql-case-id="drop_table_with_bracket">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="11" stop-index="19" />
         </tables>
-        <tokens>
-            <table-token start-index="11" table-name="t_order" left-delimiter="[" right-delimiter="]" length="9" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_index_with_bracket">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="28" stop-index="36" />
         </tables>
         <tokens>
             <index-token start-index="11" stop-index="23" table-name="t_order" />
-            <table-token start-index="28" table-name="t_order" left-delimiter="[" right-delimiter="]" length="9" />
         </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_index_if_exists_on_table">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="36" stop-index="42" />
         </tables>
         <tokens>
             <index-token start-index="21" stop-index="31" table-name="t_order" />
-            <table-token start-index="36" table-name="t_order" length="7" />
         </tokens>
     </parser-result>
 </parser-result-sets>

@@ -50,6 +50,8 @@ public final class TableAssert {
         for (TableSegment each : actual) {
             assertThat(assertMessage.getText("Table name assertion error: "), each.getTableName(), is(expected.get(count).getName()));
             assertThat(assertMessage.getText("Table alias assertion error: "), each.getAlias().orNull(), is(expected.get(count).getAlias()));
+            assertThat(assertMessage.getText("Table start index assertion error: "), each.getStartIndex(), is(expected.get(count).getStartIndex()));
+            assertThat(assertMessage.getText("Table stop index assertion error: "), each.getStopIndex(), is(expected.get(count).getStopIndex()));
             count++;
         }
     }

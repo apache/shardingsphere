@@ -27,11 +27,8 @@
     
     <parser-result sql-case-id="select_with_same_table_name_and_alias" parameters="1, 1">
         <tables>
-            <table name="t_order" alias="t_order" />
+            <table name="t_order" alias="t_order" start-index="22" stop-index="28" />
         </tables>
-        <tokens>
-            <table-token start-index="22" table-name="t_order" length="7" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="EQUAL">
@@ -53,11 +50,8 @@
     
     <parser-result sql-case-id="select_with_same_table_name_and_alias_column_with_owner" parameters="1, 1">
         <tables>
-            <table name="t_order" alias="t_order" />
+            <table name="t_order" alias="t_order" start-index="52" stop-index="58" />
         </tables>
-        <tokens>
-            <table-token start-index="52" table-name="t_order" length="7" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="EQUAL">
@@ -83,11 +77,8 @@
     
     <parser-result sql-case-id="select_not_equal_with_single_table" parameters="1">
         <tables>
-            <table name="t_order_item" />
+            <table name="t_order_item" start-index="14" stop-index="25" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order_item" length="12" />
-        </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
@@ -100,11 +91,8 @@
     
     <parser-result sql-case-id="select_exclamation_equal_with_single_table" parameters="1">
         <tables>
-            <table name="t_order_item" />
+            <table name="t_order_item" start-index="14" stop-index="25" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order_item" length="12" />
-        </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
@@ -117,11 +105,8 @@
     
     <parser-result sql-case-id="select_not_in_with_single_table" parameters="100000, 100001">
         <tables>
-            <table name="t_order_item" />
+            <table name="t_order_item" start-index="14" stop-index="25" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order_item" length="12" />
-        </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
@@ -134,11 +119,8 @@
     
     <parser-result sql-case-id="select_not_between_with_single_table" parameters="100000, 100001">
         <tables>
-            <table name="t_order_item" />
+            <table name="t_order_item" start-index="14" stop-index="25" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order_item" length="12" />
-        </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
@@ -151,11 +133,8 @@
     
     <parser-result sql-case-id="select_equal_with_single_table" parameters="1, 1">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="14" stop-index="20" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length="7" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="EQUAL">
@@ -175,11 +154,8 @@
     
     <parser-result sql-case-id="select_equal_with_same_sharding_column" parameters="1, 2">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="14" stop-index="20" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length="7" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -199,11 +175,8 @@
     
     <parser-result sql-case-id="select_between_with_single_table" parameters="1, 10, 2, 5">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="14" stop-index="20" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="7">
             <shorthand-select-items>
                 <shorthand-select-item start-index="7" stop-index="7" text="*" />
@@ -229,11 +202,8 @@
 
     <parser-result sql-case-id="select_comparison_symbol_with_single_table" parameters="1, 10, 2, 5">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="14" stop-index="20" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="7">
             <shorthand-select-items>
                 <shorthand-select-item start-index="7" stop-index="7" text="*" />
@@ -263,11 +233,8 @@
     
     <parser-result sql-case-id="select_in_with_single_table" parameters="1, 2, 3, 9, 10">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="14" stop-index="20" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="7">
             <shorthand-select-items>
                 <shorthand-select-item start-index="7" stop-index="7" text="*" />
@@ -294,11 +261,8 @@
     
     <parser-result sql-case-id="select_in_with_same_sharding_column" parameters="1000, 1001, 1001, 1002">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="14" stop-index="20" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="7">
             <shorthand-select-items>
                 <shorthand-select-item start-index="7" stop-index="7" text="*" />
@@ -323,11 +287,8 @@
     
     <parser-result sql-case-id="select_count_like_concat" parameters="'init', 1, 2, 9, 10">
         <tables>
-            <table name="t_order" alias="o"/>
+            <table name="t_order" alias="o" start-index="37" stop-index="43" />
         </tables>
-        <tokens>
-            <table-token start-index="37" table-name="t_order" length="7" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -349,11 +310,8 @@
 
     <parser-result sql-case-id="select_count_tilde_concat" parameters="'init', 1, 2, 9, 10">
         <tables>
-            <table name="t_order" alias="o"/>
+            <table name="t_order" alias="o" start-index="37" stop-index="43" />
         </tables>
-        <tokens>
-            <table-token start-index="37" table-name="t_order" length="7" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -375,13 +333,9 @@
     
     <parser-result sql-case-id="select_sharding_route_with_binding_tables" parameters="1, 2, 9, 10">
         <tables>
-            <table name="t_order" alias="o"/>
-            <table name="t_order_item" alias="i"/>
+            <table name="t_order" alias="o" start-index="16" stop-index="22" />
+            <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
         </tables>
-        <tokens>
-            <table-token start-index="16" table-name="t_order" length="7" />
-            <table-token start-index="31" table-name="t_order_item" length="12" />
-        </tokens>
         <select-items start-index="7" stop-index="9">
             <shorthand-select-items>
                 <shorthand-select-item start-index="7" stop-index="9" text="i.*">
@@ -408,13 +362,9 @@
     
     <parser-result sql-case-id="select_full_route_with_binding_tables">
         <tables>
-            <table name="t_order" alias="o"/>
-            <table name="t_order_item" alias="i"/>
+            <table name="t_order" alias="o" start-index="16" stop-index="22" />
+            <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
         </tables>
-        <tokens>
-            <table-token start-index="16" table-name="t_order" length="7" />
-            <table-token start-index="31" table-name="t_order_item" length="12" />
-        </tokens>
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
@@ -426,17 +376,13 @@
             </shorthand-select-items>
         </select-items>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_sharding_route_with_broadcast_table" parameters="1, 2, 9, 10, 'init'">
         <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
-            <table name="t_broadcast_table" alias="c" />
+            <table name="t_order" alias="o" start-index="16" stop-index="22" />
+            <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+            <table name="t_broadcast_table" alias="c" start-index="104" stop-index="120" />
         </tables>
-        <tokens>
-            <table-token start-index="16" table-name="t_order" length="7" />
-            <table-token start-index="31" table-name="t_order_item" length="12" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -468,14 +414,10 @@
     
     <parser-result sql-case-id="select_keyword_table_name_with_back_quotes" parameters="1, 2, 9, 10, 'init'">
         <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
-            <table name="select" alias="c" />
+            <table name="t_order" alias="o" start-index="16" stop-index="22" />
+            <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+            <table name="select" alias="c" start-index="104" stop-index="111" />
         </tables>
-        <tokens>
-            <table-token start-index="16" table-name="t_order" length="7" />
-            <table-token start-index="31" table-name="t_order_item" length="12" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -507,14 +449,10 @@
     
     <parser-result sql-case-id="select_keyword_table_name_with_double_quotes" parameters="1, 2, 9, 10, 'init'">
         <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
-            <table name="select" alias="c" />
+            <table name="t_order" alias="o" start-index="16" stop-index="22" />
+            <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+            <table name="select" alias="c" start-index="104" stop-index="111" />
         </tables>
-        <tokens>
-            <table-token start-index="16" table-name="t_order" length="7" />
-            <table-token start-index="31" table-name="t_order_item" length="12" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -541,14 +479,10 @@
     
     <parser-result sql-case-id="select_keyword_table_name_with_square_brackets" parameters="1, 2, 9, 10, 'init'">
         <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
-            <table name="select" alias="c" />
+            <table name="t_order" alias="o" start-index="16" stop-index="22" />
+            <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+            <table name="select" alias="c" start-index="104" stop-index="111" />
         </tables>
-        <tokens>
-            <table-token start-index="16" table-name="t_order" length="7" />
-            <table-token start-index="31" table-name="t_order_item" length="12" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -575,11 +509,8 @@
     
     <parser-result sql-case-id="select_alias_as_keyword" parameters="1">
         <tables>
-            <table name="t_order_item" alias="length" />
+            <table name="t_order_item" alias="length" start-index="36" stop-index="47" />
         </tables>
-        <tokens>
-            <table-token start-index="36" table-name="t_order_item" length="12" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
@@ -598,13 +529,9 @@
     
     <parser-result sql-case-id="select_with_force_index_join" parameters="1000">
         <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i"/>
+            <table name="t_order" alias="o" start-index="16" stop-index="22" />
+            <table name="t_order_item" alias="i" start-index="56" stop-index="67" />
         </tables>
-        <tokens>
-            <table-token start-index="16" table-name="t_order" length="7" />
-            <table-token start-index="56" table-name="t_order_item" length="12" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -623,11 +550,8 @@
     
     <parser-result sql-case-id="select_equal_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', 100, 200, 1, 2">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="14" stop-index="20" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length="7" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="EQUAL">
@@ -647,11 +571,8 @@
     
     <parser-result sql-case-id="select_in_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1, 2">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="14" stop-index="20" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length="7" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="EQUAL">
@@ -671,11 +592,8 @@
     
     <parser-result sql-case-id="select_between_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="14" stop-index="20" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length="7" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -692,11 +610,8 @@
     
     <parser-result sql-case-id="select_with_double_quotes" parameters="1">
         <tables>
-            <table name="t_order_item" />
+            <table name="t_order_item" start-index="14" stop-index="27" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order_item" left-delimiter="&quot;" right-delimiter="&quot;" length="14" />
-        </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
@@ -709,11 +624,8 @@
     
     <parser-result sql-case-id="select_distinct_with_single_column" >
         <tables>
-            <table name="t_order_item" />
+            <table name="t_order_item" start-index="29" stop-index="40" />
         </tables>
-        <tokens>
-            <table-token start-index="29" table-name="t_order_item" length="12" />
-        </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
@@ -723,14 +635,11 @@
             </column-select-items>
         </select-items>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_distinct_with_owner_column" >
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="38" stop-index="44" />
         </tables>
-        <tokens>
-            <table-token start-index="38" table-name="t_order" length="7" />
-        </tokens>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
@@ -740,14 +649,11 @@
             </column-select-items>
         </select-items>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_distinct_with_multi_column" >
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="47" stop-index="53" />
         </tables>
-        <tokens>
-            <table-token start-index="47" table-name="t_order" length="7" />
-        </tokens>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
@@ -762,11 +668,8 @@
     
     <parser-result sql-case-id="select_distinct_with_star" >
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="23" stop-index="29" />
         </tables>
-        <tokens>
-            <table-token start-index="23" table-name="t_order" length="7" />
-        </tokens>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
@@ -776,11 +679,11 @@
             </shorthand-select-items>
         </select-items>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_distinct_with_owner_star">
         <tables>
-            <table name="t_order"/>
-            <table name="t_order_item"/>
+            <table name="t_order" start-index="54" stop-index="60" />
+            <table name="t_order_item" start-index="63" stop-index="74" />
         </tables>
         <order-by-columns>
             <order-by-column owner="t_order" name="order_id" order-direction="ASC" />
@@ -797,11 +700,8 @@
     
     <parser-result sql-case-id="select_distinct_with_sum" >
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="37" stop-index="43" />
         </tables>
-        <tokens>
-            <table-token start-index="37" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="30">
             <aggregation-distinct-select-items>
                 <aggregation-distinct-select-item start-index="7" stop-index="28" text="SUM(DISTINCTorder_id)" type="SUM" distinctExpression="order_id" innerExpressionStartIndex="10" alias="s" />
@@ -811,35 +711,29 @@
 
     <parser-result sql-case-id="select_distinct_with_count" >
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="39" stop-index="45" />
         </tables>
         <select-items start-index="7" stop-index="33">
             <aggregation-distinct-select-items>
                 <aggregation-distinct-select-item start-index="7" stop-index="30" text="COUNT(DISTINCTorder_id)" type="COUNT" distinctExpression="order_id" innerExpressionStartIndex="12" alias="c" />
             </aggregation-distinct-select-items>
         </select-items>
-        <tokens>
-            <table-token start-index="39" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
-        
-    <parser-result sql-case-id="select_distinct_with_avg" >
+    
+    <parser-result sql-case-id="select_distinct_with_avg">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="35" stop-index="41" />
         </tables>
         <select-items start-index="7" stop-index="28">
             <aggregation-distinct-select-items>
                 <aggregation-distinct-select-item start-index="7" stop-index="28" text="AVG(DISTINCTorder_id)" type="AVG" distinctExpression="order_id" innerExpressionStartIndex="10" />
             </aggregation-distinct-select-items>
         </select-items>
-        <tokens>
-            <table-token start-index="35" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_count_sum" >
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="61" stop-index="67" />
         </tables>
         <select-items start-index="7" stop-index="54">
             <aggregation-distinct-select-items>
@@ -847,14 +741,11 @@
                 <aggregation-distinct-select-item start-index="33" stop-index="54" text="SUM(DISTINCTorder_id)" type="SUM" distinctExpression="order_id" innerExpressionStartIndex="36" />
             </aggregation-distinct-select-items>
         </select-items>
-        <tokens>
-            <table-token start-index="61" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_distinct_with_single_count_group_by" >
          <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="49" stop-index="55" />
         </tables>
         <select-items start-index="7" stop-index="42">
             <column-select-items>
@@ -870,14 +761,11 @@
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
-        <tokens>
-            <table-token start-index="49" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_count_group_by" >
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="49" stop-index="55" />
         </tables>
         <select-items start-index="7" stop-index="42">
             <aggregation-distinct-select-items>
@@ -893,18 +781,12 @@
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
-        <tokens>
-            <table-token start-index="49" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_function">
         <tables>
-            <table name="t_order_item" />
+            <table name="t_order_item" start-index="30" stop-index="41" />
         </tables>
-        <tokens>
-            <table-token start-index="30" table-name="t_order_item" length="12" />
-        </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
@@ -917,21 +799,18 @@
     
     <parser-result sql-case-id="select_distinct_with_count_calculation" >
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="49" stop-index="55" />
         </tables>
         <select-items start-index="7" stop-index="42">
             <aggregation-distinct-select-items>
                 <aggregation-distinct-select-item start-index="7" stop-index="40" type="COUNT" distinctExpression="user_id+order_id" text="COUNT(DISTINCTuser_id+order_id)" innerExpressionStartIndex="12" alias="c" />
             </aggregation-distinct-select-items>
         </select-items>
-        <tokens>
-            <table-token start-index="49" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_aggregation_functions" >
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="77" stop-index="83" />
         </tables>
         <select-items start-index="7" stop-index="69">
             <aggregation-distinct-select-items>
@@ -942,18 +821,12 @@
                 <aggregation-select-item start-index="55" stop-index="69" text="count(order_id)" type="COUNT" innerExpressionStartIndex="60" />
             </aggregation-select-items>
         </select-items>
-        <tokens>
-            <table-token start-index="77" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="select_with_schema" >
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="14" stop-index="24" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length = "11"  />
-        </tokens>
         <select-items start-index="7" stop-index="7">
             <shorthand-select-items>
                 <shorthand-select-item start-index="7" stop-index="7" text="*" />
@@ -963,11 +836,8 @@
     
     <parser-result sql-case-id="select_escape_with_single_quota" >
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="14" stop-index="20" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length="7" />
-        </tokens>
         <encrypt-conditions>
             <condition column-name="status" table-name="t_order" operator="EQUAL">
                 <value index="0" literal="\'" type="varchar" />
@@ -982,11 +852,8 @@
     
     <parser-result sql-case-id="select_escape_with_double_quota" >
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="14" stop-index="20" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length="7" />
-        </tokens>
         <encrypt-conditions>
             <condition column-name="status" table-name="t_order" operator="EQUAL">
                 <value index="0" literal="\&quot;" type="varchar" />
@@ -1001,11 +868,8 @@
     
     <parser-result sql-case-id="select_with_block_comment" >
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="83" stop-index="89" />
         </tables>
-        <tokens>
-            <table-token start-index="83" table-name="t_order" length="7" />
-        </tokens>
         <encrypt-conditions>
             <condition column-name="status" table-name="t_order" operator="EQUAL">
                 <value index="0" literal="1" type="varchar" />
@@ -1020,11 +884,8 @@
     
     <parser-result sql-case-id="select_with_single_comment" >
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="78" stop-index="84" />
         </tables>
-        <tokens>
-            <table-token start-index="78" table-name="t_order" length="7" />
-        </tokens>
         <encrypt-conditions>
             <condition column-name="status" table-name="t_order" operator="EQUAL">
                 <value index="0" literal="1" type="varchar" />
@@ -1039,11 +900,8 @@
     
     <parser-result sql-case-id="select_alias_as_single_quote_string">
         <tables>
-            <table name="t_order"/>
+            <table name="t_order" start-index="31" stop-index="37" />
         </tables>
-        <tokens>
-            <table-token start-index="31" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="24">
             <column-select-items>
                 <column-select-item start-index="7" stop-index="12" text="status" alias="status" name="status" />
@@ -1053,25 +911,19 @@
     
     <parser-result sql-case-id="select_alias_as_string_double_quote">
         <tables>
-            <table name="t_order"/>
+            <table name="t_order" start-index="31" stop-index="37" />
         </tables>
-        <tokens>
-            <table-token start-index="31" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="24">
             <column-select-items>
                 <column-select-item start-index="7" stop-index="12" text="status" alias="status" name="status" />
             </column-select-items>
         </select-items>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_special_function_nested" parameters="12, 1000">
         <tables>
-            <table name="t_order"/>
+            <table name="t_order" start-index="48" stop-index="54" />
         </tables>
-        <tokens>
-            <table-token start-index="36" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="29">
             <aggregation-select-items>
                 <aggregation-select-item start-index="7" stop-index="29" type="SUM" text="sum(if(status=0,1,0))" innerExpressionStartIndex="10" alias="func_status" />
@@ -1088,42 +940,33 @@
             </and-condition>
         </sharding-conditions>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_with_row_subquery_without_row_keyword">
         <tables>
-            <table name="t_order"/>
+            <table name="t_order" start-index="14" stop-index="20" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="7">
             <shorthand-select-items>
                 <shorthand-select-item start-index="7" stop-index="7" text="*" />
             </shorthand-select-items>
         </select-items>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_with_row_subquery">
         <tables>
-            <table name="t_order"/>
+            <table name="t_order" start-index="14" stop-index="20" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="7">
             <shorthand-select-items>
                 <shorthand-select-item start-index="7" stop-index="7" text="*" />
             </shorthand-select-items>
         </select-items>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_with_interval_function" parameters="12, 1000">
         <tables>
-            <table name="t_order"/>
+            <table name="t_order" start-index="45" stop-index="51" />
         </tables>
-        <tokens>
-            <table-token start-index="41" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="26">
             <expression-items>
                 <expression-item start-index="7" stop-index="26" text="INTERVAL(status,1,5)" alias="func_status" />
@@ -1140,35 +983,29 @@
             </and-condition>
         </sharding-conditions>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_with_left_function">
         <tables>
-            <table name="t_order_item"/>
+            <table name="t_order_item" start-index="44" stop-index="55" />
         </tables>
-        <tokens>
-            <table-token start-index="44" table-name="t_order_item" length="12" />
-        </tokens>
-        <select-items start-index="7" stop-index="37">
+        <select-items start-index="7" stop-index="36">
             <expression-items>
                 <expression-item start-index="7" stop-index="37" text="CONCAT(LEFT(status,7),'test')"/>
             </expression-items>
         </select-items>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_for_update" parameters="10">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="14" stop-index="20" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="7">
             <shorthand-select-items>
                 <shorthand-select-item start-index="7" stop-index="7" text="*" />
             </shorthand-select-items>
         </select-items>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_database">
         <select-items start-index="7" stop-index="16">
             <expression-items>
@@ -1176,42 +1013,33 @@
             </expression-items>
         </select-items>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_with_mod_function">
         <tables>
-            <table name="t_order"/>
+            <table name="t_order" start-index="14" stop-index="20" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="7">
             <shorthand-select-items>
                 <shorthand-select-item start-index="7" stop-index="7" text="*" />
             </shorthand-select-items>
         </select-items>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_with_date_format_function">
         <tables>
-            <table name="t_order"/>
+            <table name="t_order" start-index="14" stop-index="20" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="7">
             <shorthand-select-items>
                 <shorthand-select-item start-index="7" stop-index="7" text="*" />
             </shorthand-select-items>
         </select-items>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_with_spatial_function">
         <tables>
-            <table name="t_order"/>
+            <table name="t_order" start-index="14" stop-index="20" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="7">
             <shorthand-select-items>
                 <shorthand-select-item start-index="7" stop-index="7" text="*" />

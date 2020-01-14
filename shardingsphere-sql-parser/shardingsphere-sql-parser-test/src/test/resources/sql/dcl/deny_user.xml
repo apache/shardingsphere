@@ -19,55 +19,37 @@
 <parser-result-sets>
     <parser-result sql-case-id="deny_user">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="15" stop-index="21" />
         </tables>
-        <tokens>
-            <table-token start-index="15" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="deny_select">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="15" stop-index="21" />
         </tables>
-        <tokens>
-            <table-token start-index="15" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="deny_select_column">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="26" stop-index="32" />
         </tables>
-        <tokens>
-            <table-token start-index="26" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="deny_select_to_users">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="26" stop-index="32" />
         </tables>
-        <tokens>
-            <table-token start-index="26" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="deny_crud">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="39" stop-index="45" />
         </tables>
-        <tokens>
-            <table-token start-index="39" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
     
     <parser-result sql-case-id="deny_all">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="23" stop-index="29" />
         </tables>
-        <tokens>
-            <table-token start-index="23" table-name="t_order" length="7" />
-        </tokens>
     </parser-result>
 </parser-result-sets>

@@ -19,11 +19,8 @@
 <parser-result-sets>
     <parser-result sql-case-id="select_order_by_asc_and_index_desc">
         <tables>
-            <table name="t_order" alias="o" />
+            <table name="t_order" alias="o" start-index="14" stop-index="20" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length="7" />
-        </tokens>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
             <order-by-column index="2" order-direction="DESC" />
@@ -37,13 +34,9 @@
     
     <parser-result sql-case-id="select_order_by_desc_and_index_asc">
         <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
+            <table name="t_order" alias="o" start-index="16" stop-index="22" />
+            <table name="t_order_item" alias="i" start-index="27" stop-index="38" />
         </tables>
-        <tokens>
-            <table-token start-index="16" table-name="t_order" length="7" />
-            <table-token start-index="27" table-name="t_order_item" length="12" />
-        </tokens>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="DESC" />
             <order-by-column index="1" order-direction="ASC" />
@@ -64,11 +57,8 @@
     
     <parser-result sql-case-id="select_order_by_with_ordered_column">
         <tables>
-            <table name="t_order" alias="o" />
+            <table name="t_order" alias="o" start-index="40" stop-index="46" />
         </tables>
-        <tokens>
-            <table-token start-index="40" table-name="t_order" length="7" />
-        </tokens>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
@@ -83,13 +73,9 @@
     
     <parser-result sql-case-id="select_order_by_with_date">
         <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
+            <table name="t_order" alias="o" start-index="16" stop-index="22" />
+            <table name="t_order_item" alias="i" start-index="27" stop-index="38" />
         </tables>
-        <tokens>
-            <table-token start-index="16" table-name="t_order" length="7" />
-            <table-token start-index="27" table-name="t_order_item" length="12" />
-        </tokens>
         <order-by-columns>
             <order-by-column owner="i" name="creation_date" order-direction="DESC" />
             <order-by-column owner="o" name="order_id" order-direction="DESC" />
@@ -112,11 +98,8 @@
     <!-- //TODO add order-by-null-type -->
     <parser-result sql-case-id="select_order_by_for_nulls_first">
         <tables>
-            <table name="t_order" alias="o" />
+            <table name="t_order" alias="o" start-index="40" stop-index="46" />
         </tables>
-        <tokens>
-            <table-token start-index="40" table-name="t_order" length="7" />
-        </tokens>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
@@ -132,11 +115,8 @@
     <!-- //TODO add order-by-null-type -->
     <parser-result sql-case-id="select_order_by_for_nulls_last">
         <tables>
-            <table name="t_order" alias="o" />
+            <table name="t_order" alias="o" start-index="40" stop-index="46" />
         </tables>
-        <tokens>
-            <table-token start-index="40" table-name="t_order" length="7" />
-        </tokens>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
@@ -151,11 +131,8 @@
     
     <parser-result sql-case-id="select_order_by_with_multiple_stars">
         <tables>
-            <table name="t_order" alias="o" />
+            <table name="t_order" alias="o" start-index="29" stop-index="35" />
         </tables>
-        <tokens>
-            <table-token start-index="29" table-name="t_order" length="7" />
-        </tokens>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
@@ -174,11 +151,8 @@
     
     <parser-result sql-case-id="select_order_by_with_alias_star_alias_name">
         <tables>
-            <table name="t_order" alias="o" />
+            <table name="t_order" alias="o" start-index="16" stop-index="22" />
         </tables>
-        <tokens>
-            <table-token start-index="16" table-name="t_order" length="7" />
-        </tokens>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
@@ -193,11 +167,8 @@
     
     <parser-result sql-case-id="select_order_by_with_star_table_alias">
         <tables>
-            <table name="t_order" alias="o" />
+            <table name="t_order" alias="o" start-index="14" stop-index="20" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length="7" />
-        </tokens>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
@@ -211,11 +182,8 @@
     <!--TODO need to add later-->
     <!--<parser-result sql-case-id="select_order_by_with_parameter" parameters="order_id">-->
         <!--<tables>-->
-            <!--<table name="t_order" alias="o" />-->
+            <!--<table name="t_order" alias="o" start-index="14" stop-index="20" />-->
         <!--</tables>-->
-        <!--<tokens>-->
-            <!--<table-token start-index="14" table-name="t_order" length="7" />-->
-        <!--</tokens>-->
         <!--<order-by-columns>-->
             <!--<order-by-column name="order_id" order-direction="ASC" />-->
         <!--</order-by-columns>-->
@@ -223,13 +191,11 @@
     
     <parser-result sql-case-id="select_order_by_with_table_star_table_name">
         <tables>
-            <table name="t_order" />
+            <!-- FIXME -->
+            <!--<table name="t_order" start-index="7" stop-index="13" />-->
+            <table name="t_order" start-index="22" stop-index="28" />
+            <!--<table name="t_order" start-index="39" stop-index="45" />-->
         </tables>
-        <tokens>
-            <table-token start-index="7" table-name="t_order" length="7" />
-            <table-token start-index="22" table-name="t_order" length="7" />
-            <table-token start-index="39" table-name="t_order" length="7" />
-        </tokens>
         <order-by-columns>
             <order-by-column owner="t_order" name="order_id" order-direction="ASC" />
         </order-by-columns>
@@ -244,11 +210,8 @@
     
     <parser-result sql-case-id="select_order_by_with_star_no_table_alias">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="14" stop-index="20" />
         </tables>
-        <tokens>
-            <table-token start-index="14" table-name="t_order" length="7" />
-        </tokens>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
@@ -261,13 +224,9 @@
     
     <parser-result sql-case-id="select_order_by_with_table_star_without_table_name">
         <tables>
-            <table name="t_order" alias="o"/>
-            <table name="t_order_item" alias="i"/>
+            <table name="t_order" alias="o" start-index="21" stop-index="27" />
+            <table name="t_order_item" alias="i" start-index="36" stop-index="47" />
         </tables>
-        <tokens>
-            <table-token start-index="21" table-name="t_order" length="7" />
-            <table-token start-index="36" table-name="t_order_item" length="12" />
-        </tokens>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>

@@ -19,11 +19,8 @@
 <parser-result-sets>
     <parser-result sql-case-id="select_group_by_with_sum">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="49" stop-index="55" />
         </tables>
-        <tokens>
-            <table-token start-index="49" table-name="t_order" length="7" />
-        </tokens>
         <group-by-columns>
             <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
@@ -42,11 +39,8 @@
     
     <parser-result sql-case-id="select_group_by_with_count">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="53" stop-index="59" />
         </tables>
-        <tokens>
-            <table-token start-index="53" table-name="t_order" length="7" />
-        </tokens>
         <select-items>
             <aggregation-select-items>
                 <aggregation-select-item type="COUNT" inner-expression="(order_id)" alias="orders_count" />
@@ -70,11 +64,8 @@
     
     <parser-result sql-case-id="select_group_by_with_max">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="51" stop-index="57" />
         </tables>
-        <tokens>
-            <table-token start-index="51" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="44">
             <aggregation-select-items>
                 <aggregation-select-item text="MAX(order_id)" type="MAX" innerExpressionStartIndex="10" stop-index="19" />
@@ -93,11 +84,8 @@
     
     <parser-result sql-case-id="select_group_by_with_min">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="51" stop-index="57" />
         </tables>
-        <tokens>
-            <table-token start-index="51" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="44">
             <aggregation-select-items>
                 <aggregation-select-item text="MIN(order_id)" type="MIN" innerExpressionStartIndex="10" stop-index="19" />
@@ -116,11 +104,8 @@
     
     <parser-result sql-case-id="select_group_by_with_avg">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="49" stop-index="55" />
         </tables>
-        <tokens>
-            <table-token start-index="49" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="42">
             <aggregation-select-items>
                 <aggregation-select-item text="AVG(order_id)" type="AVG" innerExpressionStartIndex="10" stop-index="19"/>
@@ -139,11 +124,8 @@
     
     <parser-result sql-case-id="select_group_by_with_order_by_desc">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="49" stop-index="55" />
         </tables>
-        <tokens>
-            <table-token start-index="49" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="42">
             <aggregation-select-items>
                 <aggregation-select-item stop-index="19" type="SUM" innerExpressionStartIndex="10" text="SUM(order_id)" alias="orders_sum" />
@@ -162,13 +144,9 @@
     
     <parser-result sql-case-id="select_group_by_without_grouped_column" parameters="1, 2, 9, 10">
         <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
+            <table name="t_order" alias="o" start-index="36" stop-index="42" />
+            <table name="t_order_item" alias="i" start-index="51" stop-index="62" />
         </tables>
-        <tokens>
-            <table-token start-index="36" table-name="t_order" length="7" />
-            <table-token start-index="51" table-name="t_order_item" length="12" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -193,11 +171,8 @@
     
     <parser-result sql-case-id="select_group_by_with_limit" parameters="5">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="20" stop-index="26" />
         </tables>
-        <tokens>
-            <table-token start-index="20" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="13">
             <column-select-items>
                 <column-select-item text="user_id" stop-index="13" />
@@ -214,11 +189,8 @@
     
     <parser-result sql-case-id="select_group_by_with_order_by_and_limit" parameters="5">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="49" stop-index="55" />
         </tables>
-        <tokens>
-            <table-token start-index="49" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="42">
             <column-select-items>
                 <column-select-item text="user_id" stop-index="13" />
@@ -238,11 +210,8 @@
     
     <parser-result sql-case-id="select_with_item_alias_match_order_by_and_group_by_items">
         <tables>
-            <table name="t_order" alias="o" />
+            <table name="t_order" alias="o" start-index="26" stop-index="32" />
         </tables>
-        <tokens>
-            <table-token start-index="26" table-name="t_order" length="7" />
-        </tokens>
         <group-by-columns>
             <group-by-column name="user_id" owner="o" alias="uid" order-direction="ASC" />
         </group-by-columns>
@@ -260,11 +229,8 @@
     
     <parser-result sql-case-id="select_group_by_with_date_function" parameters="1000, 1100">
         <tables>
-            <table name="t_order_item" />
+            <table name="t_order_item" start-index="91" stop-index="104" />
         </tables>
-        <tokens>
-            <table-token start-index="91" table-name="t_order_item" left-delimiter="`" right-delimiter="`" length="14" />
-        </tokens>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order_item" operator="IN">
@@ -288,11 +254,8 @@
     
     <parser-result sql-case-id="select_group_by_with_keyword_alias">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="58" stop-index="64" />
         </tables>
-        <tokens>
-            <table-token start-index="58" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="51">
             <aggregation-select-items>
                 <aggregation-select-item type="SUM" start-index="7" stop-index="19" innerExpressionStartIndex="10" text="SUM(order_id)" alias="orders_sum" />
@@ -305,14 +268,11 @@
             <group-by-column name="key" alias="key" order-direction="ASC" />
         </group-by-columns>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_group_by_with_count_without_column_name">
         <tables>
-            <table name="t_order" />
+            <table name="t_order" start-index="53" stop-index="59" />
         </tables>
-        <tokens>
-            <table-token start-index="53" table-name="t_order" length="7" />
-        </tokens>
         <select-items start-index="7" stop-index="46">
             <aggregation-select-items>
                 <aggregation-select-item start-index="7" stop-index="21" innerExpressionStartIndex="12" type="COUNT" text="COUNT(order_id)" alias="orders_count" />

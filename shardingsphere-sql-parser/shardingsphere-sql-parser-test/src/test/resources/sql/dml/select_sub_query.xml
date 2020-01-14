@@ -20,13 +20,9 @@
     <!-- TODO cannot pass,add later 
     <parser-result sql-case-id="select_sub_query_with_multiple_tables" parameters="1, 2">
         <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
+            <table name="t_order" alias="o" start-index="33" stop-index="39" />
+            <table name="t_order_item" alias="i" start-index="44" stop-index="55" />
         </tables>
-        <tokens>
-            <table-token start-index="33" table-name="t_order" length="7" />
-            <table-token start-index="44" table-name="t_order_item" length="12" />
-        </tokens>
         <conditions>
             <condition column-name="order_id" table-name="t_order" operator="IN">
                 <value index="0" literal="1" type="int" />
@@ -39,11 +35,8 @@
     <!-- TODO do not support ORDER BY or ORDER BY in subquery for now, add later
     <parser-result sql-case-id="select_sub_query_with_order_by">
         <tables>
-            <table name="t_order"/>
+            <table name="t_order" start-index="52" stop-index="58" />
         </tables>
-        <tokens>
-            <table-token start-index="52" table-name="t_order" length="7" />
-        </tokens>
         <aggregation-select-items>
             <aggregation-select-item type="COUNT" inner-expression="(1)" alias="orders_count" />
         </aggregation-select-items>
@@ -59,11 +52,8 @@
     
     <parser-result sql-case-id="select_sub_query_with_group_by">
         <tables>
-            <table name="t_order_item"/>
+            <table name="t_order_item" start-index="64" stop-index="75" />
         </tables>
-        <tokens>
-            <table-token start-index="64" table-name="t_order_item" length="12" />
-        </tokens>
         <select-items start-index="50" stop-index="57">
             <column-select-items>
                 <column-select-item start-index="50" stop-index="57" text="order_id" name="order_id" />
