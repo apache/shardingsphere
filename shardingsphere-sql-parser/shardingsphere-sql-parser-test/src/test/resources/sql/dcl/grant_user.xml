@@ -42,7 +42,9 @@
     <parser-result sql-case-id="grant_user_on_db_and_table">
         <tables>
             <!--  TODO should be 25, because table name should start from real table name, not start from schema name. Need change ID definition of g4 -->
-            <table name="t_order" start-index="13" stop-index="31" />
+            <table name="t_order" start-index="13" stop-index="31">
+                <owner name="sharding_db" start-index="13" stop-index="23" />
+            </table>
         </tables>
     </parser-result>
     
@@ -56,7 +58,9 @@
     
     <parser-result sql-case-id="grant_select_column">
         <tables>
-            <table name="t_order" start-index="27" stop-index="38" />
+            <table name="t_order" start-index="27" stop-index="38">
+                <owner name="ds_0" start-index="27" stop-index="30" />
+            </table>
         </tables>
     </parser-result>
     
@@ -67,7 +71,9 @@
     
     <parser-result sql-case-id="grant_all_on_table">
         <tables>
-            <table name="t_order" start-index="24" stop-index="35" />
+            <table name="t_order" start-index="24" stop-index="35">
+                <owner name="ds_0" start-index="24" stop-index="27" />
+            </table>
         </tables>
     </parser-result>
     
@@ -80,31 +86,41 @@
     
     <parser-result sql-case-id="grant_object_privilege">
         <tables>
-            <table name="t_order" start-index="16" stop-index="27" />
+            <table name="t_order" start-index="16" stop-index="27">
+                <owner name="ds_0" start-index="16" stop-index="19" />
+            </table>
         </tables>
     </parser-result>
     
     <parser-result sql-case-id="grant_object_privileges">
         <tables>
-            <table name="t_order" start-index="40" stop-index="51" />
+            <table name="t_order" start-index="40" stop-index="51">
+                <owner name="ds_0" start-index="40" stop-index="43" />
+            </table>
         </tables>
     </parser-result>
     
     <parser-result sql-case-id="grant_all_object_privileges">
         <tables>
-            <table name="t_order" start-index="24" stop-index="35" />
+            <table name="t_order" start-index="24" stop-index="35">
+                <owner name="ds_0" start-index="24" stop-index="27" />
+            </table>
         </tables>
     </parser-result>
     
     <parser-result sql-case-id="grant_object_privilege_to_users">
         <tables>
-            <table name="t_order" start-index="16" stop-index="27" />
+            <table name="t_order" start-index="16" stop-index="27">
+                <owner name="ds_0" start-index="16" stop-index="19" />
+            </table>
         </tables>
     </parser-result>
     
     <parser-result sql-case-id="grant_object_privilege_column">
         <tables>
-            <table name="t_order" start-index="27" stop-index="38" />
+            <table name="t_order" start-index="27" stop-index="38">
+                <owner name="ds_0" start-index="27" stop-index="30" />
+            </table>
         </tables>
     </parser-result>
     
@@ -158,7 +174,9 @@
     
     <parser-result sql-case-id="grant_select_column_on_table">
         <tables>
-            <table name="t_order" start-index="33" stop-index="39" />
+            <table name="t_order" start-index="33" stop-index="39">
+                <owner name="ds_0" start-index="33" stop-index="36" />
+            </table>
         </tables>
     </parser-result>
     

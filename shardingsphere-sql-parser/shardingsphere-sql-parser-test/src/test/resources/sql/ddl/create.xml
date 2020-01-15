@@ -85,7 +85,7 @@
     
     <parser-result sql-case-id="create_table_with_back_quota">
         <tables>
-            <table name="t_order" start-index="13" stop-index="21" />
+            <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="13" stop-index="21" />
         </tables>
     </parser-result>
     
@@ -265,7 +265,7 @@
     
     <parser-result sql-case-id="create_index_with_back_quota">
         <tables>
-            <table name="t_order" start-index="30" stop-index="38" />
+            <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="30" stop-index="38" />
         </tables>
         <tokens>
             <index-token start-index="13" stop-index="25" table-name="t_order" />
@@ -292,7 +292,7 @@
     
     <parser-result sql-case-id="create_table_with_quota">
         <tables>
-            <table name="t_order" start-index="13" stop-index="21" />
+            <table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="13" stop-index="21" />
         </tables>
     </parser-result>
     
@@ -382,7 +382,7 @@
     
     <parser-result sql-case-id="create_index_with_quota">
         <tables>
-            <table name="t_order" start-index="30" stop-index="38" />
+            <table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="30" stop-index="38" />
         </tables>
         <tokens>
             <index-token start-index="13" stop-index="25" table-name="t_order"/>
@@ -400,7 +400,7 @@
     
     <parser-result sql-case-id="create_table_with_double_quota">
         <tables>
-            <table name="t_order" start-index="13" stop-index="21" />
+            <table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="13" stop-index="21" />
         </tables>
     </parser-result>
     
@@ -438,7 +438,7 @@
     
     <parser-result sql-case-id="create_index_with_double_quota">
         <tables>
-            <table name="t_order" start-index="30" stop-index="38" />
+            <table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="30" stop-index="38" />
         </tables>
         <tokens>
             <index-token start-index="13" stop-index="25" table-name="t_order"/>
@@ -484,7 +484,7 @@
     
     <parser-result sql-case-id="create_table_with_bracket">
         <tables>
-            <table name="t_order" start-index="13" stop-index="21" />
+            <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="13" stop-index="21" />
         </tables>
     </parser-result>
     
@@ -548,7 +548,7 @@
     
     <parser-result sql-case-id="create_index_with_bracket">
         <tables>
-            <table name="t_order" start-index="30" stop-index="38" />
+            <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="30" stop-index="38" />
         </tables>
         <tokens>
             <index-token start-index="13" stop-index="25" table-name="t_order" />

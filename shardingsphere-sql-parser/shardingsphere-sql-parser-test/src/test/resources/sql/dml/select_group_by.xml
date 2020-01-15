@@ -229,7 +229,7 @@
     
     <parser-result sql-case-id="select_group_by_with_date_function" parameters="1000, 1100">
         <tables>
-            <table name="t_order_item" start-index="91" stop-index="104" />
+            <table name="t_order_item" start-delimiter="`" end-delimiter="`" start-index="91" stop-index="104" />
         </tables>
         <sharding-conditions>
             <and-condition>
