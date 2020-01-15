@@ -15,32 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.rule.fixture;
+package org.apache.shardingsphere.test.sql.loader.visitor;
 
-import org.antlr.v4.runtime.Lexer;
-import org.apache.shardingsphere.sql.parser.api.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
+import lombok.Getter;
+import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
 
-public final class TestParserEntry implements SQLParserEntry {
+/**
+ * SQL cases registry for visitor.
+ * 
+ * @author panjuan 
+ */
+public final class VisitorSQLCasesRegistry {
     
-    @Override
-    public String getDatabaseTypeName() {
-        return "MySQL";
+    private static final VisitorSQLCasesRegistry INSTANCE = new VisitorSQLCasesRegistry();
+    
+    @Getter
+    private SQLCasesLoader sqlCasesLoader;
+    
+    private VisitorSQLCasesRegistry() {
+        sqlCasesLoader = new SQLCasesLoader("sql/visitor");
     }
     
-    @Override
-    public Class<? extends Lexer> getLexerClass() {
-        return null;
-    }
-    
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return null;
-    }
-    
-    @Override
-    public Class<? extends SQLVisitor> getVisitorClass() {
-        return null;
+    /**
+     * Get singleton instance.
+     * 
+     * @return singleton instance
+     */
+    public static VisitorSQLCasesRegistry getInstance() {
+        return INSTANCE;
     }
 }

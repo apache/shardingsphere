@@ -15,32 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.rule.fixture;
+package org.apache.shardingsphere.sql.parser.core.visitor;
 
-import org.antlr.v4.runtime.Lexer;
-import org.apache.shardingsphere.sql.parser.api.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
+import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 
-public final class TestParserEntry implements SQLParserEntry {
+/**
+ * SQL parser engine.
+ *
+ * @author panjuan
+ */
+@RequiredArgsConstructor
+public final class SQLVisitorEngine {
     
-    @Override
-    public String getDatabaseTypeName() {
-        return "MySQL";
-    }
+    private final String databaseTypeName;
     
-    @Override
-    public Class<? extends Lexer> getLexerClass() {
-        return null;
-    }
+    private final ParseTree parseTree;
     
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return null;
-    }
-    
-    @Override
-    public Class<? extends SQLVisitor> getVisitorClass() {
-        return null;
+    /**
+     * Parse SQL to abstract syntax tree.
+     *
+     * @return ast node
+     */
+    public ASTNode parse() {
+        return (ASTNode) SQLVisitorFactory.newInstance(databaseTypeName).visit(parseTree);
     }
 }

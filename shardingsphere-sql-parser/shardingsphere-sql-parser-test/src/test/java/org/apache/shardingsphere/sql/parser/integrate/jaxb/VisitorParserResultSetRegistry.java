@@ -15,32 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.rule.fixture;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb;
 
-import org.antlr.v4.runtime.Lexer;
-import org.apache.shardingsphere.sql.parser.api.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
+import lombok.Getter;
 
-public final class TestParserEntry implements SQLParserEntry {
+/**
+ * Visitor parser result set registry.
+ *
+ * @author panjuan
+ */
+public final class VisitorParserResultSetRegistry {
     
-    @Override
-    public String getDatabaseTypeName() {
-        return "MySQL";
-    }
+    private static final VisitorParserResultSetRegistry INSTANCE = new VisitorParserResultSetRegistry();
     
-    @Override
-    public Class<? extends Lexer> getLexerClass() {
-        return null;
-    }
+    @Getter
+    private final ParserResultSetRegistry registry = new ParserResultSetRegistry("visitor/");
     
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return null;
-    }
-    
-    @Override
-    public Class<? extends SQLVisitor> getVisitorClass() {
-        return null;
+    /**
+     * Get singleton instance.
+     *
+     * @return singleton instance
+     */
+    public static VisitorParserResultSetRegistry getInstance() {
+        return INSTANCE;
     }
 }

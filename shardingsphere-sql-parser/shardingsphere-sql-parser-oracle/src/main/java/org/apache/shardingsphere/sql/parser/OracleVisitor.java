@@ -15,32 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.rule.fixture;
+package org.apache.shardingsphere.sql.parser;
 
-import org.antlr.v4.runtime.Lexer;
-import org.apache.shardingsphere.sql.parser.api.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 
-public final class TestParserEntry implements SQLParserEntry {
+/**
+ * Oracle visitor.
+ *
+ * @author panjuan
+ */
+public final class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
-    @Override
-    public String getDatabaseTypeName() {
-        return "MySQL";
-    }
-    
-    @Override
-    public Class<? extends Lexer> getLexerClass() {
-        return null;
-    }
-    
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return null;
-    }
-    
-    @Override
-    public Class<? extends SQLVisitor> getVisitorClass() {
-        return null;
-    }
+    // DALStatement.g4
+    // DCLStatement.g4
+    // DDLStatement.g4
+    // DMLStatement.g4
+    // TCLStatement.g4
+    // StoreProcedure.g4
+    // BaseRule.g4
 }

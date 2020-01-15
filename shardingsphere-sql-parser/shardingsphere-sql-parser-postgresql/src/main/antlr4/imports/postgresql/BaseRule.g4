@@ -60,7 +60,7 @@ literalsType_
     : COLON_ COLON_ IDENTIFIER_
     ;
 
-identifier_
+identifier
     : unicodeEscapes_? IDENTIFIER_ uescape_? |  unreservedWord_ 
     ;
 
@@ -97,7 +97,7 @@ unreservedWord_
     ;
 
 schemaName
-    : identifier_
+    : identifier
     ;
 
 tableName
@@ -109,11 +109,11 @@ columnName
     ;
 
 owner
-    : identifier_
+    : identifier
     ;
 
 name
-    : identifier_
+    : identifier
     ;
 
 tableNames
@@ -125,15 +125,15 @@ columnNames
     ;
 
 collationName
-    : STRING_ | identifier_
+    : STRING_ | identifier
     ;
 
 indexName
-    : identifier_
+    : identifier
     ;
 
 alias
-    : identifier_
+    : identifier
     ;
 
 primaryKey
@@ -196,12 +196,12 @@ simpleExpr
     | parameterMarker
     | literals
     | columnName
-    | simpleExpr COLLATE (STRING_ | identifier_)
+    | simpleExpr COLLATE (STRING_ | identifier)
     | simpleExpr OR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
-    | LBE_ identifier_ expr RBE_
+    | LBE_ identifier expr RBE_
     | caseExpression_
     ;
 
@@ -226,7 +226,7 @@ filterClause_
     ;
 
 windowFunction_
-    : identifier_ LP_ expr (COMMA_ expr)* RP_ filterClause_ OVER identifier_? windowDefinition_
+    : identifier LP_ expr (COMMA_ expr)* RP_ filterClause_ OVER identifier? windowDefinition_
     ;
 
 windowDefinition_
@@ -270,7 +270,7 @@ regularFunction_
     ;
 
 regularFunctionName_
-    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | INTERVAL
+    : identifier | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | INTERVAL
     ;
 
 caseExpression_
@@ -302,7 +302,7 @@ dataType
     ;
 
 dataTypeName_
-    : identifier_ identifier_?
+    : identifier identifier?
     ;
 
 dataTypeLength
@@ -318,7 +318,7 @@ collateClause_
     ;
 
 ignoredIdentifier_
-    : identifier_ (DOT_ identifier_)?
+    : identifier (DOT_ identifier)?
     ;
 
 ignoredIdentifiers_

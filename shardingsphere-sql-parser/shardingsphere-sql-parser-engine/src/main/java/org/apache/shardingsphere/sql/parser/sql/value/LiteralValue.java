@@ -15,32 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.rule.fixture;
+package org.apache.shardingsphere.sql.parser.sql.value;
 
-import org.antlr.v4.runtime.Lexer;
-import org.apache.shardingsphere.sql.parser.api.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 
-public final class TestParserEntry implements SQLParserEntry {
+/**
+ * Literal value.
+ *
+ * @author panjuan
+ */
+@RequiredArgsConstructor
+public final class LiteralValue implements ASTNode {
     
-    @Override
-    public String getDatabaseTypeName() {
-        return "MySQL";
-    }
-    
-    @Override
-    public Class<? extends Lexer> getLexerClass() {
-        return null;
-    }
-    
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return null;
-    }
-    
-    @Override
-    public Class<? extends SQLVisitor> getVisitorClass() {
-        return null;
-    }
+    @Getter
+    private final String literal;
 }
