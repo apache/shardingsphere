@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.core.synctask.history;
 
-import org.apache.shardingsphere.shardingscaling.core.controller.SyncProcessGroup;
+import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgressGroup;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 
 import java.util.LinkedList;
@@ -28,7 +28,7 @@ import java.util.List;
  *
  * @author yangyi
  */
-public final class HistoryDataSyncTaskProgressGroup implements SyncProcessGroup {
+public final class HistoryDataSyncTaskProgressGroup implements SyncProgressGroup {
     
     private final List<SyncProgress> historyDataSyncTaskProgresses = new LinkedList<>();
     

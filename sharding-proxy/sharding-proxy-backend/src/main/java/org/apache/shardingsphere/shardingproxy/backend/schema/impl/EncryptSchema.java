@@ -20,20 +20,26 @@ package org.apache.shardingsphere.shardingproxy.backend.schema.impl;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
-import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.core.log.ConfigurationLogger;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializerEntry;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.util.ConfigurationLogger;
+import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.metadata.loader.EncryptTableMetaDataLoader;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.EncryptRuleChangedEvent;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ProxyConnectionManager;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializer;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -60,8 +66,14 @@ public final class EncryptSchema extends LogicSchema {
     
     private ShardingSphereMetaData createMetaData() throws SQLException {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDatabaseAccessConfigurationMap());
-        TableMetas tableMetas = new TableMetas(getTableMetaDataInitializer(dataSourceMetas).load(shardingRule));
+        TableMetas tableMetas = createTableMetaDataInitializerEntry(dataSourceMetas).initAll();
         return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
+    }
+    
+    private TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(final DataSourceMetas dataSourceMetas) {
+        Map<BaseRule, TableMetaDataInitializer> tableMetaDataInitializes = new HashMap<>(1, 1);
+        tableMetaDataInitializes.put(encryptRule, new EncryptTableMetaDataLoader(dataSourceMetas, new ProxyConnectionManager(getBackendDataSource())));
+        return new TableMetaDataInitializerEntry(tableMetaDataInitializes);
     }
     
     /**

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.yaml.swapper;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
 

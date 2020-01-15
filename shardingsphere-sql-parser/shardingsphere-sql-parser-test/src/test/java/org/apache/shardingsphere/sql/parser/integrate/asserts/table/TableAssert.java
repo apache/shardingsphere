@@ -45,11 +45,13 @@ public final class TableAssert {
      * @param expected expected tables
      */
     public void assertTables(final Collection<TableSegment> actual, final List<ExpectedTable> expected) {
-        assertThat(assertMessage.getFullAssertMessage("Tables size assertion error: "), actual.size(), is(expected.size()));
+        assertThat(assertMessage.getText("Tables size assertion error: "), actual.size(), is(expected.size()));
         int count = 0;
         for (TableSegment each : actual) {
-            assertThat(assertMessage.getFullAssertMessage("Table name assertion error: "), each.getTableName(), is(expected.get(count).getName()));
-            assertThat(assertMessage.getFullAssertMessage("Table alias assertion error: "), each.getAlias().orNull(), is(expected.get(count).getAlias()));
+            assertThat(assertMessage.getText("Table name assertion error: "), each.getTableName(), is(expected.get(count).getName()));
+            assertThat(assertMessage.getText("Table alias assertion error: "), each.getAlias().orNull(), is(expected.get(count).getAlias()));
+            assertThat(assertMessage.getText("Table start index assertion error: "), each.getStartIndex(), is(expected.get(count).getStartIndex()));
+            assertThat(assertMessage.getText("Table stop index assertion error: "), each.getStopIndex(), is(expected.get(count).getStopIndex()));
             count++;
         }
     }

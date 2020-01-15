@@ -21,7 +21,7 @@ import io.opentracing.NoopTracerFactory;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.opentracing.fixture.FooTracer;
 import org.junit.After;
 import org.junit.Before;
@@ -66,7 +66,7 @@ public final class ShardingTracerTest {
         assertThat(ShardingTracer.get(), is(ShardingTracer.get()));
     }
     
-    @Test(expected = ShardingException.class)
+    @Test(expected = ShardingSphereException.class)
     public void assertTracerClassError() {
         System.setProperty("org.apache.shardingsphere.opentracing.tracer.class", "com.foo.FooTracer");
         ShardingTracer.init();

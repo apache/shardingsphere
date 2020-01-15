@@ -21,16 +21,16 @@ import com.google.common.primitives.Ints;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.shardingsphere.api.config.RuleConfiguration;
-import org.apache.shardingsphere.core.config.DataSourceConfiguration;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.core.util.ConfigurationLogger;
+import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.core.yaml.swapper.impl.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.yaml.swapper.OrchestrationConfigurationYamlSwapper;
@@ -154,7 +154,7 @@ public final class Bootstrap {
     }
     
     private static void initOpenTracing() {
-        if (ShardingProxyContext.getInstance().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_OPENTRACING_ENABLED)) {
+        if (ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(PropertiesConstant.PROXY_OPENTRACING_ENABLED)) {
             ShardingTracer.init();
         }
     }

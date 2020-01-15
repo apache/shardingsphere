@@ -21,9 +21,23 @@ import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.log.ConfigurationLogger;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializerEntry;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.encrypt.metadata.decorator.EncryptTableMetaDataDecorator;
+import org.apache.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
+import org.apache.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
+import org.apache.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
+import org.apache.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
+import org.apache.shardingsphere.sharding.execute.metadata.loader.ShardingTableMetaDataLoader;
+import org.apache.shardingsphere.shardingproxy.backend.executor.BackendExecutorContext;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ProxyConnectionManager;
+import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
@@ -31,20 +45,17 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStateme
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.util.ConfigurationLogger;
-import org.apache.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
-import org.apache.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
-import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
-import org.apache.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
-import org.apache.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializer;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -78,7 +89,7 @@ public final class ShardingSchema extends LogicSchema {
     
     private ShardingSphereMetaData createMetaData() throws SQLException {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDatabaseAccessConfigurationMap());
-        TableMetas tableMetas = new TableMetas(getTableMetaDataInitializer(dataSourceMetas).load(shardingRule));
+        TableMetas tableMetas = createTableMetaDataInitializerEntry(dataSourceMetas).initAll();
         return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
     }
     
@@ -130,12 +141,12 @@ public final class ShardingSchema extends LogicSchema {
     
     private void refreshTableMetaDataForCreateTable(final SQLStatementContext sqlStatementContext) throws SQLException {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        getMetaData().getTables().put(tableName, getTableMetaDataInitializer(metaData.getDataSources()).load(tableName, shardingRule));
+        getMetaData().getTables().put(tableName, createTableMetaDataInitializerEntry(metaData.getDataSources()).init(tableName));
     }
     
     private void refreshTableMetaDataForAlterTable(final SQLStatementContext sqlStatementContext) throws SQLException {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        getMetaData().getTables().put(tableName, getTableMetaDataInitializer(metaData.getDataSources()).load(tableName, shardingRule));
+        getMetaData().getTables().put(tableName, createTableMetaDataInitializerEntry(metaData.getDataSources()).init(tableName));
     }
     
     private void refreshTableMetaDataForDropTable(final SQLStatementContext sqlStatementContext) {
@@ -163,6 +174,18 @@ public final class ShardingSchema extends LogicSchema {
                 getMetaData().getTables().get(sqlStatementContext.getTablesContext().getSingleTableName()).getIndexes().remove(each);
             }
         }
+    }
+    
+    private TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(final DataSourceMetas dataSourceMetas) {
+        ShardingSphereProperties properties = ShardingProxyContext.getInstance().getProperties();
+        Map<BaseRule, TableMetaDataInitializer> tableMetaDataInitializes = new HashMap<>(2, 1);
+        tableMetaDataInitializes.put(shardingRule, 
+                new ShardingTableMetaDataLoader(dataSourceMetas, BackendExecutorContext.getInstance().getExecutorEngine(), new ProxyConnectionManager(getBackendDataSource()), 
+                properties.<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), properties.<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED)));
+        if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
+            tableMetaDataInitializes.put(shardingRule.getEncryptRule(), new EncryptTableMetaDataDecorator());
+        }
+        return new TableMetaDataInitializerEntry(tableMetaDataInitializes);
     }
     
     private Collection<String> getIndexNames(final DropIndexStatement dropIndexStatement) {

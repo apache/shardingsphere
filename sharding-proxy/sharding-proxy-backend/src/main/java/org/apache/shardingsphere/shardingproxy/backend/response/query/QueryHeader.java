@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -58,28 +59,26 @@ public final class QueryHeader {
     private final boolean autoIncrement;
     
     public QueryHeader(final ResultSetMetaData resultSetMetaData, final LogicSchema logicSchema, final int columnIndex) throws SQLException {
-        this.schema = logicSchema.getName();
-        if (logicSchema instanceof ShardingSchema) {
-            Collection<String> tableNames = logicSchema.getShardingRule().getLogicTableNames(resultSetMetaData.getTableName(columnIndex));
-            this.table = tableNames.isEmpty() ? "" : tableNames.iterator().next();
-            if (logicSchema.getMetaData().getTables().containsTable(resultSetMetaData.getTableName(columnIndex))) {
-                this.primaryKey = logicSchema.getMetaData().getTables().get(resultSetMetaData.getTableName(columnIndex)).getColumns()
-                        .get(resultSetMetaData.getColumnName(columnIndex).toLowerCase()).isPrimaryKey();
-            } else {
-                this.primaryKey = false;
-            }
+        schema = logicSchema.getName();
+        columnLabel = resultSetMetaData.getColumnLabel(columnIndex);
+        columnName = resultSetMetaData.getColumnName(columnIndex);
+        columnLength = resultSetMetaData.getColumnDisplaySize(columnIndex);
+        columnType = resultSetMetaData.getColumnType(columnIndex);
+        decimals = resultSetMetaData.getScale(columnIndex);
+        signed = resultSetMetaData.isSigned(columnIndex);
+        notNull = resultSetMetaData.isNullable(columnIndex) == ResultSetMetaData.columnNoNulls;
+        autoIncrement = resultSetMetaData.isAutoIncrement(columnIndex);
+        String actualTableName = resultSetMetaData.getTableName(columnIndex);
+        if (null != actualTableName && logicSchema instanceof ShardingSchema) {
+            Collection<String> logicTableNames = logicSchema.getShardingRule().getLogicTableNames(actualTableName);
+            table = logicTableNames.isEmpty() ? "" : logicTableNames.iterator().next();
+            TableMetaData tableMetaData = logicSchema.getMetaData().getTables().get(table);
+            primaryKey = null != tableMetaData && tableMetaData.getColumns().get(resultSetMetaData.getColumnName(columnIndex).toLowerCase())
+                    .isPrimaryKey();
         } else {
-            this.table = resultSetMetaData.getTableName(columnIndex);
-            this.primaryKey = false;
+            table = actualTableName;
+            primaryKey = false;
         }
-        this.columnLabel = resultSetMetaData.getColumnLabel(columnIndex);
-        this.columnName = resultSetMetaData.getColumnName(columnIndex);
-        this.columnLength = resultSetMetaData.getColumnDisplaySize(columnIndex);
-        this.columnType = resultSetMetaData.getColumnType(columnIndex);
-        this.decimals = resultSetMetaData.getScale(columnIndex);
-        this.signed = resultSetMetaData.isSigned(columnIndex);
-        this.notNull = resultSetMetaData.isNullable(columnIndex) == ResultSetMetaData.columnNoNulls;
-        this.autoIncrement = resultSetMetaData.isAutoIncrement(columnIndex);
     }
     
     /**

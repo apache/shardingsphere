@@ -44,11 +44,14 @@ public final class AssignmentAssert {
      */
     public void assertAssignment(final ExpressionSegment actual, final ExpectedAssignment expected) {
         if (SQLCaseType.Placeholder == sqlCaseType) {
-            assertThat(assertMessage.getFullAssertMessage("SQL expression type for placeholder error: "), actual.getClass().getSimpleName(), is(expected.getTypeForPlaceholder()));
-            assertThat(assertMessage.getFullAssertMessage("SQL expression text for placeholder error: "), getText(actual), is(expected.getTextForPlaceholder()));
+            if (null == expected.getTypeForPlaceholder()) {
+                return;
+            }
+            assertThat(assertMessage.getText("SQL expression type for placeholder error: "), actual.getClass().getSimpleName(), is(expected.getTypeForPlaceholder()));
+            assertThat(assertMessage.getText("SQL expression text for placeholder error: "), getText(actual), is(expected.getTextForPlaceholder()));
         } else {
-            assertThat(assertMessage.getFullAssertMessage("SQL expression type for literal error: "), actual.getClass().getSimpleName(), is(expected.getTypeForLiteral()));
-            assertThat(assertMessage.getFullAssertMessage("SQL expression text for literal error: "), getText(actual), is(expected.getTextForLiteral()));
+            assertThat(assertMessage.getText("SQL expression type for literal error: "), actual.getClass().getSimpleName(), is(expected.getTypeForLiteral()));
+            assertThat(assertMessage.getText("SQL expression text for literal error: "), getText(actual), is(expected.getTextForLiteral()));
         }
     }
     

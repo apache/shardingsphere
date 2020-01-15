@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>sharding-core</artifactId>
-        <version>4.0.0-RC4-SNAPSHOT</version>
+        <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-core-rewrite</artifactId>
     <name>${project.artifactId}</name>
@@ -32,21 +32,20 @@
             <artifactId>sharding-core-route</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-parser-relation</artifactId>
+            <artifactId>encrypt-core-rewrite</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-rewriter-engine</artifactId>
+            <artifactId>shardingsphere-rewrite-engine</artifactId>
             <version>${project.version}</version>
         </dependency>
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-rewriter-test</artifactId>
+            <artifactId>shardingsphere-rewrite-test</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

@@ -20,20 +20,22 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.route.router.masterslave.MasterVisitedManager;
+import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.spi.database.H2DatabaseType;
 import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
+import org.apache.shardingsphere.underlying.common.database.type.dialect.H2DatabaseType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,6 +47,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -114,15 +117,16 @@ public final class MasterSlaveDataSourceTest {
         assertThat(((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, 
                 new MasterSlaveRuleConfiguration("ds", "masterDataSource", Arrays.asList("slaveDataSource1", "slaveDataSource2"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN")),
                 new Properties())).getDatabaseType(), instanceOf(H2DatabaseType.class));
-        verify(slaveConnection1).close();
-        verify(slaveConnection2).close();
+        verify(slaveConnection1, times(2)).close();
+        verify(slaveConnection2, times(2)).close();
     }
     
     private Connection mockConnection(final String url) throws SQLException {
         Connection result = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(result.getMetaData()).thenReturn(databaseMetaData);
-        when(databaseMetaData.getURL()).thenReturn(url);
+        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
+        when(metaData.getTables(ArgumentMatchers.<String>any(), ArgumentMatchers.<String>any(), ArgumentMatchers.<String>any(), ArgumentMatchers.<String[]>any())).thenReturn(mock(ResultSet.class));
+        when(result.getMetaData()).thenReturn(metaData);
+        when(metaData.getURL()).thenReturn(url);
         return result;
     }
     

@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>sharding-core</artifactId>
-        <version>4.0.0-RC4-SNAPSHOT</version>
+        <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-core-api</artifactId>
     <name>${project.artifactId}</name>
@@ -29,7 +29,12 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-spi</artifactId>
+            <artifactId>shardingsphere-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>encrypt-core-api</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

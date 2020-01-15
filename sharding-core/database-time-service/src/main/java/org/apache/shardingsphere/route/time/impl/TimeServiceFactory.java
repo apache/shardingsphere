@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.route.time.impl;
 
-import org.apache.shardingsphere.core.route.spi.TimeService;
+import org.apache.shardingsphere.sharding.route.spi.TimeService;
 import org.apache.shardingsphere.route.time.TimeServiceConfiguration;
 import org.apache.shardingsphere.route.time.spi.SPIDataBaseSQLEntry;
 

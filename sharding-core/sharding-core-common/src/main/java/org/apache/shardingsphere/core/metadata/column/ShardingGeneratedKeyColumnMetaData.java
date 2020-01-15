@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.metadata.column;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
 
 /**
  * Column meta data for sharding generated key.

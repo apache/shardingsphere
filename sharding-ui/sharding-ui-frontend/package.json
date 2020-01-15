@@ -9,7 +9,8 @@
     "start": "npm run dev",
     "lint": "eslint --ext .js,.vue src",
     "build": "node build/build.js",
-    "unit": "cross-env BABEL_ENV=test karma start test/karma.conf.js --single-run"
+    "unit": "cross-env BABEL_ENV=test karma start test/karma.conf.js --single-run",
+    "rimraf": "node build/rimraf.js"
   },
   "dependencies": {
     "axios": "^0.18.0",

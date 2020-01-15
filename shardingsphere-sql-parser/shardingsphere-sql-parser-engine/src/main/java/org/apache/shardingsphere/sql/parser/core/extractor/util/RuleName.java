@@ -119,6 +119,8 @@ public enum RuleName {
     
     STRING_LITERALS("StringLiterals"),
     
+    BOOLEAN_LITERALS("BooleanLiterals"),
+    
     EXPR("Expr"),
     
     SIMPLE_EXPR("SimpleExpr"),

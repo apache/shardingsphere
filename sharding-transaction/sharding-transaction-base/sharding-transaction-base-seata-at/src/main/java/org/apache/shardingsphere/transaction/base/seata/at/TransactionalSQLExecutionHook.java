@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.transaction.base.seata.at;
 
-import org.apache.shardingsphere.core.execute.hook.SQLExecutionHook;
-import org.apache.shardingsphere.spi.database.DataSourceMetaData;
+import org.apache.shardingsphere.sharding.execute.sql.hook.SQLExecutionHook;
+import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 
 import java.util.List;
 import java.util.Map;

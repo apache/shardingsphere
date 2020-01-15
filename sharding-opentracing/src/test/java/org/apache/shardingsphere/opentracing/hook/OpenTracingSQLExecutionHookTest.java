@@ -21,12 +21,12 @@ import io.opentracing.ActiveSpan;
 import io.opentracing.ActiveSpan.Continuation;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
-import org.apache.shardingsphere.core.execute.engine.ShardingExecuteDataMap;
-import org.apache.shardingsphere.core.execute.hook.SPISQLExecutionHook;
-import org.apache.shardingsphere.core.execute.hook.SQLExecutionHook;
+import org.apache.shardingsphere.underlying.executor.engine.ExecutorDataMap;
+import org.apache.shardingsphere.sharding.execute.sql.hook.SPISQLExecutionHook;
+import org.apache.shardingsphere.sharding.execute.sql.hook.SQLExecutionHook;
 import org.apache.shardingsphere.opentracing.constant.ShardingTags;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.spi.database.DataSourceMetaData;
+import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
@@ -64,13 +64,13 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         Continuation continuation = mock(Continuation.class);
         ActiveSpan result = mock(ActiveSpan.class);
         when(continuation.activate()).thenReturn(result);
-        ShardingExecuteDataMap.getDataMap().put(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION, continuation);
+        ExecutorDataMap.getValue().put(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION, continuation);
         return result;
     }
     
     @After
     public void tearDown() {
-        ShardingExecuteDataMap.getDataMap().remove(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION);
+        ExecutorDataMap.getValue().remove(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION);
     }
     
     @Test
@@ -122,7 +122,7 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
-        sqlExecutionHook.start("success_ds", "SELECT * FROM success_tbl;", Arrays.<Object>asList("1", 2), dataSourceMetaData, false, ShardingExecuteDataMap.getDataMap());
+        sqlExecutionHook.start("success_ds", "SELECT * FROM success_tbl;", Arrays.<Object>asList("1", 2), dataSourceMetaData, false, ExecutorDataMap.getValue());
         sqlExecutionHook.finishSuccess();
         MockSpan actual = getActualSpan();
         assertThat(actual.operationName(), is("/ShardingSphere/executeSQL/"));

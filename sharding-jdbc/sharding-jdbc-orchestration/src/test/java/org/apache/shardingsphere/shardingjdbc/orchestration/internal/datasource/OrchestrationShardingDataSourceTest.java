@@ -23,8 +23,8 @@ import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfi
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.core.config.DataSourceConfiguration;
-import org.apache.shardingsphere.core.constant.ShardingConstant;
+import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
+import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
@@ -119,7 +119,7 @@ public final class OrchestrationShardingDataSourceTest {
     @Test
     public void assertRenewProperties() {
         shardingDataSource.renew(getPropertiesChangedEvent());
-        assertThat(shardingDataSource.getDataSource().getRuntimeContext().getProps().getProps().getProperty("sql.show"), is("true"));
+        assertThat(shardingDataSource.getDataSource().getRuntimeContext().getProperties().getProps().getProperty("sql.show"), is("true"));
     }
     
     private PropertiesChangedEvent getPropertiesChangedEvent() {
