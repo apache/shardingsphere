@@ -55,15 +55,15 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
     
     private final int flags;
     
-    private MySQLNullBitmap nullBitmap;
+    private final MySQLNullBitmap nullBitmap;
     
-    private MySQLNewParametersBoundFlag newParametersBoundFlag;
+    private final MySQLNewParametersBoundFlag newParametersBoundFlag;
     
     @Getter
     private final String sql;
     
     @Getter
-    private List<Object> parameters;
+    private final List<Object> parameters;
     
     public MySQLComStmtExecutePacket(final MySQLPacketPayload payload) throws SQLException {
         super(MySQLCommandPacketType.COM_STMT_EXECUTE);
@@ -83,6 +83,10 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
                 binaryStatement.setParameterTypes(getParameterTypes(payload, parametersCount));
             }
             parameters = getParameters(payload, parametersCount);
+        } else {
+            nullBitmap = null;
+            newParametersBoundFlag = null;
+            parameters = null;
         }
     }
     
