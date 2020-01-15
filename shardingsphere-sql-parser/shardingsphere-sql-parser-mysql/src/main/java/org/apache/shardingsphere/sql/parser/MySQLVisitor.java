@@ -41,7 +41,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
  */
 public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
-    // DAL
+    // DALStatement.g4
     @Override
     public ASTNode visitUse(final UseContext ctx) {
         LiteralValue schema = (LiteralValue) visit(ctx.schemaName());
@@ -77,7 +77,13 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         return new ShowLikeSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), literalValue.getLiteral());
     }
     
-    // BaseRule
+    // DCLStatement.g4
+    // DDLStatement.g4
+    // DMLStatement.g4
+    // TCLStatement.g4
+    // StoreProcedure.g4
+    
+    // BaseRule.g4
     @Override
     public ASTNode visitSchemaName(final SchemaNameContext ctx) {
         return visit(ctx.identifier());
