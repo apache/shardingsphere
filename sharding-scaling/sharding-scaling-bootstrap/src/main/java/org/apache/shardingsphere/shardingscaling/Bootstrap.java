@@ -29,11 +29,11 @@ import io.netty.handler.logging.LoggingHandler;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.log4j.PropertyConfigurator;
-import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.web.HttpServerInitializer;
 import org.apache.shardingsphere.shardingscaling.utils.RuntimeUtil;
+import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 import java.io.File;
 import java.io.IOException;
