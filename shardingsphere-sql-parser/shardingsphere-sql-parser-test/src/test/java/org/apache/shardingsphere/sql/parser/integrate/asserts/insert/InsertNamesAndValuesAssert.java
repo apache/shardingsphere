@@ -53,14 +53,14 @@ public final class InsertNamesAndValuesAssert {
      * @param expected expected insert names and values
      */
     public void assertInsertNamesAndValues(final InsertStatement actual, final ExpectedInsertColumnsAndValues expected) {
-        assertThat(assertMessage.getFullAssertMessage("Insert column names assertion error: "), Joiner.on(",").join(Collections2.transform(actual.getColumns(), new Function<ColumnSegment, Object>() {
+        assertThat(assertMessage.getText("Insert column names assertion error: "), Joiner.on(",").join(Collections2.transform(actual.getColumns(), new Function<ColumnSegment, Object>() {
             
             @Override
             public Object apply(final ColumnSegment input) {
                 return input.getName();
             }
         })), is(expected.getColumnNames()));
-        assertThat(assertMessage.getFullAssertMessage("Insert values size assertion error: "), actual.getValues().size(), is(expected.getValues().size()));
+        assertThat(assertMessage.getText("Insert values size assertion error: "), actual.getValues().size(), is(expected.getValues().size()));
         assertInsertValues(actual.getValues(), expected.getValues());
     }
     
@@ -73,7 +73,7 @@ public final class InsertNamesAndValuesAssert {
     }
     
     private void assertInsertValue(final InsertValuesSegment actual, final ExpectedInsertValue expected) {
-        assertThat(assertMessage.getFullAssertMessage("Assignments size assertion error: "), actual.getValues().size(), is(expected.getAssignments().size()));
+        assertThat(assertMessage.getText("Assignments size assertion error: "), actual.getValues().size(), is(expected.getAssignments().size()));
         int i = 0;
         for (ExpressionSegment each : actual.getValues()) {
             assignmentAssert.assertAssignment(each, expected.getAssignments().get(i++));

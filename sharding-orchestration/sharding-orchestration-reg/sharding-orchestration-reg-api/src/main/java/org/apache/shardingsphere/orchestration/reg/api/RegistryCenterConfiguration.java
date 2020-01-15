@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.reg.api;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.api.config.TypeBasedSPIConfiguration;
+import org.apache.shardingsphere.underlying.common.config.TypeBasedSPIConfiguration;
 
 import java.util.Properties;
 

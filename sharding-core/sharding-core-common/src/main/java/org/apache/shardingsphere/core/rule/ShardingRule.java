@@ -22,18 +22,20 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.config.ShardingConfigurationException;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategyFactory;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
 import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
 import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -188,7 +190,7 @@ public class ShardingRule implements BaseRule {
         if (!Strings.isNullOrEmpty(shardingDataSourceNames.getDefaultDataSourceName())) {
             return new TableRule(shardingDataSourceNames.getDefaultDataSourceName(), logicTableName);
         }
-        throw new ShardingConfigurationException("Cannot find table rule and default data source with logic table: '%s'", logicTableName);
+        throw new ShardingSphereConfigurationException("Cannot find table rule and default data source with logic table: '%s'", logicTableName);
     }
     
     /**
@@ -373,14 +375,14 @@ public class ShardingRule implements BaseRule {
     public Comparable<?> generateKey(final String logicTableName) {
         Optional<TableRule> tableRule = findTableRule(logicTableName);
         if (!tableRule.isPresent()) {
-            throw new ShardingConfigurationException("Cannot find strategy for generate keys.");
+            throw new ShardingSphereConfigurationException("Cannot find strategy for generate keys.");
         }
         ShardingKeyGenerator shardingKeyGenerator = null == tableRule.get().getShardingKeyGenerator() ? defaultShardingKeyGenerator : tableRule.get().getShardingKeyGenerator();
         return shardingKeyGenerator.generateKey();
     }
     
     /**
-     * Get logic table names base on actual table name.
+     * Get logic table names based on actual table name.
      *
      * @param actualTableName actual table name
      * @return logic table name
@@ -420,7 +422,7 @@ public class ShardingRule implements BaseRule {
                 return each;
             }
         }
-        throw new ShardingConfigurationException("Cannot find actual data node for data source name: '%s' and logic table name: '%s'", dataSourceName, logicTableName);
+        throw new ShardingSphereConfigurationException("Cannot find actual data node for data source name: '%s' and logic table name: '%s'", dataSourceName, logicTableName);
     }
     
     /**

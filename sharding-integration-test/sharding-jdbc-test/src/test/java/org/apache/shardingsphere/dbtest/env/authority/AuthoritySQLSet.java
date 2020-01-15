@@ -21,8 +21,8 @@ import com.google.common.base.Function;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import lombok.Setter;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
+import org.apache.shardingsphere.spi.database.type.DatabaseType;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -43,7 +43,7 @@ import java.util.List;
 @Setter
 public final class AuthoritySQLSet {
     
-    @XmlAttribute(name = "db-types")
+    @XmlAttribute(name = "db-types", required = true)
     private String databaseTypes;
     
     @XmlElementWrapper(name = "user-create")
@@ -75,13 +75,12 @@ public final class AuthoritySQLSet {
     }
     
     private Collection<DatabaseType> getDatabaseTypes() {
-        return null == databaseTypes ? DatabaseTypes.getDatabaseTypes() : Lists.transform(Splitter.on(",").trimResults().splitToList(databaseTypes),
-                new Function<String, DatabaseType>() {
-                    
-                    @Override
-                    public DatabaseType apply(final String input) {
-                        return DatabaseTypes.getActualDatabaseType(input);
-                    }
-                });
+        return Lists.transform(Splitter.on(",").trimResults().splitToList(databaseTypes), new Function<String, DatabaseType>() {
+                
+                @Override
+                public DatabaseType apply(final String input) {
+                    return DatabaseTypes.getActualDatabaseType(input);
+                }
+            });
     }
 }

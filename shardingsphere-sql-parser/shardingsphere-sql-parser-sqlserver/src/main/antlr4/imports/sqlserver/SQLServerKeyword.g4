@@ -842,3 +842,15 @@ DROP_EXISTING
 ROW_NUMBER
     : R O W UL_ N U M B E R
     ;
+
+FETCH
+    : F E T C H
+    ;
+
+FIRST
+    : F I R S T
+    ;
+
+ONLY
+    : O N L Y
+    ;

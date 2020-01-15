@@ -1,3 +1,53 @@
+## 4.0.0
+
+### API Changes
+
+1. Change package and maven groupId form `io.shardingsphere` to `org.apache.shardingsphere`.
+1. Adjust Sharding-JDBC configuration API.
+1. Adjust persist structure for registry center.
+
+### New Features
+
+1. SQL92 Syntax available.
+1. Sharding-Proxy for PostgreSQL protocol available.
+1. SQL 100% compatible if route to single data node.
+1. Less-than(<), greater-than(>) and Less-than-equal(<=), greater-than-equal(>=) for sharding key operator available.
+1. DISTINCT SQL syntax available.
+1. Broadcast table available.
+1. LEAF key generator available.
+1. XA Transaction available, Atomikos, Narayana and Bitronix integrated.
+1. BASE Transaction available, Seata integrated.
+1. Data encrypt available.
+1. Skywalking plugin available.
+1. Sharding-UI available, an orchestration management platform.
+
+### Enhancement
+
+1. MariaDB supported.
+1. Improve the compatibility of SQL parsing.
+1. `SELECT FOR UPDATE` route to master data source only.
+1. Hint in Sharding-Proxy available.
+1. Make configuration of orchestration consistent between Sharding-JDBC and Sharding-Proxy.
+1. Renew modified data sources only, not renew all the data sources.
+1. Vibrate configurable for Snowflake key generator.
+
+### Bug Fixes
+
+1. Improve the compatibility of JDBC Driver URL.
+1. Delete statement with alias available.
+1. Check and disable updating sharding column.
+1. Fix wrong type of TINYINT and SMALLINT as INTEGER.
+
+###  Change Logs
+
+1. [MILESTONE #3](https://github.com/sharding-sphere/sharding-sphere/milestone/3)
+1. [MILESTONE #4](https://github.com/sharding-sphere/sharding-sphere/milestone/4)
+1. [MILESTONE #5](https://github.com/sharding-sphere/sharding-sphere/milestone/5)
+1. [MILESTONE #6](https://github.com/sharding-sphere/sharding-sphere/milestone/6)
+1. [MILESTONE #7](https://github.com/apache/incubator-shardingsphere/milestone/7)
+1. [MILESTONE #8](https://github.com/apache/incubator-shardingsphere/milestone/8)
+1. [MILESTONE #9](https://github.com/apache/incubator-shardingsphere/milestone/9)
+
 ## 4.0.0.RC3
 
 ### New Features

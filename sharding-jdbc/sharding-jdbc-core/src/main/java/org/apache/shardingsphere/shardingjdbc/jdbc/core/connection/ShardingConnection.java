@@ -142,7 +142,6 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
             return;
         }
         if (!autoCommit && !shardingTransactionManager.isInTransaction()) {
-            recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{true});
             closeCachedConnections();
             shardingTransactionManager.begin();
         }

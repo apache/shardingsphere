@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import org.apache.shardingsphere.core.constant.ShardingConstant;
+import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
 
 import java.sql.ResultSetMetaData;
@@ -126,7 +126,7 @@ public final class EncryptResultSetMetaData extends WrapperAdapter implements Re
     
     private String getLogicColumn(final String actualColumn) throws SQLException {
         for (Entry<String, String> entry : logicAndActualColumns.entrySet()) {
-            if (entry.getValue().contains(actualColumn)) {
+            if (entry.getValue().equals(actualColumn)) {
                 return entry.getKey();
             }
         }

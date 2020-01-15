@@ -49,14 +49,14 @@ public final class PaginationAssert {
      */
     public void assertOffset(final PaginationValueSegment actual, final ExpectedPaginationValue expected) {
         if (null == actual) {
-            assertNull(assertMessage.getFullAssertMessage("Offset should not exist: "), expected);
+            assertNull(assertMessage.getText("Offset should not exist: "), expected);
             return;
         }
         if (SQLCaseType.Placeholder == sqlCaseType) {
-            assertThat(assertMessage.getFullAssertMessage("Offset index assertion error: "),
+            assertThat(assertMessage.getText("Offset index assertion error: "),
                     ((ParameterMarkerPaginationValueSegment) actual).getParameterIndex(), is(expected.getParameterIndex()));
         } else {
-            assertThat(assertMessage.getFullAssertMessage("Offset value assertion error: "), ((NumberLiteralPaginationValueSegment) actual).getValue(), is(expected.getValue()));
+            assertThat(assertMessage.getText("Offset value assertion error: "), ((NumberLiteralPaginationValueSegment) actual).getValue(), is(expected.getValue()));
         }
     }
     
@@ -68,14 +68,14 @@ public final class PaginationAssert {
      */
     public void assertRowCount(final PaginationValueSegment actual, final ExpectedPaginationValue expected) {
         if (null == actual) {
-            assertNull(assertMessage.getFullAssertMessage("Row count should not exist: "), expected);
+            assertNull(assertMessage.getText("Row count should not exist: "), expected);
             return;
         }
         if (SQLCaseType.Placeholder == sqlCaseType) {
-            assertThat(assertMessage.getFullAssertMessage("Row count index assertion error: "),
+            assertThat(assertMessage.getText("Row count index assertion error: "),
                     ((ParameterMarkerPaginationValueSegment) actual).getParameterIndex(), is(expected.getParameterIndex()));
         } else {
-            assertThat(assertMessage.getFullAssertMessage("Row count value assertion error: "), ((NumberLiteralPaginationValueSegment) actual).getValue(), is(expected.getValue()));
+            assertThat(assertMessage.getText("Row count value assertion error: "), ((NumberLiteralPaginationValueSegment) actual).getValue(), is(expected.getValue()));
         }
     }
 }

@@ -46,13 +46,13 @@ public final class AlterTableAssert {
      * @param expected expected alter table
      */
     public void assertAlterTable(final AlterTableStatement actual, final ExpectedAlterTable expected) {
-        assertThat(assertMessage.getFullAssertMessage("Drop names assertion error: "), Joiner.on(",").join(actual.getDroppedColumnNames()), is(expected.getDropColumns()));
+        assertThat(assertMessage.getText("Drop names assertion error: "), Joiner.on(",").join(actual.getDroppedColumnNames()), is(expected.getDropColumns()));
         assertAddColumns(actual, expected.getAddColumns());
         assertColumnPositions(actual.getChangedPositionColumns(), expected.getPositionChangedColumns());
     }
     
     private void assertAddColumns(final AlterTableStatement actual, final List<ExpectedColumnDefinition> expected) {
-        assertThat(assertMessage.getFullAssertMessage("Add column size error: "), actual.getAddedColumnDefinitions().size(), is(expected.size()));
+        assertThat(assertMessage.getText("Add column size error: "), actual.getAddedColumnDefinitions().size(), is(expected.size()));
         int count = 0;
         for (ColumnDefinitionSegment each : actual.getAddedColumnDefinitions()) {
             assertColumnDefinition(each, expected.get(count));
@@ -61,15 +61,15 @@ public final class AlterTableAssert {
     }
     
     private void assertColumnDefinition(final ColumnDefinitionSegment actual, final ExpectedColumnDefinition expected) {
-        assertThat(assertMessage.getFullAssertMessage("Column name assertion error: "), actual.getColumnName(), is(expected.getName()));
-        assertThat(assertMessage.getFullAssertMessage("Column " + actual.getColumnName() + " type assertion error: "), actual.getDataType(), is(expected.getType()));
+        assertThat(assertMessage.getText("Column name assertion error: "), actual.getColumnName(), is(expected.getName()));
+        assertThat(assertMessage.getText("Column " + actual.getColumnName() + " type assertion error: "), actual.getDataType(), is(expected.getType()));
     }
     
     private void assertColumnPositions(final Collection<ColumnPositionSegment> actual, final List<ExpectedColumnPosition> expected) {
         if (null == expected) {
             return;
         }
-        assertThat(assertMessage.getFullAssertMessage("Alter column position size error: "), actual.size(), is(expected.size()));
+        assertThat(assertMessage.getText("Alter column position size error: "), actual.size(), is(expected.size()));
         int count = 0;
         for (ColumnPositionSegment each : actual) {
             assertColumnPosition(each, expected.get(count));
@@ -78,10 +78,10 @@ public final class AlterTableAssert {
     }
     
     private void assertColumnPosition(final ColumnPositionSegment actual, final ExpectedColumnPosition expected) {
-        assertThat(assertMessage.getFullAssertMessage("Alter column position name assertion error: "), actual.getColumnName(), is(expected.getColumnName()));
-        assertThat(assertMessage.getFullAssertMessage("Alter column [" + actual.getColumnName() + "]position startIndex assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
+        assertThat(assertMessage.getText("Alter column position name assertion error: "), actual.getColumnName(), is(expected.getColumnName()));
+        assertThat(assertMessage.getText("Alter column [" + actual.getColumnName() + "]position startIndex assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
         if (actual instanceof ColumnAfterPositionSegment) {
-            assertThat(assertMessage.getFullAssertMessage("Alter column [" + actual.getColumnName() + "]position afterColumnName assertion error: "), 
+            assertThat(assertMessage.getText("Alter column [" + actual.getColumnName() + "]position afterColumnName assertion error: "), 
                     ((ColumnAfterPositionSegment) actual).getAfterColumnName(), is(expected.getAfterColumn()));
         }
     }

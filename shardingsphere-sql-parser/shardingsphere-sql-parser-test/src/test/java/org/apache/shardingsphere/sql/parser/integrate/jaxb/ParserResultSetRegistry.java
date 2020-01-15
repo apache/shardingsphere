@@ -43,9 +43,9 @@ public final class ParserResultSetRegistry {
     
     private Map<String, ParserResult> load(final String directory) {
         URL url = ParserResultSetRegistry.class.getClassLoader().getResource(directory);
-        Preconditions.checkNotNull(url, "Cannot find parse test cases.");
+        Preconditions.checkNotNull(url, "Can not find parse test cases.");
         File[] files = new File(url.getPath()).listFiles();
-        Preconditions.checkNotNull(files, "Cannot find parse test cases.");
+        Preconditions.checkNotNull(files, "Can not find parse test cases.");
         Map<String, ParserResult> result = new HashMap<>(Short.MAX_VALUE, 1);
         for (File each : files) {
             result.putAll(load(each));
@@ -89,7 +89,7 @@ public final class ParserResultSetRegistry {
      * @return parser result
      */
     public ParserResult get(final String sqlCaseId) {
-        Preconditions.checkState(parserResultMap.containsKey(sqlCaseId), "Can't find SQL of id: %s", sqlCaseId);
+        Preconditions.checkState(parserResultMap.containsKey(sqlCaseId), "Can not find SQL of id: %s", sqlCaseId);
         return parserResultMap.get(sqlCaseId);
     }
     

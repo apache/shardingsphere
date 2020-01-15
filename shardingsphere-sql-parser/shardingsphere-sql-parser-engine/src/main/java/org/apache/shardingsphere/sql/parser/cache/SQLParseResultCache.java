@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.sql.parser.cache;
 
 import com.google.common.base.Optional;
-import org.apache.commons.collections4.map.AbstractReferenceMap;
-import org.apache.commons.collections4.map.ReferenceMap;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-
-import java.util.Map;
 
 /**
  * SQL parse result cache.
@@ -32,7 +30,7 @@ import java.util.Map;
  */
 public final class SQLParseResultCache {
     
-    private final Map<String, SQLStatement> cache = new ReferenceMap<>(AbstractReferenceMap.ReferenceStrength.SOFT, AbstractReferenceMap.ReferenceStrength.SOFT, 65535, 1);
+    private final Cache<String, SQLStatement> cache = CacheBuilder.newBuilder().softValues().initialCapacity(2000).maximumSize(65535).build();
     
     /**
      * Put SQL and parse result into cache.
@@ -51,13 +49,13 @@ public final class SQLParseResultCache {
      * @return SQL statement
      */
     public Optional<SQLStatement> getSQLStatement(final String sql) {
-        return Optional.fromNullable(cache.get(sql));
+        return Optional.fromNullable(cache.getIfPresent(sql));
     }
     
     /**
      * Clear cache.
      */
     public synchronized void clear() {
-        cache.clear();
+        cache.invalidateAll();
     }
 }

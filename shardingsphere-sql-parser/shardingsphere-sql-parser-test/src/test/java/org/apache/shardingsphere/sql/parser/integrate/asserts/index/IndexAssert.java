@@ -44,9 +44,9 @@ public final class IndexAssert {
      */
     public void assertParametersCount(final int actual, final int expected) {
         if (SQLCaseType.Placeholder == sqlCaseType) {
-            assertThat(assertMessage.getFullAssertMessage("Parameters count assertion error: "), actual, is(expected));
+            assertThat(assertMessage.getText("Parameters count assertion error: "), actual, is(expected));
         } else {
-            assertThat(assertMessage.getFullAssertMessage("Parameters count assertion error: "), actual, is(0));
+            assertThat(assertMessage.getText("Parameters count assertion error: "), actual, is(0));
         }
     }
 }
