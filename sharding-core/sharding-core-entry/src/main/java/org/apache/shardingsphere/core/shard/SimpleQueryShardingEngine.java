@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.core.shard;
 
+import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.sql.parser.SQLParseEngine;
-import org.apache.shardingsphere.core.route.ShardingRouteResult;
-import org.apache.shardingsphere.core.route.StatementRoutingEngine;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collections;
 import java.util.List;
@@ -41,11 +40,8 @@ import java.util.List;
  */
 public final class SimpleQueryShardingEngine extends BaseShardingEngine {
     
-    private final StatementRoutingEngine routingEngine;
-    
     public SimpleQueryShardingEngine(final ShardingRule shardingRule, final ShardingSphereProperties properties, final ShardingSphereMetaData metaData, final SQLParseEngine sqlParseEngine) {
-        super(shardingRule, properties, metaData);
-        routingEngine = new StatementRoutingEngine(shardingRule, metaData, sqlParseEngine);
+        super(shardingRule, properties, metaData, sqlParseEngine);
     }
     
     @Override
@@ -54,7 +50,7 @@ public final class SimpleQueryShardingEngine extends BaseShardingEngine {
     }
     
     @Override
-    protected ShardingRouteResult route(final String sql, final List<Object> parameters) {
-        return routingEngine.route(sql);
+    protected ShardingRouteContext route(final String sql, final List<Object> parameters) {
+        return getShardingRouter().route(sql, Collections.emptyList(), false);
     }
 }

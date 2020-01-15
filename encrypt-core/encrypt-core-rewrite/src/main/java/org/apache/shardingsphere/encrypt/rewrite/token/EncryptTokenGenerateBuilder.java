@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.rewrite.token;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.impl.EncryptInsertOnUpdateTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.impl.EncryptForUseDefaultInsertColumnsTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.impl.EncryptPredicateColumnTokenGenerator;
@@ -72,6 +73,7 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
         result.add(new EncryptForUseDefaultInsertColumnsTokenGenerator());
         result.add(new InsertCipherNameTokenGenerator());
         result.add(new AssistQueryAndPlainInsertColumnsTokenGenerator());
+        result.add(new EncryptInsertOnUpdateTokenGenerator());
         return result;
     }
 }

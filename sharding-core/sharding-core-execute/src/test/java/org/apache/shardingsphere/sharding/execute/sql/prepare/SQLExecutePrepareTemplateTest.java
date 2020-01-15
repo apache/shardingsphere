@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sharding.execute.sql.prepare;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.route.RouteUnit;
-import org.apache.shardingsphere.underlying.route.SQLUnit;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -78,18 +78,18 @@ public final class SQLExecutePrepareTemplateTest {
         when(callback.getConnections(eq(connectionMode), anyString(), eq(size))).thenReturn(connections);
     }
     
-    private Collection<RouteUnit> mockShardRouteUnit(final int shardCount, final int sizePerShard) {
-        Collection<RouteUnit> result = new ArrayList<>(shardCount * sizePerShard);
+    private Collection<ExecutionUnit> mockShardRouteUnit(final int shardCount, final int sizePerShard) {
+        Collection<ExecutionUnit> result = new ArrayList<>(shardCount * sizePerShard);
         for (int i = 0; i < shardCount; i++) {
             result.addAll(mockOneShard("ds_" + i, sizePerShard));
         }
         return result;
     }
     
-    private Collection<RouteUnit> mockOneShard(final String dsName, final int size) {
-        Collection<RouteUnit> result = new ArrayList<>(size);
+    private Collection<ExecutionUnit> mockOneShard(final String dsName, final int size) {
+        Collection<ExecutionUnit> result = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
-            result.add(new RouteUnit(dsName, mock(SQLUnit.class)));
+            result.add(new ExecutionUnit(dsName, mock(SQLUnit.class)));
         }
         return result;
     }

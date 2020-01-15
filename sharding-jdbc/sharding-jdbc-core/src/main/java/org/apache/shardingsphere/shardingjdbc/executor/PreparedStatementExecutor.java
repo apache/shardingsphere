@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.route.RouteResult;
+import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConne
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
-import org.apache.shardingsphere.underlying.route.RouteUnit;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -61,17 +61,17 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     /**
      * Initialize executor.
      *
-     * @param routeResult route result
+     * @param shardingExecutionContext sharding execution context
      * @throws SQLException SQL exception
      */
-    public void init(final RouteResult routeResult) throws SQLException {
-        setSqlStatementContext(routeResult.getSqlStatementContext());
-        getInputGroups().addAll(obtainExecuteGroups(routeResult.getRouteUnits()));
+    public void init(final ShardingExecutionContext shardingExecutionContext) throws SQLException {
+        setSqlStatementContext(shardingExecutionContext.getSqlStatementContext());
+        getInputGroups().addAll(obtainExecuteGroups(shardingExecutionContext.getExecutionUnits()));
         cacheStatements();
     }
     
-    private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<RouteUnit> routeUnits) throws SQLException {
-        return getSqlExecutePrepareTemplate().getExecuteUnitGroups(routeUnits, new SQLExecutePrepareCallback() {
+    private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<ExecutionUnit> executionUnits) throws SQLException {
+        return getSqlExecutePrepareTemplate().getExecuteUnitGroups(executionUnits, new SQLExecutePrepareCallback() {
             
             @Override
             public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
@@ -79,8 +79,8 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
             }
             
             @Override
-            public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
-                return new StatementExecuteUnit(routeUnit, createPreparedStatement(connection, routeUnit.getSqlUnit().getSql()), connectionMode);
+            public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final ExecutionUnit executionUnit, final ConnectionMode connectionMode) throws SQLException {
+                return new StatementExecuteUnit(executionUnit, createPreparedStatement(connection, executionUnit.getSqlUnit().getSql()), connectionMode);
             }
         });
     }

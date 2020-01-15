@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>encrypt-core</artifactId>
-        <version>4.0.0-RC4-SNAPSHOT</version>
+        <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>encrypt-core-rewrite</artifactId>
     <name>${project.artifactId}</name>

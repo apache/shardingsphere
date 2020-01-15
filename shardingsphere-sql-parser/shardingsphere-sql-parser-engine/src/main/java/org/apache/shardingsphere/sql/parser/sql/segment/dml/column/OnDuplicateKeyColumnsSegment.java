@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.segment.dml.column;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 
 import java.util.Collection;
 
@@ -36,5 +37,5 @@ public final class OnDuplicateKeyColumnsSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final Collection<ColumnSegment> columns;
+    private final Collection<AssignmentSegment> columns;
 }

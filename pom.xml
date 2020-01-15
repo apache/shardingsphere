@@ -25,7 +25,7 @@
     </parent>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere</artifactId>
-    <version>4.0.0-RC4-SNAPSHOT</version>
+    <version>5.0.0-RC1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
@@ -52,6 +52,7 @@
         <module>sharding-distribution</module>
         <module>sharding-integration-test</module>
         <module>shadow-core</module>
+        <module>master-slave-core</module>
     </modules>
     
     <properties>
