@@ -33,7 +33,7 @@
     
     <parser-result sql-case-id="select_with_date_function">
         <tables>
-            <table name="t_order_item" alias="i" start-index="51" stop-index="64" />
+            <table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="51" stop-index="64" />
         </tables>
         <order-by-columns>
             <order-by-column name="DATE(i.creation_date)" order-direction="DESC" />

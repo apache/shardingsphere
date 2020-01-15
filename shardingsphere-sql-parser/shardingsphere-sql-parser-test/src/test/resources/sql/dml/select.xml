@@ -416,7 +416,7 @@
         <tables>
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
             <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
-            <table name="select" alias="c" start-index="104" stop-index="111" />
+            <table name="select" alias="c" start-delimiter="`" end-delimiter="`" start-index="104" stop-index="111" />
         </tables>
         <sharding-conditions>
             <and-condition>
@@ -451,7 +451,7 @@
         <tables>
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
             <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
-            <table name="select" alias="c" start-index="104" stop-index="111" />
+            <table name="select" alias="c" start-delimiter="&quot;" end-delimiter="&quot;" start-index="104" stop-index="111" />
         </tables>
         <sharding-conditions>
             <and-condition>
@@ -481,7 +481,7 @@
         <tables>
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
             <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
-            <table name="select" alias="c" start-index="104" stop-index="111" />
+            <table name="select" alias="c" start-delimiter="[" end-delimiter="]" start-index="104" stop-index="111" />
         </tables>
         <sharding-conditions>
             <and-condition>
@@ -610,7 +610,7 @@
     
     <parser-result sql-case-id="select_with_double_quotes" parameters="1">
         <tables>
-            <table name="t_order_item" start-index="14" stop-index="27" />
+            <table name="t_order_item" start-delimiter="&quot;" end-delimiter="&quot;" start-index="14" stop-index="27" />
         </tables>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
@@ -825,7 +825,9 @@
     
     <parser-result sql-case-id="select_with_schema" >
         <tables>
-            <table name="t_order" start-index="14" stop-index="24" />
+            <table name="t_order" start-index="14" stop-index="24">
+                <owner name="db1" start-index="14" stop-index="16" />
+            </table>
         </tables>
         <select-items start-index="7" stop-index="7">
             <shorthand-select-items>
