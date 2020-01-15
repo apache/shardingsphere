@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -194,7 +195,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     public TableMetas loadAll(final ShardingRule shardingRule) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>();
         result.putAll(loadShardingTables(shardingRule));
-        result.putAll(loadDefaultTables(shardingRule));
+        loadDefaultTables(shardingRule, result);
         return new TableMetas(result);
     }
     
@@ -206,17 +207,44 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
         return result;
     }
     
-    private Map<String, TableMetaData> loadDefaultTables(final ShardingRule shardingRule) throws SQLException {
+    private Map<String, TableMetaData> loadDefaultTables(final ShardingRule shardingRule, final Map<String, TableMetaData> result) throws SQLException {
         Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
         if (!actualDefaultDataSourceName.isPresent()) {
             return Collections.emptyMap();
         }
         Collection<String> tableNames = loadAllTableNames(actualDefaultDataSourceName.get());
-        Map<String, TableMetaData> result = new HashMap<>(tableNames.size(), 1);
-        for (String each : tableNames) {
-            result.put(each, load(each, shardingRule));
+        removeRepeatTable(tableNames, result);
+        List<TableMetaData> metaList = executorEngine.execute(getTableNamesInput(tableNames), new GroupedCallback<String, TableMetaData>() {
+            @Override
+            public Collection<TableMetaData> execute(final Collection<String> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
+                String logicTableName = inputs.iterator().next();
+                Collection<TableMetaData> result = new LinkedList<>();
+                result.add(load(logicTableName, shardingRule));
+                return result;
+            }
+        });
+        Object[] tableNameArr = tableNames.toArray();
+        for (int i = 0, size = tableNames.size(); i < size; i++) {
+            result.put(tableNameArr[i].toString(), metaList.get(i));
         }
         return result;
+    }
+    
+    private void removeRepeatTable(final Collection<String> tableNames, final Map<String, TableMetaData> result) {
+        Iterator<String> tabIter = tableNames.iterator();
+        while (tabIter.hasNext()) {
+            if (result.containsKey(tabIter.next())) {
+                tabIter.remove();
+            }
+        }
+    }
+
+    private Collection<InputGroup<String>> getTableNamesInput(final Collection<String> tableNames) {
+        Collection<InputGroup<String>> inputCollection = new LinkedList<>();
+        for (String tname : tableNames) {
+            inputCollection.add(new InputGroup<String>(Lists.newArrayList(tname)));
+        }
+        return inputCollection;
     }
     
     private Collection<String> loadAllTableNames(final String dataSourceName) throws SQLException {
