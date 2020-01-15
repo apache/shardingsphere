@@ -92,7 +92,8 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
     private Optional<TableToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final OwnerAvailable<TableSegment> segment) {
         Optional<TableSegment> owner = segment.getOwner();
         return owner.isPresent() && isToGenerateTableToken(sqlStatementContext, owner.get())
-                ? Optional.of(new TableToken(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getTableName(), owner.get().getQuoteCharacter())) : Optional.<TableToken>absent();
+                ? Optional.of(new TableToken(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getTableName(), owner.get().getTableQuoteCharacter()))
+                : Optional.<TableToken>absent();
     }
     
     private Optional<TableToken> generateSQLToken(final SQLStatement sqlStatement, final TableAvailable segment) {
