@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.shardingscaling.core.config;
 
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
 /**
  * Global server configuration.
