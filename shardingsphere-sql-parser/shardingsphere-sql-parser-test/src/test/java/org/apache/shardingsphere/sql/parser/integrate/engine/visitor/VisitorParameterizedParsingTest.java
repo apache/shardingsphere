@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserFactory;
 import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorEngine;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.ShardingSQLStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistry;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.VisitorParserResultSetRegistry;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
@@ -72,6 +72,6 @@ public final class VisitorParameterizedParsingTest {
         String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());
         ParseTree parseTree = SQLParserFactory.newInstance(databaseTypeName, sql).execute().getChild(0);
         SQLStatement sqlStatement = (SQLStatement) new SQLVisitorEngine(databaseTypeName, parseTree).parse();
-        new ShardingSQLStatementAssert(sqlStatement, sqlCaseId, sqlCaseType).assertSQLStatement();
+        new SQLStatementAssert(sqlStatement, sqlCaseId, sqlCaseType).assertSQLStatement();
     }
 }
