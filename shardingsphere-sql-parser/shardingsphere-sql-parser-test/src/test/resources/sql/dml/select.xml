@@ -1048,4 +1048,12 @@
             </shorthand-select-items>
         </select-items>
     </parser-result>
+
+    <parser-result sql-case-id="select_current_user">
+        <select-items start-index="7" stop-index="19">
+            <expression-items>
+                <expression-item start-index="7" stop-index="19" text="CURRENT_USER"/>
+            </expression-items>
+        </select-items>
+    </parser-result>
 </parser-result-sets>
