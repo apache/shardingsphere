@@ -35,6 +35,10 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public final class PostgreSQLLogPositionManager implements LogPositionManager<WalPosition> {
     
+    public static final String SLOT_NAME = "sharding_scaling";
+    
+    public static final String DECODE_PLUGIN = "test_decoding";
+    
     private final DataSource dataSource;
     
     private WalPosition currentPosition;
@@ -49,21 +53,32 @@ public final class PostgreSQLLogPositionManager implements LogPositionManager<Wa
     
     private void getCurrentPositionFromSource() {
         try (Connection connection = dataSource.getConnection()) {
-            String sql = "";
-            if (9 == connection.getMetaData().getDatabaseMajorVersion() && 6 <= connection.getMetaData().getDatabaseMinorVersion()) {
-                sql = "select pg_current_xlog_location()";
-            } else if (10 <= connection.getMetaData().getDatabaseMajorVersion()) {
-                sql = "select pg_current_wal_lsn()";
-            } else {
-                throw new RuntimeException("Not support postgrsql version:" + connection.getMetaData().getDatabaseProductVersion());
-            }
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            rs.next();
-            currentPosition = new WalPosition(LogSequenceNumber.valueOf(rs.getString(1)));
+            // Need to create slot first, hold oldest wal event.
+            createIfNotExists(connection);
+            currentPosition = getCurrentLsn(connection);
         } catch (SQLException e) {
             throw new RuntimeException("markPosition error", e);
         }
+    }
+    
+    private void createIfNotExists(final Connection connection) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement(String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')", SLOT_NAME, DECODE_PLUGIN));
+        ps.execute();
+    }
+    
+    private WalPosition getCurrentLsn(final Connection connection) throws SQLException {
+        String sql = "";
+        if (9 == connection.getMetaData().getDatabaseMajorVersion() && 6 <= connection.getMetaData().getDatabaseMinorVersion()) {
+            sql = "select pg_current_xlog_location()";
+        } else if (10 <= connection.getMetaData().getDatabaseMajorVersion()) {
+            sql = "select pg_current_wal_lsn()";
+        } else {
+            throw new RuntimeException("Not support postgrsql version:" + connection.getMetaData().getDatabaseProductVersion());
+        }
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+        return new WalPosition(LogSequenceNumber.valueOf(rs.getString(1)));
     }
     
     @Override

@@ -20,9 +20,12 @@ package org.apache.shardingsphere.shardingscaling.postgresql;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.AbstractJdbcWriter;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.AbstractSqlBuilder;
+import org.apache.shardingsphere.shardingscaling.core.metadata.ColumnMetaData;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 
 import javax.sql.DataSource;
+import java.util.List;
+
 
 /**
  * postgreSQL writer.
@@ -37,18 +40,44 @@ public final class PostgreSQLWriter extends AbstractJdbcWriter {
     
     @Override
     public AbstractSqlBuilder createSqlBuilder(final DataSource dataSource) {
-        return new AbstractSqlBuilder(dataSource) {
-            
-            @Override
-            public String getLeftIdentifierQuoteString() {
-                return "\"";
-            }
+        return new PostgreSQLSqlBuilder(dataSource);
+    }
     
-            @Override
-            public String getRightIdentifierQuoteString() {
-                return "\"";
+    private static final class PostgreSQLSqlBuilder extends AbstractSqlBuilder {
+        
+        private PostgreSQLSqlBuilder(final DataSource dataSource) {
+            super(dataSource);
+        }
+        
+        @Override
+        public String getLeftIdentifierQuoteString() {
+            return "\"";
+        }
+        
+        @Override
+        public String getRightIdentifierQuoteString() {
+            return "\"";
+        }
+        
+        @Override
+        public String buildInsertSql(final String tableName) {
+            List<ColumnMetaData> metaData = getDbMetaDataUtil().getColumnNames(tableName);
+            StringBuilder columns = new StringBuilder();
+            StringBuilder holder = new StringBuilder();
+            for (ColumnMetaData each : metaData) {
+                columns.append(String.format("%s%s%s,", getLeftIdentifierQuoteString(), each.getColumnName(), getRightIdentifierQuoteString()));
+                holder.append("?,");
             }
-        };
+            columns.setLength(columns.length() - 1);
+            holder.setLength(holder.length() - 1);
+            String result = String.format("INSERT INTO %s%s%s(%s) VALUES(%s)", getLeftIdentifierQuoteString(), tableName, getRightIdentifierQuoteString(), columns.toString(), holder.toString());
+            result += " ON CONFLICT (";
+            for (String each : getDbMetaDataUtil().getPrimaryKeys(tableName)) {
+                result += each + ",";
+            }
+            result = result.substring(0, result.length() - 1) + ") DO NOTHING";
+            return result;
+        }
     }
 }
 
