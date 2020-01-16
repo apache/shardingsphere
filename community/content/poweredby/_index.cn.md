@@ -41,6 +41,8 @@ chapter = true
 1. 大搜车 https://www.souche.com/
 1. 大易有塑 https://www.dayi35.com/ 
 1. 当当 http://www.dangdang.com/ 
+1. 得物app https://poizon.com/
+1. 谛达诺科技 http://www.didano.com/
 1. 滴滴小桔车服 https://www.didiglobal.com/ 
 1. 点石经纬 https://www.okayzhihui.com/ 
 1. 点我达 https://www.dianwoda.com/ 
@@ -58,6 +60,7 @@ chapter = true
 1. 广西壮族自治区国土资源信息中心 http://z.gxdlr.gov.cn/ 
 1. 广州理德物联网科技有限公司 http://www.iotlead.com/
 1. 广州码码高信息科技有限公司 http://www.mamagao.cn/
+1. 广州锐森科技 https://www.elelive.net/
 1. 哈啰出行 https://www.helloglobal.com/
 1. 海典软件 http://www.hydee.cn/ 
 1. 海尔消费金融 https://www.haiercash.com/ 
@@ -66,6 +69,7 @@ chapter = true
 1. 好未来 http://www.100tal.com/ 
 1. 华夏信财 https://www.huaxiafinance.com/ 
 1. 欢聚时代YY https://www.yy.com/ 
+1. 会通教育 https://willclass.com/
 1. 火币资讯 https://www.huobiinfo.com/ 
 1. 货车帮 http://www.huochebang.com/ 
 1. 家视天下 http://www.hiveview.com/ 
@@ -78,6 +82,7 @@ chapter = true
 1. 京东商城海外站 https://www.joybuy.com/ 
 1. 京东云 https://www.jdcloud.com/cn/ 
 1. 玖富数科 https://www.9fgroup.com/ 
+1. 聚励云机械 https://www.cloudm.com/
 1. 均瑶集团 http://www.juneyao.com/ 
 1. 开课啦 https://www.kaike.la/
 1. 开通金融 https://www.ktjr.com/
@@ -105,6 +110,7 @@ chapter = true
 1. 上海 soul app https://www.soulapp.cn/
 1. 视觉中国 https://500px.me/ 
 1. 首汽约车 https://www.01zhuanche.com/
+1. 四川淘金你我信息技术有限公司 http://www.itaojin.cn/
 1. 搜好货 https://www.912688.com/
 1. 搜狐资讯 https://ss.sohu.com/
 1. 速珂智能 https://www.supersoco.com/ 
@@ -132,6 +138,7 @@ chapter = true
 1. 云路供应链 http://www.yl-scm.com/ 
 1. 真信认知科技 http://www.zhenxinsafe.com/ 
 1. 智创工场 http://www.izxcs.com/ 
+1. 智云健康 https://www.zyhealth.com/
 1. 中策车空间 http://www.zcckj.com/ 
 1. 中辰软件 http://jszcrj.com/ 
 1. 中国电信翼支付（甜橙金融） https://www.bestpay.com.cn/

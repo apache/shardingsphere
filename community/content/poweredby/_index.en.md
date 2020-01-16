@@ -41,6 +41,7 @@ The list here will be shown in the alphabetical order.
 1. ChuChuJie https://www.chuchujie.com/
 1. CIBN http://www.cibnvst.com/ 
 1. Cloudansys http://www.cloudansys.com/
+1. CloudM https://www.cloudm.com/
 1. Compasshz http://www.compasshz.com/
 1. CTrip https://www.ctrip.com/
 1. CyberPlus http://www.cyberplus.com.cn/
@@ -48,12 +49,14 @@ The list here will be shown in the alphabetical order.
 1. DangDang http://www.dangdang.com/
 1. Dayi35 https://www.dayi35.com/
 1. DianWoDa https://www.dianwoda.com/
+1. DiDaNo http://www.didano.com/
 1. DiDi Global https://www.didiglobal.com/
 1. DongFang789 http://www.dongfang789.com/
 1. DouYuTV https://www.douyu.com/
 1. DongAo http://edu.dongao.com/
 1. DuiA https://www.duia.com/
 1. Eeka Fashion http://www.eeka.cn/
+1. Elelive https://www.elelive.net/
 1. F6 Car http://www.f6car.com/
 1. FFZXNet http://www.ffzxnet.com/
 1. Fotoplace https://www.fotoplace.cc/
@@ -72,6 +75,7 @@ The list here will be shown in the alphabetical order.
 1. Iflytek https://www.iflytek.com/
 1. Innoways https://innoways.com/
 1. Iqiyi https://www.iqiyi.com/
+1. ITaoJin http://www.itaojin.cn/
 1. ITrusChina https://www.itrus.com.cn/
 1. IZXCS http://www.izxcs.com/
 1. JD Digits https://www.jddglobal.com/
@@ -102,6 +106,7 @@ The list here will be shown in the alphabetical order.
 1. Okay ZhiHui https://www.okayzhihui.com/
 1. OPPO https://www.oppo.com/
 1. Pagoda http://www.pagoda.com.cn/
+1. Poizon https://poizon.com/
 1. PPDai https://www.ppdai.com/
 1. QuanDaShi https://www.quandashi.com/
 1. Rabbitpre https://www.rabbitpre.com/
@@ -124,6 +129,7 @@ The list here will be shown in the alphabetical order.
 1. TuJia https://www.tujia.com/
 1. VipShop https://www.vip.com/
 1. VIVO https://www.vivo.com/
+1. WillClass https://willclass.com/
 1. XiaChuFang https://www.xiachufang.com/
 1. XiaoHongChun https://www.xiaohongchun.com/
 1. XiaoNiu88 https://www.xiaoniu88.com/
@@ -140,3 +146,4 @@ The list here will be shown in the alphabetical order.
 1. ZhuanZhuan https://www.zhuanzhuan.com/
 1. ZMN https://www.zmn.cn/
 1. ZTO Express https://www.zto.com/
+1. ZYHealth https://www.zyhealth.com/
