@@ -86,7 +86,7 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
         } else {
             nullBitmap = null;
             newParametersBoundFlag = null;
-            parameters = null;
+            parameters = new ArrayList<>(0);
         }
     }
     
