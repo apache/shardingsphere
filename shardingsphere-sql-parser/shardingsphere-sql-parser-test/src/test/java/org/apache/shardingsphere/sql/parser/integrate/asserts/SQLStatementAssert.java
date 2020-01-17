@@ -87,7 +87,7 @@ public final class SQLStatementAssert {
         }
         Optional<OrderBySegment> orderBySegment = actual.findSQLSegment(OrderBySegment.class);
         if (orderBySegment.isPresent()) {
-            new OrderByAssert(assertMessage).assertOrderByItems(orderBySegment.get().getOrderByItems(), expected.getOrderByColumns());
+            OrderByAssert.assertOrderByItems(assertMessage, orderBySegment.get().getOrderByItems(), expected.getOrderByColumns());
         }
         Optional<LimitSegment> limitSegment = actual.findSQLSegment(LimitSegment.class);
         if (limitSegment.isPresent()) {
