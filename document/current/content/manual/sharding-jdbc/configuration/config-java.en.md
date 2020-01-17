@@ -193,7 +193,7 @@ The implementation of DataSource in the following configuration is [DataSourceUt
     }
     
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
-        RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration();
+        RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration("zookeeper");//The type of registry center can be Zookeeper, Etcd and so on
         regConfig.setServerLists("localhost:2181");
         regConfig.setNamespace("sharding-sphere-orchestration");
         return regConfig;
