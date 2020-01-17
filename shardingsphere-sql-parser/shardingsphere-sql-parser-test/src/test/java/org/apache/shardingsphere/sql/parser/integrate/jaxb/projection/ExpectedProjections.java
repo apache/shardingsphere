@@ -39,7 +39,7 @@ public final class ExpectedProjections {
     @XmlAttribute(name = "stop-index")
     private Integer stopIndex;
     
-    @XmlAttribute
+    @XmlAttribute(name = "distinct-row")
     private boolean distinctRow;
     
     @XmlElementWrapper(name = "shorthand-projections")

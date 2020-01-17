@@ -629,7 +629,7 @@
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
-        <projections start-index="16" stop-index="22" distinctRow="true">
+        <projections start-index="16" stop-index="22" distinct-row="true">
             <column-projections>
                 <column-projection text="item_id" start-index="16" stop-index="22" name="item_id" />
             </column-projections>
@@ -643,7 +643,7 @@
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
-        <projections start-index="16" stop-index="31" distinctRow="true">
+        <projections start-index="16" stop-index="31" distinct-row="true">
             <column-projections>
                 <column-projection text="t_order.order_id" start-index="16" stop-index="31" name="order_id" />
             </column-projections>
@@ -657,7 +657,7 @@
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
-        <projections start-index="16" stop-index="40" distinctRow="true">
+        <projections start-index="16" stop-index="40" distinct-row="true">
             <column-projections>
                 <column-projection start-index="16" stop-index="23" text="order_id" name="order_id" />
                 <column-projection start-index="26" stop-index="32" text="user_id" name="user_id" />
@@ -673,7 +673,7 @@
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
-        <projections start-index="16" stop-index="16" distinctRow="true">
+        <projections start-index="16" stop-index="16" distinct-row="true">
             <shorthand-projections>
                 <shorthand-projection start-index="16" stop-index="16" text="*" />
             </shorthand-projections>
@@ -688,7 +688,7 @@
         <order-by-columns>
             <order-by-column owner="t_order" name="order_id" order-direction="ASC" />
         </order-by-columns>
-        <projections start-index="16" stop-index="47" distinctRow="true">
+        <projections start-index="16" stop-index="47" distinct-row="true">
             <shorthand-projections>
                 <shorthand-projection start-index="16" stop-index="24" text="t_order.*" />
             </shorthand-projections>
@@ -790,7 +790,7 @@
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
-        <projections start-index="15" stop-index="23" distinctRow="true">
+        <projections start-index="15" stop-index="23" distinct-row="true">
             <expression-projections>
                 <expression-projection start-index="15" stop-index="23" text="item_id" />
             </expression-projections>
