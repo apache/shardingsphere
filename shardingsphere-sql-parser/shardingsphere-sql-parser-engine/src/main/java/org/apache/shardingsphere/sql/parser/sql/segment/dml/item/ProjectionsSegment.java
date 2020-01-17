@@ -25,14 +25,14 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Select items segment.
+ * projections segment.
  * 
  * @author duhongjun
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class SelectItemsSegment implements SQLSegment {
+public final class ProjectionsSegment implements SQLSegment {
     
     private final int startIndex;
     
@@ -40,5 +40,5 @@ public final class SelectItemsSegment implements SQLSegment {
     
     private final boolean distinctRow;
     
-    private final Collection<SelectItemSegment> selectItems = new LinkedList<>();
+    private final Collection<ProjectionSegment> projections = new LinkedList<>();
 }

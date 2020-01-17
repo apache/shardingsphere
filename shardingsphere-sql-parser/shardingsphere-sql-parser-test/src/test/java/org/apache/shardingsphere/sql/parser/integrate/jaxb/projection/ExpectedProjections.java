@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.selectitem;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.projection;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -31,7 +31,7 @@ import java.util.LinkedList;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedSelectItems {
+public final class ExpectedProjections {
     
     @XmlAttribute(name = "start-index")
     private Integer startIndex;
@@ -44,27 +44,27 @@ public final class ExpectedSelectItems {
     
     @XmlElementWrapper(name = "shorthand-select-items")
     @XmlElement(name = "shorthand-select-item")
-    private Collection<ExpectedShorthandSelectItem> expectedShorthandSelectItems = new LinkedList<>();
+    private Collection<ExpectedShorthandProjection> expectedShorthandProjections = new LinkedList<>();
     
     @XmlElementWrapper(name = "aggregation-select-items")
     @XmlElement(name = "aggregation-select-item")
-    private Collection<ExpectedAggregationItem> expectedAggregationItems = new LinkedList<>();
+    private Collection<ExpectedAggregationProjection> expectedAggregationProjections = new LinkedList<>();
     
     @XmlElementWrapper(name = "aggregation-distinct-select-items")
     @XmlElement(name = "aggregation-distinct-select-item")
-    private Collection<ExpectedAggregationDistinctItem> expectedAggregationDistinctItems = new LinkedList<>();
+    private Collection<ExpectedAggregationDistinctProjection> expectedAggregationDistinctProjections = new LinkedList<>();
     
     @XmlElementWrapper(name = "column-select-items")
     @XmlElement(name = "column-select-item")
-    private Collection<ExpectedColumnSelectItem> expectedColumnSelectItems = new LinkedList<>();
+    private Collection<ExpectedColumnProjection> expectedColumnProjections = new LinkedList<>();
     
     @XmlElementWrapper(name = "expression-items")
     @XmlElement(name = "expression-item")
-    private Collection<ExpectedExpressionItem> expectedExpressionItems = new LinkedList<>();
+    private Collection<ExpectedExpressionProjection> expectedExpressionProjections = new LinkedList<>();
     
     @XmlElementWrapper(name = "top-select-items")
     @XmlElement(name = "top-select-item")
-    private Collection<ExpectedTopSelectItem> expectedTopSelectItems = new LinkedList<>();
+    private Collection<ExpectedTopProjection> expectedTopProjections = new LinkedList<>();
     
     /**
      * Get size.
@@ -72,37 +72,37 @@ public final class ExpectedSelectItems {
      * @return size
      */
     public int getSize() {
-        return expectedAggregationItems.size() + expectedShorthandSelectItems.size()
-                + expectedAggregationDistinctItems.size() + expectedColumnSelectItems.size()
-                + expectedExpressionItems.size() + expectedTopSelectItems.size();
+        return expectedAggregationProjections.size() + expectedShorthandProjections.size()
+                + expectedAggregationDistinctProjections.size() + expectedColumnProjections.size()
+                + expectedExpressionProjections.size() + expectedTopProjections.size();
     }
     
     /**
-     * Find expected select items.
+     * Find expected projections.
      * 
-     * @param expectedSelectItemType expected select item type
-     * @param <T> type of select item type
-     * @return expected select items
+     * @param expectedProjectionType expected projections type
+     * @param <T> type of projection type
+     * @return expected projections
      */
-    public <T extends ExpectedSelectItem> Collection<ExpectedSelectItem> findExpectedSelectItems(final Class<T> expectedSelectItemType) {
-        Collection<ExpectedSelectItem> result = new LinkedList<>();
-        if (expectedSelectItemType.equals(ExpectedShorthandSelectItem.class)) {
-            result.addAll(expectedShorthandSelectItems);
+    public <T extends ExpectedProjection> Collection<ExpectedProjection> findExpectedProjections(final Class<T> expectedProjectionType) {
+        Collection<ExpectedProjection> result = new LinkedList<>();
+        if (expectedProjectionType.equals(ExpectedShorthandProjection.class)) {
+            result.addAll(expectedShorthandProjections);
         }
-        if (expectedSelectItemType.equals(ExpectedAggregationItem.class)) {
-            result.addAll(expectedAggregationItems);
+        if (expectedProjectionType.equals(ExpectedAggregationProjection.class)) {
+            result.addAll(expectedAggregationProjections);
         }
-        if (expectedSelectItemType.equals(ExpectedColumnSelectItem.class)) {
-            result.addAll(expectedColumnSelectItems);
+        if (expectedProjectionType.equals(ExpectedColumnProjection.class)) {
+            result.addAll(expectedColumnProjections);
         }
-        if (expectedSelectItemType.equals(ExpectedAggregationDistinctItem.class)) {
-            result.addAll(expectedAggregationDistinctItems);
+        if (expectedProjectionType.equals(ExpectedAggregationDistinctProjection.class)) {
+            result.addAll(expectedAggregationDistinctProjections);
         }
-        if (expectedSelectItemType.equals(ExpectedExpressionItem.class)) {
-            result.addAll(expectedExpressionItems);
+        if (expectedProjectionType.equals(ExpectedExpressionProjection.class)) {
+            result.addAll(expectedExpressionProjections);
         }
-        if (expectedSelectItemType.equals(ExpectedTopSelectItem.class)) {
-            result.addAll(expectedExpressionItems);
+        if (expectedProjectionType.equals(ExpectedTopProjection.class)) {
+            result.addAll(expectedExpressionProjections);
         }
         return result;
     }

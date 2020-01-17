@@ -43,13 +43,13 @@ public final class ProjectionsContextTest {
     }
     
     @Test
-    public void assertUnqualifiedShorthandProjectionWithWrongSelectItem() {
+    public void assertUnqualifiedShorthandProjectionWithWrongProjection() {
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton((Projection) getColumnProjection()), Collections.<String>emptyList());
         assertFalse(projectionsContext.isUnqualifiedShorthandProjection());
     }
     
     @Test
-    public void assertUnqualifiedShorthandProjectionWithWrongShortSelectItem() {
+    public void assertUnqualifiedShorthandProjectionWithWrongShortProjection() {
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton((Projection) getShorthandProjection()), Collections.<String>emptyList());
         assertFalse(projectionsContext.isUnqualifiedShorthandProjection());
     }

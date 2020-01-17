@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.selectitem;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.projection;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -27,17 +28,16 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ExpectedAggregationItem extends ExpectedBaseSelectItem {
-    
+public final class ExpectedSchemaSegment {
+
+    @XmlAttribute(name = "start-index")
+    private Integer startIndex;
+
+    @XmlAttribute(name = "stop-index")
+    private Integer stopIndex;
+
     @XmlAttribute
-    private Integer innerExpressionStartIndex;
-    
-    @XmlAttribute
-    private String type;
-    
-    @XmlAttribute
-    private String alias;
-    
-    @XmlAttribute(name = "aggregation-inner-expression")
-    private String innerExpression;
+    private String name;
+
+    private QuoteCharacter quoteCharacter = QuoteCharacter.NONE;
 }

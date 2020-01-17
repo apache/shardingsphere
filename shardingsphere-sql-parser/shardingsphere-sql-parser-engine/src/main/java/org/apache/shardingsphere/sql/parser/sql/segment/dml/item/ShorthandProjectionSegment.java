@@ -17,19 +17,34 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.dml.item;
 
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import com.google.common.base.Optional;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 
 /**
- * Select item segment.
+ * Shorthand projection segment.
  *
  * @author zhangliang
+ * @author panjuan
  */
-public interface SelectItemSegment extends SQLSegment {
+@RequiredArgsConstructor
+@Getter
+@Setter
+public final class ShorthandProjectionSegment implements ProjectionSegment, OwnerAvailable<TableSegment> {
     
-    /**
-     * Get text.
-     * 
-     * @return text
-     */
-    String getText();
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final String text;
+    
+    private TableSegment owner;
+    
+    @Override
+    public Optional<TableSegment> getOwner() {
+        return Optional.fromNullable(owner);
+    }
 }

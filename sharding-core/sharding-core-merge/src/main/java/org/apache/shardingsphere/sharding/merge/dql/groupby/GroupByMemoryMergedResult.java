@@ -105,8 +105,8 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
         }
     }
     
-    private Comparable<?> getAggregationValue(final QueryResult queryResult, final AggregationProjection aggregationSelectItem) throws SQLException {
-        Object result = queryResult.getValue(aggregationSelectItem.getIndex(), Object.class);
+    private Comparable<?> getAggregationValue(final QueryResult queryResult, final AggregationProjection aggregationProjection) throws SQLException {
+        Object result = queryResult.getValue(aggregationProjection.getIndex(), Object.class);
         Preconditions.checkState(null == result || result instanceof Comparable, "Aggregation value must implements Comparable");
         return (Comparable<?>) result;
     }

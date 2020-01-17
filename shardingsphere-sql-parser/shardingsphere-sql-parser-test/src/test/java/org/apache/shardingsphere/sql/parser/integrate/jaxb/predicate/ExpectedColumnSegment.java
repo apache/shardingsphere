@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.selectitem.ExpectedTableSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedTableSegment;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

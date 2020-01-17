@@ -17,23 +17,40 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.dml.item;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 /**
- * Aggregation distinct select item segment.
+ * Expression projection segment.
  * 
  * @author zhangliang
  */
 @Getter
-public final class AggregationDistinctSelectItemSegment extends AggregationSelectItemSegment {
+public final class ExpressionProjectionSegment implements ProjectionSegment, AliasAvailable {
     
-    private final String distinctExpression;
+    private final int startIndex;
     
-    public AggregationDistinctSelectItemSegment(final int startIndex, final int stopIndex, 
-                                                final String text, final AggregationType type, final int innerExpressionStartIndex, final String distinctExpression) {
-        super(startIndex, stopIndex, text, type, innerExpressionStartIndex);
-        this.distinctExpression = SQLUtil.getExpressionWithoutOutsideParentheses(distinctExpression);
+    private final int stopIndex;
+    
+    private final String text;
+    
+    private String alias;
+    
+    public ExpressionProjectionSegment(final int startIndex, final int stopIndex, final String text) {
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
+        this.text = SQLUtil.getExpressionWithoutOutsideParentheses(text);
+    }
+    
+    @Override
+    public Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
+    }
+    
+    @Override
+    public void setAlias(final String alias) {
+        this.alias = SQLUtil.getExactlyValue(alias);
     }
 }

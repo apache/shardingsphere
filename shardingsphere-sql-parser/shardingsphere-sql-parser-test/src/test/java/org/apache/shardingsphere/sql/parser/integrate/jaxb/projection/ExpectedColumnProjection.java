@@ -15,24 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.selectitem;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.projection;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedTopSelectItem extends ExpectedBaseSelectItem {
-
-    @XmlElement(name = "row-number-value-segment")
-    private ExpectedRowNumberValueSegment top;
-
-    @XmlAttribute(name = "row-number-alias")
-    private String rowNumberAlias;
+public final class ExpectedColumnProjection extends ExpectedBaseProjection {
+    
+    @XmlAttribute
+    private String alias;
+    
+    @XmlAttribute
+    private String name;
+    
+    @XmlAttribute
+    private QuoteCharacter quoteCharacter = QuoteCharacter.NONE;
+    
+    @XmlElement(name = "table-segment")
+    private ExpectedTableSegment owner = new ExpectedTableSegment();
 }

@@ -18,25 +18,35 @@
 package org.apache.shardingsphere.sql.parser.core.extractor.impl.dml.select.item.impl;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.sql.parser.core.extractor.api.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.sql.parser.core.extractor.impl.common.column.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionSelectItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
 
 import java.util.Map;
 
 /**
- * Expression select item extractor.
+ * Column projection extractor.
  *
  * @author zhangliang
  */
-public final class ExpressionSelectItemExtractor implements OptionalSQLSegmentExtractor {
+public final class ColumnProjectionExtractor implements OptionalSQLSegmentExtractor {
+    
+    private final ColumnExtractor columnExtractor = new ColumnExtractor();
     
     @Override
-    public Optional<ExpressionSelectItemSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        // TODO parse table inside expression
-        ExpressionSelectItemSegment result = new ExpressionSelectItemSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex(), expressionNode.getText());
+    public Optional<ColumnProjectionSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        Optional<ParserRuleContext> columnNode = ExtractorUtils.findFirstChildNodeNoneRecursive(expressionNode, RuleName.COLUMN_NAME);
+        if (!columnNode.isPresent()) {
+            return Optional.absent();
+        }
+        Optional<ColumnSegment> columnSegment = columnExtractor.extract(columnNode.get(), parameterMarkerIndexes);
+        Preconditions.checkState(columnSegment.isPresent());
+        ColumnProjectionSegment result = new ColumnProjectionSegment(columnNode.get().getText(), columnSegment.get());
         Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNodeNoneRecursive(expressionNode, RuleName.ALIAS);
         if (aliasNode.isPresent()) {
             result.setAlias(aliasNode.get().getText());

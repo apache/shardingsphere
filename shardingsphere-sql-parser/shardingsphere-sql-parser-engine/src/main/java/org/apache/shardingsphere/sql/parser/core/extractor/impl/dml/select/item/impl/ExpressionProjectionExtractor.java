@@ -18,35 +18,25 @@
 package org.apache.shardingsphere.sql.parser.core.extractor.impl.dml.select.item.impl;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.sql.parser.core.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.sql.parser.core.extractor.impl.common.column.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnSelectItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
 
 import java.util.Map;
 
 /**
- * Column select item extractor.
+ * Expression projection extractor.
  *
  * @author zhangliang
  */
-public final class ColumnSelectItemExtractor implements OptionalSQLSegmentExtractor {
-    
-    private final ColumnExtractor columnExtractor = new ColumnExtractor();
+public final class ExpressionProjectionExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<ColumnSelectItemSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Optional<ParserRuleContext> columnNode = ExtractorUtils.findFirstChildNodeNoneRecursive(expressionNode, RuleName.COLUMN_NAME);
-        if (!columnNode.isPresent()) {
-            return Optional.absent();
-        }
-        Optional<ColumnSegment> columnSegment = columnExtractor.extract(columnNode.get(), parameterMarkerIndexes);
-        Preconditions.checkState(columnSegment.isPresent());
-        ColumnSelectItemSegment result = new ColumnSelectItemSegment(columnNode.get().getText(), columnSegment.get());
+    public Optional<ExpressionProjectionSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        // TODO parse table inside expression
+        ExpressionProjectionSegment result = new ExpressionProjectionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex(), expressionNode.getText());
         Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNodeNoneRecursive(expressionNode, RuleName.ALIAS);
         if (aliasNode.isPresent()) {
             result.setAlias(aliasNode.get().getText());
