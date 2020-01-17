@@ -17,9 +17,20 @@
 
 package org.apache.shardingsphere.sharding.execute.metadata.loader;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
-import lombok.RequiredArgsConstructor;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.apache.shardingsphere.core.metadata.column.ShardingGeneratedKeyColumnMetaData;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -37,18 +48,10 @@ import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
 import org.apache.shardingsphere.underlying.executor.engine.GroupedCallback;
 import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Table meta data loader for sharding.
@@ -194,7 +197,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     public TableMetas loadAll(final ShardingRule shardingRule) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>();
         result.putAll(loadShardingTables(shardingRule));
-        loadDefaultTables(shardingRule, result);
+        result.putAll(loadDefaultTables(shardingRule));
         return new TableMetas(result);
     }
     
@@ -206,7 +209,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
         return result;
     }
     
-    private Map<String, TableMetaData> loadDefaultTables(final ShardingRule shardingRule, final Map<String, TableMetaData> result) throws SQLException {
+    private Map<String, TableMetaData> loadDefaultTables(final ShardingRule shardingRule) throws SQLException {
         Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
         if (!actualDefaultDataSourceName.isPresent()) {
             return Collections.emptyMap();
@@ -221,9 +224,10 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
                 return result;
             }
         });
-        Object[] tableNameArr = tableNames.toArray();
-        for (int i = 0, size = tableNames.size(); i < size; i++) {
-            result.put(tableNameArr[i].toString(), metaList.get(i));
+        Map<String, TableMetaData> result = new HashMap<>(tableNames.size(), 1);
+        Iterator<String> tabNameIter = tableNames.iterator();
+        for (TableMetaData meta : metaList) {
+            result.put(tabNameIter.next(), meta);
         }
         return result;
     }
