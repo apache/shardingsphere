@@ -106,7 +106,7 @@ public final class SQLStatementAssert {
     
     private static void assertAlterTableStatement(final AlterTableStatement actual, final ParserResult expected, final SQLStatementAssertMessage assertMessage) {
         if (null != expected.getAlterTable()) {
-            new AlterTableAssert(assertMessage).assertAlterTable(actual, expected.getAlterTable());
+            AlterTableAssert.assertIs(assertMessage, actual, expected.getAlterTable());
         }
     }
     
