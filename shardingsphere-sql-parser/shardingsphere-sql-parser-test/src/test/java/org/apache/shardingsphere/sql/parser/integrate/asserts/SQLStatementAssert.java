@@ -56,16 +56,16 @@ import static org.junit.Assert.assertThat;
 public final class SQLStatementAssert {
     
     /**
-     * Assertion.
+     * Assert SQL statement is correct with expected parser result.
      * 
      * @param assertMessage assert message
      * @param actual actual SQL statement
      * @param expected expected parser result
      * @param sqlCaseType SQL case type
      */
-    public static void assertion(final SQLStatementAssertMessage assertMessage, final SQLStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
-        new ParameterMarkerAssert(sqlCaseType, assertMessage).assertCount(actual.getParametersCount(), expected.getParameters().size());
-        new TableAssert(assertMessage).assertTables(actual.findSQLSegments(TableSegment.class), expected.getTables());
+    public static void assertIs(final SQLStatementAssertMessage assertMessage, final SQLStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
+        ParameterMarkerAssert.assertCount(assertMessage, actual.getParametersCount(), expected.getParameters().size(), sqlCaseType);
+        TableAssert.assertIs(assertMessage, actual.findSQLSegments(TableSegment.class), expected.getTables());
         if (actual instanceof SelectStatement) {
             assertSelectStatement((SelectStatement) actual, expected, sqlCaseType, assertMessage);
         }
