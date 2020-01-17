@@ -214,7 +214,6 @@ cloneInstance
 cloneDir
     : IDENTIFIER_
     ;
- 
 
 channelName
     : IDENTIFIER_
