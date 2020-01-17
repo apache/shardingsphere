@@ -61,10 +61,9 @@ public final class ProjectionAssert {
      * @param sqlCaseType SQL case type
      */
     public static void assertIs(final SQLStatementAssertMessage assertMessage, final ProjectionsSegment actual, final ExpectedProjections expected, final SQLCaseType sqlCaseType) {
-        Collection<ProjectionSegment> projections = actual.getProjections();
-        assertThat(assertMessage.getText("Projections size error: "), projections.size(), is(expected.getSize()));
+        assertProjections(assertMessage, actual, expected);
         Collection<ExpectedProjection> expectedBaseProjections = new LinkedList<>();
-        for (ProjectionSegment each : projections) {
+        for (ProjectionSegment each : actual.getProjections()) {
             if (each instanceof ShorthandProjectionSegment) {
                 expectedBaseProjections = expected.findExpectedProjections(ExpectedShorthandProjection.class);
             }
@@ -87,6 +86,13 @@ public final class ProjectionAssert {
                 assertProjection(assertMessage, each, expectedBaseProjections);
             }
         }
+    }
+    
+    private static void assertProjections(final SQLStatementAssertMessage assertMessage, final ProjectionsSegment actual, final ExpectedProjections expected) {
+        assertThat(assertMessage.getText("Projections size assertion error: "), actual.getProjections().size(), is(expected.getSize()));
+        assertThat(assertMessage.getText("Projections distinct row assertion error: "), actual.isDistinctRow(), is(expected.isDistinctRow()));
+        assertThat(assertMessage.getText("Projections start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
+        assertThat(assertMessage.getText("Projections stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
     }
     
     private static void assertProjection(final SQLStatementAssertMessage assertMessage, final ProjectionSegment actual, final Collection<ExpectedProjection> expected) {

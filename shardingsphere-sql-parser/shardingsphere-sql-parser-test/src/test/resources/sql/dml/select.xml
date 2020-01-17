@@ -713,7 +713,7 @@
         <tables>
             <table name="t_order" start-index="39" stop-index="45" />
         </tables>
-        <projections start-index="7" stop-index="33">
+        <projections start-index="7" stop-index="32">
             <aggregation-distinct-projections>
                 <aggregation-distinct-projection start-index="7" stop-index="30" text="COUNT(DISTINCTorder_id)" type="COUNT" distinctExpression="order_id" innerExpressionStartIndex="12" alias="c" />
             </aggregation-distinct-projections>
@@ -926,7 +926,7 @@
         <tables>
             <table name="t_order" start-index="48" stop-index="54" />
         </tables>
-        <projections start-index="7" stop-index="29">
+        <projections start-index="7" stop-index="41">
             <aggregation-projections>
                 <aggregation-projection start-index="7" stop-index="29" type="SUM" text="sum(if(status=0,1,0))" innerExpressionStartIndex="10" alias="func_status" />
             </aggregation-projections>
@@ -969,7 +969,7 @@
         <tables>
             <table name="t_order" start-index="45" stop-index="51" />
         </tables>
-        <projections start-index="7" stop-index="26">
+        <projections start-index="7" stop-index="38">
             <expression-projections>
                 <expression-projection start-index="7" stop-index="26" text="INTERVAL(status,1,5)" alias="func_status" />
             </expression-projections>
@@ -990,7 +990,7 @@
         <tables>
             <table name="t_order_item" start-index="44" stop-index="55" />
         </tables>
-        <projections start-index="7" stop-index="36">
+        <projections start-index="7" stop-index="37">
             <expression-projections>
                 <expression-projection start-index="7" stop-index="37" text="CONCAT(LEFT(status,7),'test')"/>
             </expression-projections>
@@ -1050,7 +1050,7 @@
     </parser-result>
 
     <parser-result sql-case-id="select_current_user">
-        <projections start-index="7" stop-index="19">
+        <projections start-index="7" stop-index="18">
             <expression-projections>
                 <expression-projection start-index="7" stop-index="19" text="CURRENT_USER"/>
             </expression-projections>
