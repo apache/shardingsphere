@@ -87,13 +87,12 @@ public final class SQLStatementAssert {
         }
         Optional<OrderBySegment> orderBySegment = actual.findSQLSegment(OrderBySegment.class);
         if (orderBySegment.isPresent()) {
-            OrderByAssert.assertOrderByItems(assertMessage, orderBySegment.get().getOrderByItems(), expected.getOrderByColumns());
+            OrderByAssert.assertIs(assertMessage, orderBySegment.get().getOrderByItems(), expected.getOrderByColumns());
         }
         Optional<LimitSegment> limitSegment = actual.findSQLSegment(LimitSegment.class);
         if (limitSegment.isPresent()) {
-            PaginationAssert paginationAssert = new PaginationAssert(sqlCaseType, assertMessage);
-            paginationAssert.assertOffset(limitSegment.get().getOffset().orNull(), expected.getOffset());
-            paginationAssert.assertRowCount(limitSegment.get().getRowCount().orNull(), expected.getRowCount());
+            PaginationAssert.assertOffset(assertMessage, limitSegment.get().getOffset().orNull(), expected.getOffset(), sqlCaseType);
+            PaginationAssert.assertRowCount(assertMessage, limitSegment.get().getRowCount().orNull(), expected.getRowCount(), sqlCaseType);
         }
         Optional<WhereSegment> whereSegment = actual.findSQLSegment(WhereSegment.class);
         if (whereSegment.isPresent() && null != expected.getWhereSegment()) {

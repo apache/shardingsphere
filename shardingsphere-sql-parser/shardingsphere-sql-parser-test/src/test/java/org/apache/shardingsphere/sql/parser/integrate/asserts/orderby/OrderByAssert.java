@@ -45,7 +45,7 @@ public final class OrderByAssert {
      * @param actual actual order by items
      * @param expected expected order by items
      */
-    public static void assertOrderByItems(final SQLStatementAssertMessage assertMessage, final Collection<OrderByItemSegment> actual, final List<ExpectedOrderByColumn> expected) {
+    public static void assertIs(final SQLStatementAssertMessage assertMessage, final Collection<OrderByItemSegment> actual, final List<ExpectedOrderByColumn> expected) {
         assertThat(assertMessage.getText("Order by items size error: "), actual.size(), is(expected.size()));
         int count = 0;
         for (OrderByItemSegment each : actual) {
