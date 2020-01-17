@@ -175,7 +175,7 @@ unionClause_
     ;
 
 selectClause
-    : SELECT selectSpecification_* selectItems fromClause? whereClause? groupByClause? havingClause? windowClause_? orderByClause? limitClause? selectIntoExpression_? lockClause?
+    : SELECT selectSpecification_* projections fromClause? whereClause? groupByClause? havingClause? windowClause_? orderByClause? limitClause? selectIntoExpression_? lockClause?
     ;
 
 selectSpecification_
@@ -186,11 +186,11 @@ duplicateSpecification
     : ALL | DISTINCT | DISTINCTROW
     ;
 
-selectItems
-    : (unqualifiedShorthand | selectItem) (COMMA_ selectItem)*
+projections
+    : (unqualifiedShorthand | projection) (COMMA_ projection)*
     ;
 
-selectItem
+projection
     : (columnName | expr) (AS? alias)? | qualifiedShorthand
     ;
 
