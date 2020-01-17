@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.integrate.asserts.projection;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedAggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedAggregationProjection;
@@ -48,20 +49,18 @@ import static org.junit.Assert.assertThat;
  *
  * @author zhaoyanan
  */
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProjectionAssert {
-
-    private final SQLCaseType sqlCaseType;
-
-    private final SQLStatementAssertMessage assertMessage;
-
+    
     /**
      * Assert projections.
      * 
+     * @param assertMessage assert message
      * @param actual actual projection
      * @param expected expected projections
+     * @param sqlCaseType SQL case type
      */
-    public void assertProjections(final ProjectionsSegment actual, final ExpectedProjections expected) {
+    public static void assertProjections(final SQLStatementAssertMessage assertMessage, final ProjectionsSegment actual, final ExpectedProjections expected, final SQLCaseType sqlCaseType) {
         Collection<ProjectionSegment> projections = actual.getProjections();
         assertThat(assertMessage.getText("Projections size error: "), projections.size(), is(expected.getSize()));
         Collection<ExpectedProjection> expectedBaseProjections = new LinkedList<>();
@@ -85,12 +84,12 @@ public final class ProjectionAssert {
                 expectedBaseProjections = expected.findExpectedProjections(ExpectedTopProjection.class);
             }
             if (!expectedBaseProjections.isEmpty()) {
-                assertProjection(each, expectedBaseProjections);
+                assertProjection(assertMessage, each, expectedBaseProjections);
             }
         }
     }
-
-    private void assertProjection(final ProjectionSegment actual, final Collection<ExpectedProjection> expected) {
+    
+    private static void assertProjection(final SQLStatementAssertMessage assertMessage, final ProjectionSegment actual, final Collection<ExpectedProjection> expected) {
         String actualText = actual.getText();
         String expectedText = "";
         for (ExpectedProjection each: expected) {
@@ -102,4 +101,3 @@ public final class ProjectionAssert {
         assertThat(assertMessage.getText("Projection text assert error: "), actualText, is(expectedText));
     }
 }
-

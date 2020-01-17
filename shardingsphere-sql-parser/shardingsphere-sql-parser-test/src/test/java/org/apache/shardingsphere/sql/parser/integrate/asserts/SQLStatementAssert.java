@@ -67,10 +67,10 @@ public final class SQLStatementAssert {
         ParameterMarkerAssert.assertCount(assertMessage, actual.getParametersCount(), expected.getParameters().size(), sqlCaseType);
         TableAssert.assertIs(assertMessage, actual.findSQLSegments(TableSegment.class), expected.getTables());
         if (actual instanceof SelectStatement) {
-            assertSelectStatement((SelectStatement) actual, expected, sqlCaseType, assertMessage);
+            assertSelectStatement(assertMessage, (SelectStatement) actual, expected, sqlCaseType);
         }
         if (actual instanceof InsertStatement) {
-            assertInsertStatement((InsertStatement) actual, expected, sqlCaseType, assertMessage);
+            assertInsertStatement(assertMessage, (InsertStatement) actual, expected, sqlCaseType);
         }
         if (actual instanceof AlterTableStatement) {
             assertAlterTableStatement((AlterTableStatement) actual, expected, assertMessage);
@@ -80,9 +80,9 @@ public final class SQLStatementAssert {
         }
     }
     
-    private static void assertSelectStatement(final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType, final SQLStatementAssertMessage assertMessage) {
+    private static void assertSelectStatement(final SQLStatementAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
         ProjectionsSegment actualProjections = actual.getProjections();
-        new ProjectionAssert(sqlCaseType, assertMessage).assertProjections(actualProjections, expected.getProjections());
+        ProjectionAssert.assertProjections(assertMessage, actualProjections, expected.getProjections(), sqlCaseType);
         Optional<GroupBySegment> groupBySegment = actual.findSQLSegment(GroupBySegment.class);
         if (groupBySegment.isPresent()) {
             new GroupByAssert(assertMessage).assertGroupByItems(groupBySegment.get().getGroupByItems(), expected.getGroupByColumns());
@@ -103,7 +103,7 @@ public final class SQLStatementAssert {
         }
     }
     
-    private static void assertInsertStatement(final InsertStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType, final SQLStatementAssertMessage assertMessage) {
+    private static void assertInsertStatement(final SQLStatementAssertMessage assertMessage, final InsertStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
         new InsertNamesAndValuesAssert(assertMessage, sqlCaseType).assertInsertNamesAndValues(actual, expected.getInsertColumnsAndValues());
     }
     
