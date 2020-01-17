@@ -53,14 +53,14 @@ import static org.junit.Assert.assertThat;
 public final class ProjectionAssert {
     
     /**
-     * Assert projections.
+     * Assert actual projections segment is correct with expected projections.
      * 
      * @param assertMessage assert message
      * @param actual actual projection
      * @param expected expected projections
      * @param sqlCaseType SQL case type
      */
-    public static void assertProjections(final SQLStatementAssertMessage assertMessage, final ProjectionsSegment actual, final ExpectedProjections expected, final SQLCaseType sqlCaseType) {
+    public static void assertIs(final SQLStatementAssertMessage assertMessage, final ProjectionsSegment actual, final ExpectedProjections expected, final SQLCaseType sqlCaseType) {
         Collection<ProjectionSegment> projections = actual.getProjections();
         assertThat(assertMessage.getText("Projections size error: "), projections.size(), is(expected.getSize()));
         Collection<ExpectedProjection> expectedBaseProjections = new LinkedList<>();

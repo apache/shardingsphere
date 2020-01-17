@@ -30,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.projection.Project
 import org.apache.shardingsphere.sql.parser.integrate.asserts.table.AlterTableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
@@ -81,11 +80,10 @@ public final class SQLStatementAssert {
     }
     
     private static void assertSelectStatement(final SQLStatementAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
-        ProjectionsSegment actualProjections = actual.getProjections();
-        ProjectionAssert.assertProjections(assertMessage, actualProjections, expected.getProjections(), sqlCaseType);
+        ProjectionAssert.assertIs(assertMessage, actual.getProjections(), expected.getProjections(), sqlCaseType);
         Optional<GroupBySegment> groupBySegment = actual.findSQLSegment(GroupBySegment.class);
         if (groupBySegment.isPresent()) {
-            new GroupByAssert(assertMessage).assertGroupByItems(groupBySegment.get().getGroupByItems(), expected.getGroupByColumns());
+            GroupByAssert.assertIs(assertMessage, groupBySegment.get().getGroupByItems(), expected.getGroupByColumns());
         }
         Optional<OrderBySegment> orderBySegment = actual.findSQLSegment(OrderBySegment.class);
         if (orderBySegment.isPresent()) {
