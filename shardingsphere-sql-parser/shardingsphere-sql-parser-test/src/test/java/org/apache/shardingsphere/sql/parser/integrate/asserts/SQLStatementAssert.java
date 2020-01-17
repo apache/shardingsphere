@@ -72,7 +72,7 @@ public final class SQLStatementAssert {
             assertInsertStatement(assertMessage, (InsertStatement) actual, expected, sqlCaseType);
         }
         if (actual instanceof AlterTableStatement) {
-            assertAlterTableStatement((AlterTableStatement) actual, expected, assertMessage);
+            assertAlterTableStatement(assertMessage, (AlterTableStatement) actual, expected);
         }
         if (actual instanceof TCLStatement) {
             assertTCLStatement((TCLStatement) actual, expected);
@@ -104,7 +104,7 @@ public final class SQLStatementAssert {
         InsertNamesAndValuesAssert.assertIs(assertMessage, actual, expected.getInsertColumnsAndValues(), sqlCaseType);
     }
     
-    private static void assertAlterTableStatement(final AlterTableStatement actual, final ParserResult expected, final SQLStatementAssertMessage assertMessage) {
+    private static void assertAlterTableStatement(final SQLStatementAssertMessage assertMessage, final AlterTableStatement actual, final ParserResult expected) {
         if (null != expected.getAlterTable()) {
             AlterTableAssert.assertIs(assertMessage, actual, expected.getAlterTable());
         }
