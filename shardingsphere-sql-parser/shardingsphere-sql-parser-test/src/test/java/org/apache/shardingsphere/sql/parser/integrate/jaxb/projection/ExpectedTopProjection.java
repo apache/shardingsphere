@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedTopProjection extends ExpectedBaseProjection {
+public final class ExpectedTopProjection extends AbstractExpectedProjection {
 
     @XmlElement(name = "row-number-value-segment")
     private ExpectedRowNumberValueSegment top;

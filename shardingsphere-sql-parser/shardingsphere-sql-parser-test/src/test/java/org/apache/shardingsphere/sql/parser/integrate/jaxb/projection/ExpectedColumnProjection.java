@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedColumnProjection extends ExpectedBaseProjection {
+public final class ExpectedColumnProjection extends AbstractExpectedProjection {
     
     @XmlAttribute
     private String alias;

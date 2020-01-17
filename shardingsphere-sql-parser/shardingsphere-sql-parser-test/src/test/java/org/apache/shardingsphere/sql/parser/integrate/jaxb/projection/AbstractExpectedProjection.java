@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ExpectedBaseProjection implements ExpectedProjection {
+public abstract class AbstractExpectedProjection implements ExpectedProjection {
     
     @XmlAttribute(name = "start-index")
     private Integer startIndex;
