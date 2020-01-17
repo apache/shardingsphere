@@ -33,6 +33,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPack
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -86,7 +87,7 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
         } else {
             nullBitmap = null;
             newParametersBoundFlag = null;
-            parameters = null;
+            parameters = Collections.emptyList();
         }
     }
     
