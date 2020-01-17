@@ -34,6 +34,15 @@ export default {
             href: '/runtime-status'
           }
         ]
+      },
+      {
+        title: 'Data move',
+        child: [
+          {
+            title: 'Data scaling',
+            href: '/data-scaling'
+          }
+        ]
       }
     ],
     connected: 'Connected',
@@ -115,6 +124,27 @@ export default {
       name: 'Please enter the name of the schema',
       ruleConfig: 'Please enter the rule config of the schema',
       dataSourceConfig: 'Please enter the data source config of the schema'
+    }
+  },
+  dataScaling: {
+    btnTxt: 'ADD',
+    tableList: {
+      jobId: 'jobId',
+      jobName: 'jobName',
+      status: 'status',
+      operate: 'operate',
+      operateStop: 'stop'
+    },
+    registDialog: {
+      title: 'Add a job',
+      source: 'Source',
+      target: 'Target',
+      btnConfirmTxt: 'Confirm',
+      btnCancelTxt: 'Cancel'
+    },
+    rules: {
+      source: 'Please enter the source of the registration center',
+      target: 'Please select a target'
     }
   }
 }
