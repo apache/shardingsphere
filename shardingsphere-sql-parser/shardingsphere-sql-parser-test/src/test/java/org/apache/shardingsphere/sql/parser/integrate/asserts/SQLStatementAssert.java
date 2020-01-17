@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.sql.parser.integrate.asserts;
 
 import com.google.common.base.Optional;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.groupby.GroupByAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.index.ParameterMarkerAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.parameter.ParameterMarkerAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.insert.InsertNamesAndValuesAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.orderby.OrderByAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.pagination.PaginationAssert;
@@ -27,9 +29,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.predicate.Predicat
 import org.apache.shardingsphere.sql.parser.integrate.asserts.projection.ProjectionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.table.AlterTableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistryFactory;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
@@ -51,98 +51,66 @@ import static org.junit.Assert.assertThat;
  *
  * @author zhangliang
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLStatementAssert {
     
-    private final SQLStatement actual;
-    
-    private final ParserResult expected;
-    
-    private final ParameterMarkerAssert parameterMarkerAssert;
-    
-    private final TableAssert tableAssert;
-    
-    private final GroupByAssert groupByAssert;
-    
-    private final OrderByAssert orderByAssert;
-    
-    private final PaginationAssert paginationAssert;
-    
-    private final AlterTableAssert alterTableAssert;
-
-    private final ProjectionAssert projectionAssert;
-
-    private final PredicateAssert predicateAssert;
-    
-    private final InsertNamesAndValuesAssert insertNamesAndValuesAssert;
-    
-    public SQLStatementAssert(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
-        this.actual = actual;
-        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlCaseId, sqlCaseType);
-        expected = ParserResultSetRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
-        parameterMarkerAssert = new ParameterMarkerAssert(sqlCaseType, assertMessage);
-        tableAssert = new TableAssert(assertMessage);
-        groupByAssert = new GroupByAssert(assertMessage);
-        orderByAssert = new OrderByAssert(assertMessage);
-        paginationAssert = new PaginationAssert(sqlCaseType, assertMessage);
-        alterTableAssert = new AlterTableAssert(assertMessage);
-        projectionAssert = new ProjectionAssert(sqlCaseType, assertMessage);
-        predicateAssert = new PredicateAssert(sqlCaseType, assertMessage);
-        insertNamesAndValuesAssert = new InsertNamesAndValuesAssert(assertMessage, sqlCaseType);
-    }
-    
     /**
-     * Assert SQL statement.
+     * Assert SQL statement is correct with expected parser result.
+     * 
+     * @param assertMessage assert message
+     * @param actual actual SQL statement
+     * @param expected expected parser result
+     * @param sqlCaseType SQL case type
      */
-    public void assertSQLStatement() {
-        parameterMarkerAssert.assertCount(actual.getParametersCount(), expected.getParameters().size());
-        tableAssert.assertTables(actual.findSQLSegments(TableSegment.class), expected.getTables());
+    public static void assertIs(final SQLStatementAssertMessage assertMessage, final SQLStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
+        ParameterMarkerAssert.assertCount(assertMessage, actual.getParametersCount(), expected.getParameters().size(), sqlCaseType);
+        TableAssert.assertIs(assertMessage, actual.findSQLSegments(TableSegment.class), expected.getTables());
         if (actual instanceof SelectStatement) {
-            assertSelectStatement((SelectStatement) actual);
+            assertSelectStatement(assertMessage, (SelectStatement) actual, expected, sqlCaseType);
         }
         if (actual instanceof InsertStatement) {
-            assertInsertStatement((InsertStatement) actual);
+            assertInsertStatement(assertMessage, (InsertStatement) actual, expected, sqlCaseType);
         }
         if (actual instanceof AlterTableStatement) {
-            assertAlterTableStatement((AlterTableStatement) actual);
+            assertAlterTableStatement(assertMessage, (AlterTableStatement) actual, expected);
         }
         if (actual instanceof TCLStatement) {
-            assertTCLStatement((TCLStatement) actual);
+            assertTCLStatement((TCLStatement) actual, expected);
         }
     }
     
-    private void assertSelectStatement(final SelectStatement actual) {
-        ProjectionsSegment actualProjections = actual.getProjections();
-        projectionAssert.assertProjections(actualProjections, expected.getProjections());
+    private static void assertSelectStatement(final SQLStatementAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
+        ProjectionAssert.assertIs(assertMessage, actual.getProjections(), expected.getProjections(), sqlCaseType);
         Optional<GroupBySegment> groupBySegment = actual.findSQLSegment(GroupBySegment.class);
         if (groupBySegment.isPresent()) {
-            groupByAssert.assertGroupByItems(groupBySegment.get().getGroupByItems(), expected.getGroupByColumns());
+            GroupByAssert.assertIs(assertMessage, groupBySegment.get().getGroupByItems(), expected.getGroupByColumns());
         }
         Optional<OrderBySegment> orderBySegment = actual.findSQLSegment(OrderBySegment.class);
         if (orderBySegment.isPresent()) {
-            orderByAssert.assertOrderByItems(orderBySegment.get().getOrderByItems(), expected.getOrderByColumns());
+            OrderByAssert.assertIs(assertMessage, orderBySegment.get().getOrderByItems(), expected.getOrderByColumns());
         }
         Optional<LimitSegment> limitSegment = actual.findSQLSegment(LimitSegment.class);
         if (limitSegment.isPresent()) {
-            paginationAssert.assertOffset(limitSegment.get().getOffset().orNull(), expected.getOffset());
-            paginationAssert.assertRowCount(limitSegment.get().getRowCount().orNull(), expected.getRowCount());
+            PaginationAssert.assertOffset(assertMessage, limitSegment.get().getOffset().orNull(), expected.getOffset(), sqlCaseType);
+            PaginationAssert.assertRowCount(assertMessage, limitSegment.get().getRowCount().orNull(), expected.getRowCount(), sqlCaseType);
         }
         Optional<WhereSegment> whereSegment = actual.findSQLSegment(WhereSegment.class);
         if (whereSegment.isPresent() && null != expected.getWhereSegment()) {
-            predicateAssert.assertPredicate(whereSegment.get(), expected.getWhereSegment());
+            PredicateAssert.assertIs(assertMessage, whereSegment.get(), expected.getWhereSegment(), sqlCaseType);
         }
     }
     
-    private void assertInsertStatement(final InsertStatement actual) {
-        insertNamesAndValuesAssert.assertInsertNamesAndValues(actual, expected.getInsertColumnsAndValues());
+    private static void assertInsertStatement(final SQLStatementAssertMessage assertMessage, final InsertStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
+        InsertNamesAndValuesAssert.assertIs(assertMessage, actual, expected.getInsertColumnsAndValues(), sqlCaseType);
     }
     
-    private void assertAlterTableStatement(final AlterTableStatement actual) {
+    private static void assertAlterTableStatement(final SQLStatementAssertMessage assertMessage, final AlterTableStatement actual, final ParserResult expected) {
         if (null != expected.getAlterTable()) {
-            alterTableAssert.assertAlterTable(actual, expected.getAlterTable());
+            AlterTableAssert.assertIs(assertMessage, actual, expected.getAlterTable());
         }
     }
     
-    private void assertTCLStatement(final TCLStatement actual) {
+    private static void assertTCLStatement(final TCLStatement actual, final ParserResult expected) {
         assertThat(actual.getClass().getName(), is(expected.getTclActualStatementClassType()));
         if (actual instanceof SetAutoCommitStatement) {
             assertThat(((SetAutoCommitStatement) actual).isAutoCommit(), is(expected.isAutoCommit()));
