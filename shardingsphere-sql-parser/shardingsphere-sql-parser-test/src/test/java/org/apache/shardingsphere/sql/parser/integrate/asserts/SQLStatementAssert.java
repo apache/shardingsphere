@@ -58,13 +58,13 @@ public final class SQLStatementAssert {
     /**
      * Assertion.
      * 
+     * @param assertMessage assert message
      * @param actual actual SQL statement
      * @param expected expected parser result
      * @param sqlCaseId SQL case Id
      * @param sqlCaseType SQL case type
      */
-    public static void assertion(final SQLStatement actual, final ParserResult expected, final String sqlCaseId, final SQLCaseType sqlCaseType) {
-        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlCaseId, sqlCaseType);
+    public static void assertion(final SQLStatementAssertMessage assertMessage, final SQLStatement actual, final ParserResult expected, final String sqlCaseId, final SQLCaseType sqlCaseType) {
         new ParameterMarkerAssert(sqlCaseType, assertMessage).assertCount(actual.getParametersCount(), expected.getParameters().size());
         new TableAssert(assertMessage).assertTables(actual.findSQLSegments(TableSegment.class), expected.getTables());
         if (actual instanceof SelectStatement) {

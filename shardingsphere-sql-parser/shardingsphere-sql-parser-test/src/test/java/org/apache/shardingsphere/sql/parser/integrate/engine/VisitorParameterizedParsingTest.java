@@ -23,6 +23,7 @@ import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserFactory;
 import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistry;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistryFactory;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.VisitorParserResultSetRegistry;
@@ -73,8 +74,9 @@ public final class VisitorParameterizedParsingTest {
         String databaseTypeName = "H2".equals(databaseType) ? "MySQL" : databaseType;
         String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());
         ParseTree parseTree = SQLParserFactory.newInstance(databaseTypeName, sql).execute().getChild(0);
+        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlCaseId, sqlCaseType);
         SQLStatement actual = (SQLStatement) new SQLVisitorEngine(databaseTypeName, parseTree).parse();
         ParserResult expected = ParserResultSetRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
-        SQLStatementAssert.assertion(actual, expected, sqlCaseId, sqlCaseType);
+        SQLStatementAssert.assertion(assertMessage, actual, expected, sqlCaseId, sqlCaseType);
     }
 }
