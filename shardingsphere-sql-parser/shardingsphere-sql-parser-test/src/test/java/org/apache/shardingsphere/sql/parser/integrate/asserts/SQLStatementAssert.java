@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.groupby.GroupByAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.index.IndexAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.index.ParameterMarkerAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.insert.InsertNamesAndValuesAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.orderby.OrderByAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.pagination.PaginationAssert;
@@ -57,9 +57,9 @@ public final class SQLStatementAssert {
     
     private final ParserResult expected;
     
-    private final TableAssert tableAssert;
+    private final ParameterMarkerAssert parameterMarkerAssert;
     
-    private final IndexAssert indexAssert;
+    private final TableAssert tableAssert;
     
     private final GroupByAssert groupByAssert;
     
@@ -79,8 +79,8 @@ public final class SQLStatementAssert {
         this.actual = actual;
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlCaseId, sqlCaseType);
         expected = ParserResultSetRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
+        parameterMarkerAssert = new ParameterMarkerAssert(sqlCaseType, assertMessage);
         tableAssert = new TableAssert(assertMessage);
-        indexAssert = new IndexAssert(sqlCaseType, assertMessage);
         groupByAssert = new GroupByAssert(assertMessage);
         orderByAssert = new OrderByAssert(assertMessage);
         paginationAssert = new PaginationAssert(sqlCaseType, assertMessage);
@@ -94,8 +94,8 @@ public final class SQLStatementAssert {
      * Assert SQL statement.
      */
     public void assertSQLStatement() {
+        parameterMarkerAssert.assertCount(actual.getParametersCount(), expected.getParameters().size());
         tableAssert.assertTables(actual.findSQLSegments(TableSegment.class), expected.getTables());
-        indexAssert.assertParametersCount(actual.getParametersCount(), expected.getParameters().size());
         if (actual instanceof SelectStatement) {
             assertSelectStatement((SelectStatement) actual);
         }

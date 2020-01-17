@@ -25,28 +25,28 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * Index assert.
+ * Parameter marker assert.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class IndexAssert {
+public final class ParameterMarkerAssert {
     
     private final SQLCaseType sqlCaseType;
     
     private final SQLStatementAssertMessage assertMessage;
     
     /**
-     * Assert parameters count.
+     * Assert parameter markers count.
      * 
-     * @param actual actual parameters count
-     * @param expected expected parameters count
+     * @param actual actual parameter markers count
+     * @param expected expected parameter markers count
      */
-    public void assertParametersCount(final int actual, final int expected) {
+    public void assertCount(final int actual, final int expected) {
         if (SQLCaseType.Placeholder == sqlCaseType) {
-            assertThat(assertMessage.getText("Parameters count assertion error: "), actual, is(expected));
+            assertThat(assertMessage.getText("Parameter markers count assertion error: "), actual, is(expected));
         } else {
-            assertThat(assertMessage.getText("Parameters count assertion error: "), actual, is(0));
+            assertThat(assertMessage.getText("Parameter markers count assertion error: "), actual, is(0));
         }
     }
 }
