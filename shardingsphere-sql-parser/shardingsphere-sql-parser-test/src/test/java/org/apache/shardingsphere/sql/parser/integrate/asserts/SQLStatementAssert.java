@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.groupby.GroupByAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.index.ParameterMarkerAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.parameter.ParameterMarkerAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.insert.InsertNamesAndValuesAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.orderby.OrderByAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.pagination.PaginationAssert;
