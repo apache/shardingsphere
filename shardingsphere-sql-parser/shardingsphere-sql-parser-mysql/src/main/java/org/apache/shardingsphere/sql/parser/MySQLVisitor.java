@@ -243,8 +243,8 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         if (null != ctx.parameterMarker()) {
             return visit(ctx.parameterMarker());
         }
-        if (null !=  ctx.literals()) {
-            return visit( ctx.literals());
+        if (null != ctx.literals()) {
+            return visit(ctx.literals());
         }
         return new LiteralValue(ctx.getText());
     }
