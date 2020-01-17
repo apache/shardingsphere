@@ -24,18 +24,18 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 /**
- * Column select item segment.
+ * Column projection segment.
  * 
  * @author zhangliang
  */
-public final class ColumnSelectItemSegment extends ColumnSegment implements SelectItemSegment, AliasAvailable {
+public final class ColumnProjectionSegment extends ColumnSegment implements ProjectionSegment, AliasAvailable {
     
     @Getter
     private final String text;
     
     private String alias;
     
-    public ColumnSelectItemSegment(final String text, final ColumnSegment columnSegment) {
+    public ColumnProjectionSegment(final String text, final ColumnSegment columnSegment) {
         super(columnSegment.getStartIndex(), columnSegment.getStopIndex(), columnSegment.getName());
         this.text = SQLUtil.getExpressionWithoutOutsideParentheses(text);
         if (columnSegment.getOwner().isPresent()) {

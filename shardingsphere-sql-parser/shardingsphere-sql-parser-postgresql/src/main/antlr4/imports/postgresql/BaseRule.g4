@@ -203,6 +203,7 @@ simpleExpr
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
     | caseExpression_
+    | CURRENT_USER
     ;
 
 functionCall

@@ -15,22 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.filler.impl.dml;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.projection;
 
-import org.apache.shardingsphere.sql.parser.core.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemsSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-
-/**
- * Select items filler.
- *
- * @author duhongjun
- */
-public final class SelectItemsFiller implements SQLSegmentFiller<SelectItemsSegment> {
+public interface ExpectedProjection {
     
-    @Override
-    public void fill(final SelectItemsSegment sqlSegment, final SQLStatement sqlStatement) {
-        ((SelectStatement) sqlStatement).setSelectItems(sqlSegment);
-    }
+    /**
+     * Get text.
+     * 
+     * @return text
+     */
+    String getText();
 }

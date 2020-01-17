@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.selectitem;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.projection;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,17 +27,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedRowNumberValueSegment {
-    
-    @XmlAttribute(name = "parameter-index")
-    private Integer parameterIndex;
-    
-    @XmlAttribute(name = "start-index")
-    private Integer startIndex;
-    
-    @XmlAttribute(name = "stop-index")
-    private Integer stopIndex;
-    
-    @XmlAttribute(name = "bound-opened")
-    private boolean boundOpened;
+public final class ExpectedExpressionProjection extends ExpectedBaseProjection {
+    @XmlAttribute
+    private String alias;
 }

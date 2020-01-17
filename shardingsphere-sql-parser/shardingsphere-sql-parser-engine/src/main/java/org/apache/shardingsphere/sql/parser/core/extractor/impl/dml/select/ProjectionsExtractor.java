@@ -20,66 +20,66 @@ package org.apache.shardingsphere.sql.parser.core.extractor.impl.dml.select;
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.sql.parser.core.extractor.api.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.sql.parser.core.extractor.impl.dml.select.item.SelectItemExtractor;
+import org.apache.shardingsphere.sql.parser.core.extractor.impl.dml.select.item.ProjectionExtractor;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeSet;
 
 /**
- * Select items extractor.
+ * Projections extractor.
  *
  * @author duhongjun
  * @author panjuan
  */
-public final class SelectItemsExtractor implements OptionalSQLSegmentExtractor {
+public final class ProjectionsExtractor implements OptionalSQLSegmentExtractor {
     
     // TODO recognize database type, only oracle and sqlserver can use row number
     private final Collection<String> rowNumberIdentifiers;
     
-    private final SelectItemExtractor selectItemExtractor = new SelectItemExtractor();
+    private final ProjectionExtractor projectionExtractor = new ProjectionExtractor();
     
-    public SelectItemsExtractor() {
+    public ProjectionsExtractor() {
         rowNumberIdentifiers = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         rowNumberIdentifiers.add("rownum");
         rowNumberIdentifiers.add("ROW_NUMBER");
     }
     
     @Override
-    public Optional<SelectItemsSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        ParserRuleContext selectItemsNode = ExtractorUtils.getFirstChildNode(findMainQueryNode(ancestorNode), RuleName.SELECT_ITEMS);
-        SelectItemsSegment result = new SelectItemsSegment(selectItemsNode.getStart().getStartIndex(), selectItemsNode.getStop().getStopIndex(), extractDistinct(ancestorNode));
-        Optional<ParserRuleContext> unqualifiedShorthandNode = ExtractorUtils.findFirstChildNode(selectItemsNode, RuleName.UNQUALIFIED_SHORTHAND);
+    public Optional<ProjectionsSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        ParserRuleContext projectionNode = ExtractorUtils.getFirstChildNode(findMainQueryNode(ancestorNode), RuleName.PROJECTIONS);
+        ProjectionsSegment result = new ProjectionsSegment(projectionNode.getStart().getStartIndex(), projectionNode.getStop().getStopIndex(), extractDistinct(ancestorNode));
+        Optional<ParserRuleContext> unqualifiedShorthandNode = ExtractorUtils.findFirstChildNode(projectionNode, RuleName.UNQUALIFIED_SHORTHAND);
         if (unqualifiedShorthandNode.isPresent()) {
-            setUnqualifiedShorthandSelectItemSegment(unqualifiedShorthandNode.get(), result, parameterMarkerIndexes);
+            setUnqualifiedShorthandProjectionSegment(unqualifiedShorthandNode.get(), result, parameterMarkerIndexes);
         }
-        setSelectItemSegment(selectItemsNode, result, parameterMarkerIndexes);
+        setProjectionSegment(projectionNode, result, parameterMarkerIndexes);
         return Optional.of(result);
     }
     
-    private void setUnqualifiedShorthandSelectItemSegment(final ParserRuleContext unqualifiedShorthandNode,
-                                                          final SelectItemsSegment selectItemsSegment, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        Optional<? extends SelectItemSegment> unqualifiedShorthandSelectItemSegment = selectItemExtractor.extract(unqualifiedShorthandNode, parameterMarkerIndexes);
-        if (unqualifiedShorthandSelectItemSegment.isPresent()) {
-            selectItemsSegment.getSelectItems().add(unqualifiedShorthandSelectItemSegment.get());
+    private void setUnqualifiedShorthandProjectionSegment(final ParserRuleContext unqualifiedShorthandNode,
+                                                          final ProjectionsSegment projectionsSegment, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        Optional<? extends ProjectionSegment> unqualifiedShorthandProjectionSegment = projectionExtractor.extract(unqualifiedShorthandNode, parameterMarkerIndexes);
+        if (unqualifiedShorthandProjectionSegment.isPresent()) {
+            projectionsSegment.getProjections().add(unqualifiedShorthandProjectionSegment.get());
         }
     }
     
-    private void setSelectItemSegment(final ParserRuleContext selectItemsNode, final SelectItemsSegment selectItemsSegment, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(selectItemsNode, RuleName.SELECT_ITEM)) {
-            Optional<? extends SelectItemSegment> selectItemSegment = selectItemExtractor.extract(each, parameterMarkerIndexes);
-            if (selectItemSegment.isPresent()) {
-                selectItemsSegment.getSelectItems().add(selectItemSegment.get());
+    private void setProjectionSegment(final ParserRuleContext projectionsNode, final ProjectionsSegment projectionsSegment, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(projectionsNode, RuleName.PROJECTION)) {
+            Optional<? extends ProjectionSegment> projectionSegment = projectionExtractor.extract(each, parameterMarkerIndexes);
+            if (projectionSegment.isPresent()) {
+                projectionsSegment.getProjections().add(projectionSegment.get());
             }
         }
     }
     
-    private boolean extractDistinct(final ParserRuleContext selectItemsNode) {
-        Optional<ParserRuleContext> duplicateSpecificationNode = ExtractorUtils.findFirstChildNode(selectItemsNode, RuleName.DUPLICATE_SPECIFICATION);
+    private boolean extractDistinct(final ParserRuleContext projectionsNode) {
+        Optional<ParserRuleContext> duplicateSpecificationNode = ExtractorUtils.findFirstChildNode(projectionsNode, RuleName.DUPLICATE_SPECIFICATION);
         if (duplicateSpecificationNode.isPresent()) {
             String text = duplicateSpecificationNode.get().getText();
             return "DISTINCT".equalsIgnoreCase(text) || "DISTINCTROW".equalsIgnoreCase(text);

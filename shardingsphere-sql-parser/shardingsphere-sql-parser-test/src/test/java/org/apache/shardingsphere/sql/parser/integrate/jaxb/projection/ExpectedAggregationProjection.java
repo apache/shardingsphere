@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.selectitem;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.projection;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,8 +27,17 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedAggregationDistinctItem extends ExpectedAggregationItem {
-
+public class ExpectedAggregationProjection extends ExpectedBaseProjection {
+    
     @XmlAttribute
-    private String distinctExpression;
+    private Integer innerExpressionStartIndex;
+    
+    @XmlAttribute
+    private String type;
+    
+    @XmlAttribute
+    private String alias;
+    
+    @XmlAttribute(name = "aggregation-inner-expression")
+    private String innerExpression;
 }

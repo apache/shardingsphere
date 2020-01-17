@@ -89,7 +89,7 @@
     
     <parser-result sql-case-id="update_with_special_character" parameters="'update', 1, 1">
         <tables>
-            <table name="t_order" start-index="7" stop-index="15" />
+            <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="7" stop-index="15" />
         </tables>
         <sharding-conditions>
             <and-condition>

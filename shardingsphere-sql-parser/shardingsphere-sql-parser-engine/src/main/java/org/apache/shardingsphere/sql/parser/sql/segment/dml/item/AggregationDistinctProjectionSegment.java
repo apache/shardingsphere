@@ -17,34 +17,23 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.dml.item;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 /**
- * Shorthand select item segment.
- *
+ * Aggregation distinct projection segment.
+ * 
  * @author zhangliang
- * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ShorthandSelectItemSegment implements SelectItemSegment, OwnerAvailable<TableSegment> {
+public final class AggregationDistinctProjectionSegment extends AggregationProjectionSegment {
     
-    private final int startIndex;
+    private final String distinctExpression;
     
-    private final int stopIndex;
-    
-    private final String text;
-    
-    private TableSegment owner;
-    
-    @Override
-    public Optional<TableSegment> getOwner() {
-        return Optional.fromNullable(owner);
+    public AggregationDistinctProjectionSegment(final int startIndex, final int stopIndex,
+                                                final String text, final AggregationType type, final int innerExpressionStartIndex, final String distinctExpression) {
+        super(startIndex, stopIndex, text, type, innerExpressionStartIndex);
+        this.distinctExpression = SQLUtil.getExpressionWithoutOutsideParentheses(distinctExpression);
     }
 }

@@ -15,26 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.table;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
+import lombok.Setter;
 
-/**
- * Subquery segment.
- * 
- * @author duhongjun
- */
-@RequiredArgsConstructor
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-@ToString
-public final class SubquerySegment implements ProjectionSegment, ComplexExpressionSegment {
+@Setter
+public final class ExpectedTableOwner {
     
-    private final int startIndex;
+    @XmlAttribute
+    private String name;
     
-    private final int stopIndex;
+    @XmlAttribute(name = "start-delimiter")
+    private String startDelimiter = "";
     
-    private final String text;
+    @XmlAttribute(name = "end-delimiter")
+    private String endDelimiter = "";
+    
+    @XmlAttribute(name = "start-index")
+    private int startIndex;
+    
+    @XmlAttribute(name = "stop-index")
+    private int stopIndex;
 }

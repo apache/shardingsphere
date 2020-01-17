@@ -82,7 +82,7 @@
     
     <parser-result sql-case-id="drop_table_with_back_quota">
         <tables>
-            <table name="t_order" start-index="11" stop-index="19" />
+            <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="11" stop-index="19" />
         </tables>
     </parser-result>
     
@@ -116,7 +116,7 @@
     
     <parser-result sql-case-id="drop_index_with_back_quota">
         <tables>
-            <table name="t_order" start-index="28" stop-index="36" />
+            <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="28" stop-index="36" />
         </tables>
         <tokens>
             <index-token start-index="11" stop-index="23" table-name="t_order"/>
@@ -125,7 +125,7 @@
     
     <parser-result sql-case-id="drop_table_with_quota">
         <tables>
-            <table name="t_order" start-index="11" stop-index="19" />
+            <table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="11" stop-index="19" />
         </tables>
     </parser-result>
     
@@ -137,11 +137,11 @@
     
     <parser-result sql-case-id="drop_table_with_double_quota">
         <tables>
-            <table name="t_order" start-index="11" stop-index="19" />
+            <table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="11" stop-index="19" />
         </tables>
     </parser-result>
     
-        <parser-result sql-case-id="drop_index_with_double_quota">
+    <parser-result sql-case-id="drop_index_with_double_quota">
         <tokens>
             <index-token start-index="11" stop-index="23" table-name="t_order" />
         </tokens>
@@ -155,13 +155,13 @@
     
     <parser-result sql-case-id="drop_table_with_bracket">
         <tables>
-            <table name="t_order" start-index="11" stop-index="19" />
+            <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="11" stop-index="19" />
         </tables>
     </parser-result>
     
     <parser-result sql-case-id="drop_index_with_bracket">
         <tables>
-            <table name="t_order" start-index="28" stop-index="36" />
+            <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="28" stop-index="36" />
         </tables>
         <tokens>
             <index-token start-index="11" stop-index="23" table-name="t_order" />

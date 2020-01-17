@@ -149,17 +149,17 @@ public final class GroupByStreamMergedResultTest {
     }
     
     private SelectSQLStatementContext createSelectSQLStatementContext() {
-        AggregationProjection aggregationSelectItem1 = new AggregationProjection(AggregationType.COUNT, "(*)", null);
-        aggregationSelectItem1.setIndex(1);
-        AggregationProjection aggregationSelectItem2 = new AggregationProjection(AggregationType.AVG, "(num)", null);
-        aggregationSelectItem2.setIndex(2);
-        AggregationProjection derivedAggregationSelectItem1 = new AggregationProjection(AggregationType.COUNT, "(num)", "AVG_DERIVED_COUNT_0");
-        aggregationSelectItem2.setIndex(5);
-        aggregationSelectItem2.getDerivedAggregationProjections().add(derivedAggregationSelectItem1);
-        AggregationProjection derivedAggregationSelectItem2 = new AggregationProjection(AggregationType.SUM, "(num)", "AVG_DERIVED_SUM_0");
-        aggregationSelectItem2.setIndex(6);
-        aggregationSelectItem2.getDerivedAggregationProjections().add(derivedAggregationSelectItem2);
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Arrays.<Projection>asList(aggregationSelectItem1, aggregationSelectItem2), Collections.<String>emptyList());
+        AggregationProjection aggregationProjection1 = new AggregationProjection(AggregationType.COUNT, "(*)", null);
+        aggregationProjection1.setIndex(1);
+        AggregationProjection aggregationProjection2 = new AggregationProjection(AggregationType.AVG, "(num)", null);
+        aggregationProjection2.setIndex(2);
+        AggregationProjection derivedAggregationProjection1 = new AggregationProjection(AggregationType.COUNT, "(num)", "AVG_DERIVED_COUNT_0");
+        aggregationProjection2.setIndex(5);
+        aggregationProjection2.getDerivedAggregationProjections().add(derivedAggregationProjection1);
+        AggregationProjection derivedAggregationProjection2 = new AggregationProjection(AggregationType.SUM, "(num)", "AVG_DERIVED_SUM_0");
+        aggregationProjection2.setIndex(6);
+        aggregationProjection2.getDerivedAggregationProjections().add(derivedAggregationProjection2);
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Arrays.<Projection>asList(aggregationProjection1, aggregationProjection2), Collections.<String>emptyList());
         return new SelectSQLStatementContext(new SelectStatement(),
                 new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), false),

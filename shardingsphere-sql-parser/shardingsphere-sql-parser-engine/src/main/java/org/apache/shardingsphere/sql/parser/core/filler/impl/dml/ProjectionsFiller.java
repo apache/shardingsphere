@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.selectitem;
+package org.apache.shardingsphere.sql.parser.core.filler.impl.dml;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.core.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-
-@Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public class ExpectedBaseSelectItem implements ExpectedSelectItem {
+/**
+ * projections filler.
+ *
+ * @author duhongjun
+ */
+public final class ProjectionsFiller implements SQLSegmentFiller<ProjectionsSegment> {
     
-    @XmlAttribute(name = "start-index")
-    private Integer startIndex;
-    
-    @XmlAttribute(name = "stop-index")
-    private Integer stopIndex;
-    
-    @XmlAttribute
-    private String text;
+    @Override
+    public void fill(final ProjectionsSegment sqlSegment, final SQLStatement sqlStatement) {
+        ((SelectStatement) sqlStatement).setProjections(sqlSegment);
+    }
 }

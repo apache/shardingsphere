@@ -24,28 +24,28 @@ import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.core.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationSelectItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionSelectItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationDistinctProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
 
 import java.util.Map;
 
 /**
- * Function select item extractor.
+ * Function projection extractor.
  *
  * @author zhangliang
  */
-public final class FunctionSelectItemExtractor implements OptionalSQLSegmentExtractor {
+public final class FunctionProjectionExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<SelectItemSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+    public Optional<ProjectionSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> functionCallNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.FUNCTION_CALL);
         if (!functionCallNode.isPresent()) {
             return Optional.absent();
         }
-        SelectItemSegment result = extractFunctionSelectItemSegment(functionCallNode.get());
+        ProjectionSegment result = extractFunctionProjectionSegment(functionCallNode.get());
         Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNodeNoneRecursive(expressionNode, RuleName.ALIAS);
         if (aliasNode.isPresent() && result instanceof AliasAvailable) {
             ((AliasAvailable) result).setAlias(aliasNode.get().getText());
@@ -53,14 +53,14 @@ public final class FunctionSelectItemExtractor implements OptionalSQLSegmentExtr
         return Optional.of(result);
     }
     
-    private SelectItemSegment extractFunctionSelectItemSegment(final ParserRuleContext functionCallNode) {
+    private ProjectionSegment extractFunctionProjectionSegment(final ParserRuleContext functionCallNode) {
         Optional<ParserRuleContext> aggregationFunctionCallNode = ExtractorUtils.findFirstChildNodeNoneRecursive(functionCallNode, RuleName.AGGREGATION_FUNCTION);
         if (!aggregationFunctionCallNode.isPresent()) {
-            return new ExpressionSelectItemSegment(functionCallNode.getStart().getStartIndex(), functionCallNode.getStop().getStopIndex(), functionCallNode.getText());
+            return new ExpressionProjectionSegment(functionCallNode.getStart().getStartIndex(), functionCallNode.getStop().getStopIndex(), functionCallNode.getText());
         }
         Optional<AggregationType> aggregationType = findAggregationType(aggregationFunctionCallNode.get().getChild(0).getText());
-        return aggregationType.isPresent() ? extractAggregationSelectItemSegment(aggregationType.get(), aggregationFunctionCallNode.get())
-                : new ExpressionSelectItemSegment(functionCallNode.getStart().getStartIndex(), functionCallNode.getStop().getStopIndex(), functionCallNode.getText());
+        return aggregationType.isPresent() ? extractAggregationProjectionSegment(aggregationType.get(), aggregationFunctionCallNode.get())
+                : new ExpressionProjectionSegment(functionCallNode.getStart().getStartIndex(), functionCallNode.getStop().getStopIndex(), functionCallNode.getText());
     }
     
     private Optional<AggregationType> findAggregationType(final String functionName) {
@@ -71,12 +71,12 @@ public final class FunctionSelectItemExtractor implements OptionalSQLSegmentExtr
         }
     }
     
-    private AggregationSelectItemSegment extractAggregationSelectItemSegment(final AggregationType type, final ParserRuleContext aggregationFunctionCallNode) {
+    private AggregationProjectionSegment extractAggregationProjectionSegment(final AggregationType type, final ParserRuleContext aggregationFunctionCallNode) {
         int innerExpressionStartIndex = ((TerminalNode) aggregationFunctionCallNode.getChild(1)).getSymbol().getStartIndex();
         return ExtractorUtils.findFirstChildNode(aggregationFunctionCallNode, RuleName.DISTINCT).isPresent()
-                ? new AggregationDistinctSelectItemSegment(aggregationFunctionCallNode.getStart().getStartIndex(), aggregationFunctionCallNode.getStop().getStopIndex(), 
+                ? new AggregationDistinctProjectionSegment(aggregationFunctionCallNode.getStart().getStartIndex(), aggregationFunctionCallNode.getStop().getStopIndex(), 
                 aggregationFunctionCallNode.getText(), type, innerExpressionStartIndex, getDistinctExpression(aggregationFunctionCallNode))
-                : new AggregationSelectItemSegment(aggregationFunctionCallNode.getStart().getStartIndex(), aggregationFunctionCallNode.getStop().getStopIndex(), 
+                : new AggregationProjectionSegment(aggregationFunctionCallNode.getStart().getStartIndex(), aggregationFunctionCallNode.getStop().getStopIndex(), 
                 aggregationFunctionCallNode.getText(), type, innerExpressionStartIndex);
     }
     
