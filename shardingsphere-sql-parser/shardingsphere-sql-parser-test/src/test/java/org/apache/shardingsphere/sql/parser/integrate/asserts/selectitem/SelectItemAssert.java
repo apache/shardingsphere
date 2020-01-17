@@ -63,7 +63,7 @@ public final class SelectItemAssert {
      */
     public void assertSelectItems(final SelectItemsSegment actual, final ExpectedSelectItems expectedSelectItems) {
         Collection<SelectItemSegment> actualItems = actual.getSelectItems();
-        assertThat(assertMessage.getFullAssertMessage("Select items size error: "), actualItems.size(), is(expectedSelectItems.getSize()));
+        assertThat(assertMessage.getText("Select items size error: "), actualItems.size(), is(expectedSelectItems.getSize()));
         Collection<ExpectedSelectItem> expectedBaseItems = new LinkedList<>();
         for (SelectItemSegment each : actualItems) {
             if (each instanceof ShorthandSelectItemSegment) {
@@ -99,7 +99,7 @@ public final class SelectItemAssert {
                 break;
             }
         }
-        assertThat(assertMessage.getFullAssertMessage("selectItem text assert error: "), actualText, is(expectedText));
+        assertThat(assertMessage.getText("selectItem text assert error: "), actualText, is(expectedText));
     }
 }
 

@@ -43,7 +43,7 @@ numberLiterals
 
 dateTimeLiterals
     : (DATE | TIME | TIMESTAMP) STRING_
-    | LBE_ identifier_ STRING_ RBE_
+    | LBE_ identifier STRING_ RBE_
     ;
 
 hexadecimalLiterals
@@ -62,12 +62,12 @@ nullValueLiterals
     : NULL
     ;
 
-identifier_
+identifier
     : IDENTIFIER_ | unreservedWord_
     ;
 
 variable_
-    : (AT_? AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier_
+    : (AT_? AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier
     ;
 
 scope_
@@ -112,7 +112,7 @@ unreservedWord_
     ;
 
 schemaName
-    : identifier_
+    : identifier
     ;
 
 tableName
@@ -125,42 +125,42 @@ columnName
 
 userName
     : STRING_  AT_ STRING_
-    | identifier_
+    | identifier
     | STRING_
     ;
 
 eventName
     : (STRING_ | IDENTIFIER_) AT_ (STRING_ IDENTIFIER_)
-    | identifier_
+    | identifier
     | STRING_ 
     ;
 
 serverName
-    : identifier_
+    : identifier
     | STRING_
     ; 
 
 wrapperName
-    : identifier_
+    : identifier
     | STRING_
     ;
 
 functionName
-    : identifier_
-    | (owner DOT_)? identifier_
+    : identifier
+    | (owner DOT_)? identifier
     ;
 
 viewName
-    : identifier_
-    | (owner DOT_)? identifier_
+    : identifier
+    | (owner DOT_)? identifier
     ;
 
 owner
-    : identifier_
+    : identifier
     ;
 
 name
-    : identifier_
+    : identifier
     ;
 
 columnNames
@@ -172,7 +172,7 @@ tableNames
     ;
 
 indexName
-    : identifier_
+    : identifier
     ;
 
 characterSetName_
@@ -221,7 +221,7 @@ channelName
     ;
 
 logName
-    : identifier_
+    : identifier
     ;
 
 roleName
@@ -317,13 +317,13 @@ simpleExpr
     | parameterMarker
     | literals
     | columnName
-    | simpleExpr COLLATE (STRING_ | identifier_)
+    | simpleExpr COLLATE (STRING_ | identifier)
     | variable_
     | simpleExpr OR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
-    | LBE_ identifier_ expr RBE_
+    | LBE_ identifier expr RBE_
     | matchExpression_
     | caseExpression_
     | intervalExpression_
@@ -348,11 +348,11 @@ distinct
     ;
 
 overClause_
-    : OVER (LP_ windowSpecification_ RP_ | identifier_)
+    : OVER (LP_ windowSpecification_ RP_ | identifier)
     ;
 
 windowSpecification_
-    : identifier_? partitionClause_? orderByClause? frameClause_?
+    : identifier? partitionClause_? orderByClause? frameClause_?
     ;
 
 partitionClause_
@@ -385,7 +385,7 @@ groupConcatFunction_
     ;
 
 windowFunction_
-    : identifier_ LP_ expr (COMMA_ expr)* RP_ overClause_
+    : identifier LP_ expr (COMMA_ expr)* RP_ overClause_
     ;
 
 castFunction_
@@ -394,7 +394,7 @@ castFunction_
 
 convertFunction_
     : CONVERT LP_ expr COMMA_ dataType RP_
-    | CONVERT LP_ expr USING identifier_ RP_ 
+    | CONVERT LP_ expr USING identifier RP_ 
     ;
 
 positionFunction_
@@ -406,7 +406,7 @@ substringFunction_
     ;
 
 extractFunction_
-    : EXTRACT LP_ identifier_ FROM expr RP_
+    : EXTRACT LP_ identifier FROM expr RP_
     ;
 
 charFunction_
@@ -438,7 +438,7 @@ regularFunction_
     ;
 
 regularFunctionName_
-    : identifier_ | IF | CURRENT_TIMESTAMP | UNIX_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | INTERVAL | SUBSTRING | MOD
+    : identifier | IF | CURRENT_TIMESTAMP | UNIX_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | INTERVAL | SUBSTRING | MOD
     | DATABASE | LEFT | RIGHT | LOWER | UPPER | DATE | DATEDIFF | DATE_FORMAT | DAY | DAYNAME | DAYOFMONTH | DAYOFWEEK | DAYOFYEAR
     | GEOMCOLLECTION | GEOMETRYCOLLECTION | LINESTRING | MULTILINESTRING | MULTIPOINT | MULTIPOLYGON | POINT | POLYGON | STR_TO_DATE
     | ST_AREA | ST_ASBINARY | ST_ASGEOJSON | ST_ASTEXT | ST_ASWKB | ST_ASWKT | ST_BUFFER | ST_BUFFER_STRATEGY | ST_CENTROID | ST_CONTAINS
@@ -503,7 +503,7 @@ dataType
     ;
 
 dataTypeName_
-    : identifier_ identifier_?
+    : identifier identifier?
     ;
 
 dataTypeLength
@@ -519,7 +519,7 @@ collateClause_
     ;
 
 ignoredIdentifier_
-    : identifier_ (DOT_ identifier_)?
+    : identifier (DOT_ identifier)?
     ;
 
 ignoredIdentifiers_

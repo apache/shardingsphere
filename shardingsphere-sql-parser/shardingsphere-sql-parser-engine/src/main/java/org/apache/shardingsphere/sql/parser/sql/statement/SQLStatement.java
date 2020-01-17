@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.statement;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 import java.util.Collection;
@@ -27,7 +28,7 @@ import java.util.Collection;
  *
  * @author zhangliang
  */
-public interface SQLStatement {
+public interface SQLStatement extends ASTNode {
     
     /**
      * Get count of parameters.

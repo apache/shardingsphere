@@ -93,7 +93,7 @@ dropEvent
 
 createFunction
     : CREATE ownerStatement?
-      FUNCTION functionName LP_ (identifier_ dataType)? (COMMA_ identifier_ dataType)* RP_
+      FUNCTION functionName LP_ (identifier dataType)? (COMMA_ identifier dataType)* RP_
       RETURNS dataType
       routineOption_*
       routineBody
@@ -142,7 +142,7 @@ createView
       ( ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE) )?
       ownerStatement?
       (SQL SECURITY (DEFINER | INVOKER))?
-      VIEW viewName (LP_ identifier_ (COMMA_ identifier_)* RP_)? 
+      VIEW viewName (LP_ identifier (COMMA_ identifier)* RP_)? 
       AS select
       (WITH (CASCADED | LOCAL)? CHECK OPTION)?
     ;
@@ -152,7 +152,7 @@ alterView
       ( ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE) )?
       ownerStatement?
       (SQL SECURITY (DEFINER | INVOKER))?
-      VIEW viewName (LP_ identifier_ (COMMA_ identifier_)* RP_)? 
+      VIEW viewName (LP_ identifier (COMMA_ identifier)* RP_)? 
       AS select
       (WITH (CASCADED | LOCAL)? CHECK OPTION)?
     ;
@@ -163,7 +163,7 @@ dropView
     ;
 
 createTablespaceInnodb
-    : CREATE (UNDO)? TABLESPACE identifier_
+    : CREATE (UNDO)? TABLESPACE identifier
       ADD DATAFILE STRING_
       (FILE_BLOCK_SIZE EQ_ fileSizeLiteral_)?
       (ENCRYPTION EQ_ Y_N_ )?
@@ -171,52 +171,52 @@ createTablespaceInnodb
     ;
 
 createTablespaceNdb
-    : CREATE ( UNDO )? TABLESPACE identifier_
+    : CREATE ( UNDO )? TABLESPACE identifier
       ADD DATAFILE STRING_
-      USE LOGFILE GROUP identifier_
+      USE LOGFILE GROUP identifier
       (EXTENT_SIZE EQ_? fileSizeLiteral_)?
       (INITIAL_SIZE EQ_? fileSizeLiteral_)?
       (AUTOEXTEND_SIZE EQ_? fileSizeLiteral_)?
       (MAX_SIZE EQ_? fileSizeLiteral_)?
-      (NODEGROUP EQ_? identifier_)?
+      (NODEGROUP EQ_? identifier)?
       WAIT?
       (COMMENT EQ_? STRING_)?
-      ENGINE EQ_? identifier_
+      ENGINE EQ_? identifier
     ;
 
 alterTablespace
-    : ALTER TABLESPACE identifier_
+    : ALTER TABLESPACE identifier
       (ADD | DROP) DATAFILE STRING_
       (INITIAL_SIZE EQ_ fileSizeLiteral_)?
       WAIT?
-      ENGINE EQ_? identifier_
+      ENGINE EQ_? identifier
     ;
 
 dropTablespace
-    : DROP TABLESPACE identifier_ (ENGINE EQ_? identifier_)?
+    : DROP TABLESPACE identifier (ENGINE EQ_? identifier)?
     ;
 
 createLogfileGroup
-    : CREATE LOGFILE GROUP identifier_
+    : CREATE LOGFILE GROUP identifier
       ADD UNDOFILE STRING_
       (INITIAL_SIZE EQ_? fileSizeLiteral_)?
       (UNDO_BUFFER_SIZE EQ_? fileSizeLiteral_)?
       (REDO_BUFFER_SIZE EQ_? fileSizeLiteral_)?
-      (NODEGROUP EQ_? identifier_)?
+      (NODEGROUP EQ_? identifier)?
       WAIT?
       (COMMENT EQ_? STRING_)?
-      ENGINE EQ_? identifier_
+      ENGINE EQ_? identifier
     ;
 
 alterLogfileGroup
-    : ALTER LOGFILE GROUP identifier_
+    : ALTER LOGFILE GROUP identifier
       ADD UNDOFILE STRING_
       (INITIAL_SIZE EQ_? fileSizeLiteral_)?
-      WAIT? ENGINE EQ_? identifier_
+      WAIT? ENGINE EQ_? identifier
     ;
 
 dropLogfileGroup
-    : DROP LOGFILE GROUP identifier_ ENGINE EQ_ identifier_
+    : DROP LOGFILE GROUP identifier ENGINE EQ_ identifier
     ;
 
 createTrigger
@@ -302,7 +302,7 @@ keyPart_
 indexOption_
     : KEY_BLOCK_SIZE EQ_? NUMBER_ 
     | indexType_ 
-    | WITH PARSER identifier_ 
+    | WITH PARSER identifier 
     | COMMENT STRING_ 
     | (VISIBLE | INVISIBLE)
     ;
@@ -461,7 +461,7 @@ renameIndexSpecification
     ;
 
 renameTableSpecification_
-    : RENAME (TO | AS)? identifier_
+    : RENAME (TO | AS)? identifier
     ;
 
 partitionDefinitions_
@@ -469,7 +469,7 @@ partitionDefinitions_
     ;
 
 partitionDefinition_
-    : PARTITION identifier_ 
+    : PARTITION identifier 
     (VALUES (LESS THAN partitionLessThanValue_ | IN LP_ partitionValueList_ RP_))?
     partitionDefinitionOption_* 
     (LP_ subpartitionDefinition_ (COMMA_ subpartitionDefinition_)* RP_)?
@@ -484,17 +484,17 @@ partitionValueList_
     ;
 
 partitionDefinitionOption_
-    : STORAGE? ENGINE EQ_? identifier_
+    : STORAGE? ENGINE EQ_? identifier
     | COMMENT EQ_? STRING_
     | DATA DIRECTORY EQ_? STRING_
     | INDEX DIRECTORY EQ_? STRING_
     | MAX_ROWS EQ_? NUMBER_
     | MIN_ROWS EQ_? NUMBER_
-    | TABLESPACE EQ_? identifier_
+    | TABLESPACE EQ_? identifier
     ;
 
 subpartitionDefinition_
-    : SUBPARTITION identifier_ partitionDefinitionOption_*
+    : SUBPARTITION identifier partitionDefinitionOption_*
     ;
 
 dropTableSpecification_
@@ -547,7 +547,7 @@ routineOption_
     ;
 
 procedureParameter_
-    : ( IN | OUT | INOUT ) identifier_ dataType
+    : ( IN | OUT | INOUT ) identifier dataType
     ;
 
 fileSizeLiteral_

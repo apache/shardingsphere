@@ -48,11 +48,11 @@ conditionalInsertElsePart
     ;
 
 insertIntoClause
-    : INTO tableName (AS? alias)? columnNames?
+    : INTO tableName (AS? alias)?
     ;
 
 insertValuesClause
-    : VALUES assignmentValues (COMMA_ assignmentValues)*
+    : columnNames? VALUES assignmentValues (COMMA_ assignmentValues)*
     ;
 
 update
@@ -125,7 +125,7 @@ selectItem
     ;
 
 alias
-    : identifier_ | STRING_
+    : identifier | STRING_
     ;
 
 unqualifiedShorthand
@@ -133,7 +133,7 @@ unqualifiedShorthand
     ;
 
 qualifiedShorthand
-    : identifier_ DOT_ASTERISK_
+    : identifier DOT_ASTERISK_
     ;
 
 fromClause
