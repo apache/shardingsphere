@@ -111,10 +111,8 @@ public final class SQLStatementAssert {
     }
     
     private void assertSelectStatement(final SelectStatement actual) {
-        Optional<ProjectionsSegment> projectionsSegment = actual.findSQLSegment(ProjectionsSegment.class);
-        if (projectionsSegment.isPresent()) {
-            projectionAssert.assertProjections(projectionsSegment.get(), expected.getProjections());
-        }
+        ProjectionsSegment actualProjections = actual.getProjections();
+        projectionAssert.assertProjections(actualProjections, expected.getProjections());
         Optional<GroupBySegment> groupBySegment = actual.findSQLSegment(GroupBySegment.class);
         if (groupBySegment.isPresent()) {
             groupByAssert.assertGroupByItems(groupBySegment.get().getGroupByItems(), expected.getGroupByColumns());

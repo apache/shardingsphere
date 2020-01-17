@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
+import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 
@@ -47,24 +47,22 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext.getSqlStatement() instanceof SelectStatement && !sqlStatementContext.getTablesContext().isEmpty())) {
-            return false;
-        }
-        Optional<ProjectionsSegment> projectionsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(ProjectionsSegment.class);
-        return projectionsSegment.isPresent() && !projectionsSegment.get().getProjections().isEmpty();
+        return sqlStatementContext.getSqlStatement() instanceof SelectStatement && !sqlStatementContext.getTablesContext().isEmpty();
     }
     
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+        if (!(sqlStatementContext instanceof SelectSQLStatementContext)) {
+            return Collections.emptyList();
+        }
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
-        Optional<ProjectionsSegment> projectionsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(ProjectionsSegment.class);
-        Preconditions.checkState(projectionsSegment.isPresent());
+        ProjectionsSegment projectionsSegment = ((SelectStatement) sqlStatementContext.getSqlStatement()).getProjections();
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
         if (!encryptTable.isPresent()) {
             return Collections.emptyList();
         }
-        for (ProjectionSegment each : projectionsSegment.get().getProjections()) {
+        for (ProjectionSegment each : projectionsSegment.getProjections()) {
             if (isEncryptLogicColumn(each, encryptTable.get())) {
                 result.add(generateSQLToken((ColumnProjectionSegment) each, tableName));
             }
