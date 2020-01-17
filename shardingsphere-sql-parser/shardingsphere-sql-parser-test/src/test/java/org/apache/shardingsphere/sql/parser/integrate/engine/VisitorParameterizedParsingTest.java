@@ -77,6 +77,6 @@ public final class VisitorParameterizedParsingTest {
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlCaseId, sqlCaseType);
         SQLStatement actual = (SQLStatement) new SQLVisitorEngine(databaseTypeName, parseTree).parse();
         ParserResult expected = ParserResultSetRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
-        SQLStatementAssert.assertion(assertMessage, actual, expected, sqlCaseId, sqlCaseType);
+        SQLStatementAssert.assertion(assertMessage, actual, expected, sqlCaseType);
     }
 }
