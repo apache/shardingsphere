@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.top;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.RowNumberValueSegment;
 
 /**
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.Ro
  */
 @RequiredArgsConstructor
 @Getter
-public final class TopSegment implements SelectItemSegment {
+public final class TopSegment implements ProjectionSegment {
     
     private final int startIndex;
     

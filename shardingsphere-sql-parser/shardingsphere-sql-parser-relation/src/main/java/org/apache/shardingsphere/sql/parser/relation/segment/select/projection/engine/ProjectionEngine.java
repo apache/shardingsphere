@@ -26,12 +26,12 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.i
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.ShorthandProjection;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationSelectItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnSelectItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionSelectItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandSelectItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationDistinctProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 
 /**
@@ -49,57 +49,57 @@ public final class ProjectionEngine {
      * Create projection.
      * 
      * @param sql SQL
-     * @param selectItemSegment select item segment
+     * @param projectionSegment projection segment
      * @return projection
      */
-    public Optional<Projection> createProjection(final String sql, final SelectItemSegment selectItemSegment) {
-        if (selectItemSegment instanceof ShorthandSelectItemSegment) {
-            return Optional.<Projection>of(createProjection((ShorthandSelectItemSegment) selectItemSegment));
+    public Optional<Projection> createProjection(final String sql, final ProjectionSegment projectionSegment) {
+        if (projectionSegment instanceof ShorthandProjectionSegment) {
+            return Optional.<Projection>of(createProjection((ShorthandProjectionSegment) projectionSegment));
         }
-        if (selectItemSegment instanceof ColumnSelectItemSegment) {
-            return Optional.<Projection>of(createProjection((ColumnSelectItemSegment) selectItemSegment));
+        if (projectionSegment instanceof ColumnProjectionSegment) {
+            return Optional.<Projection>of(createProjection((ColumnProjectionSegment) projectionSegment));
         }
-        if (selectItemSegment instanceof ExpressionSelectItemSegment) {
-            return Optional.<Projection>of(createProjection((ExpressionSelectItemSegment) selectItemSegment));
+        if (projectionSegment instanceof ExpressionProjectionSegment) {
+            return Optional.<Projection>of(createProjection((ExpressionProjectionSegment) projectionSegment));
         }
-        if (selectItemSegment instanceof AggregationDistinctSelectItemSegment) {
-            return Optional.<Projection>of(createProjection(sql, (AggregationDistinctSelectItemSegment) selectItemSegment));
+        if (projectionSegment instanceof AggregationDistinctProjectionSegment) {
+            return Optional.<Projection>of(createProjection(sql, (AggregationDistinctProjectionSegment) projectionSegment));
         }
-        if (selectItemSegment instanceof AggregationSelectItemSegment) {
-            return Optional.<Projection>of(createProjection(sql, (AggregationSelectItemSegment) selectItemSegment));
+        if (projectionSegment instanceof AggregationProjectionSegment) {
+            return Optional.<Projection>of(createProjection(sql, (AggregationProjectionSegment) projectionSegment));
         }
         // TODO subquery
         return Optional.absent();
     }
     
-    private ShorthandProjection createProjection(final ShorthandSelectItemSegment selectItemSegment) {
-        Optional<TableSegment> owner = selectItemSegment.getOwner();
+    private ShorthandProjection createProjection(final ShorthandProjectionSegment projectionSegment) {
+        Optional<TableSegment> owner = projectionSegment.getOwner();
         return new ShorthandProjection(owner.isPresent() ? owner.get().getTableName() : null);
     }
     
-    private ColumnProjection createProjection(final ColumnSelectItemSegment selectItemSegment) {
-        String owner = selectItemSegment.getOwner().isPresent() ? selectItemSegment.getOwner().get().getTableName() : null;
-        return new ColumnProjection(owner, selectItemSegment.getName(), selectItemSegment.getAlias().orNull());
+    private ColumnProjection createProjection(final ColumnProjectionSegment projectionSegment) {
+        String owner = projectionSegment.getOwner().isPresent() ? projectionSegment.getOwner().get().getTableName() : null;
+        return new ColumnProjection(owner, projectionSegment.getName(), projectionSegment.getAlias().orNull());
     }
     
-    private ExpressionProjection createProjection(final ExpressionSelectItemSegment selectItemSegment) {
-        return new ExpressionProjection(selectItemSegment.getText(), selectItemSegment.getAlias().orNull());
+    private ExpressionProjection createProjection(final ExpressionProjectionSegment projectionSegment) {
+        return new ExpressionProjection(projectionSegment.getText(), projectionSegment.getAlias().orNull());
     }
     
-    private AggregationDistinctProjection createProjection(final String sql, final AggregationDistinctSelectItemSegment selectItemSegment) {
-        String innerExpression = sql.substring(selectItemSegment.getInnerExpressionStartIndex(), selectItemSegment.getStopIndex() + 1);
-        String alias = selectItemSegment.getAlias().or(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++));
+    private AggregationDistinctProjection createProjection(final String sql, final AggregationDistinctProjectionSegment projectionSegment) {
+        String innerExpression = sql.substring(projectionSegment.getInnerExpressionStartIndex(), projectionSegment.getStopIndex() + 1);
+        String alias = projectionSegment.getAlias().or(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++));
         AggregationDistinctProjection result = new AggregationDistinctProjection(
-                selectItemSegment.getStartIndex(), selectItemSegment.getStopIndex(), selectItemSegment.getType(), innerExpression, alias, selectItemSegment.getDistinctExpression());
+                projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), projectionSegment.getType(), innerExpression, alias, projectionSegment.getDistinctExpression());
         if (AggregationType.AVG == result.getType()) {
             appendAverageDistinctDerivedProjection(result);
         }
         return result;
     }
     
-    private AggregationProjection createProjection(final String sql, final AggregationSelectItemSegment selectItemSegment) {
-        String innerExpression = sql.substring(selectItemSegment.getInnerExpressionStartIndex(), selectItemSegment.getStopIndex() + 1);
-        AggregationProjection result = new AggregationProjection(selectItemSegment.getType(), innerExpression, selectItemSegment.getAlias().orNull());
+    private AggregationProjection createProjection(final String sql, final AggregationProjectionSegment projectionSegment) {
+        String innerExpression = sql.substring(projectionSegment.getInnerExpressionStartIndex(), projectionSegment.getStopIndex() + 1);
+        AggregationProjection result = new AggregationProjection(projectionSegment.getType(), innerExpression, projectionSegment.getAlias().orNull());
         if (AggregationType.AVG == result.getType()) {
             appendAverageDerivedProjection(result);
             // TODO replace avg to constant, avoid calculate useless avg

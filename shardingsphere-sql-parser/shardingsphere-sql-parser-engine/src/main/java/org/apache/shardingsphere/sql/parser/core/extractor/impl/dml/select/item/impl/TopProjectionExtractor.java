@@ -35,11 +35,11 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.top.TopSe
 import java.util.Map;
 
 /**
- * Top select item extractor.
+ * Top projection extractor.
  *
  * @author zhangliang
  */
-public final class TopSelectItemExtractor implements OptionalSQLSegmentExtractor {
+public final class TopProjectionExtractor implements OptionalSQLSegmentExtractor {
     
     private final ExpressionExtractor expressionExtractor = new ExpressionExtractor();
     

@@ -26423,10 +26423,10 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <select-items start-index="7" stop-index="7">
-            <shorthand-select-items>
-                <shorthand-select-item text="*" start-index="7" stop-index="7" />
-            </shorthand-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projections>
+                <shorthand-projection text="*" start-index="7" stop-index="7" />
+            </shorthand-projections>
+        </projections>
     </parser-result>
 </parser-result-sets>

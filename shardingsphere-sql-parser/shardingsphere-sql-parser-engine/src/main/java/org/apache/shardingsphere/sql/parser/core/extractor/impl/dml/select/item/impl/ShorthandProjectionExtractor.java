@@ -22,28 +22,28 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.sql.parser.core.extractor.api.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandSelectItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 
 import java.util.Map;
 
 /**
- * Shorthand select item extractor.
+ * Shorthand projection extractor.
  *
  * @author zhangliang
  */
-public final class ShorthandSelectItemExtractor implements OptionalSQLSegmentExtractor {
+public final class ShorthandProjectionExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<ShorthandSelectItemSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+    public Optional<ShorthandProjectionSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> unqualifiedShorthandNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.UNQUALIFIED_SHORTHAND);
         if (unqualifiedShorthandNode.isPresent()) {
-            return Optional.of(new ShorthandSelectItemSegment(
+            return Optional.of(new ShorthandProjectionSegment(
                     unqualifiedShorthandNode.get().getStart().getStartIndex(), unqualifiedShorthandNode.get().getStop().getStopIndex(), unqualifiedShorthandNode.get().getText()));
         }
         Optional<ParserRuleContext> qualifiedShorthandNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.QUALIFIED_SHORTHAND);
         if (qualifiedShorthandNode.isPresent()) {
-            ShorthandSelectItemSegment result = new ShorthandSelectItemSegment(
+            ShorthandProjectionSegment result = new ShorthandProjectionSegment(
                     qualifiedShorthandNode.get().getStart().getStartIndex(), qualifiedShorthandNode.get().getStop().getStopIndex(), qualifiedShorthandNode.get().getText());
             ParserRuleContext ownerNode = (ParserRuleContext) qualifiedShorthandNode.get().getChild(0);
             result.setOwner(new TableSegment(ownerNode.getStart().getStartIndex(), ownerNode.getStop().getStopIndex(), ownerNode.getText()));

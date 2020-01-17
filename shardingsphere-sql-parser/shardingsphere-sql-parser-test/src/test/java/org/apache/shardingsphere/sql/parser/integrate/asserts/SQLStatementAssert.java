@@ -24,12 +24,12 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.insert.InsertNames
 import org.apache.shardingsphere.sql.parser.integrate.asserts.orderby.OrderByAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.pagination.PaginationAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.predicate.PredicateAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.selectitem.SelectItemAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.projection.ProjectionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.table.AlterTableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistryFactory;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
@@ -69,7 +69,7 @@ public final class SQLStatementAssert {
     
     private final AlterTableAssert alterTableAssert;
 
-    private final SelectItemAssert selectItemAssert;
+    private final ProjectionAssert projectionAssert;
 
     private final PredicateAssert predicateAssert;
     
@@ -85,7 +85,7 @@ public final class SQLStatementAssert {
         orderByAssert = new OrderByAssert(assertMessage);
         paginationAssert = new PaginationAssert(sqlCaseType, assertMessage);
         alterTableAssert = new AlterTableAssert(assertMessage);
-        selectItemAssert = new SelectItemAssert(sqlCaseType, assertMessage);
+        projectionAssert = new ProjectionAssert(sqlCaseType, assertMessage);
         predicateAssert = new PredicateAssert(sqlCaseType, assertMessage);
         insertNamesAndValuesAssert = new InsertNamesAndValuesAssert(assertMessage, sqlCaseType);
     }
@@ -111,9 +111,9 @@ public final class SQLStatementAssert {
     }
     
     private void assertSelectStatement(final SelectStatement actual) {
-        Optional<SelectItemsSegment> selectItemsSegment = actual.findSQLSegment(SelectItemsSegment.class);
-        if (selectItemsSegment.isPresent()) {
-            selectItemAssert.assertSelectItems(selectItemsSegment.get(), expected.getSelectItems());
+        Optional<ProjectionsSegment> projectionsSegment = actual.findSQLSegment(ProjectionsSegment.class);
+        if (projectionsSegment.isPresent()) {
+            projectionAssert.assertProjections(projectionsSegment.get(), expected.getProjections());
         }
         Optional<GroupBySegment> groupBySegment = actual.findSQLSegment(GroupBySegment.class);
         if (groupBySegment.isPresent()) {

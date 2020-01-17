@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.selectitem;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.projection;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedShorthandSelectItem extends ExpectedBaseSelectItem {
+public final class ExpectedAggregationDistinctProjection extends ExpectedAggregationProjection {
 
-    @XmlElement(name = "table-segment")
-    private ExpectedTableSegment owner = new ExpectedTableSegment();
-
+    @XmlAttribute
+    private String distinctExpression;
 }

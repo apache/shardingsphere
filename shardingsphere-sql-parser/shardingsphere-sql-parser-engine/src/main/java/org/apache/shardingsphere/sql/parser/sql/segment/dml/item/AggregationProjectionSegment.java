@@ -24,12 +24,12 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 /**
- * Aggregation select item segment.
+ * Aggregation projection segment.
  * 
  * @author zhangliang
  */
 @Getter
-public class AggregationSelectItemSegment implements SelectItemSegment, AliasAvailable {
+public class AggregationProjectionSegment implements ProjectionSegment, AliasAvailable {
     
     private final int startIndex;
     
@@ -43,7 +43,7 @@ public class AggregationSelectItemSegment implements SelectItemSegment, AliasAva
     
     private String alias;
     
-    public AggregationSelectItemSegment(final int startIndex, final int stopIndex, final String text, final AggregationType type, final int innerExpressionStartIndex) {
+    public AggregationProjectionSegment(final int startIndex, final int stopIndex, final String text, final AggregationType type, final int innerExpressionStartIndex) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         this.text = SQLUtil.getExpressionWithoutOutsideParentheses(text);

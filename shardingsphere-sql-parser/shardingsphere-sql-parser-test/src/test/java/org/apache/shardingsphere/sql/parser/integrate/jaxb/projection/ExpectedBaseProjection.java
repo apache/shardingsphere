@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.selectitem;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.projection;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedTableSegment {
+public class ExpectedBaseProjection implements ExpectedProjection {
     
     @XmlAttribute(name = "start-index")
     private Integer startIndex;
@@ -38,14 +36,5 @@ public final class ExpectedTableSegment {
     private Integer stopIndex;
     
     @XmlAttribute
-    private String name;
-    
-    @XmlAttribute
-    private QuoteCharacter quoteCharacter = QuoteCharacter.NONE;
-    
-    @XmlElement(name = "schema-segment")
-    private ExpectedSchemaSegment expectedSchemaSegment = new ExpectedSchemaSegment();
-    
-    @XmlAttribute
-    private String alias;
+    private String text;
 }

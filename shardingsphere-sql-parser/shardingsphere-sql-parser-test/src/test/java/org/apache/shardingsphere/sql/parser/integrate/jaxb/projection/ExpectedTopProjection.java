@@ -15,14 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.selectitem;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.projection;
 
-public interface ExpectedSelectItem {
-    
-    /**
-     * Get text.
-     * 
-     * @return text
-     */
-    String getText();
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
+
+@Getter
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedTopProjection extends ExpectedBaseProjection {
+
+    @XmlElement(name = "row-number-value-segment")
+    private ExpectedRowNumberValueSegment top;
+
+    @XmlAttribute(name = "row-number-alias")
+    private String rowNumberAlias;
 }
