@@ -104,6 +104,6 @@ public final class ProjectionAssert {
                 break;
             }
         }
-        assertThat(assertMessage.getText("Projection text assert error: "), actualText, is(expectedText));
+        assertThat(assertMessage.getText("Projection text assertion error: "), actualText, is(expectedText));
     }
 }
