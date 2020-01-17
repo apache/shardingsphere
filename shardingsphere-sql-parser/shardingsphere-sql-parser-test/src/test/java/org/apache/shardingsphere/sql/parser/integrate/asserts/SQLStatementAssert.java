@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.predicate.Predicat
 import org.apache.shardingsphere.sql.parser.integrate.asserts.projection.ProjectionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.table.AlterTableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistryFactory;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
@@ -60,12 +59,12 @@ public final class SQLStatementAssert {
      * Assert SQL statement.
      * 
      * @param actual actual SQL statement
+     * @param expected expected parser result
      * @param sqlCaseId SQL case Id
      * @param sqlCaseType SQL case type
      */
-    public static void assertSQLStatement(final SQLStatement actual, final String sqlCaseId, final SQLCaseType sqlCaseType) {
+    public static void assertSQLStatement(final SQLStatement actual, final ParserResult expected, final String sqlCaseId, final SQLCaseType sqlCaseType) {
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlCaseId, sqlCaseType);
-        ParserResult expected = ParserResultSetRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
         new ParameterMarkerAssert(sqlCaseType, assertMessage).assertCount(actual.getParametersCount(), expected.getParameters().size());
         new TableAssert(assertMessage).assertTables(actual.findSQLSegments(TableSegment.class), expected.getTables());
         if (actual instanceof SelectStatement) {
