@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingscaling.postgresql;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
 import org.postgresql.replication.LogSequenceNumber;
+import org.postgresql.util.PSQLException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -38,6 +39,8 @@ public final class PostgreSQLLogPositionManager implements LogPositionManager<Wa
     public static final String SLOT_NAME = "sharding_scaling";
     
     public static final String DECODE_PLUGIN = "test_decoding";
+    
+    public static final String DUPLICATE_OBJECT_ERROR_CODE = "42710";
     
     private final DataSource dataSource;
     
@@ -62,8 +65,14 @@ public final class PostgreSQLLogPositionManager implements LogPositionManager<Wa
     }
     
     private void createIfNotExists(final Connection connection) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement(String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')", SLOT_NAME, DECODE_PLUGIN));
-        ps.execute();
+        try {
+            PreparedStatement ps = connection.prepareStatement(String.format("SELECT * FROM pg_create_logical_replication_slot('%s', '%s')", SLOT_NAME, DECODE_PLUGIN));
+            ps.execute();
+        } catch (PSQLException ex) {
+            if (!DUPLICATE_OBJECT_ERROR_CODE.equals(ex.getSQLState())) {
+                throw ex;
+            }
+        }
     }
     
     private WalPosition getCurrentLsn(final Connection connection) throws SQLException {
