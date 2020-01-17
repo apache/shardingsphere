@@ -60,7 +60,8 @@ public final class InsertNamesAndValuesAssert {
         assertInsertValues(assertMessage, actual.getValues(), expected.getValues(), sqlCaseType);
     }
     
-    private static void assertInsertValues(final SQLStatementAssertMessage assertMessage, final Collection<InsertValuesSegment> actual, final Collection<ExpectedInsertValue> expected, final SQLCaseType sqlCaseType) {
+    private static void assertInsertValues(final SQLStatementAssertMessage assertMessage, 
+                                           final Collection<InsertValuesSegment> actual, final Collection<ExpectedInsertValue> expected, final SQLCaseType sqlCaseType) {
         assertThat(actual.size(), is(expected.size()));
         Iterator<ExpectedInsertValue> expectedIterator = expected.iterator();
         for (InsertValuesSegment each : actual) {
