@@ -21,6 +21,9 @@
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection text="*" start-index="7" stop-index="7" />
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -33,17 +36,15 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection text="*" start-index="7" stop-index="7" />
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_or_with_different_sharding_columns" parameters="1, 2">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection text="*" start-index="7" stop-index="7" />
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -56,33 +57,29 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection text="*" start-index="7" stop-index="7" />
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_or_with_none_sharding_columns" parameters="1, 'init'">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection text="*" start-index="7" stop-index="7" />
+        </projections>
         <encrypt-conditions>
             <condition column-name="status" table-name="t_order" operator="EQUAL">
                 <value index="1" literal="init" type="varchar" />
             </condition>
         </encrypt-conditions>
-        <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection text="*" start-index="7" stop-index="7" />
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_or_mix_and_for_simple_pattern" parameters="1, 'init', 3">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection text="*" start-index="7" stop-index="7" />
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -103,17 +100,15 @@
                 <value index="1" literal="init" type="varchar" />
             </condition>
         </encrypt-conditions>
-        <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection text="*" start-index="7" stop-index="7" />
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_or_mix_and_for_complex_pattern" parameters="'init', 1, 2, 3, 4">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection text="*" start-index="7" stop-index="7" />
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -153,11 +148,6 @@
                 <value index="0" literal="init" type="varchar" />
             </condition>
         </encrypt-conditions>
-        <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection text="*" start-index="7" stop-index="7" />
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_or_mix_and_with_binding_tables" parameters="1, 2, 3">
@@ -165,6 +155,11 @@
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
             <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
         </tables>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection text="i.*" start-index="7" stop-index="9">
+                <table-segment name="i" />
+            </shorthand-projection>
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -183,13 +178,6 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="7" stop-index="9">
-            <shorthand-projections>
-                <shorthand-projection text="i.*" start-index="7" stop-index="9">
-                    <table-segment name="i" />
-                </shorthand-projection>
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_or_mix_and_with_binding_and_broadcast_tables" parameters="1, 2, 3, 'init'">
@@ -198,6 +186,11 @@
             <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
             <table name="t_broadcast_table" alias="c" start-index="104" stop-index="120" />
         </tables>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection text="i.*" start-index="7" stop-index="9">
+                <table-segment name="i" />
+            </shorthand-projection>
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -221,12 +214,5 @@
                 <value index="3" literal="init" type="varchar" />
             </condition>
         </encrypt-conditions>
-        <projections start-index="7" stop-index="9">
-            <shorthand-projections>
-                <shorthand-projection text="i.*" start-index="7" stop-index="9">
-                    <table-segment name="i" />
-                </shorthand-projection>
-            </shorthand-projections>
-        </projections>
     </parser-result>
 </parser-result-sets>

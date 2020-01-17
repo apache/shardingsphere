@@ -21,6 +21,9 @@
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection text="*" start-index="7" stop-index="7" />
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -26423,10 +26426,5 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection text="*" start-index="7" stop-index="7" />
-            </shorthand-projections>
-        </projections>
     </parser-result>
 </parser-result-sets>

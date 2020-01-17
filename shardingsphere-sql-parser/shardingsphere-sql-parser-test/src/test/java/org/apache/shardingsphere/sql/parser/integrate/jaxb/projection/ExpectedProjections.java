@@ -24,7 +24,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -42,27 +41,21 @@ public final class ExpectedProjections {
     @XmlAttribute(name = "distinct-row")
     private boolean distinctRow;
     
-    @XmlElementWrapper(name = "shorthand-projections")
     @XmlElement(name = "shorthand-projection")
     private Collection<ExpectedShorthandProjection> expectedShorthandProjections = new LinkedList<>();
     
-    @XmlElementWrapper(name = "aggregation-projections")
     @XmlElement(name = "aggregation-projection")
     private Collection<ExpectedAggregationProjection> expectedAggregationProjections = new LinkedList<>();
     
-    @XmlElementWrapper(name = "aggregation-distinct-projections")
     @XmlElement(name = "aggregation-distinct-projection")
     private Collection<ExpectedAggregationDistinctProjection> expectedAggregationDistinctProjections = new LinkedList<>();
     
-    @XmlElementWrapper(name = "column-projections")
     @XmlElement(name = "column-projection")
     private Collection<ExpectedColumnProjection> expectedColumnProjections = new LinkedList<>();
     
-    @XmlElementWrapper(name = "expression-projections")
     @XmlElement(name = "expression-projection")
     private Collection<ExpectedExpressionProjection> expectedExpressionProjections = new LinkedList<>();
     
-    @XmlElementWrapper(name = "top-projections")
     @XmlElement(name = "top-projection")
     private Collection<ExpectedTopProjection> expectedTopProjections = new LinkedList<>();
     

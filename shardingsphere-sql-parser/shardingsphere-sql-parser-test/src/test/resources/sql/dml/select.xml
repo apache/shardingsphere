@@ -19,9 +19,7 @@
 <parser-result-sets>
     <parser-result sql-case-id="select_constant_without_table" >
         <projections start-index="7" stop-index="12">
-            <expression-projections>
-                <expression-projection start-index="7" stop-index="12" text="1asa" alias="a" />
-            </expression-projections>
+            <expression-projection start-index="7" stop-index="12" text="1asa" alias="a" />
         </projections>
     </parser-result>
     
@@ -29,6 +27,11 @@
         <tables>
             <table name="t_order" alias="t_order" start-index="22" stop-index="28" />
         </tables>
+        <projections start-index="7" stop-index="15">
+            <shorthand-projection start-index="7" stop-index="15" text="t_order.*">
+                <table-segment start-index="7" stop-index="13" name="t_order" />
+            </shorthand-projection>
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="EQUAL">
@@ -39,19 +42,21 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="7" stop-index="15">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="15" text="t_order.*">
-                    <table-segment start-index="7" stop-index="13" name="t_order" />
-                </shorthand-projection>
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_with_same_table_name_and_alias_column_with_owner" parameters="1, 1">
         <tables>
             <table name="t_order" alias="t_order" start-index="52" stop-index="58" />
         </tables>
+        <projections start-index="7" stop-index="45">
+            <column-projection start-index="7" stop-index="13" text="t_order.order_id" name="order_id">
+                <table-segment start-index="7" stop-index="13" name="t_order" />
+            </column-projection>
+            <column-projection start-index="24" stop-index="30" text="t_order.user_id" name="user_id">
+                <table-segment start-index="24" stop-index="30" name="t_order" />
+            </column-projection>
+            <column-projection start-index="40" stop-index="45" text="status" name="status" />
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="EQUAL">
@@ -62,79 +67,63 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="7" stop-index="45">
-            <column-projections>
-                <column-projection start-index="7" stop-index="13" text="t_order.order_id" name="order_id">
-                    <table-segment start-index="7" stop-index="13" name="t_order" />
-                </column-projection>
-                <column-projection start-index="24" stop-index="30" text="t_order.user_id" name="user_id">
-                    <table-segment start-index="24" stop-index="30" name="t_order" />
-                </column-projection>
-                <column-projection start-index="40" stop-index="45" text="status" name="status" />
-            </column-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_not_equal_with_single_table" parameters="1">
         <tables>
             <table name="t_order_item" start-index="14" stop-index="25" />
         </tables>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
+        </projections>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
-        <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_exclamation_equal_with_single_table" parameters="1">
         <tables>
             <table name="t_order_item" start-index="14" stop-index="25" />
         </tables>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
+        </projections>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
-        <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_not_in_with_single_table" parameters="100000, 100001">
         <tables>
             <table name="t_order_item" start-index="14" stop-index="25" />
         </tables>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
+        </projections>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
-        <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_not_between_with_single_table" parameters="100000, 100001">
         <tables>
             <table name="t_order_item" start-index="14" stop-index="25" />
         </tables>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
+        </projections>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
-        <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_equal_with_single_table" parameters="1, 1">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="EQUAL">
@@ -145,17 +134,15 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_equal_with_same_sharding_column" parameters="1, 2">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -166,11 +153,6 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_between_with_single_table" parameters="1, 10, 2, 5">
@@ -178,9 +160,7 @@
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
         <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
         </projections>
         <sharding-conditions>
             <and-condition>
@@ -205,9 +185,7 @@
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
         <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
         </projections>
         <sharding-conditions>
             <and-condition>
@@ -236,9 +214,7 @@
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
         <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
         </projections>
         <sharding-conditions>
             <and-condition>
@@ -264,9 +240,7 @@
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
         <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
         </projections>
         <sharding-conditions>
             <and-condition>
@@ -289,6 +263,9 @@
         <tables>
             <table name="t_order" alias="o" start-index="37" stop-index="43" />
         </tables>
+        <projections start-index="7" stop-index="30">
+            <aggregation-projection start-index="7" stop-index="14" type="COUNT" text="count(0)" inner-expression="(0)" alias="orders_count"/>
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -301,17 +278,15 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="7" stop-index="30">
-            <aggregation-projections>
-                <aggregation-projection start-index="7" stop-index="14" type="COUNT" text="count(0)" inner-expression="(0)" alias="orders_count"/>
-            </aggregation-projections>
-        </projections>
     </parser-result>
 
     <parser-result sql-case-id="select_count_tilde_concat" parameters="'init', 1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o" start-index="37" stop-index="43" />
         </tables>
+        <projections start-index="7" stop-index="30">
+            <aggregation-projection start-index="7" stop-index="14" type="COUNT" text="count(0)" inner-expression="(0)" alias="orders_count"/>
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -324,11 +299,6 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="7" stop-index="30">
-            <aggregation-projections>
-                <aggregation-projection start-index="7" stop-index="14" type="COUNT" text="count(0)" inner-expression="(0)" alias="orders_count"/>
-            </aggregation-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_sharding_route_with_binding_tables" parameters="1, 2, 9, 10">
@@ -337,11 +307,9 @@
             <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
         </tables>
         <projections start-index="7" stop-index="9">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="9" text="i.*">
-                    <table-segment start-index="7" stop-index="7" name="i" />
-                </shorthand-projection>
-            </shorthand-projections>
+            <shorthand-projection start-index="7" stop-index="9" text="i.*">
+                <table-segment start-index="7" stop-index="7" name="i" />
+            </shorthand-projection>
         </projections>
         <sharding-conditions>
             <and-condition>
@@ -365,16 +333,14 @@
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
             <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
         </tables>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9" text="i.*">
+                <table-segment start-index="7" stop-index="7" name="i" />
+            </shorthand-projection>
+        </projections>
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
-        <projections start-index="7" stop-index="9">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="9" text="i.*">
-                    <table-segment start-index="7" stop-index="7" name="i" />
-                </shorthand-projection>
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_sharding_route_with_broadcast_table" parameters="1, 2, 9, 10, 'init'">
@@ -383,6 +349,11 @@
             <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
             <table name="t_broadcast_table" alias="c" start-index="104" stop-index="120" />
         </tables>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9" text="i.*">
+                <table-segment start-index="7" stop-index="7" name="i" />
+            </shorthand-projection>
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -403,13 +374,6 @@
                 <value index="4" literal="init" type="varchar" />
             </condition>
         </encrypt-conditions>
-        <projections start-index="7" stop-index="9">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="9" text="i.*">
-                    <table-segment start-index="7" stop-index="7" name="i" />
-                </shorthand-projection>
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_keyword_table_name_with_back_quotes" parameters="1, 2, 9, 10, 'init'">
@@ -418,6 +382,11 @@
             <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
             <table name="select" alias="c" start-delimiter="`" end-delimiter="`" start-index="104" stop-index="111" />
         </tables>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9" text="i.*">
+                <table-segment start-index="7" stop-index="7" name="i" />
+            </shorthand-projection>
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -438,13 +407,6 @@
                 <value index="4" literal="init" type="varchar" />
             </condition>
         </encrypt-conditions>
-        <projections start-index="7" stop-index="9">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="9" text="i.*">
-                    <table-segment start-index="7" stop-index="7" name="i" />
-                </shorthand-projection>
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_keyword_table_name_with_double_quotes" parameters="1, 2, 9, 10, 'init'">
@@ -453,6 +415,11 @@
             <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
             <table name="select" alias="c" start-delimiter="&quot;" end-delimiter="&quot;" start-index="104" stop-index="111" />
         </tables>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9" text="i.*">
+                <table-segment start-index="7" stop-index="7" name="i" />
+            </shorthand-projection>
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -468,13 +435,6 @@
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
-        <projections start-index="7" stop-index="9">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="9" text="i.*">
-                    <table-segment start-index="7" stop-index="7" name="i" />
-                </shorthand-projection>
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_keyword_table_name_with_square_brackets" parameters="1, 2, 9, 10, 'init'">
@@ -483,6 +443,11 @@
             <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
             <table name="select" alias="c" start-delimiter="[" end-delimiter="]" start-index="104" stop-index="111" />
         </tables>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9" text="i.*">
+                <table-segment start-index="7" stop-index="7" name="i" />
+            </shorthand-projection>
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -498,19 +463,17 @@
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
-        <projections start-index="7" stop-index="9">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="9" text="i.*">
-                    <table-segment start-index="7" stop-index="7" name="i" />
-                </shorthand-projection>
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_alias_as_keyword" parameters="1">
         <tables>
             <table name="t_order_item" alias="length" start-index="36" stop-index="47" />
         </tables>
+        <projections start-index="7" stop-index="29">
+            <column-projection start-index="7" stop-index="12" text="length.item_id" name="item_id" alias="password">
+                <table-segment start-index="7" stop-index="12" name="length" />
+            </column-projection>>
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
@@ -518,13 +481,6 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="7" stop-index="29">
-            <column-projections>
-                <column-projection start-index="7" stop-index="12" text="length.item_id" name="item_id" alias="password">
-                    <table-segment start-index="7" stop-index="12" name="length" />
-                </column-projection>>
-            </column-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_with_force_index_join" parameters="1000">
@@ -532,6 +488,11 @@
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
             <table name="t_order_item" alias="i" start-index="56" stop-index="67" />
         </tables>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9" text="i.*">
+                <table-segment start-index="7" stop-index="7" name="i" />
+            </shorthand-projection>
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -539,19 +500,15 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="7" stop-index="9">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="9" text="i.*">
-                    <table-segment start-index="7" stop-index="7" name="i" />
-                </shorthand-projection>
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_equal_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', 100, 200, 1, 2">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="EQUAL">
@@ -562,17 +519,15 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_in_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1, 2">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="EQUAL">
@@ -583,17 +538,15 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_between_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -601,83 +554,68 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_with_double_quotes" parameters="1">
         <tables>
             <table name="t_order_item" start-delimiter="&quot;" end-delimiter="&quot;" start-index="14" stop-index="27" />
         </tables>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
+        </projections>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
-        <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_single_column" >
         <tables>
             <table name="t_order_item" start-index="29" stop-index="40" />
         </tables>
+        <projections start-index="16" stop-index="22" distinct-row="true">
+            <column-projection text="item_id" start-index="16" stop-index="22" name="item_id" />
+        </projections>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
-        <projections start-index="16" stop-index="22" distinct-row="true">
-            <column-projections>
-                <column-projection text="item_id" start-index="16" stop-index="22" name="item_id" />
-            </column-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_owner_column" >
         <tables>
             <table name="t_order" start-index="38" stop-index="44" />
         </tables>
+        <projections start-index="16" stop-index="31" distinct-row="true">
+            <column-projection text="t_order.order_id" start-index="16" stop-index="31" name="order_id" />
+        </projections>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
-        <projections start-index="16" stop-index="31" distinct-row="true">
-            <column-projections>
-                <column-projection text="t_order.order_id" start-index="16" stop-index="31" name="order_id" />
-            </column-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_multi_column" >
         <tables>
             <table name="t_order" start-index="47" stop-index="53" />
         </tables>
+        <projections start-index="16" stop-index="40" distinct-row="true">
+            <column-projection start-index="16" stop-index="23" text="order_id" name="order_id" />
+            <column-projection start-index="26" stop-index="32" text="user_id" name="user_id" />
+            <column-projection start-index="35" stop-index="40" text="status" name="status" />
+        </projections>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
-        <projections start-index="16" stop-index="40" distinct-row="true">
-            <column-projections>
-                <column-projection start-index="16" stop-index="23" text="order_id" name="order_id" />
-                <column-projection start-index="26" stop-index="32" text="user_id" name="user_id" />
-                <column-projection start-index="35" stop-index="40" text="status" name="status" />
-            </column-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_star" >
         <tables>
             <table name="t_order" start-index="23" stop-index="29" />
         </tables>
+        <projections start-index="16" stop-index="16" distinct-row="true">
+            <shorthand-projection start-index="16" stop-index="16" text="*" />
+        </projections>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
-        <projections start-index="16" stop-index="16" distinct-row="true">
-            <shorthand-projections>
-                <shorthand-projection start-index="16" stop-index="16" text="*" />
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_owner_star">
@@ -685,17 +623,13 @@
             <table name="t_order" start-index="54" stop-index="60" />
             <table name="t_order_item" start-index="63" stop-index="74" />
         </tables>
+        <projections start-index="16" stop-index="47" distinct-row="true">
+            <shorthand-projection start-index="16" stop-index="24" text="t_order.*" />
+            <column-projection start-index="27" stop-index="47" text="t_order_item.order_id" />
+        </projections>
         <order-by-columns>
             <order-by-column owner="t_order" name="order_id" order-direction="ASC" />
         </order-by-columns>
-        <projections start-index="16" stop-index="47" distinct-row="true">
-            <shorthand-projections>
-                <shorthand-projection start-index="16" stop-index="24" text="t_order.*" />
-            </shorthand-projections>
-            <column-projections>
-                <column-projection start-index="27" stop-index="47" text="t_order_item.order_id" />
-            </column-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_sum" >
@@ -703,9 +637,7 @@
             <table name="t_order" start-index="37" stop-index="43" />
         </tables>
         <projections start-index="7" stop-index="30">
-            <aggregation-distinct-projections>
-                <aggregation-distinct-projection start-index="7" stop-index="28" text="SUM(DISTINCTorder_id)" type="SUM" distinctExpression="order_id" innerExpressionStartIndex="10" alias="s" />
-            </aggregation-distinct-projections>
+            <aggregation-distinct-projection start-index="7" stop-index="28" text="SUM(DISTINCTorder_id)" type="SUM" distinctExpression="order_id" innerExpressionStartIndex="10" alias="s" />
         </projections>
     </parser-result>
 
@@ -714,9 +646,7 @@
             <table name="t_order" start-index="39" stop-index="45" />
         </tables>
         <projections start-index="7" stop-index="32">
-            <aggregation-distinct-projections>
-                <aggregation-distinct-projection start-index="7" stop-index="30" text="COUNT(DISTINCTorder_id)" type="COUNT" distinctExpression="order_id" innerExpressionStartIndex="12" alias="c" />
-            </aggregation-distinct-projections>
+            <aggregation-distinct-projection start-index="7" stop-index="30" text="COUNT(DISTINCTorder_id)" type="COUNT" distinctExpression="order_id" innerExpressionStartIndex="12" alias="c" />
         </projections>
     </parser-result>
     
@@ -725,9 +655,7 @@
             <table name="t_order" start-index="35" stop-index="41" />
         </tables>
         <projections start-index="7" stop-index="28">
-            <aggregation-distinct-projections>
-                <aggregation-distinct-projection start-index="7" stop-index="28" text="AVG(DISTINCTorder_id)" type="AVG" distinctExpression="order_id" innerExpressionStartIndex="10" />
-            </aggregation-distinct-projections>
+            <aggregation-distinct-projection start-index="7" stop-index="28" text="AVG(DISTINCTorder_id)" type="AVG" distinctExpression="order_id" innerExpressionStartIndex="10" />
         </projections>
     </parser-result>
     
@@ -736,10 +664,8 @@
             <table name="t_order" start-index="61" stop-index="67" />
         </tables>
         <projections start-index="7" stop-index="54">
-            <aggregation-distinct-projections>
-                <aggregation-distinct-projection start-index="7" stop-index="30" text="COUNT(DISTINCTorder_id)" type="COUNT" distinctExpression="order_id" innerExpressionStartIndex="12" />
-                <aggregation-distinct-projection start-index="33" stop-index="54" text="SUM(DISTINCTorder_id)" type="SUM" distinctExpression="order_id" innerExpressionStartIndex="36" />
-            </aggregation-distinct-projections>
+            <aggregation-distinct-projection start-index="7" stop-index="30" text="COUNT(DISTINCTorder_id)" type="COUNT" distinctExpression="order_id" innerExpressionStartIndex="12" />
+            <aggregation-distinct-projection start-index="33" stop-index="54" text="SUM(DISTINCTorder_id)" type="SUM" distinctExpression="order_id" innerExpressionStartIndex="36" />
         </projections>
     </parser-result>
     
@@ -748,12 +674,8 @@
             <table name="t_order" start-index="49" stop-index="55" />
         </tables>
         <projections start-index="7" stop-index="42">
-            <column-projections>
-                <column-projection start-index="7" stop-index="14" text="order_id" name="order_id" />
-            </column-projections>
-            <aggregation-distinct-projections>
-                <aggregation-distinct-projection start-index="17" stop-index="40" innerExpressionStartIndex="22" type="COUNT" text="COUNT(DISTINCTorder_id)" distinctExpression="order_id" alias="c" />
-            </aggregation-distinct-projections>
+            <column-projection start-index="7" stop-index="14" text="order_id" name="order_id" />
+            <aggregation-distinct-projection start-index="17" stop-index="40" innerExpressionStartIndex="22" type="COUNT" text="COUNT(DISTINCTorder_id)" distinctExpression="order_id" alias="c" />
         </projections>
         <group-by-columns>
             <group-by-column name="order_id" order-direction="ASC" />
@@ -768,12 +690,8 @@
             <table name="t_order" start-index="49" stop-index="55" />
         </tables>
         <projections start-index="7" stop-index="42">
-            <aggregation-distinct-projections>
-                <aggregation-distinct-projection start-index="7" stop-index="30" innerExpressionStartIndex="12" type="COUNT" text="COUNT(DISTINCTorder_id)" distinctExpression="order_id" alias="c" />
-            </aggregation-distinct-projections>
-            <column-projections>
-                <column-projection start-index="35" stop-index="42" text="order_id" name="order_id" />
-            </column-projections>
+            <aggregation-distinct-projection start-index="7" stop-index="30" innerExpressionStartIndex="12" type="COUNT" text="COUNT(DISTINCTorder_id)" distinctExpression="order_id" alias="c" />
+            <column-projection start-index="35" stop-index="42" text="order_id" name="order_id" />
         </projections>
         <group-by-columns>
             <group-by-column name="order_id" order-direction="ASC" />
@@ -787,14 +705,12 @@
         <tables>
             <table name="t_order_item" start-index="30" stop-index="41" />
         </tables>
+        <projections start-index="15" stop-index="23" distinct-row="true">
+            <expression-projection start-index="15" stop-index="23" text="item_id" />
+        </projections>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
-        <projections start-index="15" stop-index="23" distinct-row="true">
-            <expression-projections>
-                <expression-projection start-index="15" stop-index="23" text="item_id" />
-            </expression-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_count_calculation" >
@@ -802,9 +718,7 @@
             <table name="t_order" start-index="49" stop-index="55" />
         </tables>
         <projections start-index="7" stop-index="42">
-            <aggregation-distinct-projections>
-                <aggregation-distinct-projection start-index="7" stop-index="40" type="COUNT" distinctExpression="user_id+order_id" text="COUNT(DISTINCTuser_id+order_id)" innerExpressionStartIndex="12" alias="c" />
-            </aggregation-distinct-projections>
+            <aggregation-distinct-projection start-index="7" stop-index="40" type="COUNT" distinctExpression="user_id+order_id" text="COUNT(DISTINCTuser_id+order_id)" innerExpressionStartIndex="12" alias="c" />
         </projections>
     </parser-result>
     
@@ -813,13 +727,9 @@
             <table name="t_order" start-index="77" stop-index="83" />
         </tables>
         <projections start-index="7" stop-index="69">
-            <aggregation-distinct-projections>
-                <aggregation-distinct-projection start-index="7" stop-index="28" innerExpressionStartIndex="10" type="SUM" text="SUM(DISTINCTorder_id)" distinctExpression="order_id" />
-                <aggregation-distinct-projection start-index="30" stop-index="53" innerExpressionStartIndex="35" type="COUNT" text="count(DISTINCTorder_id)" distinctExpression="order_id" />
-            </aggregation-distinct-projections>
-            <aggregation-projections>
-                <aggregation-projection start-index="55" stop-index="69" text="count(order_id)" type="COUNT" innerExpressionStartIndex="60" />
-            </aggregation-projections>
+            <aggregation-distinct-projection start-index="7" stop-index="28" innerExpressionStartIndex="10" type="SUM" text="SUM(DISTINCTorder_id)" distinctExpression="order_id" />
+            <aggregation-distinct-projection start-index="30" stop-index="53" innerExpressionStartIndex="35" type="COUNT" text="count(DISTINCTorder_id)" distinctExpression="order_id" />
+            <aggregation-projection start-index="55" stop-index="69" text="count(order_id)" type="COUNT" innerExpressionStartIndex="60" />
         </projections>
     </parser-result>
     
@@ -830,9 +740,7 @@
             </table>
         </tables>
         <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
         </projections>
     </parser-result>
     
@@ -840,64 +748,56 @@
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
+        </projections>
         <encrypt-conditions>
             <condition column-name="status" table-name="t_order" operator="EQUAL">
                 <value index="0" literal="\'" type="varchar" />
             </condition>
         </encrypt-conditions>
-        <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_escape_with_double_quota" >
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
+        </projections>
         <encrypt-conditions>
             <condition column-name="status" table-name="t_order" operator="EQUAL">
                 <value index="0" literal="\&quot;" type="varchar" />
             </condition>
         </encrypt-conditions>
-        <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_with_block_comment" >
         <tables>
             <table name="t_order" start-index="83" stop-index="89" />
         </tables>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
+        </projections>
         <encrypt-conditions>
             <condition column-name="status" table-name="t_order" operator="EQUAL">
                 <value index="0" literal="1" type="varchar" />
             </condition>
         </encrypt-conditions>
-        <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_with_single_comment" >
         <tables>
             <table name="t_order" start-index="78" stop-index="84" />
         </tables>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
+        </projections>
         <encrypt-conditions>
             <condition column-name="status" table-name="t_order" operator="EQUAL">
                 <value index="0" literal="1" type="varchar" />
             </condition>
         </encrypt-conditions>
-        <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_alias_as_single_quote_string">
@@ -905,9 +805,7 @@
             <table name="t_order" start-index="31" stop-index="37" />
         </tables>
         <projections start-index="7" stop-index="24">
-            <column-projections>
-                <column-projection start-index="7" stop-index="12" text="status" alias="status" name="status" />
-            </column-projections>
+            <column-projection start-index="7" stop-index="12" text="status" alias="status" name="status" />
         </projections>
     </parser-result>
     
@@ -916,9 +814,7 @@
             <table name="t_order" start-index="31" stop-index="37" />
         </tables>
         <projections start-index="7" stop-index="24">
-            <column-projections>
-                <column-projection start-index="7" stop-index="12" text="status" alias="status" name="status" />
-            </column-projections>
+            <column-projection start-index="7" stop-index="12" text="status" alias="status" name="status" />
         </projections>
     </parser-result>
     
@@ -927,9 +823,7 @@
             <table name="t_order" start-index="48" stop-index="54" />
         </tables>
         <projections start-index="7" stop-index="41">
-            <aggregation-projections>
-                <aggregation-projection start-index="7" stop-index="29" type="SUM" text="sum(if(status=0,1,0))" innerExpressionStartIndex="10" alias="func_status" />
-            </aggregation-projections>
+            <aggregation-projection start-index="7" stop-index="29" type="SUM" text="sum(if(status=0,1,0))" innerExpressionStartIndex="10" alias="func_status" />
         </projections>
         <sharding-conditions>
             <and-condition>
@@ -948,9 +842,7 @@
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
         <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
         </projections>
     </parser-result>
     
@@ -959,9 +851,7 @@
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
         <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
         </projections>
     </parser-result>
     
@@ -970,9 +860,7 @@
             <table name="t_order" start-index="45" stop-index="51" />
         </tables>
         <projections start-index="7" stop-index="38">
-            <expression-projections>
-                <expression-projection start-index="7" stop-index="26" text="INTERVAL(status,1,5)" alias="func_status" />
-            </expression-projections>
+            <expression-projection start-index="7" stop-index="26" text="INTERVAL(status,1,5)" alias="func_status" />
         </projections>
         <sharding-conditions>
             <and-condition>
@@ -991,9 +879,7 @@
             <table name="t_order_item" start-index="44" stop-index="55" />
         </tables>
         <projections start-index="7" stop-index="37">
-            <expression-projections>
-                <expression-projection start-index="7" stop-index="37" text="CONCAT(LEFT(status,7),'test')"/>
-            </expression-projections>
+            <expression-projection start-index="7" stop-index="37" text="CONCAT(LEFT(status,7),'test')"/>
         </projections>
     </parser-result>
     
@@ -1002,17 +888,13 @@
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
         <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
         </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_database">
         <projections start-index="7" stop-index="16">
-            <expression-projections>
-                <expression-projection start-index="7" stop-index="16" text="DATABASE()"/>
-            </expression-projections>
+            <expression-projection start-index="7" stop-index="16" text="DATABASE()"/>
         </projections>
     </parser-result>
     
@@ -1021,9 +903,7 @@
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
         <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
         </projections>
     </parser-result>
     
@@ -1032,9 +912,7 @@
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
         <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
         </projections>
     </parser-result>
     
@@ -1043,17 +921,13 @@
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
         <projections start-index="7" stop-index="7">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="7" text="*" />
-            </shorthand-projections>
+            <shorthand-projection start-index="7" stop-index="7" text="*" />
         </projections>
     </parser-result>
 
     <parser-result sql-case-id="select_current_user">
         <projections start-index="7" stop-index="18">
-            <expression-projections>
-                <expression-projection start-index="7" stop-index="19" text="CURRENT_USER"/>
-            </expression-projections>
+            <expression-projection start-index="7" stop-index="19" text="CURRENT_USER"/>
         </projections>
     </parser-result>
 </parser-result-sets>

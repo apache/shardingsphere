@@ -37,17 +37,13 @@
         <tables>
             <table name="t_order" start-index="52" stop-index="58" />
         </tables>
-        <aggregation-projections>
+        <projections start-index="45" stop-index="45">
             <aggregation-projection type="COUNT" inner-expression="(1)" alias="orders_count" />
-        </aggregation-projections>
+            <shorthand-projection start-index="45" text="*" stop-index="45" />
+        </projections>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="DESC" />
         </order-by-columns>
-        <projections start-index="45" stop-index="45">
-            <shorthand-projections>
-                <shorthand-projection start-index="45" text="*" stop-index="45" />
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_sub_query_with_group_by">
@@ -55,9 +51,7 @@
             <table name="t_order_item" start-index="64" stop-index="75" />
         </tables>
         <projections start-index="50" stop-index="57">
-            <column-projections>
-                <column-projection start-index="50" stop-index="57" text="order_id" name="order_id" />
-            </column-projections>
+            <column-projection start-index="50" stop-index="57" text="order_id" name="order_id" />
         </projections>
         <group-by-columns>
             <group-by-column name="order_id" order-direction="ASC" />

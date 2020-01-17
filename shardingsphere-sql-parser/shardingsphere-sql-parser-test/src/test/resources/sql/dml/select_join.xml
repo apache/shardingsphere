@@ -30,11 +30,9 @@
             </and-condition>
         </sharding-conditions>
         <projections start-index="7" stop-index="9">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="9" text="i.*">
-                    <table-segment start-index="7" stop-index="7" name="i" />
-                </shorthand-projection>
-            </shorthand-projections>
+            <shorthand-projection start-index="7" stop-index="9" text="i.*">
+                <table-segment start-index="7" stop-index="7" name="i" />
+            </shorthand-projection>
         </projections>
     </parser-result>
     
@@ -48,6 +46,11 @@
             <!--<table name="t_order_item" start-index="75" stop-index="86" />-->
             <!--<table name="t_order" start-index="103" stop-index="109" />-->
         </tables>
+        <projections start-index="7" stop-index="20">
+            <shorthand-projection start-index="7" stop-index="20" text="t_order_item.*">
+                <table-segment start-index="7" stop-index="18" name="t_order_item" />
+            </shorthand-projection>
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -55,13 +58,6 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="7" stop-index="20">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="20" text="t_order_item.*">
-                    <table-segment start-index="7" stop-index="18" name="t_order_item" />
-                </shorthand-projection>
-            </shorthand-projections>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_join_using" parameters="1000">
@@ -69,6 +65,11 @@
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
             <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
         </tables>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9" text="i.*">
+                <table-segment start-index="7" stop-index="7" name="i" />
+            </shorthand-projection>
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -76,12 +77,5 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="7" stop-index="9">
-            <shorthand-projections>
-                <shorthand-projection start-index="7" stop-index="9" text="i.*">
-                    <table-segment start-index="7" stop-index="7" name="i" />
-                </shorthand-projection>
-            </shorthand-projections>
-        </projections>
     </parser-result>
 </parser-result-sets>
