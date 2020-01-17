@@ -44,7 +44,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -213,7 +212,6 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
             return Collections.emptyMap();
         }
         Collection<String> tableNames = loadAllTableNames(actualDefaultDataSourceName.get());
-        removeRepeatTable(tableNames, result);
         List<TableMetaData> metaList = executorEngine.execute(getTableNamesInput(tableNames), new GroupedCallback<String, TableMetaData>() {
             @Override
             public Collection<TableMetaData> execute(final Collection<String> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
@@ -230,15 +228,6 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
         return result;
     }
     
-    private void removeRepeatTable(final Collection<String> tableNames, final Map<String, TableMetaData> result) {
-        Iterator<String> tabIter = tableNames.iterator();
-        while (tabIter.hasNext()) {
-            if (result.containsKey(tabIter.next())) {
-                tabIter.remove();
-            }
-        }
-    }
-
     private Collection<InputGroup<String>> getTableNamesInput(final Collection<String> tableNames) {
         Collection<InputGroup<String>> inputCollection = new LinkedList<>();
         for (String tname : tableNames) {
