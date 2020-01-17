@@ -101,7 +101,7 @@ public final class SQLStatementAssert {
     }
     
     private static void assertInsertStatement(final SQLStatementAssertMessage assertMessage, final InsertStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
-        new InsertNamesAndValuesAssert(assertMessage, sqlCaseType).assertInsertNamesAndValues(actual, expected.getInsertColumnsAndValues());
+        InsertNamesAndValuesAssert.assertIs(assertMessage, actual, expected.getInsertColumnsAndValues(), sqlCaseType);
     }
     
     private static void assertAlterTableStatement(final AlterTableStatement actual, final ParserResult expected, final SQLStatementAssertMessage assertMessage) {
