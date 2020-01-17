@@ -42,28 +42,28 @@ public final class ExpectedProjections {
     @XmlAttribute
     private boolean distinctRow;
     
-    @XmlElementWrapper(name = "shorthand-select-items")
-    @XmlElement(name = "shorthand-select-item")
+    @XmlElementWrapper(name = "shorthand-projections")
+    @XmlElement(name = "shorthand-projection")
     private Collection<ExpectedShorthandProjection> expectedShorthandProjections = new LinkedList<>();
     
-    @XmlElementWrapper(name = "aggregation-select-items")
-    @XmlElement(name = "aggregation-select-item")
+    @XmlElementWrapper(name = "aggregation-projections")
+    @XmlElement(name = "aggregation-projection")
     private Collection<ExpectedAggregationProjection> expectedAggregationProjections = new LinkedList<>();
     
-    @XmlElementWrapper(name = "aggregation-distinct-select-items")
-    @XmlElement(name = "aggregation-distinct-select-item")
+    @XmlElementWrapper(name = "aggregation-distinct-projections")
+    @XmlElement(name = "aggregation-distinct-projection")
     private Collection<ExpectedAggregationDistinctProjection> expectedAggregationDistinctProjections = new LinkedList<>();
     
-    @XmlElementWrapper(name = "column-select-items")
-    @XmlElement(name = "column-select-item")
+    @XmlElementWrapper(name = "column-projections")
+    @XmlElement(name = "column-projection")
     private Collection<ExpectedColumnProjection> expectedColumnProjections = new LinkedList<>();
     
-    @XmlElementWrapper(name = "expression-items")
-    @XmlElement(name = "expression-item")
+    @XmlElementWrapper(name = "expression-projections")
+    @XmlElement(name = "expression-projection")
     private Collection<ExpectedExpressionProjection> expectedExpressionProjections = new LinkedList<>();
     
-    @XmlElementWrapper(name = "top-select-items")
-    @XmlElement(name = "top-select-item")
+    @XmlElementWrapper(name = "top-projections")
+    @XmlElement(name = "top-projection")
     private Collection<ExpectedTopProjection> expectedTopProjections = new LinkedList<>();
     
     /**

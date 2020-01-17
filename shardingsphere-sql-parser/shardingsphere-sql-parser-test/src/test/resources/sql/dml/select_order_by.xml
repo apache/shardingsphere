@@ -25,11 +25,11 @@
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
             <order-by-column index="2" order-direction="DESC" />
         </order-by-columns>
-        <select-items start-index="7" stop-index="7">
-            <shorthand-select-items>
-                <shorthand-select-item start-index="7" stop-index="7" text="*" />
-            </shorthand-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projections>
+                <shorthand-projection start-index="7" stop-index="7" text="*" />
+            </shorthand-projections>
+        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_desc_and_index_asc">
@@ -46,13 +46,13 @@
                 <value index="0" literal="init" type="varchar" />
             </condition>
         </encrypt-conditions>
-        <select-items start-index="7" stop-index="9">
-            <shorthand-select-items>
-                <shorthand-select-item start-index="7" stop-index="9" text="i.*">
+        <projections start-index="7" stop-index="9">
+            <shorthand-projections>
+                <shorthand-projection start-index="7" stop-index="9" text="i.*">
                     <table-segment start-index="7" stop-index="7" name="i" />
-                </shorthand-select-item>
-            </shorthand-select-items>
-        </select-items>
+                </shorthand-projection>
+            </shorthand-projections>
+        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_with_ordered_column">
@@ -62,13 +62,13 @@
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
-        <select-items start-index="7" stop-index="33">
-            <column-select-items>
-                <column-select-item start-index="7" stop-index="7" text="o.order_id" >
+        <projections start-index="7" stop-index="33">
+            <column-projections>
+                <column-projection start-index="7" stop-index="7" text="o.order_id" >
                     <table-segment start-index="7" stop-index="7" name="o" />
-                </column-select-item>
-            </column-select-items>
-        </select-items>
+                </column-projection>
+            </column-projections>
+        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_with_date">
@@ -86,13 +86,13 @@
                 <value index="0" literal="init" type="varchar" />
             </condition>
         </encrypt-conditions>
-        <select-items start-index="7" stop-index="9">
-            <shorthand-select-items>
-                <shorthand-select-item start-index="7" stop-index="9" text="i.*">
+        <projections start-index="7" stop-index="9">
+            <shorthand-projections>
+                <shorthand-projection start-index="7" stop-index="9" text="i.*">
                     <table-segment start-index="7" stop-index="7" name="i" />
-                </shorthand-select-item>
-            </shorthand-select-items>
-        </select-items>
+                </shorthand-projection>
+            </shorthand-projections>
+        </projections>
     </parser-result>
     
     <!-- //TODO add order-by-null-type -->
@@ -103,13 +103,13 @@
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
-        <select-items start-index="7" stop-index="33">
-            <column-select-items>
-                <column-select-item start-index="7" stop-index="7" text="o.order_id">
+        <projections start-index="7" stop-index="33">
+            <column-projections>
+                <column-projection start-index="7" stop-index="7" text="o.order_id">
                     <table-segment start-index="7" stop-index="7" name="o" />
-                </column-select-item>
-            </column-select-items>
-        </select-items>
+                </column-projection>
+            </column-projections>
+        </projections>
     </parser-result>
     
     <!-- //TODO add order-by-null-type -->
@@ -120,13 +120,13 @@
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
-        <select-items start-index="7" stop-index="33">
-            <column-select-items>
-                <column-select-item start-index="7" stop-index="7" text="o.order_id" alias="gen_order_id_">
+        <projections start-index="7" stop-index="33">
+            <column-projections>
+                <column-projection start-index="7" stop-index="7" text="o.order_id" alias="gen_order_id_">
                     <table-segment start-index="7" stop-index="7" name="o" />
-                </column-select-item>
-            </column-select-items>
-        </select-items>
+                </column-projection>
+            </column-projections>
+        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_with_multiple_stars">
@@ -136,17 +136,17 @@
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
-        <select-items start-index="7" stop-index="22">
-            <shorthand-select-items>
-                <shorthand-select-item start-index="7" stop-index="7" text="*"/>
-                <shorthand-select-item start-index="20" stop-index="22" text="o.*">
+        <projections start-index="7" stop-index="22">
+            <shorthand-projections>
+                <shorthand-projection start-index="7" stop-index="7" text="*"/>
+                <shorthand-projection start-index="20" stop-index="22" text="o.*">
                     <table-segment start-index="20" stop-index="20" name="o" />
-                </shorthand-select-item>
-            </shorthand-select-items>
-            <column-select-items>
-                <column-select-item start-index="10" stop-index="17" text="order_id"/>
-            </column-select-items>
-        </select-items>
+                </shorthand-projection>
+            </shorthand-projections>
+            <column-projections>
+                <column-projection start-index="10" stop-index="17" text="order_id"/>
+            </column-projections>
+        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_with_alias_star_alias_name">
@@ -156,13 +156,13 @@
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
-        <select-items start-index="7" stop-index="9">
-            <shorthand-select-items>
-                <shorthand-select-item start-index="7" stop-index="9" text="o.*">
+        <projections start-index="7" stop-index="9">
+            <shorthand-projections>
+                <shorthand-projection start-index="7" stop-index="9" text="o.*">
                     <table-segment start-index="7" stop-index="7" name="o" />
-                </shorthand-select-item>
-            </shorthand-select-items>
-        </select-items>
+                </shorthand-projection>
+            </shorthand-projections>
+        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_with_star_table_alias">
@@ -172,11 +172,11 @@
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
-        <select-items start-index="7" stop-index="7">
-            <shorthand-select-items>
-                <shorthand-select-item text="*" start-index="7" stop-index="7" />
-            </shorthand-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projections>
+                <shorthand-projection text="*" start-index="7" stop-index="7" />
+            </shorthand-projections>
+        </projections>
     </parser-result>
     
     <!--TODO need to add later-->
@@ -199,13 +199,13 @@
         <order-by-columns>
             <order-by-column owner="t_order" name="order_id" order-direction="ASC" />
         </order-by-columns>
-        <select-items start-index="7" stop-index="15">
-            <shorthand-select-items>
-                <shorthand-select-item text="t_order.*" start-index="7" stop-index="15">
+        <projections start-index="7" stop-index="15">
+            <shorthand-projections>
+                <shorthand-projection text="t_order.*" start-index="7" stop-index="15">
                     <table-segment name="t_order" start-index="7" stop-index="13" />
-                </shorthand-select-item>
-            </shorthand-select-items>
-        </select-items>
+                </shorthand-projection>
+            </shorthand-projections>
+        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_with_star_no_table_alias">
@@ -215,11 +215,11 @@
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
-        <select-items start-index="7" stop-index="7">
-            <shorthand-select-items>
-                <shorthand-select-item text="*" start-index="7" stop-index="7" />
-            </shorthand-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projections>
+                <shorthand-projection text="*" start-index="7" stop-index="7" />
+            </shorthand-projections>
+        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_with_table_star_without_table_name">
@@ -230,15 +230,15 @@
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
-        <select-items start-index="7" stop-index="14">
-            <shorthand-select-items>
-                <shorthand-select-item start-index="7" stop-index="9" text="i.*">
+        <projections start-index="7" stop-index="14">
+            <shorthand-projections>
+                <shorthand-projection start-index="7" stop-index="9" text="i.*">
                     <table-segment name="i"/>
-                </shorthand-select-item>
-                <shorthand-select-item start-index="12" stop-index="14" text="o.*">
+                </shorthand-projection>
+                <shorthand-projection start-index="12" stop-index="14" text="o.*">
                     <table-segment name="o" />
-                </shorthand-select-item>
-            </shorthand-select-items>
-        </select-items>
+                </shorthand-projection>
+            </shorthand-projections>
+        </projections>
     </parser-result>
 </parser-result-sets>

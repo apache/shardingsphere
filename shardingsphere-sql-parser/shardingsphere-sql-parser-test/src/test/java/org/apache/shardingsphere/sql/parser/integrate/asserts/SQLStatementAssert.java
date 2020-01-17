@@ -69,7 +69,7 @@ public final class SQLStatementAssert {
     
     private final AlterTableAssert alterTableAssert;
 
-    private final ProjectionAssert selectItemAssert;
+    private final ProjectionAssert projectionAssert;
 
     private final PredicateAssert predicateAssert;
     
@@ -85,7 +85,7 @@ public final class SQLStatementAssert {
         orderByAssert = new OrderByAssert(assertMessage);
         paginationAssert = new PaginationAssert(sqlCaseType, assertMessage);
         alterTableAssert = new AlterTableAssert(assertMessage);
-        selectItemAssert = new ProjectionAssert(sqlCaseType, assertMessage);
+        projectionAssert = new ProjectionAssert(sqlCaseType, assertMessage);
         predicateAssert = new PredicateAssert(sqlCaseType, assertMessage);
         insertNamesAndValuesAssert = new InsertNamesAndValuesAssert(assertMessage, sqlCaseType);
     }
@@ -113,7 +113,7 @@ public final class SQLStatementAssert {
     private void assertSelectStatement(final SelectStatement actual) {
         Optional<ProjectionsSegment> projectionsSegment = actual.findSQLSegment(ProjectionsSegment.class);
         if (projectionsSegment.isPresent()) {
-            selectItemAssert.assertProjections(projectionsSegment.get(), expected.getProjections());
+            projectionAssert.assertProjections(projectionsSegment.get(), expected.getProjections());
         }
         Optional<GroupBySegment> groupBySegment = actual.findSQLSegment(GroupBySegment.class);
         if (groupBySegment.isPresent()) {

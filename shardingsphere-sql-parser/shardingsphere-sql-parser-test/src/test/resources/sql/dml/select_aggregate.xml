@@ -21,77 +21,77 @@
         <tables>
             <table name="t_order" start-index="40" stop-index="46" />
         </tables>
-        <select-items start-index="7" stop-index="33">
-            <aggregation-select-items>
-                <aggregation-select-item type="SUM" text="SUM(user_id)" innerExpressionStartIndex="10" stop-index="18"/>
-            </aggregation-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="33">
+            <aggregation-projections>
+                <aggregation-projection type="SUM" text="SUM(user_id)" innerExpressionStartIndex="10" stop-index="18"/>
+            </aggregation-projections>
+        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_count">
         <tables>
             <table name="t_order" start-index="37" stop-index="43" />
         </tables>
-        <select-items start-index="7" stop-index="30">
-            <aggregation-select-items>
-                <aggregation-select-item type="COUNT" text="COUNT(*)" innerExpressionStartIndex="12" stop-index="14"/>
-            </aggregation-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="30">
+            <aggregation-projections>
+                <aggregation-projection type="COUNT" text="COUNT(*)" innerExpressionStartIndex="12" stop-index="14"/>
+            </aggregation-projections>
+        </projections>
     </parser-result>
 
     <parser-result sql-case-id="select_count_with_sub">
         <tables>
             <table name="t_order" start-index="37" stop-index="43" />
         </tables>
-        <select-items start-index="7" stop-index="30">
-            <aggregation-select-items>
-                <aggregation-select-item type="COUNT" stop-index="14" text="COUNT(*)" innerExpressionStartIndex="12" />
-            </aggregation-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="30">
+            <aggregation-projections>
+                <aggregation-projection type="COUNT" stop-index="14" text="COUNT(*)" innerExpressionStartIndex="12" />
+            </aggregation-projections>
+        </projections>
     </parser-result>
 
     <parser-result sql-case-id="select_count_with_sub_with_whitespace">
         <tables>
             <table name="t_order" start-index="37" stop-index="43" />
         </tables>
-        <select-items start-index="7" stop-index="30">
-            <aggregation-select-items>
-                <aggregation-select-item type="COUNT" stop-index="14" innerExpressionStartIndex="12" text="COUNT(*)" />
-            </aggregation-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="30">
+            <aggregation-projections>
+                <aggregation-projection type="COUNT" stop-index="14" innerExpressionStartIndex="12" text="COUNT(*)" />
+            </aggregation-projections>
+        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_max">
         <tables>
             <table name="t_order" start-index="40" stop-index="46" />
         </tables>
-        <select-items start-index="7" stop-index="33">
-            <aggregation-select-items>
-                <aggregation-select-item type="MAX" text="MAX(user_id)" innerExpressionStartIndex="10" stop-index="18" alias="max_user_id" />
-            </aggregation-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="33">
+            <aggregation-projections>
+                <aggregation-projection type="MAX" text="MAX(user_id)" innerExpressionStartIndex="10" stop-index="18" alias="max_user_id" />
+            </aggregation-projections>
+        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_min">
         <tables>
             <table name="t_order" start-index="40" stop-index="46" />
         </tables>
-        <select-items start-index="7" stop-index="33">
-            <aggregation-select-items>
-                <aggregation-select-item type="MIM" text="MIN(user_id)" innerExpressionStartIndex="10" stop-index="18" alias="min_user_id" />
-            </aggregation-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="33">
+            <aggregation-projections>
+                <aggregation-projection type="MIM" text="MIN(user_id)" innerExpressionStartIndex="10" stop-index="18" alias="min_user_id" />
+            </aggregation-projections>
+        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_avg">
         <tables>
             <table name="t_order" start-index="40" stop-index="46" />
         </tables>
-        <select-items start-index="7" stop-index="33">
-            <aggregation-select-items>
-                <aggregation-select-item type="AVG" text="AVG(user_id)" innerExpressionStartIndex="10" stop-index="18" alias="user_id_avg" />
-            </aggregation-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="33">
+            <aggregation-projections>
+                <aggregation-projection type="AVG" text="AVG(user_id)" innerExpressionStartIndex="10" stop-index="18" alias="user_id_avg" />
+            </aggregation-projections>
+        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_count_with_binding_tables_without_join" parameters="1, 2, 9, 10">
@@ -111,11 +111,11 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <select-items start-index="7" stop-index="29">
-            <aggregation-select-items>
-                <aggregation-select-item stop-index="14" type="COUNT" text="COUNT(*)" innerExpressionStartIndex="12" alias="items_count"/>
-            </aggregation-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="29">
+            <aggregation-projections>
+                <aggregation-projection stop-index="14" type="COUNT" text="COUNT(*)" innerExpressionStartIndex="12" alias="items_count"/>
+            </aggregation-projections>
+        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_count_with_binding_tables_with_join" parameters="1, 2, 9, 10">
@@ -135,21 +135,21 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <select-items start-index="7" stop-index="29">
-            <aggregation-select-items>
-                <aggregation-select-item stop-index="14" type="COUNT" text="COUNT(*)" innerExpressionStartIndex="12" alias="items_count"/>
-            </aggregation-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="29">
+            <aggregation-projections>
+                <aggregation-projection stop-index="14" type="COUNT" text="COUNT(*)" innerExpressionStartIndex="12" alias="items_count"/>
+            </aggregation-projections>
+        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_count_with_escape_character">
         <tables>
             <table name="t_order" start-index="46" stop-index="52" />
         </tables>
-        <select-items start-index="7" stop-index="39">
-            <aggregation-select-items>
-                <aggregation-select-item type="COUNT" innerExpressionStartIndex="12" stop-index="23" text="COUNT(`order_id`)" alias="orders_count" />
-            </aggregation-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="39">
+            <aggregation-projections>
+                <aggregation-projection type="COUNT" innerExpressionStartIndex="12" stop-index="23" text="COUNT(`order_id`)" alias="orders_count" />
+            </aggregation-projections>
+        </projections>
     </parser-result>
 </parser-result-sets>

@@ -90,7 +90,7 @@ public final class ParserResult {
     @XmlAttribute(name = "lock-clause")
     private boolean lockClause;
 
-    @XmlElement(name = "select-items")
+    @XmlElement(name = "projections")
     private ExpectedProjections projections = new ExpectedProjections();
 
     @XmlElement(name = "where-segment")
