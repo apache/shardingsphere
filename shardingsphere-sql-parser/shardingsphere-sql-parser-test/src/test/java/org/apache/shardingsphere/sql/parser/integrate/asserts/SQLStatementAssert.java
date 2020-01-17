@@ -96,7 +96,7 @@ public final class SQLStatementAssert {
         }
         Optional<WhereSegment> whereSegment = actual.findSQLSegment(WhereSegment.class);
         if (whereSegment.isPresent() && null != expected.getWhereSegment()) {
-            new PredicateAssert(sqlCaseType, assertMessage).assertPredicate(whereSegment.get(), expected.getWhereSegment());
+            PredicateAssert.assertIs(assertMessage, whereSegment.get(), expected.getWhereSegment(), sqlCaseType);
         }
     }
     
