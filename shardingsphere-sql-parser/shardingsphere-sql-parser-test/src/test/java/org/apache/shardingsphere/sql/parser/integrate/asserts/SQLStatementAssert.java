@@ -56,14 +56,14 @@ import static org.junit.Assert.assertThat;
 public final class SQLStatementAssert {
     
     /**
-     * Assert SQL statement.
+     * Assertion.
      * 
      * @param actual actual SQL statement
      * @param expected expected parser result
      * @param sqlCaseId SQL case Id
      * @param sqlCaseType SQL case type
      */
-    public static void assertSQLStatement(final SQLStatement actual, final ParserResult expected, final String sqlCaseId, final SQLCaseType sqlCaseType) {
+    public static void assertion(final SQLStatement actual, final ParserResult expected, final String sqlCaseId, final SQLCaseType sqlCaseType) {
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlCaseId, sqlCaseType);
         new ParameterMarkerAssert(sqlCaseType, assertMessage).assertCount(actual.getParametersCount(), expected.getParameters().size());
         new TableAssert(assertMessage).assertTables(actual.findSQLSegments(TableSegment.class), expected.getTables());

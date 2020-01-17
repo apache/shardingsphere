@@ -62,6 +62,6 @@ public final class SQLParserParameterizedTest {
         String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());
         SQLStatement actual = SQLParseEngineFactory.getSQLParseEngine("H2".equals(databaseType) ? "MySQL" : databaseType).parse(sql, false);
         ParserResult expected = ParserResultSetRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
-        SQLStatementAssert.assertSQLStatement(actual, expected, sqlCaseId, sqlCaseType);
+        SQLStatementAssert.assertion(actual, expected, sqlCaseId, sqlCaseType);
     }
 }

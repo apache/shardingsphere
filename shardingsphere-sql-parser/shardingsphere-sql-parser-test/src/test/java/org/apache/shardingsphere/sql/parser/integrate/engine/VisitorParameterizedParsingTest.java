@@ -75,6 +75,6 @@ public final class VisitorParameterizedParsingTest {
         ParseTree parseTree = SQLParserFactory.newInstance(databaseTypeName, sql).execute().getChild(0);
         SQLStatement actual = (SQLStatement) new SQLVisitorEngine(databaseTypeName, parseTree).parse();
         ParserResult expected = ParserResultSetRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
-        SQLStatementAssert.assertSQLStatement(actual, expected, sqlCaseId, sqlCaseType);
+        SQLStatementAssert.assertion(actual, expected, sqlCaseId, sqlCaseType);
     }
 }
