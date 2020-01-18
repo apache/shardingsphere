@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 
-import java.util.Collection;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -49,8 +49,11 @@ public final class ProjectionAssert {
      */
     public static void assertIs(final SQLStatementAssertMessage assertMessage, final ProjectionsSegment actual, final ExpectedProjections expected, final SQLCaseType sqlCaseType) {
         assertProjections(assertMessage, actual, expected);
+        List<ExpectedProjection> expectedProjections = expected.getExpectedProjections();
+        int count = 0;
         for (ProjectionSegment each : actual.getProjections()) {
-            assertProjection(assertMessage, each, expected.getExpectedProjections(), sqlCaseType);
+            assertProjection(assertMessage, each, expectedProjections.get(count), sqlCaseType);
+            count++;
         }
     }
     
@@ -61,16 +64,8 @@ public final class ProjectionAssert {
         assertThat(assertMessage.getText("Projections stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
     }
     
-    private static void assertProjection(final SQLStatementAssertMessage assertMessage, final ProjectionSegment actual, final Collection<ExpectedProjection> expected, final SQLCaseType sqlCaseType) {
-        String actualText = actual.getText();
-        String expectedText = "";
-        for (ExpectedProjection each: expected) {
-            String text = SQLCaseType.Placeholder == sqlCaseType && null != each.getParameterMarkerText() ? each.getParameterMarkerText() : each.getText();
-            if (actualText.equals(text)) {
-                expectedText = text;
-                break;
-            }
-        }
-        assertThat(assertMessage.getText("Projection text assertion error: "), actualText, is(expectedText));
+    private static void assertProjection(final SQLStatementAssertMessage assertMessage, final ProjectionSegment actual, final ExpectedProjection expected, final SQLCaseType sqlCaseType) {
+        String expectedText = SQLCaseType.Placeholder == sqlCaseType && null != expected.getParameterMarkerText() ? expected.getParameterMarkerText() : expected.getText();
+        assertThat(assertMessage.getText("Projection text assertion error: "), actual.getText(), is(expectedText));
     }
 }

@@ -78,7 +78,7 @@ public final class ExpectedProjections {
      *
      * @return expected projections
      */
-    public Collection<ExpectedProjection> getExpectedProjections() {
+    public List<ExpectedProjection> getExpectedProjections() {
         List<ExpectedProjection> result = new LinkedList<>();
         result.addAll(shorthandProjections);
         result.addAll(aggregationProjections);
