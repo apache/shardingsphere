@@ -40,6 +40,6 @@ public final class ExpectedColumnProjection extends AbstractExpectedProjection {
     @XmlAttribute
     private QuoteCharacter quoteCharacter = QuoteCharacter.NONE;
     
-    @XmlElement(name = "table-segment")
+    @XmlElement(name = "owner")
     private ExpectedTableSegment owner = new ExpectedTableSegment();
 }

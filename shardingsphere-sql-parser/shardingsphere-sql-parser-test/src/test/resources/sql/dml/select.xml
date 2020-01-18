@@ -29,7 +29,7 @@
         </tables>
         <projections start-index="7" stop-index="15">
             <shorthand-projection text="t_order.*" start-index="7" stop-index="15">
-                <table-segment name="t_order" start-index="7" stop-index="13" />
+                <owner name="t_order" start-index="7" stop-index="13" />
             </shorthand-projection>
         </projections>
         <sharding-conditions>
@@ -50,10 +50,10 @@
         </tables>
         <projections start-index="7" stop-index="45">
             <column-projection text="t_order.order_id" name="order_id" start-index="7" stop-index="22">
-                <table-segment name="t_order" start-index="7" stop-index="13" />
+                <owner name="t_order" start-index="7" stop-index="13" />
             </column-projection>
             <column-projection text="t_order.user_id" name="user_id" start-index="24" stop-index="38">
-                <table-segment name="t_order" start-index="24" stop-index="30" />
+                <owner name="t_order" start-index="24" stop-index="30" />
             </column-projection>
             <column-projection text="status" name="status" start-index="40" stop-index="45" />
         </projections>
@@ -308,7 +308,7 @@
         </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection text="i.*" start-index="7" stop-index="9">
-                <table-segment name="i" start-index="7" stop-index="7" />
+                <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
         <sharding-conditions>
@@ -335,7 +335,7 @@
         </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection text="i.*" start-index="7" stop-index="9">
-                <table-segment name="i" start-index="7" stop-index="7" />
+                <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
         <order-by-columns>
@@ -351,7 +351,7 @@
         </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection text="i.*" start-index="7" stop-index="9">
-                <table-segment name="i" start-index="7" stop-index="7" />
+                <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
         <sharding-conditions>
@@ -384,7 +384,7 @@
         </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection text="i.*" start-index="7" stop-index="9">
-                <table-segment name="i" start-index="7" stop-index="7" />
+                <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
         <sharding-conditions>
@@ -417,7 +417,7 @@
         </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection text="i.*" start-index="7" stop-index="9" >
-                <table-segment name="i" start-index="7" stop-index="7" />
+                <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
         <sharding-conditions>
@@ -445,7 +445,7 @@
         </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection text="i.*" start-index="7" stop-index="9">
-                <table-segment name="i" start-index="7" stop-index="7" />
+                <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
         <sharding-conditions>
@@ -471,7 +471,7 @@
         </tables>
         <projections start-index="7" stop-index="29">
             <column-projection text="length.item_id" name="item_id" alias="password" start-index="7" stop-index="20">
-                <table-segment name="length" start-index="7" stop-index="12" />
+                <owner name="length" start-index="7" stop-index="12" />
             </column-projection>>
         </projections>
         <sharding-conditions>
@@ -490,7 +490,7 @@
         </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection text="i.*" start-index="7" stop-index="9">
-                <table-segment name="i" start-index="7" stop-index="7" />
+                <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
         <sharding-conditions>
@@ -625,7 +625,7 @@
         </tables>
         <projections distinct-row="true" start-index="16" stop-index="47">
             <shorthand-projection text="t_order.*" start-index="16" stop-index="24">
-                <table-segment name="t_order" start-index="16" stop-index="22" />
+                <owner name="t_order" start-index="16" stop-index="22" />
             </shorthand-projection>
             <column-projection text="t_order_item.order_id" start-index="27" stop-index="47" />
         </projections>

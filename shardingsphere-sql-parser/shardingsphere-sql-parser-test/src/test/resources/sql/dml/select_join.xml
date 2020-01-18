@@ -31,7 +31,7 @@
         </sharding-conditions>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9" text="i.*">
-                <table-segment start-index="7" stop-index="7" name="i" />
+                <owner start-index="7" stop-index="7" name="i" />
             </shorthand-projection>
         </projections>
     </parser-result>
@@ -43,7 +43,7 @@
         </tables>
         <projections start-index="7" stop-index="20">
             <shorthand-projection start-index="7" stop-index="20" text="t_order_item.*">
-                <table-segment start-index="7" stop-index="18" name="t_order_item" />
+                <owner start-index="7" stop-index="18" name="t_order_item" />
             </shorthand-projection>
         </projections>
         <sharding-conditions>
@@ -62,7 +62,7 @@
         </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9" text="i.*">
-                <table-segment start-index="7" stop-index="7" name="i" />
+                <owner start-index="7" stop-index="7" name="i" />
             </shorthand-projection>
         </projections>
         <sharding-conditions>

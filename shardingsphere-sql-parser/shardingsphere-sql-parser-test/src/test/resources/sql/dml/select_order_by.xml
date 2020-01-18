@@ -37,7 +37,7 @@
         </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection text="i.*" start-index="7" stop-index="9">
-                <table-segment name="i" start-index="7" stop-index="7" />
+                <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
         <order-by-columns>
@@ -57,7 +57,7 @@
         </tables>
         <projections start-index="7" stop-index="33">
             <column-projection text="o.order_id" start-index="7" stop-index="16">
-                <table-segment name="o" start-index="7" stop-index="7" />
+                <owner name="o" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
         <order-by-columns>
@@ -72,7 +72,7 @@
         </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection text="i.*" start-index="7" stop-index="9">
-                <table-segment name="i" start-index="7" stop-index="7" />
+                <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
         <order-by-columns>
@@ -94,7 +94,7 @@
         </tables>
         <projections start-index="7" stop-index="33">
             <column-projection text="o.order_id" start-index="7" stop-index="16">
-                <table-segment name="o" start-index="7" stop-index="7" />
+                <owner name="o" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
         <order-by-columns>
@@ -109,7 +109,7 @@
         </tables>
         <projections start-index="7" stop-index="33">
             <column-projection text="o.order_id" alias="gen_order_id_" start-index="7" stop-index="16">
-                <table-segment name="o" start-index="7" stop-index="7" />
+                <owner name="o" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
         <order-by-columns>
@@ -124,7 +124,7 @@
         <projections start-index="7" stop-index="22">
             <shorthand-projection text="*" start-index="7" stop-index="7" />
             <shorthand-projection text="o.*" start-index="20" stop-index="22">
-                <table-segment name="o" start-index="20" stop-index="20" />
+                <owner name="o" start-index="20" stop-index="20" />
             </shorthand-projection>
             <column-projection text="order_id" start-index="10" stop-index="17" />
         </projections>
@@ -139,7 +139,7 @@
         </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection text="o.*" start-index="7" stop-index="9">
-                <table-segment name="o" start-index="7" stop-index="7" />
+                <owner name="o" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
         <order-by-columns>
@@ -175,7 +175,7 @@
         </tables>
         <projections start-index="7" stop-index="15">
             <shorthand-projection text="t_order.*" start-index="7" stop-index="15">
-                <table-segment name="t_order" start-index="7" stop-index="13" />
+                <owner name="t_order" start-index="7" stop-index="13" />
             </shorthand-projection>
         </projections>
         <order-by-columns>
@@ -202,10 +202,10 @@
         </tables>
         <projections start-index="7" stop-index="14">
             <shorthand-projection start-index="7" stop-index="9" text="i.*">
-                <table-segment name="i" start-index="7" stop-index="7" />
+                <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
             <shorthand-projection start-index="12" stop-index="14" text="o.*">
-                <table-segment name="o" start-index="12" stop-index="12" />
+                <owner name="o" start-index="12" stop-index="12" />
             </shorthand-projection>
         </projections>
         <order-by-columns>

@@ -177,7 +177,7 @@
         </tables>
         <projections start-index="7" stop-index="19">
             <column-projection text="o.user_id" alias="uid" start-index="7" stop-index="15">
-                <table-segment name="o" start-index="7" stop-index="7" />
+                <owner name="o" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
         <group-by-columns>

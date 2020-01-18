@@ -24,7 +24,7 @@
         </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection text="i.*" start-index="7" stop-index="9">
-                <table-segment name="i" start-index="7" stop-index="7" />
+                <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
         <sharding-conditions>
@@ -52,7 +52,7 @@
         </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection text="i.*" start-index="7" stop-index="9">
-                <table-segment name="i" start-index="7" stop-index="7" />
+                <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
         <sharding-conditions>
@@ -80,7 +80,7 @@
         </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection text="i.*" start-index="7" stop-index="9">
-                <table-segment name="i" start-index="7" stop-index="7" />
+                <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
         <sharding-conditions>
@@ -109,7 +109,7 @@
         </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection text="i.*" start-index="7" stop-index="9">
-                <table-segment name="i" start-index="7" stop-index="7" />
+                <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
         <sharding-conditions>
@@ -170,7 +170,7 @@
         </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection text="i.*" start-index="7" stop-index="9">
-                <table-segment name="i" start-index="7" stop-index="7" />
+                <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
         <sharding-conditions>
@@ -261,13 +261,13 @@
         </tables>
         <projections start-index="58" stop-index="139">
             <column-projection text="order0_.order_id" start-index="58" stop-index="73">
-                <table-segment name="order0_" start-index="58" stop-index="64" />
+                <owner name="order0_" start-index="58" stop-index="64" />
             </column-projection>
             <column-projection text="order0_.status" start-index="88" stop-index="101">
-                <table-segment name="order0_" start-index="88" stop-index="94" />
+                <owner name="order0_" start-index="88" stop-index="94" />
             </column-projection>
             <column-projection text="order0_.user_id" start-index="114" stop-index="128">
-                <table-segment name="order0_" start-index="114" stop-index="120" />
+                <owner name="order0_" start-index="114" stop-index="120" />
             </column-projection>
         </projections>
         <sharding-conditions>
@@ -295,13 +295,13 @@
         </tables>
         <projections start-index="58" stop-index="139">
             <column-projection text="order0_.order_id" start-index="58" stop-index="73">
-                <table-segment name="order0_" start-index="58" stop-index="64" />
+                <owner name="order0_" start-index="58" stop-index="64" />
             </column-projection>
             <column-projection text="order0_.status" start-index="88" stop-index="101">
-                <table-segment name="order0_" start-index="88" stop-index="94" />
+                <owner name="order0_" start-index="88" stop-index="94" />
             </column-projection>
             <column-projection text="order0_.user_id" start-index="114" stop-index="128">
-                <table-segment name="order0_" start-index="114" stop-index="120" />
+                <owner name="order0_" start-index="114" stop-index="120" />
             </column-projection>
         </projections>
         <sharding-conditions>
@@ -330,13 +330,13 @@
         </tables>
         <projections start-index="58" stop-index="139">
             <column-projection text="order0_.order_id" start-index="58" stop-index="73">
-                <table-segment start-index="58" stop-index="64" name="order0_" />
+                <owner start-index="58" stop-index="64" name="order0_" />
             </column-projection>
             <column-projection text="order0_.status" start-index="88" stop-index="101">
-                <table-segment start-index="88" stop-index="94" name="order0_" />
+                <owner start-index="88" stop-index="94" name="order0_" />
             </column-projection>
             <column-projection text="order0_.user_id" start-index="114" stop-index="128">
-                <table-segment start-index="114" stop-index="120" name="order0_" />
+                <owner start-index="114" stop-index="120" name="order0_" />
             </column-projection>
         </projections>
         <sharding-conditions>
