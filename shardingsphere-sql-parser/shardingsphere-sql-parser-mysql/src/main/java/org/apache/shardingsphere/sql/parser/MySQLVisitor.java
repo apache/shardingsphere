@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Assignm
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BitExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BlobValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BooleanLiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BooleanPrimary_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BooleanPrimaryContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
@@ -196,7 +196,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     
     @Override
     public ASTNode visitExpr(final ExprContext ctx) {
-        BooleanPrimary_Context bool = ctx.booleanPrimary_();
+        BooleanPrimaryContext bool = ctx.booleanPrimary();
         if (null != bool) {
             return visit(bool);
         }
@@ -204,7 +204,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     }
     
     @Override
-    public ASTNode visitBooleanPrimary_(final BooleanPrimary_Context ctx) {
+    public ASTNode visitBooleanPrimary(final BooleanPrimaryContext ctx) {
         if (null != ctx.subquery()) {
             return new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.subquery().getText());
         }
