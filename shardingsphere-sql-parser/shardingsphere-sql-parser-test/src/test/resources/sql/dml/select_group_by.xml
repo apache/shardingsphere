@@ -22,7 +22,7 @@
             <table name="t_order" start-index="49" stop-index="55" />
         </tables>
         <projections start-index="7" stop-index="42">
-            <aggregation-projection text="SUM(order_id)" type="SUM" innerExpressionStartIndex="10" stop-index="19" />
+            <aggregation-projection text="SUM(order_id)" type="SUM" innerExpressionStartIndex="10" start-index="7" stop-index="19" />
             <column-projection text="user_id" start-index="36" stop-index="42" />
         </projections>
         <group-by-columns>
@@ -38,7 +38,7 @@
             <table name="t_order" start-index="53" stop-index="59" />
         </tables>
         <projections start-index="7" stop-index="46">
-            <aggregation-projection text="COUNT(order_id)" type="COUNT" innerExpressionStartIndex="12" stop-index="21" />
+            <aggregation-projection text="COUNT(order_id)" type="COUNT" innerExpressionStartIndex="12" start-index="7" stop-index="21" />
             <column-projection text="user_id" start-index="40" stop-index="46" />
         </projections>
         <group-by-columns>
@@ -54,7 +54,7 @@
             <table name="t_order" start-index="51" stop-index="57" />
         </tables>
         <projections start-index="7" stop-index="44">
-            <aggregation-projection text="MAX(order_id)" type="MAX" innerExpressionStartIndex="10" stop-index="19" />
+            <aggregation-projection text="MAX(order_id)" type="MAX" innerExpressionStartIndex="10" start-index="7" stop-index="19" />
             <column-projection text="user_id" start-index="38" stop-index="44" />
         </projections>
         <group-by-columns>
@@ -70,7 +70,7 @@
             <table name="t_order" start-index="51" stop-index="57" />
         </tables>
         <projections start-index="7" stop-index="44">
-            <aggregation-projection text="MIN(order_id)" type="MIN" innerExpressionStartIndex="10" stop-index="19" />
+            <aggregation-projection text="MIN(order_id)" type="MIN" innerExpressionStartIndex="10" start-index="7" stop-index="19" />
             <column-projection text="user_id" start-index="38" stop-index="44" />
         </projections>
         <group-by-columns>
@@ -86,7 +86,7 @@
             <table name="t_order" start-index="49" stop-index="55" />
         </tables>
         <projections start-index="7" stop-index="42">
-            <aggregation-projection text="AVG(order_id)" type="AVG" innerExpressionStartIndex="10" stop-index="19"/>
+            <aggregation-projection text="AVG(order_id)" type="AVG" innerExpressionStartIndex="10" start-index="7" stop-index="19" />
             <column-projection text="user_id" start-index="36" stop-index="42"/>
         </projections>
         <group-by-columns>
@@ -102,7 +102,7 @@
             <table name="t_order" start-index="49" stop-index="55" />
         </tables>
         <projections start-index="7" stop-index="42">
-            <aggregation-projection stop-index="19" type="SUM" innerExpressionStartIndex="10" text="SUM(order_id)" alias="orders_sum" />
+            <aggregation-projection start-index="7" stop-index="19" type="SUM" innerExpressionStartIndex="10" text="SUM(order_id)" alias="orders_sum" />
             <column-projection text="user_id" start-index="36" stop-index="42" />
         </projections>
         <group-by-columns>
@@ -119,7 +119,7 @@
             <table name="t_order_item" alias="i" start-index="51" stop-index="62" />
         </tables>
         <projections start-index="7" stop-index="29">
-            <aggregation-projection type="COUNT" stop-index="14" innerExpressionStartIndex="12" text="count(*)" alias="items_count" />
+            <aggregation-projection type="COUNT" start-index="7" stop-index="14" innerExpressionStartIndex="12" text="count(*)" alias="items_count" />
         </projections>
         <sharding-conditions>
             <and-condition>
@@ -143,7 +143,7 @@
             <table name="t_order" start-index="20" stop-index="26" />
         </tables>
         <projections start-index="7" stop-index="13">
-            <column-projection text="user_id" stop-index="13" />
+            <column-projection text="user_id" start-index="7" stop-index="13" />
         </projections>
         <group-by-columns>
             <group-by-column name="user_id" order-direction="ASC" />
@@ -159,7 +159,7 @@
             <table name="t_order" start-index="49" stop-index="55" />
         </tables>
         <projections start-index="7" stop-index="42">
-            <column-projection text="user_id" stop-index="13" />
+            <column-projection text="user_id" start-index="7" stop-index="13" />
             <aggregation-projection start-index="16" stop-index="28" innerExpressionStartIndex="19" type="SUM" text="SUM(order_id)" alias="orders_sum" />
         </projections>
         <group-by-columns>
