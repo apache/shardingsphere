@@ -36,11 +36,11 @@ public final class ExpectedProjections {
     
     @Getter
     @XmlAttribute(name = "start-index")
-    private Integer startIndex;
+    private int startIndex;
     
     @Getter
     @XmlAttribute(name = "stop-index")
-    private Integer stopIndex;
+    private int stopIndex;
     
     @Getter
     @XmlAttribute(name = "distinct-row")
