@@ -40,7 +40,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.Nu
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 import java.util.List;
 
@@ -63,14 +62,13 @@ public final class ProjectionAssert {
      * @param assertMessage assert message
      * @param actual actual projection
      * @param expected expected projections
-     * @param sqlCaseType SQL case type
      */
-    public static void assertIs(final SQLStatementAssertMessage assertMessage, final ProjectionsSegment actual, final ExpectedProjections expected, final SQLCaseType sqlCaseType) {
+    public static void assertIs(final SQLStatementAssertMessage assertMessage, final ProjectionsSegment actual, final ExpectedProjections expected) {
         assertProjections(assertMessage, actual, expected);
         List<ExpectedProjection> expectedProjections = expected.getExpectedProjections();
         int count = 0;
         for (ProjectionSegment each : actual.getProjections()) {
-            assertProjection(assertMessage, each, expectedProjections.get(count), sqlCaseType);
+            assertProjection(assertMessage, each, expectedProjections.get(count));
             count++;
         }
     }
@@ -82,8 +80,7 @@ public final class ProjectionAssert {
         assertThat(assertMessage.getText("Projections stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
     }
     
-    private static void assertProjection(final SQLStatementAssertMessage assertMessage, final ProjectionSegment actual, final ExpectedProjection expected, final SQLCaseType sqlCaseType) {
-        String expectedText = SQLCaseType.Placeholder == sqlCaseType && null != expected.getParameterMarkerText() ? expected.getParameterMarkerText() : expected.getText();
+    private static void assertProjection(final SQLStatementAssertMessage assertMessage, final ProjectionSegment actual, final ExpectedProjection expected) {
         if (actual instanceof ShorthandProjectionSegment) {
             assertThat(assertMessage.getText("Projection type assertion error: "), expected, instanceOf(ExpectedShorthandProjection.class));
             assertShorthandProjection(assertMessage, (ShorthandProjectionSegment) actual, (ExpectedShorthandProjection) expected);

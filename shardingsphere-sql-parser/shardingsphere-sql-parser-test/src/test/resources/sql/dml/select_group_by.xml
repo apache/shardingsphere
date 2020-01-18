@@ -102,7 +102,7 @@
             <table name="t_order" start-index="49" stop-index="55" />
         </tables>
         <projections start-index="7" stop-index="42">
-            <aggregation-projection start-index="7" stop-index="19" type="SUM" inner-expression-start-index="10" text="SUM(order_id)" alias="orders_sum" />
+            <aggregation-projection type="SUM" inner-expression-start-index="10" alias="orders_sum" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="36" stop-index="42" />
         </projections>
         <group-by-columns>
@@ -119,7 +119,7 @@
             <table name="t_order_item" alias="i" start-index="51" stop-index="62" />
         </tables>
         <projections start-index="7" stop-index="29">
-            <aggregation-projection type="COUNT" start-index="7" stop-index="14" inner-expression-start-index="12" text="count(*)" alias="items_count" />
+            <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="items_count" start-index="7" stop-index="14" />
         </projections>
         <sharding-conditions>
             <and-condition>
@@ -160,7 +160,7 @@
         </tables>
         <projections start-index="7" stop-index="42">
             <column-projection name="user_id" start-index="7" stop-index="13" />
-            <aggregation-projection start-index="16" stop-index="28" inner-expression-start-index="19" type="SUM" text="SUM(order_id)" alias="orders_sum" />
+            <aggregation-projection type="SUM"  inner-expression-start-index="19" alias="orders_sum" start-index="16" stop-index="28" />
         </projections>
         <group-by-columns>
             <group-by-column name="user_id" order-direction="ASC" />
@@ -194,7 +194,7 @@
         </tables>
         <projections start-index="7" stop-index="84">
             <expression-projection alias="creation_date" start-index="7" stop-index="45" />
-            <aggregation-projection start-index="65" stop-index="72" inner-expression-start-index="70" type="COUNT" text="count(*)" alias="c_number" />
+            <aggregation-projection type="COUNT" inner-expression-start-index="70" alias="c_number" start-index="65" stop-index="72" />
         </projections>
         <sharding-conditions>
             <and-condition>
@@ -214,7 +214,7 @@
             <table name="t_order" start-index="58" stop-index="64" />
         </tables>
         <projections start-index="7" stop-index="51">
-            <aggregation-projection type="SUM" start-index="7" stop-index="19" inner-expression-start-index="10" text="SUM(order_id)" alias="orders_sum" />
+            <aggregation-projection type="SUM" inner-expression-start-index="10" alias="orders_sum" start-index="7" stop-index="19" />
             <column-projection name="user_id" alias="key" start-index="36" stop-index="42" />
         </projections>
         <group-by-columns>
@@ -227,7 +227,7 @@
             <table name="t_order" start-index="53" stop-index="59" />
         </tables>
         <projections start-index="7" stop-index="46">
-            <aggregation-projection start-index="7" stop-index="21" inner-expression-start-index="12" type="COUNT" text="COUNT(order_id)" alias="orders_count" />
+            <aggregation-projection inner-expression-start-index="12" type="COUNT" alias="orders_count" start-index="7" stop-index="21" />
             <column-projection name="user_id" start-index="40" stop-index="46" />
         </projections>
         <group-by-columns>

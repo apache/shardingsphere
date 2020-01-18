@@ -820,7 +820,7 @@
             <table name="t_order" start-index="31" stop-index="37" />
         </tables>
         <projections start-index="7" stop-index="24">
-            <column-projection start-index="7" stop-index="12" text="status" alias="status" name="status" />
+            <column-projection name="status" alias="status" start-index="7" stop-index="12" />
         </projections>
     </parser-result>
     
@@ -829,7 +829,7 @@
             <table name="t_order" start-index="48" stop-index="54" />
         </tables>
         <projections start-index="7" stop-index="41">
-            <aggregation-projection type="SUM" text="sum(if(status=0,1,0))" inner-expression-start-index="10" alias="func_status" start-index="7" stop-index="29" />
+            <aggregation-projection type="SUM" inner-expression-start-index="10" alias="func_status" start-index="7" stop-index="29" />
         </projections>
         <sharding-conditions>
             <and-condition>

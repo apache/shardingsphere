@@ -38,8 +38,8 @@
             <table name="t_order" start-index="52" stop-index="58" />
         </tables>
         <projections start-index="45" stop-index="45">
-            <aggregation-projection type="COUNT" inner-expression="(1)" alias="orders_count" />
-            <shorthand-projection start-index="45" text="*" stop-index="45" />
+            <aggregation-projection type="COUNT" alias="orders_count" />
+            <shorthand-projection start-index="45" stop-index="45" />
         </projections>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="DESC" />
@@ -51,7 +51,7 @@
             <table name="t_order_item" start-index="64" stop-index="75" />
         </tables>
         <projections start-index="50" stop-index="57">
-            <column-projection start-index="50" stop-index="57" text="order_id" name="order_id" />
+            <column-projection name="order_id" start-index="50" stop-index="57" />
         </projections>
         <group-by-columns>
             <group-by-column name="order_id" order-direction="ASC" />

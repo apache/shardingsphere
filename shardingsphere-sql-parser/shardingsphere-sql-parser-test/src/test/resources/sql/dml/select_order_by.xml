@@ -201,10 +201,10 @@
             <table name="t_order_item" alias="i" start-index="36" stop-index="47" />
         </tables>
         <projections start-index="7" stop-index="14">
-            <shorthand-projection start-index="7" stop-index="9" text="i.*">
+            <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
-            <shorthand-projection start-index="12" stop-index="14" text="o.*">
+            <shorthand-projection start-index="12" stop-index="14">
                 <owner name="o" start-index="12" stop-index="12" />
             </shorthand-projection>
         </projections>

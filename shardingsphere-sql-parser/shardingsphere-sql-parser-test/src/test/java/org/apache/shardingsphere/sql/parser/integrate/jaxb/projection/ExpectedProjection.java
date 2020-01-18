@@ -32,18 +32,4 @@ public interface ExpectedProjection {
      * @return stop index
      */
     int getStopIndex();
-    
-    /**
-     * Get text.
-     * 
-     * @return text
-     */
-    String getText();
-    
-    /**
-     * Get parameter marker text.
-     *
-     * @return parameter marker text
-     */
-    String getParameterMarkerText();
 }

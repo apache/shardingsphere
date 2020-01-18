@@ -34,10 +34,4 @@ public abstract class AbstractExpectedProjection implements ExpectedProjection {
     
     @XmlAttribute(name = "stop-index")
     private int stopIndex;
-    
-    @XmlAttribute
-    private String text;
-    
-    @XmlAttribute(name = "parameter-marker-text")
-    private String parameterMarkerText;
 }

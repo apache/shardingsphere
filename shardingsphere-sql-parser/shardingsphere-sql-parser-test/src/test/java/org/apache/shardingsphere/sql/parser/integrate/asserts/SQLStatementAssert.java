@@ -80,7 +80,7 @@ public final class SQLStatementAssert {
     }
     
     private static void assertSelectStatement(final SQLStatementAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
-        ProjectionAssert.assertIs(assertMessage, actual.getProjections(), expected.getProjections(), sqlCaseType);
+        ProjectionAssert.assertIs(assertMessage, actual.getProjections(), expected.getProjections());
         Optional<GroupBySegment> groupBySegment = actual.getGroupBy();
         if (groupBySegment.isPresent()) {
             GroupByAssert.assertIs(assertMessage, groupBySegment.get().getGroupByItems(), expected.getGroupByColumns());
