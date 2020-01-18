@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedPr
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedProjections;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedShorthandProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedTableSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedTopProjection;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
@@ -35,6 +36,9 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProje
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 
@@ -92,6 +96,9 @@ public final class ProjectionAssert {
         } else if (actual instanceof ExpressionProjectionSegment) {
             assertThat(assertMessage.getText("Projection type assertion error: "), expected, instanceOf(ExpectedExpressionProjection.class));
             assertExpressionProjection(assertMessage, (ExpressionProjectionSegment) actual, (ExpectedExpressionProjection) expected);
+        } else if (actual instanceof TopProjectionSegment) {
+            assertThat(assertMessage.getText("Projection type assertion error: "), expected, instanceOf(ExpectedTopProjection.class));
+            assertTopProjection(assertMessage, (TopProjectionSegment) actual, (ExpectedTopProjection) expected);
         }
         assertThat(assertMessage.getText("Projection start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
         assertThat(assertMessage.getText("Projection stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
@@ -117,6 +124,14 @@ public final class ProjectionAssert {
         }
     }
     
+    private static void assertOwner(final SQLStatementAssertMessage assertMessage, final TableSegment actual, final ExpectedTableSegment expected) {
+        assertThat(assertMessage.getText("Projection owner name assertion error: "), actual.getTableName(), is(expected.getName()));
+        assertThat(assertMessage.getText("Projection owner name start delimiter assertion error: "), actual.getTableQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
+        assertThat(assertMessage.getText("Projection owner name end delimiter assertion error: "), actual.getTableQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
+        assertThat(assertMessage.getText("Projection owner name start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
+        assertThat(assertMessage.getText("Projection owner name stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
+    }
+    
     private static void assertAggregationProjection(final SQLStatementAssertMessage assertMessage, final AggregationProjectionSegment actual, final ExpectedAggregationProjection expected) {
         assertThat(assertMessage.getText("Aggregation projection type assertion error: "), actual.getType().name(), is(expected.getType()));
         assertThat(assertMessage.getText("Aggregation projection inner expression start index assertion error: "), actual.getInnerExpressionStartIndex(), is(expected.getInnerExpressionStartIndex()));
@@ -132,11 +147,15 @@ public final class ProjectionAssert {
         assertThat(assertMessage.getText("Expression projection alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
     }
     
-    private static void assertOwner(final SQLStatementAssertMessage assertMessage, final TableSegment actual, final ExpectedTableSegment expected) {
-        assertThat(assertMessage.getText("Projection owner name assertion error: "), actual.getTableName(), is(expected.getName()));
-        assertThat(assertMessage.getText("Projection owner name start delimiter assertion error: "), actual.getTableQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
-        assertThat(assertMessage.getText("Projection owner name end delimiter assertion error: "), actual.getTableQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
-        assertThat(assertMessage.getText("Projection owner name start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
-        assertThat(assertMessage.getText("Projection owner name stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
+    private static void assertTopProjection(final SQLStatementAssertMessage assertMessage, final TopProjectionSegment actual, final ExpectedTopProjection expected) {
+        if (actual.getTop() instanceof NumberLiteralRowNumberValueSegment) {
+            assertThat(assertMessage.getText("Expression projection top value assertion error: "), ((NumberLiteralRowNumberValueSegment) actual.getTop()).getValue(), is(expected.getTopValue()));
+        } else {
+            assertThat(assertMessage.getText("Expression projection top parameter index assertion error: "), 
+                    ((ParameterMarkerRowNumberValueSegment) actual.getTop()).getParameterIndex(), is(expected.getTopParameterIndex()));
+        }
+        assertThat(assertMessage.getText("Expression projection top value start index assertion error: "), actual.getTop().getStartIndex(), is(expected.getTopValueStartIndex()));
+        assertThat(assertMessage.getText("Expression projection top value stop index assertion error: "), actual.getTop().getStopIndex(), is(expected.getTopValueStopIndex()));
+        assertThat(assertMessage.getText("Expression projection alias assertion error: "), actual.getAlias(), is(expected.getAlias()));
     }
 }

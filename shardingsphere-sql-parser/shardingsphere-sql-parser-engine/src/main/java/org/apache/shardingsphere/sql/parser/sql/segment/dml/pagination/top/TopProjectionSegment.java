@@ -23,13 +23,13 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.RowNumberValueSegment;
 
 /**
- * Top segment.
+ * Top projection segment.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class TopSegment implements ProjectionSegment {
+public final class TopProjectionSegment implements ProjectionSegment {
     
     private final int startIndex;
     
@@ -39,5 +39,5 @@ public final class TopSegment implements ProjectionSegment {
     
     private final RowNumberValueSegment top;
     
-    private final String rowNumberAlias;
+    private final String alias;
 }

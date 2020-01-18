@@ -20,9 +20,8 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.projection;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
 @Getter
@@ -30,9 +29,18 @@ import javax.xml.bind.annotation.XmlAttribute;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedTopProjection extends AbstractExpectedProjection {
     
-    @XmlElement(name = "row-number-value-segment")
-    private ExpectedRowNumberValueSegment top;
+    @XmlAttribute(name = "top-value")
+    private Long topValue;
     
-    @XmlAttribute(name = "row-number-alias")
-    private String rowNumberAlias;
+    @XmlAttribute(name = "top-parameter-index")
+    private Integer topParameterIndex;
+    
+    @XmlAttribute(name = "top-value-start-index")
+    private int topValueStartIndex;
+    
+    @XmlAttribute(name = "top-value-stop-index")
+    private int topValueStopIndex;
+    
+    @XmlAttribute(name = "alias")
+    private String alias;
 }

@@ -22,7 +22,7 @@
             <table name="t_order" alias="o" start-index="38" stop-index="44" />
         </tables>
         <projections start-index="7" stop-index="31">
-            <!-- TODO check expression-projection's stop-index whether inculde alias --> 
+            <!-- TODO check expression-projection's stop-index whether include alias --> 
             <expression-projection alias="exp" start-index="7" stop-index="31" />
         </projections>
         <order-by-columns>
