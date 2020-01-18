@@ -264,7 +264,7 @@
             <table name="t_order" alias="o" start-index="37" stop-index="43" />
         </tables>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" text="count(0)" inner-expression="(0)" alias="orders_count" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="orders_count" start-index="7" stop-index="14" />
         </projections>
         <sharding-conditions>
             <and-condition>
@@ -285,7 +285,7 @@
             <table name="t_order" alias="o" start-index="37" stop-index="43" />
         </tables>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" text="count(0)" inner-expression="(0)" alias="orders_count" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="orders_count" start-index="7" stop-index="14" />
         </projections>
         <sharding-conditions>
             <and-condition>

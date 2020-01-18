@@ -22,7 +22,7 @@
             <table name="t_order" start-index="40" stop-index="46" />
         </tables>
         <projections start-index="7" stop-index="33">
-            <aggregation-projection type="SUM" text="SUM(user_id)" inner-expression-start-index="10" start-index="7" stop-index="18" />
+            <aggregation-projection type="SUM" inner-expression-start-index="10" alias="user_id_sum" start-index="7" stop-index="18" />
         </projections>
     </parser-result>
     
@@ -31,7 +31,7 @@
             <table name="t_order" start-index="37" stop-index="43" />
         </tables>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" text="COUNT(*)" inner-expression-start-index="12" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" alias="orders_count" inner-expression-start-index="12" start-index="7" stop-index="14" />
         </projections>
     </parser-result>
 
@@ -40,7 +40,7 @@
             <table name="t_order" start-index="37" stop-index="43" />
         </tables>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" text="COUNT(*)" inner-expression-start-index="12" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" alias="orders_count" inner-expression-start-index="12" start-index="7" stop-index="14" />
         </projections>
     </parser-result>
 
@@ -49,7 +49,7 @@
             <table name="t_order" start-index="37" stop-index="43" />
         </tables>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" inner-expression-start-index="12" text="COUNT(*)" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" alias="orders_count" inner-expression-start-index="12" start-index="7" stop-index="14" />
         </projections>
     </parser-result>
     
@@ -67,7 +67,7 @@
             <table name="t_order" start-index="40" stop-index="46" />
         </tables>
         <projections start-index="7" stop-index="33">
-            <aggregation-projection type="MIM" text="MIN(user_id)" inner-expression-start-index="10" alias="min_user_id" start-index="7" stop-index="18" />
+            <aggregation-projection type="MIN" inner-expression-start-index="10" alias="min_user_id" start-index="7" stop-index="18" />
         </projections>
     </parser-result>
     

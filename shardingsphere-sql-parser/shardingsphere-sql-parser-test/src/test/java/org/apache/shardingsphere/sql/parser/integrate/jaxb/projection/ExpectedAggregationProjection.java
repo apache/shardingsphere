@@ -29,15 +29,12 @@ import javax.xml.bind.annotation.XmlAttribute;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ExpectedAggregationProjection extends AbstractExpectedProjection {
     
-    @XmlAttribute(name = "inner-expression-start-index")
-    private Integer innerExpressionStartIndex;
-    
     @XmlAttribute
     private String type;
     
+    @XmlAttribute(name = "inner-expression-start-index")
+    private int innerExpressionStartIndex;
+    
     @XmlAttribute
     private String alias;
-    
-    @XmlAttribute(name = "aggregation-inner-expression")
-    private String innerExpression;
 }
