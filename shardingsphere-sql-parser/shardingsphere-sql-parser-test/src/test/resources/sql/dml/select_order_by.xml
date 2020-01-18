@@ -202,10 +202,10 @@
         </tables>
         <projections start-index="7" stop-index="14">
             <shorthand-projection start-index="7" stop-index="9" text="i.*">
-                <table-segment name="i"/>
+                <table-segment name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
             <shorthand-projection start-index="12" stop-index="14" text="o.*">
-                <table-segment name="o" />
+                <table-segment name="o" start-index="12" stop-index="12" />
             </shorthand-projection>
         </projections>
         <order-by-columns>

@@ -157,7 +157,7 @@
         </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection text="i.*" start-index="7" stop-index="9">
-                <table-segment name="i" />
+                <table-segment name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
         <sharding-conditions>
@@ -188,7 +188,7 @@
         </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection text="i.*" start-index="7" stop-index="9">
-                <table-segment name="i" />
+                <table-segment name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
         <sharding-conditions>

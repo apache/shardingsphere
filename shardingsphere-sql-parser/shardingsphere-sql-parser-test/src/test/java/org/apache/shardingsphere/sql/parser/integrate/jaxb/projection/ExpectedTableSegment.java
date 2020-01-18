@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.projection;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -39,9 +38,9 @@ public final class ExpectedTableSegment {
     @XmlAttribute
     private String name;
     
-    @XmlAttribute
-    private QuoteCharacter quoteCharacter = QuoteCharacter.NONE;
+    @XmlAttribute(name = "start-delimiter")
+    private String startDelimiter = "";
     
-    @XmlAttribute
-    private String alias;
+    @XmlAttribute(name = "end-delimiter")
+    private String endDelimiter = "";
 }

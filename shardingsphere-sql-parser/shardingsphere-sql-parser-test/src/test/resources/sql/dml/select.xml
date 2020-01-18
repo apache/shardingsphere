@@ -624,7 +624,9 @@
             <table name="t_order_item" start-index="63" stop-index="74" />
         </tables>
         <projections distinct-row="true" start-index="16" stop-index="47">
-            <shorthand-projection text="t_order.*" start-index="16" stop-index="24" />
+            <shorthand-projection text="t_order.*" start-index="16" stop-index="24">
+                <table-segment name="t_order" start-index="16" stop-index="22" />
+            </shorthand-projection>
             <column-projection text="t_order_item.order_id" start-index="27" stop-index="47" />
         </projections>
         <order-by-columns>
