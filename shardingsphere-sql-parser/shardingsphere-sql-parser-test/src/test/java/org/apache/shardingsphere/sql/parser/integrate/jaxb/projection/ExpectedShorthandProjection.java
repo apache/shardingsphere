@@ -28,8 +28,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedShorthandProjection extends AbstractExpectedProjection {
-
+    
     @XmlElement(name = "table-segment")
     private ExpectedTableSegment owner = new ExpectedTableSegment();
-
 }

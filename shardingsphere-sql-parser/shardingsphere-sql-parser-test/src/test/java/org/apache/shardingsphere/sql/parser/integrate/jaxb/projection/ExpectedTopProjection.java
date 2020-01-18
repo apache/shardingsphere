@@ -29,10 +29,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedTopProjection extends AbstractExpectedProjection {
-
+    
     @XmlElement(name = "row-number-value-segment")
     private ExpectedRowNumberValueSegment top;
-
+    
     @XmlAttribute(name = "row-number-alias")
     private String rowNumberAlias;
 }

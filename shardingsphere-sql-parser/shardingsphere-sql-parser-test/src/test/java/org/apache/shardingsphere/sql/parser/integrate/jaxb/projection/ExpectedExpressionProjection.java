@@ -28,6 +28,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedExpressionProjection extends AbstractExpectedProjection {
+    
     @XmlAttribute
     private String alias;
 }

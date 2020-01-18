@@ -30,17 +30,19 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-@Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedProjections {
     
+    @Getter
     @XmlAttribute(name = "start-index")
     private Integer startIndex;
     
+    @Getter
     @XmlAttribute(name = "stop-index")
     private Integer stopIndex;
     
+    @Getter
     @XmlAttribute(name = "distinct-row")
     private boolean distinctRow;
     
