@@ -49,14 +49,14 @@ public final class ExpectedProjections {
     @XmlElement(name = "shorthand-projection")
     private Collection<ExpectedShorthandProjection> shorthandProjections = new LinkedList<>();
     
+    @XmlElement(name = "column-projection")
+    private Collection<ExpectedColumnProjection> columnProjections = new LinkedList<>();
+    
     @XmlElement(name = "aggregation-projection")
     private Collection<ExpectedAggregationProjection> aggregationProjections = new LinkedList<>();
     
     @XmlElement(name = "aggregation-distinct-projection")
     private Collection<ExpectedAggregationDistinctProjection> aggregationDistinctProjections = new LinkedList<>();
-    
-    @XmlElement(name = "column-projection")
-    private Collection<ExpectedColumnProjection> columnProjections = new LinkedList<>();
     
     @XmlElement(name = "expression-projection")
     private Collection<ExpectedExpressionProjection> expressionProjections = new LinkedList<>();
@@ -70,7 +70,7 @@ public final class ExpectedProjections {
      * @return size
      */
     public int getSize() {
-        return aggregationProjections.size() + shorthandProjections.size() + aggregationDistinctProjections.size() + columnProjections.size() + expressionProjections.size() + topProjections.size();
+        return shorthandProjections.size() + columnProjections.size() + aggregationProjections.size() + aggregationDistinctProjections.size() + expressionProjections.size() + topProjections.size();
     }
     
     /**
@@ -81,8 +81,8 @@ public final class ExpectedProjections {
     public List<ExpectedProjection> getExpectedProjections() {
         List<ExpectedProjection> result = new LinkedList<>();
         result.addAll(shorthandProjections);
-        result.addAll(aggregationProjections);
         result.addAll(columnProjections);
+        result.addAll(aggregationProjections);
         result.addAll(aggregationDistinctProjections);
         result.addAll(expressionProjections);
         result.addAll(topProjections);

@@ -140,10 +140,18 @@
             <top-projection row-number-alias="rownum_" text="TOP(3)row_number()OVER(ORDERBYi.item_idDESC)" parameter-marker-text="TOP(?)row_number()OVER(ORDERBYi.item_idDESC)" start-index="22" stop-index="72">
                 <row-number-value-segment parameter-index="0" start-index="27" stop-index="27" />
             </top-projection>
-            <column-projection start-index="86" stop-index="94" text="i.item_id" />
-            <column-projection start-index="97" stop-index="106" text="o.order_id" />
-            <column-projection start-index="121" stop-index="128" text="o.status" />
-            <column-projection start-index="141" stop-index="149" text="o.user_id" />
+            <column-projection name="item_id" start-index="86" stop-index="94">
+                <owner name="i" start-index="86" stop-index="86" />
+            </column-projection>
+            <column-projection name="order_id" alias="order_id" start-index="97" stop-index="106">
+                <owner name="o" start-index="97" stop-index="97" />
+            </column-projection>
+            <column-projection name="status" alias="status" start-index="121" stop-index="128">
+                <owner name="o" start-index="121" stop-index="121" />
+            </column-projection>
+            <column-projection name="user_id" alias="user_id" start-index="141" stop-index="149">
+                <owner name="o" start-index="141" stop-index="141" />
+            </column-projection>
         </projections>
         <sharding-conditions>
             <and-condition>
@@ -199,10 +207,18 @@
         </tables>
         <projections start-index="22" stop-index="160">
             <top-projection row-number-alias="rownum_" text="TOP(3)row_number()OVER(ORDERBYi.item_idDESC)" parameter-marker-text="TOP(?)row_number()OVER(ORDERBYi.item_idDESC)" start-index="22" stop-index="72" />
-            <column-projection text="i.item_id" start-index="86" stop-index="94" />
-            <column-projection text="o.order_id" start-index="97" stop-index="106" />
-            <column-projection text="o.status" start-index="121" stop-index="128" />
-            <column-projection text="o.user_id" start-index="141" stop-index="149" />
+            <column-projection name="item_id" start-index="86" stop-index="94">
+                <owner name="i" start-index="86" stop-index="86" />
+            </column-projection>
+            <column-projection name="order_id" alias="order_id" start-index="97" stop-index="106">
+                <owner name="o" start-index="97" stop-index="97" />
+            </column-projection>
+            <column-projection name="status" alias="status" start-index="121" stop-index="128">
+                <owner name="o" start-index="121" stop-index="121" />
+            </column-projection>
+            <column-projection name="user_id" alias="user_id" start-index="141" stop-index="149">
+                <owner name="o" start-index="141" stop-index="141" />
+            </column-projection>
         </projections>
         <sharding-conditions>
             <and-condition>
@@ -230,10 +246,18 @@
         </tables>
         <projections start-index="22" stop-index="160">
             <top-projection row-number-alias="rownum_" text="TOP(3)row_number()OVER(ORDERBYi.item_idDESC)" parameter-marker-text="TOP(?)row_number()OVER(ORDERBYi.item_idDESC)" start-index="22" stop-index="72" />
-            <column-projection text="i.item_id" start-index="86" stop-index="94" />
-            <column-projection text="o.order_id" start-index="97" stop-index="106" />
-            <column-projection text="o.status" start-index="121" stop-index="128" />
-            <column-projection text="o.user_id" start-index="141" stop-index="149" />
+            <column-projection name="item_id" start-index="86" stop-index="94">
+                <owner name="i" start-index="86" stop-index="86" />
+            </column-projection>
+            <column-projection name="order_id" alias="order_id" start-index="97" stop-index="106">
+                <owner name="o" start-index="97" stop-index="97" />
+            </column-projection>
+            <column-projection name="status" alias="status" start-index="121" stop-index="128">
+                <owner name="o" start-index="121" stop-index="121" />
+            </column-projection>
+            <column-projection name="user_id" alias="user_id" start-index="141" stop-index="149">
+                <owner name="o" start-index="141" stop-index="141" />
+            </column-projection>
         </projections>
         <sharding-conditions>
             <and-condition>
@@ -260,13 +284,13 @@
             <table name="t_order_item" alias="i" start-index="167" stop-index="178" />
         </tables>
         <projections start-index="58" stop-index="139">
-            <column-projection text="order0_.order_id" start-index="58" stop-index="73">
+            <column-projection name="order_id" alias="order_id" start-index="58" stop-index="73">
                 <owner name="order0_" start-index="58" stop-index="64" />
             </column-projection>
-            <column-projection text="order0_.status" start-index="88" stop-index="101">
+            <column-projection name="status" alias="status" start-index="88" stop-index="101">
                 <owner name="order0_" start-index="88" stop-index="94" />
             </column-projection>
-            <column-projection text="order0_.user_id" start-index="114" stop-index="128">
+            <column-projection name="user_id" alias="user_id" start-index="114" stop-index="128">
                 <owner name="order0_" start-index="114" stop-index="120" />
             </column-projection>
         </projections>
@@ -294,13 +318,13 @@
             <table name="t_order_item" alias="i" start-index="167" stop-index="178" />
         </tables>
         <projections start-index="58" stop-index="139">
-            <column-projection text="order0_.order_id" start-index="58" stop-index="73">
+            <column-projection name="order_id" alias="order_id" start-index="58" stop-index="73">
                 <owner name="order0_" start-index="58" stop-index="64" />
             </column-projection>
-            <column-projection text="order0_.status" start-index="88" stop-index="101">
+            <column-projection name="status" alias="status" start-index="88" stop-index="101">
                 <owner name="order0_" start-index="88" stop-index="94" />
             </column-projection>
-            <column-projection text="order0_.user_id" start-index="114" stop-index="128">
+            <column-projection name="user_id" alias="user_id" start-index="114" stop-index="128">
                 <owner name="order0_" start-index="114" stop-index="120" />
             </column-projection>
         </projections>
@@ -329,14 +353,14 @@
             <table name="t_order_item" alias="i" start-index="167" stop-index="178" />
         </tables>
         <projections start-index="58" stop-index="139">
-            <column-projection text="order0_.order_id" start-index="58" stop-index="73">
-                <owner start-index="58" stop-index="64" name="order0_" />
+            <column-projection name="order_id" alias="order_id" start-index="58" stop-index="73">
+                <owner name="order0_" start-index="58" stop-index="64" />
             </column-projection>
-            <column-projection text="order0_.status" start-index="88" stop-index="101">
-                <owner start-index="88" stop-index="94" name="order0_" />
+            <column-projection name="status" alias="status" start-index="88" stop-index="101">
+                <owner name="order0_" start-index="88" stop-index="94" />
             </column-projection>
-            <column-projection text="order0_.user_id" start-index="114" stop-index="128">
-                <owner start-index="114" stop-index="120" name="order0_" />
+            <column-projection name="user_id" alias="user_id" start-index="114" stop-index="128">
+                <owner name="order0_" start-index="114" stop-index="120" />
             </column-projection>
         </projections>
         <sharding-conditions>

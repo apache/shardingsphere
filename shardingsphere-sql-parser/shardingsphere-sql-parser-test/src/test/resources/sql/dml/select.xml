@@ -49,13 +49,13 @@
             <table name="t_order" alias="t_order" start-index="52" stop-index="58" />
         </tables>
         <projections start-index="7" stop-index="45">
-            <column-projection text="t_order.order_id" name="order_id" start-index="7" stop-index="22">
+            <column-projection name="order_id" start-index="7" stop-index="22">
                 <owner name="t_order" start-index="7" stop-index="13" />
             </column-projection>
-            <column-projection text="t_order.user_id" name="user_id" start-index="24" stop-index="38">
+            <column-projection name="user_id" start-index="24" stop-index="38">
                 <owner name="t_order" start-index="24" stop-index="30" />
             </column-projection>
-            <column-projection text="status" name="status" start-index="40" stop-index="45" />
+            <column-projection name="status" start-index="40" stop-index="45" />
         </projections>
         <sharding-conditions>
             <and-condition>
@@ -470,7 +470,7 @@
             <table name="t_order_item" alias="length" start-index="36" stop-index="47" />
         </tables>
         <projections start-index="7" stop-index="29">
-            <column-projection text="length.item_id" name="item_id" alias="password" start-index="7" stop-index="20">
+            <column-projection name="item_id" alias="password" start-index="7" stop-index="20">
                 <owner name="length" start-index="7" stop-index="12" />
             </column-projection>>
         </projections>
@@ -573,7 +573,7 @@
             <table name="t_order_item" start-index="29" stop-index="40" />
         </tables>
         <projections start-index="16" stop-index="22" distinct-row="true">
-            <column-projection text="item_id" name="item_id" start-index="16" stop-index="22" />
+            <column-projection name="item_id" start-index="16" stop-index="22" />
         </projections>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
@@ -585,7 +585,9 @@
             <table name="t_order" start-index="38" stop-index="44" />
         </tables>
         <projections start-index="16" stop-index="31" distinct-row="true">
-            <column-projection text="t_order.order_id" name="order_id" start-index="16" stop-index="31" />
+            <column-projection name="order_id" start-index="16" stop-index="31">
+                <owner name="t_order" start-index="16" stop-index="22" />
+            </column-projection>
         </projections>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
@@ -597,9 +599,9 @@
             <table name="t_order" start-index="47" stop-index="53" />
         </tables>
         <projections start-index="16" stop-index="40" distinct-row="true">
-            <column-projection text="order_id" name="order_id" start-index="16" stop-index="23" />
-            <column-projection text="user_id" name="user_id" start-index="26" stop-index="32" />
-            <column-projection text="status" name="status" start-index="35" stop-index="40" />
+            <column-projection name="order_id" start-index="16" stop-index="23" />
+            <column-projection name="user_id" start-index="26" stop-index="32" />
+            <column-projection name="status" start-index="35" stop-index="40" />
         </projections>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
@@ -627,7 +629,9 @@
             <shorthand-projection text="t_order.*" start-index="16" stop-index="24">
                 <owner name="t_order" start-index="16" stop-index="22" />
             </shorthand-projection>
-            <column-projection text="t_order_item.order_id" start-index="27" stop-index="47" />
+            <column-projection name="order_id" start-index="27" stop-index="47">
+                <owner name="t_order_item" start-index="27" stop-index="38" />
+            </column-projection>
         </projections>
         <order-by-columns>
             <order-by-column owner="t_order" name="order_id" order-direction="ASC" />
@@ -676,7 +680,7 @@
             <table name="t_order" start-index="49" stop-index="55" />
         </tables>
         <projections start-index="7" stop-index="42">
-            <column-projection text="order_id" name="order_id" start-index="7" stop-index="14" />
+            <column-projection name="order_id" start-index="7" stop-index="14" />
             <aggregation-distinct-projection inner-expression-start-index="22" type="COUNT" text="COUNT(DISTINCTorder_id)" distinctExpression="order_id" alias="c" start-index="17" stop-index="40" />
         </projections>
         <group-by-columns>
@@ -693,7 +697,7 @@
         </tables>
         <projections start-index="7" stop-index="42">
             <aggregation-distinct-projection inner-expression-start-index="12" type="COUNT" text="COUNT(DISTINCTorder_id)" distinctExpression="order_id" alias="c" start-index="7" stop-index="30" />
-            <column-projection text="order_id" name="order_id" start-index="35" stop-index="42" />
+            <column-projection name="order_id" start-index="35" stop-index="42" />
         </projections>
         <group-by-columns>
             <group-by-column name="order_id" order-direction="ASC" />
@@ -807,7 +811,7 @@
             <table name="t_order" start-index="31" stop-index="37" />
         </tables>
         <projections start-index="7" stop-index="24">
-            <column-projection text="status" alias="status" name="status" start-index="7" stop-index="12" />
+            <column-projection alias="status" name="status" start-index="7" stop-index="12" />
         </projections>
     </parser-result>
     

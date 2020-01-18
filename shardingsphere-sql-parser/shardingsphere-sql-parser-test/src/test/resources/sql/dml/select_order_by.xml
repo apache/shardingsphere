@@ -56,7 +56,7 @@
             <table name="t_order" alias="o" start-index="40" stop-index="46" />
         </tables>
         <projections start-index="7" stop-index="33">
-            <column-projection text="o.order_id" start-index="7" stop-index="16">
+            <column-projection name="order_id" alias="gen_order_id_" start-index="7" stop-index="16">
                 <owner name="o" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
@@ -93,7 +93,7 @@
             <table name="t_order" alias="o" start-index="40" stop-index="46" />
         </tables>
         <projections start-index="7" stop-index="33">
-            <column-projection text="o.order_id" start-index="7" stop-index="16">
+            <column-projection name="order_id" alias="gen_order_id_" start-index="7" stop-index="16">
                 <owner name="o" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
@@ -108,7 +108,7 @@
             <table name="t_order" alias="o" start-index="40" stop-index="46" />
         </tables>
         <projections start-index="7" stop-index="33">
-            <column-projection text="o.order_id" alias="gen_order_id_" start-index="7" stop-index="16">
+            <column-projection name="order_id" alias="gen_order_id_" start-index="7" stop-index="16">
                 <owner name="o" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
@@ -126,7 +126,7 @@
             <shorthand-projection text="o.*" start-index="20" stop-index="22">
                 <owner name="o" start-index="20" stop-index="20" />
             </shorthand-projection>
-            <column-projection text="order_id" start-index="10" stop-index="17" />
+            <column-projection name="order_id" start-index="10" stop-index="17" />
         </projections>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />

@@ -20,12 +20,16 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.projection;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedColumnProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedProjections;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedShorthandProjection;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 import java.util.List;
@@ -73,8 +77,13 @@ public final class ProjectionAssert {
         if (actual instanceof ShorthandProjectionSegment) {
             assertThat(assertMessage.getText("Projection type assertion error: "), expected, instanceOf(ExpectedShorthandProjection.class));
             assertShorthandProjection(assertMessage, (ShorthandProjectionSegment) actual, (ExpectedShorthandProjection) expected);
+        } else if (actual instanceof ColumnProjectionSegment) {
+            assertThat(assertMessage.getText("Projection type assertion error: "), expected, instanceOf(ExpectedColumnProjection.class));
+            assertColumnProjection(assertMessage, (ColumnProjectionSegment) actual, (ExpectedColumnProjection) expected);
         }
-        assertThat(assertMessage.getText("Projection text assertion error: "), actual.getText(), is(expectedText));
+        if (!(actual instanceof ColumnProjectionSegment)) {
+            assertThat(assertMessage.getText("Projection text assertion error: "), actual.getText(), is(expectedText));
+        }
         assertThat(assertMessage.getText("Projection start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
         assertThat(assertMessage.getText("Projection stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
     }
@@ -82,15 +91,29 @@ public final class ProjectionAssert {
     private static void assertShorthandProjection(final SQLStatementAssertMessage assertMessage, final ShorthandProjectionSegment actual, final ExpectedShorthandProjection expected) {
         assertThat(assertMessage.getText("Projection text assertion error: "), actual.getText(), is(expected.getText()));
         if (actual.getOwner().isPresent()) {
-            assertThat(assertMessage.getText("Projection owner name assertion error: "), actual.getOwner().get().getTableName(), is(expected.getOwner().getName()));
-            assertThat(assertMessage.getText("Projection owner name start delimiter assertion error: "), 
-                    actual.getOwner().get().getTableQuoteCharacter().getStartDelimiter(), is(expected.getOwner().getStartDelimiter()));
-            assertThat(assertMessage.getText("Projection owner name end delimiter assertion error: "), 
-                    actual.getOwner().get().getTableQuoteCharacter().getEndDelimiter(), is(expected.getOwner().getEndDelimiter()));
-            assertThat(assertMessage.getText("Projection owner name start index assertion error: "), actual.getOwner().get().getStartIndex(), is(expected.getOwner().getStartIndex()));
-            assertThat(assertMessage.getText("Projection owner name stop index assertion error: "), actual.getOwner().get().getStopIndex(), is(expected.getOwner().getStopIndex()));
+            assertOwner(assertMessage, actual.getOwner().get(), expected.getOwner());
         } else {
             assertNull(expected.getOwner());
         }
+    }
+    
+    private static void assertColumnProjection(final SQLStatementAssertMessage assertMessage, final ColumnProjectionSegment actual, final ExpectedColumnProjection expected) {
+        assertThat(assertMessage.getText("Projection name assertion error: "), actual.getName(), is(expected.getName()));
+        assertThat(assertMessage.getText("Projection start delimiter assertion error: "), actual.getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
+        assertThat(assertMessage.getText("Projection end delimiter assertion error: "), actual.getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
+        assertThat(assertMessage.getText("Projection alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
+        if (actual.getOwner().isPresent()) {
+            assertOwner(assertMessage, actual.getOwner().get(), expected.getOwner());
+        } else {
+            assertNull(expected.getOwner());
+        }
+    }
+    
+    private static void assertOwner(final SQLStatementAssertMessage assertMessage, final TableSegment actual, final ExpectedTableSegment expected) {
+        assertThat(assertMessage.getText("Projection owner name assertion error: "), actual.getTableName(), is(expected.getName()));
+        assertThat(assertMessage.getText("Projection owner name start delimiter assertion error: "), actual.getTableQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
+        assertThat(assertMessage.getText("Projection owner name end delimiter assertion error: "), actual.getTableQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
+        assertThat(assertMessage.getText("Projection owner name start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
+        assertThat(assertMessage.getText("Projection owner name stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
     }
 }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.projection;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -32,14 +31,17 @@ import javax.xml.bind.annotation.XmlElement;
 public final class ExpectedColumnProjection extends AbstractExpectedProjection {
     
     @XmlAttribute
-    private String alias;
-    
-    @XmlAttribute
     private String name;
     
+    @XmlAttribute(name = "start-delimiter")
+    private String startDelimiter = "";
+    
+    @XmlAttribute(name = "end-delimiter")
+    private String endDelimiter = "";
+    
     @XmlAttribute
-    private QuoteCharacter quoteCharacter = QuoteCharacter.NONE;
+    private String alias;
     
     @XmlElement(name = "owner")
-    private ExpectedTableSegment owner = new ExpectedTableSegment();
+    private ExpectedTableSegment owner;
 }
