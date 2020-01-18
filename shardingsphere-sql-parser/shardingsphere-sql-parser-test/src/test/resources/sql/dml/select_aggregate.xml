@@ -22,7 +22,7 @@
             <table name="t_order" start-index="40" stop-index="46" />
         </tables>
         <projections start-index="7" stop-index="33">
-            <aggregation-projection type="SUM" text="SUM(user_id)" innerExpressionStartIndex="10" stop-index="18"/>
+            <aggregation-projection type="SUM" text="SUM(user_id)" inner-expression-start-index="10" stop-index="18"/>
         </projections>
     </parser-result>
     
@@ -31,7 +31,7 @@
             <table name="t_order" start-index="37" stop-index="43" />
         </tables>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" text="COUNT(*)" innerExpressionStartIndex="12" stop-index="14"/>
+            <aggregation-projection type="COUNT" text="COUNT(*)" inner-expression-start-index="12" stop-index="14"/>
         </projections>
     </parser-result>
 
@@ -40,7 +40,7 @@
             <table name="t_order" start-index="37" stop-index="43" />
         </tables>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" stop-index="14" text="COUNT(*)" innerExpressionStartIndex="12" />
+            <aggregation-projection type="COUNT" stop-index="14" text="COUNT(*)" inner-expression-start-index="12" />
         </projections>
     </parser-result>
 
@@ -49,7 +49,7 @@
             <table name="t_order" start-index="37" stop-index="43" />
         </tables>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" stop-index="14" innerExpressionStartIndex="12" text="COUNT(*)" />
+            <aggregation-projection type="COUNT" stop-index="14" inner-expression-start-index="12" text="COUNT(*)" />
         </projections>
     </parser-result>
     
@@ -58,7 +58,7 @@
             <table name="t_order" start-index="40" stop-index="46" />
         </tables>
         <projections start-index="7" stop-index="33">
-            <aggregation-projection type="MAX" text="MAX(user_id)" innerExpressionStartIndex="10" stop-index="18" alias="max_user_id" />
+            <aggregation-projection type="MAX" text="MAX(user_id)" inner-expression-start-index="10" stop-index="18" alias="max_user_id" />
         </projections>
     </parser-result>
     
@@ -67,7 +67,7 @@
             <table name="t_order" start-index="40" stop-index="46" />
         </tables>
         <projections start-index="7" stop-index="33">
-            <aggregation-projection type="MIM" text="MIN(user_id)" innerExpressionStartIndex="10" stop-index="18" alias="min_user_id" />
+            <aggregation-projection type="MIM" text="MIN(user_id)" inner-expression-start-index="10" stop-index="18" alias="min_user_id" />
         </projections>
     </parser-result>
     
@@ -76,7 +76,7 @@
             <table name="t_order" start-index="40" stop-index="46" />
         </tables>
         <projections start-index="7" stop-index="33">
-            <aggregation-projection type="AVG" text="AVG(user_id)" innerExpressionStartIndex="10" stop-index="18" alias="user_id_avg" />
+            <aggregation-projection type="AVG" text="AVG(user_id)" inner-expression-start-index="10" stop-index="18" alias="user_id_avg" />
         </projections>
     </parser-result>
     
@@ -86,7 +86,7 @@
             <table name="t_order_item" alias="i" start-index="47" stop-index="58" />
         </tables>
         <projections start-index="7" stop-index="29">
-            <aggregation-projection stop-index="14" type="COUNT" text="COUNT(*)" innerExpressionStartIndex="12" alias="items_count"/>
+            <aggregation-projection stop-index="14" type="COUNT" text="COUNT(*)" inner-expression-start-index="12" alias="items_count"/>
         </projections>
         <sharding-conditions>
             <and-condition>
@@ -108,7 +108,7 @@
             <table name="t_order_item" alias="i" start-index="51" stop-index="62" />
         </tables>
         <projections start-index="7" stop-index="29">
-            <aggregation-projection stop-index="14" type="COUNT" text="COUNT(*)" innerExpressionStartIndex="12" alias="items_count"/>
+            <aggregation-projection stop-index="14" type="COUNT" text="COUNT(*)" inner-expression-start-index="12" alias="items_count"/>
         </projections>
         <sharding-conditions>
             <and-condition>
@@ -129,7 +129,7 @@
             <table name="t_order" start-index="46" stop-index="52" />
         </tables>
         <projections start-index="7" stop-index="39">
-            <aggregation-projection type="COUNT" innerExpressionStartIndex="12" stop-index="23" text="COUNT(`order_id`)" alias="orders_count" />
+            <aggregation-projection type="COUNT" inner-expression-start-index="12" stop-index="23" text="COUNT(`order_id`)" alias="orders_count" />
         </projections>
     </parser-result>
 </parser-result-sets>
