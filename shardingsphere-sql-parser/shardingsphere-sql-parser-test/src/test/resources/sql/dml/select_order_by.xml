@@ -22,7 +22,7 @@
             <table name="t_order" alias="o" start-index="14" stop-index="20" />
         </tables>
         <projections start-index="7" stop-index="7">
-            <shorthand-projection start-index="7" stop-index="7" text="*" />
+            <shorthand-projection text="*" start-index="7" stop-index="7" />
         </projections>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
@@ -36,8 +36,8 @@
             <table name="t_order_item" alias="i" start-index="27" stop-index="38" />
         </tables>
         <projections start-index="7" stop-index="9">
-            <shorthand-projection start-index="7" stop-index="9" text="i.*">
-                <table-segment start-index="7" stop-index="7" name="i" />
+            <shorthand-projection text="i.*" start-index="7" stop-index="9">
+                <table-segment name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
         <order-by-columns>
@@ -56,8 +56,8 @@
             <table name="t_order" alias="o" start-index="40" stop-index="46" />
         </tables>
         <projections start-index="7" stop-index="33">
-            <column-projection start-index="7" stop-index="7" text="o.order_id" >
-                <table-segment start-index="7" stop-index="7" name="o" />
+            <column-projection text="o.order_id" start-index="7" stop-index="16">
+                <table-segment name="o" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
         <order-by-columns>
@@ -71,8 +71,8 @@
             <table name="t_order_item" alias="i" start-index="27" stop-index="38" />
         </tables>
         <projections start-index="7" stop-index="9">
-            <shorthand-projection start-index="7" stop-index="9" text="i.*">
-                <table-segment start-index="7" stop-index="7" name="i" />
+            <shorthand-projection text="i.*" start-index="7" stop-index="9">
+                <table-segment name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
         <order-by-columns>
@@ -93,8 +93,8 @@
             <table name="t_order" alias="o" start-index="40" stop-index="46" />
         </tables>
         <projections start-index="7" stop-index="33">
-            <column-projection start-index="7" stop-index="7" text="o.order_id">
-                <table-segment start-index="7" stop-index="7" name="o" />
+            <column-projection text="o.order_id" start-index="7" stop-index="16">
+                <table-segment name="o" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
         <order-by-columns>
@@ -108,8 +108,8 @@
             <table name="t_order" alias="o" start-index="40" stop-index="46" />
         </tables>
         <projections start-index="7" stop-index="33">
-            <column-projection start-index="7" stop-index="7" text="o.order_id" alias="gen_order_id_">
-                <table-segment start-index="7" stop-index="7" name="o" />
+            <column-projection text="o.order_id" alias="gen_order_id_" start-index="7" stop-index="16">
+                <table-segment name="o" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
         <order-by-columns>
@@ -122,11 +122,11 @@
             <table name="t_order" alias="o" start-index="29" stop-index="35" />
         </tables>
         <projections start-index="7" stop-index="22">
-            <shorthand-projection start-index="7" stop-index="7" text="*"/>
-            <shorthand-projection start-index="20" stop-index="22" text="o.*">
-                <table-segment start-index="20" stop-index="20" name="o" />
+            <shorthand-projection text="*" start-index="7" stop-index="7" />
+            <shorthand-projection text="o.*" start-index="20" stop-index="22">
+                <table-segment name="o" start-index="20" stop-index="20" />
             </shorthand-projection>
-            <column-projection start-index="10" stop-index="17" text="order_id"/>
+            <column-projection text="order_id" start-index="10" stop-index="17" />
         </projections>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
@@ -138,8 +138,8 @@
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
         </tables>
         <projections start-index="7" stop-index="9">
-            <shorthand-projection start-index="7" stop-index="9" text="o.*">
-                <table-segment start-index="7" stop-index="7" name="o" />
+            <shorthand-projection text="o.*" start-index="7" stop-index="9">
+                <table-segment name="o" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
         <order-by-columns>
@@ -171,10 +171,7 @@
     
     <parser-result sql-case-id="select_order_by_with_table_star_table_name">
         <tables>
-            <!-- FIXME -->
-            <!--<table name="t_order" start-index="7" stop-index="13" />-->
             <table name="t_order" start-index="22" stop-index="28" />
-            <!--<table name="t_order" start-index="39" stop-index="45" />-->
         </tables>
         <projections start-index="7" stop-index="15">
             <shorthand-projection text="t_order.*" start-index="7" stop-index="15">

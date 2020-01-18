@@ -176,7 +176,7 @@
             <table name="t_order" alias="o" start-index="26" stop-index="32" />
         </tables>
         <projections start-index="7" stop-index="19">
-            <column-projection text="o.user_id" alias="uid" start-index="7" stop-index="7">
+            <column-projection text="o.user_id" alias="uid" start-index="7" stop-index="15">
                 <table-segment name="o" start-index="7" stop-index="7" />
             </column-projection>
         </projections>

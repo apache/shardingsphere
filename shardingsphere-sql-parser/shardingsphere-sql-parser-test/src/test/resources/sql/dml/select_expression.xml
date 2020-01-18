@@ -22,7 +22,8 @@
             <table name="t_order" alias="o" start-index="38" stop-index="44" />
         </tables>
         <projections start-index="7" stop-index="31">
-            <expression-projection text="o.order_id+1*2asexp" />
+            <!-- TODO check expression-projection's stop-index whether inculde alias --> 
+            <expression-projection text="o.order_id+1*2asexp" start-index="7" stop-index="31" />
         </projections>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />

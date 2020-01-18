@@ -23,8 +23,8 @@
             <table name="t_order_item" alias="i" start-index="37" stop-index="48" />
         </tables>
         <projections start-index="7" stop-index="15">
-            <column-projection start-index="7" stop-index="7" text="i.user_id" name="user_id">
-                <table-segment start-index="7" stop-index="7" name="i" />
+            <column-projection text="i.user_id" name="user_id" start-index="7" stop-index="15">
+                <table-segment name="i" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
         <sharding-conditions>
@@ -55,8 +55,8 @@
             <table name="t_order_item" alias="i" start-index="37" stop-index="48" />
         </tables>
         <projections start-index="7" stop-index="15">
-            <column-projection start-index="7" stop-index="7" text="i.user_id" name="user_id">
-                <table-segment start-index="7" stop-index="7" name="i" />
+            <column-projection text="i.user_id" name="user_id" start-index="7" stop-index="15">
+                <table-segment name="i" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
         <sharding-conditions>
@@ -87,11 +87,11 @@
             <table name="t_order_item" alias="i" start-index="180" stop-index="191" />
         </tables>
         <projections start-index="22" stop-index="158">
-            <top-projection start-index="22" stop-index="70" row-number-alias="rownum_" text="TOP3row_number()OVER(ORDERBYi.item_idDESC)" parameter-marker-text="TOP?row_number()OVER(ORDERBYi.item_idDESC)" />
-            <column-projection start-index="84" stop-index="84" text="i.item_id" />
-            <column-projection start-index="95" stop-index="95" text="o.order_id" />
-            <column-projection start-index="119" stop-index="119" text="o.status" />
-            <column-projection start-index="139" stop-index="139" text="o.user_id" />
+            <top-projection row-number-alias="rownum_" text="TOP3row_number()OVER(ORDERBYi.item_idDESC)" parameter-marker-text="TOP?row_number()OVER(ORDERBYi.item_idDESC)" start-index="22" stop-index="70" />
+            <column-projection text="i.item_id" start-index="84" stop-index="92" />
+            <column-projection text="o.order_id" start-index="95" stop-index="104" />
+            <column-projection text="o.status" start-index="119" stop-index="126" />
+            <column-projection text="o.user_id" start-index="139" stop-index="147" />
         </projections>
         <sharding-conditions>
             <and-condition>
@@ -121,11 +121,11 @@
             <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
         </tables>
         <projections start-index="22" stop-index="160">
-            <top-projection start-index="22" stop-index="72" row-number-alias="rownum_" text="TOP(3)row_number()OVER(ORDERBYi.item_idDESC)" parameter-marker-text="TOP(?)row_number()OVER(ORDERBYi.item_idDESC)" />
-            <column-projection start-index="86" stop-index="86" text="i.item_id" />
-            <column-projection start-index="97" stop-index="97" text="o.order_id" />
-            <column-projection start-index="121" stop-index="121" text="o.status" />
-            <column-projection start-index="141" stop-index="141" text="o.user_id" />
+            <top-projection row-number-alias="rownum_" text="TOP(3)row_number()OVER(ORDERBYi.item_idDESC)" parameter-marker-text="TOP(?)row_number()OVER(ORDERBYi.item_idDESC)" start-index="22" stop-index="72" />
+            <column-projection text="i.item_id" start-index="86" stop-index="94" />
+            <column-projection text="o.order_id" start-index="97" stop-index="106" />
+            <column-projection text="o.status" start-index="121" stop-index="128" />
+            <column-projection text="o.user_id" start-index="141" stop-index="149" />
         </projections>
         <sharding-conditions>
             <and-condition>
@@ -155,11 +155,11 @@
             <table name="t_order_item" alias="i" start-index="180" stop-index="191" />
         </tables>
         <projections start-index="22" stop-index="158">
-            <top-projection start-index="22" stop-index="70" row-number-alias="rownum_" text="TOP3row_number()OVER(ORDERBYi.item_idDESC)" parameter-marker-text="TOP?row_number()OVER(ORDERBYi.item_idDESC)" />
-            <column-projection start-index="84" stop-index="84" text="i.item_id" />
-            <column-projection start-index="95" stop-index="95" text="o.order_id" />
-            <column-projection start-index="119" stop-index="119" text="o.status" />
-            <column-projection start-index="139" stop-index="139" text="o.user_id" />
+            <top-projection row-number-alias="rownum_" text="TOP3row_number()OVER(ORDERBYi.item_idDESC)" parameter-marker-text="TOP?row_number()OVER(ORDERBYi.item_idDESC)" start-index="22" stop-index="70" />
+            <column-projection text="i.item_id" start-index="84" stop-index="92" />
+            <column-projection text="o.order_id" start-index="95" stop-index="104" />
+            <column-projection text="o.status" start-index="119" stop-index="126" />
+            <column-projection text="o.user_id" start-index="139" stop-index="147" />
         </projections>
         <sharding-conditions>
             <and-condition>
@@ -189,13 +189,13 @@
             <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
         </tables>
         <projections start-index="22" stop-index="160">
-            <top-projection start-index="22" stop-index="72" row-number-alias="rownum_" text="TOP(3)row_number()OVER(ORDERBYi.item_idDESC)" parameter-marker-text="TOP(?)row_number()OVER(ORDERBYi.item_idDESC)">
+            <top-projection row-number-alias="rownum_" text="TOP(3)row_number()OVER(ORDERBYi.item_idDESC)" parameter-marker-text="TOP(?)row_number()OVER(ORDERBYi.item_idDESC)" start-index="22" stop-index="72">
                 <row-number-value-segment parameter-index="0" start-index="27" stop-index="27" />
             </top-projection>
-            <column-projection start-index="86" stop-index="86" text="i.item_id" />
-            <column-projection start-index="97" stop-index="97" text="o.order_id" />
-            <column-projection start-index="121" stop-index="121" text="o.status" />
-            <column-projection start-index="141" stop-index="141" text="o.user_id" />
+            <column-projection text="i.item_id" start-index="86" stop-index="94" />
+            <column-projection text="o.order_id" start-index="97" stop-index="106" />
+            <column-projection text="o.status" start-index="121" stop-index="128" />
+            <column-projection text="o.user_id" start-index="141" stop-index="149" />
         </projections>
         <sharding-conditions>
             <and-condition>
@@ -225,13 +225,13 @@
             <table name="t_order_item" alias="i" start-index="167" stop-index="178" />
         </tables>
         <projections start-index="58" stop-index="139">
-            <column-projection text="order0_.order_id" start-index="58" stop-index="64">
+            <column-projection text="order0_.order_id" start-index="58" stop-index="73">
                 <table-segment start-index="58" stop-index="64" name="order0_" />
             </column-projection>
-            <column-projection text="order0_.status" start-index="88" stop-index="94">
+            <column-projection text="order0_.status" start-index="88" stop-index="101">
                 <table-segment start-index="88" stop-index="94" name="order0_" />
             </column-projection>
-            <column-projection text="order0_.user_id" start-index="114" stop-index="120">
+            <column-projection text="order0_.user_id" start-index="114" stop-index="128">
                 <table-segment start-index="114" stop-index="120" name="order0_" />
             </column-projection>
         </projections>
@@ -263,13 +263,13 @@
             <table name="t_order_item" alias="i" start-index="167" stop-index="178" />
         </tables>
         <projections start-index="58" stop-index="139">
-            <column-projection text="order0_.order_id" start-index="58" stop-index="64">
+            <column-projection text="order0_.order_id" start-index="58" stop-index="73">
                 <table-segment start-index="58" stop-index="64" name="order0_" />
             </column-projection>
-            <column-projection text="order0_.status" start-index="88" stop-index="94">
+            <column-projection text="order0_.status" start-index="88" stop-index="101">
                 <table-segment start-index="88" stop-index="94" name="order0_" />
             </column-projection>
-            <column-projection text="order0_.user_id" start-index="114" stop-index="120">
+            <column-projection text="order0_.user_id" start-index="114" stop-index="128">
                 <table-segment start-index="114" stop-index="120" name="order0_" />
             </column-projection>
         </projections>

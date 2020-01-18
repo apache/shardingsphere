@@ -67,5 +67,7 @@ public final class ProjectionAssert {
     private static void assertProjection(final SQLStatementAssertMessage assertMessage, final ProjectionSegment actual, final ExpectedProjection expected, final SQLCaseType sqlCaseType) {
         String expectedText = SQLCaseType.Placeholder == sqlCaseType && null != expected.getParameterMarkerText() ? expected.getParameterMarkerText() : expected.getText();
         assertThat(assertMessage.getText("Projection text assertion error: "), actual.getText(), is(expectedText));
+        assertThat(assertMessage.getText("Projection start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
+        assertThat(assertMessage.getText("Projection stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
     }
 }
