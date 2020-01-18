@@ -70,31 +70,17 @@ public final class ExpectedProjections {
     
     /**
      * Find expected projections.
-     * 
-     * @param expectedProjectionType expected projections type
-     * @param <T> type of projection type
+     *
      * @return expected projections
      */
-    public <T extends ExpectedProjection> Collection<ExpectedProjection> findExpectedProjections(final Class<T> expectedProjectionType) {
+    public Collection<ExpectedProjection> findExpectedProjections() {
         Collection<ExpectedProjection> result = new LinkedList<>();
-        if (expectedProjectionType.equals(ExpectedShorthandProjection.class)) {
-            result.addAll(shorthandProjections);
-        }
-        if (expectedProjectionType.equals(ExpectedAggregationProjection.class)) {
-            result.addAll(aggregationProjections);
-        }
-        if (expectedProjectionType.equals(ExpectedColumnProjection.class)) {
-            result.addAll(columnProjections);
-        }
-        if (expectedProjectionType.equals(ExpectedAggregationDistinctProjection.class)) {
-            result.addAll(aggregationDistinctProjections);
-        }
-        if (expectedProjectionType.equals(ExpectedExpressionProjection.class)) {
-            result.addAll(expressionProjections);
-        }
-        if (expectedProjectionType.equals(ExpectedTopProjection.class)) {
-            result.addAll(expressionProjections);
-        }
+        result.addAll(shorthandProjections);
+        result.addAll(aggregationProjections);
+        result.addAll(columnProjections);
+        result.addAll(aggregationDistinctProjections);
+        result.addAll(expressionProjections);
+        result.addAll(topProjections);
         return result;
     }
 }

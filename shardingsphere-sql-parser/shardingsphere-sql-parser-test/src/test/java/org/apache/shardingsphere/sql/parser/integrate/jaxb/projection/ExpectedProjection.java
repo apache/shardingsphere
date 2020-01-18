@@ -25,4 +25,11 @@ public interface ExpectedProjection {
      * @return text
      */
     String getText();
+    
+    /**
+     * Get parameter marker text.
+     *
+     * @return parameter marker text
+     */
+    String getParameterMarkerText();
 }

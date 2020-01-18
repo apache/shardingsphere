@@ -37,4 +37,7 @@ public abstract class AbstractExpectedProjection implements ExpectedProjection {
     
     @XmlAttribute
     private String text;
+    
+    @XmlAttribute(name = "parameter-marker-text")
+    private String parameterMarkerText;
 }

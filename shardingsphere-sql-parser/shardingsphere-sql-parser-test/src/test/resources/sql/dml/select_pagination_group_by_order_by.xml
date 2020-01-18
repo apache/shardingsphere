@@ -87,7 +87,7 @@
             <table name="t_order_item" alias="i" start-index="180" stop-index="191" />
         </tables>
         <projections start-index="22" stop-index="158">
-            <top-projection start-index="22" stop-index="70" row-number-alias="rownum_" text="TOP3row_number()OVER(ORDERBYi.item_idDESC)" />
+            <top-projection start-index="22" stop-index="70" row-number-alias="rownum_" text="TOP3row_number()OVER(ORDERBYi.item_idDESC)" parameter-marker-text="TOP?row_number()OVER(ORDERBYi.item_idDESC)" />
             <column-projection start-index="84" stop-index="84" text="i.item_id" />
             <column-projection start-index="95" stop-index="95" text="o.order_id" />
             <column-projection start-index="119" stop-index="119" text="o.status" />
@@ -121,7 +121,7 @@
             <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
         </tables>
         <projections start-index="22" stop-index="160">
-            <top-projection start-index="22" stop-index="72" row-number-alias="rownum_" text="TOP(3)row_number()OVER(ORDERBYi.item_idDESC)" />
+            <top-projection start-index="22" stop-index="72" row-number-alias="rownum_" text="TOP(3)row_number()OVER(ORDERBYi.item_idDESC)" parameter-marker-text="TOP(?)row_number()OVER(ORDERBYi.item_idDESC)" />
             <column-projection start-index="86" stop-index="86" text="i.item_id" />
             <column-projection start-index="97" stop-index="97" text="o.order_id" />
             <column-projection start-index="121" stop-index="121" text="o.status" />
@@ -155,7 +155,7 @@
             <table name="t_order_item" alias="i" start-index="180" stop-index="191" />
         </tables>
         <projections start-index="22" stop-index="158">
-            <top-projection start-index="22" stop-index="70" row-number-alias="rownum_" text="TOP3row_number()OVER(ORDERBYi.item_idDESC)" />
+            <top-projection start-index="22" stop-index="70" row-number-alias="rownum_" text="TOP3row_number()OVER(ORDERBYi.item_idDESC)" parameter-marker-text="TOP?row_number()OVER(ORDERBYi.item_idDESC)" />
             <column-projection start-index="84" stop-index="84" text="i.item_id" />
             <column-projection start-index="95" stop-index="95" text="o.order_id" />
             <column-projection start-index="119" stop-index="119" text="o.status" />
@@ -189,7 +189,7 @@
             <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
         </tables>
         <projections start-index="22" stop-index="160">
-            <top-projection start-index="22" stop-index="72" row-number-alias="rownum_" text="TOP(3)row_number()OVER(ORDERBYi.item_idDESC)">
+            <top-projection start-index="22" stop-index="72" row-number-alias="rownum_" text="TOP(3)row_number()OVER(ORDERBYi.item_idDESC)" parameter-marker-text="TOP(?)row_number()OVER(ORDERBYi.item_idDESC)">
                 <row-number-value-segment parameter-index="0" start-index="27" stop-index="27" />
             </top-projection>
             <column-projection start-index="86" stop-index="86" text="i.item_id" />
