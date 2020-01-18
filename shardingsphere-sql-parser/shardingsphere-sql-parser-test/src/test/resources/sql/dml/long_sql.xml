@@ -22,7 +22,7 @@
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
         <projections start-index="7" stop-index="7">
-            <shorthand-projection text="*" start-index="7" stop-index="7" />
+            <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <sharding-conditions>
             <and-condition>

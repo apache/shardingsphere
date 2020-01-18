@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssert
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedAggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedAggregationProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedColumnProjection;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedExpressionProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedProjections;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedShorthandProjection;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedTa
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
@@ -87,16 +89,15 @@ public final class ProjectionAssert {
         } else if (actual instanceof AggregationProjectionSegment) {
             assertThat(assertMessage.getText("Projection type assertion error: "), expected, instanceOf(ExpectedAggregationProjection.class));
             assertAggregationProjection(assertMessage, (AggregationProjectionSegment) actual, (ExpectedAggregationProjection) expected);
-        }
-        if (!(actual instanceof ColumnProjectionSegment) && !(actual instanceof AggregationProjectionSegment)) {
-            assertThat(assertMessage.getText("Projection text assertion error: "), actual.getText(), is(expectedText));
+        } else if (actual instanceof ExpressionProjectionSegment) {
+            assertThat(assertMessage.getText("Projection type assertion error: "), expected, instanceOf(ExpectedExpressionProjection.class));
+            assertExpressionProjection(assertMessage, (ExpressionProjectionSegment) actual, (ExpectedExpressionProjection) expected);
         }
         assertThat(assertMessage.getText("Projection start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
         assertThat(assertMessage.getText("Projection stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
     }
     
     private static void assertShorthandProjection(final SQLStatementAssertMessage assertMessage, final ShorthandProjectionSegment actual, final ExpectedShorthandProjection expected) {
-        assertThat(assertMessage.getText("Shorthand projection text assertion error: "), actual.getText(), is(expected.getText()));
         if (actual.getOwner().isPresent()) {
             assertOwner(assertMessage, actual.getOwner().get(), expected.getOwner());
         } else {
@@ -125,6 +126,10 @@ public final class ProjectionAssert {
             assertThat(assertMessage.getText("Aggregation projection alias assertion error: "), 
                     ((AggregationDistinctProjectionSegment) actual).getDistinctExpression(), is(((ExpectedAggregationDistinctProjection) expected).getDistinctExpression()));
         }
+    }
+    
+    private static void assertExpressionProjection(final SQLStatementAssertMessage assertMessage, final ExpressionProjectionSegment actual, final ExpectedExpressionProjection expected) {
+        assertThat(assertMessage.getText("Expression projection alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
     }
     
     private static void assertOwner(final SQLStatementAssertMessage assertMessage, final TableSegment actual, final ExpectedTableSegment expected) {

@@ -22,7 +22,7 @@
             <table name="t_order" alias="o" start-index="14" stop-index="20" />
         </tables>
         <projections start-index="7" stop-index="7">
-            <shorthand-projection text="*" start-index="7" stop-index="7" />
+            <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
@@ -36,7 +36,7 @@
             <table name="t_order_item" alias="i" start-index="27" stop-index="38" />
         </tables>
         <projections start-index="7" stop-index="9">
-            <shorthand-projection text="i.*" start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
@@ -71,7 +71,7 @@
             <table name="t_order_item" alias="i" start-index="27" stop-index="38" />
         </tables>
         <projections start-index="7" stop-index="9">
-            <shorthand-projection text="i.*" start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
@@ -122,8 +122,8 @@
             <table name="t_order" alias="o" start-index="29" stop-index="35" />
         </tables>
         <projections start-index="7" stop-index="22">
-            <shorthand-projection text="*" start-index="7" stop-index="7" />
-            <shorthand-projection text="o.*" start-index="20" stop-index="22">
+            <shorthand-projection start-index="7" stop-index="7" />
+            <shorthand-projection start-index="20" stop-index="22">
                 <owner name="o" start-index="20" stop-index="20" />
             </shorthand-projection>
             <column-projection name="order_id" start-index="10" stop-index="17" />
@@ -138,7 +138,7 @@
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
         </tables>
         <projections start-index="7" stop-index="9">
-            <shorthand-projection text="o.*" start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
                 <owner name="o" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
@@ -152,7 +152,7 @@
             <table name="t_order" alias="o" start-index="14" stop-index="20" />
         </tables>
         <projections start-index="7" stop-index="7">
-            <shorthand-projection text="*" start-index="7" stop-index="7" />
+            <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
@@ -174,7 +174,7 @@
             <table name="t_order" start-index="22" stop-index="28" />
         </tables>
         <projections start-index="7" stop-index="15">
-            <shorthand-projection text="t_order.*" start-index="7" stop-index="15">
+            <shorthand-projection start-index="7" stop-index="15">
                 <owner name="t_order" start-index="7" stop-index="13" />
             </shorthand-projection>
         </projections>
@@ -188,7 +188,7 @@
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
         <projections start-index="7" stop-index="7">
-            <shorthand-projection text="*" start-index="7" stop-index="7" />
+            <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
