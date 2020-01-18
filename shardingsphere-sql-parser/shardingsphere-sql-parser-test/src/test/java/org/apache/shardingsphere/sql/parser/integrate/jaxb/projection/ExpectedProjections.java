@@ -26,6 +26,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -69,12 +70,12 @@ public final class ExpectedProjections {
     }
     
     /**
-     * Find expected projections.
+     * Get expected projections.
      *
      * @return expected projections
      */
-    public Collection<ExpectedProjection> findExpectedProjections() {
-        Collection<ExpectedProjection> result = new LinkedList<>();
+    public Collection<ExpectedProjection> getExpectedProjections() {
+        List<ExpectedProjection> result = new LinkedList<>();
         result.addAll(shorthandProjections);
         result.addAll(aggregationProjections);
         result.addAll(columnProjections);

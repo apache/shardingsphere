@@ -50,7 +50,7 @@ public final class ProjectionAssert {
     public static void assertIs(final SQLStatementAssertMessage assertMessage, final ProjectionsSegment actual, final ExpectedProjections expected, final SQLCaseType sqlCaseType) {
         assertProjections(assertMessage, actual, expected);
         for (ProjectionSegment each : actual.getProjections()) {
-            assertProjection(assertMessage, each, expected.findExpectedProjections(), sqlCaseType);
+            assertProjection(assertMessage, each, expected.getExpectedProjections(), sqlCaseType);
         }
     }
     
