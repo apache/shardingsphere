@@ -20,12 +20,14 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.projection;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedAggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedAggregationProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedColumnProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedProjections;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedShorthandProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
@@ -118,6 +120,11 @@ public final class ProjectionAssert {
         assertThat(assertMessage.getText("Aggregation projection type assertion error: "), actual.getType().name(), is(expected.getType()));
         assertThat(assertMessage.getText("Aggregation projection inner expression start index assertion error: "), actual.getInnerExpressionStartIndex(), is(expected.getInnerExpressionStartIndex()));
         assertThat(assertMessage.getText("Aggregation projection alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
+        if (actual instanceof AggregationDistinctProjectionSegment) {
+            assertThat(assertMessage.getText("Projection type assertion error: "), expected, instanceOf(ExpectedAggregationDistinctProjection.class));
+            assertThat(assertMessage.getText("Aggregation projection alias assertion error: "), 
+                    ((AggregationDistinctProjectionSegment) actual).getDistinctExpression(), is(((ExpectedAggregationDistinctProjection) expected).getDistinctExpression()));
+        }
     }
     
     private static void assertOwner(final SQLStatementAssertMessage assertMessage, final TableSegment actual, final ExpectedTableSegment expected) {
