@@ -24,14 +24,14 @@ public interface ExpectedProjection {
      * 
      * @return start index
      */
-    Integer getStartIndex();
+    int getStartIndex();
     
     /**
      * Get stop index.
      *
      * @return stop index
      */
-    Integer getStopIndex();
+    int getStopIndex();
     
     /**
      * Get text.

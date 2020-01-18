@@ -30,10 +30,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 public abstract class AbstractExpectedProjection implements ExpectedProjection {
     
     @XmlAttribute(name = "start-index")
-    private Integer startIndex;
+    private int startIndex;
     
     @XmlAttribute(name = "stop-index")
-    private Integer stopIndex;
+    private int stopIndex;
     
     @XmlAttribute
     private String text;
