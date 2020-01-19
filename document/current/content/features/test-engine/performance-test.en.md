@@ -377,3 +377,7 @@ Make sure the location of result.jtl file is correct.
 ```shell
 sh shardingsphere-benchmark/report/script/gen_report.sh
 ```
+
+#### Display of Historical Performance Test Data
+
+The data of [benchmark platform](https://shardingsphere.apache.org/benchmark/#/overview) is show daily

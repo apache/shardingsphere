@@ -372,3 +372,7 @@ test.jmx参考https://github.com/apache/incubator-shardingsphere-benchmark/tree/
 ```shell
 sh shardingsphere-benchmark/report/script/gen_report.sh
 ```
+
+#### 历史压测数据展示
+
+[Benchmark性能平台](https://shardingsphere.apache.org/benchmark/#/overview)是数据以天粒度展示
