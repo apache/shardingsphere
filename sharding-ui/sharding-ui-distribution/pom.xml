@@ -20,14 +20,14 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>sharding-distribution</artifactId>
+        <artifactId>sharding-ui</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-ui-distribution</artifactId>
     <name>${project.artifactId}</name>
     
     <properties>
-        <spring-boot.version>1.5.21.RELEASE</spring-boot.version>
+        <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
     
     <dependencies>
@@ -40,7 +40,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <version>${spring-boot.version}</version>
             <scope>runtime</scope>
             <exclusions>
                 <exclusion>
@@ -53,7 +52,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>${spring-boot.version}</version>
             <scope>runtime</scope>
             <exclusions>
                 <exclusion>
@@ -61,12 +59,6 @@
                     <groupId>org.hibernate</groupId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <scope>runtime</scope>
         </dependency>
     </dependencies>
     

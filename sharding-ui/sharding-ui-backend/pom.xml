@@ -31,6 +31,20 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-core-common</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>shardingsphere-sql-parser-spi</artifactId>
+                    <groupId>org.apache.shardingsphere</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>shardingsphere-sql-parser-engine</artifactId>
+                    <groupId>org.apache.shardingsphere</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>shardingsphere-sql-parser-relation</artifactId>
+                    <groupId>org.apache.shardingsphere</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -63,9 +77,28 @@
         </dependency>
         
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <scope>compile</scope>
             <exclusions>
                 <exclusion>
                     <artifactId>log4j-over-slf4j</artifactId>
@@ -76,6 +109,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <scope>runtime</scope>
             <exclusions>
                 <exclusion>
                     <artifactId>hibernate-validator</artifactId>
@@ -103,6 +137,7 @@
                     <resources>
                         <resource>
                             <targetPath>${project.build.directory}/classes/public</targetPath>
+                            <!--<directory>${project.basedir}/sharding-ui-frontend/dist</directory>-->
                             <directory>${project.parent.basedir}/sharding-ui-frontend/dist</directory>
                         </resource>
                         <resource>
@@ -112,9 +147,11 @@
                     </resources>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
             </plugin>
         </plugins>
     </build>

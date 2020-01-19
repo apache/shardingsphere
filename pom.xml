@@ -40,7 +40,6 @@
         
         <module>sharding-jdbc</module>
         <module>sharding-proxy</module>
-        <module>sharding-ui</module>
         
         <module>sharding-transaction</module>
         <module>sharding-orchestration</module> 
@@ -125,7 +124,6 @@
         <findbugs-maven-plugin.version>3.0.2</findbugs-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
         <maven-pmd-plugin.version>3.5</maven-pmd-plugin.version>
-        <frontend-maven-plugin.version>1.6</frontend-maven-plugin.version>
         <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
         <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
@@ -792,11 +790,11 @@
                         <exclude>**/.eslintignore</exclude>
                         <exclude>**/package.json</exclude>
                         <exclude>**/assets/**</exclude>
-                        <exclude>/dist/**</exclude>
-                        <exclude>/etc/**</exclude>
-                        <exclude>/node/**</exclude>
-                        <exclude>/node_modules/**</exclude>
-                        <exclude>/test/coverage/**</exclude>
+                        <exclude>**/dist/**</exclude>
+                        <exclude>**/etc/**</exclude>
+                        <exclude>**/node/**</exclude>
+                        <exclude>**/node_modules/**</exclude>
+                        <exclude>**/test/coverage/**</exclude>
                         <exclude>**/package-lock.json</exclude>
                     </excludes>
                 </configuration>
