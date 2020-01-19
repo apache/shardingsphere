@@ -36,6 +36,7 @@ import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlHintShar
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlInlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlNoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlStandardShardingStrategyConfiguration;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -103,7 +104,7 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
         assertNull(actual.getInline());
         assertNull(actual.getComplex());
         assertNull(actual.getHint());
-        assertNull(actual.getNone());
+        assertThat(actual.getNone(), CoreMatchers.instanceOf(YamlNoneShardingStrategyConfiguration.class));
     }
     
     @Test
