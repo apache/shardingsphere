@@ -35,6 +35,5 @@
         <module>shardingsphere-src-distribution</module>
         <module>sharding-jdbc-distribution</module>
         <module>sharding-proxy-distribution</module>
-        <module>sharding-ui-distribution</module>
     </modules>
 </project>
