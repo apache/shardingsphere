@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.keygen;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
@@ -56,7 +57,8 @@ public final class GeneratedKeyTest {
     @Before
     public void setUp() {
         insertStatement.setTable(new TableSegment(0, 0, "tbl"));
-        insertStatement.getColumns().add(new ColumnSegment(0, 0, "id"));
+        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singleton(new ColumnSegment(0, 0, "id")));
+        insertStatement.setColumns(insertColumnsSegment);
     }
     
     @Test

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.relation.statement.impl;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -40,7 +41,8 @@ public final class InsertSQLStatementContextTest {
     public void assertInsertSQLStatementContextWithColumnNames() {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
-        insertStatement.getColumns().addAll(Arrays.asList(new ColumnSegment(0, 0, "id"), new ColumnSegment(0, 0, "name"), new ColumnSegment(0, 0, "status")));
+        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Arrays.asList(new ColumnSegment(0, 0, "id"), new ColumnSegment(0, 0, "name"), new ColumnSegment(0, 0, "status")));
+        insertStatement.setColumns(insertColumnsSegment);
         setUpInsertValues(insertStatement);
         InsertSQLStatementContext actual = new InsertSQLStatementContext(mock(RelationMetas.class), Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
         assertInsertSQLStatementContext(actual);
