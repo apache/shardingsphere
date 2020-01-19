@@ -25,37 +25,19 @@
         <artifactId>shardingsphere-ui-distribution</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-ui-bin-distribution</artifactId>
+    <artifactId>shardingsphere-ui-src-distribution</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-ui-backend</artifactId>
+            <artifactId>shardingsphere-ui-frontend</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>log4j-over-slf4j</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <scope>runtime</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>hibernate-validator</artifactId>
-                    <groupId>org.hibernate</groupId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-ui-backend</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
     
@@ -65,20 +47,19 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-assembly-plugin</artifactId>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>src/main/assembly/shardingsphere-ui-bin-distribution.xml</descriptor>
-                            </descriptors>
-                        </configuration>
                         <executions>
                             <execution>
-                                <id>shardingsphere-ui-bin</id>
+                                <id>shardingsphere-ui-src</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>single</goal>
                                 </goals>
+                                <configuration>
+                                    <descriptors>
+                                        <descriptor>src/main/assembly/shardingsphere-ui-src-distribution.xml</descriptor>
+                                    </descriptors>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

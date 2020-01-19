@@ -32,6 +32,7 @@
     </properties>
     
     <modules>
+        <module>shardingsphere-ui-src-distribution</module>
         <module>shardingsphere-ui-bin-distribution</module>
     </modules>
 </project>
