@@ -216,7 +216,9 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         for (ColumnNameContext each : ctx.columnName()) {
             segments.add((ColumnSegment) visit(each));
         }
-        return new InsertColumnsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), segments);
+        InsertColumnsSegment result = new InsertColumnsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.getColumns().addAll(segments);
+        return result;
     }
     
     @Override

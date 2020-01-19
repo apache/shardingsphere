@@ -38,12 +38,12 @@ public class PreparedJudgementEngineTest {
     public void isShadowSql() {
         RelationMetas relationMetas = mock(RelationMetas.class);
         when(relationMetas.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "shadow"));
-    
         ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration();
         shadowRuleConfiguration.setColumn("shadow");
         ShadowRule shadowRule = new ShadowRule(shadowRuleConfiguration);
         InsertStatement insertStatement = new InsertStatement();
-        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Arrays.asList(new ColumnSegment(0, 0, "id"),
+        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0);
+        insertColumnsSegment.getColumns().addAll(Arrays.asList(new ColumnSegment(0, 0, "id"),
                 new ColumnSegment(0, 0, "name"),
                 new ColumnSegment(0, 0, "shadow")));
         insertStatement.setColumns(insertColumnsSegment);

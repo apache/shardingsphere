@@ -78,7 +78,7 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
      * @return is use default columns or not
      */
     public boolean useDefaultColumns() {
-        return columns.getColumns().isEmpty() && null == setAssignment;
+        return getColumns().isEmpty() && null == setAssignment;
     }
     
     /**
@@ -92,7 +92,7 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
     
     private List<String> getColumnNamesForInsertColumns() {
         List<String> result = new LinkedList<>();
-        for (ColumnSegment each : columns.getColumns()) {
+        for (ColumnSegment each : getColumns()) {
             result.add(each.getName().toLowerCase());
         }
         return result;

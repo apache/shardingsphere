@@ -64,7 +64,8 @@ public class SimpleJudgementEngineTest {
     @Test
     public void judgeForInsert() {
         InsertStatement insertStatement = new InsertStatement();
-        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Arrays.asList(new ColumnSegment(0, 0, "id"),
+        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0);
+        insertColumnsSegment.getColumns().addAll(Arrays.asList(new ColumnSegment(0, 0, "id"),
                 new ColumnSegment(0, 0, "name"),
                 new ColumnSegment(0, 0, "shadow")));
         insertStatement.setColumns(insertColumnsSegment);

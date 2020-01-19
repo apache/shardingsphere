@@ -41,7 +41,8 @@ public final class InsertSQLStatementContextTest {
     public void assertInsertSQLStatementContextWithColumnNames() {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
-        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Arrays.asList(new ColumnSegment(0, 0, "id"), new ColumnSegment(0, 0, "name"), new ColumnSegment(0, 0, "status")));
+        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0);
+        insertColumnsSegment.getColumns().addAll(Arrays.asList(new ColumnSegment(0, 0, "id"), new ColumnSegment(0, 0, "name"), new ColumnSegment(0, 0, "status")));
         insertStatement.setColumns(insertColumnsSegment);
         setUpInsertValues(insertStatement);
         InsertSQLStatementContext actual = new InsertSQLStatementContext(mock(RelationMetas.class), Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
