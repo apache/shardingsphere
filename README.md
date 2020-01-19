@@ -121,17 +121,31 @@ Architects can adjust the system architecture to the most applicable one to curr
 
 ## How to Build
 
+### Build ShardingSphere
+
 ```bash
 ./mvnw clean install -Prelease
-``` 
+```
 
 Artifact:
 
 ```
 sharding-distribution/sharding-jdbc-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-jdbc-bin.tar.gz: Binary package of Sharding-JDBC
 sharding-distribution/sharding-proxy-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-proxy-bin.tar.gz: Binary package of Sharding-Proxy
-sharding-distribution/sharding-ui-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-ui-bin.tar.gz: Binary package of Sharding-UI
 sharding-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-src.zip: Source code package of ShardingSphere
+```
+
+### Build ShardingSphere-UI
+
+```bash
+cd shardingsphere-ui
+./mvnw clean install -Prelease
+```
+
+Artifact:
+
+```
+shardingsphere-ui/shardingsphere-ui-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-shardingsphere-ui-bin.tar.gz: Binary package of ShardingSphere-UI
 ```
 
 ## Landscapes

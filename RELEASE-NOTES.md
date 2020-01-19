@@ -19,7 +19,7 @@
 1. BASE Transaction available, Seata integrated.
 1. Data encrypt available.
 1. Skywalking plugin available.
-1. Sharding-UI available, an orchestration management platform.
+1. ShardingSphere-UI available, an orchestration management platform.
 
 ### Enhancement
 
@@ -52,7 +52,7 @@
 
 ### New Features
 
-1. Sharding-UI, an orchestration management platform for ShardingSphere comes online.
+1. ShardingSphere-UI, an orchestration management platform for ShardingSphere comes online.
 1. Not only SQLs from MySQL, PostgreSQL, SQLServer, Oracle, but any SQL92 Syntax can be parsed correctly and used in ShardingSphere.
 
 ### Enhancement
