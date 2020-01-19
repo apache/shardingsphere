@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 public final class StringToNoneShardingStrategyConfigurationConverter implements Converter<String, YamlNoneShardingStrategyConfiguration> {
     
     @Override
-    public YamlNoneShardingStrategyConfiguration convert(final String s) {
+    public YamlNoneShardingStrategyConfiguration convert(final String value) {
         return new YamlNoneShardingStrategyConfiguration();
     }
 }

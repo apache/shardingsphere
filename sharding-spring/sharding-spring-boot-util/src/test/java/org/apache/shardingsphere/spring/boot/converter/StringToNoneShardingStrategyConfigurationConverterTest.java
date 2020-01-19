@@ -23,7 +23,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public class StringToNoneShardingStrategyConfigurationConverterTest {
+public final class StringToNoneShardingStrategyConfigurationConverterTest {
     
     @Test
     public void assertConvert() {
