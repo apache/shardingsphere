@@ -21,15 +21,18 @@ import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValuesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BitExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BlobValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BooleanLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BooleanPrimaryContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OwnerContext;
@@ -48,8 +51,10 @@ import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.SubquerySegment;
@@ -67,6 +72,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.ParameterValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * MySQL visitor.
@@ -119,26 +125,47 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
-        InsertStatement result = new InsertStatement();
+        // TODO :Since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
+        InsertStatement result = null != ctx.insertValuesClause() ? (InsertStatement) visit(ctx.insertValuesClause()) : (InsertStatement) visit(ctx.setAssignmentsClause());
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.setTable(table);
         result.getAllSQLSegments().add(table);
-        if (null != ctx.setAssignmentsClause()) {
-            SetAssignmentsSegment segment = (SetAssignmentsSegment) visit(ctx.setAssignmentsClause());
-            result.setSetAssignment(segment);
-            result.getAllSQLSegments().add(segment);
-        }
         result.setParametersCount(currentParameterIndex);
         return result;
     }
     
     @Override
+    public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
+        InsertStatement result = new InsertStatement();
+        InsertColumnsSegment insertColumnsSegment = (InsertColumnsSegment) visit(ctx.columnNames());
+        Collection<InsertValuesSegment> insertValuesSegments = createInsertValuesSegments(ctx.assignmentValues());
+        result.setColumns(insertColumnsSegment);
+        result.getValues().addAll(insertValuesSegments);
+        result.getAllSQLSegments().add(insertColumnsSegment);
+        result.getAllSQLSegments().addAll(insertValuesSegments);
+        return result;
+    }
+    
+    @Override
     public ASTNode visitSetAssignmentsClause(final SetAssignmentsClauseContext ctx) {
+        InsertStatement result = new InsertStatement();
         Collection<AssignmentSegment> assignments = new LinkedList<>();
         for (AssignmentContext each : ctx.assignment()) {
             assignments.add((AssignmentSegment) visit(each));
         }
-        return new SetAssignmentsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), assignments);
+        SetAssignmentsSegment segment = new SetAssignmentsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), assignments);
+        result.setSetAssignment(segment);
+        result.getAllSQLSegments().add(segment);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAssignmentValues(final AssignmentValuesContext ctx) {
+        List<ExpressionSegment> segments = new LinkedList<>();
+        for (AssignmentValueContext each : ctx.assignmentValue()) {
+            segments.add((ExpressionSegment) visit(each));
+        }
+        return new InsertValuesSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), segments);
     }
     
     @Override
@@ -180,6 +207,17 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         if (null != owner) {
             result.setOwner(createSchemaSegment(owner));
         }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitColumnNames(final ColumnNamesContext ctx) {
+        Collection<ColumnSegment> segments = new LinkedList<>();
+        for (ColumnNameContext each : ctx.columnName()) {
+            segments.add((ColumnSegment) visit(each));
+        }
+        InsertColumnsSegment result = new InsertColumnsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.getColumns().addAll(segments);
         return result;
     }
     
@@ -319,5 +357,13 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
             return new LiteralExpressionSegment(expr.start.getStartIndex(), expr.stop.getStopIndex(), ((NumberValue) astNode).getNumber());
         }
         return new ParameterMarkerExpressionSegment(expr.start.getStartIndex(), expr.stop.getStopIndex(), ((ParameterValue) astNode).getParameterIndex());
+    }
+    
+    private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
+        Collection<InsertValuesSegment> result = new LinkedList<>();
+        for (AssignmentValuesContext each : assignmentValuesContexts) {
+            result.add((InsertValuesSegment) visit(each));
+        }
+        return result;
     }
 }

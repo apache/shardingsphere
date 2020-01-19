@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLSta
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
@@ -63,10 +64,11 @@ public class SimpleJudgementEngineTest {
     @Test
     public void judgeForInsert() {
         InsertStatement insertStatement = new InsertStatement();
-        insertStatement.getColumns()
-                .addAll(Arrays.asList(new ColumnSegment(0, 0, "id"),
-                        new ColumnSegment(0, 0, "name"),
-                        new ColumnSegment(0, 0, "shadow")));
+        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0);
+        insertColumnsSegment.getColumns().addAll(Arrays.asList(new ColumnSegment(0, 0, "id"),
+                new ColumnSegment(0, 0, "name"),
+                new ColumnSegment(0, 0, "shadow")));
+        insertStatement.setColumns(insertColumnsSegment);
         insertStatement.getValues()
                 .addAll(Collections.singletonList(new InsertValuesSegment(0, 0, new ArrayList<ExpressionSegment>() {
                     {
