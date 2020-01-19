@@ -47,12 +47,18 @@ public final class ParserResult {
     @XmlAttribute(name = "sql-case-id")
     private String sqlCaseId;
     
+    @XmlAttribute(name = "long-sql")
+    private boolean longSQL;
+    
     @XmlAttribute
     private String parameters;
     
     @XmlElementWrapper
     @XmlElement(name = "table")
     private List<ExpectedTable> tables = new LinkedList<>();
+    
+    @XmlElement(name = "projections")
+    private ExpectedProjections projections = new ExpectedProjections();
     
     @XmlElementWrapper
     @XmlElement(name = "schema")
@@ -86,13 +92,10 @@ public final class ParserResult {
     
     @XmlAttribute(name = "auto-commit")
     private boolean autoCommit;
-
+    
     @XmlAttribute(name = "lock-clause")
     private boolean lockClause;
-
-    @XmlElement(name = "projections")
-    private ExpectedProjections projections = new ExpectedProjections();
-
+    
     @XmlElement(name = "where-segment")
     private ExpectedWhereSegment whereSegment;
     

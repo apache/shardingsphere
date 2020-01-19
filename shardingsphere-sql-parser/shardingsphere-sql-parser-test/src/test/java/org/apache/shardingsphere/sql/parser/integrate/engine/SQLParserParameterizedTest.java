@@ -61,9 +61,12 @@ public final class SQLParserParameterizedTest {
     @Test
     public void assertSupportedSQL() {
         String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());
+        ParserResult expected = ParserResultSetRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
+        if (expected.isLongSQL()) {
+            return;
+        }
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlCaseId, sqlCaseType);
         SQLStatement actual = SQLParseEngineFactory.getSQLParseEngine("H2".equals(databaseType) ? "MySQL" : databaseType).parse(sql, false);
-        ParserResult expected = ParserResultSetRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
         SQLStatementAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
 }

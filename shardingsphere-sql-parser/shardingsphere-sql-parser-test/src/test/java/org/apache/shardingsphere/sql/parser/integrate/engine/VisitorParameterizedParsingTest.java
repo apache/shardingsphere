@@ -71,12 +71,15 @@ public final class VisitorParameterizedParsingTest {
     
     @Test
     public void assertSupportedSQL() {
+        ParserResult expected = ParserResultSetRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
+        if (expected.isLongSQL()) {
+            return;
+        }
         String databaseTypeName = "H2".equals(databaseType) ? "MySQL" : databaseType;
         String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());
         ParseTree parseTree = SQLParserFactory.newInstance(databaseTypeName, sql).execute().getChild(0);
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlCaseId, sqlCaseType);
         SQLStatement actual = (SQLStatement) new SQLVisitorEngine(databaseTypeName, parseTree).parse();
-        ParserResult expected = ParserResultSetRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
         SQLStatementAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
 }
