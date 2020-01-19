@@ -37,9 +37,10 @@
     
     <properties>
         <spring-boot.version>1.5.21.RELEASE</spring-boot.version>
-        
-        <frontend-maven-plugin.version>1.6</frontend-maven-plugin.version>
+
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
+        <frontend-maven-plugin.version>1.6</frontend-maven-plugin.version>
+        <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
     </properties>
     
     <dependencyManagement>
@@ -55,6 +56,15 @@
     </dependencyManagement>
     
     <build>
+        <finalName>apache-shardingsphere-incubating-${project.version}</finalName>
+        <extensions>
+            <extension>
+                <groupId>kr.motd.maven</groupId>
+                <artifactId>os-maven-plugin</artifactId>
+                <version>${os-maven-plugin.version}</version>
+            </extension>
+        </extensions>
+        
         <plugins>
             <plugin>
                 <groupId>org.apache.rat</groupId>
