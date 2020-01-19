@@ -35,4 +35,89 @@
             </and-condition>
         </sharding-conditions>
     </parser-result>
+    
+    <parser-result sql-case-id="insert_set_with_all_placeholders_for_table_identifier" parameters="1, 1, 'init'">
+        <tables>
+            <!-- FIXME -->
+            <table name="t_order" start-index="12" stop-index="18" />
+            <!--<table name="t_order" start-index="24" stop-index="30" />-->
+            <!--<table name="t_order" start-index="46" stop-index="52" />-->
+            <!--<table name="t_order" start-index="67" stop-index="73" />-->
+        </tables>
+        <tokens>
+            <insert-set-token begin-position="20" />
+        </tokens>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_set_with_partial_placeholders" parameters="1, 1">
+        <tables>
+            <table name="t_order" start-index="12" stop-index="18" />
+        </tables>
+        <tokens>
+            <insert-set-token begin-position="55" />
+        </tokens>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_set_with_generate_key_column" parameters="10000, 1000, 10">
+        <tables>
+            <table name="t_order_item" start-index="12" stop-index="23" />
+        </tables>
+        <tokens>
+            <insert-set-token begin-position="25" />
+        </tokens>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="0" literal="10000" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="1" literal="1000" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="2" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_set_without_generate_key_column" parameters="1000, 10">
+        <tables>
+            <table name="t_order_item" start-index="12" stop-index="23" />
+        </tables>
+        <tokens>
+            <insert-set-token begin-position="25" />
+        </tokens>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="0" literal="1000" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order_item" operator="EQUAL">
+                    <value index="1" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+    </parser-result>
+    
+    
 </parser-result-sets>
