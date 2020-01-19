@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.integrate.engine;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserFactory;
@@ -39,24 +40,38 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Collection;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
+@Slf4j
 public final class VisitorParameterizedParsingTest {
     
-    private static SQLCasesLoader sqlCasesLoader = VisitorSQLCasesRegistry.getInstance().getSqlCasesLoader();
+    private static final SQLCasesLoader SQL_CASES_LOADER = VisitorSQLCasesRegistry.getInstance().getSqlCasesLoader();
     
-    private static ParserResultSetRegistry parserResultSetRegistry = VisitorParserResultSetRegistry.getInstance().getRegistry();
+    private static final ParserResultSetRegistry PARSER_RESULT_SET_REGISTRY = VisitorParserResultSetRegistry.getInstance().getRegistry();
+    
+    private static final Properties PROPS = new Properties();
     
     private final String sqlCaseId;
     
     private final String databaseType;
     
     private final SQLCaseType sqlCaseType;
+    
+    static {
+        try {
+            PROPS.load(new FileInputStream(SQLParserParameterizedTest.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "/runtime-config.properties"));
+        } catch (final IOException ex) {
+            log.warn("Can not find file `runtime-config.properties`, use default properties configuration.", ex);
+        }
+    }
     
     @Before
     public void setUp() {
@@ -65,18 +80,21 @@ public final class VisitorParameterizedParsingTest {
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        assertThat(sqlCasesLoader.countAllSQLCases(), is(parserResultSetRegistry.countAllTestCases()));
-        return sqlCasesLoader.getSQLTestParameters();
+        assertThat(SQL_CASES_LOADER.countAllSQLCases(), is(PARSER_RESULT_SET_REGISTRY.countAllTestCases()));
+        return SQL_CASES_LOADER.getSQLTestParameters();
     }
     
     @Test
     public void assertSupportedSQL() {
+        ParserResult expected = ParserResultSetRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
+        if (expected.isLongSQL() && Boolean.valueOf(PROPS.getProperty("long.sql.skip", Boolean.TRUE.toString()))) {
+            return;
+        }
         String databaseTypeName = "H2".equals(databaseType) ? "MySQL" : databaseType;
-        String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters());
+        String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, PARSER_RESULT_SET_REGISTRY.get(sqlCaseId).getParameters());
         ParseTree parseTree = SQLParserFactory.newInstance(databaseTypeName, sql).execute().getChild(0);
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlCaseId, sqlCaseType);
         SQLStatement actual = (SQLStatement) new SQLVisitorEngine(databaseTypeName, parseTree).parse();
-        ParserResult expected = ParserResultSetRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
         SQLStatementAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
 }
