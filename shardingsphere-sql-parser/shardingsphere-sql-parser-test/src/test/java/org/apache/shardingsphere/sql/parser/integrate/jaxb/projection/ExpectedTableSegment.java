@@ -19,12 +19,10 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.projection;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @Setter
@@ -32,20 +30,17 @@ import javax.xml.bind.annotation.XmlElement;
 public final class ExpectedTableSegment {
     
     @XmlAttribute(name = "start-index")
-    private Integer startIndex;
+    private int startIndex;
     
     @XmlAttribute(name = "stop-index")
-    private Integer stopIndex;
+    private int stopIndex;
     
     @XmlAttribute
     private String name;
     
-    @XmlAttribute
-    private QuoteCharacter quoteCharacter = QuoteCharacter.NONE;
+    @XmlAttribute(name = "start-delimiter")
+    private String startDelimiter = "";
     
-    @XmlElement(name = "schema-segment")
-    private ExpectedSchemaSegment expectedSchemaSegment = new ExpectedSchemaSegment();
-    
-    @XmlAttribute
-    private String alias;
+    @XmlAttribute(name = "end-delimiter")
+    private String endDelimiter = "";
 }

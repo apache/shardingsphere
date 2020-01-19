@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.projection;
+package org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.top;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.RowNumberValueSegment;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-
+/**
+ * Top projection segment.
+ *
+ * @author zhangliang
+ */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedRowNumberValueSegment {
+public final class TopProjectionSegment implements ProjectionSegment {
     
-    @XmlAttribute(name = "parameter-index")
-    private Integer parameterIndex;
+    private final int startIndex;
     
-    @XmlAttribute(name = "start-index")
-    private Integer startIndex;
+    private final int stopIndex;
     
-    @XmlAttribute(name = "stop-index")
-    private Integer stopIndex;
+    private final String text;
     
-    @XmlAttribute(name = "bound-opened")
-    private boolean boundOpened;
+    private final RowNumberValueSegment top;
+    
+    private final String alias;
 }

@@ -24,47 +24,45 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.List;
 
-@Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedProjections {
     
+    @Getter
     @XmlAttribute(name = "start-index")
-    private Integer startIndex;
+    private int startIndex;
     
+    @Getter
     @XmlAttribute(name = "stop-index")
-    private Integer stopIndex;
+    private int stopIndex;
     
-    @XmlAttribute
+    @Getter
+    @XmlAttribute(name = "distinct-row")
     private boolean distinctRow;
     
-    @XmlElementWrapper(name = "shorthand-projections")
     @XmlElement(name = "shorthand-projection")
-    private Collection<ExpectedShorthandProjection> expectedShorthandProjections = new LinkedList<>();
+    private Collection<ExpectedShorthandProjection> shorthandProjections = new LinkedList<>();
     
-    @XmlElementWrapper(name = "aggregation-projections")
-    @XmlElement(name = "aggregation-projection")
-    private Collection<ExpectedAggregationProjection> expectedAggregationProjections = new LinkedList<>();
-    
-    @XmlElementWrapper(name = "aggregation-distinct-projections")
-    @XmlElement(name = "aggregation-distinct-projection")
-    private Collection<ExpectedAggregationDistinctProjection> expectedAggregationDistinctProjections = new LinkedList<>();
-    
-    @XmlElementWrapper(name = "column-projections")
     @XmlElement(name = "column-projection")
-    private Collection<ExpectedColumnProjection> expectedColumnProjections = new LinkedList<>();
+    private Collection<ExpectedColumnProjection> columnProjections = new LinkedList<>();
     
-    @XmlElementWrapper(name = "expression-projections")
+    @XmlElement(name = "aggregation-projection")
+    private Collection<ExpectedAggregationProjection> aggregationProjections = new LinkedList<>();
+    
+    @XmlElement(name = "aggregation-distinct-projection")
+    private Collection<ExpectedAggregationDistinctProjection> aggregationDistinctProjections = new LinkedList<>();
+    
     @XmlElement(name = "expression-projection")
-    private Collection<ExpectedExpressionProjection> expectedExpressionProjections = new LinkedList<>();
+    private Collection<ExpectedExpressionProjection> expressionProjections = new LinkedList<>();
     
-    @XmlElementWrapper(name = "top-projections")
     @XmlElement(name = "top-projection")
-    private Collection<ExpectedTopProjection> expectedTopProjections = new LinkedList<>();
+    private Collection<ExpectedTopProjection> topProjections = new LinkedList<>();
     
     /**
      * Get size.
@@ -72,38 +70,29 @@ public final class ExpectedProjections {
      * @return size
      */
     public int getSize() {
-        return expectedAggregationProjections.size() + expectedShorthandProjections.size()
-                + expectedAggregationDistinctProjections.size() + expectedColumnProjections.size()
-                + expectedExpressionProjections.size() + expectedTopProjections.size();
+        return shorthandProjections.size() + columnProjections.size() + aggregationProjections.size() + aggregationDistinctProjections.size() + expressionProjections.size() + topProjections.size();
     }
     
     /**
-     * Find expected projections.
-     * 
-     * @param expectedProjectionType expected projections type
-     * @param <T> type of projection type
+     * Get expected projections.
+     *
      * @return expected projections
      */
-    public <T extends ExpectedProjection> Collection<ExpectedProjection> findExpectedProjections(final Class<T> expectedProjectionType) {
-        Collection<ExpectedProjection> result = new LinkedList<>();
-        if (expectedProjectionType.equals(ExpectedShorthandProjection.class)) {
-            result.addAll(expectedShorthandProjections);
-        }
-        if (expectedProjectionType.equals(ExpectedAggregationProjection.class)) {
-            result.addAll(expectedAggregationProjections);
-        }
-        if (expectedProjectionType.equals(ExpectedColumnProjection.class)) {
-            result.addAll(expectedColumnProjections);
-        }
-        if (expectedProjectionType.equals(ExpectedAggregationDistinctProjection.class)) {
-            result.addAll(expectedAggregationDistinctProjections);
-        }
-        if (expectedProjectionType.equals(ExpectedExpressionProjection.class)) {
-            result.addAll(expectedExpressionProjections);
-        }
-        if (expectedProjectionType.equals(ExpectedTopProjection.class)) {
-            result.addAll(expectedExpressionProjections);
-        }
+    public List<ExpectedProjection> getExpectedProjections() {
+        List<ExpectedProjection> result = new LinkedList<>();
+        result.addAll(shorthandProjections);
+        result.addAll(columnProjections);
+        result.addAll(aggregationProjections);
+        result.addAll(aggregationDistinctProjections);
+        result.addAll(expressionProjections);
+        result.addAll(topProjections);
+        Collections.sort(result, new Comparator<ExpectedProjection>() {
+            
+            @Override
+            public int compare(final ExpectedProjection o1, final ExpectedProjection o2) {
+                return o1.getStartIndex() - o2.getStartIndex();
+            }
+        });
         return result;
     }
 }

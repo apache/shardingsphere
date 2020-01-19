@@ -20,9 +20,16 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.projection;
 public interface ExpectedProjection {
     
     /**
-     * Get text.
+     * Get start index.
      * 
-     * @return text
+     * @return start index
      */
-    String getText();
+    int getStartIndex();
+    
+    /**
+     * Get stop index.
+     *
+     * @return stop index
+     */
+    int getStopIndex();
 }

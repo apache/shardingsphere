@@ -22,6 +22,11 @@
             <table name="t_order" alias="o" start-index="22" stop-index="28" />
             <table name="t_order_item" alias="i" start-index="37" stop-index="48" />
         </tables>
+        <projections start-index="7" stop-index="15">
+            <column-projection name="user_id" start-index="7" stop-index="15">
+                <owner name="i" start-index="7" stop-index="7" />
+            </column-projection>
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -34,13 +39,6 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="7" stop-index="15">
-            <column-projections>
-                <column-projection start-index="7" stop-index="7" text="i.user_id" name="user_id">
-                    <table-segment start-index="7" stop-index="7" name="i" />
-                </column-projection>
-            </column-projections>
-        </projections>
         <group-by-columns>
             <group-by-column name="item_id" owner="i" order-direction="ASC" />
         </group-by-columns>
@@ -56,6 +54,11 @@
             <table name="t_order" alias="o" start-index="22" stop-index="28" />
             <table name="t_order_item" alias="i" start-index="37" stop-index="48" />
         </tables>
+        <projections start-index="7" stop-index="15">
+            <column-projection name="user_id" start-index="7" stop-index="15">
+                <owner name="i" start-index="7" stop-index="7" />
+            </column-projection>
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -68,13 +71,6 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="7" stop-index="15">
-            <column-projections>
-                <column-projection start-index="7" stop-index="7" text="i.user_id" name="user_id">
-                    <table-segment start-index="7" stop-index="7" name="i" />
-                </column-projection>
-            </column-projections>
-        </projections>
         <group-by-columns>
             <group-by-column name="user_id" owner="i" order-direction="ASC" />
         </group-by-columns>
@@ -90,6 +86,21 @@
             <table name="t_order" alias="o" start-index="165" stop-index="171" />
             <table name="t_order_item" alias="i" start-index="180" stop-index="191" />
         </tables>
+        <projections start-index="22" stop-index="158">
+            <top-projection alias="rownum_" top-value="3" top-parameter-index="0" top-value-start-index="26" top-value-stop-index="26" start-index="22" stop-index="70" />
+            <column-projection name="item_id" start-index="84" stop-index="92">
+                <owner name="i" start-index="84" stop-index="84" />
+            </column-projection>
+            <column-projection name="order_id" alias="order_id" start-index="95" stop-index="104">
+                <owner name="o" start-index="95" stop-index="95" />
+            </column-projection>
+            <column-projection name="status" alias="status" start-index="119" stop-index="126">
+                <owner name="o" start-index="119" stop-index="119" />
+            </column-projection>
+            <column-projection name="user_id" alias="user_id" start-index="139" stop-index="147">
+                <owner name="o" start-index="139" stop-index="139" />
+            </column-projection>
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -102,17 +113,6 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="22" stop-index="158">
-            <top-projections>
-                <top-projection start-index="22" stop-index="70" row-number-alias="rownum_" text="TOP3row_number()OVER(ORDERBYi.item_idDESC)" />
-            </top-projections>
-            <column-projections>
-                <column-projection start-index="84" stop-index="84" text="i.item_id" />
-                <column-projection start-index="95" stop-index="95" text="o.order_id" />
-                <column-projection start-index="119" stop-index="119" text="o.status" />
-                <column-projection start-index="139" stop-index="139" text="o.user_id" />
-            </column-projections>
-        </projections>
         <group-by-columns>
             <group-by-column name="item_id" owner="i" order-direction="ASC" />
         </group-by-columns>
@@ -128,6 +128,21 @@
             <table name="t_order" alias="o" start-index="167" stop-index="173" />
             <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
         </tables>
+        <projections start-index="22" stop-index="160">
+            <top-projection alias="rownum_" top-value="3" top-parameter-index="0" top-value-start-index="27" top-value-stop-index="27" start-index="22" stop-index="72" />
+            <column-projection name="item_id" start-index="86" stop-index="94">
+                <owner name="i" start-index="86" stop-index="86" />
+            </column-projection>
+            <column-projection name="order_id" alias="order_id" start-index="97" stop-index="106">
+                <owner name="o" start-index="97" stop-index="97" />
+            </column-projection>
+            <column-projection name="status" alias="status" start-index="121" stop-index="128">
+                <owner name="o" start-index="121" stop-index="121" />
+            </column-projection>
+            <column-projection name="user_id" alias="user_id" start-index="141" stop-index="149">
+                <owner name="o" start-index="141" stop-index="141" />
+            </column-projection>
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -140,17 +155,6 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="22" stop-index="160">
-            <top-projections>
-                <top-projection start-index="22" stop-index="72" row-number-alias="rownum_" text="TOP(3)row_number()OVER(ORDERBYi.item_idDESC)" />
-            </top-projections>
-            <column-projections>
-                <column-projection start-index="86" stop-index="86" text="i.item_id" />
-                <column-projection start-index="97" stop-index="97" text="o.order_id" />
-                <column-projection start-index="121" stop-index="121" text="o.status" />
-                <column-projection start-index="141" stop-index="141" text="o.user_id" />
-            </column-projections>
-        </projections>
         <group-by-columns>
             <group-by-column name="item_id" owner="i" order-direction="ASC" />
         </group-by-columns>
@@ -166,6 +170,21 @@
             <table name="t_order" alias="o" start-index="165" stop-index="171" />
             <table name="t_order_item" alias="i" start-index="180" stop-index="191" />
         </tables>
+        <projections start-index="22" stop-index="158">
+            <top-projection alias="rownum_" top-value="3" top-parameter-index="0" top-value-start-index="26" top-value-stop-index="26" start-index="22" stop-index="70" />
+            <column-projection name="item_id" start-index="84" stop-index="92">
+                <owner name="i" start-index="84" stop-index="84" />
+            </column-projection>
+            <column-projection name="order_id" alias="order_id" start-index="95" stop-index="104">
+                <owner name="o" start-index="95" stop-index="95" />
+            </column-projection>
+            <column-projection name="status" alias="status" start-index="119" stop-index="126">
+                <owner name="o" start-index="119" stop-index="119" />
+            </column-projection>
+            <column-projection name="user_id" alias="user_id" start-index="139" stop-index="147">
+                <owner name="o" start-index="139" stop-index="139" />
+            </column-projection>
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -178,17 +197,6 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="22" stop-index="158">
-            <top-projections>
-                <top-projection start-index="22" stop-index="70" row-number-alias="rownum_" text="TOP3row_number()OVER(ORDERBYi.item_idDESC)" />
-            </top-projections>
-            <column-projections>
-                <column-projection start-index="84" stop-index="84" text="i.item_id" />
-                <column-projection start-index="95" stop-index="95" text="o.order_id" />
-                <column-projection start-index="119" stop-index="119" text="o.status" />
-                <column-projection start-index="139" stop-index="139" text="o.user_id" />
-            </column-projections>
-        </projections>
         <group-by-columns>
             <group-by-column name="user_id" owner="i" order-direction="ASC" />
         </group-by-columns>
@@ -204,6 +212,21 @@
             <table name="t_order" alias="o" start-index="167" stop-index="173" />
             <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
         </tables>
+        <projections start-index="22" stop-index="160">
+            <top-projection alias="rownum_" top-value="3" top-parameter-index="0" top-value-start-index="27" top-value-stop-index="27" start-index="22" stop-index="72" />
+            <column-projection name="item_id" start-index="86" stop-index="94">
+                <owner name="i" start-index="86" stop-index="86" />
+            </column-projection>
+            <column-projection name="order_id" alias="order_id" start-index="97" stop-index="106">
+                <owner name="o" start-index="97" stop-index="97" />
+            </column-projection>
+            <column-projection name="status" alias="status" start-index="121" stop-index="128">
+                <owner name="o" start-index="121" stop-index="121" />
+            </column-projection>
+            <column-projection name="user_id" alias="user_id" start-index="141" stop-index="149">
+                <owner name="o" start-index="141" stop-index="141" />
+            </column-projection>
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -216,19 +239,6 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="22" stop-index="160">
-            <top-projections>
-                <top-projection start-index="22" stop-index="72" row-number-alias="rownum_" text="TOP(3)row_number()OVER(ORDERBYi.item_idDESC)">
-                    <row-number-value-segment parameter-index="0" start-index="27" stop-index="27" />
-                </top-projection>
-            </top-projections>
-            <column-projections>
-                <column-projection start-index="86" stop-index="86" text="i.item_id" />
-                <column-projection start-index="97" stop-index="97" text="o.order_id" />
-                <column-projection start-index="121" stop-index="121" text="o.status" />
-                <column-projection start-index="141" stop-index="141" text="o.user_id" />
-            </column-projections>
-        </projections>
         <group-by-columns>
             <group-by-column name="user_id" owner="i" order-direction="ASC" />
         </group-by-columns>
@@ -244,6 +254,17 @@
             <table name="t_order" alias="order0_" start-index="146" stop-index="152" />
             <table name="t_order_item" alias="i" start-index="167" stop-index="178" />
         </tables>
+        <projections start-index="58" stop-index="139">
+            <column-projection name="order_id" alias="order_id" start-index="58" stop-index="73">
+                <owner name="order0_" start-index="58" stop-index="64" />
+            </column-projection>
+            <column-projection name="status" alias="status" start-index="88" stop-index="101">
+                <owner name="order0_" start-index="88" stop-index="94" />
+            </column-projection>
+            <column-projection name="user_id" alias="user_id" start-index="114" stop-index="128">
+                <owner name="order0_" start-index="114" stop-index="120" />
+            </column-projection>
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -256,19 +277,6 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="58" stop-index="139">
-            <column-projections>
-                <column-projection text="order0_.order_id" start-index="58" stop-index="64">
-                    <table-segment start-index="58" stop-index="64" name="order0_" />
-                </column-projection>
-                <column-projection text="order0_.status" start-index="88" stop-index="94">
-                    <table-segment start-index="88" stop-index="94" name="order0_" />
-                </column-projection>
-                <column-projection text="order0_.user_id" start-index="114" stop-index="120">
-                    <table-segment start-index="114" stop-index="120" name="order0_" />
-                </column-projection>
-            </column-projections>
-        </projections>
         <group-by-columns>
             <group-by-column name="item_id" owner="i" order-direction="ASC" />
         </group-by-columns>
@@ -284,6 +292,17 @@
             <table name="t_order" alias="order0_" start-index="146" stop-index="152" />
             <table name="t_order_item" alias="i" start-index="167" stop-index="178" />
         </tables>
+        <projections start-index="58" stop-index="139">
+            <column-projection name="order_id" alias="order_id" start-index="58" stop-index="73">
+                <owner name="order0_" start-index="58" stop-index="64" />
+            </column-projection>
+            <column-projection name="status" alias="status" start-index="88" stop-index="101">
+                <owner name="order0_" start-index="88" stop-index="94" />
+            </column-projection>
+            <column-projection name="user_id" alias="user_id" start-index="114" stop-index="128">
+                <owner name="order0_" start-index="114" stop-index="120" />
+            </column-projection>
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -296,19 +315,6 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="58" stop-index="139">
-            <column-projections>
-                <column-projection text="order0_.order_id" start-index="58" stop-index="64">
-                    <table-segment start-index="58" stop-index="64" name="order0_" />
-                </column-projection>
-                <column-projection text="order0_.status" start-index="88" stop-index="94">
-                    <table-segment start-index="88" stop-index="94" name="order0_" />
-                </column-projection>
-                <column-projection text="order0_.user_id" start-index="114" stop-index="120">
-                    <table-segment start-index="114" stop-index="120" name="order0_" />
-                </column-projection>
-            </column-projections>
-        </projections>
         <group-by-columns>
             <group-by-column name="user_id" owner="i" order-direction="ASC" />
         </group-by-columns>

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.Paramete
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.RowNumberValueSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.top.TopSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.top.TopProjectionSegment;
 
 import java.util.Map;
 
@@ -44,7 +44,7 @@ public final class TopProjectionExtractor implements OptionalSQLSegmentExtractor
     private final ExpressionExtractor expressionExtractor = new ExpressionExtractor();
     
     @Override
-    public Optional<TopSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+    public Optional<TopProjectionSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> topNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.TOP);
         if (!topNode.isPresent()) {
             return Optional.absent();
@@ -55,8 +55,8 @@ public final class TopProjectionExtractor implements OptionalSQLSegmentExtractor
         Optional<RowNumberValueSegment> rowNumberValueSegment = createRowNumberValueSegment(topExpr.get());
         Preconditions.checkState(rowNumberValueSegment.isPresent());
         ParserRuleContext rowNumberAliasNode = ExtractorUtils.getFirstChildNode(topNode.get().getParent(), RuleName.ALIAS);
-        return Optional.of(
-                new TopSegment(topNode.get().getStart().getStartIndex(), topNode.get().getStop().getStopIndex(), topNode.get().getText(), rowNumberValueSegment.get(), rowNumberAliasNode.getText()));
+        return Optional.of(new TopProjectionSegment(topNode.get().getStart().getStartIndex(), topNode.get().getStop().getStopIndex(), 
+                topNode.get().getText(), rowNumberValueSegment.get(), rowNumberAliasNode.getText()));
     }
     
     private Optional<RowNumberValueSegment> createRowNumberValueSegment(final ExpressionSegment topExpr) {
