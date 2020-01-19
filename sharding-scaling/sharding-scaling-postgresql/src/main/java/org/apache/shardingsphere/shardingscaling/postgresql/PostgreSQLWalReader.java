@@ -31,6 +31,7 @@ import org.apache.shardingsphere.shardingscaling.postgresql.wal.WalEventConverte
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.decode.DecodingPlugin;
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.decode.TestDecodingPlugin;
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.AbstractWalEvent;
+import org.postgresql.PGConnection;
 import org.postgresql.replication.PGReplicationStream;
 
 import java.nio.ByteBuffer;
@@ -74,8 +75,8 @@ public final class PostgreSQLWalReader extends AbstractSyncRunner implements Log
     @Override
     public void read(final Channel channel) {
         try {
-            PGReplicationStream stream = logicalReplication.createReplicationStream(
-                    (JdbcDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration(),
+            PGConnection pgConnection = logicalReplication.createPgConnection((JdbcDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration());
+            PGReplicationStream stream = logicalReplication.createReplicationStream(pgConnection,
                     PostgreSQLLogPositionManager.SLOT_NAME, walPosition.getLogSequenceNumber());
             while (isRunning()) {
                 ByteBuffer msg = stream.readPending();
