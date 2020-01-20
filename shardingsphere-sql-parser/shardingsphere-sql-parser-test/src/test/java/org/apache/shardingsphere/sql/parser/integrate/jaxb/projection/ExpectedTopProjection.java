@@ -19,15 +19,16 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.projection;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSegment;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedTopProjection extends AbstractExpectedProjection {
+public final class ExpectedTopProjection extends AbstractExpectedSegment implements ExpectedProjection {
     
     @XmlAttribute(name = "top-value")
     private Long topValue;

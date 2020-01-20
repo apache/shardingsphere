@@ -17,19 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.projection;
 
-public interface ExpectedProjection {
-    
-    /**
-     * Get start index.
-     * 
-     * @return start index
-     */
-    int getStartIndex();
-    
-    /**
-     * Get stop index.
-     *
-     * @return stop index
-     */
-    int getStopIndex();
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.ExpectedSegment;
+
+public interface ExpectedProjection extends ExpectedSegment {
 }
