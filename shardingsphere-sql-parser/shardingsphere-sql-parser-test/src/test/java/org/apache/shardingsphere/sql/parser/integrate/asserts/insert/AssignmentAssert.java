@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.insert;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.insert.ExpectedAssignment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.insert.ExpectedAssignment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;

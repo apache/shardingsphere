@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.pagination;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.pagination.ExpectedPaginationValue;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.pagination.ExpectedPaginationValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
