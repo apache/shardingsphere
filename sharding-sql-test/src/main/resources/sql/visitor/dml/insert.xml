@@ -17,6 +17,12 @@
   -->
 
 <sql-cases>
+    <sql-case id="insert_with_all_placeholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)" db-types="MySQL" />
+    <sql-case id="insert_without_parameters" value="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert')" db-types="MySQL" />
+    <sql-case id="insert_with_multiple_values" value="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert'), (2, 2, 'insert2')" db-types="MySQL" />
+    <sql-case id="insert_with_special_characters" value="INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (1, 1, 'insert')" db-types="MySQL" />
+    <sql-case id="insert_with_all_placeholders_for_table_identifier" value="INSERT INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (?, ?, ?)" db-types="MySQL" />
+    <sql-case id="insert_without_columns_with_all_placeholders" value="INSERT INTO t_order VALUES (?, ?, ?)" db-types="MySQL" />
     <sql-case id="insert_set_with_all_placeholders" value="INSERT INTO t_order SET order_id = ?, user_id = ?, status = ?" db-types="MySQL" />
     <sql-case id="insert_set_with_all_placeholders_for_table_identifier" value="INSERT INTO t_order SET t_order.order_id = ?, t_order.user_id = ?, t_order.status = ?" db-types="MySQL" />
     <sql-case id="insert_set_with_partial_placeholders" value="INSERT INTO t_order SET order_id = ?, user_id = ?, status = 'insert'" db-types="MySQL" />
