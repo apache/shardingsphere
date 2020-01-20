@@ -145,7 +145,7 @@ cd shardingsphere-ui
 Artifact:
 
 ```
-shardingsphere-ui/shardingsphere-ui-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-shardingsphere-ui-bin.tar.gz: Binary package of ShardingSphere-UI
+shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-shardingsphere-ui-bin.tar.gz: Binary package of ShardingSphere-UI
 ```
 
 ## Landscapes
