@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.expr.simple.ExpectedP
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate.ExpectedAndPredicate;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate.ExpectedColumnSegment;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate.ExpectedPredicateSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate.ExpectedWhereSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate.ExpectedWhere;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate.value.ExpectedPredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
@@ -63,7 +63,7 @@ public final class PredicateAssert {
      * @param expected expected where segment
      * @param sqlCaseType SQL case type
      */
-    public static void assertIs(final SQLStatementAssertMessage assertMessage, final WhereSegment actual, final ExpectedWhereSegment expected, final SQLCaseType sqlCaseType) {
+    public static void assertIs(final SQLStatementAssertMessage assertMessage, final WhereSegment actual, final ExpectedWhere expected, final SQLCaseType sqlCaseType) {
         if (SQLCaseType.Placeholder == sqlCaseType) {
             assertThat(assertMessage.getText("parameters count assertion error:"), actual.getParametersCount(), is(expected.getParametersCount()));
         }

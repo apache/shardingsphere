@@ -31,15 +31,15 @@ import java.util.List;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedWhereSegment extends ExpectedBaseSegment {
-
+public final class ExpectedWhere extends ExpectedBaseSegment {
+    
     @XmlAttribute
     private Integer parametersCount;
-
+    
     @XmlElementWrapper(name = "and-predicates")
     @XmlElement(name = "and-predicate")
     private List<ExpectedAndPredicate> andPredicates = new LinkedList<>();
-
+    
     @XmlAttribute
     private Integer parameterStartIndex;
 }

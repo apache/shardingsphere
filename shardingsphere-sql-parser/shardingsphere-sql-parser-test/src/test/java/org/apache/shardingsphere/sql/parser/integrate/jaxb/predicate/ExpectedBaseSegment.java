@@ -28,10 +28,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ExpectedBaseSegment {
-
+    
     @XmlAttribute(name = "start-index")
     private Integer startIndex;
-
+    
     @XmlAttribute(name = "stop-index")
     private Integer stopIndex;
 }

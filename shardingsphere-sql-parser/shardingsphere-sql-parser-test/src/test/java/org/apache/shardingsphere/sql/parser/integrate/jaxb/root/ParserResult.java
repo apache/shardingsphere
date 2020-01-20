@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.groupby.ExpectedGroup
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.insert.ExpectedInsertColumnsAndValues;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.orderby.ExpectedOrderByColumn;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.pagination.ExpectedPaginationValue;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate.ExpectedWhereSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate.ExpectedWhere;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedProjections;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.table.ExpectedAlterTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.table.ExpectedTable;
@@ -96,8 +96,8 @@ public final class ParserResult {
     @XmlAttribute(name = "lock-clause")
     private boolean lockClause;
     
-    @XmlElement(name = "where-segment")
-    private ExpectedWhereSegment whereSegment;
+    @XmlElement(name = "where")
+    private ExpectedWhere where;
     
     /**
      * Get parameters.
