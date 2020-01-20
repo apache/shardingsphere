@@ -55,8 +55,9 @@ pipeline {
                     uiBuildBadge.setStatus('running')
                     try {
                         sh '''
+                        mvn clean install
                         cd ./shardingsphere-ui
-                        mvn clean verify -DpullRequest=${ghprbPullLink} -Prelease
+                        mvn clean install
                         '''
                         uiBuildBadge.setStatus('passing')
                     } catch (Exception err) {
