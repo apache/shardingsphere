@@ -34,4 +34,10 @@ public abstract class AbstractExpectedSegment implements ExpectedSegment {
     
     @XmlAttribute(name = "stop-index")
     private int stopIndex;
+    
+    @XmlAttribute(name = "literal-start-index")
+    private Integer literalStartIndex;
+    
+    @XmlAttribute(name = "literal-stop-index")
+    private Integer literalStopIndex;
 }

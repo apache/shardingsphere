@@ -20,10 +20,12 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.table;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.position.PositionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.table.ExpectedTableOwner;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 import java.util.Collection;
 import java.util.List;
@@ -45,33 +47,32 @@ public final class TableAssert {
      * @param assertMessage assert message
      * @param actual actual tables
      * @param expected expected tables
+     * @param sqlCaseType SQL case type
      */
-    public static void assertIs(final SQLStatementAssertMessage assertMessage, final Collection<TableSegment> actual, final List<ExpectedTable> expected) {
+    public static void assertIs(final SQLStatementAssertMessage assertMessage, final Collection<TableSegment> actual, final List<ExpectedTable> expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Tables size assertion error: "), actual.size(), is(expected.size()));
         int count = 0;
         for (TableSegment each : actual) {
-            assertTable(assertMessage, each, expected.get(count));
+            assertTable(assertMessage, each, expected.get(count), sqlCaseType);
             count++;
         }
     }
     
-    private static void assertTable(final SQLStatementAssertMessage assertMessage, final TableSegment actual, final ExpectedTable expected) {
+    private static void assertTable(final SQLStatementAssertMessage assertMessage, final TableSegment actual, final ExpectedTable expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Table name assertion error: "), actual.getTableName(), is(expected.getName()));
         assertThat(assertMessage.getText("Table alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
         if (actual.getOwner().isPresent()) {
-            assertOwner(assertMessage, actual.getOwner().get(), expected.getOwner());
+            assertOwner(assertMessage, actual.getOwner().get(), expected.getOwner(), sqlCaseType);
         }
         assertThat(assertMessage.getText("Table start delimiter assertion error: "), actual.getTableQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
-        assertThat(assertMessage.getText("Table stop delimiter assertion error: "), actual.getTableQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
-        assertThat(assertMessage.getText("Table start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
-        assertThat(assertMessage.getText("Table stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
+        assertThat(assertMessage.getText("Table end delimiter assertion error: "), actual.getTableQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
+        PositionAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
     
-    private static void assertOwner(final SQLStatementAssertMessage assertMessage, final SchemaSegment actual, final ExpectedTableOwner expected) {
+    private static void assertOwner(final SQLStatementAssertMessage assertMessage, final SchemaSegment actual, final ExpectedTableOwner expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Table owner name assertion error: "), actual.getName(), is(expected.getName()));
         assertThat(assertMessage.getText("Table owner start delimiter assertion error: "), actual.getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
-        assertThat(assertMessage.getText("Table owner stop delimiter assertion error: "), actual.getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
-        assertThat(assertMessage.getText("Table owner start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
-        assertThat(assertMessage.getText("Table owner stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
+        assertThat(assertMessage.getText("Table owner end delimiter assertion error: "), actual.getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
+        PositionAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
 }

@@ -17,5 +17,5 @@
 
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex;
 
-public final class ExpectedCommonExpressionSegment extends ExpectedBaseComplexExpression {
+public final class ExpectedCommonExpression extends ExpectedBaseComplexExpression {
 }

@@ -25,7 +25,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,13 +33,12 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedWhere extends AbstractExpectedSegment {
     
-    @XmlAttribute
+    @XmlAttribute(name = "parameters-count")
     private Integer parametersCount;
     
-    @XmlElementWrapper(name = "and-predicates")
     @XmlElement(name = "and-predicate")
     private List<ExpectedAndPredicate> andPredicates = new LinkedList<>();
     
-    @XmlAttribute
-    private Integer parameterStartIndex;
+    @XmlAttribute(name = "parameter-marker-start-index")
+    private Integer parameterMarkerStartIndex;
 }
