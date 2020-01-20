@@ -137,11 +137,13 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
         InsertStatement result = new InsertStatement();
-        InsertColumnsSegment insertColumnsSegment = (InsertColumnsSegment) visit(ctx.columnNames());
+        if (null != ctx.columnNames()) { 
+            InsertColumnsSegment insertColumnsSegment = (InsertColumnsSegment) visit(ctx.columnNames());
+            result.setColumns(insertColumnsSegment);
+            result.getAllSQLSegments().add(insertColumnsSegment);
+        }
         Collection<InsertValuesSegment> insertValuesSegments = createInsertValuesSegments(ctx.assignmentValues());
-        result.setColumns(insertColumnsSegment);
         result.getValues().addAll(insertValuesSegments);
-        result.getAllSQLSegments().add(insertColumnsSegment);
         result.getAllSQLSegments().addAll(insertValuesSegments);
         return result;
     }
@@ -308,7 +310,8 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     
     @Override
     public ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
-        return new LiteralValue(ctx.getText());
+        String text = ctx.getText();
+        return new LiteralValue(text.substring(1, text.length() - 1));
     }
     
     @Override
