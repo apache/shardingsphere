@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedColumnSegment extends ExpectedBaseSegment {
+public final class ExpectedColumnSegment extends AbstractExpectedSegment {
 
     @XmlAttribute
     private String name;

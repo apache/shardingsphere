@@ -31,7 +31,7 @@ import java.util.List;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedWhere extends ExpectedBaseSegment {
+public final class ExpectedWhere extends AbstractExpectedSegment {
     
     @XmlAttribute
     private Integer parametersCount;

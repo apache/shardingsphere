@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedPredicateSegment extends ExpectedBaseSegment {
+public final class ExpectedPredicateSegment extends AbstractExpectedSegment {
     
     @XmlElement(name = "column-segment")
     private ExpectedColumnSegment column = new ExpectedColumnSegment();
