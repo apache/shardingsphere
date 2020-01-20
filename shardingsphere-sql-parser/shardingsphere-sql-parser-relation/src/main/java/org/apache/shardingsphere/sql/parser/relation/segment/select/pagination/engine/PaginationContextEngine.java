@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.top.TopSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
@@ -49,11 +49,11 @@ public final class PaginationContextEngine {
         if (limitSegment.isPresent()) {
             return new LimitPaginationContextEngine().createPaginationContext(limitSegment.get(), parameters);
         }
-        Optional<TopSegment> topSegment = selectStatement.findSQLSegment(TopSegment.class);
+        Optional<TopProjectionSegment> topProjectionSegment = selectStatement.findSQLSegment(TopProjectionSegment.class);
         Optional<WhereSegment> whereSegment = selectStatement.findSQLSegment(WhereSegment.class);
-        if (topSegment.isPresent()) {
+        if (topProjectionSegment.isPresent()) {
             return new TopPaginationContextEngine().createPaginationContext(
-                    topSegment.get(), whereSegment.isPresent() ? whereSegment.get().getAndPredicates() : Collections.<AndPredicate>emptyList(), parameters);
+                    topProjectionSegment.get(), whereSegment.isPresent() ? whereSegment.get().getAndPredicates() : Collections.<AndPredicate>emptyList(), parameters);
         }
         if (whereSegment.isPresent()) {
             return new RowNumberPaginationContextEngine().createPaginationContext(whereSegment.get().getAndPredicates(), projectionsContext, parameters);

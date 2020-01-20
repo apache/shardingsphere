@@ -24,10 +24,11 @@ import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLSta
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionSelectItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
@@ -63,10 +64,11 @@ public class SimpleJudgementEngineTest {
     @Test
     public void judgeForInsert() {
         InsertStatement insertStatement = new InsertStatement();
-        insertStatement.getColumns()
-                .addAll(Arrays.asList(new ColumnSegment(0, 0, "id"),
-                        new ColumnSegment(0, 0, "name"),
-                        new ColumnSegment(0, 0, "shadow")));
+        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0);
+        insertColumnsSegment.getColumns().addAll(Arrays.asList(new ColumnSegment(0, 0, "id"),
+                new ColumnSegment(0, 0, "name"),
+                new ColumnSegment(0, 0, "shadow")));
+        insertStatement.setColumns(insertColumnsSegment);
         insertStatement.getValues()
                 .addAll(Collections.singletonList(new InsertValuesSegment(0, 0, new ArrayList<ExpressionSegment>() {
                     {
@@ -103,10 +105,10 @@ public class SimpleJudgementEngineTest {
                 new PredicateCompareRightValue("=", new LiteralExpressionSegment(0, 0, "true")))));
         whereSegment.getAndPredicates().addAll(Collections.singletonList(andPredicate));
         selectStatement.setWhere(whereSegment);
-        SelectItemsSegment selectItemsSegment = new SelectItemsSegment(0, 0, true);
-        selectItemsSegment.getSelectItems()
-                .addAll(Collections.singletonList(new ExpressionSelectItemSegment(0, 0, "true")));
-        selectStatement.setSelectItems(selectItemsSegment);
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0, true);
+        projectionsSegment.getProjections()
+                .addAll(Collections.singletonList(new ExpressionProjectionSegment(0, 0, "true")));
+        selectStatement.setProjections(projectionsSegment);
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(relationMetas, "", Collections.emptyList(), selectStatement);
         SimpleJudgementEngine simpleJudgementEngine = new SimpleJudgementEngine(shadowRule, selectSQLStatementContext);
         Assert.assertTrue("should be shadow", simpleJudgementEngine.isShadowSQL());
@@ -115,9 +117,9 @@ public class SimpleJudgementEngineTest {
         andPredicate.getPredicates().addAll(Collections.singletonList(new PredicateSegment(0, 0,
                 new ColumnSegment(0, 0, "shadow"),
                 new PredicateCompareRightValue("=", new LiteralExpressionSegment(0, 0, "false")))));
-        selectItemsSegment.getSelectItems().clear();
-        selectItemsSegment.getSelectItems()
-                .addAll(Collections.singletonList(new ExpressionSelectItemSegment(0, 0, "false")));
+        projectionsSegment.getProjections().clear();
+        projectionsSegment.getProjections()
+                .addAll(Collections.singletonList(new ExpressionProjectionSegment(0, 0, "false")));
         Assert.assertFalse("should not be shadow", simpleJudgementEngine.isShadowSQL());
     }
 }

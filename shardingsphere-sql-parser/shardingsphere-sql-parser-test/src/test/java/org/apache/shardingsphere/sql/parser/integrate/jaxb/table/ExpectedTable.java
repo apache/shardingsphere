@@ -23,6 +23,7 @@ import lombok.Setter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
@@ -35,9 +36,18 @@ public final class ExpectedTable {
     @XmlAttribute
     private String alias;
     
+    @XmlAttribute(name = "start-delimiter")
+    private String startDelimiter = "";
+    
+    @XmlAttribute(name = "end-delimiter")
+    private String endDelimiter = "";
+    
     @XmlAttribute(name = "start-index")
     private int startIndex;
     
     @XmlAttribute(name = "stop-index")
     private int stopIndex;
+    
+    @XmlElement
+    private ExpectedTableOwner owner;
 }

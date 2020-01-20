@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 
 /**
  * Subquery segment.
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemSegme
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class SubquerySegment implements SelectItemSegment, ComplexExpressionSegment {
+public final class SubquerySegment implements ProjectionSegment, ComplexExpressionSegment {
     
     private final int startIndex;
     

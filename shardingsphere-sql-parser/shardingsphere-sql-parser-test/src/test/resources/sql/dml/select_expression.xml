@@ -21,34 +21,34 @@
         <tables>
             <table name="t_order" alias="o" start-index="38" stop-index="44" />
         </tables>
+        <projections start-index="7" stop-index="31">
+            <!-- TODO check expression-projection's stop-index whether include alias --> 
+            <expression-projection alias="exp" start-index="7" stop-index="31" />
+        </projections>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
-        <select-items start-index="7" stop-index="31">
-            <expression-items>
-                <expression-item text="o.order_id+1*2asexp" />
-            </expression-items>
-        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_with_date_function">
         <tables>
-            <table name="t_order_item" alias="i" start-index="51" stop-index="64" />
+            <table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="51" stop-index="64" />
         </tables>
+        <projections start-index="7" stop-index="44">
+            <expression-projection alias="creation_date" start-index="7" stop-index="27" />
+        </projections>
         <order-by-columns>
             <order-by-column name="DATE(i.creation_date)" order-direction="DESC" />
         </order-by-columns>
-        <select-items start-index="7" stop-index="44">
-            <expression-items>
-                <expression-item text="DATE(i.creation_date)" start-index="7" stop-index="27" />
-            </expression-items>
-        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_with_regexp" parameters="'init', 1, 2">
         <tables>
             <table name="t_order_item" alias="t" start-index="14" stop-index="25" />
         </tables>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="item_id" table-name="t_order_item" operator="IN">
@@ -57,10 +57,5 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <select-items start-index="7" stop-index="7">
-            <shorthand-select-items>
-                <shorthand-select-item text="*" start-index="7" stop-index="7" />
-            </shorthand-select-items>
-        </select-items>
     </parser-result>
 </parser-result-sets>

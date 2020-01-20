@@ -77,18 +77,18 @@ unionClause_
     ;
 
 selectClause
-    : SELECT duplicateSpecification? selectItems fromClause? whereClause? groupByClause? havingClause? orderByClause?
+    : SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause? orderByClause?
     ;
 
 duplicateSpecification
     : ALL | DISTINCT
     ;
 
-selectItems
-    : (unqualifiedShorthand | selectItem) (COMMA_ selectItem)*
+projections
+    : (unqualifiedShorthand | projection) (COMMA_ projection)*
     ;
 
-selectItem
+projection
     : (top | columnName | expr) (AS? alias)? | qualifiedShorthand
     ;
 
@@ -97,7 +97,7 @@ top
     ;
 
 alias
-    : identifier_ | STRING_
+    : identifier | STRING_
     ;
 
 unqualifiedShorthand
@@ -105,7 +105,7 @@ unqualifiedShorthand
     ;
 
 qualifiedShorthand
-    : identifier_ DOT_ASTERISK_
+    : identifier DOT_ASTERISK_
     ;
 
 fromClause

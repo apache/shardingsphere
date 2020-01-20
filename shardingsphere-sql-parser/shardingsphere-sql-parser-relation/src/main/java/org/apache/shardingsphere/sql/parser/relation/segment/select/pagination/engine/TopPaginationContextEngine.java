@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.Paginatio
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.RowNumberValueSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.top.TopSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
@@ -44,15 +44,15 @@ public final class TopPaginationContextEngine {
     /**
      * Create pagination context.
      * 
-     * @param topSegment top segment
+     * @param topProjectionSegment top projection segment
      * @param andPredicates and predicates
      * @param parameters SQL parameters
      * @return pagination context
      */
-    public PaginationContext createPaginationContext(final TopSegment topSegment, final Collection<AndPredicate> andPredicates, final List<Object> parameters) {
-        Optional<PredicateSegment> rowNumberPredicate = getRowNumberPredicate(andPredicates, topSegment.getRowNumberAlias());
+    public PaginationContext createPaginationContext(final TopProjectionSegment topProjectionSegment, final Collection<AndPredicate> andPredicates, final List<Object> parameters) {
+        Optional<PredicateSegment> rowNumberPredicate = getRowNumberPredicate(andPredicates, topProjectionSegment.getAlias());
         Optional<PaginationValueSegment> offset = rowNumberPredicate.isPresent() ? createOffsetWithRowNumber(rowNumberPredicate.get()) : Optional.<PaginationValueSegment>absent();
-        PaginationValueSegment rowCount = topSegment.getTop();
+        PaginationValueSegment rowCount = topProjectionSegment.getTop();
         return new PaginationContext(offset.orNull(), rowCount, parameters);
     }
     
