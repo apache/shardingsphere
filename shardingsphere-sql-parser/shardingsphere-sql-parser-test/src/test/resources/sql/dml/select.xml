@@ -474,6 +474,15 @@
                 <owner name="length" start-index="7" stop-index="12" />
             </column-projection>>
         </projections>
+        <where parameters-count="1" parameter-marker-start-index="0" start-index="56" stop-index="79">
+            <and-predicate>
+                <predicate start-index="62" stop-index="80">
+                    <column name="item_id" start-index="62" stop-index="75">
+                        <owner name="length" start-index="62" stop-index="67" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">

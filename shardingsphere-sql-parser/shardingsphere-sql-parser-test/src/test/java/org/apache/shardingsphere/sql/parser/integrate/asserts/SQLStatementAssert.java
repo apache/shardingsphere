@@ -86,7 +86,7 @@ public final class SQLStatementAssert {
         if (whereSegment.isPresent() && null != expected.getWhere()) {
 //        if (whereSegment.isPresent()) {
             assertNotNull(assertMessage.getText("Expected where assertion should exist: "), expected.getWhere());
-            WhereAssert.assertIs(assertMessage, whereSegment.get(), expected.getWhere());
+            WhereAssert.assertIs(assertMessage, whereSegment.get(), expected.getWhere(), sqlCaseType);
         }
         Optional<GroupBySegment> groupBySegment = actual.getGroupBy();
         if (groupBySegment.isPresent()) {

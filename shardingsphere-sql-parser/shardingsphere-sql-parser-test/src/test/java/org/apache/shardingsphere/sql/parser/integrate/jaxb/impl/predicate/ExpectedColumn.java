@@ -32,6 +32,6 @@ public final class ExpectedColumn extends AbstractExpectedDelimiterSegment {
     @XmlAttribute
     private String name;
     
-    @XmlElement(name = "table")
+    @XmlElement
     private ExpectedTableSegment owner;
 }
