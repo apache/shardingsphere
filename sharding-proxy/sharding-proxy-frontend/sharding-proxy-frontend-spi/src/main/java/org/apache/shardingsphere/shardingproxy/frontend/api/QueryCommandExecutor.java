@@ -29,6 +29,13 @@ import java.sql.SQLException;
 public interface QueryCommandExecutor extends CommandExecutor {
     
     /**
+     * Judge is error response.
+     *
+     * @return is error response or not
+     */
+    boolean isErrorResponse();
+    
+    /**
      * Judge is query SQL or not.
      *
      * @return is query SQL or not
