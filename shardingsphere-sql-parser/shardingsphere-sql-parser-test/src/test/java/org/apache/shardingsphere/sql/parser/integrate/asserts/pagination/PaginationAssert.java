@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.integrate.asserts.pagination;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.pagination.ExpectedPaginationValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
@@ -34,20 +35,18 @@ import static org.junit.Assert.assertThat;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PaginationAssert {
     
-    private final SQLCaseType sqlCaseType;
-    
-    private final SQLStatementAssertMessage assertMessage;
-    
     /**
-     * Assert offset.
+     * Assert actual offset segment is correct with expected offset.
      * 
+     * @param assertMessage assert message
      * @param actual actual offset
      * @param expected expected offset
+     * @param sqlCaseType SQL case type
      */
-    public void assertOffset(final PaginationValueSegment actual, final ExpectedPaginationValue expected) {
+    public static void assertOffset(final SQLStatementAssertMessage assertMessage, final PaginationValueSegment actual, final ExpectedPaginationValue expected, final SQLCaseType sqlCaseType) {
         if (null == actual) {
             assertNull(assertMessage.getText("Offset should not exist: "), expected);
             return;
@@ -61,12 +60,14 @@ public final class PaginationAssert {
     }
     
     /**
-     * Assert row count.
+     * Assert actual row count segment is correct with expected row count.
      *
+     * @param assertMessage assert message
      * @param actual actual row count
      * @param expected expected row count
+     * @param sqlCaseType SQL case type
      */
-    public void assertRowCount(final PaginationValueSegment actual, final ExpectedPaginationValue expected) {
+    public static void assertRowCount(final SQLStatementAssertMessage assertMessage, final PaginationValueSegment actual, final ExpectedPaginationValue expected, final SQLCaseType sqlCaseType) {
         if (null == actual) {
             assertNull(assertMessage.getText("Row count should not exist: "), expected);
             return;

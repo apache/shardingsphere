@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.junit.Assert;
 import org.junit.Test;
@@ -37,18 +38,17 @@ public class PreparedJudgementEngineTest {
     public void isShadowSql() {
         RelationMetas relationMetas = mock(RelationMetas.class);
         when(relationMetas.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "shadow"));
-    
         ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration();
         shadowRuleConfiguration.setColumn("shadow");
         ShadowRule shadowRule = new ShadowRule(shadowRuleConfiguration);
         InsertStatement insertStatement = new InsertStatement();
-        insertStatement.getColumns()
-                .addAll(Arrays.asList(new ColumnSegment(0, 0, "id"),
-                        new ColumnSegment(0, 0, "name"),
-                        new ColumnSegment(0, 0, "shadow")));
+        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0);
+        insertColumnsSegment.getColumns().addAll(Arrays.asList(new ColumnSegment(0, 0, "id"),
+                new ColumnSegment(0, 0, "name"),
+                new ColumnSegment(0, 0, "shadow")));
+        insertStatement.setColumns(insertColumnsSegment);
         InsertSQLStatementContext insertSQLStatementContext = new InsertSQLStatementContext(relationMetas, Arrays.<Object>asList(1, "Tom", 2, "Jerry", 3, true), insertStatement);
         PreparedJudgementEngine preparedJudgementEngine = new PreparedJudgementEngine(shadowRule, insertSQLStatementContext, Arrays.<Object>asList(1, "Tom", true));
-        
         Assert.assertTrue("should be shadow", preparedJudgementEngine.isShadowSQL());
     }
 }

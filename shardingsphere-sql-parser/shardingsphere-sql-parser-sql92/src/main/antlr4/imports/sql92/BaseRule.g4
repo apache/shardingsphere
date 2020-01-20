@@ -43,7 +43,7 @@ numberLiterals
 
 dateTimeLiterals
     : (DATE | TIME | TIMESTAMP) STRING_
-    | LBE_ identifier_ STRING_ RBE_
+    | LBE_ identifier STRING_ RBE_
     ;
 
 hexadecimalLiterals
@@ -62,12 +62,12 @@ nullValueLiterals
     : NULL
     ;
 
-identifier_
+identifier
     : IDENTIFIER_ | unreservedWord_
     ;
 
 variable_
-    : (AT_? AT_)? (GLOBAL | LOCAL)? DOT_? identifier_
+    : (AT_? AT_)? (GLOBAL | LOCAL)? DOT_? identifier
     ;
 
 unreservedWord_
@@ -89,7 +89,7 @@ unreservedWord_
     ;
 
 schemaName
-    : identifier_
+    : identifier
     ;
 
 tableName
@@ -101,16 +101,16 @@ columnName
     ;
 
 viewName
-    : identifier_
-    | (owner DOT_)? identifier_
+    : identifier
+    | (owner DOT_)? identifier
     ;
 
 owner
-    : identifier_
+    : identifier
     ;
 
 name
-    : identifier_
+    : identifier
     ;
 
 columnNames
@@ -129,7 +129,7 @@ expr
     : expr logicalOperator expr
     | notOperator_ expr
     | LP_ expr RP_
-    | booleanPrimary_
+    | booleanPrimary
     ;
 
 logicalOperator
@@ -140,11 +140,11 @@ notOperator_
     : NOT | NOT_
     ;
 
-booleanPrimary_
-    : booleanPrimary_ IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
-    | booleanPrimary_ SAFE_EQ_ predicate
-    | booleanPrimary_ comparisonOperator predicate
-    | booleanPrimary_ comparisonOperator (ALL | ANY) subquery
+booleanPrimary
+    : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
+    | booleanPrimary SAFE_EQ_ predicate
+    | booleanPrimary comparisonOperator predicate
+    | booleanPrimary comparisonOperator (ALL | ANY) subquery
     | predicate
     ;
 
@@ -181,12 +181,12 @@ simpleExpr
     | parameterMarker
     | literals
     | columnName
-    | simpleExpr COLLATE (STRING_ | identifier_)
+    | simpleExpr COLLATE (STRING_ | identifier)
     | variable_
     | (PLUS_ | MINUS_ | TILDE_ | NOT_) simpleExpr
     | LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
-    | LBE_ identifier_ expr RBE_
+    | LBE_ identifier expr RBE_
     | matchExpression_
     | caseExpression_
     | intervalExpression_
@@ -217,7 +217,7 @@ castFunction_
     ;
 
 convertFunction_
-    : CONVERT LP_ expr USING identifier_ RP_
+    : CONVERT LP_ expr USING identifier RP_
     ;
 
 positionFunction_
@@ -229,7 +229,7 @@ substringFunction_
     ;
 
 extractFunction_
-    : EXTRACT LP_ identifier_ FROM expr RP_
+    : EXTRACT LP_ identifier FROM expr RP_
     ;
 
 trimFunction_
@@ -241,7 +241,7 @@ regularFunction_
     ;
 
 regularFunctionName_
-    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | INTERVAL
+    : identifier | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | INTERVAL
     ;
 
 matchExpression_
@@ -285,7 +285,7 @@ dataType
     ;
 
 dataTypeName_
-    : identifier_ identifier_?
+    : identifier identifier?
     ;
 
 dataTypeLength
@@ -301,7 +301,7 @@ collateClause_
     ;
 
 ignoredIdentifier_
-    : identifier_ (DOT_ identifier_)?
+    : identifier (DOT_ identifier)?
     ;
 
 dropBehaviour_

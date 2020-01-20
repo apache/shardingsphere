@@ -115,8 +115,8 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
         }
     }
     
-    private Comparable<?> getAggregationValue(final AggregationProjection aggregationSelectItem) throws SQLException {
-        Object result = getCurrentQueryResult().getValue(aggregationSelectItem.getIndex(), Object.class);
+    private Comparable<?> getAggregationValue(final AggregationProjection aggregationProjection) throws SQLException {
+        Object result = getCurrentQueryResult().getValue(aggregationProjection.getIndex(), Object.class);
         Preconditions.checkState(null == result || result instanceof Comparable, "Aggregation value must implements Comparable");
         return (Comparable<?>) result;
     }

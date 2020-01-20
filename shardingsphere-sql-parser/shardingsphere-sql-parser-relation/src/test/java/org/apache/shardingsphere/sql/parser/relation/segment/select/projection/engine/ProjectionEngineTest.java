@@ -26,11 +26,11 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.i
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationDistinctSelectItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationSelectItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnSelectItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionSelectItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandSelectItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationDistinctProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.junit.Test;
 
@@ -44,64 +44,64 @@ import static org.mockito.Mockito.when;
 public final class ProjectionEngineTest {
     
     @Test
-    public void assertCreateProjectionWhenSelectItemSegmentNotMatched() {
+    public void assertCreateProjectionWhenProjectionSegmentNotMatched() {
         assertFalse(new ProjectionEngine().createProjection(null, null).isPresent());
     }
     
     @Test
-    public void assertCreateProjectionWhenSelectItemSegmentInstanceOfShorthandSelectItemSegment() {
-        ShorthandSelectItemSegment shorthandSelectItemSegment = mock(ShorthandSelectItemSegment.class);
-        when(shorthandSelectItemSegment.getOwner()).thenReturn(Optional.of(mock(TableSegment.class)));
-        Optional<Projection> actual = new ProjectionEngine().createProjection(null, shorthandSelectItemSegment);
+    public void assertCreateProjectionWhenProjectionSegmentInstanceOfShorthandProjectionSegment() {
+        ShorthandProjectionSegment shorthandProjectionSegment = mock(ShorthandProjectionSegment.class);
+        when(shorthandProjectionSegment.getOwner()).thenReturn(Optional.of(mock(TableSegment.class)));
+        Optional<Projection> actual = new ProjectionEngine().createProjection(null, shorthandProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
     }
     
     @Test
-    public void assertCreateProjectionWhenSelectItemSegmentInstanceOfColumnSelectItemSegment() {
-        ColumnSelectItemSegment columnSelectItemSegment = new ColumnSelectItemSegment("text", new ColumnSegment(0, 10, "name"));
-        columnSelectItemSegment.setAlias("alias");
-        Optional<Projection> actual = new ProjectionEngine().createProjection(null, columnSelectItemSegment);
+    public void assertCreateProjectionWhenProjectionSegmentInstanceOfColumnProjectionSegment() {
+        ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment("text", new ColumnSegment(0, 10, "name"));
+        columnProjectionSegment.setAlias("alias");
+        Optional<Projection> actual = new ProjectionEngine().createProjection(null, columnProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ColumnProjection.class));
     }
 
     @Test
-    public void assertCreateProjectionWhenSelectItemSegmentInstanceOfExpressionSelectItemSegment() {
-        ExpressionSelectItemSegment expressionSelectItemSegment = new ExpressionSelectItemSegment(0, 10, "text");
-        Optional<Projection> actual = new ProjectionEngine().createProjection(null, expressionSelectItemSegment);
+    public void assertCreateProjectionWhenProjectionSegmentInstanceOfExpressionProjectionegment() {
+        ExpressionProjectionSegment expressionProjectionSegment = new ExpressionProjectionSegment(0, 10, "text");
+        Optional<Projection> actual = new ProjectionEngine().createProjection(null, expressionProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ExpressionProjection.class));
     }
     
     @Test
-    public void assertCreateProjectionWhenSelectItemSegmentInstanceOfAggregationDistinctSelectItemSegment() {
-        AggregationDistinctSelectItemSegment aggregationDistinctSelectItemSegment = new AggregationDistinctSelectItemSegment(0, 10, "text", AggregationType.COUNT, 0, "distinctExpression");
-        Optional<Projection> actual = new ProjectionEngine().createProjection("select count(1) from table_1", aggregationDistinctSelectItemSegment);
+    public void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationDistinctProjectionSegment() {
+        AggregationDistinctProjectionSegment aggregationDistinctProjectionSegment = new AggregationDistinctProjectionSegment(0, 10, "text", AggregationType.COUNT, 0, "distinctExpression");
+        Optional<Projection> actual = new ProjectionEngine().createProjection("select count(1) from table_1", aggregationDistinctProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(AggregationDistinctProjection.class));
     }
     
     @Test
-    public void assertCreateProjectionWhenSelectItemSegmentInstanceOfAggregationSelectItemSegment() {
-        AggregationSelectItemSegment aggregationSelectItemSegment = new AggregationSelectItemSegment(0, 10, "text", AggregationType.COUNT, 0);
-        Optional<Projection> actual = new ProjectionEngine().createProjection("select count(1) from table_1", aggregationSelectItemSegment);
+    public void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationProjectionSegment() {
+        AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 10, "text", AggregationType.COUNT, 0);
+        Optional<Projection> actual = new ProjectionEngine().createProjection("select count(1) from table_1", aggregationProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(AggregationProjection.class));
     }
     
     @Test
-    public void assertCreateProjectionWhenSelectItemSegmentInstanceOfAggregationDistinctSelectItemSegmentAndAggregationTypeIsAvg() {
-        AggregationDistinctSelectItemSegment aggregationDistinctSelectItemSegment = new AggregationDistinctSelectItemSegment(0, 10, "text", AggregationType.AVG, 0, "distinctExpression");
-        Optional<Projection> actual = new ProjectionEngine().createProjection("select count(1) from table_1", aggregationDistinctSelectItemSegment);
+    public void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationDistinctProjectionSegmentAndAggregationTypeIsAvg() {
+        AggregationDistinctProjectionSegment aggregationDistinctProjectionSegment = new AggregationDistinctProjectionSegment(0, 10, "text", AggregationType.AVG, 0, "distinctExpression");
+        Optional<Projection> actual = new ProjectionEngine().createProjection("select count(1) from table_1", aggregationDistinctProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(AggregationDistinctProjection.class));
     }
     
     @Test
-    public void assertCreateProjectionWhenSelectItemSegmentInstanceOfAggregationSelectItemSegmentAndAggregationTypeIsAvg() {
-        AggregationSelectItemSegment aggregationSelectItemSegment = new AggregationSelectItemSegment(0, 10, "text", AggregationType.AVG, 0);
-        Optional<Projection> actual = new ProjectionEngine().createProjection("select count(1) from table_1", aggregationSelectItemSegment);
+    public void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationProjectionSegmentAndAggregationTypeIsAvg() {
+        AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 10, "text", AggregationType.AVG, 0);
+        Optional<Projection> actual = new ProjectionEngine().createProjection("select count(1) from table_1", aggregationProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(AggregationProjection.class));
     }

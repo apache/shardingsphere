@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.P
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -98,7 +98,7 @@ public final class SelectSQLStatementContextTest {
     @Test
     public void assertIsSameGroupByAndOrderByItems() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.setSelectItems(new SelectItemsSegment(0, 0, false));
+        selectStatement.setProjections(new ProjectionsSegment(0, 0, false));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.<OrderByItemSegment>singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.<OrderByItemSegment>singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(null, "", Collections.emptyList(), selectStatement);
@@ -108,7 +108,7 @@ public final class SelectSQLStatementContextTest {
     @Test
     public void assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupBy() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.setSelectItems(new SelectItemsSegment(0, 0, false));
+        selectStatement.setProjections(new ProjectionsSegment(0, 0, false));
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(null, "", Collections.emptyList(), selectStatement);
         assertFalse(selectSQLStatementContext.isSameGroupByAndOrderByItems());
     }
@@ -116,7 +116,7 @@ public final class SelectSQLStatementContextTest {
     @Test
     public void assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderBy() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.setSelectItems(new SelectItemsSegment(0, 0, false));
+        selectStatement.setProjections(new ProjectionsSegment(0, 0, false));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.<OrderByItemSegment>singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.DESC))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.<OrderByItemSegment>singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(null, "", Collections.emptyList(), selectStatement);
@@ -161,14 +161,14 @@ public final class SelectSQLStatementContextTest {
     
     private ProjectionsContext createProjectionsContext() {
         return new ProjectionsContext(
-                0, 0, true, Arrays.asList(getColumnSelectItemWithoutOwner(), getColumnSelectItemWithoutOwner(true), getColumnSelectItemWithoutOwner(false)), Collections.<String>emptyList());
+                0, 0, true, Arrays.asList(getColumnProjectionWithoutOwner(), getColumnProjectionWithoutOwner(true), getColumnProjectionWithoutOwner(false)), Collections.<String>emptyList());
     }
     
-    private Projection getColumnSelectItemWithoutOwner() {
+    private Projection getColumnProjectionWithoutOwner() {
         return new ColumnProjection("table", "name", null);
     }
     
-    private Projection getColumnSelectItemWithoutOwner(final boolean hasAlias) {
+    private Projection getColumnProjectionWithoutOwner(final boolean hasAlias) {
         return new ColumnProjection(null, hasAlias ? "name" : "id", hasAlias ? "n" : null);
     }
 }

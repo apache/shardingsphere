@@ -34,6 +34,8 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class SQLStatementAssertMessage {
     
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    
     private final String sqlCaseId;
     
     private final SQLCaseType sqlCaseType;
@@ -49,7 +51,7 @@ public final class SQLStatementAssertMessage {
      * @return message text
      */
     public String getText(final String failureMessage) {
-        StringBuilder result = new StringBuilder(System.getProperty("line.separator"));
+        StringBuilder result = new StringBuilder(LINE_SEPARATOR);
         appendSQLCaseId(result);
         appendSQL(result);
         appendFailureMessage(failureMessage, result);
@@ -59,25 +61,25 @@ public final class SQLStatementAssertMessage {
     private void appendSQLCaseId(final StringBuilder builder) {
         builder.append("SQL Case ID : ");
         builder.append(sqlCaseId);
-        builder.append(System.getProperty("line.separator"));
+        builder.append(LINE_SEPARATOR);
     }
     
     private void appendSQL(final StringBuilder builder) {
         builder.append("SQL         : ");
         if (SQLCaseType.Placeholder == sqlCaseType) {
             builder.append(sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList()));
-            builder.append(System.getProperty("line.separator"));
+            builder.append(LINE_SEPARATOR);
             builder.append("SQL Params  : ");
             builder.append(parserResultSetRegistry.get(sqlCaseId).getParameters());
-            builder.append(System.getProperty("line.separator"));
+            builder.append(LINE_SEPARATOR);
         } else {
             builder.append(sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters()));
         }
     }
     
     private void appendFailureMessage(final String failureMessage, final StringBuilder builder) {
-        builder.append(System.getProperty("line.separator"));
+        builder.append(LINE_SEPARATOR);
         builder.append(failureMessage);
-        builder.append(System.getProperty("line.separator"));
+        builder.append(LINE_SEPARATOR);
     }
 }

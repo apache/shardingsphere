@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment;
 
+import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+
 /**
  * SQL segment.
  * 
  * @author zhangliang
  */
-public interface SQLSegment {
+public interface SQLSegment extends ASTNode {
     
     /**
      * Get start index.

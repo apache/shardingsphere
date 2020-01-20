@@ -21,59 +21,42 @@
         <tables>
             <table name="t_order" start-index="49" stop-index="55" />
         </tables>
+        <projections start-index="7" stop-index="42">
+            <aggregation-projection type="SUM" alias="orders_sum" inner-expression-start-index="10" start-index="7" stop-index="19" />
+            <column-projection name="user_id" start-index="36" stop-index="42" />
+        </projections>
         <group-by-columns>
             <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
         <order-by-columns>
             <order-by-column name="user_id" order-direction="ASC" />
         </order-by-columns>
-        <select-items start-index="7" stop-index="42">
-            <aggregation-select-items>
-                <aggregation-select-item text="SUM(order_id)" type="SUM" innerExpressionStartIndex="10" stop-index="19" />
-            </aggregation-select-items>
-            <column-select-items>
-                <column-select-item text="user_id" start-index="36" stop-index="42" />
-            </column-select-items>
-        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_group_by_with_count">
         <tables>
             <table name="t_order" start-index="53" stop-index="59" />
         </tables>
-        <select-items>
-            <aggregation-select-items>
-                <aggregation-select-item type="COUNT" inner-expression="(order_id)" alias="orders_count" />
-            </aggregation-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="46">
+            <aggregation-projection type="COUNT" alias="orders_count" inner-expression-start-index="12" start-index="7" stop-index="21" />
+            <column-projection name="user_id" start-index="40" stop-index="46" />
+        </projections>
         <group-by-columns>
             <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
         <order-by-columns>
             <order-by-column name="user_id" order-direction="ASC" />
         </order-by-columns>
-        <select-items start-index="7" stop-index="46">
-            <aggregation-select-items>
-                <aggregation-select-item text="COUNT(order_id)" type="COUNT" innerExpressionStartIndex="12" stop-index="21" />
-            </aggregation-select-items>
-            <column-select-items>
-                <column-select-item text="user_id" start-index="40" stop-index="46" />
-            </column-select-items>
-        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_group_by_with_max">
         <tables>
             <table name="t_order" start-index="51" stop-index="57" />
         </tables>
-        <select-items start-index="7" stop-index="44">
-            <aggregation-select-items>
-                <aggregation-select-item text="MAX(order_id)" type="MAX" innerExpressionStartIndex="10" stop-index="19" />
-            </aggregation-select-items>
-            <column-select-items>
-                <column-select-item text="user_id" start-index="38" stop-index="44" />
-            </column-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="44">
+            <aggregation-projection type="MAX" alias="max_order_id" inner-expression-start-index="10" start-index="7" stop-index="19" />
+            <column-projection name="user_id" start-index="38" stop-index="44" />
+        </projections>
         <group-by-columns>
             <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
@@ -86,14 +69,10 @@
         <tables>
             <table name="t_order" start-index="51" stop-index="57" />
         </tables>
-        <select-items start-index="7" stop-index="44">
-            <aggregation-select-items>
-                <aggregation-select-item text="MIN(order_id)" type="MIN" innerExpressionStartIndex="10" stop-index="19" />
-            </aggregation-select-items>
-            <column-select-items>
-                <column-select-item text="user_id" start-index="38" stop-index="44" />
-            </column-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="44">
+            <aggregation-projection type="MIN" alias="min_order_id" inner-expression-start-index="10" start-index="7" stop-index="19" />
+            <column-projection name="user_id" start-index="38" stop-index="44" />
+        </projections>
         <group-by-columns>
             <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
@@ -106,14 +85,10 @@
         <tables>
             <table name="t_order" start-index="49" stop-index="55" />
         </tables>
-        <select-items start-index="7" stop-index="42">
-            <aggregation-select-items>
-                <aggregation-select-item text="AVG(order_id)" type="AVG" innerExpressionStartIndex="10" stop-index="19"/>
-            </aggregation-select-items>
-            <column-select-items>
-                <column-select-item text="user_id" start-index="36" stop-index="42"/>
-            </column-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="42">
+            <aggregation-projection type="AVG" alias="orders_avg" inner-expression-start-index="10" start-index="7" stop-index="19" />
+            <column-projection name="user_id" start-index="36" stop-index="42" />
+        </projections>
         <group-by-columns>
             <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
@@ -126,14 +101,10 @@
         <tables>
             <table name="t_order" start-index="49" stop-index="55" />
         </tables>
-        <select-items start-index="7" stop-index="42">
-            <aggregation-select-items>
-                <aggregation-select-item stop-index="19" type="SUM" innerExpressionStartIndex="10" text="SUM(order_id)" alias="orders_sum" />
-            </aggregation-select-items>
-            <column-select-items>
-                <column-select-item text="user_id" start-index="36" stop-index="42" />
-            </column-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="42">
+            <aggregation-projection type="SUM" inner-expression-start-index="10" alias="orders_sum" start-index="7" stop-index="19" />
+            <column-projection name="user_id" start-index="36" stop-index="42" />
+        </projections>
         <group-by-columns>
             <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
@@ -147,6 +118,9 @@
             <table name="t_order" alias="o" start-index="36" stop-index="42" />
             <table name="t_order_item" alias="i" start-index="51" stop-index="62" />
         </tables>
+        <projections start-index="7" stop-index="29">
+            <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="items_count" start-index="7" stop-index="14" />
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -159,11 +133,6 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <select-items start-index="7" stop-index="29">
-            <aggregation-select-items>
-                <aggregation-select-item type="COUNT" stop-index="14" innerExpressionStartIndex="12" text="count(*)" alias="items_count" />
-            </aggregation-select-items>
-        </select-items>
         <group-by-columns>
             <group-by-column name="user_id" owner="o" order-direction="ASC" />
         </group-by-columns>
@@ -173,11 +142,9 @@
         <tables>
             <table name="t_order" start-index="20" stop-index="26" />
         </tables>
-        <select-items start-index="7" stop-index="13">
-            <column-select-items>
-                <column-select-item text="user_id" stop-index="13" />
-            </column-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="13">
+            <column-projection name="user_id" start-index="7" stop-index="13" />
+        </projections>
         <group-by-columns>
             <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
@@ -191,14 +158,10 @@
         <tables>
             <table name="t_order" start-index="49" stop-index="55" />
         </tables>
-        <select-items start-index="7" stop-index="42">
-            <column-select-items>
-                <column-select-item text="user_id" stop-index="13" />
-            </column-select-items>
-            <aggregation-select-items>
-                <aggregation-select-item start-index="16" stop-index="28" innerExpressionStartIndex="19" type="SUM" text="SUM(order_id)" alias="orders_sum" />
-            </aggregation-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="42">
+            <column-projection name="user_id" start-index="7" stop-index="13" />
+            <aggregation-projection type="SUM"  inner-expression-start-index="19" alias="orders_sum" start-index="16" stop-index="28" />
+        </projections>
         <group-by-columns>
             <group-by-column name="user_id" order-direction="ASC" />
         </group-by-columns>
@@ -212,25 +175,27 @@
         <tables>
             <table name="t_order" alias="o" start-index="26" stop-index="32" />
         </tables>
+        <projections start-index="7" stop-index="19">
+            <column-projection name="user_id" alias="uid" start-index="7" stop-index="15">
+                <owner name="o" start-index="7" stop-index="7" />
+            </column-projection>
+        </projections>
         <group-by-columns>
             <group-by-column name="user_id" owner="o" alias="uid" order-direction="ASC" />
         </group-by-columns>
         <order-by-columns>
             <order-by-column name="user_id" owner="o" order-direction="ASC" />
         </order-by-columns>
-        <select-items start-index="7" stop-index="19">
-            <column-select-items>
-                <column-select-item text="o.user_id" alias="uid" start-index="7" stop-index="7">
-                    <table-segment name="o" start-index="7" stop-index="7" />
-                </column-select-item>
-            </column-select-items>
-        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_group_by_with_date_function" parameters="1000, 1100">
         <tables>
-            <table name="t_order_item" start-index="91" stop-index="104" />
+            <table name="t_order_item" start-delimiter="`" end-delimiter="`" start-index="91" stop-index="104" />
         </tables>
+        <projections start-index="7" stop-index="84">
+            <expression-projection alias="creation_date" start-index="7" stop-index="45" />
+            <aggregation-projection type="COUNT" inner-expression-start-index="70" alias="c_number" start-index="65" stop-index="72" />
+        </projections>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order_item" operator="IN">
@@ -239,14 +204,6 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <select-items start-index="7" stop-index="84">
-            <expression-items>
-                <expression-item start-index="7" stop-index="45" text="date_format(creation_date,'%y-%m-%d')" alias="creation_date" />
-            </expression-items>
-            <aggregation-select-items>
-                <aggregation-select-item start-index="65" stop-index="72" innerExpressionStartIndex="70" type="COUNT" text="count(*)" alias="c_number" />
-            </aggregation-select-items>
-        </select-items>
         <group-by-columns>
             <group-by-column name="date_format(creation_date,'%y-%m-%d')" order-direction="ASC" />
         </group-by-columns>
@@ -256,14 +213,10 @@
         <tables>
             <table name="t_order" start-index="58" stop-index="64" />
         </tables>
-        <select-items start-index="7" stop-index="51">
-            <aggregation-select-items>
-                <aggregation-select-item type="SUM" start-index="7" stop-index="19" innerExpressionStartIndex="10" text="SUM(order_id)" alias="orders_sum" />
-            </aggregation-select-items>
-            <column-select-items>
-                <column-select-item text="user_id" alias="key" start-index="36" stop-index="42" />
-            </column-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="51">
+            <aggregation-projection type="SUM" inner-expression-start-index="10" alias="orders_sum" start-index="7" stop-index="19" />
+            <column-projection name="user_id" alias="key" start-index="36" stop-index="42" />
+        </projections>
         <group-by-columns>
             <group-by-column name="key" alias="key" order-direction="ASC" />
         </group-by-columns>
@@ -273,14 +226,10 @@
         <tables>
             <table name="t_order" start-index="53" stop-index="59" />
         </tables>
-        <select-items start-index="7" stop-index="46">
-            <aggregation-select-items>
-                <aggregation-select-item start-index="7" stop-index="21" innerExpressionStartIndex="12" type="COUNT" text="COUNT(order_id)" alias="orders_count" />
-            </aggregation-select-items>
-            <column-select-items>
-                <column-select-item text="user_id" start-index="40" stop-index="46" />
-            </column-select-items>
-        </select-items>
+        <projections start-index="7" stop-index="46">
+            <aggregation-projection inner-expression-start-index="12" type="COUNT" alias="orders_count" start-index="7" stop-index="21" />
+            <column-projection name="user_id" start-index="40" stop-index="46" />
+        </projections>
         <group-by-columns>
             <group-by-column index="2" order-direction="ASC" />
         </group-by-columns>

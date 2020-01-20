@@ -50,7 +50,7 @@
                         <configuration>
                             <libDirectory>src/main/antlr4/imports/sql92/</libDirectory>
                             <listener>false</listener>
-                            <visitor>false</visitor>
+                            <visitor>true</visitor>
                         </configuration>
                         <goals>
                             <goal>antlr4</goal>

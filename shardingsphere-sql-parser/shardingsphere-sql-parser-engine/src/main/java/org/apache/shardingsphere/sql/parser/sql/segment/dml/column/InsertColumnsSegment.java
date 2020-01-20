@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Insert columns segment.
@@ -37,5 +38,5 @@ public final class InsertColumnsSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final Collection<ColumnSegment> columns;
+    private final Collection<ColumnSegment> columns = new LinkedList<>();
 }

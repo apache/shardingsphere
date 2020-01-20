@@ -46,7 +46,7 @@ privilegeType_
     ;
 
 grantee_
-    : PUBLIC | identifier_
+    : PUBLIC | identifier
     ;
 
 onObjectClause_

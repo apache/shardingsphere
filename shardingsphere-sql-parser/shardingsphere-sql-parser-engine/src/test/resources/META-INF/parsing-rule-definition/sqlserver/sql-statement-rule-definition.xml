@@ -17,6 +17,6 @@
   -->
 
 <sql-statement-rule-definition>
-    <sql-statement-rule context="select" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement" extractor-rule-refs="tableReferences, columns, selectItems" />
+    <sql-statement-rule context="select" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement" extractor-rule-refs="tableReferences, columns, projections" />
     <sql-statement-rule context="delete" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement" />
 </sql-statement-rule-definition>

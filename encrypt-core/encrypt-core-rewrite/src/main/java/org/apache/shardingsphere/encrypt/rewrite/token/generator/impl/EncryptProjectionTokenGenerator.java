@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnSelectItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemsSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
+import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 
@@ -47,36 +47,34 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext.getSqlStatement() instanceof SelectStatement && !sqlStatementContext.getTablesContext().isEmpty())) {
-            return false;
-        }
-        Optional<SelectItemsSegment> selectItemsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(SelectItemsSegment.class);
-        return selectItemsSegment.isPresent() && !selectItemsSegment.get().getSelectItems().isEmpty();
+        return sqlStatementContext.getSqlStatement() instanceof SelectStatement && !sqlStatementContext.getTablesContext().isEmpty();
     }
     
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+        if (!(sqlStatementContext instanceof SelectSQLStatementContext)) {
+            return Collections.emptyList();
+        }
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
-        Optional<SelectItemsSegment> selectItemsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(SelectItemsSegment.class);
-        Preconditions.checkState(selectItemsSegment.isPresent());
+        ProjectionsSegment projectionsSegment = ((SelectStatement) sqlStatementContext.getSqlStatement()).getProjections();
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
         if (!encryptTable.isPresent()) {
             return Collections.emptyList();
         }
-        for (SelectItemSegment each : selectItemsSegment.get().getSelectItems()) {
+        for (ProjectionSegment each : projectionsSegment.getProjections()) {
             if (isEncryptLogicColumn(each, encryptTable.get())) {
-                result.add(generateSQLToken((ColumnSelectItemSegment) each, tableName));
+                result.add(generateSQLToken((ColumnProjectionSegment) each, tableName));
             }
         }
         return result;
     }
     
-    private boolean isEncryptLogicColumn(final SelectItemSegment selectItemSegment, final EncryptTable encryptTable) {
-        return selectItemSegment instanceof ColumnSelectItemSegment && encryptTable.getLogicColumns().contains(((ColumnSelectItemSegment) selectItemSegment).getName());
+    private boolean isEncryptLogicColumn(final ProjectionSegment projectionSegment, final EncryptTable encryptTable) {
+        return projectionSegment instanceof ColumnProjectionSegment && encryptTable.getLogicColumns().contains(((ColumnProjectionSegment) projectionSegment).getName());
     }
     
-    private SubstitutableColumnNameToken generateSQLToken(final ColumnSelectItemSegment segment, final String tableName) {
+    private SubstitutableColumnNameToken generateSQLToken(final ColumnProjectionSegment segment, final String tableName) {
         Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, segment.getName());
         String columnName = plainColumn.isPresent() && !queryWithCipherColumn ? plainColumn.get() : getEncryptRule().getCipherColumn(tableName, segment.getName());
         return segment.getOwner().isPresent() ? new SubstitutableColumnNameToken(segment.getOwner().get().getStopIndex() + 2, segment.getStopIndex(), columnName)
