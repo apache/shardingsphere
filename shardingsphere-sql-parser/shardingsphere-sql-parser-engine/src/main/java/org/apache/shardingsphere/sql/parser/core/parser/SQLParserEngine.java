@@ -63,7 +63,7 @@ public final class SQLParserEngine {
             ((Parser) sqlParser).setErrorHandler(new BailErrorStrategy());
             ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.SLL);
             parseTree = sqlParser.execute().getChild(0);
-        } catch (ParseCancellationException ex) {
+        } catch (final ParseCancellationException ex) {
             ((Parser) sqlParser).reset();
             ((Parser) sqlParser).setErrorHandler(new DefaultErrorStrategy());
             ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.LL);
