@@ -17,21 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.projection;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSegment;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 
-@Getter
-@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class AbstractExpectedProjection implements ExpectedProjection {
-    
-    @XmlAttribute(name = "start-index")
-    private int startIndex;
-    
-    @XmlAttribute(name = "stop-index")
-    private int stopIndex;
+public abstract class AbstractExpectedProjection extends AbstractExpectedSegment implements ExpectedProjection {
 }
