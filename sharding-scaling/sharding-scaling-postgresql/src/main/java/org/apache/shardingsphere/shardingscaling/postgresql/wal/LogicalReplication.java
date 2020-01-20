@@ -35,20 +35,26 @@ import java.util.Properties;
 public final class LogicalReplication {
     
     /**
-     *  Create PostgreSQL replication stream.
+     *  Create PostgreSQL connection.
      *
      * @param jdbcDataSourceConfiguration jdbc configuration
-     * @param slotName of replication stream
-     * @param startPosition of replication stream
-     * @return postgresql replication stream
+     * @return PostgreSQL connection
      * @throws SQLException sql exception
      */
-    public PGReplicationStream createReplicationStream(final JdbcDataSourceConfiguration jdbcDataSourceConfiguration,
-                                                       final String slotName, final LogSequenceNumber startPosition) throws SQLException {
-        return createReplicationStream(createConnection(jdbcDataSourceConfiguration), slotName, startPosition);
+    public PGConnection createPgConnection(final JdbcDataSourceConfiguration jdbcDataSourceConfiguration) throws SQLException {
+        return createConnection(jdbcDataSourceConfiguration);
     }
     
-    private PGReplicationStream createReplicationStream(final PGConnection pgConnection, final String slotName, final LogSequenceNumber startPosition) throws SQLException {
+    /**
+     * Create PostgreSQL replication stream.
+     *
+     * @param pgConnection PostgreSQL connection
+     * @param slotName slot name
+     * @param startPosition start position
+     * @return replication stream
+     * @throws SQLException sql exception
+     */
+    public PGReplicationStream createReplicationStream(final PGConnection pgConnection, final String slotName, final LogSequenceNumber startPosition) throws SQLException {
         return pgConnection.getReplicationAPI()
                 .replicationStream()
                 .logical()
