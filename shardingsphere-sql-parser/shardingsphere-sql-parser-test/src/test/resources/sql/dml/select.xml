@@ -476,7 +476,7 @@
         </projections>
         <where parameters-count="1" parameter-marker-start-index="0" start-index="56" stop-index="79">
             <and-predicate>
-                <predicate start-index="62" stop-index="80">
+                <predicate start-index="62" stop-index="79">
                     <column name="item_id" start-index="62" stop-index="75">
                         <owner name="length" start-index="62" stop-index="67" />
                     </column>

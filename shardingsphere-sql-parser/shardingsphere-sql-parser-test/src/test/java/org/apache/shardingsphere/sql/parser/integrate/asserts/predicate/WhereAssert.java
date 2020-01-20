@@ -88,11 +88,14 @@ public final class WhereAssert {
     private static void assertPredicates(final SQLStatementAssertMessage assertMessage, final Collection<PredicateSegment> actual, final List<ExpectedPredicate> expected) {
         int count = 0;
         for (PredicateSegment each: actual) {
-            assertColumn(assertMessage, each.getColumn(), expected.get(count).getColumn());
+            ExpectedPredicate expectedPredicate = expected.get(count);
+            assertColumn(assertMessage, each.getColumn(), expectedPredicate.getColumn());
 //            if (each.getRightValue() instanceof PredicateCompareRightValue) {
-//                assertCompareRightValue(assertMessage, (PredicateCompareRightValue) each.getRightValue(), expected.get(count).findExpectedRightValue(ExpectedPredicateCompareRightValue.class));
+//                assertCompareRightValue(assertMessage, (PredicateCompareRightValue) each.getRightValue(), expectedPredicate.findExpectedRightValue(ExpectedPredicateCompareRightValue.class));
 //            }
             // TODO add other right value assertion
+            assertThat(assertMessage.getText("Predicate start index assertion error: "), each.getStartIndex(), is(expectedPredicate.getStartIndex()));
+            assertThat(assertMessage.getText("Predicate stop index assertion error: "), each.getStopIndex(), is(expectedPredicate.getStopIndex()));
             count++;
         }
     }
