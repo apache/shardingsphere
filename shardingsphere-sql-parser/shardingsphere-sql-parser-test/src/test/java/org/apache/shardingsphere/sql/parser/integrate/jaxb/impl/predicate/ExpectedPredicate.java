@@ -31,8 +31,8 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class ExpectedPredicate extends AbstractExpectedSegment {
     
-    @XmlElement(name = "column-segment")
-    private ExpectedColumnSegment column = new ExpectedColumnSegment();
+    @XmlElement
+    private ExpectedColumn column;
     
     @XmlElement(name = "predicate-between-right-value")
     private ExpectedPredicateBetweenRightValue betweenRightValue = new ExpectedPredicateBetweenRightValue();

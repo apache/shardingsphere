@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.Exp
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedLiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedParamMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedAndPredicate;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedColumnSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedColumn;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedPredicate;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedWhere;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.value.ExpectedPredicateCompareRightValue;
@@ -90,7 +90,7 @@ public final class WhereAssert {
         }
     }
     
-    private static void assertColumnSegment(final SQLStatementAssertMessage assertMessage, final ColumnSegment actual, final ExpectedColumnSegment expected) {
+    private static void assertColumnSegment(final SQLStatementAssertMessage assertMessage, final ColumnSegment actual, final ExpectedColumn expected) {
         assertThat(assertMessage.getText("column segment name assertion error: "), actual.getName(), is(expected.getName()));
         assertThat(assertMessage.getText("column segment table name assertion error: "), 
                 actual.getOwner().isPresent() ? actual.getOwner().get().getTableName() : null, is(expected.getOwner().getName()));
