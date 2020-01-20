@@ -88,7 +88,7 @@ public final class WhereAssert {
             if (each.getRightValue() instanceof PredicateCompareRightValue) {
                 assertCompareRightValue(assertMessage, (PredicateCompareRightValue) each.getRightValue(), expected.get(count).findExpectedRightValue(ExpectedPredicateCompareRightValue.class));
             }
-            //TODO add expr assertion
+            //TODO add other right value assertion
             count++;
         }
     }
@@ -115,22 +115,22 @@ public final class WhereAssert {
     }
     
     private static void assertCompareRightValue(final SQLStatementAssertMessage assertMessage, final PredicateCompareRightValue actual, final ExpectedPredicateCompareRightValue expected) {
-        assertThat(assertMessage.getText("right value operator assertion error: "), actual.getOperator(), is(expected.getOperator()));
+        assertThat(assertMessage.getText("Right value operator assertion error: "), actual.getOperator(), is(expected.getOperator()));
         if (actual.getExpression() instanceof ParameterMarkerExpressionSegment) {
-            assertThat(assertMessage.getText("parameter marker expression parameter marker index assertion error"), 
+            assertThat(assertMessage.getText("Parameter marker expression parameter marker index assertion error: "), 
                     ((ParameterMarkerExpressionSegment) actual.getExpression()).getParameterMarkerIndex(), 
                     is(expected.findExpectedExpression(ExpectedParameterMarkerExpression.class).getParameterMarkerIndex()));
         }
         if (actual.getExpression() instanceof CommonExpressionSegment) {
-            assertThat(assertMessage.getText("common expression text assertion error: "), ((ComplexExpressionSegment) actual.getExpression()).getText(), 
+            assertThat(assertMessage.getText("Common expression text assertion error: "), ((ComplexExpressionSegment) actual.getExpression()).getText(), 
                     is(expected.findExpectedExpression(ExpectedCommonExpression.class).getText()));
         }
         if (actual.getExpression() instanceof SubquerySegment) {
-            assertThat(assertMessage.getText("subquery segment text assertion error: "), ((ComplexExpressionSegment) actual.getExpression()).getText(), 
+            assertThat(assertMessage.getText("Subquery text assertion error: "), ((ComplexExpressionSegment) actual.getExpression()).getText(), 
                     is(expected.findExpectedExpression(ExpectedSubquery.class).getText()));
         }
         if (actual.getExpression() instanceof LiteralExpressionSegment) {
-            assertThat(assertMessage.getText("literal assertion error:"), ((LiteralExpressionSegment) actual.getExpression()).getLiterals().toString(), 
+            assertThat(assertMessage.getText("Literal assertion error: "), ((LiteralExpressionSegment) actual.getExpression()).getLiterals().toString(), 
                     is(expected.findExpectedExpression(ExpectedLiteralExpression.class).getLiterals().toString()));
         }
     }
