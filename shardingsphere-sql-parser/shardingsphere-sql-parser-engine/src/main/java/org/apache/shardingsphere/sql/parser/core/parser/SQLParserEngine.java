@@ -18,9 +18,15 @@
 package org.apache.shardingsphere.sql.parser.core.parser;
 
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.BailErrorStrategy;
+import org.antlr.v4.runtime.DefaultErrorStrategy;
+import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.atn.PredictionMode;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.sql.parser.api.SQLParser;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
 import org.apache.shardingsphere.sql.parser.core.rule.registry.ParseRuleRegistry;
@@ -51,7 +57,18 @@ public final class SQLParserEngine {
      * @return abstract syntax tree of SQL
      */
     public SQLAST parse() {
-        ParseTree parseTree = SQLParserFactory.newInstance(databaseTypeName, sql).execute().getChild(0);
+        SQLParser sqlParser = SQLParserFactory.newInstance(databaseTypeName, sql);
+        ParseTree parseTree;
+        try {
+            ((Parser) sqlParser).setErrorHandler(new BailErrorStrategy());
+            ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.SLL);
+            parseTree = sqlParser.execute().getChild(0);
+        } catch (ParseCancellationException ex) {
+            ((Parser) sqlParser).reset();
+            ((Parser) sqlParser).setErrorHandler(new DefaultErrorStrategy());
+            ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.LL);
+            parseTree = sqlParser.execute().getChild(0);
+        }
         if (parseTree instanceof ErrorNode) {
             throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }
