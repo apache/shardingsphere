@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.value;
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
@@ -35,7 +36,13 @@ public final class NumberValue implements ASTNode {
     private final Number number;
     
     public NumberValue(final String number) {
-        this.number = createBigInteger(number);
+        Number result;
+        try {
+            result = createBigInteger(number);
+        } catch (final NumberFormatException ex) {
+            result = new BigDecimal(number);
+        }
+        this.number = result;
     }
     
     private static Number createBigInteger(final String value) {

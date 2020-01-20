@@ -24,6 +24,18 @@
     <sql-case id="insert_with_special_characters" value="INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (1, 1, 'insert')" db-types="MySQL" />
     <sql-case id="insert_with_all_placeholders_for_table_identifier" value="INSERT INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (?, ?, ?)" db-types="MySQL" />
     <sql-case id="insert_without_columns_with_all_placeholders" value="INSERT INTO t_order VALUES (?, ?, ?)" db-types="MySQL" />
+    <sql-case id="insert_with_partial_placeholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, 'insert')" db-types="MySQL" />
+    <sql-case id="insert_with_generate_key_column" value="INSERT INTO t_order_item(item_id, order_id, user_id, status, creation_date) values (?, ?, ?, 'insert', '2017-08-08')" db-types="MySQL" />
+    <sql-case id="insert_without_generate_key_column" value="INSERT INTO t_order_item(order_id, user_id, status, creation_date) values (?, ?, 'insert', '2017-08-08')" db-types="MySQL" />
+    <sql-case id="insert_without_columns_and_with_generate_key_column" value="INSERT INTO t_order_item values(?, ?, ?, 'insert', '2017-08-08')" db-types="MySQL" />
+    <sql-case id="insert_without_columns_and_without_generate_key_column" value="INSERT INTO t_order_item values(?, ?, 'insert', '2017-08-08')" db-types="MySQL" />
+    <sql-case id="insert_with_batch" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?), (?, ?, ?)" db-types="MySQL" />
+    <sql-case id="insert_with_batch_and_irregular_parameters" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, 1, 'insert'), (?, ?, ?)" db-types="MySQL" />
+    <sql-case id="insert_with_batch_and_with_generate_key_column" value="INSERT INTO t_order_item(item_id, order_id, user_id, status, creation_date) values (?, ?, ?, 'insert', '2017-08-08'), (?, ?, ?, 'insert', '2017-08-08')" db-types="MySQL" />
+    <sql-case id="insert_with_double_value" value="INSERT INTO t_double_test(col1) VALUES(1.22)" db-types="MySQL" />
+    <sql-case id="insert_with_null_value" value="INSERT INTO t_null_value_test(col1) VALUES(null)" db-types="MySQL" />
+    <sql-case id="insert_with_blob_value" value="INSERT INTO t_blob_value_test(col1) VALUES(_BINARY'This is a binary value.')" db-types="MySQL" />
+    <sql-case id="insert_with_function" value="INSERT INTO t_order(current_date, order_id, user_id) VALUES (curdate(), ?, ?)" db-types="MySQL" />
     <sql-case id="insert_set_with_all_placeholders" value="INSERT INTO t_order SET order_id = ?, user_id = ?, status = ?" db-types="MySQL" />
     <sql-case id="insert_set_with_all_placeholders_for_table_identifier" value="INSERT INTO t_order SET t_order.order_id = ?, t_order.user_id = ?, t_order.status = ?" db-types="MySQL" />
     <sql-case id="insert_set_with_partial_placeholders" value="INSERT INTO t_order SET order_id = ?, user_id = ?, status = 'insert'" db-types="MySQL" />
