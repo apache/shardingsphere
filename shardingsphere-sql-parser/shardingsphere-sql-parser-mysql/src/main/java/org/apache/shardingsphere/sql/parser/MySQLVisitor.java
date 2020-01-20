@@ -315,6 +315,9 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         if (null != ctx.booleanLiterals()) {
             return visit(ctx.booleanLiterals());
         }
+        if (null != ctx.nullValueLiterals()) {
+            return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+        }
         return new LiteralValue(ctx.getText());
     }
     
