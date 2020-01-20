@@ -77,7 +77,7 @@ public final class SQLParserParameterizedTest {
     public void assertSupportedSQL() {
         String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, PARSER_RESULT_SET_REGISTRY.get(sqlCaseId).getParameters());
         ParserResult expected = ParserResultSetRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
-        if (expected.isLongSQL() && Boolean.valueOf(PROPS.getProperty("long.sql.skip", Boolean.TRUE.toString()))) {
+        if (expected.isLongSQL() && Boolean.parseBoolean(PROPS.getProperty("long.sql.skip", Boolean.TRUE.toString()))) {
             return;
         }
         SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlCaseId, sqlCaseType);

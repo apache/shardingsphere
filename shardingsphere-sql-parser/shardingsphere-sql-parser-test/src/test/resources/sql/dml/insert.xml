@@ -978,4 +978,32 @@
             </and-condition>
         </sharding-conditions>
     </parser-result>
+
+    <parser-result sql-case-id="insert_with_str_date_add" parameters="1, 1, 1">
+        <tables>
+            <table name="t_order" start-index="12" stop-index="18" />
+        </tables>
+        <insert-columns-and-values column-names="current_date,order_id,user_id">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-placeholder="ExpressionProjectionSegment" text-for-placeholder="date_add(now(),interval?second)" type-for-literal="ExpressionProjectionSegment" text-for-literal="date_add(now(),interval1second)"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="current_date" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="varchar" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="2" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+    </parser-result>
 </parser-result-sets>
