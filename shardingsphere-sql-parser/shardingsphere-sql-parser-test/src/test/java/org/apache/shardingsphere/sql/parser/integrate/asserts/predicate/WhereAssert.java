@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.Expe
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedParamMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedAndPredicate;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedColumnSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedPredicateSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedPredicate;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedWhere;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.value.ExpectedPredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
@@ -71,14 +71,14 @@ public final class WhereAssert {
         int count = 0;
         for (AndPredicate each: actual) {
             Collection<PredicateSegment> actualPredicates = each.getPredicates();
-            List<ExpectedPredicateSegment> expectedPredicates = expected.get(count).getPredicates();
+            List<ExpectedPredicate> expectedPredicates = expected.get(count).getPredicates();
             assertThat(assertMessage.getText("Predicates size assertion error: "), actualPredicates.size(), is(expectedPredicates.size()));
             assertPredicateSegment(assertMessage, actualPredicates, expectedPredicates);
             count++;
         }
     }
     
-    private static void assertPredicateSegment(final SQLStatementAssertMessage assertMessage, final Collection<PredicateSegment> actual, final List<ExpectedPredicateSegment> expected) {
+    private static void assertPredicateSegment(final SQLStatementAssertMessage assertMessage, final Collection<PredicateSegment> actual, final List<ExpectedPredicate> expected) {
         int count = 0;
         for (PredicateSegment each: actual) {
             assertColumnSegment(assertMessage, each.getColumn(), expected.get(count).getColumn());

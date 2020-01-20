@@ -31,8 +31,8 @@ import java.util.List;
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedAndPredicate {
-
-    @XmlElementWrapper(name = "predicate-segments")
-    @XmlElement(name = "predicate-segment")
-    private List<ExpectedPredicateSegment> predicates = new LinkedList<>();
+    
+    @XmlElementWrapper(name = "predicates")
+    @XmlElement(name = "predicate")
+    private List<ExpectedPredicate> predicates = new LinkedList<>();
 }

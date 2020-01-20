@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @Setter
-public final class ExpectedPredicateSegment extends AbstractExpectedSegment {
+public final class ExpectedPredicate extends AbstractExpectedSegment {
     
     @XmlElement(name = "column-segment")
     private ExpectedColumnSegment column = new ExpectedColumnSegment();
