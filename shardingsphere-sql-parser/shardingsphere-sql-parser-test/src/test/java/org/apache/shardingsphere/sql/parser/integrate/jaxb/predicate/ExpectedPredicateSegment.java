@@ -25,13 +25,10 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate.value.Expec
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate.value.ExpectedPredicateInRightValue;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate.value.ExpectedPredicateRightValue;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedPredicateSegment extends AbstractExpectedSegment {
     
     @XmlElement(name = "column-segment")

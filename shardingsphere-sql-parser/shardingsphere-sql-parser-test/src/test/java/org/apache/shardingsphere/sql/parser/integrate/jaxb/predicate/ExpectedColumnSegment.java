@@ -23,22 +23,19 @@ import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSegment;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.projection.ExpectedTableSegment;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedColumnSegment extends AbstractExpectedSegment {
-
+    
     @XmlAttribute
     private String name;
-
+    
     @XmlAttribute
     private QuoteCharacter quoteCharacter = QuoteCharacter.NONE;
-
+    
     @XmlElement(name = "table-segment")
     private ExpectedTableSegment owner = new ExpectedTableSegment();
 }

@@ -17,9 +17,5 @@
 
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.expr.complex;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedSubquerySegment extends ExpectedBaseComplexExpression {
 }
