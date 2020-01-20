@@ -62,16 +62,18 @@ public final class WhereAssert {
      * @param expected expected where segment
      */
     public static void assertIs(final SQLStatementAssertMessage assertMessage, final WhereSegment actual, final ExpectedWhere expected) {
-        assertThat(assertMessage.getText("parameters count in where clause assertion error:"), actual.getParametersCount(), is(expected.getParametersCount()));
-        assertAndPredicate(assertMessage, actual.getAndPredicates(), expected.getAndPredicates());
+        assertThat(assertMessage.getText("Parameters count in where clause assertion error:"), actual.getParametersCount(), is(expected.getParametersCount()));
+        assertAndPredicates(assertMessage, actual.getAndPredicates(), expected.getAndPredicates());
     }
     
-    private static void assertAndPredicate(final SQLStatementAssertMessage assertMessage, final Collection<AndPredicate> actual, final List<ExpectedAndPredicate> expected) {
-        assertThat(assertMessage.getText("and predicate size error: "), actual.size(), is(expected.size()));
+    private static void assertAndPredicates(final SQLStatementAssertMessage assertMessage, final Collection<AndPredicate> actual, final List<ExpectedAndPredicate> expected) {
+        assertThat(assertMessage.getText("And predicate size assertion error: "), actual.size(), is(expected.size()));
         int count = 0;
         for (AndPredicate each: actual) {
-            assertThat(assertMessage.getText("predicate segment size error: "), each.getPredicates().size(), is(expected.get(count).getPredicates().size()));
-            assertPredicateSegment(assertMessage, each.getPredicates(), expected.get(count).getPredicates());
+            Collection<PredicateSegment> actualPredicates = each.getPredicates();
+            List<ExpectedPredicateSegment> expectedPredicates = expected.get(count).getPredicates();
+            assertThat(assertMessage.getText("Predicates size assertion error: "), actualPredicates.size(), is(expectedPredicates.size()));
+            assertPredicateSegment(assertMessage, actualPredicates, expectedPredicates);
             count++;
         }
     }
