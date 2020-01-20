@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.projection;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.generic;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedDelimiterSegment;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
 @Getter
 @Setter
-public final class ExpectedTableSegment extends AbstractExpectedDelimiterSegment {
+public abstract class AbstractExpectedDelimiterSegment extends AbstractExpectedSegment implements ExpectedDelimiterSegment {
     
-    @XmlAttribute
-    private String name;
+    @XmlAttribute(name = "start-delimiter")
+    private String startDelimiter = "";
+    
+    @XmlAttribute(name = "end-delimiter")
+    private String endDelimiter = "";
 }

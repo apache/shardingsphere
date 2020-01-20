@@ -19,26 +19,20 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.table;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedDelimiterSegment;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @Setter
-public final class ExpectedTable extends AbstractExpectedSegment {
+public final class ExpectedTable extends AbstractExpectedDelimiterSegment {
     
     @XmlAttribute
     private String name;
     
     @XmlAttribute
     private String alias;
-    
-    @XmlAttribute(name = "start-delimiter")
-    private String startDelimiter = "";
-    
-    @XmlAttribute(name = "end-delimiter")
-    private String endDelimiter = "";
     
     @XmlElement
     private ExpectedTableOwner owner;

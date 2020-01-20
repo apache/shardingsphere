@@ -19,23 +19,17 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.projection;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedDelimiterSegment;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @Setter
-public final class ExpectedColumnProjection extends AbstractExpectedSegment implements ExpectedProjection {
+public final class ExpectedColumnProjection extends AbstractExpectedDelimiterSegment implements ExpectedProjection {
     
     @XmlAttribute
     private String name;
-    
-    @XmlAttribute(name = "start-delimiter")
-    private String startDelimiter = "";
-    
-    @XmlAttribute(name = "end-delimiter")
-    private String endDelimiter = "";
     
     @XmlAttribute
     private String alias;
