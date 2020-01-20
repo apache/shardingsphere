@@ -65,7 +65,7 @@ public final class SQLStatementAssert {
      */
     public static void assertIs(final SQLStatementAssertMessage assertMessage, final SQLStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
         ParameterMarkerAssert.assertCount(assertMessage, actual.getParametersCount(), expected.getParameters().size(), sqlCaseType);
-        TableAssert.assertIs(assertMessage, actual.findSQLSegments(TableSegment.class), expected.getTables());
+        TableAssert.assertIs(assertMessage, actual.findSQLSegments(TableSegment.class), expected.getTables(), sqlCaseType);
         if (actual instanceof SelectStatement) {
             assertSelectStatement(assertMessage, (SelectStatement) actual, expected, sqlCaseType);
         }
@@ -81,7 +81,7 @@ public final class SQLStatementAssert {
     }
     
     private static void assertSelectStatement(final SQLStatementAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
-        ProjectionAssert.assertIs(assertMessage, actual.getProjections(), expected.getProjections());
+        ProjectionAssert.assertIs(assertMessage, actual.getProjections(), expected.getProjections(), sqlCaseType);
         Optional<WhereSegment> whereSegment = actual.getWhere();
         if (whereSegment.isPresent() && null != expected.getWhere()) {
 //        if (whereSegment.isPresent()) {

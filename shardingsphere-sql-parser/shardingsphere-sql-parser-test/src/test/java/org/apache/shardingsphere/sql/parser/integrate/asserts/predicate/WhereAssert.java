@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.predicate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.position.PositionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedCommonExpression;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedSubquery;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedLiteralExpression;
@@ -96,16 +97,7 @@ public final class WhereAssert {
 //                assertCompareRightValue(assertMessage, (PredicateCompareRightValue) each.getRightValue(), expectedPredicate.findExpectedRightValue(ExpectedPredicateCompareRightValue.class));
 //            }
             // TODO add other right value assertion
-            if (SQLCaseType.Literal == sqlCaseType && null != expectedPredicate.getLiteralStartIndex()) {
-                assertThat(assertMessage.getText("Predicate start index assertion error: "), each.getStartIndex(), is(expectedPredicate.getLiteralStartIndex()));
-            } else {
-                assertThat(assertMessage.getText("Predicate start index assertion error: "), each.getStartIndex(), is(expectedPredicate.getStartIndex()));
-            }
-            if (SQLCaseType.Literal == sqlCaseType && null != expectedPredicate.getLiteralStopIndex()) {
-                assertThat(assertMessage.getText("Predicate stop index assertion error: "), each.getStopIndex(), is(expectedPredicate.getLiteralStopIndex()));
-            } else {
-                assertThat(assertMessage.getText("Predicate stop index assertion error: "), each.getStopIndex(), is(expectedPredicate.getStopIndex()));
-            }
+            PositionAssert.assertIs(assertMessage, each, expectedPredicate, sqlCaseType);
             count++;
         }
     }
@@ -113,30 +105,20 @@ public final class WhereAssert {
     private static void assertColumn(final SQLStatementAssertMessage assertMessage, final ColumnSegment actual, final ExpectedColumn expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Column name assertion error: "), actual.getName(), is(expected.getName()));
         if (actual.getOwner().isPresent()) {
-            assertOwner(assertMessage, actual.getOwner().get(), expected.getOwner());
+            assertOwner(assertMessage, actual.getOwner().get(), expected.getOwner(), sqlCaseType);
         } else {
             assertNull(expected.getOwner());
         }
         assertThat(assertMessage.getText("Column start delimiter assertion error: "), actual.getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
         assertThat(assertMessage.getText("Column end delimiter assertion error: "), actual.getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
-        if (SQLCaseType.Literal == sqlCaseType && null != expected.getLiteralStartIndex()) {
-            assertThat(assertMessage.getText("Column start index assertion error: "), actual.getStartIndex(), is(expected.getLiteralStartIndex()));
-        } else {
-            assertThat(assertMessage.getText("Column start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
-        }
-        if (SQLCaseType.Literal == sqlCaseType && null != expected.getLiteralStopIndex()) {
-            assertThat(assertMessage.getText("Column stop index assertion error: "), actual.getStopIndex(), is(expected.getLiteralStopIndex()));
-        } else {
-            assertThat(assertMessage.getText("Column stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
-        }
+        PositionAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
     
-    private static void assertOwner(final SQLStatementAssertMessage assertMessage, final TableSegment actual, final ExpectedTableSegment expected) {
+    private static void assertOwner(final SQLStatementAssertMessage assertMessage, final TableSegment actual, final ExpectedTableSegment expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Column owner name assertion error: "), actual.getTableName(), is(expected.getName()));
         assertThat(assertMessage.getText("Column owner name start delimiter assertion error: "), actual.getTableQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
         assertThat(assertMessage.getText("Column owner name end delimiter assertion error: "), actual.getTableQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
-        assertThat(assertMessage.getText("Column owner name start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
-        assertThat(assertMessage.getText("Column owner name stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
+        PositionAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
     
     private static void assertCompareRightValue(final SQLStatementAssertMessage assertMessage, final PredicateCompareRightValue actual, final ExpectedPredicateCompareRightValue expected) {

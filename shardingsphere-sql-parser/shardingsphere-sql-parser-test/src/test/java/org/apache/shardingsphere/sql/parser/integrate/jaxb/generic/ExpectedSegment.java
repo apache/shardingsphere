@@ -32,4 +32,18 @@ public interface ExpectedSegment {
      * @return stop index
      */
     int getStopIndex();
+    
+    /**
+     * Get literal start index.
+     *
+     * @return literal start index
+     */
+    Integer getLiteralStartIndex();
+    
+    /**
+     * Get literal stop index.
+     *
+     * @return literal stop index
+     */
+    Integer getLiteralStopIndex();
 }
