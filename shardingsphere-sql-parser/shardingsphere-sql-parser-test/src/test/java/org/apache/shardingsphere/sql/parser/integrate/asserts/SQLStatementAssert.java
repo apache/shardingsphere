@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.insert.InsertNames
 import org.apache.shardingsphere.sql.parser.integrate.asserts.orderby.OrderByAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.pagination.PaginationAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.parameter.ParameterMarkerAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.predicate.PredicateAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.predicate.WhereAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.projection.ProjectionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.table.AlterTableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.table.TableAssert;
@@ -86,7 +86,7 @@ public final class SQLStatementAssert {
         if (whereSegment.isPresent() && null != expected.getWhere()) {
 //        if (whereSegment.isPresent()) {
             assertNotNull(assertMessage.getText("Expected where assertion should exist: "), expected.getWhere());
-            PredicateAssert.assertIs(assertMessage, whereSegment.get(), expected.getWhere());
+            WhereAssert.assertIs(assertMessage, whereSegment.get(), expected.getWhere());
         }
         Optional<GroupBySegment> groupBySegment = actual.getGroupBy();
         if (groupBySegment.isPresent()) {

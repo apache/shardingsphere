@@ -47,13 +47,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- *  where predicate assert.
+ *  Where assert.
  *
  * @author zhaoyanan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PredicateAssert {
-
+public final class WhereAssert {
+    
     /**
      * Assert actual where segment is correct with expected where.
      * 
