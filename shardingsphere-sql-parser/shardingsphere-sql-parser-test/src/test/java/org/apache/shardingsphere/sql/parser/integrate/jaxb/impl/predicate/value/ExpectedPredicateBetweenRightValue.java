@@ -19,10 +19,10 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.value
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedCommonExpressionSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedSubquerySegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedLiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedParamMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedCommonExpression;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedSubquery;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedLiteralExpression;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedParameterMarkerExpression;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -32,28 +32,28 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedPredicateBetweenRightValue implements ExpectedPredicateRightValue {
-
+    
     @XmlElement(name = "between-common-expression")
-    private ExpectedCommonExpressionSegment betweenCommonExpressionSegment;
-
-    @XmlElement(name = "between-subquery-segment")
-    private ExpectedSubquerySegment betweenSubquerySegment;
-
+    private ExpectedCommonExpression betweenCommonExpression;
+    
+    @XmlElement(name = "between-subquery")
+    private ExpectedSubquery betweenSubquery;
+    
     @XmlElement(name = "between-literal-expression")
-    private ExpectedLiteralExpressionSegment betweenLiteralExpression;
-
+    private ExpectedLiteralExpression betweenLiteralExpression;
+    
     @XmlElement(name = "between-param-marker-expression")
-    private ExpectedParamMarkerExpressionSegment betweenParamMarkerExpression;
-
-    @XmlElement(name = "and-subquery-segment")
-    private ExpectedSubquerySegment andSubquerySegment;
-
+    private ExpectedParameterMarkerExpression betweenParamMarkerExpression;
+    
+    @XmlElement(name = "and-subquery")
+    private ExpectedSubquery andSubquery;
+    
     @XmlElement(name = "and-common-expression")
-    private ExpectedCommonExpressionSegment andCommonExpressionSegment;
-
+    private ExpectedCommonExpression andCommonExpression;
+    
     @XmlElement(name = "and-literal-expression")
-    private ExpectedLiteralExpressionSegment andLiteralExpression;
-
-    @XmlElement(name = "and-param-marker-expression")
-    private ExpectedParamMarkerExpressionSegment andParamMarkerExpression;
+    private ExpectedLiteralExpression andLiteralExpression;
+    
+    @XmlElement(name = "and-parameter-marker-expression")
+    private ExpectedParameterMarkerExpression expectedParameterMarkerExpression;
 }

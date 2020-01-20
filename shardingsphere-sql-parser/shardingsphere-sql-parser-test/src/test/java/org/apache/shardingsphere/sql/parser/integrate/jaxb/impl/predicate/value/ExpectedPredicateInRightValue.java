@@ -19,10 +19,10 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.value
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedCommonExpressionSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedSubquerySegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedLiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedParamMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedCommonExpression;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedSubquery;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedLiteralExpression;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedParameterMarkerExpression;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -37,17 +37,17 @@ public final class ExpectedPredicateInRightValue implements ExpectedPredicateRig
 
     @XmlElementWrapper(name = "common-expressions")
     @XmlElement(name = "common-expression")
-    private Collection<ExpectedCommonExpressionSegment> commonExpressionSegments;
+    private Collection<ExpectedCommonExpression> commonExpressionSegments;
 
     @XmlElementWrapper(name = "subquery-segments")
     @XmlElement(name = "subquery-segment")
-    private Collection<ExpectedSubquerySegment> subquerySegments;
+    private Collection<ExpectedSubquery> subquerySegments;
 
     @XmlElementWrapper(name = "literal-expressions")
     @XmlElement(name = "literal-expression")
-    private Collection<ExpectedLiteralExpressionSegment> literalExpressionSegments;
+    private Collection<ExpectedLiteralExpression> literalExpressionSegments;
 
     @XmlElementWrapper(name = "param-marker-expressions")
     @XmlElement(name = "param-marker-expression")
-    private Collection<ExpectedParamMarkerExpressionSegment> paramMarkerExpressionSegments;
+    private Collection<ExpectedParameterMarkerExpression> paramMarkerExpressionSegments;
 }

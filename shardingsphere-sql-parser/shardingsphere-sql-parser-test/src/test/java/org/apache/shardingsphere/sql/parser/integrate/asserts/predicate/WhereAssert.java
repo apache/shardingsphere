@@ -20,10 +20,10 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.predicate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedCommonExpressionSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedSubquerySegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedLiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedParamMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedCommonExpression;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedSubquery;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedLiteralExpression;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedParameterMarkerExpression;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedAndPredicate;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedColumn;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedPredicate;
@@ -101,19 +101,19 @@ public final class WhereAssert {
         if (actual.getExpression() instanceof ParameterMarkerExpressionSegment) {
             assertThat(assertMessage.getText("parameter marker expression parameter marker index assertion error"), 
                     ((ParameterMarkerExpressionSegment) actual.getExpression()).getParameterMarkerIndex(), 
-                    is(expected.findExpectedExpression(ExpectedParamMarkerExpressionSegment.class).getParameterMarkerIndex()));
+                    is(expected.findExpectedExpression(ExpectedParameterMarkerExpression.class).getParameterMarkerIndex()));
         }
         if (actual.getExpression() instanceof CommonExpressionSegment) {
             assertThat(assertMessage.getText("common expression text assertion error: "), ((ComplexExpressionSegment) actual.getExpression()).getText(), 
-                    is(expected.findExpectedExpression(ExpectedCommonExpressionSegment.class).getText()));
+                    is(expected.findExpectedExpression(ExpectedCommonExpression.class).getText()));
         }
         if (actual.getExpression() instanceof SubquerySegment) {
             assertThat(assertMessage.getText("subquery segment text assertion error: "), ((ComplexExpressionSegment) actual.getExpression()).getText(), 
-                    is(expected.findExpectedExpression(ExpectedSubquerySegment.class).getText()));
+                    is(expected.findExpectedExpression(ExpectedSubquery.class).getText()));
         }
         if (actual.getExpression() instanceof LiteralExpressionSegment) {
             assertThat(assertMessage.getText("literal assertion error:"), ((LiteralExpressionSegment) actual.getExpression()).getLiterals().toString(), 
-                    is(expected.findExpectedExpression(ExpectedLiteralExpressionSegment.class).getLiterals().toString()));
+                    is(expected.findExpectedExpression(ExpectedLiteralExpression.class).getLiterals().toString()));
         }
     }
 }
