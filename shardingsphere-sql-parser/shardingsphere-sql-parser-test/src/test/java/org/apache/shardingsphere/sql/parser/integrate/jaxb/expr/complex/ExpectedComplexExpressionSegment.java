@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.expr.complex;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.expr.ExpectedExpressionSegment;
 
 public interface ExpectedComplexExpressionSegment extends ExpectedExpressionSegment {
-
+    
     /**
      * Get text.
      *

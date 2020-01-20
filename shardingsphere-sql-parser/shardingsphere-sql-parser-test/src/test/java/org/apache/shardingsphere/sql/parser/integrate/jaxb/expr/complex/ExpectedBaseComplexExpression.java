@@ -19,22 +19,17 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.expr.complex;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSegment;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public class ExpectedBaseComplexExpression implements ExpectedComplexExpressionSegment {
-
-    @XmlAttribute(name = "start-index")
-    private Integer startIndex;
-
-    @XmlAttribute(name = "stop-index")
-    private Integer stopIndex;
-
+public class ExpectedBaseComplexExpression extends AbstractExpectedSegment implements ExpectedComplexExpressionSegment {
+    
     @XmlAttribute
     private String text;
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.table;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSegment;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -27,7 +28,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class ExpectedTableOwner {
+public final class ExpectedTableOwner extends AbstractExpectedSegment {
     
     @XmlAttribute
     private String name;
@@ -37,10 +38,4 @@ public final class ExpectedTableOwner {
     
     @XmlAttribute(name = "end-delimiter")
     private String endDelimiter = "";
-    
-    @XmlAttribute(name = "start-index")
-    private int startIndex;
-    
-    @XmlAttribute(name = "stop-index")
-    private int stopIndex;
 }
