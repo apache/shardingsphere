@@ -184,11 +184,7 @@
     
     <parser-result sql-case-id="insert_with_all_placeholders_for_table_identifier" parameters="1, 1, 'init'">
         <tables>
-            <!-- FIXME -->
             <table name="t_order" start-index="12" stop-index="18" />
-            <!--<table name="t_order" start-index="21" stop-index="27" />-->
-            <!--<table name="t_order" start-index="39" stop-index="35" />-->
-            <!--<table name="t_order" start-index="56" stop-index="62" />-->
         </tables>
         <insert-columns-and-values column-names="order_id,user_id,status">
             <insert-values>
@@ -423,11 +419,7 @@
     
     <parser-result sql-case-id="insert_set_with_all_placeholders_for_table_identifier" parameters="1, 1, 'init'">
         <tables>
-            <!-- FIXME -->
             <table name="t_order" start-index="12" stop-index="18" />
-            <!--<table name="t_order" start-index="24" stop-index="30" />-->
-            <!--<table name="t_order" start-index="46" stop-index="52" />-->
-            <!--<table name="t_order" start-index="67" stop-index="73" />-->
         </tables>
         <tokens>
             <insert-set-token begin-position="20" />

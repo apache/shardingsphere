@@ -21,10 +21,10 @@ import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.groupby.GroupByAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.parameter.ParameterMarkerAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.insert.InsertNamesAndValuesAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.orderby.OrderByAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.pagination.PaginationAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.parameter.ParameterMarkerAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.predicate.PredicateAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.projection.ProjectionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.table.AlterTableAssert;
@@ -44,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -81,6 +82,12 @@ public final class SQLStatementAssert {
     
     private static void assertSelectStatement(final SQLStatementAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
         ProjectionAssert.assertIs(assertMessage, actual.getProjections(), expected.getProjections());
+        Optional<WhereSegment> whereSegment = actual.getWhere();
+        if (whereSegment.isPresent() && null != expected.getWhere()) {
+//        if (whereSegment.isPresent()) {
+            assertNotNull(assertMessage.getText("Expected where assertion should exist: "), expected.getWhere());
+            PredicateAssert.assertIs(assertMessage, whereSegment.get(), expected.getWhere(), sqlCaseType);
+        }
         Optional<GroupBySegment> groupBySegment = actual.getGroupBy();
         if (groupBySegment.isPresent()) {
             GroupByAssert.assertIs(assertMessage, groupBySegment.get().getGroupByItems(), expected.getGroupByColumns());
@@ -93,10 +100,6 @@ public final class SQLStatementAssert {
         if (limitSegment.isPresent()) {
             PaginationAssert.assertOffset(assertMessage, limitSegment.get().getOffset().orNull(), expected.getOffset(), sqlCaseType);
             PaginationAssert.assertRowCount(assertMessage, limitSegment.get().getRowCount().orNull(), expected.getRowCount(), sqlCaseType);
-        }
-        Optional<WhereSegment> whereSegment = actual.getWhere();
-        if (whereSegment.isPresent() && null != expected.getWhereSegment()) {
-            PredicateAssert.assertIs(assertMessage, whereSegment.get(), expected.getWhereSegment(), sqlCaseType);
         }
     }
     

@@ -20,15 +20,15 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.predicate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.expr.complex.ExpectedCommonExpressionSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.expr.complex.ExpectedSubquerySegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.expr.simple.ExpectedLiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.expr.simple.ExpectedParamMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate.ExpectedAndPredicate;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate.ExpectedColumnSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate.ExpectedPredicateSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate.ExpectedWhereSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate.value.ExpectedPredicateCompareRightValue;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedCommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedSubquerySegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedLiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedParamMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedAndPredicate;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedColumnSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedPredicateSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedWhere;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.value.ExpectedPredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.ComplexExpressionSegment;
@@ -63,7 +63,7 @@ public final class PredicateAssert {
      * @param expected expected where segment
      * @param sqlCaseType SQL case type
      */
-    public static void assertIs(final SQLStatementAssertMessage assertMessage, final WhereSegment actual, final ExpectedWhereSegment expected, final SQLCaseType sqlCaseType) {
+    public static void assertIs(final SQLStatementAssertMessage assertMessage, final WhereSegment actual, final ExpectedWhere expected, final SQLCaseType sqlCaseType) {
         if (SQLCaseType.Placeholder == sqlCaseType) {
             assertThat(assertMessage.getText("parameters count assertion error:"), actual.getParametersCount(), is(expected.getParametersCount()));
         }
