@@ -53,7 +53,7 @@
                     <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
                     <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="init"/>
                     <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="insert"/>
-                    <assignment type-for-literal="CommonExpressionSegment" text-for-literal="now()"/>
+                    <assignment type-for-literal="ExpressionProjectionSegment" text-for-literal="now()"/>
                 </insert-value>
             </insert-values>
         </insert-columns-and-values>
@@ -638,7 +638,7 @@
                 <insert-value>
                     <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="7"/>
                     <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="200"/>
-                    <assignment type-for-literal="CommonExpressionSegment" text-for-literal="ST_GeographyFromText('SRID=4326;POINT(100 200)')"/>
+                    <assignment type-for-literal="ExpressionProjectionSegment" text-for-literal="ST_GeographyFromText('SRID=4326;POINT(100 200)')"/>
                     <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="{&quot;rule&quot;:&quot;null&quot;}'::json"/>
                 </insert-value>
             </insert-values>
@@ -790,7 +790,7 @@
         <insert-columns-and-values column-names="current_date,order_id,user_id">
             <insert-values>
                 <insert-value>
-                    <assignment type-for-literal="CommonExpressionSegment" text-for-literal="curdate()"/>
+                    <assignment type-for-literal="ExpressionProjectionSegment" text-for-literal="curdate()"/>
                     <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="1000"/>
                     <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="10"/>
                 </insert-value>
@@ -848,7 +848,7 @@
             <insert-values>
                 <insert-value>
                     <!-- FIXME  text-for-placeholder="unix_timestamp(?)" and text-for-literal="unix_timestamp(2019-10-19)" has problem -->
-                    <assignment type-for-placeholder="CommonExpressionSegment" text-for-placeholder="unix_timestamp(?)" type-for-literal="CommonExpressionSegment" text-for-literal="unix_timestamp(2019-10-19)"/>
+                    <assignment type-for-placeholder="ExpressionProjectionSegment" text-for-placeholder="unix_timestamp(?)" type-for-literal="ExpressionProjectionSegment" text-for-literal="unix_timestamp(2019-10-19)"/>
                     <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="1000"/>
                     <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="10"/>
                 </insert-value>
@@ -902,7 +902,7 @@
             <insert-values>
                 <insert-value>
                     <!-- FIXME  text-for-placeholder="str_to_date(?,'%Y-%m-%d')" and text-for-literal="str_to_date(2019-12-10,'%Y-%m-%d') has problem -->
-                    <assignment type-for-placeholder="CommonExpressionSegment" text-for-placeholder="str_to_date(?,'%Y-%m-%d')" type-for-literal="CommonExpressionSegment" text-for-literal="str_to_date(2019-12-10,'%Y-%m-%d')"/>
+                    <assignment type-for-placeholder="ExpressionProjectionSegment" text-for-placeholder="str_to_date(?,'%Y-%m-%d')" type-for-literal="ExpressionProjectionSegment" text-for-literal="str_to_date(2019-12-10,'%Y-%m-%d')"/>
                     <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
                     <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
                 </insert-value>
