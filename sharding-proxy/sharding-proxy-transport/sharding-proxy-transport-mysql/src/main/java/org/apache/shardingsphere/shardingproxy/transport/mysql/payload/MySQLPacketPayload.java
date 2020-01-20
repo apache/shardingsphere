@@ -21,164 +21,158 @@ import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
+
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 /**
  * MySQL payload operation for MySQL packet data types.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/describing-packets.html">describing packets</a>
- * 
  * @author zhangliang
  * @author zhangyonglun
  * @author wangkai
+ * @see <a href="https://dev.mysql.com/doc/internals/en/describing-packets.html">describing packets</a>
  */
 @RequiredArgsConstructor
 @Getter
+@Slf4j
 public final class MySQLPacketPayload implements PacketPayload {
-    
+
+    private Charset charset = StandardCharsets.UTF_8;
+
     private final ByteBuf byteBuf;
-    
+
     /**
      * Read 1 byte fixed length integer from byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
-     * 
+     *
      * @return 1 byte fixed length integer
+     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      */
     public int readInt1() {
         return byteBuf.readByte() & 0xff;
     }
-    
+
     /**
      * Write 1 byte fixed length integer to byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
-     * 
+     *
      * @param value 1 byte fixed length integer
+     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      */
     public void writeInt1(final int value) {
         byteBuf.writeByte(value);
     }
-    
+
     /**
      * Read 2 byte fixed length integer from byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @return 2 byte fixed length integer
+     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      */
     public int readInt2() {
         return byteBuf.readShortLE() & 0xffff;
     }
-    
+
     /**
      * Write 2 byte fixed length integer to byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @param value 2 byte fixed length integer
+     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      */
     public void writeInt2(final int value) {
         byteBuf.writeShortLE(value);
     }
-    
+
     /**
      * Read 3 byte fixed length integer from byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @return 3 byte fixed length integer
+     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      */
     public int readInt3() {
         return byteBuf.readMediumLE() & 0xffffff;
     }
-    
+
     /**
      * Write 3 byte fixed length integer to byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @param value 3 byte fixed length integer
+     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      */
     public void writeInt3(final int value) {
         byteBuf.writeMediumLE(value);
     }
-    
+
     /**
      * Read 4 byte fixed length integer from byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @return 4 byte fixed length integer
+     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      */
     public int readInt4() {
         return byteBuf.readIntLE();
     }
-    
+
     /**
      * Write 4 byte fixed length integer to byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @param value 4 byte fixed length integer
+     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      */
     public void writeInt4(final int value) {
         byteBuf.writeIntLE(value);
-    
+
     }
-    
+
     /**
      * Read 6 byte fixed length integer from byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @return 6 byte fixed length integer
+     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      */
     public int readInt6() {
         // TODO
         return 0;
     }
-    
+
     /**
      * Write 6 byte fixed length integer to byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @param value 6 byte fixed length integer
+     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      */
     public void writeInt6(final int value) {
         // TODO
     }
-    
+
     /**
      * Read 8 byte fixed length integer from byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @return 8 byte fixed length integer
+     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      */
     public long readInt8() {
         return byteBuf.readLongLE();
     }
-    
+
     /**
      * Write 8 byte fixed length integer to byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      *
      * @param value 8 byte fixed length integer
+     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::FixedLengthInteger">FixedLengthInteger</a>
      */
     public void writeInt8(final long value) {
         byteBuf.writeLongLE(value);
-        
+
     }
-    
+
     /**
      * Read lenenc integer from byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::LengthEncodedInteger">LengthEncodedInteger</a>
      *
      * @return lenenc integer
+     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::LengthEncodedInteger">LengthEncodedInteger</a>
      */
     public long readIntLenenc() {
         int firstByte = readInt1();
@@ -196,13 +190,12 @@ public final class MySQLPacketPayload implements PacketPayload {
         }
         return byteBuf.readLongLE();
     }
-    
+
     /**
      * Write lenenc integer to byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::LengthEncodedInteger">LengthEncodedInteger</a>
      *
      * @param value lenenc integer
+     * @see <a href="https://dev.mysql.com/doc/internals/en/integer.html#packet-Protocol::LengthEncodedInteger">LengthEncodedInteger</a>
      */
     public void writeIntLenenc(final long value) {
         if (value < 0xfb) {
@@ -222,27 +215,25 @@ public final class MySQLPacketPayload implements PacketPayload {
         byteBuf.writeByte(0xfe);
         byteBuf.writeLongLE(value);
     }
-    
+
     /**
      * Read lenenc string from byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
      *
      * @return lenenc string
+     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
      */
     public String readStringLenenc() {
         int length = (int) readIntLenenc();
         byte[] result = new byte[length];
         byteBuf.readBytes(result);
-        return new String(result);
+        return new String(result, charset);
     }
-    
+
     /**
      * Read lenenc string from byte buffers for bytes.
      *
-     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
-     *
      * @return lenenc bytes
+     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
      */
     public byte[] readStringLenencByBytes() {
         int length = (int) readIntLenenc();
@@ -250,23 +241,22 @@ public final class MySQLPacketPayload implements PacketPayload {
         byteBuf.readBytes(result);
         return result;
     }
-    
+
     /**
      * Write lenenc string to byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
      *
      * @param value fixed length string
+     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
      */
     public void writeStringLenenc(final String value) {
         if (Strings.isNullOrEmpty(value)) {
             byteBuf.writeByte(0);
             return;
         }
-        writeIntLenenc(value.getBytes().length);
-        byteBuf.writeBytes(value.getBytes());
+        writeIntLenenc(value.getBytes(charset).length);
+        byteBuf.writeBytes(value.getBytes(charset));
     }
-    
+
     /**
      * Write lenenc bytes to byte buffers.
      *
@@ -280,102 +270,92 @@ public final class MySQLPacketPayload implements PacketPayload {
         writeIntLenenc(value.length);
         byteBuf.writeBytes(value);
     }
-    
+
     /**
      * Read fixed length string from byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
      *
      * @param length length of fixed string
-     * 
      * @return fixed length string
+     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
      */
     public String readStringFix(final int length) {
         byte[] result = new byte[length];
         byteBuf.readBytes(result);
-        return new String(result);
+        return new String(result, charset);
     }
-    
+
     /**
      * Read fixed length string from byte buffers and return bytes.
      *
-     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
-     *
      * @param length length of fixed string
-     *
      * @return fixed length bytes
+     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
      */
     public byte[] readStringFixByBytes(final int length) {
         byte[] result = new byte[length];
         byteBuf.readBytes(result);
         return result;
     }
-    
+
     /**
      * Write variable length string to byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
      *
      * @param value fixed length string
+     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
      */
     public void writeStringFix(final String value) {
-        byteBuf.writeBytes(value.getBytes());
+        byteBuf.writeBytes(value.getBytes(charset));
     }
-    
+
     /**
      * Write variable length bytes to byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/secure-password-authentication.html#packet-Authentication::Native41">Native41</a>
      *
      * @param value fixed length bytes
+     * @see <a href="https://dev.mysql.com/doc/internals/en/secure-password-authentication.html#packet-Authentication::Native41">Native41</a>
      */
     public void writeBytes(final byte[] value) {
         byteBuf.writeBytes(value);
     }
-    
+
     /**
      * Read variable length string from byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::VariableLengthString">FixedLengthString</a>
      *
      * @return variable length string
+     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::VariableLengthString">FixedLengthString</a>
      */
     public String readStringVar() {
         // TODO
         return "";
     }
-    
+
     /**
      * Write fixed length string to byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::VariableLengthString">FixedLengthString</a>
      *
      * @param value variable length string
+     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::VariableLengthString">FixedLengthString</a>
      */
     public void writeStringVar(final String value) {
         // TODO
     }
-    
+
     /**
      * Read null terminated string from byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::NulTerminatedString">NulTerminatedString</a>
      *
      * @return null terminated string
+     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::NulTerminatedString">NulTerminatedString</a>
      */
     public String readStringNul() {
         byte[] result = new byte[byteBuf.bytesBefore((byte) 0)];
         byteBuf.readBytes(result);
         byteBuf.skipBytes(1);
-        return new String(result);
+        return new String(result, charset);
     }
-    
+
     /**
      * Read null terminated string from byte buffers and return bytes.
      *
-     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::NulTerminatedString">NulTerminatedString</a>
-     *
      * @return null terminated bytes
+     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::NulTerminatedString">NulTerminatedString</a>
      */
     public byte[] readStringNulByBytes() {
         byte[] result = new byte[byteBuf.bytesBefore((byte) 0)];
@@ -383,55 +363,54 @@ public final class MySQLPacketPayload implements PacketPayload {
         byteBuf.skipBytes(1);
         return result;
     }
-    
+
     /**
      * Write null terminated string to byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::NulTerminatedString">NulTerminatedString</a>
      *
      * @param value null terminated string
+     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::NulTerminatedString">NulTerminatedString</a>
      */
     public void writeStringNul(final String value) {
-        byteBuf.writeBytes(value.getBytes());
+        byteBuf.writeBytes(value.getBytes(charset));
         byteBuf.writeByte(0);
     }
-    
+
     /**
      * Read rest of packet string from byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::RestOfPacketString">RestOfPacketString</a>
      *
      * @return rest of packet string
+     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::RestOfPacketString">RestOfPacketString</a>
      */
     public String readStringEOF() {
         byte[] result = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(result);
-        return new String(result);
+        String str = new String(result, charset);
+        log.debug("readStringEOF=>byte[]:{},String:{}", Arrays.toString(result), str);
+        return str;
     }
-    
+
     /**
      * Write rest of packet string to byte buffers.
-     * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::RestOfPacketString">RestOfPacketString</a>
      *
      * @param value rest of packet string
+     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::RestOfPacketString">RestOfPacketString</a>
      */
     public void writeStringEOF(final String value) {
-        byteBuf.writeBytes(value.getBytes());
+        byteBuf.writeBytes(value.getBytes(charset));
     }
-    
+
     /**
      * Skip reserved from byte buffers.
-     * 
+     *
      * @param length length of reserved
      */
     public void skipReserved(final int length) {
         byteBuf.skipBytes(length);
     }
-    
+
     /**
      * Write null for reserved to byte buffers.
-     * 
+     *
      * @param length length of reserved
      */
     public void writeReserved(final int length) {
@@ -439,7 +418,7 @@ public final class MySQLPacketPayload implements PacketPayload {
             byteBuf.writeByte(0);
         }
     }
-    
+
     @Override
     public void close() {
         byteBuf.release();
