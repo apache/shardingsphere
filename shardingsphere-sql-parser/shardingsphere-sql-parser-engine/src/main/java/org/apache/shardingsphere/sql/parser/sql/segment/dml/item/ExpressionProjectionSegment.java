@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.segment.dml.item;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
@@ -28,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.util.SQLUtil;
  * @author zhangliang
  */
 @Getter
-public final class ExpressionProjectionSegment implements ProjectionSegment, AliasAvailable {
+public final class ExpressionProjectionSegment implements ProjectionSegment, ComplexExpressionSegment, AliasAvailable {
     
     private final int startIndex;
     
