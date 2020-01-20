@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSegment;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate.value.ExpectedPredicateBetweenRightValue;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate.value.ExpectedPredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate.value.ExpectedPredicateInRightValue;

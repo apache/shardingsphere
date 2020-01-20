@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.generic;
 
 import lombok.Getter;
 import lombok.Setter;
