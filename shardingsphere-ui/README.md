@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
-[![Build Status](https://builds.apache.org/job/shardingsphere-ci-dev/badge/icon)](https://builds.apache.org/job/shardingsphere-ci-dev/)
+[![Build Status](https://builds.apache.org/job/shardingsphere-ui-dev/badge/icon)](https://builds.apache.org/job/shardingsphere-ui-dev/)
 ## Overview
 
 ShardingSphere UI is a management background for [ShardingSphere](https://shardingsphere.apache.org/), including: dynamic configuration, Data orchestration, etc.
