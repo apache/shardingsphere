@@ -17,21 +17,19 @@
 
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.generic;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-
-@XmlAccessorType(XmlAccessType.FIELD)
-@Getter
-@Setter
-public abstract class AbstractExpectedSegment implements ExpectedSegment {
+public interface ExpectedSegment {
     
-    @XmlAttribute(name = "start-index")
-    private int startIndex;
+    /**
+     * Get start index.
+     *
+     * @return start index
+     */
+    int getStartIndex();
     
-    @XmlAttribute(name = "stop-index")
-    private int stopIndex;
+    /**
+     * Get stop index.
+     *
+     * @return stop index
+     */
+    int getStopIndex();
 }
