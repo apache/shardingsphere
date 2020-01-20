@@ -41,6 +41,6 @@ public final class ExpectedWhere extends AbstractExpectedSegment {
     @XmlElement(name = "and-predicate")
     private List<ExpectedAndPredicate> andPredicates = new LinkedList<>();
     
-    @XmlAttribute
-    private Integer parameterStartIndex;
+    @XmlAttribute(name = "parameter-marker-start-index")
+    private Integer parameterMarkerStartIndex;
 }

@@ -51,7 +51,7 @@ public final class WhereExtractor implements OptionalSQLSegmentExtractor {
         }
         Collection<ParserRuleContext> parameterMarkerNodes = ExtractorUtils.getAllDescendantNodes(whereNode.get(), RuleName.PARAMETER_MARKER);
         if (!parameterMarkerNodes.isEmpty()) {
-            result.setParameterStartIndex(parameterMarkerIndexes.get(parameterMarkerNodes.iterator().next()));
+            result.setParameterMarkerStartIndex(parameterMarkerIndexes.get(parameterMarkerNodes.iterator().next()));
         }
         return Optional.of(result);
     }

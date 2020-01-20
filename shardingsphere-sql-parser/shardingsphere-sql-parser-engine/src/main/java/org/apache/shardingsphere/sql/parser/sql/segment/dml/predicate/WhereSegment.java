@@ -43,5 +43,5 @@ public final class WhereSegment implements SQLSegment {
     
     private final Collection<AndPredicate> andPredicates = new LinkedList<>();
     
-    private int parameterStartIndex;
+    private int parameterMarkerStartIndex;
 }
