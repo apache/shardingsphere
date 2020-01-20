@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.Expect
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedPredicate;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedWhere;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.value.ExpectedPredicateCompareRightValue;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.ComplexExpressionSegment;
@@ -39,11 +40,13 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredica
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 
 import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -62,7 +65,7 @@ public final class WhereAssert {
      * @param expected expected where segment
      */
     public static void assertIs(final SQLStatementAssertMessage assertMessage, final WhereSegment actual, final ExpectedWhere expected) {
-        assertThat(assertMessage.getText("Parameters count in where clause assertion error:"), actual.getParametersCount(), is(expected.getParametersCount()));
+        assertThat(assertMessage.getText("Parameters count in where clause assertion error: "), actual.getParametersCount(), is(expected.getParametersCount()));
         assertAndPredicates(assertMessage, actual.getAndPredicates(), expected.getAndPredicates());
     }
     
@@ -73,15 +76,15 @@ public final class WhereAssert {
             Collection<PredicateSegment> actualPredicates = each.getPredicates();
             List<ExpectedPredicate> expectedPredicates = expected.get(count).getPredicates();
             assertThat(assertMessage.getText("Predicates size assertion error: "), actualPredicates.size(), is(expectedPredicates.size()));
-            assertPredicateSegment(assertMessage, actualPredicates, expectedPredicates);
+            assertPredicates(assertMessage, actualPredicates, expectedPredicates);
             count++;
         }
     }
     
-    private static void assertPredicateSegment(final SQLStatementAssertMessage assertMessage, final Collection<PredicateSegment> actual, final List<ExpectedPredicate> expected) {
+    private static void assertPredicates(final SQLStatementAssertMessage assertMessage, final Collection<PredicateSegment> actual, final List<ExpectedPredicate> expected) {
         int count = 0;
         for (PredicateSegment each: actual) {
-            assertColumnSegment(assertMessage, each.getColumn(), expected.get(count).getColumn());
+            assertColumn(assertMessage, each.getColumn(), expected.get(count).getColumn());
             if (each.getRightValue() instanceof PredicateCompareRightValue) {
                 assertCompareRightValue(assertMessage, (PredicateCompareRightValue) each.getRightValue(), expected.get(count).findExpectedRightValue(ExpectedPredicateCompareRightValue.class));
             }
@@ -90,10 +93,25 @@ public final class WhereAssert {
         }
     }
     
-    private static void assertColumnSegment(final SQLStatementAssertMessage assertMessage, final ColumnSegment actual, final ExpectedColumn expected) {
-        assertThat(assertMessage.getText("column segment name assertion error: "), actual.getName(), is(expected.getName()));
-        assertThat(assertMessage.getText("column segment table name assertion error: "), 
-                actual.getOwner().isPresent() ? actual.getOwner().get().getTableName() : null, is(expected.getOwner().getName()));
+    private static void assertColumn(final SQLStatementAssertMessage assertMessage, final ColumnSegment actual, final ExpectedColumn expected) {
+        assertThat(assertMessage.getText("Column name assertion error: "), actual.getName(), is(expected.getName()));
+        if (actual.getOwner().isPresent()) {
+            assertOwner(assertMessage, actual.getOwner().get(), expected.getOwner());
+        } else {
+            assertNull(expected.getOwner());
+        }
+        assertThat(assertMessage.getText("Column start delimiter assertion error: "), actual.getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
+        assertThat(assertMessage.getText("Column end delimiter assertion error: "), actual.getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
+        assertThat(assertMessage.getText("Column start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
+        assertThat(assertMessage.getText("Column stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
+    }
+    
+    private static void assertOwner(final SQLStatementAssertMessage assertMessage, final TableSegment actual, final ExpectedTableSegment expected) {
+        assertThat(assertMessage.getText("Column owner name assertion error: "), actual.getTableName(), is(expected.getName()));
+        assertThat(assertMessage.getText("Column owner name start delimiter assertion error: "), actual.getTableQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
+        assertThat(assertMessage.getText("Column owner name end delimiter assertion error: "), actual.getTableQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
+        assertThat(assertMessage.getText("Column owner name start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
+        assertThat(assertMessage.getText("Column owner name stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
     }
     
     private static void assertCompareRightValue(final SQLStatementAssertMessage assertMessage, final PredicateCompareRightValue actual, final ExpectedPredicateCompareRightValue expected) {
