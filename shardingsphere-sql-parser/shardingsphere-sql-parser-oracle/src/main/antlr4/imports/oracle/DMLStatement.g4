@@ -145,7 +145,7 @@ tableReferences
     ;
 
 tableReference
-    : (tableFactor joinedTable)+ | tableFactor joinedTable*
+    : tableFactor joinedTable*
     ;
 
 tableFactor
