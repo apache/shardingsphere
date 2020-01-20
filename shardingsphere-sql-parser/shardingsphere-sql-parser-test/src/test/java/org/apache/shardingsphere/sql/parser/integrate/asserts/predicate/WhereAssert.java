@@ -70,37 +70,47 @@ public final class WhereAssert {
         if (SQLCaseType.Placeholder == sqlCaseType) {
             assertThat(assertMessage.getText("Parameters count in where clause assertion error: "), actual.getParametersCount(), is(expected.getParametersCount()));
         }
-        assertAndPredicates(assertMessage, actual.getAndPredicates(), expected.getAndPredicates());
+        assertAndPredicates(assertMessage, actual.getAndPredicates(), expected.getAndPredicates(), sqlCaseType);
     }
     
-    private static void assertAndPredicates(final SQLStatementAssertMessage assertMessage, final Collection<AndPredicate> actual, final List<ExpectedAndPredicate> expected) {
+    private static void assertAndPredicates(final SQLStatementAssertMessage assertMessage, 
+                                            final Collection<AndPredicate> actual, final List<ExpectedAndPredicate> expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("And predicate size assertion error: "), actual.size(), is(expected.size()));
         int count = 0;
         for (AndPredicate each: actual) {
             Collection<PredicateSegment> actualPredicates = each.getPredicates();
             List<ExpectedPredicate> expectedPredicates = expected.get(count).getPredicates();
             assertThat(assertMessage.getText("Predicates size assertion error: "), actualPredicates.size(), is(expectedPredicates.size()));
-            assertPredicates(assertMessage, actualPredicates, expectedPredicates);
+            assertPredicates(assertMessage, actualPredicates, expectedPredicates, sqlCaseType);
             count++;
         }
     }
     
-    private static void assertPredicates(final SQLStatementAssertMessage assertMessage, final Collection<PredicateSegment> actual, final List<ExpectedPredicate> expected) {
+    private static void assertPredicates(final SQLStatementAssertMessage assertMessage, 
+                                         final Collection<PredicateSegment> actual, final List<ExpectedPredicate> expected, final SQLCaseType sqlCaseType) {
         int count = 0;
         for (PredicateSegment each: actual) {
             ExpectedPredicate expectedPredicate = expected.get(count);
-            assertColumn(assertMessage, each.getColumn(), expectedPredicate.getColumn());
+            assertColumn(assertMessage, each.getColumn(), expectedPredicate.getColumn(), sqlCaseType);
 //            if (each.getRightValue() instanceof PredicateCompareRightValue) {
 //                assertCompareRightValue(assertMessage, (PredicateCompareRightValue) each.getRightValue(), expectedPredicate.findExpectedRightValue(ExpectedPredicateCompareRightValue.class));
 //            }
             // TODO add other right value assertion
-            assertThat(assertMessage.getText("Predicate start index assertion error: "), each.getStartIndex(), is(expectedPredicate.getStartIndex()));
-            assertThat(assertMessage.getText("Predicate stop index assertion error: "), each.getStopIndex(), is(expectedPredicate.getStopIndex()));
+            if (SQLCaseType.Literal == sqlCaseType && null != expectedPredicate.getLiteralStartIndex()) {
+                assertThat(assertMessage.getText("Predicate start index assertion error: "), each.getStartIndex(), is(expectedPredicate.getLiteralStartIndex()));
+            } else {
+                assertThat(assertMessage.getText("Predicate start index assertion error: "), each.getStartIndex(), is(expectedPredicate.getStartIndex()));
+            }
+            if (SQLCaseType.Literal == sqlCaseType && null != expectedPredicate.getLiteralStopIndex()) {
+                assertThat(assertMessage.getText("Predicate stop index assertion error: "), each.getStopIndex(), is(expectedPredicate.getLiteralStopIndex()));
+            } else {
+                assertThat(assertMessage.getText("Predicate stop index assertion error: "), each.getStopIndex(), is(expectedPredicate.getStopIndex()));
+            }
             count++;
         }
     }
     
-    private static void assertColumn(final SQLStatementAssertMessage assertMessage, final ColumnSegment actual, final ExpectedColumn expected) {
+    private static void assertColumn(final SQLStatementAssertMessage assertMessage, final ColumnSegment actual, final ExpectedColumn expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Column name assertion error: "), actual.getName(), is(expected.getName()));
         if (actual.getOwner().isPresent()) {
             assertOwner(assertMessage, actual.getOwner().get(), expected.getOwner());
@@ -109,8 +119,16 @@ public final class WhereAssert {
         }
         assertThat(assertMessage.getText("Column start delimiter assertion error: "), actual.getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
         assertThat(assertMessage.getText("Column end delimiter assertion error: "), actual.getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
-        assertThat(assertMessage.getText("Column start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
-        assertThat(assertMessage.getText("Column stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
+        if (SQLCaseType.Literal == sqlCaseType && null != expected.getLiteralStartIndex()) {
+            assertThat(assertMessage.getText("Column start index assertion error: "), actual.getStartIndex(), is(expected.getLiteralStartIndex()));
+        } else {
+            assertThat(assertMessage.getText("Column start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
+        }
+        if (SQLCaseType.Literal == sqlCaseType && null != expected.getLiteralStopIndex()) {
+            assertThat(assertMessage.getText("Column stop index assertion error: "), actual.getStopIndex(), is(expected.getLiteralStopIndex()));
+        } else {
+            assertThat(assertMessage.getText("Column stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
+        }
     }
     
     private static void assertOwner(final SQLStatementAssertMessage assertMessage, final TableSegment actual, final ExpectedTableSegment expected) {
