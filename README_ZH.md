@@ -142,7 +142,7 @@ cd shardingsphere-ui
 构建产物：
 
 ```
-shardingsphere-ui/shardingsphere-ui-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-shardingsphere-ui-bin.tar.gz: ShardingSphere-UI的二进制包
+shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-shardingsphere-ui-bin.tar.gz: ShardingSphere-UI的二进制包
 ```
 
 ## 全景图

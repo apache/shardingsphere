@@ -22,7 +22,7 @@ shardingsphere-ui-backend is a standard spring boot project.
 ```bash
 git clone https://github.com/apache/incubator-shardingsphere.git
 cd incubator-shardingsphere/shardingsphere-ui/
-mvn clean package
+mvn clean package -Prelease
 ```
 
-Get the package in `/dist`. (shardingsphere-ui.tar.gz)
+Get the package in `shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-shardingsphere-ui-bin.tar.gz`
