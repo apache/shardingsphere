@@ -85,10 +85,10 @@ public final class WhereAssert {
         int count = 0;
         for (PredicateSegment each: actual) {
             assertColumn(assertMessage, each.getColumn(), expected.get(count).getColumn());
-            if (each.getRightValue() instanceof PredicateCompareRightValue) {
-                assertCompareRightValue(assertMessage, (PredicateCompareRightValue) each.getRightValue(), expected.get(count).findExpectedRightValue(ExpectedPredicateCompareRightValue.class));
-            }
-            //TODO add other right value assertion
+//            if (each.getRightValue() instanceof PredicateCompareRightValue) {
+//                assertCompareRightValue(assertMessage, (PredicateCompareRightValue) each.getRightValue(), expected.get(count).findExpectedRightValue(ExpectedPredicateCompareRightValue.class));
+//            }
+            // TODO add other right value assertion
             count++;
         }
     }
