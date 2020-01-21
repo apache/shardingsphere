@@ -15,18 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.table;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.top;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedDelimiterSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSegment;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
+/**
+ * Expected top value.
+ *
+ * @author zhangliang
+ */
 @Getter
 @Setter
-public final class ExpectedTableOwner extends AbstractExpectedDelimiterSegment {
+public final class ExpectedTopValue extends AbstractExpectedSegment {
     
     @XmlAttribute
-    private String name;
+    private Long value;
+    
+    @XmlAttribute(name = "parameter-index")
+    private Integer parameterIndex;
 }

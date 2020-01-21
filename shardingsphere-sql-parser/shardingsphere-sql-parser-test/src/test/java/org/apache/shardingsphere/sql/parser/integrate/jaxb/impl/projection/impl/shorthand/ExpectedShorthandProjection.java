@@ -29,6 +29,6 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class ExpectedShorthandProjection extends AbstractExpectedSegment implements ExpectedProjection {
     
-    @XmlElement(name = "owner")
+    @XmlElement
     private ExpectedTableOwner owner;
 }

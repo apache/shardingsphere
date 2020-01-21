@@ -35,5 +35,5 @@ public final class ExpectedTable extends AbstractExpectedDelimiterSegment {
     private String alias;
     
     @XmlElement
-    private ExpectedTableOwner owner;
+    private ExpectedSchemaOwner owner;
 }

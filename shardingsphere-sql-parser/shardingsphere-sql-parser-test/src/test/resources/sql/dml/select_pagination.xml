@@ -137,7 +137,9 @@
             <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
         </tables>
         <projections start-index="22" stop-index="160">
-            <top-projection alias="rownum_" top-value="3" top-parameter-index="0" top-value-start-index="27" top-value-stop-index="27" start-index="22" stop-index="72" />
+            <top-projection alias="rownum_" start-index="22" stop-index="72">
+                <top-value value="3" parameter-index="0" start-index="27" stop-index="27" />
+            </top-projection>
             <column-projection name="item_id" start-index="86" stop-index="94">
                 <owner name="i" start-index="86" stop-index="86" />
             </column-projection>
@@ -204,7 +206,9 @@
             <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
         </tables>
         <projections start-index="22" stop-index="160">
-            <top-projection alias="rownum_" top-value="3" top-parameter-index="0" top-value-start-index="27" top-value-stop-index="27" start-index="22" stop-index="72" />
+            <top-projection alias="rownum_" start-index="22" stop-index="72">
+                <top-value value="3" parameter-index="0" start-index="27" stop-index="27" />
+            </top-projection>
             <column-projection name="item_id" start-index="86" stop-index="94">
                 <owner name="i" start-index="86" stop-index="86" />
             </column-projection>
@@ -243,7 +247,9 @@
             <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
         </tables>
         <projections start-index="22" stop-index="160">
-            <top-projection alias="rownum_" top-value="3" top-parameter-index="0" top-value-start-index="27" top-value-stop-index="27" start-index="22" stop-index="72" />
+            <top-projection alias="rownum_" start-index="22" stop-index="72">
+                <top-value value="3" parameter-index="0" start-index="27" stop-index="27" />
+            </top-projection>
             <column-projection name="item_id" start-index="86" stop-index="94">
                 <owner name="i" start-index="86" stop-index="86" />
             </column-projection>

@@ -97,7 +97,7 @@ public final class ProjectionAssert {
             assertExpressionProjection(assertMessage, (ExpressionProjectionSegment) actual, (ExpectedExpressionProjection) expected);
         } else if (actual instanceof TopProjectionSegment) {
             assertThat(assertMessage.getText("Projection type assertion error: "), expected, instanceOf(ExpectedTopProjection.class));
-            assertTopProjection(assertMessage, (TopProjectionSegment) actual, (ExpectedTopProjection) expected);
+            assertTopProjection(assertMessage, (TopProjectionSegment) actual, (ExpectedTopProjection) expected, sqlCaseType);
         }
         SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
@@ -146,15 +146,15 @@ public final class ProjectionAssert {
         assertThat(assertMessage.getText("Expression projection alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
     }
     
-    private static void assertTopProjection(final SQLStatementAssertMessage assertMessage, final TopProjectionSegment actual, final ExpectedTopProjection expected) {
+    private static void assertTopProjection(final SQLStatementAssertMessage assertMessage, final TopProjectionSegment actual, final ExpectedTopProjection expected, final SQLCaseType sqlCaseType) {
         if (actual.getTop() instanceof NumberLiteralRowNumberValueSegment) {
-            assertThat(assertMessage.getText("Expression projection top value assertion error: "), ((NumberLiteralRowNumberValueSegment) actual.getTop()).getValue(), is(expected.getTopValue()));
+            assertThat(assertMessage.getText("Expression projection top value assertion error: "), 
+                    ((NumberLiteralRowNumberValueSegment) actual.getTop()).getValue(), is(expected.getTopValue().getValue()));
         } else {
             assertThat(assertMessage.getText("Expression projection top parameter index assertion error: "), 
-                    ((ParameterMarkerRowNumberValueSegment) actual.getTop()).getParameterIndex(), is(expected.getTopParameterIndex()));
+                    ((ParameterMarkerRowNumberValueSegment) actual.getTop()).getParameterIndex(), is(expected.getTopValue().getParameterIndex()));
         }
-        assertThat(assertMessage.getText("Expression projection top value start index assertion error: "), actual.getTop().getStartIndex(), is(expected.getTopValueStartIndex()));
-        assertThat(assertMessage.getText("Expression projection top value stop index assertion error: "), actual.getTop().getStopIndex(), is(expected.getTopValueStopIndex()));
         assertThat(assertMessage.getText("Expression projection alias assertion error: "), actual.getAlias(), is(expected.getAlias()));
+        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
 }
