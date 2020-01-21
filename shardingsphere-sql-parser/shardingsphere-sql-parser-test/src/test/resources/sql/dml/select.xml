@@ -734,14 +734,21 @@
             <aggregation-distinct-projection type="SUM" inner-expression-start-index="10" distinct-expression="order_id" alias="s" start-index="7" stop-index="28" />
         </projections>
     </parser-result>
-
-    <parser-result sql-case-id="select_distinct_with_count" >
+    
+    <parser-result sql-case-id="select_distinct_with_count">
         <tables>
             <table name="t_order" start-index="39" stop-index="45" />
         </tables>
         <projections start-index="7" stop-index="32">
             <aggregation-distinct-projection type="COUNT" inner-expression-start-index="12" distinct-expression="order_id" alias="c" start-index="7" stop-index="30" />
         </projections>
+        <where parameters-count="0" parameter-marker-start-index="0" start-index="47" stop-index="67">
+            <and-predicate>
+                <predicate start-index="53" stop-index="67">
+                    <column name="order_id" start-index="53" stop-index="60" />
+                </predicate>
+            </and-predicate>
+        </where>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_avg">
