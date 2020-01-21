@@ -197,6 +197,22 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
+        <where parameters-count="4" parameter-marker-start-index="0" start-index="22" stop-index="119" literal-stop-index="120">
+            <and-predicate>
+                <predicate start-index="28" stop-index="39">
+                    <column name="user_id" start-index="28" stop-index="34" />
+                </predicate>
+                <predicate start-index="45" stop-index="56" literal-stop-index="57">
+                    <column name="user_id" start-index="45" stop-index="51" />
+                </predicate>
+                <predicate start-index="62" stop-index="74" literal-start-index="63" literal-stop-index="75">
+                    <column name="order_id" start-index="62" stop-index="69" literal-start-index="63" literal-stop-index="70" />
+                </predicate>
+                <predicate start-index="80" stop-index="92" literal-start-index="81" literal-stop-index="93">
+                    <column name="order_id" start-index="80" stop-index="87" literal-start-index="81" literal-stop-index="88" />
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="&gt;=">
