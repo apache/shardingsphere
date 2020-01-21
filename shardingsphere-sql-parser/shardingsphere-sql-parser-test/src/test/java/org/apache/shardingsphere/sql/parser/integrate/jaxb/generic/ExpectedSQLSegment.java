@@ -15,25 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.generic;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedDelimiterSegment;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-
-@Getter
-@Setter
-public final class ExpectedColumnProjection extends AbstractExpectedDelimiterSegment implements ExpectedProjection {
+/**
+ * Expected SQL segment.
+ * 
+ * @author zhangliang 
+ */
+public interface ExpectedSQLSegment {
     
-    @XmlAttribute
-    private String name;
+    /**
+     * Get start index.
+     *
+     * @return start index
+     */
+    int getStartIndex();
     
-    @XmlAttribute
-    private String alias;
+    /**
+     * Get stop index.
+     *
+     * @return stop index
+     */
+    int getStopIndex();
     
-    @XmlElement(name = "owner")
-    private ExpectedTableSegment owner;
+    /**
+     * Get literal start index.
+     *
+     * @return literal start index
+     */
+    Integer getLiteralStartIndex();
+    
+    /**
+     * Get literal stop index.
+     *
+     * @return literal stop index
+     */
+    Integer getLiteralStopIndex();
 }

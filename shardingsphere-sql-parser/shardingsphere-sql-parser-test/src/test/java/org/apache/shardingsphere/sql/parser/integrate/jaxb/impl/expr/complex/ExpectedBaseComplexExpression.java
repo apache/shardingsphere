@@ -19,13 +19,13 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSQLSegment;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
 @Getter
 @Setter
-public class ExpectedBaseComplexExpression extends AbstractExpectedSegment implements ExpectedComplexExpressionSegment {
+public class ExpectedBaseComplexExpression extends AbstractExpectedSQLSegment implements ExpectedComplexExpressionSegment {
     
     @XmlAttribute
     private String text;

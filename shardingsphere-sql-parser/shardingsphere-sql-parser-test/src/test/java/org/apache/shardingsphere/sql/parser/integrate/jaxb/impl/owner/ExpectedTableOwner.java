@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.owner;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedDelimiterSQLSegment;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
 @Getter
 @Setter
-public class ExpectedAggregationProjection extends AbstractExpectedSegment implements ExpectedProjection {
+public final class ExpectedTableOwner extends AbstractExpectedDelimiterSQLSegment {
     
     @XmlAttribute
-    private String type;
-    
-    @XmlAttribute(name = "inner-expression-start-index")
-    private int innerExpressionStartIndex;
-    
-    @XmlAttribute
-    private String alias;
+    private String name;
 }

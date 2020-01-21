@@ -15,35 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.generic;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.aggregation;
 
-public interface ExpectedSegment {
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.xml.bind.annotation.XmlAttribute;
+
+@Getter
+@Setter
+public final class ExpectedAggregationDistinctProjection extends ExpectedAggregationProjection {
     
-    /**
-     * Get start index.
-     *
-     * @return start index
-     */
-    int getStartIndex();
-    
-    /**
-     * Get stop index.
-     *
-     * @return stop index
-     */
-    int getStopIndex();
-    
-    /**
-     * Get literal start index.
-     *
-     * @return literal start index
-     */
-    Integer getLiteralStartIndex();
-    
-    /**
-     * Get literal stop index.
-     *
-     * @return literal stop index
-     */
-    Integer getLiteralStopIndex();
+    @XmlAttribute(name = "distinct-expression")
+    private String distinctExpression;
 }

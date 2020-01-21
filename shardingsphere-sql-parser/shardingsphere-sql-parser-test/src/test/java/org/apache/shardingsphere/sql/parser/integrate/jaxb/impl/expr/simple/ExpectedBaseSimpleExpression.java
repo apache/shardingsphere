@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple;
 
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSQLSegment;
 
-public class ExpectedBaseSimpleExpression extends AbstractExpectedSegment implements ExpectedSimpleExpressionSegment {
+public class ExpectedBaseSimpleExpression extends AbstractExpectedSQLSegment implements ExpectedSimpleExpressionSegment {
 }

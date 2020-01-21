@@ -19,7 +19,13 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.aggregation.ExpectedAggregationDistinctProjection;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.aggregation.ExpectedAggregationProjection;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.column.ExpectedColumnProjection;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.expression.ExpectedExpressionProjection;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.shorthand.ExpectedShorthandProjection;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.top.ExpectedTopProjection;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -30,7 +36,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Setter
-public final class ExpectedProjections extends AbstractExpectedSegment {
+public final class ExpectedProjections extends AbstractExpectedSQLSegment {
     
     @Getter
     @XmlAttribute(name = "distinct-row")

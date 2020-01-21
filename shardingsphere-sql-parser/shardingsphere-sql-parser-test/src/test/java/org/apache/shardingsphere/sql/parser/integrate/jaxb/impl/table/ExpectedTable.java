@@ -19,14 +19,15 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.table;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedDelimiterSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedDelimiterSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.owner.ExpectedSchemaOwner;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @Setter
-public final class ExpectedTable extends AbstractExpectedDelimiterSegment {
+public final class ExpectedTable extends AbstractExpectedDelimiterSQLSegment {
     
     @XmlAttribute
     private String name;
@@ -35,5 +36,5 @@ public final class ExpectedTable extends AbstractExpectedDelimiterSegment {
     private String alias;
     
     @XmlElement
-    private ExpectedTableOwner owner;
+    private ExpectedSchemaOwner owner;
 }
