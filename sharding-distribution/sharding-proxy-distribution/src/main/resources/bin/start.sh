@@ -29,13 +29,6 @@ fi
 
 STDOUT_FILE=${LOGS_DIR}/stdout.log
 
-PIDS=`ps -ef | grep java | grep "$DEPLOY_DIR" | grep -v grep | awk '{print $2}'`
-if [ -n "$PIDS" ]; then
-    echo "ERROR: The $SERVER_NAME already started!"
-    echo "PID: $PIDS"
-    exit 1
-fi
-
 CLASS_PATH=.:..:${DEPLOY_DIR}/lib/*
 JAVA_OPTS=" -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true "
 
