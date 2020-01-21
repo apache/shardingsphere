@@ -42,8 +42,6 @@ public final class ShardingConfigurationLoader {
     
     private static final String DEFAULT_DATASOURCE_NAME = "dataSource";
     
-    private static final String CONFIG_PATH = "/conf/";
-    
     private static final String SERVER_CONFIG_FILE = "server.yaml";
     
     private static final Pattern RULE_CONFIG_FILE_PATTERN = Pattern.compile("config-.+\\.yaml");
@@ -51,13 +49,14 @@ public final class ShardingConfigurationLoader {
     /**
      * Load configuration of Sharding-Proxy.
      *
+     * @param path configuration path of Sharding-Proxy
      * @return configuration of Sharding-Proxy
      * @throws IOException IO exception
      */
-    public ShardingConfiguration load() throws IOException {
+    public ShardingConfiguration load(final String path) throws IOException {
         Collection<String> schemaNames = new HashSet<>();
-        YamlProxyServerConfiguration serverConfig = loadServerConfiguration(new File(ShardingConfigurationLoader.class.getResource(CONFIG_PATH + SERVER_CONFIG_FILE).getFile()));
-        File configPath = new File(ShardingConfigurationLoader.class.getResource(CONFIG_PATH).getFile());
+        YamlProxyServerConfiguration serverConfig = loadServerConfiguration(new File(ShardingConfigurationLoader.class.getResource(path + "/" + SERVER_CONFIG_FILE).getFile()));
+        File configPath = new File(ShardingConfigurationLoader.class.getResource(path).getFile());
         Collection<YamlProxyRuleConfiguration> ruleConfigurations = new LinkedList<>();
         for (File each : findRuleConfigurationFiles(configPath)) {
             Optional<YamlProxyRuleConfiguration> ruleConfig = loadRuleConfiguration(each, serverConfig);
