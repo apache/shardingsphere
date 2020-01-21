@@ -28,28 +28,40 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BitExpr
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BlobValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BooleanLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BooleanPrimaryContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CastFunction_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CharFunction_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConvertFunction_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExtractFunction_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FunctionCallContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GroupConcatFunction_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertValuesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IntervalExpression_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ParameterMarkerContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PositionFunction_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PredicateContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RegularFunction_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowLikeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SimpleExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SpecialFunction_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StringLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SubstringFunction_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnreservedWord_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WeightStringFunction_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowFunction_Context;
 import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromSchemaSegment;
@@ -78,6 +90,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.NumberValue;
 import org.apache.shardingsphere.sql.parser.sql.value.ParameterValue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -293,6 +306,9 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         if (null != ctx.literals()) {
             return visit(ctx.literals());
         }
+        if (null != ctx.intervalExpression_()) {
+            return visit(ctx.intervalExpression_());
+        }
         if (null != ctx.functionCall()) {
             return visit(ctx.functionCall());
         }
@@ -338,9 +354,21 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     }
     
     @Override
+    public ASTNode visitIntervalExpression_(final IntervalExpression_Context ctx) {
+        calculateParameterCount(Collections.singleton(ctx.expr()));
+        return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+    }
+    
+    @Override
     public ASTNode visitFunctionCall(final FunctionCallContext ctx) {
         if (null != ctx.aggregationFunction()) {
             return visit(ctx.aggregationFunction());
+        }
+        if (null != ctx.regularFunction_()) {
+            return visit(ctx.regularFunction_());
+        }
+        if (null != ctx.specialFunction_()) {
+            calculateParameterCount(ctx.regularFunction_().expr());
         }
         return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
@@ -350,6 +378,98 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         if (AggregationType.isAggregationType(ctx.aggregationFunctionName_().getText())) {
             return createAggregationSegment(ctx);
         }
+        return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public ASTNode visitSpecialFunction_(final SpecialFunction_Context ctx) {
+        if (null != ctx.groupConcatFunction_()) {
+            return visit(ctx.groupConcatFunction_());
+        }
+        if (null != ctx.windowFunction_()) {
+            return visit(ctx.windowFunction_());
+        }
+        if (null != ctx.castFunction_()) {
+            return visit(ctx.castFunction_());
+        }
+        if (null != ctx.convertFunction_()) {
+            return visit(ctx.convertFunction_());
+        }
+        if (null != ctx.positionFunction_()) {
+            return visit(ctx.positionFunction_());
+        }
+        if (null != ctx.substringFunction_()) {
+            return visit(ctx.substringFunction_());
+        }
+        if (null != ctx.extractFunction_()) {
+            return visit(ctx.extractFunction_());
+        }
+        if (null != ctx.charFunction_()) {
+            return visit(ctx.charFunction_());
+        }
+        if (null != ctx.weightStringFunction_()) {
+            return visit(ctx.weightStringFunction_());
+        }
+        return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public ASTNode visitGroupConcatFunction_(final GroupConcatFunction_Context ctx) {
+        calculateParameterCount(ctx.expr());
+        return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public ASTNode visitWindowFunction_(final WindowFunction_Context ctx) {
+        calculateParameterCount(ctx.expr());
+        return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public ASTNode visitCastFunction_(final CastFunction_Context ctx) {
+        calculateParameterCount(Collections.singleton(ctx.expr()));
+        return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public ASTNode visitConvertFunction_(final ConvertFunction_Context ctx) {
+        calculateParameterCount(Collections.singleton(ctx.expr()));
+        return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public ASTNode visitPositionFunction_(final PositionFunction_Context ctx) {
+        calculateParameterCount(ctx.expr());
+        return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public ASTNode visitSubstringFunction_(final SubstringFunction_Context ctx) {
+        calculateParameterCount(Collections.singleton(ctx.expr()));
+        return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public ASTNode visitExtractFunction_(final ExtractFunction_Context ctx) {
+        calculateParameterCount(Collections.singleton(ctx.expr()));
+        return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public ASTNode visitCharFunction_(final CharFunction_Context ctx) {
+        calculateParameterCount(ctx.expr());
+        return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public ASTNode visitWeightStringFunction_(final WeightStringFunction_Context ctx) {
+        calculateParameterCount(Collections.singleton(ctx.expr()));
+        return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public ASTNode visitRegularFunction_(final RegularFunction_Context ctx) {
+        calculateParameterCount(ctx.expr());
         return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
@@ -416,5 +536,12 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
             result.append(ctx.getChild(i).getText());
         }
         return result.toString();
+    }
+    
+    // TODO :FIXME, sql case id: insert_with_str_to_date
+    private void calculateParameterCount(final Collection<ExprContext> exprContexts) {
+        for (ExprContext each : exprContexts) {
+            visit(each);
+        }
     }
 }
