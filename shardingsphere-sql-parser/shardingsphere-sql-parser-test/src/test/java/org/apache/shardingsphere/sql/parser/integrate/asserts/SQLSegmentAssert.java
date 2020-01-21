@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.position;
+package org.apache.shardingsphere.sql.parser.integrate.asserts;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.ExpectedSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.test.sql.SQLCaseType;

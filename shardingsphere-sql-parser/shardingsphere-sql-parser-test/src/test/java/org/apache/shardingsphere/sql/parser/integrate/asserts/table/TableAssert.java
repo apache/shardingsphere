@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.table;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.position.SQLSegmentAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLSegmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.owner.ExpectedSchemaOwner;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
