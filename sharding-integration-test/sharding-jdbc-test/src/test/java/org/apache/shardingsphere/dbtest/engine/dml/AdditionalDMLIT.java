@@ -41,8 +41,6 @@ import static org.junit.Assert.assertFalse;
 
 public final class AdditionalDMLIT extends BaseDMLIT {
     
-    private static IntegrateTestEnvironment integrateTestEnvironment = IntegrateTestEnvironment.getInstance();
-    
     private final DMLIntegrateTestCaseAssertion assertion;
     
     public AdditionalDMLIT(final String sqlCaseId, final String path, final DMLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
@@ -53,7 +51,7 @@ public final class AdditionalDMLIT extends BaseDMLIT {
     
     @Parameters(name = "{0} -> Rule:{3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return integrateTestEnvironment.isRunAdditionalTestCases() ? IntegrateTestParameters.getParametersWithAssertion(SQLType.DML) : Collections.<Object[]>emptyList();
+        return IntegrateTestEnvironment.getInstance().isRunAdditionalTestCases() ? IntegrateTestParameters.getParametersWithAssertion(SQLType.DML) : Collections.<Object[]>emptyList();
     }
     
     @Test

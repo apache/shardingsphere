@@ -57,8 +57,6 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseDQLIT extends SingleIT {
     
-    private static IntegrateTestEnvironment integrateTestEnvironment = IntegrateTestEnvironment.getInstance();
-    
     public BaseDQLIT(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
                      final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
         super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
@@ -67,27 +65,27 @@ public abstract class BaseDQLIT extends SingleIT {
     @BeforeClass
     public static void insertData() throws IOException, JAXBException, SQLException, ParseException {
         createDatabasesAndTables();
-        for (DatabaseType each : integrateTestEnvironment.getDatabaseTypes()) {
+        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             insertData(each);
         }
     }
     
     private static void insertData(final DatabaseType databaseType) throws SQLException, ParseException, IOException, JAXBException {
-        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
+        for (String each : IntegrateTestEnvironment.getInstance().getShardingRuleTypes()) {
             new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(each), createDataSourceMap(databaseType, each)).initialize();
         }
     }
     
     @AfterClass
     public static void clearData() throws IOException, JAXBException, SQLException {
-        for (DatabaseType each : integrateTestEnvironment.getDatabaseTypes()) {
+        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             clearData(each);
         }
         dropDatabases();
     }
     
     private static void clearData(final DatabaseType databaseType) throws SQLException, IOException, JAXBException {
-        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
+        for (String each : IntegrateTestEnvironment.getInstance().getShardingRuleTypes()) {
             new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(each), createDataSourceMap(databaseType, each)).clear();
         }
     }
