@@ -292,6 +292,26 @@
         <projections start-index="7" stop-index="30">
             <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="orders_count" start-index="7" stop-index="14" />
         </projections>
+        <where parameters-count="5" parameter-marker-start-index="0" start-index="47" stop-index="142" literal-stop-index="148">
+            <and-predicate>
+                <!-- TODO assert predicate with like  -->
+                <!--<predicate start-index="62" stop-index="79">-->
+                    <!--<column name="status" start-index="53" stop-index="60">-->
+                        <!--<owner name="o" start-index="53" stop-index="53" />-->
+                    <!--</column>-->
+                <!--</predicate>-->
+                <predicate start-index="93" stop-index="111" literal-start-index="98" literal-stop-index="116">
+                    <column name="user_id" start-index="93" stop-index="101" literal-start-index="98" literal-stop-index="106">
+                        <owner name="o" start-index="93" stop-index="93" literal-start-index="98" literal-stop-index="98" />
+                    </column>
+                </predicate>
+                <predicate start-index="117" stop-index="142" literal-start-index="122" literal-stop-index="148">
+                    <column name="order_id" start-index="117" stop-index="126" literal-start-index="122" literal-stop-index="131">
+                        <owner name="o" start-index="117" stop-index="117" literal-start-index="122" literal-stop-index="122" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
