@@ -40,7 +40,7 @@ dropDatabse
     ;
 
 createView
-    : CREATE VIEW viewName (LP_ identifier_ (COMMA_ identifier_)* RP_)?
+    : CREATE VIEW viewName (LP_ identifier (COMMA_ identifier)* RP_)?
       AS select
       (WITH (CASCADED | LOCAL)? CHECK OPTION)?
     ;

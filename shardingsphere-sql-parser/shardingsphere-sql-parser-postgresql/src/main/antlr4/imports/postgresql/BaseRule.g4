@@ -60,7 +60,7 @@ literalsType_
     : COLON_ COLON_ IDENTIFIER_
     ;
 
-identifier_
+identifier
     : unicodeEscapes_? IDENTIFIER_ uescape_? |  unreservedWord_ 
     ;
 
@@ -92,12 +92,12 @@ unreservedWord_
     | TEMP | TEMPORARY | TRIGGER | TYPE | UNBOUNDED | UNLOGGED | UPDATE
     | USAGE | VALID | VALIDATE | WITHIN | WITHOUT | ZONE | GROUPS
     | RECURSIVE | INSTANCE | DEFINER | PRESERVE | SQL | LOCAL | CASCADED
-    | CLOSE | OPEN | NEXT | NAME | NAMES | INTEGER | REAL | DECIMAL
+    | CLOSE | OPEN | NEXT | NAME | NAMES | INTEGER | REAL | DECIMAL | TYPE
     | BOOLEAN | CHAR | TIME | TIMESTAMP | INTERVAL
     ;
 
 schemaName
-    : identifier_
+    : identifier
     ;
 
 tableName
@@ -109,11 +109,11 @@ columnName
     ;
 
 owner
-    : identifier_
+    : identifier
     ;
 
 name
-    : identifier_
+    : identifier
     ;
 
 tableNames
@@ -125,15 +125,15 @@ columnNames
     ;
 
 collationName
-    : STRING_ | identifier_
+    : STRING_ | identifier
     ;
 
 indexName
-    : identifier_
+    : identifier
     ;
 
 alias
-    : identifier_
+    : identifier
     ;
 
 primaryKey
@@ -145,7 +145,7 @@ expr
     : expr logicalOperator expr
     | notOperator_ expr
     | LP_ expr RP_
-    | booleanPrimary_
+    | booleanPrimary
     ;
 
 logicalOperator
@@ -156,11 +156,11 @@ notOperator_
     : NOT | NOT_
     ;
 
-booleanPrimary_
-    : booleanPrimary_ IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
-    | booleanPrimary_ SAFE_EQ_ predicate
-    | booleanPrimary_ comparisonOperator predicate
-    | booleanPrimary_ comparisonOperator (ALL | ANY) subquery
+booleanPrimary
+    : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
+    | booleanPrimary SAFE_EQ_ predicate
+    | booleanPrimary comparisonOperator predicate
+    | booleanPrimary comparisonOperator (ALL | ANY) subquery
     | predicate
     ;
 
@@ -196,17 +196,18 @@ simpleExpr
     | parameterMarker
     | literals
     | columnName
-    | simpleExpr COLLATE (STRING_ | identifier_)
+    | simpleExpr COLLATE (STRING_ | identifier)
     | simpleExpr OR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
-    | LBE_ identifier_ expr RBE_
+    | LBE_ identifier expr RBE_
     | caseExpression_
+    | CURRENT_USER
     ;
 
 functionCall
-    : aggregationFunction | specialFunction_ | regularFunction_ 
+    : aggregationFunction | specialFunction | regularFunction 
     ;
 
 aggregationFunction
@@ -225,8 +226,8 @@ filterClause_
     : FILTER LP_ WHERE expr RP_
     ;
 
-windowFunction_
-    : identifier_ LP_ expr (COMMA_ expr)* RP_ filterClause_ OVER identifier_? windowDefinition_
+windowFunction
+    : identifier LP_ expr (COMMA_ expr)* RP_ filterClause_ OVER identifier? windowDefinition_
     ;
 
 windowDefinition_
@@ -253,24 +254,24 @@ frameBetween_
     : BETWEEN frameStart_ AND frameEnd_
     ;
 
-specialFunction_
-    : windowFunction_ | castFunction_  | charFunction_
+specialFunction
+    : windowFunction | castFunction  | charFunction
     ;
 
-castFunction_
+castFunction
     : CAST LP_ expr AS dataType RP_
     ;
 
-charFunction_
+charFunction
     : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier_)? RP_
     ;
 
-regularFunction_
+regularFunction
     : regularFunctionName_ LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
 regularFunctionName_
-    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | INTERVAL
+    : identifier | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | INTERVAL
     ;
 
 caseExpression_
@@ -302,7 +303,7 @@ dataType
     ;
 
 dataTypeName_
-    : identifier_ identifier_?
+    : identifier identifier?
     ;
 
 dataTypeLength
@@ -318,7 +319,7 @@ collateClause_
     ;
 
 ignoredIdentifier_
-    : identifier_ (DOT_ identifier_)?
+    : identifier (DOT_ identifier)?
     ;
 
 ignoredIdentifiers_

@@ -49,7 +49,7 @@ It can be considered as an enhanced JDBC driver, which is fully compatible with 
 
 ### Sharding-Proxy
 
-[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://www.apache.org/dyn/closer.cgi?path=incubator/shardingsphere/4.0.0-RC3/apache-shardingsphere-incubating-4.0.0-RC3-sharding-proxy-bin.tar.gz)
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://www.apache.org/dyn/closer.cgi?path=incubator/shardingsphere/4.0.0/apache-shardingsphere-incubating-4.0.0-sharding-proxy-bin.tar.gz)
 [![Docker Pulls](https://img.shields.io/docker/pulls/shardingsphere/sharding-proxy.svg)](https://store.docker.com/community/images/shardingsphere/sharding-proxy)
 
 Sharding-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
@@ -121,17 +121,31 @@ Architects can adjust the system architecture to the most applicable one to curr
 
 ## How to Build
 
+### Build ShardingSphere
+
 ```bash
 ./mvnw clean install -Prelease
-``` 
+```
 
 Artifact:
 
 ```
 sharding-distribution/sharding-jdbc-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-jdbc-bin.tar.gz: Binary package of Sharding-JDBC
 sharding-distribution/sharding-proxy-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-proxy-bin.tar.gz: Binary package of Sharding-Proxy
-sharding-distribution/sharding-ui-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-ui-bin.tar.gz: Binary package of Sharding-UI
 sharding-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-src.zip: Source code package of ShardingSphere
+```
+
+### Build ShardingSphere-UI
+
+```bash
+cd shardingsphere-ui
+./mvnw clean install -Prelease
+```
+
+Artifact:
+
+```
+shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-shardingsphere-ui-bin.tar.gz: Binary package of ShardingSphere-UI
 ```
 
 ## Landscapes

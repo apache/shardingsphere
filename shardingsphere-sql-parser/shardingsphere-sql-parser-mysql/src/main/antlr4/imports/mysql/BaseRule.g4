@@ -43,7 +43,7 @@ numberLiterals
 
 dateTimeLiterals
     : (DATE | TIME | TIMESTAMP) STRING_
-    | LBE_ identifier_ STRING_ RBE_
+    | LBE_ identifier STRING_ RBE_
     ;
 
 hexadecimalLiterals
@@ -62,12 +62,12 @@ nullValueLiterals
     : NULL
     ;
 
-identifier_
+identifier
     : IDENTIFIER_ | unreservedWord_
     ;
 
 variable_
-    : (AT_? AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier_
+    : (AT_? AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier
     ;
 
 scope_
@@ -107,12 +107,11 @@ unreservedWord_
     | IMPORT | CONCURRENT | XML | POSITION | SHARE | DUMPFILE | CLONE | AGGREGATE | INSTALL | UNINSTALL
     | RESOURCE | FLUSH | RESET | RESTART | HOSTS | RELAY | EXPORT | USER_RESOURCES | SLOW | GENERAL | CACHE
     | SUBJECT | ISSUER | OLD | RANDOM | RETAIN | MAX_USER_CONNECTIONS | MAX_CONNECTIONS_PER_HOUR | MAX_UPDATES_PER_HOUR
-    | MAX_QUERIES_PER_HOUR | REUSE | OPTIONAL | HISTORY | NEVER | EXPIRE | TYPE | UNIX_TIMESTAMP | LOWER | UPPER | CONTEXT
-    | CODE | CHANNEL | SOURCE
+    | MAX_QUERIES_PER_HOUR | REUSE | OPTIONAL | HISTORY | NEVER | EXPIRE | TYPE | CONTEXT | CODE | CHANNEL | SOURCE
     ;
 
 schemaName
-    : identifier_
+    : identifier
     ;
 
 tableName
@@ -125,42 +124,42 @@ columnName
 
 userName
     : STRING_  AT_ STRING_
-    | identifier_
+    | identifier
     | STRING_
     ;
 
 eventName
     : (STRING_ | IDENTIFIER_) AT_ (STRING_ IDENTIFIER_)
-    | identifier_
+    | identifier
     | STRING_ 
     ;
 
 serverName
-    : identifier_
+    : identifier
     | STRING_
     ; 
 
 wrapperName
-    : identifier_
+    : identifier
     | STRING_
     ;
 
 functionName
-    : identifier_
-    | (owner DOT_)? identifier_
+    : identifier
+    | (owner DOT_)? identifier
     ;
 
 viewName
-    : identifier_
-    | (owner DOT_)? identifier_
+    : identifier
+    | (owner DOT_)? identifier
     ;
 
 owner
-    : identifier_
+    : identifier
     ;
 
 name
-    : identifier_
+    : identifier
     ;
 
 columnNames
@@ -172,7 +171,7 @@ tableNames
     ;
 
 indexName
-    : identifier_
+    : identifier
     ;
 
 characterSetName_
@@ -214,14 +213,13 @@ cloneInstance
 cloneDir
     : IDENTIFIER_
     ;
- 
 
 channelName
     : IDENTIFIER_
     ;
 
 logName
-    : identifier_
+    : identifier
     ;
 
 roleName
@@ -261,7 +259,7 @@ expr
     | expr XOR expr
     | notOperator_ expr
     | LP_ expr RP_
-    | booleanPrimary_
+    | booleanPrimary
     ;
 
 logicalOperator
@@ -272,11 +270,11 @@ notOperator_
     : NOT | NOT_
     ;
 
-booleanPrimary_
-    : booleanPrimary_ IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
-    | booleanPrimary_ SAFE_EQ_ predicate
-    | booleanPrimary_ comparisonOperator predicate
-    | booleanPrimary_ comparisonOperator (ALL | ANY) subquery
+booleanPrimary
+    : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
+    | booleanPrimary SAFE_EQ_ predicate
+    | booleanPrimary comparisonOperator predicate
+    | booleanPrimary comparisonOperator (ALL | ANY) subquery
     | predicate
     ;
 
@@ -307,8 +305,8 @@ bitExpr
     | bitExpr MOD bitExpr
     | bitExpr MOD_ bitExpr
     | bitExpr CARET_ bitExpr
-    | bitExpr PLUS_ intervalExpression_
-    | bitExpr MINUS_ intervalExpression_
+    | bitExpr PLUS_ intervalExpression
+    | bitExpr MINUS_ intervalExpression
     | simpleExpr
     ;
 
@@ -317,20 +315,20 @@ simpleExpr
     | parameterMarker
     | literals
     | columnName
-    | simpleExpr COLLATE (STRING_ | identifier_)
+    | simpleExpr COLLATE (STRING_ | identifier)
     | variable_
     | simpleExpr OR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
-    | LBE_ identifier_ expr RBE_
+    | LBE_ identifier expr RBE_
     | matchExpression_
     | caseExpression_
-    | intervalExpression_
+    | intervalExpression
     ;
 
 functionCall
-    : aggregationFunction | specialFunction_ | regularFunction_ 
+    : aggregationFunction | specialFunction | regularFunction 
     ;
 
 aggregationFunction
@@ -348,11 +346,11 @@ distinct
     ;
 
 overClause_
-    : OVER (LP_ windowSpecification_ RP_ | identifier_)
+    : OVER (LP_ windowSpecification_ RP_ | identifier)
     ;
 
 windowSpecification_
-    : identifier_? partitionClause_? orderByClause? frameClause_?
+    : identifier? partitionClause_? orderByClause? frameClause_?
     ;
 
 partitionClause_
@@ -375,41 +373,41 @@ frameBetween_
     : BETWEEN frameStart_ AND frameEnd_
     ;
 
-specialFunction_
-    : groupConcatFunction_ | windowFunction_ | castFunction_ | convertFunction_ | positionFunction_ | substringFunction_ | extractFunction_ 
-    | charFunction_ | trimFunction_ | weightStringFunction_ | valuesFunction_
+specialFunction
+    : groupConcatFunction | windowFunction | castFunction | convertFunction | positionFunction | substringFunction | extractFunction 
+    | charFunction | trimFunction_ | weightStringFunction | valuesFunction_
     ;
 
-groupConcatFunction_
+groupConcatFunction
     : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause)? (SEPARATOR expr)? RP_
     ;
 
-windowFunction_
-    : identifier_ LP_ expr (COMMA_ expr)* RP_ overClause_
+windowFunction
+    : identifier LP_ expr (COMMA_ expr)* RP_ overClause_
     ;
 
-castFunction_
+castFunction
     : CAST LP_ expr AS dataType RP_
     ;
 
-convertFunction_
+convertFunction
     : CONVERT LP_ expr COMMA_ dataType RP_
-    | CONVERT LP_ expr USING identifier_ RP_ 
+    | CONVERT LP_ expr USING identifier RP_ 
     ;
 
-positionFunction_
+positionFunction
     : POSITION LP_ expr IN expr RP_
     ;
 
-substringFunction_
+substringFunction
     :  (SUBSTRING | SUBSTR) LP_ expr FROM NUMBER_ (FOR NUMBER_)? RP_
     ;
 
-extractFunction_
-    : EXTRACT LP_ identifier_ FROM expr RP_
+extractFunction
+    : EXTRACT LP_ identifier FROM expr RP_
     ;
 
-charFunction_
+charFunction
     : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier_)? RP_
     ;
 
@@ -421,7 +419,7 @@ valuesFunction_
     : VALUES LP_ columnName RP_
     ;
 
-weightStringFunction_
+weightStringFunction
     : WEIGHT_STRING LP_ expr (AS dataType)? levelClause_? RP_
     ;
 
@@ -433,12 +431,12 @@ levelInWeightListElement_
     : NUMBER_ (ASC | DESC)? REVERSE?
     ;
 
-regularFunction_
+regularFunction
     : regularFunctionName_ LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
 regularFunctionName_
-    : identifier_ | IF | CURRENT_TIMESTAMP | UNIX_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | INTERVAL | SUBSTRING | MOD
+    : identifier | IF | CURRENT_TIMESTAMP | UNIX_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | REPLACE | INTERVAL | SUBSTRING | MOD
     | DATABASE | LEFT | RIGHT | LOWER | UPPER | DATE | DATEDIFF | DATE_FORMAT | DAY | DAYNAME | DAYOFMONTH | DAYOFWEEK | DAYOFYEAR
     | GEOMCOLLECTION | GEOMETRYCOLLECTION | LINESTRING | MULTILINESTRING | MULTIPOINT | MULTIPOLYGON | POINT | POLYGON | STR_TO_DATE
     | ST_AREA | ST_ASBINARY | ST_ASGEOJSON | ST_ASTEXT | ST_ASWKB | ST_ASWKT | ST_BUFFER | ST_BUFFER_STRATEGY | ST_CENTROID | ST_CONTAINS
@@ -452,8 +450,8 @@ regularFunctionName_
     | ST_MULTIPOLYGONFROMWKB | ST_NUMGEOMETRIES | ST_NUMINTERIORRING | ST_NUMINTERIORRINGS | ST_NUMPOINTS | ST_OVERLAPS | ST_POINTFROMGEOHASH
     | ST_POINTFROMTEXT | ST_POINTFROMWKB | ST_POINTN | ST_POLYFROMTEXT | ST_POLYFROMWKB | ST_POLYGONFROMTEXT | ST_POLYGONFROMWKB | ST_SIMPLIFY
     | ST_SRID | ST_STARTPOINT | ST_SWAPXY | ST_SYMDIFFERENCE | ST_TOUCHES | ST_TRANSFORM | ST_UNION | ST_VALIDATE | ST_WITHIN | ST_X | ST_Y
-    | TIME | TIMEDIFF | TIMESTAMP | TIMESTAMPADD | TIMESTAMPDIFF | TIME_FORMAT | TIME_TO_SEC
-    | AES_DECRYPT | AES_ENCRYPT | FROM_BASE64 | TO_BASE64
+    | TIME | TIMEDIFF | TIMESTAMP | TIMESTAMPADD | TIMESTAMPDIFF | TIME_FORMAT | TIME_TO_SEC | AES_DECRYPT | AES_ENCRYPT | FROM_BASE64 | TO_BASE64
+    | ADDDATE | ADDTIME | DATE | DATE_ADD | DATE_SUB |
     ;
 
 matchExpression_
@@ -476,7 +474,7 @@ caseElse_
     : ELSE expr
     ;
 
-intervalExpression_
+intervalExpression
     : INTERVAL expr intervalUnit_
     ;
 
@@ -503,7 +501,7 @@ dataType
     ;
 
 dataTypeName_
-    : identifier_ identifier_?
+    : identifier identifier?
     ;
 
 dataTypeLength
@@ -519,7 +517,7 @@ collateClause_
     ;
 
 ignoredIdentifier_
-    : identifier_ (DOT_ identifier_)?
+    : identifier (DOT_ identifier)?
     ;
 
 ignoredIdentifiers_

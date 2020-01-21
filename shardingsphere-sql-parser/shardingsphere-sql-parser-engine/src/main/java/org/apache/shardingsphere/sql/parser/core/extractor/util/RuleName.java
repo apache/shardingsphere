@@ -91,9 +91,9 @@ public enum RuleName {
     
     DUPLICATE_SPECIFICATION("DuplicateSpecification"),
     
-    SELECT_ITEMS("SelectItems"),
+    PROJECTIONS("Projections"),
     
-    SELECT_ITEM("SelectItem"),
+    PROJECTION("Projection"),
     
     UNQUALIFIED_SHORTHAND("UnqualifiedShorthand"),
     
@@ -120,6 +120,8 @@ public enum RuleName {
     STRING_LITERALS("StringLiterals"),
     
     BOOLEAN_LITERALS("BooleanLiterals"),
+    
+    NULL_LITERALS("NullValueLiterals"),
     
     EXPR("Expr"),
     

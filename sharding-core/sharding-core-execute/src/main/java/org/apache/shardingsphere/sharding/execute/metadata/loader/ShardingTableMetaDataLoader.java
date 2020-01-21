@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -212,9 +213,28 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
             return Collections.emptyMap();
         }
         Collection<String> tableNames = loadAllTableNames(actualDefaultDataSourceName.get());
+        List<TableMetaData> tableMetaDataList = executorEngine.execute(getTableNamesInputGroups(tableNames), new GroupedCallback<String, TableMetaData>() {
+            
+            @Override
+            public Collection<TableMetaData> execute(final Collection<String> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
+                String logicTableName = inputs.iterator().next();
+                Collection<TableMetaData> result = new LinkedList<>();
+                result.add(load(logicTableName, shardingRule));
+                return result;
+            }
+        });
         Map<String, TableMetaData> result = new HashMap<>(tableNames.size(), 1);
+        Iterator<String> tabNameIterator = tableNames.iterator();
+        for (TableMetaData each : tableMetaDataList) {
+            result.put(tabNameIterator.next(), each);
+        }
+        return result;
+    }
+    
+    private Collection<InputGroup<String>> getTableNamesInputGroups(final Collection<String> tableNames) {
+        Collection<InputGroup<String>> result = new LinkedList<>();
         for (String each : tableNames) {
-            result.put(each, load(each, shardingRule));
+            result.add(new InputGroup<>(Lists.newArrayList(each)));
         }
         return result;
     }

@@ -43,7 +43,7 @@ numberLiterals
 
 dateTimeLiterals
     : (DATE | TIME | TIMESTAMP) STRING_
-    | LBE_ identifier_ STRING_ RBE_
+    | LBE_ identifier STRING_ RBE_
     ;
 
 hexadecimalLiterals
@@ -62,12 +62,12 @@ nullValueLiterals
     : NULL
     ;
 
-identifier_
+identifier
     : IDENTIFIER_ | unreservedWord_
     ;
 
 variable_
-    : (AT_? AT_)? (GLOBAL | LOCAL)? DOT_? identifier_
+    : (AT_? AT_)? (GLOBAL | LOCAL)? DOT_? identifier
     ;
 
 unreservedWord_
@@ -89,7 +89,7 @@ unreservedWord_
     ;
 
 schemaName
-    : identifier_
+    : identifier
     ;
 
 tableName
@@ -101,16 +101,16 @@ columnName
     ;
 
 viewName
-    : identifier_
-    | (owner DOT_)? identifier_
+    : identifier
+    | (owner DOT_)? identifier
     ;
 
 owner
-    : identifier_
+    : identifier
     ;
 
 name
-    : identifier_
+    : identifier
     ;
 
 columnNames
@@ -129,7 +129,7 @@ expr
     : expr logicalOperator expr
     | notOperator_ expr
     | LP_ expr RP_
-    | booleanPrimary_
+    | booleanPrimary
     ;
 
 logicalOperator
@@ -140,11 +140,11 @@ notOperator_
     : NOT | NOT_
     ;
 
-booleanPrimary_
-    : booleanPrimary_ IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
-    | booleanPrimary_ SAFE_EQ_ predicate
-    | booleanPrimary_ comparisonOperator predicate
-    | booleanPrimary_ comparisonOperator (ALL | ANY) subquery
+booleanPrimary
+    : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
+    | booleanPrimary SAFE_EQ_ predicate
+    | booleanPrimary comparisonOperator predicate
+    | booleanPrimary comparisonOperator (ALL | ANY) subquery
     | predicate
     ;
 
@@ -171,8 +171,8 @@ bitExpr
     | bitExpr SLASH_ bitExpr
     | bitExpr MOD_ bitExpr
     | bitExpr CARET_ bitExpr
-    | bitExpr PLUS_ intervalExpression_
-    | bitExpr MINUS_ intervalExpression_
+    | bitExpr PLUS_ intervalExpression
+    | bitExpr MINUS_ intervalExpression
     | simpleExpr
     ;
 
@@ -181,19 +181,19 @@ simpleExpr
     | parameterMarker
     | literals
     | columnName
-    | simpleExpr COLLATE (STRING_ | identifier_)
+    | simpleExpr COLLATE (STRING_ | identifier)
     | variable_
     | (PLUS_ | MINUS_ | TILDE_ | NOT_) simpleExpr
     | LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
-    | LBE_ identifier_ expr RBE_
+    | LBE_ identifier expr RBE_
     | matchExpression_
     | caseExpression_
-    | intervalExpression_
+    | intervalExpression
     ;
 
 functionCall
-    : aggregationFunction | specialFunction_ | regularFunction_ 
+    : aggregationFunction | specialFunction | regularFunction 
     ;
 
 aggregationFunction
@@ -208,40 +208,40 @@ distinct
     : DISTINCT
     ;
 
-specialFunction_
-    : castFunction_ | convertFunction_ | positionFunction_ | substringFunction_ | extractFunction_ | trimFunction_
+specialFunction
+    : castFunction | convertFunction | positionFunction | substringFunction | extractFunction | trimFunction_
     ;
 
-castFunction_
+castFunction
     : CAST LP_ (expr | NULL) AS dataType RP_
     ;
 
-convertFunction_
-    : CONVERT LP_ expr USING identifier_ RP_
+convertFunction
+    : CONVERT LP_ expr USING identifier RP_
     ;
 
-positionFunction_
+positionFunction
     : POSITION LP_ expr IN expr RP_
     ;
 
-substringFunction_
+substringFunction
     : SUBSTRING LP_ expr FROM NUMBER_ (FOR NUMBER_)? RP_
     ;
 
-extractFunction_
-    : EXTRACT LP_ identifier_ FROM expr RP_
+extractFunction
+    : EXTRACT LP_ identifier FROM expr RP_
     ;
 
 trimFunction_
     : TRIM LP_ (LEADING | BOTH | TRAILING) STRING_ FROM STRING_ RP_
     ;
 
-regularFunction_
+regularFunction
     : regularFunctionName_ LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
 regularFunctionName_
-    : identifier_ | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | INTERVAL
+    : identifier | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | INTERVAL
     ;
 
 matchExpression_
@@ -260,7 +260,7 @@ caseElse_
     : ELSE expr
     ;
 
-intervalExpression_
+intervalExpression
     : INTERVAL expr intervalUnit_
     ;
 
@@ -285,7 +285,7 @@ dataType
     ;
 
 dataTypeName_
-    : identifier_ identifier_?
+    : identifier identifier?
     ;
 
 dataTypeLength
@@ -301,7 +301,7 @@ collateClause_
     ;
 
 ignoredIdentifier_
-    : identifier_ (DOT_ identifier_)?
+    : identifier (DOT_ identifier)?
     ;
 
 dropBehaviour_

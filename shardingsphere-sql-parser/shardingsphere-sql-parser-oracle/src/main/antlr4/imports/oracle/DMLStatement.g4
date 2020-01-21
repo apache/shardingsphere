@@ -48,11 +48,11 @@ conditionalInsertElsePart
     ;
 
 insertIntoClause
-    : INTO tableName (AS? alias)? columnNames?
+    : INTO tableName (AS? alias)?
     ;
 
 insertValuesClause
-    : VALUES assignmentValues (COMMA_ assignmentValues)*
+    : columnNames? VALUES assignmentValues (COMMA_ assignmentValues)*
     ;
 
 update
@@ -109,23 +109,23 @@ unionClause_
     ;
 
 selectClause
-    : SELECT duplicateSpecification? selectItems fromClause? whereClause? groupByClause? havingClause? orderByClause?
+    : SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause? orderByClause?
     ;
 
 duplicateSpecification
     : ALL | DISTINCT
     ;
 
-selectItems
-    : (unqualifiedShorthand | selectItem) (COMMA_ selectItem)*
+projections
+    : (unqualifiedShorthand | projection) (COMMA_ projection)*
     ;
 
-selectItem
+projection
     : (columnName | expr) (AS? alias)? | qualifiedShorthand
     ;
 
 alias
-    : identifier_ | STRING_
+    : identifier | STRING_
     ;
 
 unqualifiedShorthand
@@ -133,7 +133,7 @@ unqualifiedShorthand
     ;
 
 qualifiedShorthand
-    : identifier_ DOT_ASTERISK_
+    : identifier DOT_ASTERISK_
     ;
 
 fromClause
@@ -145,7 +145,7 @@ tableReferences
     ;
 
 tableReference
-    : (tableFactor joinedTable)+ | tableFactor joinedTable*
+    : tableFactor joinedTable*
     ;
 
 tableFactor

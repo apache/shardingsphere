@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.Assignmen
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAvailable;
@@ -49,9 +50,18 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
     
     private SetAssignmentsSegment setAssignment;
     
-    private final Collection<ColumnSegment> columns = new LinkedList<>();
+    private InsertColumnsSegment columns;
     
     private final Collection<InsertValuesSegment> values = new LinkedList<>();
+    
+    /**
+     * Get columns.
+     * 
+     * @return columns
+     */
+    public Collection<ColumnSegment> getColumns() {
+        return null == columns ? Collections.<ColumnSegment>emptyList() : columns.getColumns();
+    }
     
     /**
      * Get set assignment segment.
@@ -68,7 +78,7 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
      * @return is use default columns or not
      */
     public boolean useDefaultColumns() {
-        return columns.isEmpty() && null == setAssignment;
+        return getColumns().isEmpty() && null == setAssignment;
     }
     
     /**
@@ -82,7 +92,7 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
     
     private List<String> getColumnNamesForInsertColumns() {
         List<String> result = new LinkedList<>();
-        for (ColumnSegment each : columns) {
+        for (ColumnSegment each : getColumns()) {
             result.add(each.getName().toLowerCase());
         }
         return result;

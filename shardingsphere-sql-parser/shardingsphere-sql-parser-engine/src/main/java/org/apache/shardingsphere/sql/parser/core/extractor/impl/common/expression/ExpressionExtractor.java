@@ -24,11 +24,14 @@ import org.apache.shardingsphere.sql.parser.core.extractor.impl.common.expressio
 import org.apache.shardingsphere.sql.parser.core.extractor.impl.common.expression.impl.LiteralExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.core.extractor.impl.common.expression.impl.ParameterMarkerExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.core.extractor.impl.dml.select.SubqueryExtractor;
+import org.apache.shardingsphere.sql.parser.core.extractor.impl.dml.select.item.impl.FunctionProjectionExtractor;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 
 import java.util.Map;
 
@@ -46,6 +49,8 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     
     private final CommonExpressionExtractor commonExpressionExtractor = new CommonExpressionExtractor();
     
+    private final FunctionProjectionExtractor functionProjectionExtractor = new FunctionProjectionExtractor();
+    
     @Override
     public Optional<? extends ExpressionSegment> extract(final ParserRuleContext expressionNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.SUBQUERY);
@@ -59,6 +64,10 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         Optional<LiteralExpressionSegment> literalExpressionSegment = literalExpressionExtractor.extract(expressionNode, parameterMarkerIndexes);
         if (literalExpressionSegment.isPresent()) {
             return literalExpressionSegment;
+        }
+        Optional<ProjectionSegment> expressionProjectionSegment = functionProjectionExtractor.extract(expressionNode, parameterMarkerIndexes);
+        if (expressionProjectionSegment.isPresent() && expressionProjectionSegment.get() instanceof ExpressionProjectionSegment) {
+            return Optional.of((ExpressionSegment) expressionProjectionSegment.get());
         }
         return commonExpressionExtractor.extract(expressionNode, parameterMarkerIndexes);
     }

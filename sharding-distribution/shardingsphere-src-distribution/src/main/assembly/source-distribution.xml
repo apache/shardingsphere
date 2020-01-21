@@ -52,11 +52,11 @@
                 <exclude>*.gpg</exclude>
                 
                 <!-- node ignore -->
-                <exclude>**/sharding-ui-frontend/test/coverage/**</exclude>
-                <exclude>**/sharding-ui-frontend/dist/**</exclude>
-                <exclude>**/sharding-ui-frontend/node/**</exclude>
-                <exclude>**/sharding-ui-frontend/node_modules/**</exclude>
-                <exclude>**/sharding-ui-frontend/etc/**</exclude>
+                <exclude>**/shardingsphere-ui-frontend/test/coverage/**</exclude>
+                <exclude>**/shardingsphere-ui-frontend/dist/**</exclude>
+                <exclude>**/shardingsphere-ui-frontend/node/**</exclude>
+                <exclude>**/shardingsphere-ui-frontend/node_modules/**</exclude>
+                <exclude>**/shardingsphere-ui-frontend/etc/**</exclude>
                 
                 <!-- eclipse ignore -->
                 <exclude>**/.settings/**</exclude>

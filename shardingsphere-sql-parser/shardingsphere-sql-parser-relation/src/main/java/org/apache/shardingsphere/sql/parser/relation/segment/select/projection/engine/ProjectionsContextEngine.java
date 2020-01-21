@@ -31,8 +31,8 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.i
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.Table;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
@@ -57,7 +57,7 @@ public final class ProjectionsContextEngine {
     
     private final RelationMetas relationMetas;
     
-    private final ProjectionEngine selectItemEngine = new ProjectionEngine();
+    private final ProjectionEngine projectionEngine = new ProjectionEngine();
     
     /**
      * Create projections context.
@@ -69,22 +69,22 @@ public final class ProjectionsContextEngine {
      * @return projections context
      */
     public ProjectionsContext createProjectionsContext(final String sql, final SelectStatement selectStatement, final GroupByContext groupByContext, final OrderByContext orderByContext) {
-        SelectItemsSegment selectItemsSegment = selectStatement.getSelectItems();
-        Collection<Projection> projections = getProjections(sql, selectItemsSegment);
+        ProjectionsSegment projectionsSegment = selectStatement.getProjections();
+        Collection<Projection> projections = getProjections(sql, projectionsSegment);
         ProjectionsContext result = new ProjectionsContext(
-                selectItemsSegment.getStartIndex(), selectItemsSegment.getStopIndex(), selectItemsSegment.isDistinctRow(), projections, getColumnLabels(selectStatement.getTables(), projections));
+                projectionsSegment.getStartIndex(), projectionsSegment.getStopIndex(), projectionsSegment.isDistinctRow(), projections, getColumnLabels(selectStatement.getTables(), projections));
         TablesContext tablesContext = new TablesContext(selectStatement);
         result.getProjections().addAll(getDerivedGroupByColumns(tablesContext, projections, groupByContext));
         result.getProjections().addAll(getDerivedOrderByColumns(tablesContext, projections, orderByContext));
         return result;
     }
     
-    private Collection<Projection> getProjections(final String sql, final SelectItemsSegment selectItemsSegment) {
+    private Collection<Projection> getProjections(final String sql, final ProjectionsSegment projectionsSegment) {
         Collection<Projection> result = new LinkedList<>();
-        for (SelectItemSegment each : selectItemsSegment.getSelectItems()) {
-            Optional<Projection> selectItem = selectItemEngine.createProjection(sql, each);
-            if (selectItem.isPresent()) {
-                result.add(selectItem.get());
+        for (ProjectionSegment each : projectionsSegment.getProjections()) {
+            Optional<Projection> projection = projectionEngine.createProjection(sql, each);
+            if (projection.isPresent()) {
+                result.add(projection.get());
             }
         }
         return result;
@@ -124,20 +124,20 @@ public final class ProjectionsContextEngine {
         return result;
     }
     
-    private Collection<Projection> getDerivedGroupByColumns(final TablesContext tablesContext, final Collection<Projection> selectItems, final GroupByContext groupByContext) {
-        return getDerivedOrderColumns(tablesContext, selectItems, groupByContext.getItems(), DerivedColumn.GROUP_BY_ALIAS);
+    private Collection<Projection> getDerivedGroupByColumns(final TablesContext tablesContext, final Collection<Projection> projections, final GroupByContext groupByContext) {
+        return getDerivedOrderColumns(tablesContext, projections, groupByContext.getItems(), DerivedColumn.GROUP_BY_ALIAS);
     }
     
-    private Collection<Projection> getDerivedOrderByColumns(final TablesContext tablesContext, final Collection<Projection> selectItems, final OrderByContext orderByContext) {
-        return getDerivedOrderColumns(tablesContext, selectItems, orderByContext.getItems(), DerivedColumn.ORDER_BY_ALIAS);
+    private Collection<Projection> getDerivedOrderByColumns(final TablesContext tablesContext, final Collection<Projection> projections, final OrderByContext orderByContext) {
+        return getDerivedOrderColumns(tablesContext, projections, orderByContext.getItems(), DerivedColumn.ORDER_BY_ALIAS);
     }
     
     private Collection<Projection> getDerivedOrderColumns(final TablesContext tablesContext,
-                                                          final Collection<Projection> selectItems, final Collection<OrderByItem> orderItems, final DerivedColumn derivedColumn) {
+                                                          final Collection<Projection> projections, final Collection<OrderByItem> orderItems, final DerivedColumn derivedColumn) {
         Collection<Projection> result = new LinkedList<>();
         int derivedColumnOffset = 0;
         for (OrderByItem each : orderItems) {
-            if (!containsProjection(tablesContext, selectItems, each.getSegment())) {
+            if (!containsProjection(tablesContext, projections, each.getSegment())) {
                 result.add(new DerivedProjection(((TextOrderByItemSegment) each.getSegment()).getText(), derivedColumn.getDerivedColumnAlias(derivedColumnOffset++)));
             }
         }
@@ -188,9 +188,9 @@ public final class ProjectionsContextEngine {
             if (!(each instanceof ShorthandProjection)) {
                 continue;
             }
-            ShorthandProjection shorthandSelectItem = (ShorthandProjection) each;
-            if (shorthandSelectItem.getOwner().isPresent() && tablesContext.find(shorthandSelectItem.getOwner().get()).equals(table)) {
-                return Optional.of(shorthandSelectItem);
+            ShorthandProjection shorthandProjection = (ShorthandProjection) each;
+            if (shorthandProjection.getOwner().isPresent() && tablesContext.find(shorthandProjection.getOwner().get()).equals(table)) {
+                return Optional.of(shorthandProjection);
             }
         }
         return Optional.absent();

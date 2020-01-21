@@ -30,7 +30,7 @@ import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
-import org.apache.shardingsphere.test.sql.loader.sharding.ShardingSQLCasesRegistry;
+import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -45,7 +45,7 @@ import java.util.LinkedList;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class IntegrateTestParameters {
     
-    private static SQLCasesLoader sqlCasesLoader = ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader();
+    private static SQLCasesLoader sqlCasesLoader = SQLCasesRegistry.getInstance().getSqlCasesLoader();
     
     private static IntegrateTestCasesLoader integrateTestCasesLoader = IntegrateTestCasesLoader.getInstance();
     
@@ -91,7 +91,7 @@ public final class IntegrateTestParameters {
     private static Collection<Object[]> getParametersWithAssertion(
             final IntegrateTestCase integrateTestCase, final IntegrateTestCaseAssertion assertion, final DatabaseType databaseType, final SQLCaseType caseType) {
         Collection<Object[]> result = new LinkedList<>();
-        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
+        for (String each : integrateTestEnvironment.getRuleTypes()) {
             Object[] data = new Object[6];
             data[0] = integrateTestCase.getSqlCaseId();
             data[1] = integrateTestCase.getPath();
@@ -139,7 +139,7 @@ public final class IntegrateTestParameters {
     
     private static Collection<Object[]> getParametersWithCase(final DatabaseType databaseType, final IntegrateTestCase integrateTestCase) {
         Collection<Object[]> result = new LinkedList<>();
-        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
+        for (String each : integrateTestEnvironment.getRuleTypes()) {
             Object[] data = new Object[4];
             data[0] = integrateTestCase.getSqlCaseId();
             data[1] = integrateTestCase;

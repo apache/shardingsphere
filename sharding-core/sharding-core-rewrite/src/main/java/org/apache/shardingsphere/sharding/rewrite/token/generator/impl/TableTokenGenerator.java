@@ -23,9 +23,9 @@ import org.apache.shardingsphere.sql.parser.relation.segment.table.Table;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemsSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandSelectItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
@@ -59,8 +59,8 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
     public Collection<TableToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<TableToken> result = new LinkedList<>();
         for (SQLSegment each : sqlStatementContext.getSqlStatement().getAllSQLSegments()) {
-            if (each instanceof SelectItemsSegment) {
-                result.addAll(generateSQLTokens(sqlStatementContext, (SelectItemsSegment) each));
+            if (each instanceof ProjectionsSegment) {
+                result.addAll(generateSQLTokens(sqlStatementContext, (ProjectionsSegment) each));
             } else if (each instanceof ColumnSegment) {
                 Optional<TableToken> tableToken = generateSQLToken(sqlStatementContext, (ColumnSegment) each);
                 if (tableToken.isPresent()) {
@@ -76,11 +76,11 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
         return result;
     }
     
-    private Collection<TableToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final SelectItemsSegment selectItemsSegment) {
+    private Collection<TableToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final ProjectionsSegment projectionsSegment) {
         Collection<TableToken> result = new LinkedList<>();
-        for (SelectItemSegment each : selectItemsSegment.getSelectItems()) {
-            if (each instanceof ShorthandSelectItemSegment) {
-                Optional<TableToken> tableToken = generateSQLToken(sqlStatementContext, (ShorthandSelectItemSegment) each);
+        for (ProjectionSegment each : projectionsSegment.getProjections()) {
+            if (each instanceof ShorthandProjectionSegment) {
+                Optional<TableToken> tableToken = generateSQLToken(sqlStatementContext, (ShorthandProjectionSegment) each);
                 if (tableToken.isPresent()) {
                     result.add(tableToken.get());
                 }
@@ -92,7 +92,8 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
     private Optional<TableToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final OwnerAvailable<TableSegment> segment) {
         Optional<TableSegment> owner = segment.getOwner();
         return owner.isPresent() && isToGenerateTableToken(sqlStatementContext, owner.get())
-                ? Optional.of(new TableToken(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getTableName(), owner.get().getQuoteCharacter())) : Optional.<TableToken>absent();
+                ? Optional.of(new TableToken(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getTableName(), owner.get().getTableQuoteCharacter()))
+                : Optional.<TableToken>absent();
     }
     
     private Optional<TableToken> generateSQLToken(final SQLStatement sqlStatement, final TableAvailable segment) {

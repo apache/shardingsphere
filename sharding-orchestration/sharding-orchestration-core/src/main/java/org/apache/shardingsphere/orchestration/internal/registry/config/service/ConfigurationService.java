@@ -21,6 +21,8 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+
+import org.apache.shardingsphere.core.yaml.representer.processor.ShardingTupleProcessorFactory;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
@@ -132,7 +134,8 @@ public final class ConfigurationService {
     private void persistShardingRuleConfiguration(final String shardingSchemaName, final ShardingRuleConfiguration shardingRuleConfiguration) {
         Preconditions.checkState(null != shardingRuleConfiguration && !shardingRuleConfiguration.getTableRuleConfigs().isEmpty(),
                 "No available sharding rule configuration in `%s` for orchestration.", shardingSchemaName);
-        regCenter.persist(configNode.getRulePath(shardingSchemaName), YamlEngine.marshal(new ShardingRuleConfigurationYamlSwapper().swap(shardingRuleConfiguration)));
+        regCenter.persist(configNode.getRulePath(shardingSchemaName),
+            YamlEngine.marshal(new ShardingRuleConfigurationYamlSwapper().swap(shardingRuleConfiguration), ShardingTupleProcessorFactory.newInstance()));
     }
     
     private void persistEncryptRuleConfiguration(final String shardingSchemaName, final EncryptRuleConfiguration encryptRuleConfiguration) {

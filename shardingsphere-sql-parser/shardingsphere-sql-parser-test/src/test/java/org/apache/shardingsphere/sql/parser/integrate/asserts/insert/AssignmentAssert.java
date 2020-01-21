@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.integrate.asserts.insert;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.insert.ExpectedAssignment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.insert.ExpectedAssignment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -29,30 +30,31 @@ import org.apache.shardingsphere.test.sql.SQLCaseType;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AssignmentAssert {
     
-    private final SQLStatementAssertMessage assertMessage;
-    
-    private final SQLCaseType sqlCaseType;
-    
     /**
-     * Assert Assignment.
+     * Assert actual expression segment is correct with expected assignment.
      *
+     * @param assertMessage assert message
      * @param actual actual assignment
      * @param expected expected assignment
+     * @param sqlCaseType SQL case type
      */
-    public void assertAssignment(final ExpressionSegment actual, final ExpectedAssignment expected) {
+    public static void assertIs(final SQLStatementAssertMessage assertMessage, final ExpressionSegment actual, final ExpectedAssignment expected, final SQLCaseType sqlCaseType) {
         if (SQLCaseType.Placeholder == sqlCaseType) {
-            assertThat(assertMessage.getFullAssertMessage("SQL expression type for placeholder error: "), actual.getClass().getSimpleName(), is(expected.getTypeForPlaceholder()));
-            assertThat(assertMessage.getFullAssertMessage("SQL expression text for placeholder error: "), getText(actual), is(expected.getTextForPlaceholder()));
+            if (null == expected.getTypeForPlaceholder()) {
+                return;
+            }
+            assertThat(assertMessage.getText("SQL expression type for placeholder error: "), actual.getClass().getSimpleName(), is(expected.getTypeForPlaceholder()));
+            assertThat(assertMessage.getText("SQL expression text for placeholder error: "), getText(actual), is(expected.getTextForPlaceholder()));
         } else {
-            assertThat(assertMessage.getFullAssertMessage("SQL expression type for literal error: "), actual.getClass().getSimpleName(), is(expected.getTypeForLiteral()));
-            assertThat(assertMessage.getFullAssertMessage("SQL expression text for literal error: "), getText(actual), is(expected.getTextForLiteral()));
+            assertThat(assertMessage.getText("SQL expression type for literal error: "), actual.getClass().getSimpleName(), is(expected.getTypeForLiteral()));
+            assertThat(assertMessage.getText("SQL expression text for literal error: "), getText(actual), is(expected.getTextForLiteral()));
         }
     }
     
-    private String getText(final ExpressionSegment expressionSegment) {
+    private static String getText(final ExpressionSegment expressionSegment) {
         if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
             return "" + ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex();
         }

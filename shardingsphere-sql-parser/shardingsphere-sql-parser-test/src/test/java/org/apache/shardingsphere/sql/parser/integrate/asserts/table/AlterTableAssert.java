@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.sql.parser.integrate.asserts.table;
 
 import com.google.common.base.Joiner;
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.table.ExpectedAlterTable;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.token.ExpectedColumnDefinition;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.token.ExpectedColumnPosition;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.table.ExpectedAlterTable;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.token.ExpectedColumnDefinition;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.token.ExpectedColumnPosition;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnAfterPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
@@ -34,54 +35,53 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterTableAssert {
     
-    private final SQLStatementAssertMessage assertMessage;
-    
     /**
-     * Assert alter table.
+     * Assert actual alter table statement is correct with expected alter table.
      * 
+     * @param assertMessage assert message
      * @param actual actual alter table statement
      * @param expected expected alter table
      */
-    public void assertAlterTable(final AlterTableStatement actual, final ExpectedAlterTable expected) {
-        assertThat(assertMessage.getFullAssertMessage("Drop names assertion error: "), Joiner.on(",").join(actual.getDroppedColumnNames()), is(expected.getDropColumns()));
-        assertAddColumns(actual, expected.getAddColumns());
-        assertColumnPositions(actual.getChangedPositionColumns(), expected.getPositionChangedColumns());
+    public static void assertIs(final SQLStatementAssertMessage assertMessage, final AlterTableStatement actual, final ExpectedAlterTable expected) {
+        assertThat(assertMessage.getText("Drop names assertion error: "), Joiner.on(",").join(actual.getDroppedColumnNames()), is(expected.getDropColumns()));
+        assertAddColumns(assertMessage, actual, expected.getAddColumns());
+        assertColumnPositions(assertMessage, actual.getChangedPositionColumns(), expected.getPositionChangedColumns());
     }
     
-    private void assertAddColumns(final AlterTableStatement actual, final List<ExpectedColumnDefinition> expected) {
-        assertThat(assertMessage.getFullAssertMessage("Add column size error: "), actual.getAddedColumnDefinitions().size(), is(expected.size()));
+    private static void assertAddColumns(final SQLStatementAssertMessage assertMessage, final AlterTableStatement actual, final List<ExpectedColumnDefinition> expected) {
+        assertThat(assertMessage.getText("Add column size error: "), actual.getAddedColumnDefinitions().size(), is(expected.size()));
         int count = 0;
         for (ColumnDefinitionSegment each : actual.getAddedColumnDefinitions()) {
-            assertColumnDefinition(each, expected.get(count));
+            assertColumnDefinition(assertMessage, each, expected.get(count));
             count++;
         }
     }
     
-    private void assertColumnDefinition(final ColumnDefinitionSegment actual, final ExpectedColumnDefinition expected) {
-        assertThat(assertMessage.getFullAssertMessage("Column name assertion error: "), actual.getColumnName(), is(expected.getName()));
-        assertThat(assertMessage.getFullAssertMessage("Column " + actual.getColumnName() + " type assertion error: "), actual.getDataType(), is(expected.getType()));
+    private static void assertColumnDefinition(final SQLStatementAssertMessage assertMessage, final ColumnDefinitionSegment actual, final ExpectedColumnDefinition expected) {
+        assertThat(assertMessage.getText("Column name assertion error: "), actual.getColumnName(), is(expected.getName()));
+        assertThat(assertMessage.getText("Column " + actual.getColumnName() + " type assertion error: "), actual.getDataType(), is(expected.getType()));
     }
     
-    private void assertColumnPositions(final Collection<ColumnPositionSegment> actual, final List<ExpectedColumnPosition> expected) {
+    private static void assertColumnPositions(final SQLStatementAssertMessage assertMessage, final Collection<ColumnPositionSegment> actual, final List<ExpectedColumnPosition> expected) {
         if (null == expected) {
             return;
         }
-        assertThat(assertMessage.getFullAssertMessage("Alter column position size error: "), actual.size(), is(expected.size()));
+        assertThat(assertMessage.getText("Alter column position size error: "), actual.size(), is(expected.size()));
         int count = 0;
         for (ColumnPositionSegment each : actual) {
-            assertColumnPosition(each, expected.get(count));
+            assertColumnPosition(assertMessage, each, expected.get(count));
             count++;
         }
     }
     
-    private void assertColumnPosition(final ColumnPositionSegment actual, final ExpectedColumnPosition expected) {
-        assertThat(assertMessage.getFullAssertMessage("Alter column position name assertion error: "), actual.getColumnName(), is(expected.getColumnName()));
-        assertThat(assertMessage.getFullAssertMessage("Alter column [" + actual.getColumnName() + "]position startIndex assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
+    private static void assertColumnPosition(final SQLStatementAssertMessage assertMessage, final ColumnPositionSegment actual, final ExpectedColumnPosition expected) {
+        assertThat(assertMessage.getText("Alter column position name assertion error: "), actual.getColumnName(), is(expected.getColumnName()));
+        assertThat(assertMessage.getText("Alter column [" + actual.getColumnName() + "]position startIndex assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
         if (actual instanceof ColumnAfterPositionSegment) {
-            assertThat(assertMessage.getFullAssertMessage("Alter column [" + actual.getColumnName() + "]position afterColumnName assertion error: "), 
+            assertThat(assertMessage.getText("Alter column [" + actual.getColumnName() + "]position afterColumnName assertion error: "), 
                     ((ColumnAfterPositionSegment) actual).getAfterColumnName(), is(expected.getAfterColumn()));
         }
     }

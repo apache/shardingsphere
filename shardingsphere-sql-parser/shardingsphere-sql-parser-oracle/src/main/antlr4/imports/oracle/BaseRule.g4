@@ -43,7 +43,7 @@ numberLiterals
 
 dateTimeLiterals
     : (DATE | TIME | TIMESTAMP) STRING_
-    | LBE_ identifier_ STRING_ RBE_
+    | LBE_ identifier STRING_ RBE_
     ;
 
 hexadecimalLiterals
@@ -62,7 +62,7 @@ nullValueLiterals
     : NULL
     ;
 
-identifier_
+identifier
     : IDENTIFIER_ | unreservedWord_
     ;
 
@@ -100,7 +100,7 @@ unreservedWord_
     ;
 
 schemaName
-    : identifier_
+    : identifier
     ;
 
 tableName
@@ -112,11 +112,11 @@ columnName
     ;
 
 owner
-    : identifier_
+    : identifier
     ;
 
 name
-    : identifier_
+    : identifier
     ;
 
 columnNames
@@ -128,7 +128,7 @@ tableNames
     ;
 
 indexName
-    : identifier_
+    : identifier
     ;
 
 oracleId
@@ -164,7 +164,7 @@ expr
     : expr logicalOperator expr
     | notOperator_ expr
     | LP_ expr RP_
-    | booleanPrimary_
+    | booleanPrimary
     ;
 
 logicalOperator
@@ -175,11 +175,11 @@ notOperator_
     : NOT | NOT_
     ;
 
-booleanPrimary_
-    : booleanPrimary_ IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
-    | booleanPrimary_ SAFE_EQ_ predicate
-    | booleanPrimary_ comparisonOperator predicate
-    | booleanPrimary_ comparisonOperator (ALL | ANY) subquery
+booleanPrimary
+    : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
+    | booleanPrimary SAFE_EQ_ predicate
+    | booleanPrimary comparisonOperator predicate
+    | booleanPrimary comparisonOperator (ALL | ANY) subquery
     | predicate
     ;
 
@@ -218,13 +218,13 @@ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
-    | LBE_ identifier_ expr RBE_
+    | LBE_ identifier expr RBE_
     | caseExpression_
     | privateExprOfDb
     ;
 
 functionCall
-    : aggregationFunction | specialFunction_ | regularFunction_ 
+    : aggregationFunction | specialFunction | regularFunction 
     ;
 
 aggregationFunction
@@ -239,24 +239,24 @@ distinct
     : DISTINCT
     ;
 
-specialFunction_
-    : castFunction_  | charFunction_
+specialFunction
+    : castFunction  | charFunction
     ;
 
-castFunction_
+castFunction
     : CAST LP_ expr AS dataType RP_
     ;
 
-charFunction_
+charFunction
     : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier_)? RP_
     ;
 
-regularFunction_
+regularFunction
     : regularFunctionName_ LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
 regularFunctionName_
-    : identifier_ | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL
+    : identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL
     ;
 
 caseExpression_

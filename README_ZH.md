@@ -50,7 +50,7 @@ __Apache官方发布从4.0.0版本开始。__
 
 ### Sharding-Proxy
 
-[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://www.apache.org/dyn/closer.cgi?path=incubator/shardingsphere/4.0.0-RC3/apache-shardingsphere-incubating-4.0.0-RC3-sharding-proxy-bin.tar.gz)
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://www.apache.org/dyn/closer.cgi?path=incubator/shardingsphere/4.0.0/apache-shardingsphere-incubating-4.0.0-sharding-proxy-bin.tar.gz)
 [![Docker Pulls](https://img.shields.io/docker/pulls/shardingsphere/sharding-proxy.svg)](https://store.docker.com/community/images/shardingsphere/sharding-proxy)
 
 定位为透明化的数据库代理端，提供封装了数据库二进制协议的服务端版本，用于完成对异构语言的支持。
@@ -118,6 +118,8 @@ ShardingSphere是多接入端共同组成的生态圈。
 
 ## 如何构建
 
+### 构建ShardingSphere
+
 ```bash
 ./mvnw clean install -Prelease
 ``` 
@@ -127,8 +129,20 @@ ShardingSphere是多接入端共同组成的生态圈。
 ```
 sharding-distribution/sharding-jdbc-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-jdbc-bin.tar.gz: Sharding-JDBC的二进制包
 sharding-distribution/sharding-proxy-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-proxy-bin.tar.gz: Sharding-Proxy的二进制包
-sharding-distribution/sharding-ui-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-ui-bin.tar.gz: Sharding-UI的二进制包
 sharding-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-src.zip: ShardingSphere的源码包
+```
+
+### 构建ShardingSphere UI
+
+```bash
+cd shardingsphere-ui
+./mvnw clean install -Prelease
+```
+
+构建产物：
+
+```
+shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-shardingsphere-ui-bin.tar.gz: ShardingSphere-UI的二进制包
 ```
 
 ## 全景图

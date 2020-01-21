@@ -21,6 +21,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.Assignmen
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.junit.Test;
@@ -42,7 +43,9 @@ public final class InsertStatementTest {
     @Test
     public void assertNotUseDefaultColumnsWithColumns() {
         InsertStatement insertStatement = new InsertStatement();
-        insertStatement.getColumns().add(new ColumnSegment(0, 0, "col"));
+        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0);
+        insertColumnsSegment.getColumns().add(new ColumnSegment(0, 0, "col"));
+        insertStatement.setColumns(insertColumnsSegment);
         assertFalse(insertStatement.useDefaultColumns());
     }
     
@@ -50,13 +53,16 @@ public final class InsertStatementTest {
     public void assertNotUseDefaultColumnsWithSetAssignment() {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.setSetAssignment(new SetAssignmentsSegment(0, 0, Collections.<AssignmentSegment>emptyList()));
+        insertStatement.setColumns(new InsertColumnsSegment(0, 0));
         assertFalse(insertStatement.useDefaultColumns());
     }
     
     @Test
     public void assertGetColumnNamesForInsertColumns() {
         InsertStatement insertStatement = new InsertStatement();
-        insertStatement.getColumns().add(new ColumnSegment(0, 0, "col"));
+        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0);
+        insertColumnsSegment.getColumns().add(new ColumnSegment(0, 0, "col"));
+        insertStatement.setColumns(insertColumnsSegment);
         assertThat(insertStatement.getColumnNames().size(), is(1));
         assertThat(insertStatement.getColumnNames().iterator().next(), is("col"));
     }

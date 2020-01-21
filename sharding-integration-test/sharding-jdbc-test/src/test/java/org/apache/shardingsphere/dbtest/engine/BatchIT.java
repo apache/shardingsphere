@@ -32,7 +32,7 @@ import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
 import org.apache.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.loader.sharding.ShardingSQLCasesRegistry;
+import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -77,7 +77,7 @@ public abstract class BatchIT extends BaseIT {
                    final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
         super(shardingRuleType, databaseTypeEnvironment);
         this.integrateTestCase = integrateTestCase;
-        sql = ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList());
+        sql = SQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList());
         expectedDataFiles = new LinkedList<>();
         for (IntegrateTestCaseAssertion each : integrateTestCase.getIntegrateTestCaseAssertions()) {
             expectedDataFiles.add(getExpectedDataFile(integrateTestCase.getPath(), shardingRuleType, databaseTypeEnvironment.getDatabaseType(), each.getExpectedDataFile()));
@@ -194,7 +194,7 @@ public abstract class BatchIT extends BaseIT {
             int index = 1;
             for (String each : expectedDatSetRows.get(count).getValues()) {
                 if (Types.DATE == actualResultSet.getMetaData().getColumnType(index)) {
-                    if (!getNotVerifyFlag().equals(each)) {
+                    if (!NOT_VERIFY_FLAG.equals(each)) {
                         assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(index)), is(each));
                     }
                 } else {

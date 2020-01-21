@@ -103,7 +103,7 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
         assertNull(actual.getInline());
         assertNull(actual.getComplex());
         assertNull(actual.getHint());
-        assertNull(actual.getNone());
+        assertThat(actual.getNone(), instanceOf(YamlNoneShardingStrategyConfiguration.class));
     }
     
     @Test

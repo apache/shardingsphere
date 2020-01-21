@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dml;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SelectItemsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
@@ -44,7 +44,7 @@ public final class SelectStatement extends DMLStatement implements TableSegments
     
     private final Collection<TableSegment> tables = new LinkedList<>();
     
-    private SelectItemsSegment selectItems;
+    private ProjectionsSegment projections;
     
     private WhereSegment where;
     

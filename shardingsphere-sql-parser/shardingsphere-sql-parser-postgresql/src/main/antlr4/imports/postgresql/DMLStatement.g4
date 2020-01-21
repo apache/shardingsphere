@@ -85,23 +85,23 @@ unionClause_
     ;
 
 selectClause
-    : SELECT duplicateSpecification? selectItems fromClause? whereClause? groupByClause? havingClause? orderByClause? limitClause?
+    : SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause? orderByClause? limitClause?
     ;
 
 duplicateSpecification
     : ALL | DISTINCT
     ;
 
-selectItems
-    : (unqualifiedShorthand | selectItem) (COMMA_ selectItem)*
+projections
+    : (unqualifiedShorthand | projection) (COMMA_ projection)*
     ;
 
-selectItem
+projection
     : (columnName | expr) (AS? alias)? | qualifiedShorthand
     ;
 
 alias
-    : identifier_ | STRING_
+    : identifier | STRING_
     ;
 
 unqualifiedShorthand
@@ -109,7 +109,7 @@ unqualifiedShorthand
     ;
 
 qualifiedShorthand
-    : identifier_ DOT_ASTERISK_
+    : identifier DOT_ASTERISK_
     ;
 
 fromClause
@@ -121,7 +121,7 @@ tableReferences
     ;
 
 tableReference
-    : (tableFactor joinedTable)+ | tableFactor joinedTable*
+    : tableFactor joinedTable*
     ;
 
 tableFactor
