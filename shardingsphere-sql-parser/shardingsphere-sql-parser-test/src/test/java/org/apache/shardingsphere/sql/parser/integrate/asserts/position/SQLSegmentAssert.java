@@ -28,15 +28,15 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- *  Position assert.
+ *  SQL segment assert.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PositionAssert {
+public final class SQLSegmentAssert {
     
     /**
-     * Assert actual SQL segment is same position with expected SQL segment.
+     * Assert generic attributes of actual SQL segment are same with expected SQL segment.
      * 
      * @param assertMessage assert message
      * @param actual actual SQL segment

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.table;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.position.PositionAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.position.SQLSegmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.table.ExpectedTableOwner;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
@@ -66,13 +66,13 @@ public final class TableAssert {
         }
         assertThat(assertMessage.getText("Table start delimiter assertion error: "), actual.getTableQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
         assertThat(assertMessage.getText("Table end delimiter assertion error: "), actual.getTableQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
-        PositionAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
+        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
     
     private static void assertOwner(final SQLStatementAssertMessage assertMessage, final SchemaSegment actual, final ExpectedTableOwner expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Table owner name assertion error: "), actual.getName(), is(expected.getName()));
         assertThat(assertMessage.getText("Table owner start delimiter assertion error: "), actual.getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
         assertThat(assertMessage.getText("Table owner end delimiter assertion error: "), actual.getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
-        PositionAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
+        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
 }
