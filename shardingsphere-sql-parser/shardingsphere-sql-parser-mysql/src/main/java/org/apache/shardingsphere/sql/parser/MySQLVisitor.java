@@ -368,7 +368,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
             return visit(ctx.regularFunction_());
         }
         if (null != ctx.specialFunction_()) {
-            calculateParameterCount(ctx.regularFunction_().expr());
+            return visit(ctx.specialFunction_());
         }
         return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
