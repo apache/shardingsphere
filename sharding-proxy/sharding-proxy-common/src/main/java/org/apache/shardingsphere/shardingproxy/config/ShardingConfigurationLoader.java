@@ -49,7 +49,7 @@ public final class ShardingConfigurationLoader {
     /**
      * Load configuration of Sharding-Proxy.
      *
-     * @param  path configuration path of Sharding-Proxy
+     * @param path configuration path of Sharding-Proxy
      * @return configuration of Sharding-Proxy
      * @throws IOException IO exception
      */

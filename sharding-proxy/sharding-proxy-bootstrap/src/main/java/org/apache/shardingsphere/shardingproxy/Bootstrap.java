@@ -77,11 +77,8 @@ public final class Bootstrap {
      */
     public static void main(final String[] args) throws IOException, SQLException {
         int port = getPort(args);
-        String path = getConfigPath(args);
-
-        ShardingConfiguration shardingConfig = new ShardingConfigurationLoader().load(path);
+        ShardingConfiguration shardingConfig = new ShardingConfigurationLoader().load(getConfigPath(args));
         logRuleConfigurationMap(getRuleConfiguration(shardingConfig.getRuleConfigurationMap()).values());
-
         if (null == shardingConfig.getServerConfiguration().getOrchestration()) {
             startWithoutRegistryCenter(shardingConfig.getRuleConfigurationMap(), shardingConfig.getServerConfiguration().getAuthentication(), shardingConfig.getServerConfiguration().getProps(), port);
         } else {
