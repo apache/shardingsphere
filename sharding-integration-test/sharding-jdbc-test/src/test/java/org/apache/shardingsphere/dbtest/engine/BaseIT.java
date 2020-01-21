@@ -30,9 +30,7 @@ import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSource
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShadowDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
-import org.apache.shardingsphere.spi.database.metadata.MemorizedDataSourceMetaData;
 import org.junit.After;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -41,15 +39,10 @@ import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.TimeZone;
 
 @RunWith(Parameterized.class)
@@ -68,9 +61,7 @@ public abstract class BaseIT {
     
     private final DataSource dataSource;
     
-    private Map<String, DataSource> dataSourceMap;
-    
-    private Map<String, DataSource> instanceDataSourceMap;
+    private final Map<String, DataSource> dataSourceMap;
     
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -82,11 +73,9 @@ public abstract class BaseIT {
         if (databaseTypeEnvironment.isEnabled()) {
             dataSourceMap = createDataSourceMap(shardingRuleType);
             dataSource = createDataSource(dataSourceMap);
-            instanceDataSourceMap = createInstanceDataSourceMap();
         } else {
             dataSourceMap = null;
             dataSource = null;
-            instanceDataSourceMap = null;
         }
     }
     
@@ -128,47 +117,6 @@ public abstract class BaseIT {
             default:
                 return YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
         }
-    }
-    
-    private Map<String, DataSource> createInstanceDataSourceMap() throws SQLException {
-        return "masterslave".equals(shardingRuleType) || "shadow".equals(shardingRuleType) ? dataSourceMap : getShardingInstanceDataSourceMap();
-    }
-    
-    private Map<String, DataSource> getShardingInstanceDataSourceMap() throws SQLException {
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        Map<String, DataSourceMetaData> dataSourceMetaDataMap = getDataSourceMetaDataMap();
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            if (!isExisted(entry.getKey(), result.keySet(), dataSourceMetaDataMap)) {
-                result.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return result;
-    }
-    
-    private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames, final Map<String, DataSourceMetaData> dataSourceMetaDataMap) {
-        DataSourceMetaData sample = dataSourceMetaDataMap.get(dataSourceName);
-        for (String each : existedDataSourceNames) {
-            if (isInSameDatabaseInstance(sample, dataSourceMetaDataMap.get(each))) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean isInSameDatabaseInstance(final DataSourceMetaData sample, final DataSourceMetaData target) {
-        return sample instanceof MemorizedDataSourceMetaData
-                ? (Objects.equals(target.getSchema(), sample.getSchema())) : target.getHostName().equals(sample.getHostName()) && target.getPort() == sample.getPort();
-    }
-    
-    private Map<String, DataSourceMetaData> getDataSourceMetaDataMap() throws SQLException {
-        Map<String, DataSourceMetaData> result = new LinkedHashMap<>();
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            try (Connection connection = entry.getValue().getConnection()) {
-                DatabaseMetaData metaData = connection.getMetaData();
-                result.put(entry.getKey(), databaseTypeEnvironment.getDatabaseType().getDataSourceMetaData(metaData.getURL(), metaData.getUserName()));
-            }
-        }
-        return result;
     }
     
     protected static void createDatabasesAndTables() {
