@@ -68,8 +68,8 @@ public final class IntegrateTestParameters {
             SQLCaseType caseType = (SQLCaseType) each[2];
             Class<?> sqlStatementClass = SQLParseEngineFactory.getSQLParseEngine(
                     DatabaseTypes.getTrunkDatabaseType(databaseType).getName()).parse(sqlCasesLoader.getSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), false).getClass();
-            if (!sqlType.getSqlStatementClass().isAssignableFrom(sqlStatementClass) ||
-                    SQLType.DML == sqlType && SelectStatement.class == sqlStatementClass) {
+            if (!sqlType.getSqlStatementClass().isAssignableFrom(sqlStatementClass)
+                    || SQLType.DML == sqlType && SelectStatement.class == sqlStatementClass) {
                 continue;
             }
             IntegrateTestCase integrateTestCase = getIntegrateTestCase(sqlCaseId, sqlType);
@@ -122,8 +122,8 @@ public final class IntegrateTestParameters {
             SQLCaseType caseType = (SQLCaseType) each[2];
             Class<?> sqlStatementClass = SQLParseEngineFactory.getSQLParseEngine(
                     DatabaseTypes.getTrunkDatabaseType(databaseType).getName()).parse(sqlCasesLoader.getSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), false).getClass();
-            if (!sqlType.getSqlStatementClass().isAssignableFrom(sqlStatementClass) ||
-                    SQLType.DML == sqlType && SelectStatement.class == sqlStatementClass) {
+            if (!sqlType.getSqlStatementClass().isAssignableFrom(sqlStatementClass)
+                    || SQLType.DML == sqlType && SelectStatement.class == sqlStatementClass) {
                 continue;
             }
             // TODO only for prepared statement for now
