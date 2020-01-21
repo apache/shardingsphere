@@ -15,25 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.shorthand;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.owner.ExpectedTableOwner;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedProjection;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @Setter
-public class ExpectedAggregationProjection extends AbstractExpectedSegment implements ExpectedProjection {
+public final class ExpectedShorthandProjection extends AbstractExpectedSegment implements ExpectedProjection {
     
-    @XmlAttribute
-    private String type;
-    
-    @XmlAttribute(name = "inner-expression-start-index")
-    private int innerExpressionStartIndex;
-    
-    @XmlAttribute
-    private String alias;
+    @XmlElement(name = "owner")
+    private ExpectedTableOwner owner;
 }

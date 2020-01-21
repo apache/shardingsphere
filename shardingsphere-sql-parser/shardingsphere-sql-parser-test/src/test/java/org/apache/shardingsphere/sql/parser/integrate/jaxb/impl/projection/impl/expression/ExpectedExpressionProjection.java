@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.expression;
 
 import lombok.Getter;
 import lombok.Setter;

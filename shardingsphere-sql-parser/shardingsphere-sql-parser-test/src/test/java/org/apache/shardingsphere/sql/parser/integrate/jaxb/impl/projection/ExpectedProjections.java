@@ -20,12 +20,12 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.ExpectedAggregationDistinctProjection;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.ExpectedAggregationProjection;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.ExpectedColumnProjection;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.ExpectedExpressionProjection;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.ExpectedShorthandProjection;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.ExpectedTopProjection;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.aggregation.ExpectedAggregationDistinctProjection;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.aggregation.ExpectedAggregationProjection;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.column.ExpectedColumnProjection;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.expression.ExpectedExpressionProjection;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.shorthand.ExpectedShorthandProjection;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.top.ExpectedTopProjection;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
