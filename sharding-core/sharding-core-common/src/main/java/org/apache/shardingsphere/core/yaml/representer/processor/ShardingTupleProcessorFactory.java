@@ -15,7 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex;
+package org.apache.shardingsphere.core.yaml.representer.processor;
 
-public final class ExpectedCommonExpressionSegment extends ExpectedBaseComplexExpression {
+import java.util.Collection;
+import java.util.Collections;
+
+import org.apache.shardingsphere.underlying.common.yaml.representer.processor.TupleProcessor;
+
+/**
+ * Sharding tuple processor.
+ *
+ * @author yangyi
+ */
+public final class ShardingTupleProcessorFactory {
+    
+    /**
+     * New instance tuple processors for sharding.
+     *
+     * @return tuple processors for sharding
+     */
+    public static Collection<TupleProcessor> newInstance() {
+        return Collections.<TupleProcessor>singletonList(new NoneShardingStrategyTupleProcessor());
+    }
 }

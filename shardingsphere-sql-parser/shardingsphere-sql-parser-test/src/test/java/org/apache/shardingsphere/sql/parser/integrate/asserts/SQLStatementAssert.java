@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.insert.InsertNames
 import org.apache.shardingsphere.sql.parser.integrate.asserts.orderby.OrderByAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.pagination.PaginationAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.parameter.ParameterMarkerAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.predicate.PredicateAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.predicate.WhereAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.projection.ProjectionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.table.AlterTableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.table.TableAssert;
@@ -65,7 +65,7 @@ public final class SQLStatementAssert {
      */
     public static void assertIs(final SQLStatementAssertMessage assertMessage, final SQLStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
         ParameterMarkerAssert.assertCount(assertMessage, actual.getParametersCount(), expected.getParameters().size(), sqlCaseType);
-        TableAssert.assertIs(assertMessage, actual.findSQLSegments(TableSegment.class), expected.getTables());
+        TableAssert.assertIs(assertMessage, actual.findSQLSegments(TableSegment.class), expected.getTables(), sqlCaseType);
         if (actual instanceof SelectStatement) {
             assertSelectStatement(assertMessage, (SelectStatement) actual, expected, sqlCaseType);
         }
@@ -81,12 +81,12 @@ public final class SQLStatementAssert {
     }
     
     private static void assertSelectStatement(final SQLStatementAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
-        ProjectionAssert.assertIs(assertMessage, actual.getProjections(), expected.getProjections());
+        ProjectionAssert.assertIs(assertMessage, actual.getProjections(), expected.getProjections(), sqlCaseType);
         Optional<WhereSegment> whereSegment = actual.getWhere();
         if (whereSegment.isPresent() && null != expected.getWhere()) {
 //        if (whereSegment.isPresent()) {
             assertNotNull(assertMessage.getText("Expected where assertion should exist: "), expected.getWhere());
-            PredicateAssert.assertIs(assertMessage, whereSegment.get(), expected.getWhere(), sqlCaseType);
+            WhereAssert.assertIs(assertMessage, whereSegment.get(), expected.getWhere(), sqlCaseType);
         }
         Optional<GroupBySegment> groupBySegment = actual.getGroupBy();
         if (groupBySegment.isPresent()) {

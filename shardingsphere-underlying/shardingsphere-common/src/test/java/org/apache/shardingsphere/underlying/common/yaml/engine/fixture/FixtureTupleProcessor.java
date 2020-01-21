@@ -15,17 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple;
+package org.apache.shardingsphere.underlying.common.yaml.engine.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.underlying.common.yaml.representer.processor.TupleProcessor;
+import org.yaml.snakeyaml.nodes.NodeTuple;
+import org.yaml.snakeyaml.nodes.ScalarNode;
+import org.yaml.snakeyaml.nodes.Tag;
 
-import javax.xml.bind.annotation.XmlAttribute;
-
-@Getter
-@Setter
-public final class ExpectedParamMarkerExpressionSegment extends ExpectedBaseSimpleExpression {
+public final class FixtureTupleProcessor implements TupleProcessor {
     
-    @XmlAttribute
-    private Integer parameterMarkerIndex;
+    @Override
+    public String getProcessedTupleName() {
+        return "value";
+    }
+    
+    @Override
+    public NodeTuple process(final NodeTuple nodeTuple) {
+        return new NodeTuple(nodeTuple.getKeyNode(), new ScalarNode(Tag.STR, "processedValue", null, null, null));
+    }
 }

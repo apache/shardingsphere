@@ -15,32 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.yaml.engine;
+package org.apache.shardingsphere.underlying.common.yaml.representer.processor;
 
-import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.nodes.CollectionNode;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.nodes.Tag;
-import org.yaml.snakeyaml.representer.Representer;
 
 /**
- * Default YAML representer.
+ * Skip unset tuple processor. 
  *
- * @author panjuan
- * @author zhangliang
+ * @author yangyi
  */
-public final class DefaultYamlRepresenter extends Representer {
+public final class SkipUnsetTupleProcessor implements TupleProcessor {
     
     @Override
-    protected NodeTuple representJavaBeanProperty(final Object javaBean, final Property property, final Object propertyValue, final Tag customTag) {
-        NodeTuple tuple = super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
-        return isUnwantedNodeTuple(tuple.getValueNode()) ? null : tuple;
+    public String getProcessedTupleName() {
+        return null;
     }
     
-    private boolean isUnwantedNodeTuple(final Node valueNode) {
+    @Override
+    public NodeTuple process(final NodeTuple nodeTuple) {
+        return isUnsetNodeTuple(nodeTuple.getValueNode()) ? null : nodeTuple;
+    }
+    
+    private boolean isUnsetNodeTuple(final Node valueNode) {
         return isNullNode(valueNode) || isEmptyCollectionNode(valueNode);
     }
     

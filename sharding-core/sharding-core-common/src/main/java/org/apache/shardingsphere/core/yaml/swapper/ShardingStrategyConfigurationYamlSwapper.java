@@ -33,6 +33,7 @@ import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingStrategyC
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlHintShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlInlineShardingStrategyConfiguration;
+import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlNoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlStandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
@@ -57,6 +58,9 @@ public final class ShardingStrategyConfigurationYamlSwapper implements YamlSwapp
         }
         if (data instanceof InlineShardingStrategyConfiguration) {
             result.setInline(createYamlInlineShardingStrategyConfiguration((InlineShardingStrategyConfiguration) data));
+        }
+        if (data instanceof NoneShardingStrategyConfiguration) {
+            result.setNone(new YamlNoneShardingStrategyConfiguration());
         }
         return result;
     }

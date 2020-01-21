@@ -95,7 +95,7 @@ public final class ShardingUpdateStatementValidatorTest {
         SetAssignmentsSegment setAssignmentsSegment = new SetAssignmentsSegment(0, 0, assignments);
         result.setSetAssignment(setAssignmentsSegment);
         WhereSegment where = new WhereSegment(0, 0, 1);
-        where.setParameterStartIndex(0);
+        where.setParameterMarkerStartIndex(0);
         AndPredicate andPre = new AndPredicate();
         andPre.getPredicates().add(new PredicateSegment(0, 1, new ColumnSegment(0, 0, "id"), new PredicateCompareRightValue("=", new ParameterMarkerExpressionSegment(0, 0, 0))));
         where.getAndPredicates().add(andPre);

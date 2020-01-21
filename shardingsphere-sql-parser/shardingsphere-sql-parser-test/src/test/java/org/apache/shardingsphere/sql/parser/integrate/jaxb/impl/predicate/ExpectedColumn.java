@@ -19,8 +19,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedDelimiterSegment;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedTableSegment;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -28,14 +27,11 @@ import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @Setter
-public final class ExpectedColumnSegment extends AbstractExpectedSegment {
+public final class ExpectedColumn extends AbstractExpectedDelimiterSegment {
     
     @XmlAttribute
     private String name;
     
-    @XmlAttribute
-    private QuoteCharacter quoteCharacter = QuoteCharacter.NONE;
-    
-    @XmlElement(name = "table-segment")
-    private ExpectedTableSegment owner = new ExpectedTableSegment();
+    @XmlElement
+    private ExpectedTableSegment owner;
 }

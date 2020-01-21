@@ -117,7 +117,7 @@ escapedTableReference_
     ;
 
 tableReference
-    : (tableFactor joinedTable)+ | tableFactor joinedTable*
+    : tableFactor joinedTable*
     ;
 
 tableFactor

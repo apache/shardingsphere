@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
+import org.apache.shardingsphere.core.yaml.representer.processor.ShardingTupleProcessorFactory;
 import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
@@ -62,7 +63,8 @@ public final class ConfigurationLogger {
     
     private static void log(final ShardingRuleConfiguration shardingRuleConfiguration) {
         if (null != shardingRuleConfiguration) {
-            log(shardingRuleConfiguration.getClass().getSimpleName(), YamlEngine.marshal(new ShardingRuleConfigurationYamlSwapper().swap(shardingRuleConfiguration)));
+            log(shardingRuleConfiguration.getClass().getSimpleName(),
+                YamlEngine.marshal(new ShardingRuleConfigurationYamlSwapper().swap(shardingRuleConfiguration), ShardingTupleProcessorFactory.newInstance()));
         }
     }
     

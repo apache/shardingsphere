@@ -20,11 +20,11 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.value
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.ExpectedExpressionSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedCommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedCommonExpression;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedComplexExpressionSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedSubquerySegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedLiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedParamMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedSubquery;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedLiteralExpression;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedParameterMarkerExpression;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -40,16 +40,16 @@ public final class ExpectedPredicateCompareRightValue implements ExpectedPredica
     private String operator;
 
     @XmlElement(name = "common-expression")
-    private ExpectedCommonExpressionSegment commonExpressionSegment;
+    private ExpectedCommonExpression commonExpressionSegment;
 
     @XmlElement(name = "subquery-segment")
-    private ExpectedSubquerySegment subquerySegment;
+    private ExpectedSubquery subquerySegment;
 
     @XmlElement(name = "literal-expression")
-    private ExpectedLiteralExpressionSegment literalExpression;
+    private ExpectedLiteralExpression literalExpression;
 
     @XmlElement(name = "param-marker-expression")
-    private ExpectedParamMarkerExpressionSegment paramMarkerExpression;
+    private ExpectedParameterMarkerExpression paramMarkerExpression;
 
     /**
      * Find expected expression.
@@ -60,13 +60,13 @@ public final class ExpectedPredicateCompareRightValue implements ExpectedPredica
      */
     @SuppressWarnings("unchecked")
     public <T extends ExpectedExpressionSegment> T findExpectedExpression(final Class<T> expectedExpressionSegment) {
-        if (expectedExpressionSegment.isAssignableFrom(ExpectedParamMarkerExpressionSegment.class)) {
+        if (expectedExpressionSegment.isAssignableFrom(ExpectedParameterMarkerExpression.class)) {
             return (T) paramMarkerExpression;
         }
-        if (expectedExpressionSegment.isAssignableFrom(ExpectedLiteralExpressionSegment.class)) {
+        if (expectedExpressionSegment.isAssignableFrom(ExpectedLiteralExpression.class)) {
             return (T) literalExpression;
         }
-        if (expectedExpressionSegment.isAssignableFrom(ExpectedCommonExpressionSegment.class)) {
+        if (expectedExpressionSegment.isAssignableFrom(ExpectedCommonExpression.class)) {
             return (T) commonExpressionSegment;
         }
         if (expectedExpressionSegment.isAssignableFrom(ExpectedComplexExpressionSegment.class)) {

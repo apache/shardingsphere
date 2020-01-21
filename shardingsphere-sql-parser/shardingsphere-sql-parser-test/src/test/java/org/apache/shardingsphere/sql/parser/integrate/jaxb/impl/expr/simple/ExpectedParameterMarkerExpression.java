@@ -24,8 +24,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 @Getter
 @Setter
-public final class ExpectedLiteralExpressionSegment extends ExpectedBaseSimpleExpression {
+public final class ExpectedParameterMarkerExpression extends ExpectedBaseSimpleExpression {
     
     @XmlAttribute
-    private Integer literals;
+    private Integer parameterMarkerIndex;
 }

@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser;
 
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValuesContext;
@@ -30,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnN
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FunctionCallContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertValuesClauseContext;
@@ -47,6 +50,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StringL
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnreservedWord_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
+import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.ShowLikeSegment;
@@ -60,6 +64,9 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonE
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationDistinctProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
@@ -137,11 +144,13 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
         InsertStatement result = new InsertStatement();
-        InsertColumnsSegment insertColumnsSegment = (InsertColumnsSegment) visit(ctx.columnNames());
+        if (null != ctx.columnNames()) { 
+            InsertColumnsSegment insertColumnsSegment = (InsertColumnsSegment) visit(ctx.columnNames());
+            result.setColumns(insertColumnsSegment);
+            result.getAllSQLSegments().add(insertColumnsSegment);
+        }
         Collection<InsertValuesSegment> insertValuesSegments = createInsertValuesSegments(ctx.assignmentValues());
-        result.setColumns(insertColumnsSegment);
         result.getValues().addAll(insertValuesSegments);
-        result.getAllSQLSegments().add(insertColumnsSegment);
         result.getAllSQLSegments().addAll(insertValuesSegments);
         return result;
     }
@@ -284,7 +293,10 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         if (null != ctx.literals()) {
             return visit(ctx.literals());
         }
-        return new LiteralValue(ctx.getText());
+        if (null != ctx.functionCall()) {
+            return visit(ctx.functionCall());
+        }
+        return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
     @Override
@@ -303,12 +315,16 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         if (null != ctx.booleanLiterals()) {
             return visit(ctx.booleanLiterals());
         }
+        if (null != ctx.nullValueLiterals()) {
+            return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+        }
         return new LiteralValue(ctx.getText());
     }
     
     @Override
     public ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
-        return new LiteralValue(ctx.getText());
+        String text = ctx.getText();
+        return new LiteralValue(text.substring(1, text.length() - 1));
     }
     
     @Override
@@ -319,6 +335,22 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     @Override
     public ASTNode visitBooleanLiterals(final BooleanLiteralsContext ctx) {
         return new BooleanValue(ctx.getText());
+    }
+    
+    @Override
+    public ASTNode visitFunctionCall(final FunctionCallContext ctx) {
+        if (null != ctx.aggregationFunction()) {
+            return visit(ctx.aggregationFunction());
+        }
+        return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public ASTNode visitAggregationFunction(final AggregationFunctionContext ctx) {
+        if (AggregationType.isAggregationType(ctx.aggregationFunctionName_().getText())) {
+            return createAggregationSegment(ctx);
+        }
+        return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
     @Override
@@ -347,16 +379,16 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     }
     
     private ExpressionSegment createExpressionSegment(final ASTNode astNode, final ExprContext expr) {
-        if (astNode instanceof SubquerySegment) {
-            return (SubquerySegment) astNode;
-        }
         if (astNode instanceof LiteralValue) {
             return new LiteralExpressionSegment(expr.start.getStartIndex(), expr.stop.getStopIndex(), ((LiteralValue) astNode).getLiteral());
         }
         if (astNode instanceof NumberValue) {
             return new LiteralExpressionSegment(expr.start.getStartIndex(), expr.stop.getStopIndex(), ((NumberValue) astNode).getNumber());
         }
-        return new ParameterMarkerExpressionSegment(expr.start.getStartIndex(), expr.stop.getStopIndex(), ((ParameterValue) astNode).getParameterIndex());
+        if (astNode instanceof ParameterValue) {
+            return new ParameterMarkerExpressionSegment(expr.start.getStartIndex(), expr.stop.getStopIndex(), ((ParameterValue) astNode).getParameterIndex());
+        }
+        return (ExpressionSegment) astNode;
     }
     
     private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
@@ -365,5 +397,24 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
             result.add((InsertValuesSegment) visit(each));
         }
         return result;
+    }
+    
+    private ASTNode createAggregationSegment(final AggregationFunctionContext ctx) {
+        AggregationType type = AggregationType.valueOf(ctx.aggregationFunctionName_().getText());
+        int innerExpressionStartIndex = ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex();
+        if (null != ctx.distinct()) {
+            return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(),
+                    ctx.getStop().getStopIndex(), ctx.getText(), type, innerExpressionStartIndex, getDistinctExpression(ctx));
+        }
+        return new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                ctx.getText(), type, innerExpressionStartIndex);
+    }
+    
+    private String getDistinctExpression(final AggregationFunctionContext ctx) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 3; i < ctx.getChildCount() - 1; i++) {
+            result.append(ctx.getChild(i).getText());
+        }
+        return result.toString();
     }
 }
