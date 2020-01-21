@@ -325,7 +325,7 @@
             </and-condition>
         </sharding-conditions>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_count_tilde_concat" parameters="'init', 1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o" start-index="37" stop-index="43" />
@@ -333,6 +333,26 @@
         <projections start-index="7" stop-index="30">
             <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="orders_count" start-index="7" stop-index="14" />
         </projections>
+        <where parameters-count="5" parameter-marker-start-index="0" start-index="47" stop-index="140" literal-stop-index="146">
+            <and-predicate>
+                <!-- TODO add predication assert for ~~ -->
+                <!--<predicate start-index="62" stop-index="79">-->
+                    <!--<column name="status" start-index="53" stop-index="60">-->
+                        <!--<owner name="o" start-index="53" stop-index="53" />-->
+                    <!--</column>-->
+                <!--</predicate>-->
+                <predicate start-index="91" stop-index="109" literal-start-index="96" literal-stop-index="114">
+                    <column name="user_id" start-index="91" stop-index="99" literal-start-index="96" literal-stop-index="104">
+                        <owner name="o" start-index="91" stop-index="91" literal-start-index="96" literal-stop-index="96" />
+                    </column>
+                </predicate>
+                <predicate start-index="115" stop-index="140" literal-start-index="120" literal-stop-index="146">
+                    <column name="order_id" start-index="115" stop-index="124" literal-start-index="120" literal-stop-index="129">
+                        <owner name="o" start-index="115" stop-index="115" literal-start-index="120" literal-stop-index="120" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
