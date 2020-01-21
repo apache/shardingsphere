@@ -21,15 +21,15 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.position.SQLSegmentAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedAggregationDistinctProjection;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedAggregationProjection;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedColumnProjection;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedExpressionProjection;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.ExpectedAggregationDistinctProjection;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.ExpectedAggregationProjection;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.ExpectedColumnProjection;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.ExpectedExpressionProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedProjections;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedShorthandProjection;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedTableSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedTopProjection;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.ExpectedShorthandProjection;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.ExpectedTableOwner;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.ExpectedTopProjection;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
@@ -124,7 +124,7 @@ public final class ProjectionAssert {
         }
     }
     
-    private static void assertOwner(final SQLStatementAssertMessage assertMessage, final TableSegment actual, final ExpectedTableSegment expected, final SQLCaseType sqlCaseType) {
+    private static void assertOwner(final SQLStatementAssertMessage assertMessage, final TableSegment actual, final ExpectedTableOwner expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Projection owner name assertion error: "), actual.getTableName(), is(expected.getName()));
         assertThat(assertMessage.getText("Projection owner name start delimiter assertion error: "), actual.getTableQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
         assertThat(assertMessage.getText("Projection owner name end delimiter assertion error: "), actual.getTableQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));

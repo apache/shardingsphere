@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedDelimiterSegment;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
 @Getter
 @Setter
-public final class ExpectedTableSegment extends AbstractExpectedDelimiterSegment {
+public final class ExpectedAggregationDistinctProjection extends ExpectedAggregationProjection {
     
-    @XmlAttribute
-    private String name;
+    @XmlAttribute(name = "distinct-expression")
+    private String distinctExpression;
 }

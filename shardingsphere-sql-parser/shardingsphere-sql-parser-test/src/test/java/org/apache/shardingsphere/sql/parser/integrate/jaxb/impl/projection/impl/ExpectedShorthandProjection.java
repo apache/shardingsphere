@@ -15,30 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedProjection;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @Setter
-public final class ExpectedTopProjection extends AbstractExpectedSegment implements ExpectedProjection {
+public final class ExpectedShorthandProjection extends AbstractExpectedSegment implements ExpectedProjection {
     
-    @XmlAttribute(name = "top-value")
-    private Long topValue;
-    
-    @XmlAttribute(name = "top-parameter-index")
-    private Integer topParameterIndex;
-    
-    @XmlAttribute(name = "top-value-start-index")
-    private int topValueStartIndex;
-    
-    @XmlAttribute(name = "top-value-stop-index")
-    private int topValueStopIndex;
-    
-    @XmlAttribute(name = "alias")
-    private String alias;
+    @XmlElement(name = "owner")
+    private ExpectedTableOwner owner;
 }
