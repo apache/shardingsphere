@@ -101,8 +101,8 @@ public final class Bootstrap {
         return paddingWithSlash(args[1]);
     }
 
-    private static String paddingWithSlash(final String str) {
-        String path = str.endsWith("/") ? str : (str + "/");
+    private static String paddingWithSlash(final String arg) {
+        String path = arg.endsWith("/") ? arg : (arg + "/");
         return path.startsWith("/") ? path : ("/" + path);
     }
     
