@@ -17,27 +17,24 @@
 
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.generic;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-
-@XmlAccessorType(XmlAccessType.FIELD)
-@Getter
-@Setter
-public abstract class AbstractExpectedSegment implements ExpectedSegment {
+/**
+ * Expected delimiter SQL segment.
+ * 
+ * @author zhangliang 
+ */
+public interface ExpectedDelimiterSQLSegment extends ExpectedSQLSegment {
     
-    @XmlAttribute(name = "start-index")
-    private int startIndex;
+    /**
+     * Get start delimiter.
+     *
+     * @return start delimiter
+     */
+    String getStartDelimiter();
     
-    @XmlAttribute(name = "stop-index")
-    private int stopIndex;
-    
-    @XmlAttribute(name = "literal-start-index")
-    private Integer literalStartIndex;
-    
-    @XmlAttribute(name = "literal-stop-index")
-    private Integer literalStopIndex;
+    /**
+     * Get end delimiter.
+     *
+     * @return end delimiter
+     */
+    String getEndDelimiter();
 }

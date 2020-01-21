@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection;
 
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.ExpectedSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.ExpectedSQLSegment;
 
-public interface ExpectedProjection extends ExpectedSegment {
+public interface ExpectedProjection extends ExpectedSQLSegment {
 }
