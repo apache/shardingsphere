@@ -91,7 +91,7 @@ public final class IntegrateTestParameters {
     private static Collection<Object[]> getParametersWithAssertion(
             final IntegrateTestCase integrateTestCase, final IntegrateTestCaseAssertion assertion, final DatabaseType databaseType, final SQLCaseType caseType) {
         Collection<Object[]> result = new LinkedList<>();
-        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
+        for (String each : integrateTestEnvironment.getRuleTypes()) {
             Object[] data = new Object[6];
             data[0] = integrateTestCase.getSqlCaseId();
             data[1] = integrateTestCase.getPath();
@@ -139,7 +139,7 @@ public final class IntegrateTestParameters {
     
     private static Collection<Object[]> getParametersWithCase(final DatabaseType databaseType, final IntegrateTestCase integrateTestCase) {
         Collection<Object[]> result = new LinkedList<>();
-        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
+        for (String each : integrateTestEnvironment.getRuleTypes()) {
             Object[] data = new Object[4];
             data[0] = integrateTestCase.getSqlCaseId();
             data[1] = integrateTestCase;
