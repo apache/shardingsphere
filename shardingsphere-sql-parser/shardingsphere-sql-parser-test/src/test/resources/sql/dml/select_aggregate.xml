@@ -58,6 +58,13 @@
         <projections start-index="7" stop-index="30">
             <aggregation-projection type="COUNT" alias="orders_count" inner-expression-start-index="12" start-index="7" stop-index="14" />
         </projections>
+        <where parameters-count="0" parameter-marker-start-index="0" start-index="45" stop-index="66">
+            <and-predicate>
+                <predicate start-index="51" stop-index="66">
+                    <column name="order_id" start-index="51" stop-index="58" />
+                </predicate>
+            </and-predicate>
+        </where>
     </parser-result>
     
     <parser-result sql-case-id="select_max">
