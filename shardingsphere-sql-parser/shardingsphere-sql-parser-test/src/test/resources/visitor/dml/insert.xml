@@ -627,6 +627,82 @@
         </sharding-conditions>
     </parser-result>
     
+    <parser-result sql-case-id="insert_on_duplicate_key_update" parameters="1, 1, 'init'">
+        <tables>
+            <table name="t_order" start-index="12" stop-index="18" />
+        </tables>
+        <insert-columns-and-values column-names="order_id,user_id,status">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="init"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_on_duplicate_key_update_with_complicated_expression" parameters="1, 2, 45, 2000">
+        <tables>
+            <table name="emp" start-index="12" stop-index="14" />
+        </tables>
+        <insert-columns-and-values column-names="order_id,emp_id,age,salary">
+            <insert-values>
+                <insert-value>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="2"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="45"/>
+                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="3" type-for-literal="LiteralExpressionSegment" text-for-literal="2000"/>
+                </insert-value>
+            </insert-values>
+        </insert-columns-and-values>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="order_id" table-name="emp" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="emp_id" table-name="emp" operator="EQUAL">
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="age" table-name="emp" operator="EQUAL">
+                    <value index="2" literal="45" type="int" />
+                </condition>
+                <condition column-name="salary" table-name="emp" operator="EQUAL">
+                    <value index="2" literal="2000" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+    </parser-result>
+    
+    <parser-result sql-case-id="insert_on_duplicate_key_update_with_base64_aesencrypt" parameters="1, 1, 'init'">
+        <tables>
+            <table name="t_order" start-index="12" stop-index="18" />
+        </tables>
+        <tokens>
+            <insert-set-token begin-position="20" />
+        </tokens>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+    </parser-result>
+    
     <parser-result sql-case-id="insert_set_with_all_placeholders" parameters="1, 1, 'init'">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
