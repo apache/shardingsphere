@@ -71,8 +71,8 @@ public abstract class BaseIT {
         this.shardingRuleType = shardingRuleType;
         this.databaseTypeEnvironment = databaseTypeEnvironment;
         if (databaseTypeEnvironment.isEnabled()) {
-            dataSourceMap = createDataSourceMap(shardingRuleType);
-            dataSource = createDataSource(dataSourceMap);
+            dataSourceMap = createDataSourceMap();
+            dataSource = createDataSource();
         } else {
             dataSourceMap = null;
             dataSource = null;
@@ -99,7 +99,7 @@ public abstract class BaseIT {
         return Joiner.on("/").join(prefix, "dataset", expectedDataFile);
     }
     
-    private Map<String, DataSource> createDataSourceMap(final String shardingRuleType) throws IOException, JAXBException {
+    private Map<String, DataSource> createDataSourceMap() throws IOException, JAXBException {
         Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(shardingRuleType);
         Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
         for (String each : dataSourceNames) {
@@ -108,7 +108,7 @@ public abstract class BaseIT {
         return result;
     }
     
-    private DataSource createDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException, IOException {
+    private DataSource createDataSource() throws SQLException, IOException {
         switch (shardingRuleType) {
             case "masterslave":
                 return YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
