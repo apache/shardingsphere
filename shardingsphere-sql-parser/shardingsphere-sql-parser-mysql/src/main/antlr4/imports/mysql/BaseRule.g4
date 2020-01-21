@@ -305,8 +305,8 @@ bitExpr
     | bitExpr MOD bitExpr
     | bitExpr MOD_ bitExpr
     | bitExpr CARET_ bitExpr
-    | bitExpr PLUS_ intervalExpression_
-    | bitExpr MINUS_ intervalExpression_
+    | bitExpr PLUS_ intervalExpression
+    | bitExpr MINUS_ intervalExpression
     | simpleExpr
     ;
 
@@ -324,11 +324,11 @@ simpleExpr
     | LBE_ identifier expr RBE_
     | matchExpression_
     | caseExpression_
-    | intervalExpression_
+    | intervalExpression
     ;
 
 functionCall
-    : aggregationFunction | specialFunction_ | regularFunction_ 
+    : aggregationFunction | specialFunction | regularFunction 
     ;
 
 aggregationFunction
@@ -373,41 +373,41 @@ frameBetween_
     : BETWEEN frameStart_ AND frameEnd_
     ;
 
-specialFunction_
-    : groupConcatFunction_ | windowFunction_ | castFunction_ | convertFunction_ | positionFunction_ | substringFunction_ | extractFunction_ 
-    | charFunction_ | trimFunction_ | weightStringFunction_ | valuesFunction_
+specialFunction
+    : groupConcatFunction | windowFunction | castFunction | convertFunction | positionFunction | substringFunction | extractFunction 
+    | charFunction | trimFunction_ | weightStringFunction | valuesFunction_
     ;
 
-groupConcatFunction_
+groupConcatFunction
     : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause)? (SEPARATOR expr)? RP_
     ;
 
-windowFunction_
+windowFunction
     : identifier LP_ expr (COMMA_ expr)* RP_ overClause_
     ;
 
-castFunction_
+castFunction
     : CAST LP_ expr AS dataType RP_
     ;
 
-convertFunction_
+convertFunction
     : CONVERT LP_ expr COMMA_ dataType RP_
     | CONVERT LP_ expr USING identifier RP_ 
     ;
 
-positionFunction_
+positionFunction
     : POSITION LP_ expr IN expr RP_
     ;
 
-substringFunction_
+substringFunction
     :  (SUBSTRING | SUBSTR) LP_ expr FROM NUMBER_ (FOR NUMBER_)? RP_
     ;
 
-extractFunction_
+extractFunction
     : EXTRACT LP_ identifier FROM expr RP_
     ;
 
-charFunction_
+charFunction
     : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier_)? RP_
     ;
 
@@ -419,7 +419,7 @@ valuesFunction_
     : VALUES LP_ columnName RP_
     ;
 
-weightStringFunction_
+weightStringFunction
     : WEIGHT_STRING LP_ expr (AS dataType)? levelClause_? RP_
     ;
 
@@ -431,7 +431,7 @@ levelInWeightListElement_
     : NUMBER_ (ASC | DESC)? REVERSE?
     ;
 
-regularFunction_
+regularFunction
     : regularFunctionName_ LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
@@ -474,7 +474,7 @@ caseElse_
     : ELSE expr
     ;
 
-intervalExpression_
+intervalExpression
     : INTERVAL expr intervalUnit_
     ;
 
