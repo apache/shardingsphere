@@ -213,7 +213,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
             return Collections.emptyMap();
         }
         Collection<String> tableNames = loadAllTableNames(actualDefaultDataSourceName.get());
-        List<TableMetaData> metaList = executorEngine.execute(getTableNamesInputGroups(tableNames), new GroupedCallback<String, TableMetaData>() {
+        List<TableMetaData> tableMetaDataList = executorEngine.execute(getTableNamesInputGroups(tableNames), new GroupedCallback<String, TableMetaData>() {
             
             @Override
             public Collection<TableMetaData> execute(final Collection<String> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
@@ -224,9 +224,9 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
             }
         });
         Map<String, TableMetaData> result = new HashMap<>(tableNames.size(), 1);
-        Iterator<String> tabNameIter = tableNames.iterator();
-        for (TableMetaData meta : metaList) {
-            result.put(tabNameIter.next(), meta);
+        Iterator<String> tabNameIterator = tableNames.iterator();
+        for (TableMetaData each : tableMetaDataList) {
+            result.put(tabNameIterator.next(), each);
         }
         return result;
     }
