@@ -44,7 +44,7 @@ public final class EncryptMergedResult implements MergedResult {
     public boolean next() throws SQLException {
         return mergedResult.next();
     }
-
+    
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         if (!queryWithCipherColumn) {
