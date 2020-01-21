@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSQLSegment;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 @Getter
 @Setter
-public final class ExpectedTopValue extends AbstractExpectedSegment {
+public final class ExpectedTopValue extends AbstractExpectedSQLSegment {
     
     @XmlAttribute
     private Long value;

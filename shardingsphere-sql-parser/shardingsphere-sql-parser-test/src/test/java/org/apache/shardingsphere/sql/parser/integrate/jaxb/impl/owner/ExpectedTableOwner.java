@@ -19,13 +19,13 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.owner;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedDelimiterSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedDelimiterSQLSegment;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
 @Getter
 @Setter
-public final class ExpectedTableOwner extends AbstractExpectedDelimiterSegment {
+public final class ExpectedTableOwner extends AbstractExpectedDelimiterSQLSegment {
     
     @XmlAttribute
     private String name;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSQLSegment;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -31,7 +31,7 @@ import java.util.List;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedWhere extends AbstractExpectedSegment {
+public final class ExpectedWhere extends AbstractExpectedSQLSegment {
     
     @XmlAttribute(name = "parameters-count")
     private Integer parametersCount;
