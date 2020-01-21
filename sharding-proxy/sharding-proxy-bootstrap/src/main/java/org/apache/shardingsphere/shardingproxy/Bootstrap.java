@@ -65,6 +65,8 @@ import java.util.Properties;
 public final class Bootstrap {
     
     private static final int DEFAULT_PORT = 3307;
+
+    private static final String DEFAULT_CONFIG_PATH = "/conf/";
     
     /**
      * Main entrance.
@@ -74,9 +76,12 @@ public final class Bootstrap {
      * @throws SQLException SQL exception
      */
     public static void main(final String[] args) throws IOException, SQLException {
-        ShardingConfiguration shardingConfig = new ShardingConfigurationLoader().load();
-        logRuleConfigurationMap(getRuleConfiguration(shardingConfig.getRuleConfigurationMap()).values());
         int port = getPort(args);
+        String path = getConfigPath(args);
+
+        ShardingConfiguration shardingConfig = new ShardingConfigurationLoader().load(path);
+        logRuleConfigurationMap(getRuleConfiguration(shardingConfig.getRuleConfigurationMap()).values());
+
         if (null == shardingConfig.getServerConfiguration().getOrchestration()) {
             startWithoutRegistryCenter(shardingConfig.getRuleConfigurationMap(), shardingConfig.getServerConfiguration().getAuthentication(), shardingConfig.getServerConfiguration().getProps(), port);
         } else {
@@ -90,6 +95,18 @@ public final class Bootstrap {
         }
         Integer paredPort = Ints.tryParse(args[0]);
         return paredPort == null ? DEFAULT_PORT : paredPort;
+    }
+
+    private static String getConfigPath(final String[] args) {
+        if (args.length < 2) {
+            return DEFAULT_CONFIG_PATH;
+        }
+        return paddingWithSlash(args[1]);
+    }
+
+    private static String paddingWithSlash(final String str) {
+        String path = str.endsWith("/") ? str : (str + "/");
+        return path.startsWith("/") ? path : ("/" + path);
     }
     
     private static void startWithoutRegistryCenter(final Map<String, YamlProxyRuleConfiguration> ruleConfigs,
