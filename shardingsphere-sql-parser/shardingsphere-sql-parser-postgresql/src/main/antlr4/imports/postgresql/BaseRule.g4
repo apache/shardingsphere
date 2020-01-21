@@ -207,7 +207,7 @@ simpleExpr
     ;
 
 functionCall
-    : aggregationFunction | specialFunction_ | regularFunction_ 
+    : aggregationFunction | specialFunction | regularFunction 
     ;
 
 aggregationFunction
@@ -226,7 +226,7 @@ filterClause_
     : FILTER LP_ WHERE expr RP_
     ;
 
-windowFunction_
+windowFunction
     : identifier LP_ expr (COMMA_ expr)* RP_ filterClause_ OVER identifier? windowDefinition_
     ;
 
@@ -254,19 +254,19 @@ frameBetween_
     : BETWEEN frameStart_ AND frameEnd_
     ;
 
-specialFunction_
-    : windowFunction_ | castFunction_  | charFunction_
+specialFunction
+    : windowFunction | castFunction  | charFunction
     ;
 
-castFunction_
+castFunction
     : CAST LP_ expr AS dataType RP_
     ;
 
-charFunction_
+charFunction
     : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier_)? RP_
     ;
 
-regularFunction_
+regularFunction
     : regularFunctionName_ LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
