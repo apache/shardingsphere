@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.Expect
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedPredicate;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedWhere;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.value.ExpectedPredicateCompareRightValue;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.ExpectedTableOwner;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.owner.ExpectedTableOwner;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.ComplexExpressionSegment;

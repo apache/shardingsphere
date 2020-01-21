@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedProjections;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.ExpectedShorthandProjection;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.ExpectedTableOwner;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.owner.ExpectedTableOwner;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.ExpectedTopProjection;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
