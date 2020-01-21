@@ -74,22 +74,6 @@ public abstract class BaseIT {
         }
     }
     
-    protected final String getExpectedDataFile(final String path, final String shardingRuleType, final DatabaseType databaseType, final String expectedDataFile) {
-        if (null == expectedDataFile) {
-            return null;
-        }
-        String prefix = path.substring(0, path.lastIndexOf(File.separator));
-        String result = Joiner.on("/").join(prefix, "dataset", shardingRuleType, databaseType.getName().toLowerCase(), expectedDataFile);
-        if (new File(result).exists()) {
-            return result;
-        }
-        result = Joiner.on("/").join(prefix, "dataset", shardingRuleType, expectedDataFile);
-        if (new File(result).exists()) {
-            return result;
-        }
-        return Joiner.on("/").join(prefix, "dataset", expectedDataFile);
-    }
-    
     private Map<String, DataSource> createDataSourceMap() throws IOException, JAXBException {
         Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(ruleType);
         Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
@@ -108,6 +92,22 @@ public abstract class BaseIT {
             default:
                 return YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(ruleType)));
         }
+    }
+    
+    protected final String getExpectedDataFile(final String path, final String shardingRuleType, final DatabaseType databaseType, final String expectedDataFile) {
+        if (null == expectedDataFile) {
+            return null;
+        }
+        String prefix = path.substring(0, path.lastIndexOf(File.separator));
+        String result = Joiner.on("/").join(prefix, "dataset", shardingRuleType, databaseType.getName().toLowerCase(), expectedDataFile);
+        if (new File(result).exists()) {
+            return result;
+        }
+        result = Joiner.on("/").join(prefix, "dataset", shardingRuleType, expectedDataFile);
+        if (new File(result).exists()) {
+            return result;
+        }
+        return Joiner.on("/").join(prefix, "dataset", expectedDataFile);
     }
     
     protected static void createDatabasesAndTables() {
