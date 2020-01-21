@@ -751,6 +751,13 @@
         <projections start-index="7" stop-index="28">
             <aggregation-distinct-projection type="AVG" inner-expression-start-index="10" distinct-expression="order_id" start-index="7" stop-index="28" />
         </projections>
+        <where parameters-count="0" parameter-marker-start-index="0" start-index="43" stop-index="63">
+            <and-predicate>
+                <predicate start-index="49" stop-index="63">
+                    <column name="order_id" start-index="49" stop-index="56" />
+                </predicate>
+            </and-predicate>
+        </where>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_count_sum" >
