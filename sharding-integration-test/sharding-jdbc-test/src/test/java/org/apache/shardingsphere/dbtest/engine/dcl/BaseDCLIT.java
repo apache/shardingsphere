@@ -56,7 +56,7 @@ public abstract class BaseDCLIT extends SingleIT {
     }
     
     private Map<String, DataSource> createInstanceDataSourceMap() throws SQLException {
-        return "masterslave".equals(getShardingRuleType()) || "shadow".equals(getShardingRuleType()) ? getDataSourceMap() : getShardingInstanceDataSourceMap();
+        return "masterslave".equals(getRuleType()) || "shadow".equals(getRuleType()) ? getDataSourceMap() : getShardingInstanceDataSourceMap();
     }
     
     private Map<String, DataSource> getShardingInstanceDataSourceMap() throws SQLException {
@@ -109,7 +109,7 @@ public abstract class BaseDCLIT extends SingleIT {
     @Before
     public void insertData() throws SQLException, ParseException, IOException, JAXBException {
         if (getDatabaseTypeEnvironment().isEnabled()) {
-            new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getShardingRuleType()), getDataSourceMap()).initialize();
+            new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getRuleType()), getDataSourceMap()).initialize();
             authorityEnvironmentManager.initialize();
         }
     }

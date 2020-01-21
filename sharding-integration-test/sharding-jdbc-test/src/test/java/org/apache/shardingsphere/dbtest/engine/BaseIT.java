@@ -55,20 +55,20 @@ public abstract class BaseIT {
     
     private static IntegrateTestCasesLoader integrateTestCasesLoader = IntegrateTestCasesLoader.getInstance();
     
-    private final String shardingRuleType;
+    private final String ruleType;
     
     private final DatabaseTypeEnvironment databaseTypeEnvironment;
     
-    private final DataSource dataSource;
-    
     private final Map<String, DataSource> dataSourceMap;
+    
+    private final DataSource dataSource;
     
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
     
-    public BaseIT(final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
-        this.shardingRuleType = shardingRuleType;
+    public BaseIT(final String ruleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
+        this.ruleType = ruleType;
         this.databaseTypeEnvironment = databaseTypeEnvironment;
         if (databaseTypeEnvironment.isEnabled()) {
             dataSourceMap = createDataSourceMap();
@@ -100,7 +100,7 @@ public abstract class BaseIT {
     }
     
     private Map<String, DataSource> createDataSourceMap() throws IOException, JAXBException {
-        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(shardingRuleType);
+        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(ruleType);
         Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
         for (String each : dataSourceNames) {
             result.put(each, DataSourceUtil.createDataSource(databaseTypeEnvironment.getDatabaseType(), each));
@@ -109,13 +109,13 @@ public abstract class BaseIT {
     }
     
     private DataSource createDataSource() throws SQLException, IOException {
-        switch (shardingRuleType) {
+        switch (ruleType) {
             case "masterslave":
-                return YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
+                return YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(ruleType)));
             case "shadow":
-                return YamlShadowDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
+                return YamlShadowDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(ruleType)));
             default:
-                return YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(shardingRuleType)));
+                return YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(ruleType)));
         }
     }
     
