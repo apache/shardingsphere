@@ -83,8 +83,7 @@ public final class SQLStatementAssert {
     private static void assertSelectStatement(final SQLStatementAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
         ProjectionAssert.assertIs(assertMessage, actual.getProjections(), expected.getProjections(), sqlCaseType);
         Optional<WhereSegment> whereSegment = actual.getWhere();
-        if (whereSegment.isPresent() && null != expected.getWhere()) {
-//        if (whereSegment.isPresent()) {
+        if (whereSegment.isPresent()) {
             assertNotNull(assertMessage.getText("Expected where assertion should exist: "), expected.getWhere());
             WhereAssert.assertIs(assertMessage, whereSegment.get(), expected.getWhere(), sqlCaseType);
         }

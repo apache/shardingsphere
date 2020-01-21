@@ -110,6 +110,20 @@
         <projections start-index="7" stop-index="29">
             <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="items_count" start-index="7" stop-index="14" />
         </projections>
+        <where parameters-count="4" parameter-marker-start-index="0" start-index="119" stop-index="174" literal-stop-index="175">
+            <and-predicate>
+                <predicate start-index="125" stop-index="143">
+                    <column name="user_id" start-index="125" stop-index="133">
+                        <owner name="o" start-index="125" stop-index="125" />
+                    </column>
+                </predicate>
+                <predicate start-index="149" stop-index="174" literal-stop-index="175">
+                    <column name="order_id" start-index="149" stop-index="158">
+                        <owner name="o" start-index="149" stop-index="149" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
