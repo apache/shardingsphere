@@ -825,6 +825,13 @@
             <aggregation-distinct-projection type="COUNT" inner-expression-start-index="35" distinct-expression="order_id" start-index="30" stop-index="53" />
             <aggregation-projection type="COUNT" inner-expression-start-index="60" start-index="55" stop-index="69" />
         </projections>
+        <where parameters-count="0" parameter-marker-start-index="0" start-index="85" stop-index="105">
+            <and-predicate>
+                <predicate start-index="91" stop-index="105">
+                    <column name="order_id" start-index="91" stop-index="98" />
+                </predicate>
+            </and-predicate>
+        </where>
     </parser-result>
     
     <parser-result sql-case-id="select_with_schema" >
