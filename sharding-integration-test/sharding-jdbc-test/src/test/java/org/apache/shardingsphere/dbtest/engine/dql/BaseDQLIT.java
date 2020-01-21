@@ -71,7 +71,7 @@ public abstract class BaseDQLIT extends SingleIT {
     }
     
     private static void insertData(final DatabaseType databaseType) throws SQLException, ParseException, IOException, JAXBException {
-        for (String each : IntegrateTestEnvironment.getInstance().getShardingRuleTypes()) {
+        for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
             new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(each), createDataSourceMap(databaseType, each)).initialize();
         }
     }
@@ -85,7 +85,7 @@ public abstract class BaseDQLIT extends SingleIT {
     }
     
     private static void clearData(final DatabaseType databaseType) throws SQLException, IOException, JAXBException {
-        for (String each : IntegrateTestEnvironment.getInstance().getShardingRuleTypes()) {
+        for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
             new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(each), createDataSourceMap(databaseType, each)).clear();
         }
     }

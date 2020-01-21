@@ -42,7 +42,7 @@ public final class IntegrateTestEnvironment {
     
     private final boolean runAdditionalTestCases;
     
-    private final Collection<String> shardingRuleTypes;
+    private final Collection<String> ruleTypes;
     
     private final Collection<DatabaseType> databaseTypes;
     
@@ -56,7 +56,7 @@ public final class IntegrateTestEnvironment {
             ex.printStackTrace();
         }
         runAdditionalTestCases = Boolean.parseBoolean(prop.getProperty("run.additional.cases"));
-        shardingRuleTypes = Splitter.on(",").trimResults().splitToList(prop.getProperty("sharding.rule.type"));
+        ruleTypes = Splitter.on(",").trimResults().splitToList(prop.getProperty("rule.types"));
         databaseTypes = new LinkedList<>();
         for (String each : prop.getProperty("databases", "H2").split(",")) {
             databaseTypes.add(DatabaseTypes.getActualDatabaseType(each.trim()));

@@ -118,10 +118,10 @@ public abstract class BaseIT {
     
     protected static void createDatabases() {
         try {
-            for (String each : IntegrateTestEnvironment.getInstance().getShardingRuleTypes()) {
+            for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
                 SchemaEnvironmentManager.dropDatabase(each);
             }
-            for (String each : IntegrateTestEnvironment.getInstance().getShardingRuleTypes()) {
+            for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
                 SchemaEnvironmentManager.createDatabase(each);
             }
         } catch (final JAXBException | IOException | SQLException ex) {
@@ -131,7 +131,7 @@ public abstract class BaseIT {
     
     protected static void createTables() {
         try {
-            for (String each : IntegrateTestEnvironment.getInstance().getShardingRuleTypes()) {
+            for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
                 SchemaEnvironmentManager.createTable(each);
             }
         } catch (final JAXBException | IOException | SQLException ex) {
@@ -141,7 +141,7 @@ public abstract class BaseIT {
     
     protected static void dropDatabases() {
         try {
-            for (String each : IntegrateTestEnvironment.getInstance().getShardingRuleTypes()) {
+            for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
                 SchemaEnvironmentManager.dropDatabase(each);
             }
         } catch (final JAXBException | IOException ex) {
@@ -151,7 +151,7 @@ public abstract class BaseIT {
     
     protected static void dropTables() {
         try {
-            for (String each : IntegrateTestEnvironment.getInstance().getShardingRuleTypes()) {
+            for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
                 SchemaEnvironmentManager.dropTable(each);
             }
         } catch (final JAXBException | IOException ex) {
