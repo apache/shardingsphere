@@ -162,6 +162,16 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
+        <where parameters-count="4" parameter-marker-start-index="0" start-index="22" stop-index="107">
+            <and-predicate>
+                <predicate start-index="28" stop-index="50" literal-stop-index="51">
+                    <column name="user_id" start-index="28" stop-index="34" />
+                </predicate>
+                <predicate start-index="56" stop-index="79" literal-start-index="57" literal-stop-index="80">
+                    <column name="order_id" start-index="56" stop-index="63" literal-start-index="57" literal-stop-index="64" />
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="BETWEEN">
