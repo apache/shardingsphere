@@ -130,7 +130,7 @@ public abstract class BaseDQLIT extends SingleIT {
             assertTrue("Size of actual result set is different with size of expected dat set rows.", count < expectedDatSetRows.size());
             for (String each : expectedDatSetRows.get(count).getValues()) {
                 if (Types.DATE == actualResultSet.getMetaData().getColumnType(index)) {
-                    if (!getNotVerifyFlag().equals(each)) {
+                    if (!NOT_VERIFY_FLAG.equals(each)) {
                         assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(index)), is(each));
                         assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(actualMetaData.getColumnLabel(index))), is(each));
                     }

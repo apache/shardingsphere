@@ -49,7 +49,7 @@ import java.util.TimeZone;
 @Getter(AccessLevel.PROTECTED)
 public abstract class BaseIT {
     
-    private static String notVerifyFlag = "NOT_VERIFY";
+    public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
     private static IntegrateTestEnvironment integrateTestEnvironment = IntegrateTestEnvironment.getInstance();
     
@@ -77,10 +77,6 @@ public abstract class BaseIT {
             dataSourceMap = null;
             dataSource = null;
         }
-    }
-    
-    protected static String getNotVerifyFlag() {
-        return notVerifyFlag;
     }
     
     protected final String getExpectedDataFile(final String path, final String shardingRuleType, final DatabaseType databaseType, final String expectedDataFile) {

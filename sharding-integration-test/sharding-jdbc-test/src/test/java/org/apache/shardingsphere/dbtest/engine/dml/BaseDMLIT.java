@@ -123,7 +123,7 @@ public abstract class BaseDMLIT extends SingleIT {
             int index = 1;
             for (String each : expectedDatSetRows.get(count).getValues()) {
                 if (Types.DATE == actualResultSet.getMetaData().getColumnType(index)) {
-                    if (!getNotVerifyFlag().equals(each)) {
+                    if (!NOT_VERIFY_FLAG.equals(each)) {
                         assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(index)), is(each));
                     }
                 } else {
