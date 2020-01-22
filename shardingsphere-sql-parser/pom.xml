@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere</artifactId>
-        <version>4.0.0-RC3-SNAPSHOT</version>
+        <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-sql-parser</artifactId>
     <name>${project.artifactId}</name>
@@ -31,12 +31,15 @@
     
     <modules>
         <module>shardingsphere-sql-parser-spi</module>
-        <module>shardingsphere-sql-parser-common</module>
+        <module>shardingsphere-sql-parser-engine</module>
+        <module>shardingsphere-sql-parser-relation</module>
+        
         <module>shardingsphere-sql-parser-sql92</module>
         <module>shardingsphere-sql-parser-mysql</module>
         <module>shardingsphere-sql-parser-postgresql</module>
         <module>shardingsphere-sql-parser-oracle</module>
         <module>shardingsphere-sql-parser-sqlserver</module>
+        
         <module>shardingsphere-sql-parser-test</module>
     </modules>
     

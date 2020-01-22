@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-sql-parser</artifactId>
-        <version>4.0.0-RC3-SNAPSHOT</version>
+        <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-sql-parser-sqlserver</artifactId>
     <name>${project.artifactId}</name>
@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-parser-common</artifactId>
+            <artifactId>shardingsphere-sql-parser-engine</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
@@ -50,7 +50,7 @@
                         <configuration>
                             <libDirectory>src/main/antlr4/imports/sqlserver/</libDirectory>
                             <listener>false</listener>
-                            <visitor>false</visitor>
+                            <visitor>true</visitor>
                         </configuration>
                         <goals>
                             <goal>antlr4</goal>

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.core.util.InlineExpressionParser;
+import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -86,7 +86,7 @@ public final class InlineShardingStrategy implements ShardingStrategy {
     private String execute(final PreciseShardingValue shardingValue) {
         Closure<?> result = closure.rehydrate(new Expando(), null, null);
         result.setResolveStrategy(Closure.DELEGATE_ONLY);
-        result.setProperty(shardingValue.getColumnName(), shardingValue.getValue());
+        result.setProperty(shardingColumn, shardingValue.getValue());
         return result.call().toString();
     }
     

@@ -21,13 +21,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * SQLException constant.
+ * SQL exception constant.
  *
  * @author RaigorJiang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLExceptionConstant {
-
-    public static final String SQL_STRING_NULL_OR_EMPTY = "SQL String can not be NULL or empty.";
     
+    public static final String SQL_STRING_NULL_OR_EMPTY = "SQL String can not be NULL or empty.";
 }

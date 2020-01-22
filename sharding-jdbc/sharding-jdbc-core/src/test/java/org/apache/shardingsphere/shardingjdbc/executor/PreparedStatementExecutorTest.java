@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
-import org.apache.shardingsphere.core.execute.StatementExecuteUnit;
-import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
-import org.apache.shardingsphere.core.route.RouteUnit;
-import org.apache.shardingsphere.core.route.SQLUnit;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
+import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.junit.Test;
 
@@ -88,7 +88,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         setExecuteGroups(Collections.singletonList(preparedStatement), true);
-        assertThat((String) actual.executeQuery().iterator().next().getValue(1, String.class), is("decryptValue"));
+        assertThat((String) actual.executeQuery().iterator().next().getValue(1, String.class), is("value"));
     }
     
     @Test
@@ -111,9 +111,8 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement2.executeQuery()).thenReturn(resultSet2);
         setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2), true);
         List<QueryResult> result = actual.executeQuery();
-        for (QueryResult each : result) {
-            assertThat(String.valueOf(each.getValue(1, int.class)), is("decryptValue"));
-        }
+        assertThat(String.valueOf(result.get(0).getValue(1, int.class)), is("1"));
+        assertThat(String.valueOf(result.get(1).getValue(1, int.class)), is("2"));
         verify(preparedStatement1).executeQuery();
         verify(preparedStatement2).executeQuery();
     }
@@ -263,14 +262,14 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     
     @SneakyThrows
     private void setExecuteGroups(final List<PreparedStatement> preparedStatements, final boolean isQuery) {
-        Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
+        Collection<InputGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
         List<StatementExecuteUnit> preparedStatementExecuteUnits = new LinkedList<>();
-        executeGroups.add(new ShardingExecuteGroup<>(preparedStatementExecuteUnits));
+        executeGroups.add(new InputGroup<>(preparedStatementExecuteUnits));
         for (PreparedStatement each : preparedStatements) {
-            preparedStatementExecuteUnits.add(new StatementExecuteUnit(new RouteUnit("ds_0", 
-                    new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList((Object) 1))), each, ConnectionMode.MEMORY_STRICTLY));
+            preparedStatementExecuteUnits.add(
+                    new StatementExecuteUnit(new ExecutionUnit("ds_0", new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList((Object) 1))), each, ConnectionMode.MEMORY_STRICTLY));
         }
-        Field field = PreparedStatementExecutor.class.getSuperclass().getDeclaredField("executeGroups");
+        Field field = PreparedStatementExecutor.class.getSuperclass().getDeclaredField("inputGroups");
         field.setAccessible(true);
         field.set(actual, executeGroups);
     }

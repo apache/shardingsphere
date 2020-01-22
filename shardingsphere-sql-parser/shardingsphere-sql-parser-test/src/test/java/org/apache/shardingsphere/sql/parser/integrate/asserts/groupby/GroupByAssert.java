@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.integrate.asserts.groupby;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.groupby.ExpectedGroupByColumn;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.groupby.ExpectedGroupByColumn;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 
@@ -34,33 +35,32 @@ import static org.junit.Assert.assertThat;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GroupByAssert {
     
-    private final SQLStatementAssertMessage assertMessage;
-    
     /**
-     * Assert group by items.
+     * Assert actual group by item segments is correct with expected group by columns.
      * 
+     * @param assertMessage assert message
      * @param actual actual group by items
      * @param expected expected group by items
      */
-    public void assertGroupByItems(final Collection<OrderByItemSegment> actual, final List<ExpectedGroupByColumn> expected) {
-        assertThat(assertMessage.getFullAssertMessage("Group by items size error: "), actual.size(), is(expected.size()));
+    public static void assertIs(final SQLStatementAssertMessage assertMessage, final Collection<OrderByItemSegment> actual, final List<ExpectedGroupByColumn> expected) {
+        assertThat(assertMessage.getText("Group by items size error: "), actual.size(), is(expected.size()));
         int count = 0;
         for (OrderByItemSegment each : actual) {
             if (each instanceof ColumnOrderByItemSegment) {
-                assertGroupByItem((ColumnOrderByItemSegment) each, expected.get(count));
+                assertGroupByItem(assertMessage, (ColumnOrderByItemSegment) each, expected.get(count));
             }
             count++;
         }
     }
     
-    private void assertGroupByItem(final ColumnOrderByItemSegment actual, final ExpectedGroupByColumn expected) {
-        assertThat(assertMessage.getFullAssertMessage("Group by item owner assertion error: "), 
+    private static void assertGroupByItem(final SQLStatementAssertMessage assertMessage, final ColumnOrderByItemSegment actual, final ExpectedGroupByColumn expected) {
+        assertThat(assertMessage.getText("Group by item owner assertion error: "), 
                 actual.getColumn().getOwner().isPresent() ? actual.getColumn().getOwner().get().getTableName() : null, is(expected.getOwner()));
-        assertThat(assertMessage.getFullAssertMessage("Group by item name assertion error: "), actual.getColumn().getName(), is(expected.getName()));
-        assertThat(assertMessage.getFullAssertMessage("Group by item order direction assertion error: "), actual.getOrderDirection().name(), is(expected.getOrderDirection()));
+        assertThat(assertMessage.getText("Group by item name assertion error: "), actual.getColumn().getName(), is(expected.getName()));
+        assertThat(assertMessage.getText("Group by item order direction assertion error: "), actual.getOrderDirection().name(), is(expected.getOrderDirection()));
         // TODO assert nullOrderDirection
     }
 }

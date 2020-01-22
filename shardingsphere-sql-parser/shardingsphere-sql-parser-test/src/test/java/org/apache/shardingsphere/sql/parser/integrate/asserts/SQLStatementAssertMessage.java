@@ -19,8 +19,10 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistry;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistryFactory;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
 
 import java.util.Collections;
 
@@ -32,38 +34,52 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class SQLStatementAssertMessage {
     
-    private final SQLCasesLoader sqlCasesLoader;
-    
-    private final ParserResultSetRegistry parserResultSetRegistry;
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     
     private final String sqlCaseId;
     
     private final SQLCaseType sqlCaseType;
     
+    private final SQLCasesLoader sqlCasesLoader = SQLCasesRegistry.getInstance().getSqlCasesLoader();
+    
+    private final ParserResultSetRegistry parserResultSetRegistry = ParserResultSetRegistryFactory.getInstance().getRegistry();
+    
     /**
-     * Get full assert message.
+     * Get message text.
      * 
-     * @param assertMessage assert message
-     * @return full assert message
+     * @param failureMessage failure message
+     * @return message text
      */
-    public String getFullAssertMessage(final String assertMessage) {
-        StringBuilder result = new StringBuilder(System.getProperty("line.separator"));
-        result.append("SQL Case ID : ");
-        result.append(sqlCaseId);
-        result.append(System.getProperty("line.separator"));
-        result.append("SQL         : ");
-        if (SQLCaseType.Placeholder == sqlCaseType) {
-            result.append(sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList()));
-            result.append(System.getProperty("line.separator"));
-            result.append("SQL Params  : ");
-            result.append(parserResultSetRegistry.get(sqlCaseId).getParameters());
-            result.append(System.getProperty("line.separator"));
-        } else {
-            result.append(sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters()));
-        }
-        result.append(System.getProperty("line.separator"));
-        result.append(assertMessage);
-        result.append(System.getProperty("line.separator"));
+    public String getText(final String failureMessage) {
+        StringBuilder result = new StringBuilder(LINE_SEPARATOR);
+        appendSQLCaseId(result);
+        appendSQL(result);
+        appendFailureMessage(failureMessage, result);
         return result.toString();
+    }
+    
+    private void appendSQLCaseId(final StringBuilder builder) {
+        builder.append("SQL Case ID : ");
+        builder.append(sqlCaseId);
+        builder.append(LINE_SEPARATOR);
+    }
+    
+    private void appendSQL(final StringBuilder builder) {
+        builder.append("SQL         : ");
+        if (SQLCaseType.Placeholder == sqlCaseType) {
+            builder.append(sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList()));
+            builder.append(LINE_SEPARATOR);
+            builder.append("SQL Params  : ");
+            builder.append(parserResultSetRegistry.get(sqlCaseId).getParameters());
+            builder.append(LINE_SEPARATOR);
+        } else {
+            builder.append(sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters()));
+        }
+    }
+    
+    private void appendFailureMessage(final String failureMessage, final StringBuilder builder) {
+        builder.append(LINE_SEPARATOR);
+        builder.append(failureMessage);
+        builder.append(LINE_SEPARATOR);
     }
 }

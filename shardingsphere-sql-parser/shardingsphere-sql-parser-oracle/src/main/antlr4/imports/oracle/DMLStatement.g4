@@ -20,15 +20,39 @@ grammar DMLStatement;
 import Symbol, Keyword, OracleKeyword, Literals, BaseRule;
 
 insert
-    : INSERT INTO tableName (AS? alias)? (insertValuesClause | insertSelectClause)
+    : INSERT (insertSingleTable | insertMultiTable)
+    ;
+
+insertSingleTable
+    : insertIntoClause (insertValuesClause | select)
+    ;
+
+insertMultiTable
+    : (ALL multiTableElement+ | conditionalInsertClause) select
+    ;
+
+multiTableElement
+    : insertIntoClause insertValuesClause
+    ;
+
+conditionalInsertClause
+    : (ALL | FIRST)? conditionalInsertWhenPart+ conditionalInsertElsePart?
+    ;
+
+conditionalInsertWhenPart
+    : WHEN expr THEN multiTableElement+
+    ;
+
+conditionalInsertElsePart
+    : ELSE multiTableElement+
+    ;
+
+insertIntoClause
+    : INTO tableName (AS? alias)?
     ;
 
 insertValuesClause
     : columnNames? VALUES assignmentValues (COMMA_ assignmentValues)*
-    ;
-
-insertSelectClause
-    : columnNames? select
     ;
 
 update
@@ -85,23 +109,23 @@ unionClause_
     ;
 
 selectClause
-    : SELECT duplicateSpecification? selectItems fromClause? whereClause? groupByClause? havingClause? orderByClause?
+    : SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause? orderByClause?
     ;
 
 duplicateSpecification
     : ALL | DISTINCT
     ;
 
-selectItems
-    : (unqualifiedShorthand | selectItem) (COMMA_ selectItem)*
+projections
+    : (unqualifiedShorthand | projection) (COMMA_ projection)*
     ;
 
-selectItem
+projection
     : (columnName | expr) (AS? alias)? | qualifiedShorthand
     ;
 
 alias
-    : identifier_ | STRING_
+    : identifier | STRING_
     ;
 
 unqualifiedShorthand
@@ -109,7 +133,7 @@ unqualifiedShorthand
     ;
 
 qualifiedShorthand
-    : identifier_ DOT_ASTERISK_
+    : identifier DOT_ASTERISK_
     ;
 
 fromClause

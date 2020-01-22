@@ -43,7 +43,7 @@ numberLiterals
 
 dateTimeLiterals
     : (DATE | TIME | TIMESTAMP) STRING_
-    | LBE_ identifier_ STRING_ RBE_
+    | LBE_ identifier STRING_ RBE_
     ;
 
 hexadecimalLiterals
@@ -62,7 +62,7 @@ nullValueLiterals
     : NULL
     ;
 
-identifier_
+identifier
     : IDENTIFIER_ | unreservedWord_
     ;
 
@@ -95,11 +95,11 @@ unreservedWord_
     | MESSAGE | TYPE | REMOTE | BINDING | ROUTE | SECURITY | POLICY | AGGREGATE | QUEUE
     | RULE | SYNONYM | COLLECTION | SCRIPT | KILL | BACKUP | LOG | SHOWPLAN
     | SUBSCRIBE | QUERY | NOTIFICATIONS | CHECKPOINT | SEQUENCE | INSTANCE | DO | DEFINER | LOCAL | CASCADED
-    | NEXT | NAME | INTEGER | TYPE
+    | NEXT | NAME | INTEGER | TYPE | MAX | MIN | SUM | COUNT | AVG | FIRST
     ;
 
 schemaName
-    : identifier_
+    : identifier
     ;
 
 tableName
@@ -111,11 +111,11 @@ columnName
     ;
 
 owner
-    : identifier_
+    : identifier
     ;
 
 name
-    : identifier_
+    : identifier
     ;
 
 columnNames
@@ -127,7 +127,7 @@ tableNames
     ;
 
 indexName
-    : identifier_
+    : identifier
     ;
 
 collationName
@@ -151,7 +151,7 @@ expr
     : expr logicalOperator expr
     | notOperator_ expr
     | LP_ expr RP_
-    | booleanPrimary_
+    | booleanPrimary
     ;
 
 logicalOperator
@@ -162,11 +162,11 @@ notOperator_
     : NOT | NOT_
     ;
 
-booleanPrimary_
-    : booleanPrimary_ IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
-    | booleanPrimary_ SAFE_EQ_ predicate
-    | booleanPrimary_ comparisonOperator predicate
-    | booleanPrimary_ comparisonOperator (ALL | ANY) subquery
+booleanPrimary
+    : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
+    | booleanPrimary SAFE_EQ_ predicate
+    | booleanPrimary comparisonOperator predicate
+    | booleanPrimary comparisonOperator (ALL | ANY) subquery
     | predicate
     ;
 
@@ -205,7 +205,7 @@ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
-    | LBE_ identifier_ expr RBE_
+    | LBE_ identifier expr RBE_
     | caseExpression_
     | privateExprOfDb
     ;
@@ -243,7 +243,7 @@ regularFunction_
     ;
 
 regularFunctionName_
-    : identifier_ | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL
+    : identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL
     ;
 
 caseExpression_
@@ -268,6 +268,7 @@ subquery
 
 orderByClause
     : ORDER BY orderByItem (COMMA_ orderByItem)*
+    (OFFSET expr (ROW | ROWS) (FETCH (FIRST | NEXT) expr (ROW | ROWS) ONLY)?)?
     ;
 
 orderByItem

@@ -20,15 +20,15 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.root;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.groupby.ExpectedGroupByColumn;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.insert.ExpectedInsertColumnsAndValues;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.orderby.ExpectedOrderByColumn;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.pagination.ExpectedPaginationValue;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.predicate.ExpectedWhereSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.selectitem.ExpectedSelectItems;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.table.ExpectedAlterTable;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.table.ExpectedTable;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.token.ExpectedTokens;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.groupby.ExpectedGroupByColumn;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.insert.ExpectedInsertColumnsAndValues;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedOrderByColumn;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.pagination.ExpectedPaginationValue;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedWhere;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedProjections;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.table.ExpectedAlterTable;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.table.ExpectedTable;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.token.ExpectedTokens;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -47,12 +47,18 @@ public final class ParserResult {
     @XmlAttribute(name = "sql-case-id")
     private String sqlCaseId;
     
+    @XmlAttribute(name = "long-sql")
+    private boolean longSQL;
+    
     @XmlAttribute
     private String parameters;
     
     @XmlElementWrapper
     @XmlElement(name = "table")
     private List<ExpectedTable> tables = new LinkedList<>();
+    
+    @XmlElement(name = "projections")
+    private ExpectedProjections projections = new ExpectedProjections();
     
     @XmlElementWrapper
     @XmlElement(name = "schema")
@@ -86,15 +92,12 @@ public final class ParserResult {
     
     @XmlAttribute(name = "auto-commit")
     private boolean autoCommit;
-
+    
     @XmlAttribute(name = "lock-clause")
     private boolean lockClause;
-
-    @XmlElement(name = "select-items")
-    private ExpectedSelectItems selectItems = new ExpectedSelectItems();
-
-    @XmlElement(name = "where-segment")
-    private ExpectedWhereSegment whereSegment;
+    
+    @XmlElement(name = "where")
+    private ExpectedWhere where;
     
     /**
      * Get parameters.

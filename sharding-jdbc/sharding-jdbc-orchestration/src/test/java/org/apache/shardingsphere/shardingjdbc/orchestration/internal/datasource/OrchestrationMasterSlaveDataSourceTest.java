@@ -20,9 +20,9 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.config.DataSourceConfiguration;
-import org.apache.shardingsphere.core.constant.ShardingConstant;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
+import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
@@ -108,7 +108,7 @@ public final class OrchestrationMasterSlaveDataSourceTest {
     @Test
     public void assertRenewProperties() {
         masterSlaveDataSource.renew(getPropertiesChangedEvent());
-        assertThat(masterSlaveDataSource.getDataSource().getRuntimeContext().getProps().getProps().getProperty("sql.show"), is("true"));
+        assertThat(masterSlaveDataSource.getDataSource().getRuntimeContext().getProperties().getProps().getProperty("sql.show"), is("true"));
     }
     
     private PropertiesChangedEvent getPropertiesChangedEvent() {
@@ -144,13 +144,13 @@ public final class OrchestrationMasterSlaveDataSourceTest {
         assertThat(masterSlaveDataSource.getConnection("root", "root"), instanceOf(Connection.class));
     }
     
-    @Test(expected = ShardingException.class)
+    @Test(expected = ShardingSphereException.class)
     public void assertClose() throws Exception {
         masterSlaveDataSource.close();
         try {
             masterSlaveDataSource.getDataSource().getDataSourceMap().values().iterator().next().getConnection();
         } catch (final SQLException ex) {
-            throw new ShardingException(ex.getMessage());
+            throw new ShardingSphereException(ex.getMessage());
         }
     }
 }

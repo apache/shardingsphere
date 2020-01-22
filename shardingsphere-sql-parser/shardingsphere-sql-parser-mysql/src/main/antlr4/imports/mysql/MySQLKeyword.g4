@@ -1515,3 +1515,451 @@ LOWER
 UPPER
     : U P P E R
     ;
+
+DATEDIFF
+    : D A T E D I F F
+    ;
+
+DATE_FORMAT
+    : D A T E UL_ F O R M A T
+    ;
+
+DAYNAME
+    : D A Y N A M E
+    ;
+
+DAYOFMONTH
+    : D A Y O F M O N T H
+    ;
+
+DAYOFWEEK
+    : D A Y O F W E E K
+    ;
+
+DAYOFYEAR
+    : D A Y O F Y E A R
+    ;
+
+STR_TO_DATE
+    : S T R UL_ T O UL_ D A T E
+    ;
+
+TIMEDIFF
+    : T I M E D I F F
+    ;
+
+TIMESTAMPADD
+    : T I M E S T A M P A D D
+    ;
+
+TIMESTAMPDIFF
+    : T I M E S T A M P D I F F
+    ;
+
+TIME_FORMAT
+     : T I M E UL_ F O R M A T
+     ;
+
+TIME_TO_SEC
+    : T I M E UL_ T O UL_ S E C
+    ;
+
+AES_DECRYPT
+    : A E S UL_ D E C R Y P T
+    ;
+
+AES_ENCRYPT
+    : A E S UL_ E N C R Y P T
+    ;
+
+FROM_BASE64
+    : F R O M UL_ B A S E
+    ;
+
+TO_BASE64
+    : T O UL_ B A S E
+    ;
+
+GEOMCOLLECTION
+    : G E O M C O L L E C T I O N
+    ;
+
+GEOMETRYCOLLECTION
+    : G E O M E T R Y C O L L E C T I O N
+    ;
+
+LINESTRING
+    : L I N E S T R I N G
+    ;
+
+MULTILINESTRING
+    : M U L T I L I N E S T R I N G
+    ;
+
+MULTIPOINT
+    : M U L T I P O I N T
+    ;
+
+MULTIPOLYGON
+    : M U L T I P O L Y G O N
+    ;
+
+POINT
+    : P O I N T
+    ;
+
+POLYGON
+    : P O L Y G O N
+    ;
+
+ST_AREA
+    : S T UL_ A R E A
+    ;
+
+ST_ASBINARY
+    : S T UL_ A S B I N A R Y
+    ;
+
+ST_ASGEOJSON
+    : S T UL_ A S G E O J S O N
+    ;
+
+ST_ASTEXT
+    : S T UL_ A S T E X T
+    ;
+
+ST_ASWKB
+    : S T UL_ A S W K B
+    ;
+
+ST_ASWKT
+    : S T UL_ A S W K T
+    ;
+
+ST_BUFFER
+    : S T UL_ B U F F E R
+    ;
+
+ST_BUFFER_STRATEGY
+    : S T UL_ B U F F E R UL_ S T R A T E G Y
+    ;
+
+ST_CENTROID
+    : S T UL_ C E N T R O I D
+    ;
+
+ST_CONTAINS
+    : S T UL_ C O N T A I N S
+    ;
+
+ST_CONVEXHULL
+    : S T UL_ C O N V E X H U L L
+    ;
+
+ST_CROSSES
+    : S T UL_ C R O S S E S
+    ;
+
+ST_DIFFERENCE
+    : S T UL_ D I F F E R E N C E
+    ;
+
+ST_DIMENSION
+    : S T UL_ D I M E N S I O N
+    ;
+
+ST_DISJOINT
+    : S T UL_ D I S J O I N T
+    ;
+
+ST_DISTANCE
+    : S T UL_ D I S T A N C E
+    ;
+
+ST_DISTANCE_SPHERE
+    : S T UL_ D I S T A N C E UL_ S P H E R E
+    ;
+
+ST_ENDPOINT
+    : S T UL_ E N D P O I N T
+    ;
+
+ST_ENVELOPE
+    : S T UL_ E N V E L O P E
+    ;
+
+ST_EQUALS
+    : S T UL_ E Q U A L S
+    ;
+
+ST_EXTERIORRING
+    : S T UL_ E X T E R I O R R I N G
+    ;
+
+ST_GEOHASH
+    : S T UL_ G E O H A S H
+    ;
+
+ST_GEOMCOLLFROMTEXT
+    : S T UL_ G E O M C O L L F R O M T E X T
+    ;
+
+ST_GEOMCOLLFROMTXT
+    : S T UL_ G E O M C O L L F R O M T X T
+    ;
+
+ST_GEOMCOLLFROMWKB
+    : S T UL_ G E O M C O L L F R O M W K B
+    ;
+
+ST_GEOMETRYCOLLECTIONFROMTEXT
+    : S T UL_ G E O M E T R Y C O L L E C T I O N F R O M T E X T
+    ;
+
+ST_GEOMETRYCOLLECTIONFROMWKB
+    : S T UL_ G E O M E T R Y C O L L E C T I O N F R O M W K B
+    ;
+
+ST_GEOMETRYFROMTEXT
+    : S T UL_ G E O M E T R Y F R O M T E X T
+    ;
+
+ST_GEOMETRYFROMWKB
+    : S T UL_ G E O M E T R Y F R O M W K B
+    ;
+
+ST_GEOMETRYN
+    : S T UL_ G E O M E T R Y N
+    ;
+
+ST_GEOMETRYTYPE
+    : S T UL_ G E O M E T R Y T Y P E
+    ;
+
+ST_GEOMFROMGEOJSON
+    : S T UL_ G E O F R O M G E O J S O N
+    ;
+
+ST_GEOMFROMTEXT
+    : S T UL_ G E O F R O M T E X T
+    ;
+
+ST_GEOMFROMWKB
+    : S T UL_ G E O F R O M W K B
+    ;
+
+ST_INTERIORRINGN
+    : S T UL_ I N T E R I O R R I N G N
+    ;
+
+ST_INTERSECTION
+    : S T UL_ I N T E R S E C T I O N
+    ;
+
+ST_INTERSECTS
+    : S T UL_ I N T E R S E C T S
+    ;
+
+ST_ISCLOSED
+    : S T UL_ I S C L O S E D
+    ;
+
+ST_ISEMPTY
+    : S T UL_ I S E M P T Y
+    ;
+
+ST_ISSIMPLE
+    : S T UL_ I S S I M P L E
+    ;
+
+ST_ISVALID
+    : S T UL_ I S V A L I D
+    ;
+
+ST_LATFROMGEOHASH
+    : S T UL_ L A T F R O M G E O H A S H
+    ;
+
+ST_LATITUDE
+    : S T UL_ L A T I T U D E
+    ;
+
+ST_LENGTH
+    : S T UL_ L E N G T H
+    ;
+
+ST_LINEFROMTEXT
+    : S T UL_ L I N E F R O M T E X T
+    ;
+
+ST_LINEFROMWKB
+    : S T UL_ L I N E F R O M W K B
+    ;
+
+ST_LINESTRINGFROMTEXT
+    : S T UL_ L I N E S T R I N G F R O M T E X T
+    ;
+
+ST_LINESTRINGFROMWKB
+    : S T UL_ L I N E S T R I N G F R O M W K B
+    ;
+
+ST_LONGFROMGEOHASH
+    : S T UL_ L O N G F R O M G E O H A S H
+    ;
+
+ST_LONGITUDE
+    : S T UL_ L O N G I T U D E
+    ;
+
+ST_MAKEENVELOPE
+    : S T UL_ M A K E E N V E L O P E
+    ;
+
+ST_MLINEFROMTEXT
+    : S T UL_ M L I N E F R O M T E X T
+    ;
+
+ST_MLINEFROMWKB
+    : S T UL_ M L I N E F R O M W K B
+    ;
+
+ST_MULTILINESTRINGFROMTEXT
+    : S T UL_ M U L T I L I N E S T R I N G F R O M T E X T
+    ;
+
+ST_MULTILINESTRINGFROMWKB
+    : S T UL_ M U L T I L I N E S T R I N G F R O M W K B
+    ;
+
+ST_MPOINTFROMTEXT
+    : S T UL_ M P O I N T F R O M T E X T
+    ;
+
+ST_MPOINTFROMWKB
+    : S T UL_ M P O I N T F R O M W K B
+    ;
+
+ST_MULTIPOINTFROMTEXT
+    : S T UL_ M U L T I P O I N T F R O M T E X T
+    ;
+
+ST_MULTIPOINTFROMWKB
+    : S T UL_ M U L T I P O I N T F R O M W K B
+    ;
+
+ST_MPOLYFROMTEXT
+    : S T UL_ M P O L Y F R O M T E X T
+    ;
+
+ST_MPOLYFROMWKB
+    : S T UL_ M P O L Y F R O M W K B
+    ;
+
+ST_MULTIPOLYGONFROMTEXT
+    : S T UL_ M U L T I P O L Y G O N F R O M T E X T
+    ;
+
+ST_MULTIPOLYGONFROMWKB
+    : S T UL_ M U L T I P O L Y G O N F R O M W K B
+    ;
+
+ST_NUMGEOMETRIES
+    : S T UL_ N U M G E O M E T R I E S
+    ;
+
+ST_NUMINTERIORRING
+    : S T UL_ N U M I N T E R I O R R I N G
+    ;
+
+ST_NUMINTERIORRINGS
+    : S T UL_ N U M I N T E R I O R R I N G S
+    ;
+
+ST_NUMPOINTS
+    : S T UL_ N U M P O I N T S
+    ;
+
+ST_OVERLAPS
+    : S T UL_ O V E R L A P S
+    ;
+
+ST_POINTFROMGEOHASH
+    : S T UL_ P O I N T F R O M G E O H A S H
+    ;
+
+ST_POINTFROMTEXT
+    : S T UL_ P O I N T F R O M T E X T
+    ;
+
+ST_POINTFROMWKB
+    : S T UL_ P O I N T F R O M W K B
+    ;
+
+ST_POINTN
+    : S T UL_ P O I N T N
+    ;
+
+ST_POLYFROMTEXT
+    : S T UL_ P O L Y F R O M T E X T
+    ;
+
+ST_POLYFROMWKB
+    : S T UL_ P O L Y F R O M W K B
+    ;
+
+ST_POLYGONFROMTEXT
+    : S T UL_ P O L Y G O N F R O M T E X T
+    ;
+
+ST_POLYGONFROMWKB
+    : S T UL_ P O L Y G O N F R O M W K B
+    ;
+
+ST_SIMPLIFY
+    : S T UL_ S I M P L I F Y
+    ;
+
+ST_SRID
+    : S T UL_ S R I D
+    ;
+
+ST_STARTPOINT
+    : S T UL_ S T A R T P O I N T
+    ;
+
+ST_SWAPXY
+    : S T UL_ S W A P X Y
+    ;
+
+ST_SYMDIFFERENCE
+    : S T UL_ S Y M D I F F E R E N C E
+    ;
+
+ST_TOUCHES
+    : S T UL_ T O U C H E S
+    ;
+
+ST_TRANSFORM
+    : S T UL_ T R A N S F O R M
+    ;
+
+ST_UNION
+    : S T UL_ U N I O N
+    ;
+
+ST_VALIDATE
+    : S T UL_ V A L I D A T E
+    ;
+
+ST_WITHIN
+    : S T UL_ W I T H I N
+    ;
+
+ST_X
+    : S T UL_ X
+    ;
+
+ST_Y
+    : S T UL_ Y
+    ;

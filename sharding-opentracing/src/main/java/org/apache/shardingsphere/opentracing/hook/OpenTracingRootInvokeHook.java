@@ -19,8 +19,8 @@ package org.apache.shardingsphere.opentracing.hook;
 
 import io.opentracing.ActiveSpan;
 import io.opentracing.tag.Tags;
-import org.apache.shardingsphere.core.execute.ShardingExecuteDataMap;
-import org.apache.shardingsphere.core.execute.hook.RootInvokeHook;
+import org.apache.shardingsphere.underlying.executor.engine.ExecutorDataMap;
+import org.apache.shardingsphere.underlying.common.hook.RootInvokeHook;
 import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.opentracing.constant.ShardingTags;
 
@@ -40,7 +40,7 @@ public final class OpenTracingRootInvokeHook implements RootInvokeHook {
     @Override
     public void start() {
         activeSpan = ShardingTracer.get().buildSpan(OPERATION_NAME).withTag(Tags.COMPONENT.getKey(), ShardingTags.COMPONENT_NAME).startActive();
-        ShardingExecuteDataMap.getDataMap().put(ACTIVE_SPAN_CONTINUATION, activeSpan.capture());
+        ExecutorDataMap.getValue().put(ACTIVE_SPAN_CONTINUATION, activeSpan.capture());
     }
     
     @Override

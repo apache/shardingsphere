@@ -31,7 +31,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class GeneratedKeysResultSetTest {
+public final class GeneratedKeysResultSetTest {
     
     private static final Statement STATEMENT = Mockito.mock(Statement.class);
     

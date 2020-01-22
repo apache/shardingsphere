@@ -19,26 +19,21 @@ package org.apache.shardingsphere.shardingproxy.backend.schema;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.execute.metadata.TableMetaDataInitializer;
-import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
-import org.apache.shardingsphere.shardingproxy.backend.executor.BackendExecutorContext;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
-import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -58,9 +53,19 @@ public abstract class LogicSchema {
     
     public LogicSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources) {
         this.name = name;
-        parseEngine = SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getDatabaseTypeName(LogicSchemas.getInstance().getDatabaseType()));
+        parseEngine = SQLParseEngineFactory.getSQLParseEngine(DatabaseTypes.getTrunkDatabaseTypeName(LogicSchemas.getInstance().getDatabaseType()));
         backendDataSource = new JDBCBackendDataSource(dataSources);
         ShardingOrchestrationEventBus.getInstance().register(this);
+    }
+    
+    protected final Map<String, DatabaseAccessConfiguration> getDatabaseAccessConfigurationMap() {
+        Map<String, DatabaseAccessConfiguration> result = new HashMap<>(backendDataSource.getDataSourceParameters().size(), 1);
+        for (Entry<String, YamlDataSourceParameter> entry : backendDataSource.getDataSourceParameters().entrySet()) {
+            YamlDataSourceParameter dataSource = entry.getValue();
+            DatabaseAccessConfiguration dataSourceInfo = new DatabaseAccessConfiguration(dataSource.getUrl(), null, null);
+            result.put(entry.getKey(), dataSourceInfo);
+        }
+        return result;
     }
     
     /**
@@ -85,22 +90,6 @@ public abstract class LogicSchema {
      */
     public Map<String, YamlDataSourceParameter> getDataSources() {
         return backendDataSource.getDataSourceParameters();
-    }
-    
-    protected final Map<String, String> getDataSourceURLs(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
-        Map<String, String> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
-        for (Entry<String, YamlDataSourceParameter> entry : dataSourceParameters.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().getUrl());
-        }
-        return result;
-    }
-    
-    protected final TableMetaDataInitializer getTableMetaDataInitializer(final DataSourceMetas dataSourceMetas) {
-        ShardingProperties shardingProperties = ShardingProxyContext.getInstance().getShardingProperties();
-        return new TableMetaDataInitializer(
-                dataSourceMetas, BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()),
-                shardingProperties.<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
-                shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
     }
     
     /**

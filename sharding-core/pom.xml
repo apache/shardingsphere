@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere</artifactId>
-        <version>4.0.0-RC3-SNAPSHOT</version>
+        <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-core</artifactId>
     <name>${project.artifactId}</name>
@@ -30,7 +30,6 @@
     <modules>
         <module>sharding-core-api</module>
         <module>sharding-core-common</module>
-        <module>sharding-core-preprocessor</module>
         <module>sharding-core-route</module>
         <module>database-time-service</module>
         <module>sharding-core-rewrite</module>

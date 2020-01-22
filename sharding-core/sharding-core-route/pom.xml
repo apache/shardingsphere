@@ -17,22 +17,28 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>sharding-core</artifactId>
-        <groupId>org.apache.shardingsphere</groupId>
-        <version>4.0.0-RC3-SNAPSHOT</version>
-    </parent>
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache.shardingsphere</groupId>
+        <artifactId>sharding-core</artifactId>
+        <version>5.0.0-RC1-SNAPSHOT</version>
+    </parent>
     <artifactId>sharding-core-route</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-preprocessor</artifactId>
+            <artifactId>sharding-core-common</artifactId>
             <version>${project.version}</version>
         </dependency>
-    
+        
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-route</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-sql-parser-sql92</artifactId>
