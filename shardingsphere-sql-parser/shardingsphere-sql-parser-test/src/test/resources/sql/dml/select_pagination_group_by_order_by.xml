@@ -59,6 +59,20 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
+        <where parameters-count="6" parameter-marker-start-index="0" start-index="105" stop-index="160" literal-stop-index="161">
+            <and-predicate>
+                <predicate start-index="111" stop-index="129">
+                    <column name="user_id" start-index="111" stop-index="119">
+                        <owner name="o" start-index="111" stop-index="111" />
+                    </column>
+                </predicate>
+                <predicate start-index="135" stop-index="160" literal-stop-index="161">
+                    <column name="order_id" start-index="135" stop-index="144">
+                        <owner name="o" start-index="135" stop-index="135" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
