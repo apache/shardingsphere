@@ -91,7 +91,6 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
                     String masterDataSourceName = shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(dataNode.getDataSourceName());
                     DataSourceMetaData dataSourceMetaData = ShardingTableMetaDataLoader.this.dataSourceMetas.getDataSourceMetaData(masterDataSourceName);
                     String generateKeyColumnName = logicTableName == null ? shardingRule.findGenerateKeyColumnName(dataNode.getTableName()).orNull() : shardingRule.findGenerateKeyColumnName(logicTableName).orNull();
-                    System.err.println(generateKeyColumnName);
                     result.addAll(load(masterDataSourceName, dataSourceMetaData, dataNode, generateKeyColumnName));
                 }
                 return result;
