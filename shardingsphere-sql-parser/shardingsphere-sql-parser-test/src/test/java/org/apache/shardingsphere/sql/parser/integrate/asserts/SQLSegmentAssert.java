@@ -49,11 +49,11 @@ public final class SQLSegmentAssert {
     
     private static void assertStartIndex(final SQLStatementAssertMessage assertMessage, final SQLSegment actual, final ExpectedSQLSegment expected, final SQLCaseType sqlCaseType) {
         int expectedStartIndex = SQLCaseType.Literal == sqlCaseType && null != expected.getLiteralStartIndex() ? expected.getLiteralStartIndex() : expected.getStartIndex();
-        assertThat(assertMessage.getText(String.format("`%s`'s start index assertion error: ", actual.getClass())), actual.getStartIndex(), is(expectedStartIndex));
+        assertThat(assertMessage.getText(String.format("`%s`'s start index assertion error: ", actual.getClass().getSimpleName())), actual.getStartIndex(), is(expectedStartIndex));
     }
     
     private static void assertStopIndex(final SQLStatementAssertMessage assertMessage, final SQLSegment actual, final ExpectedSQLSegment expected, final SQLCaseType sqlCaseType) {
         int expectedStopIndex = SQLCaseType.Literal == sqlCaseType && null != expected.getLiteralStopIndex() ? expected.getLiteralStopIndex() : expected.getStopIndex();
-        assertThat(assertMessage.getText(String.format("`%s`'s stop index assertion error: ", actual.getClass())), actual.getStopIndex(), is(expectedStopIndex));
+        assertThat(assertMessage.getText(String.format("`%s`'s stop index assertion error: ", actual.getClass().getSimpleName())), actual.getStopIndex(), is(expectedStopIndex));
     }
 }
