@@ -703,6 +703,13 @@
         <projections distinct-row="true" start-index="16" stop-index="16">
             <shorthand-projection start-index="16" stop-index="16" />
         </projections>
+        <where parameters-count="0" parameter-marker-start-index="0" start-index="31" stop-index="51">
+            <and-predicate>
+                <predicate start-index="37" stop-index="51">
+                    <column name="order_id" start-index="37" stop-index="44" />
+                </predicate>
+            </and-predicate>
+        </where>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
@@ -801,6 +808,13 @@
             <column-projection name="order_id" start-index="7" stop-index="14" />
             <aggregation-distinct-projection type="COUNT" inner-expression-start-index="22" distinct-expression="order_id" alias="c" start-index="17" stop-index="40" />
         </projections>
+        <where parameters-count="0" parameter-marker-start-index="0" start-index="57" stop-index="77">
+            <and-predicate>
+                <predicate start-index="63" stop-index="77">
+                    <column name="order_id" start-index="63" stop-index="70" />
+                </predicate>
+            </and-predicate>
+        </where>
         <group-by-columns>
             <group-by-column name="order_id" order-direction="ASC" />
         </group-by-columns>
