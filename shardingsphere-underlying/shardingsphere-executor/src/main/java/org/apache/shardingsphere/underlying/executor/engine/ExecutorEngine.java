@@ -63,6 +63,20 @@ public final class ExecutorEngine implements AutoCloseable {
      * Execute.
      *
      * @param inputGroups input groups
+     * @param callback grouped callback
+     * @param <I> type of input value
+     * @param <O> type of return value
+     * @return execute result
+     * @throws SQLException throw if execute failure
+     */
+    public <I, O> List<O> execute(final Collection<InputGroup<I>> inputGroups, final GroupedCallback<I, O> callback, final boolean serial) throws SQLException {
+        return execute(inputGroups, null, callback, serial);
+    }
+    
+    /**
+     * Execute.
+     *
+     * @param inputGroups input groups
      * @param firstCallback first grouped callback
      * @param callback other grouped callback
      * @param serial whether using multi thread execute or not

@@ -40,6 +40,7 @@ import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -75,13 +76,13 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     private final ColumnMetaDataLoader columnMetaDataLoader = new ColumnMetaDataLoader();
     
     @Override
-    public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) throws SQLException {
-        List<TableMetaData> actualTableMetaDataList = load(getDataNodeGroups(shardingRule.getTableRule(logicTableName)), shardingRule, logicTableName);
+    public TableMetaData load(final String logicTableName, final ShardingRule shardingRule, final boolean serial) throws SQLException {
+        List<TableMetaData> actualTableMetaDataList = load(getDataNodeGroups(shardingRule.getTableRule(logicTableName)), shardingRule, logicTableName, serial);
         checkUniformed(logicTableName, actualTableMetaDataList);
         return actualTableMetaDataList.iterator().next();
     }
     
-    private List<TableMetaData> load(final Map<String, List<DataNode>> dataNodeGroups, final ShardingRule shardingRule, final String logicTableName) throws SQLException {
+    private List<TableMetaData> load(final Map<String, List<DataNode>> dataNodeGroups, final ShardingRule shardingRule, final String logicTableName, final boolean serial) throws SQLException {
         final String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(logicTableName).orNull();
         return executorEngine.execute(getDataNodeInputGroups(dataNodeGroups), new GroupedCallback<DataNode, TableMetaData>() {
             
@@ -91,7 +92,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
                 DataSourceMetaData dataSourceMetaData = ShardingTableMetaDataLoader.this.dataSourceMetas.getDataSourceMetaData(masterDataSourceName);
                 return load(masterDataSourceName, dataSourceMetaData, dataNodes, generateKeyColumnName);
             }
-        });
+        }, serial);
     }
     
     private Collection<TableMetaData> load(final String dataSourceName, 
@@ -202,7 +203,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     private Map<String, TableMetaData> loadShardingTables(final ShardingRule shardingRule) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>(shardingRule.getTableRules().size(), 1);
         for (TableRule each : shardingRule.getTableRules()) {
-            result.put(each.getLogicTable(), load(each.getLogicTable(), shardingRule));
+            result.put(each.getLogicTable(), load(each.getLogicTable(), shardingRule, true));
         }
         return result;
     }
@@ -217,9 +218,10 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
             
             @Override
             public Collection<TableMetaData> execute(final Collection<String> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
-                String logicTableName = inputs.iterator().next();
                 Collection<TableMetaData> result = new LinkedList<>();
-                result.add(load(logicTableName, shardingRule));
+                for (String tableName : inputs) {
+                    result.add(load(tableName, shardingRule, false));
+                }
                 return result;
             }
         });
@@ -233,8 +235,8 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     
     private Collection<InputGroup<String>> getTableNamesInputGroups(final Collection<String> tableNames) {
         Collection<InputGroup<String>> result = new LinkedList<>();
-        for (String each : tableNames) {
-            result.add(new InputGroup<>(Lists.newArrayList(each)));
+        for (List<String> each : Lists.partition(new ArrayList<String>(tableNames), Math.max(tableNames.size() / 2, 1))) {
+            result.add(new InputGroup<String>(each));
         }
         return result;
     }
