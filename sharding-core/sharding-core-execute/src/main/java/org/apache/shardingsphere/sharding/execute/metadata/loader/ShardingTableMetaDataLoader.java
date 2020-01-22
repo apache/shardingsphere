@@ -235,7 +235,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     
     private Collection<InputGroup<String>> getTableNamesInputGroups(final Collection<String> tableNames) {
         Collection<InputGroup<String>> result = new LinkedList<>();
-        for (List<String> each : Lists.partition(new ArrayList<String>(tableNames), Math.max(tableNames.size() / 2, 1))) {
+        for (List<String> each : Lists.partition(new ArrayList<String>(tableNames), Math.max(tableNames.size() / maxConnectionsSizePerQuery, 1))) {
             result.add(new InputGroup<String>(each));
         }
         return result;
