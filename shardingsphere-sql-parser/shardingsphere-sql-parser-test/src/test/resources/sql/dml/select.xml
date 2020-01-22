@@ -143,7 +143,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="1" parameter-marker-start-index="0" start-index="22" stop-index="56">
+        <where parameters-count="2" parameter-marker-start-index="0" start-index="22" stop-index="56">
             <and-predicate>
                 <predicate start-index="28" stop-index="39">
                     <column name="order_id" start-index="28" stop-index="35" />
