@@ -83,6 +83,15 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
+        <where parameters-count="1" parameter-marker-start-index="0" start-index="62" stop-index="81" literal-stop-index="84">
+            <and-predicate>
+                <predicate start-index="68" stop-index="81" literal-stop-index="84">
+                    <column name="order_id" start-index="68" stop-index="77">
+                        <owner name="o" start-index="68" stop-index="68" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
