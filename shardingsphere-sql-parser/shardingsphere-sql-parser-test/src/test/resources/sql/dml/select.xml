@@ -295,6 +295,16 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
+        <where parameters-count="4" parameter-marker-start-index="0" start-index="22" stop-index="68" literal-stop-index="80">
+            <and-predicate>
+                <predicate start-index="28" stop-index="45" literal-stop-index="51">
+                    <column name="order_id" start-index="28" stop-index="35" />
+                </predicate>
+                <predicate start-index="51" stop-index="68" literal-start-index="57" literal-stop-index="80">
+                    <column name="order_id" start-index="51" stop-index="58" literal-start-index="57" literal-stop-index="64" />
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="IN">
