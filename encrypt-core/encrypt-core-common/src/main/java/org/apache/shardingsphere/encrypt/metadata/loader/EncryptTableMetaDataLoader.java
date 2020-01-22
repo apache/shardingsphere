@@ -49,8 +49,8 @@ public final class EncryptTableMetaDataLoader implements TableMetaDataLoader<Enc
     }
     
     @Override
-    public TableMetaData load(final String tableName, final EncryptRule encryptRule, final boolean serial) throws SQLException {
-        return encryptTableMetaDataDecorator.decorate(defaultTableMetaDataLoader.load(tableName, encryptRule, serial), tableName, encryptRule);
+    public TableMetaData load(final String tableName, final EncryptRule encryptRule) throws SQLException {
+        return encryptTableMetaDataDecorator.decorate(defaultTableMetaDataLoader.load(tableName, encryptRule), tableName, encryptRule);
     }
     
     @Override

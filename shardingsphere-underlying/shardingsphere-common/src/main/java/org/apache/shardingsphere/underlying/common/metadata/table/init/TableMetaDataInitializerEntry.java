@@ -53,7 +53,7 @@ public final class TableMetaDataInitializerEntry {
     private TableMetaData load(final String tableName) throws SQLException {
         for (Entry<BaseRule, TableMetaDataInitializer> entry : initializes.entrySet()) {
             if (entry.getValue() instanceof TableMetaDataLoader) {
-                return ((TableMetaDataLoader) entry.getValue()).load(tableName, entry.getKey(), true);
+                return ((TableMetaDataLoader) entry.getValue()).load(tableName, entry.getKey());
             }
         }
         throw new IllegalStateException("Cannot find class `TableMetaDataLoader`");

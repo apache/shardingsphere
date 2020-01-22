@@ -36,11 +36,10 @@ public interface TableMetaDataLoader<T extends BaseRule> extends TableMetaDataIn
      *
      * @param tableName table name
      * @param rule rule
-     * @param serial whether using multi thread execute or not
      * @return table meta data
      * @throws SQLException SQL exception
      */
-    TableMetaData load(String tableName, T rule, boolean serial) throws SQLException;
+    TableMetaData load(String tableName, T rule) throws SQLException;
     
     /**
      * Load all table metas.

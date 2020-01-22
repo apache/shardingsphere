@@ -57,7 +57,7 @@ public final class DefaultTableMetaDataLoader implements TableMetaDataLoader {
     private final ColumnMetaDataLoader columnMetaDataLoader = new ColumnMetaDataLoader();
     
     @Override
-    public TableMetaData load(final String tableName, final BaseRule rule, final boolean serial) throws SQLException {
+    public TableMetaData load(final String tableName, final BaseRule rule) throws SQLException {
         String dataSourceName = getDataSourceName();
         try (Connection connection = connectionManager.getConnection(dataSourceName)) {
             return createTableMetaData(connection, dataSourceMetas.getDataSourceMetaData(dataSourceName), tableName);
@@ -87,7 +87,7 @@ public final class DefaultTableMetaDataLoader implements TableMetaDataLoader {
         Map<String, TableMetaData> result = new HashMap<>(tableNames.size(), 1);
         // TODO concurrency load via maxConnectionsSizePerQuery
         for (String each : tableNames) {
-            result.put(each, load(each, rule, false));
+            result.put(each, load(each, rule));
         }
         return new TableMetas(result);
     }
