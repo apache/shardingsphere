@@ -22,6 +22,7 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
@@ -64,6 +65,8 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     private final SQLStatementContext sqlStatementContext;
     
     private final ShardingConditions shardingConditions;
+
+    private final ShardingSphereProperties properties;
     
     @Override
     public RouteResult route(final ShardingRule shardingRule) {
@@ -200,7 +203,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
         if (databaseShardingValues.isEmpty()) {
             return tableRule.getActualDatasourceNames();
         }
-        Collection<String> result = new LinkedHashSet<>(shardingRule.getDatabaseShardingStrategy(tableRule).doSharding(tableRule.getActualDatasourceNames(), databaseShardingValues));
+        Collection<String> result = new LinkedHashSet<>(shardingRule.getDatabaseShardingStrategy(tableRule).doSharding(tableRule.getActualDatasourceNames(), databaseShardingValues, this.properties));
         Preconditions.checkState(!result.isEmpty(), "no database route info");
         Preconditions.checkState(tableRule.getActualDatasourceNames().containsAll(result), 
                 "Some routed data sources do not belong to configured data sources. routed data sources: `%s`, configured data sources: `%s`", result, tableRule.getActualDatasourceNames());
@@ -210,7 +213,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     private Collection<DataNode> routeTables(final ShardingRule shardingRule, final TableRule tableRule, final String routedDataSource, final List<RouteValue> tableShardingValues) {
         Collection<String> availableTargetTables = tableRule.getActualTableNames(routedDataSource);
         Collection<String> routedTables = new LinkedHashSet<>(tableShardingValues.isEmpty() ? availableTargetTables
-                : shardingRule.getTableShardingStrategy(tableRule).doSharding(availableTargetTables, tableShardingValues));
+                : shardingRule.getTableShardingStrategy(tableRule).doSharding(availableTargetTables, tableShardingValues, this.properties));
         Preconditions.checkState(!routedTables.isEmpty(), "no table route info");
         Collection<DataNode> result = new LinkedList<>();
         for (String each : routedTables) {
