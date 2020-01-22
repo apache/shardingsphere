@@ -721,6 +721,15 @@
                 <owner name="t_order_item" start-index="27" stop-index="38" />
             </column-projection>
         </projections>
+        <where parameters-count="0" parameter-marker-start-index="0" start-index="76" stop-index="121">
+            <and-predicate>
+                <predicate start-index="82" stop-index="121">
+                    <column name="order_id" start-index="82" stop-index="97">
+                        <owner name="t_order" start-index="82" stop-index="88" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <order-by-columns>
             <order-by-column owner="t_order" name="order_id" order-direction="ASC" />
         </order-by-columns>
@@ -775,6 +784,13 @@
             <aggregation-distinct-projection type="COUNT" inner-expression-start-index="12" distinct-expression="order_id" start-index="7" stop-index="30" />
             <aggregation-distinct-projection type="SUM" inner-expression-start-index="36" distinct-expression="order_id" start-index="33" stop-index="54" />
         </projections>
+        <where parameters-count="0" parameter-marker-start-index="0" start-index="75" stop-index="89">
+            <and-predicate>
+                <predicate start-index="75" stop-index="89">
+                    <column name="order_id" start-index="75" stop-index="82" />
+                </predicate>
+            </and-predicate>
+        </where>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_single_count_group_by" >
@@ -828,6 +844,13 @@
         <projections start-index="7" stop-index="42">
             <aggregation-distinct-projection type="COUNT" inner-expression-start-index="12" distinct-expression="user_id+order_id" alias="c" start-index="7" stop-index="40" />
         </projections>
+        <where parameters-count="0" parameter-marker-start-index="0" start-index="57" stop-index="77">
+            <and-predicate>
+                <predicate start-index="63" stop-index="77">
+                    <column name="order_id" start-index="63" stop-index="70" />
+                </predicate>
+            </and-predicate>
+        </where>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_aggregation_functions" >
