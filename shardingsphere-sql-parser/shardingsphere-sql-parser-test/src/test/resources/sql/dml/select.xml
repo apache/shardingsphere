@@ -646,6 +646,22 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
+        <where parameters-count="6" parameter-marker-start-index="0" start-index="22" stop-index="161" literal-stop-index="201">
+            <and-predicate>
+                <predicate start-index="28" stop-index="55" literal-stop-index="91">
+                    <column name="rule" start-index="28" stop-index="31" />
+                </predicate>
+                <predicate start-index="61" stop-index="128" literal-start-index="97" literal-stop-index="168">
+                    <column name="start_point" start-index="61" stop-index="71" literal-start-index="97" literal-stop-index="107" />
+                </predicate>
+                <predicate start-index="134" stop-index="144" literal-start-index="174" literal-stop-index="184">
+                    <column name="user_id" start-index="134" stop-index="140" literal-start-index="174" literal-stop-index="180" />
+                </predicate>
+                <predicate start-index="150" stop-index="161" literal-start-index="190" literal-stop-index="201">
+                    <column name="order_id" start-index="150" stop-index="157" literal-start-index="190" literal-stop-index="197" />
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="EQUAL">
