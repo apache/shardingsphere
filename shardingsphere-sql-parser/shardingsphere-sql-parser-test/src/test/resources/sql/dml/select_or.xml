@@ -255,6 +255,42 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
+        <where parameters-count="4" parameter-marker-start-index="0" start-index="147" stop-index="221" literal-stop-index="226">
+            <and-predicate>
+                <predicate start-index="154" stop-index="167">
+                    <column name="order_id" start-index="154" stop-index="163">
+                        <owner name="o" start-index="154" stop-index="154" />
+                    </column>
+                </predicate>
+                <predicate start-index="192" stop-index="204">
+                    <column name="user_id" start-index="192" stop-index="200">
+                        <owner name="o" start-index="192" stop-index="192" />
+                    </column>
+                </predicate>
+                <predicate start-index="210" stop-index="221" literal-stop-index="226">
+                    <column name="status" start-index="210" stop-index="217">
+                        <owner name="o" start-index="210" stop-index="210" />
+                    </column>
+                </predicate>
+            </and-predicate>
+            <and-predicate>
+                <predicate start-index="172" stop-index="185">
+                    <column name="order_id" start-index="172" stop-index="181">
+                        <owner name="o" start-index="172" stop-index="172" />
+                    </column>
+                </predicate>
+                <predicate start-index="192" stop-index="204">
+                    <column name="user_id" start-index="192" stop-index="200">
+                        <owner name="o" start-index="192" stop-index="192" />
+                    </column>
+                </predicate>
+                <predicate start-index="210" stop-index="221" literal-stop-index="226">
+                    <column name="status" start-index="210" stop-index="217">
+                        <owner name="o" start-index="210" stop-index="210" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
