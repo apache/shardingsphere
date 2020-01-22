@@ -749,6 +749,13 @@
         <projections start-index="7" stop-index="30">
             <aggregation-distinct-projection type="SUM" inner-expression-start-index="10" distinct-expression="order_id" alias="s" start-index="7" stop-index="28" />
         </projections>
+        <where parameters-count="0" parameter-marker-start-index="0" start-index="45" stop-index="65">
+            <and-predicate>
+                <predicate start-index="51" stop-index="65">
+                    <column name="order_id" start-index="51" stop-index="58" />
+                </predicate>
+            </and-predicate>
+        </where>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_count">
