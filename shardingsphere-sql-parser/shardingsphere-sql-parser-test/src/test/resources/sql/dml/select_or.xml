@@ -109,6 +109,53 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
+        <where parameters-count="5" parameter-marker-start-index="0" start-index="22" stop-index="113" literal-stop-index="118">
+            <!-- TODO check whether correct -->
+            <and-predicate>
+                <predicate start-index="30" stop-index="39" literal-stop-index="44">
+                    <column name="status" start-index="30" stop-index="35" />
+                </predicate>
+                <predicate start-index="46" stop-index="57" literal-start-index="51" literal-stop-index="62">
+                    <column name="order_id" start-index="46" stop-index="53" literal-start-index="51" literal-stop-index="58" />
+                </predicate>
+                <predicate start-index="83" stop-index="93" literal-start-index="88" literal-stop-index="98">
+                    <column name="user_id" start-index="83" stop-index="89" literal-start-index="88" literal-stop-index="94" />
+                </predicate>
+            </and-predicate>
+            <and-predicate>
+                <predicate start-index="30" stop-index="39" literal-stop-index="44">
+                    <column name="status" start-index="30" stop-index="35" />
+                </predicate>
+                <predicate start-index="46" stop-index="57" literal-start-index="51" literal-stop-index="62">
+                    <column name="order_id" start-index="46" stop-index="53" literal-start-index="51" literal-stop-index="58" />
+                </predicate>
+                <predicate start-index="99" stop-index="109" literal-start-index="104" literal-stop-index="114">
+                    <column name="user_id" start-index="99" stop-index="105" literal-start-index="104" literal-stop-index="110" />
+                </predicate>
+            </and-predicate>
+            <and-predicate>
+                <predicate start-index="30" stop-index="39" literal-stop-index="44">
+                    <column name="status" start-index="30" stop-index="35" />
+                </predicate>
+                <predicate start-index="63" stop-index="74" literal-start-index="68" literal-stop-index="79">
+                    <column name="order_id" start-index="63" stop-index="70" literal-start-index="68" literal-stop-index="75" />
+                </predicate>
+                <predicate start-index="83" stop-index="93" literal-start-index="88" literal-stop-index="98">
+                    <column name="user_id" start-index="83" stop-index="89" literal-start-index="88" literal-stop-index="94" />
+                </predicate>
+            </and-predicate>
+            <and-predicate>
+                <predicate start-index="30" stop-index="39" literal-stop-index="44">
+                    <column name="status" start-index="30" stop-index="35" />
+                </predicate>
+                <predicate start-index="63" stop-index="74" literal-start-index="68" literal-stop-index="79">
+                    <column name="order_id" start-index="63" stop-index="70" literal-start-index="68" literal-stop-index="75" />
+                </predicate>
+                <predicate start-index="99" stop-index="109" literal-start-index="104" literal-stop-index="114">
+                    <column name="user_id" start-index="99" stop-index="105" literal-start-index="104" literal-stop-index="110" />
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
