@@ -88,6 +88,13 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
+        <where parameters-count="1" parameter-marker-start-index="0" start-index="27" stop-index="44">
+            <and-predicate>
+                <predicate start-index="33" stop-index="44">
+                    <column name="item_id" start-index="33" stop-index="39" />
+                </predicate>
+            </and-predicate>
+        </where>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
