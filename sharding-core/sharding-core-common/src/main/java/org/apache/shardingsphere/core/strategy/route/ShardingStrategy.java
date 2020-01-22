@@ -41,7 +41,7 @@ public interface ShardingStrategy {
      *
      * @param availableTargetNames available data sources or tables's names
      * @param shardingValues sharding values
-     * @param properties shardingsphere properties
+     * @param properties ShardingSphere properties
      * @return sharding results for data sources or tables's names
      */
     Collection<String> doSharding(Collection<String> availableTargetNames, Collection<RouteValue> shardingValues, ShardingSphereProperties properties);
