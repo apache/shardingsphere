@@ -124,6 +124,16 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
+        <where parameters-count="2" parameter-marker-start-index="0" start-index="22" stop-index="33">
+            <and-predicate>
+                <predicate start-index="28" stop-index="38">
+                    <column name="user_id" start-index="28" stop-index="34" />
+                </predicate>
+                <predicate start-index="44" stop-index="55">
+                    <column name="order_id" start-index="44" stop-index="51" />
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="EQUAL">
