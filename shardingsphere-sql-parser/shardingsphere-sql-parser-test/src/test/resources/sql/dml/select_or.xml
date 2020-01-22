@@ -80,6 +80,24 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
+        <where parameters-count="3" parameter-marker-start-index="0" start-index="22" stop-index="71" literal-stop-index="76">
+            <and-predicate>
+                <predicate start-index="29" stop-index="40">
+                    <column name="order_id" start-index="29" stop-index="36" />
+                </predicate>
+                <predicate start-index="61" stop-index="71" literal-start-index="66" literal-stop-index="76">
+                    <column name="user_id" start-index="61" stop-index="67" literal-start-index="66" literal-stop-index="72" />
+                </predicate>
+            </and-predicate>
+            <and-predicate>
+                <predicate start-index="45" stop-index="54" literal-stop-index="59">
+                    <column name="status" start-index="45" stop-index="50" />
+                </predicate>
+                <predicate start-index="61" stop-index="71" literal-start-index="66" literal-stop-index="76">
+                    <column name="user_id" start-index="61" stop-index="67" literal-start-index="66" literal-stop-index="72" />
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -110,7 +128,6 @@
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <where parameters-count="5" parameter-marker-start-index="0" start-index="22" stop-index="113" literal-stop-index="118">
-            <!-- TODO check whether correct -->
             <and-predicate>
                 <predicate start-index="30" stop-index="39" literal-stop-index="44">
                     <column name="status" start-index="30" stop-index="35" />
