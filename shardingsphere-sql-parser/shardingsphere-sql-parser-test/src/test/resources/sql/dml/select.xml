@@ -1406,9 +1406,19 @@
             <and-predicate>
                 <predicate start-index="62" stop-index="72" literal-stop-index="73">
                     <column-left-value name="user_id" start-index="62" stop-index="68" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="12" />
+                    </compare-right-value>
                 </predicate>
                 <predicate start-index="78" stop-index="89" literal-start-index="79" literal-stop-index="93">
                     <column-left-value name="order_id" start-index="78" stop-index="85" literal-start-index="79" literal-stop-index="86" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="1000" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
