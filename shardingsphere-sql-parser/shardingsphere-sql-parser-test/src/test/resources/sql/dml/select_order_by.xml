@@ -46,6 +46,9 @@
                     <column-left-value name="order_id" start-index="48" stop-index="57">
                         <owner name="o" start-index="48" stop-index="48" />
                     </column-left-value>
+                    <column-right-value name="order_id" start-index="61" stop-index="70">
+                        <owner name="i" start-index="61" stop-index="61" />
+                    </column-right-value>
                 </predicate>
                 <predicate start-index="76" stop-index="92">
                     <column-left-value name="status" start-index="76" stop-index="83">
