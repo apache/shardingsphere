@@ -243,6 +243,13 @@
                     <column-left-value name="user_id" start-index="256" stop-index="264">
                         <owner name="o" start-index="256" stop-index="256" />
                     </column-left-value>
+                    <operator type="IN" />
+                    <in-right-value>
+                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="2" />
+                        <literal-expression value="1" />
+                        <literal-expression value="2" />
+                    </in-right-value>
                 </predicate>
                 <predicate start-index="280" stop-index="305" literal-stop-index="306">
                     <column-left-value name="order_id" start-index="280" stop-index="289">
