@@ -1398,6 +1398,12 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
+        <where parameters-count="0" parameter-marker-start-index="0" start-index="22" stop-index="106">
+            <!-- FIXME cannot parse expr in left value -->
+            <!--<and-predicate>-->
+                <!--<predicate start-index="28" stop-index="106" />-->
+            <!--</and-predicate>-->
+        </where>
     </parser-result>
 
     <parser-result sql-case-id="select_current_user">
