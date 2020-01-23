@@ -810,15 +810,32 @@
             <and-predicate>
                 <predicate start-index="28" stop-index="42" literal-stop-index="60">
                     <column-left-value name="rule" start-index="28" stop-index="31" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}'::json" />
+                    </compare-right-value>
                 </predicate>
                 <predicate start-index="48" stop-index="115" literal-start-index="66" literal-stop-index="137">
                     <column-left-value name="start_point" start-index="48" stop-index="58" literal-start-index="66" literal-stop-index="76" />
+                    <operator type="=" />
+                    <!-- TODO assert expression -->
                 </predicate>
                 <predicate start-index="121" stop-index="131" literal-start-index="143" literal-stop-index="153">
                     <column-left-value name="user_id" start-index="121" stop-index="127" literal-start-index="143" literal-stop-index="149" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="3" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
                 </predicate>
                 <predicate start-index="137" stop-index="148" literal-start-index="159" literal-stop-index="170">
                     <column-left-value name="order_id" start-index="137" stop-index="144" literal-start-index="159" literal-stop-index="166" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="4" />
+                        <literal-expression value="2" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
