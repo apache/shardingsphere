@@ -1040,6 +1040,10 @@
             <and-predicate>
                 <predicate start-index="53" stop-index="67">
                     <column-left-value name="order_id" start-index="53" stop-index="60" />
+                    <operator type="&lt;" />
+                    <compare-right-value>
+                        <literal-expression value="1100" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
@@ -1144,6 +1148,10 @@
             <and-predicate>
                 <predicate start-index="63" stop-index="77">
                     <column-left-value name="order_id" start-index="63" stop-index="70" />
+                    <operator type="&lt;" />
+                    <compare-right-value>
+                        <literal-expression value="1100" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
