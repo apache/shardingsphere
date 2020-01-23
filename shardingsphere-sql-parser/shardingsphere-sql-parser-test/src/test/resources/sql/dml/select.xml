@@ -598,6 +598,11 @@
                     <column-left-value name="status" start-index="208" stop-index="215" literal-start-index="209" literal-stop-index="216">
                         <owner name="o" start-index="208" stop-index="208" literal-start-index="209" literal-stop-index="209" />
                     </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="4" />
+                        <literal-expression value="init" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
