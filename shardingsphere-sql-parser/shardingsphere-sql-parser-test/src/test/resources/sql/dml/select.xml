@@ -1345,6 +1345,10 @@
                 <!-- FIXME \n's index is incorrect --> 
                 <predicate start-index="97" stop-index="106">
                     <column-left-value name="status" start-index="97" stop-index="102" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <literal-expression value="1" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
