@@ -108,11 +108,17 @@
                     <column-left-value name="user_id" start-index="68" stop-index="76">
                         <owner name="o" start-index="68" stop-index="68" />
                     </column-left-value>
+                    <column-right-value name="user_id" start-index="80" stop-index="88">
+                        <owner name="i" start-index="80" stop-index="80" />
+                    </column-right-value>
                 </predicate>
                 <predicate start-index="94" stop-index="116">
                     <column-left-value name="order_id" start-index="94" stop-index="103">
                         <owner name="o" start-index="94" stop-index="94" />
                     </column-left-value>
+                    <column-right-value name="order_id" start-index="107" stop-index="116">
+                        <owner name="i" start-index="107" stop-index="107" />
+                    </column-right-value>
                 </predicate>
                 <predicate start-index="122" stop-index="140">
                     <column-left-value name="user_id" start-index="122" stop-index="130">

@@ -34,6 +34,9 @@ public final class ExpectedPredicate extends AbstractExpectedSQLSegment {
     @XmlElement(name = "column-left-value")
     private ExpectedColumn columnLeftValue;
     
+    @XmlElement(name = "column-right-value")
+    private ExpectedColumn columnRightValue;
+    
     @XmlElement(name = "predicate-compare-right-value")
     private ExpectedPredicateCompareRightValue compareRightValue = new ExpectedPredicateCompareRightValue();
     

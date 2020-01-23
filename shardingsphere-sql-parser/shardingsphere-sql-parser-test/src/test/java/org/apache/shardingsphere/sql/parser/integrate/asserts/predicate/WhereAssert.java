@@ -48,6 +48,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
@@ -92,10 +93,12 @@ public final class WhereAssert {
         int count = 0;
         for (PredicateSegment each: actual) {
             ExpectedPredicate expectedPredicate = expected.get(count);
+            // TODO assert other type of left value 
             assertColumn(assertMessage, each.getColumn(), expectedPredicate.getColumnLeftValue(), sqlCaseType);
-//            if (each.getRightValue() instanceof ColumnSegment) {
-//                assertColumn(assertMessage, (ColumnSegment) each.getRightValue(), expectedPredicate.getColumn(), sqlCaseType);
-//            }
+            if (each.getRightValue() instanceof ColumnSegment) {
+                assertNotNull(assertMessage.getText("not null"), expectedPredicate.getColumnRightValue());
+                assertColumn(assertMessage, (ColumnSegment) each.getRightValue(), expectedPredicate.getColumnRightValue(), sqlCaseType);
+            }
 //            if (each.getRightValue() instanceof PredicateCompareRightValue) {
 //                assertCompareRightValue(assertMessage, (PredicateCompareRightValue) each.getRightValue(), expectedPredicate.findExpectedRightValue(ExpectedPredicateCompareRightValue.class));
 //            }
