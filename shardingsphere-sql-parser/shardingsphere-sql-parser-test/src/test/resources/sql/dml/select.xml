@@ -734,6 +734,11 @@
                     <column-left-value name="item_id" start-index="62" stop-index="75">
                         <owner name="length" start-index="62" stop-index="67" />
                     </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
