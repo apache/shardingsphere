@@ -27,5 +27,5 @@ import javax.xml.bind.annotation.XmlAttribute;
 public final class ExpectedLiteralExpression extends ExpectedBaseSimpleExpression {
     
     @XmlAttribute
-    private Integer literals;
+    private String value;
 }
