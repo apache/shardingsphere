@@ -849,6 +849,14 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
+        <where parameters-count="1" parameter-marker-start-index="0" start-index="29" stop-index="48">
+            <and-predicate>
+                <predicate start-index="35" stop-index="48">
+                    <column name="item_id" start-delimiter="&quot;" end-delimiter="&quot;" start-index="35" stop-index="43">
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <order-by-columns>
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
