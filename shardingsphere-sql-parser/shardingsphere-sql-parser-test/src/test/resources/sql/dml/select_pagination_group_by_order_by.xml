@@ -349,6 +349,11 @@
                     <column-left-value name="rownum_" start-index="392" stop-index="400" literal-start-index="393" literal-stop-index="401">
                         <owner name="t" start-index="392" stop-index="392" literal-start-index="393" literal-stop-index="393" />
                     </column-left-value>
+                    <operator type="&gt;" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="5" />
+                        <literal-expression value="3" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
