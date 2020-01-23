@@ -368,6 +368,24 @@
                 <owner name="order0_" start-index="114" stop-index="120" />
             </column-projection>
         </projections>
+        <where parameters-count="5" parameter-marker-start-index="0" start-index="253" stop-index="314" literal-stop-index="315">
+            <and-predicate>
+                <!-- FIXME cannot parse subquery's predicate -->
+                <!--<predicate start-index="253" stop-index="277">-->
+                    <!--<column name="user_id" start-index="253" stop-index="267">-->
+                        <!--<owner name="order0_" start-index="253" stop-index="253" />-->
+                    <!--</column>-->
+                <!--</predicate>-->
+                <!--<predicate start-index="283" stop-index="314" literal-stop-index="315">-->
+                    <!--<column name="order_id" start-index="283" stop-index="298">-->
+                        <!--<owner name="order0_" start-index="283" stop-index="289" />-->
+                    <!--</column>-->
+                <!--</predicate>-->
+                <predicate start-index="352" stop-index="362" literal-start-index="353" literal-stop-index="363">
+                    <column name="rownum" start-index="352" stop-index="357" literal-start-index="353" literal-stop-index="358" />
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
