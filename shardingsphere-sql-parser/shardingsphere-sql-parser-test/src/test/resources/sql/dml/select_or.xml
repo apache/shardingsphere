@@ -403,16 +403,31 @@
                     <column-left-value name="order_id" start-index="154" stop-index="163">
                         <owner name="o" start-index="154" stop-index="154" />
                     </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
                 </predicate>
                 <predicate start-index="192" stop-index="204">
                     <column-left-value name="user_id" start-index="192" stop-index="200">
                         <owner name="o" start-index="192" stop-index="192" />
                     </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" />
+                        <literal-expression value="3" />
+                    </compare-right-value>
                 </predicate>
                 <predicate start-index="210" stop-index="221" literal-stop-index="226">
                     <column-left-value name="status" start-index="210" stop-index="217">
                         <owner name="o" start-index="210" stop-index="210" />
                     </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="3" />
+                        <literal-expression value="init" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
             <and-predicate>
@@ -420,16 +435,31 @@
                     <column-left-value name="order_id" start-index="172" stop-index="181">
                         <owner name="o" start-index="172" stop-index="172" />
                     </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="2" />
+                    </compare-right-value>
                 </predicate>
                 <predicate start-index="192" stop-index="204">
                     <column-left-value name="user_id" start-index="192" stop-index="200">
                         <owner name="o" start-index="192" stop-index="192" />
                     </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" />
+                        <literal-expression value="3" />
+                    </compare-right-value>
                 </predicate>
                 <predicate start-index="210" stop-index="221" literal-stop-index="226">
                     <column-left-value name="status" start-index="210" stop-index="217">
                         <owner name="o" start-index="210" stop-index="210" />
                     </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="3" />
+                        <literal-expression value="init" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
