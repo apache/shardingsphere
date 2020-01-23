@@ -117,6 +117,13 @@
                     <column-left-value name="user_id" start-delimiter="`" end-delimiter="`" start-index="109" stop-index="119">
                         <owner name="o" start-index="109" stop-index="109" />
                     </column-left-value>
+                    <operator type="IN" />
+                    <in-right-value>
+                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="1" />
+                        <literal-expression value="2" />
+                    </in-right-value>
                 </predicate>
                 <predicate start-index="135" stop-index="162" literal-stop-index="163">
                     <column-left-value name="order_id" start-delimiter="`" end-delimiter="`" start-index="135" stop-index="146">
