@@ -554,6 +554,11 @@
             <and-predicate>
                 <predicate start-index="28" stop-index="38" literal-stop-index="39">
                     <column-left-value name="ROWNUM" start-index="28" stop-index="33" />
+                    <operator type="&lt;=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="20" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
