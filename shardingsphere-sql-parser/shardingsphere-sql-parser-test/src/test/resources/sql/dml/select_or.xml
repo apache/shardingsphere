@@ -346,11 +346,21 @@
                     <column-left-value name="order_id" start-index="106" stop-index="115">
                         <owner name="o" start-index="106" stop-index="106" />
                     </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
                 </predicate>
                 <predicate start-index="144" stop-index="156">
                     <column-left-value name="user_id" start-index="144" stop-index="152">
                         <owner name="o" start-index="144" stop-index="144" />
                     </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" />
+                        <literal-expression value="3" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
             <and-predicate>
@@ -358,11 +368,21 @@
                     <column-left-value name="order_id" start-index="124" stop-index="133">
                         <owner name="o" start-index="124" stop-index="124" />
                     </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="2" />
+                    </compare-right-value>
                 </predicate>
                 <predicate start-index="144" stop-index="156">
                     <column-left-value name="user_id" start-index="144" stop-index="152">
                         <owner name="o" start-index="144" stop-index="144" />
                     </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" />
+                        <literal-expression value="3" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
