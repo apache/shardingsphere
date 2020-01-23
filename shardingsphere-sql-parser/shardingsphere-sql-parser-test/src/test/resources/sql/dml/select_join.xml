@@ -33,6 +33,11 @@
                     <column-left-value name="order_id" start-index="85" stop-index="94">
                         <owner name="o" start-index="85" stop-index="85" />
                     </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="1000" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
@@ -61,6 +66,11 @@
                     <column-left-value name="order_id" start-index="103" stop-index="118">
                         <owner name="t_order" start-index="103" stop-index="109" />
                     </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="1000" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
@@ -89,6 +99,11 @@
                     <column-left-value name="order_id" start-index="68" stop-index="77">
                         <owner name="o" start-index="68" stop-index="68" />
                     </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="1000" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>

@@ -46,6 +46,7 @@
                     <column-left-value name="order_id" start-index="48" stop-index="57">
                         <owner name="o" start-index="48" stop-index="48" />
                     </column-left-value>
+                    <operator type="=" />
                     <column-right-value name="order_id" start-index="61" stop-index="70">
                         <owner name="i" start-index="61" stop-index="61" />
                     </column-right-value>
@@ -54,6 +55,11 @@
                     <column-left-value name="status" start-index="76" stop-index="83">
                         <owner name="o" start-index="76" stop-index="76" />
                     </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="init" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
@@ -98,6 +104,7 @@
                     <column-left-value name="order_id" start-index="48" stop-index="57">
                         <owner name="o" start-index="48" stop-index="48" />
                     </column-left-value>
+                    <operator type="=" />
                     <column-right-value name="order_id" start-index="61" stop-index="70">
                         <owner name="i" start-index="61" stop-index="61" />
                     </column-right-value>
@@ -106,6 +113,10 @@
                     <column-left-value name="status" start-index="76" stop-index="83">
                         <owner name="o" start-index="76" stop-index="76" />
                     </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <literal-expression value="init" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
