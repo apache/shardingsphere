@@ -30,14 +30,14 @@
         <where parameters-count="5" parameter-marker-start-index="0" start-index="99" stop-index="154" literal-stop-index="155">
             <and-predicate>
                 <predicate start-index="105" stop-index="123">
-                    <column name="user_id" start-index="105" stop-index="113">
+                    <column-left-value name="user_id" start-index="105" stop-index="113">
                         <owner name="o" start-index="105" stop-index="105" />
-                    </column>
+                    </column-left-value>
                 </predicate>
                 <predicate start-index="129" stop-index="154" literal-stop-index="155">
-                    <column name="order_id" start-index="129" stop-index="138">
+                    <column-left-value name="order_id" start-index="129" stop-index="138">
                         <owner name="o" start-index="129" stop-index="129" />
-                    </column>
+                    </column-left-value>
                 </predicate>
             </and-predicate>
         </where>
@@ -72,14 +72,14 @@
         <where parameters-count="5" parameter-marker-start-index="0" start-index="99" stop-index="154" literal-stop-index="155">
             <and-predicate>
                 <predicate start-index="105" stop-index="123">
-                    <column name="user_id" start-index="105" stop-index="113">
+                    <column-left-value name="user_id" start-index="105" stop-index="113">
                         <owner name="o" start-index="105" stop-index="105" />
-                    </column>
+                    </column-left-value>
                 </predicate>
                 <predicate start-index="129" stop-index="154" literal-stop-index="155">
-                    <column name="order_id" start-index="129" stop-index="138">
+                    <column-left-value name="order_id" start-index="129" stop-index="138">
                         <owner name="o" start-index="129" stop-index="129" />
-                    </column>
+                    </column-left-value>
                 </predicate>
             </and-predicate>
         </where>
@@ -114,14 +114,14 @@
         <where parameters-count="6" parameter-marker-start-index="0" start-index="103" stop-index="162" literal-stop-index="163">
             <and-predicate>
                 <predicate start-index="109" stop-index="129">
-                    <column name="user_id" start-delimiter="`" end-delimiter="`" start-index="109" stop-index="119">
+                    <column-left-value name="user_id" start-delimiter="`" end-delimiter="`" start-index="109" stop-index="119">
                         <owner name="o" start-index="109" stop-index="109" />
-                    </column>
+                    </column-left-value>
                 </predicate>
                 <predicate start-index="135" stop-index="162" literal-stop-index="163">
-                    <column name="order_id" start-delimiter="`" end-delimiter="`" start-index="135" stop-index="146">
+                    <column-left-value name="order_id" start-delimiter="`" end-delimiter="`" start-index="135" stop-index="146">
                         <owner name="o" start-index="135" stop-index="135" />
-                    </column>
+                    </column-left-value>
                 </predicate>
             </and-predicate>
         </where>
@@ -157,14 +157,14 @@
         <where parameters-count="6" parameter-marker-start-index="0" start-index="103" stop-index="162" literal-stop-index="163">
             <and-predicate>
                 <predicate start-index="109" stop-index="129">
-                    <column name="user_id" start-delimiter="`" end-delimiter="`" start-index="109" stop-index="119">
+                    <column-left-value name="user_id" start-delimiter="`" end-delimiter="`" start-index="109" stop-index="119">
                         <owner name="o" start-index="109" stop-index="109" />
-                    </column>
+                    </column-left-value>
                 </predicate>
                 <predicate start-index="135" stop-index="162" literal-stop-index="163">
-                    <column name="order_id" start-delimiter="`" end-delimiter="`" start-index="135" stop-index="146">
+                    <column-left-value name="order_id" start-delimiter="`" end-delimiter="`" start-index="135" stop-index="146">
                         <owner name="o" start-index="135" stop-index="135" />
-                    </column>
+                    </column-left-value>
                 </predicate>
             </and-predicate>
         </where>
@@ -212,14 +212,14 @@
         <where parameters-count="5" parameter-marker-start-index="0" start-index="250" stop-index="305" literal-stop-index="306">
             <and-predicate>
                 <predicate start-index="256" stop-index="274">
-                    <column name="user_id" start-index="256" stop-index="264">
+                    <column-left-value name="user_id" start-index="256" stop-index="264">
                         <owner name="o" start-index="256" stop-index="256" />
-                    </column>
+                    </column-left-value>
                 </predicate>
                 <predicate start-index="280" stop-index="305" literal-stop-index="306">
-                    <column name="order_id" start-index="280" stop-index="289">
+                    <column-left-value name="order_id" start-index="280" stop-index="289">
                         <owner name="o" start-index="280" stop-index="280" />
-                    </column>
+                    </column-left-value>
                 </predicate>
             </and-predicate>
         </where>
@@ -254,14 +254,14 @@
         <where parameters-count="6" parameter-marker-start-index="0" start-index="99" stop-index="154" literal-stop-index="155">
             <and-predicate>
                 <predicate start-index="105" stop-index="123">
-                    <column name="user_id" start-index="105" stop-index="113">
+                    <column-left-value name="user_id" start-index="105" stop-index="113">
                         <owner name="o" start-index="105" stop-index="105" />
-                    </column>
+                    </column-left-value>
                 </predicate>
                 <predicate start-index="129" stop-index="154" literal-stop-index="155">
-                    <column name="order_id" start-index="129" stop-index="138">
+                    <column-left-value name="order_id" start-index="129" stop-index="138">
                         <owner name="o" start-index="129" stop-index="129" />
-                    </column>
+                    </column-left-value>
                 </predicate>
             </and-predicate>
         </where>
@@ -310,9 +310,9 @@
             <and-predicate>
                 <!-- FIXME cannot parse subquery's predicate -->
                 <predicate start-index="322" stop-index="337" literal-start-index="323" literal-stop-index="338">
-                    <column name="rownum_" start-index="322" stop-index="333" literal-start-index="323" literal-stop-index="334">
+                    <column-left-value name="rownum_" start-index="322" stop-index="333" literal-start-index="323" literal-stop-index="334">
                         <owner name="row_" start-index="322" stop-index="325" literal-start-index="323" literal-stop-index="326" />
-                    </column>
+                    </column-left-value>
                 </predicate>
             </and-predicate>
         </where>
@@ -361,9 +361,9 @@
             <and-predicate>
                 <!-- FIXME cannot parse subquery's predicate -->
                 <predicate start-index="322" stop-index="338" literal-start-index="323" literal-stop-index="339">
-                    <column name="rownum_" start-index="322" stop-index="333" literal-start-index="323" literal-stop-index="334">
+                    <column-left-value name="rownum_" start-index="322" stop-index="333" literal-start-index="323" literal-stop-index="334">
                         <owner name="row_" start-index="322" stop-index="325" literal-start-index="323" literal-stop-index="326" />
-                    </column>
+                    </column-left-value>
                 </predicate>
             </and-predicate>
         </where>
@@ -406,17 +406,17 @@
             <and-predicate>
                 <!-- FIXME cannot parse subquery's predicate -->
                 <!--<predicate start-index="253" stop-index="277">-->
-                    <!--<column name="user_id" start-index="253" stop-index="267">-->
+                    <!--<column-left-value name="user_id" start-index="253" stop-index="267">-->
                         <!--<owner name="order0_" start-index="253" stop-index="253" />-->
-                    <!--</column>-->
+                    <!--</column-left-value>-->
                 <!--</predicate>-->
                 <!--<predicate start-index="283" stop-index="314" literal-stop-index="315">-->
-                    <!--<column name="order_id" start-index="283" stop-index="298">-->
+                    <!--<column-left-value name="order_id" start-index="283" stop-index="298">-->
                         <!--<owner name="order0_" start-index="283" stop-index="289" />-->
-                    <!--</column>-->
+                    <!--</column-left-value>-->
                 <!--</predicate>-->
                 <predicate start-index="352" stop-index="362" literal-start-index="353" literal-stop-index="363">
-                    <column name="rownum" start-index="352" stop-index="357" literal-start-index="353" literal-stop-index="358" />
+                    <column-left-value name="rownum" start-index="352" stop-index="357" literal-start-index="353" literal-stop-index="358" />
                 </predicate>
             </and-predicate>
         </where>
@@ -458,9 +458,9 @@
             <and-predicate>
                 <!-- FIXME cannot parse subquery's predicate -->
                 <predicate start-index="373" stop-index="385" literal-start-index="374" literal-stop-index="386">
-                    <column name="rownum_" start-index="373" stop-index="381" literal-start-index="374" literal-stop-index="382">
+                    <column-left-value name="rownum_" start-index="373" stop-index="381" literal-start-index="374" literal-stop-index="382">
                         <owner name="t" start-index="373" stop-index="373" literal-start-index="374" literal-stop-index="374" />
-                    </column>
+                    </column-left-value>
                 </predicate>
             </and-predicate>
         </where>
@@ -503,9 +503,9 @@
             <and-predicate>
                 <!-- FIXME cannot parse subquery's predicate -->
                 <predicate start-index="373" stop-index="386" literal-start-index="374" literal-stop-index="387">
-                    <column name="rownum_" start-index="373" stop-index="381" literal-start-index="374" literal-stop-index="382">
+                    <column-left-value name="rownum_" start-index="373" stop-index="381" literal-start-index="374" literal-stop-index="382">
                         <owner name="t" start-index="373" stop-index="373" literal-start-index="374" literal-stop-index="374" />
-                    </column>
+                    </column-left-value>
                 </predicate>
             </and-predicate>
         </where>
@@ -538,7 +538,7 @@
         <where parameters-count="1" parameter-marker-start-index="0" start-index="22" stop-index="38" literal-stop-index="39">
             <and-predicate>
                 <predicate start-index="28" stop-index="38" literal-stop-index="39">
-                    <column name="ROWNUM" start-index="28" stop-index="33" />
+                    <column-left-value name="ROWNUM" start-index="28" stop-index="33" />
                 </predicate>
             </and-predicate>
         </where>

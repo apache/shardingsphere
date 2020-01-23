@@ -45,7 +45,7 @@
         <where parameters-count="0" parameter-marker-start-index="0" start-index="45" stop-index="64">
             <and-predicate>
                 <predicate start-index="51" stop-index="64">
-                    <column name="order_id" start-index="51" stop-index="58" />
+                    <column-left-value name="order_id" start-index="51" stop-index="58" />
                 </predicate>
             </and-predicate>
         </where>
@@ -61,7 +61,7 @@
         <where parameters-count="0" parameter-marker-start-index="0" start-index="45" stop-index="66">
             <and-predicate>
                 <predicate start-index="51" stop-index="66">
-                    <column name="order_id" start-index="51" stop-index="58" />
+                    <column-left-value name="order_id" start-index="51" stop-index="58" />
                 </predicate>
             </and-predicate>
         </where>
@@ -105,24 +105,30 @@
         <where parameters-count="4" parameter-marker-start-index="0" start-index="62" stop-index="171" literal-stop-index="172">
             <and-predicate>
                 <predicate start-index="68" stop-index="88">
-                    <column name="user_id" start-index="68" stop-index="76">
+                    <column-left-value name="user_id" start-index="68" stop-index="76">
                         <owner name="o" start-index="68" stop-index="68" />
-                    </column>
+                    </column-left-value>
+                    <column-right-value name="user_id" start-index="80" stop-index="88">
+                        <owner name="i" start-index="80" stop-index="80" />
+                    </column-right-value>
                 </predicate>
                 <predicate start-index="94" stop-index="116">
-                    <column name="order_id" start-index="94" stop-index="103">
+                    <column-left-value name="order_id" start-index="94" stop-index="103">
                         <owner name="o" start-index="94" stop-index="94" />
-                    </column>
+                    </column-left-value>
+                    <column-right-value name="order_id" start-index="107" stop-index="116">
+                        <owner name="i" start-index="107" stop-index="107" />
+                    </column-right-value>
                 </predicate>
                 <predicate start-index="122" stop-index="140">
-                    <column name="user_id" start-index="122" stop-index="130">
+                    <column-left-value name="user_id" start-index="122" stop-index="130">
                         <owner name="o" start-index="122" stop-index="122" />
-                    </column>
+                    </column-left-value>
                 </predicate>
                 <predicate start-index="146" stop-index="171" literal-stop-index="172">
-                    <column name="order_id" start-index="146" stop-index="155">
+                    <column-left-value name="order_id" start-index="146" stop-index="155">
                         <owner name="o" start-index="146" stop-index="146" />
-                    </column>
+                    </column-left-value>
                 </predicate>
             </and-predicate>
         </where>
@@ -151,14 +157,14 @@
         <where parameters-count="4" parameter-marker-start-index="0" start-index="119" stop-index="174" literal-stop-index="175">
             <and-predicate>
                 <predicate start-index="125" stop-index="143">
-                    <column name="user_id" start-index="125" stop-index="133">
+                    <column-left-value name="user_id" start-index="125" stop-index="133">
                         <owner name="o" start-index="125" stop-index="125" />
-                    </column>
+                    </column-left-value>
                 </predicate>
                 <predicate start-index="149" stop-index="174" literal-stop-index="175">
-                    <column name="order_id" start-index="149" stop-index="158">
+                    <column-left-value name="order_id" start-index="149" stop-index="158">
                         <owner name="o" start-index="149" stop-index="149" />
-                    </column>
+                    </column-left-value>
                 </predicate>
             </and-predicate>
         </where>

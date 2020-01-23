@@ -30,9 +30,9 @@
         <where parameters-count="1" parameter-marker-start-index="0" start-index="79" stop-index="98" literal-stop-index="101">
             <and-predicate>
                 <predicate start-index="85" stop-index="98" literal-stop-index="101">
-                    <column name="order_id" start-index="85" stop-index="94">
+                    <column-left-value name="order_id" start-index="85" stop-index="94">
                         <owner name="o" start-index="85" stop-index="85" />
-                    </column>
+                    </column-left-value>
                 </predicate>
             </and-predicate>
         </where>
@@ -58,9 +58,9 @@
         <where parameters-count="1" parameter-marker-start-index="0" start-index="97" stop-index="122" literal-stop-index="125">
             <and-predicate>
                 <predicate start-index="103" stop-index="122" literal-stop-index="125">
-                    <column name="order_id" start-index="103" stop-index="118">
+                    <column-left-value name="order_id" start-index="103" stop-index="118">
                         <owner name="t_order" start-index="103" stop-index="109" />
-                    </column>
+                    </column-left-value>
                 </predicate>
             </and-predicate>
         </where>
@@ -86,9 +86,9 @@
         <where parameters-count="1" parameter-marker-start-index="0" start-index="62" stop-index="81" literal-stop-index="84">
             <and-predicate>
                 <predicate start-index="68" stop-index="81" literal-stop-index="84">
-                    <column name="order_id" start-index="68" stop-index="77">
+                    <column-left-value name="order_id" start-index="68" stop-index="77">
                         <owner name="o" start-index="68" stop-index="68" />
-                    </column>
+                    </column-left-value>
                 </predicate>
             </and-predicate>
         </where>
