@@ -44,7 +44,7 @@ public final class ExpectedPredicateCompareRightValue implements ExpectedPredica
     private ExpectedLiteralExpression literalExpression;
     
     @XmlElement(name = "common-expression")
-    private ExpectedCommonExpression commonExpressionSegment;
+    private ExpectedCommonExpression commonExpression;
     
     @XmlElement(name = "subquery")
     private ExpectedSubquery subquery;

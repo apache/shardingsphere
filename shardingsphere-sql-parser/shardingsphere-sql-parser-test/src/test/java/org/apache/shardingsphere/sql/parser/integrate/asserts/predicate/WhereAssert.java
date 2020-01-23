@@ -139,7 +139,7 @@ public final class WhereAssert {
                     ((LiteralExpressionSegment) actual.getExpression()).getLiterals().toString(), is(expected.getLiteralExpression().getValue()));
         } else if (actual.getExpression() instanceof CommonExpressionSegment) {
             assertThat(assertMessage.getText("Common expression text assertion error: "), 
-                    ((ComplexExpressionSegment) actual.getExpression()).getText(), is(expected.getCommonExpressionSegment().getText()));
+                    ((ComplexExpressionSegment) actual.getExpression()).getText(), is(expected.getCommonExpression().getText()));
         } else if (actual.getExpression() instanceof SubquerySegment) {
             assertThat(assertMessage.getText("Subquery text assertion error: "), 
                     ((ComplexExpressionSegment) actual.getExpression()).getText(), is(expected.getSubquery().getText()));
