@@ -1268,6 +1268,16 @@
         <projections start-index="7" stop-index="38">
             <expression-projection alias="func_status" start-index="7" stop-index="26" />
         </projections>
+        <where parameters-count="2" parameter-marker-start-index="0" start-index="53" stop-index="86" literal-stop-index="90">
+            <and-predicate>
+                <predicate start-index="59" stop-index="69" literal-stop-index="70">
+                    <column name="user_id" start-index="59" stop-index="65" />
+                </predicate>
+                <predicate start-index="75" stop-index="86" literal-start-index="76" literal-stop-index="90">
+                    <column name="order_id" start-index="75" stop-index="82" literal-start-index="76" literal-stop-index="83" />
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="EQUAL">
