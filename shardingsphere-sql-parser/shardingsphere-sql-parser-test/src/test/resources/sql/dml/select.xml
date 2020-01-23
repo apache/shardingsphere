@@ -704,7 +704,7 @@
                     </column-left-value>
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="5" />
+                        <parameter-marker-expression value="4" />
                         <literal-expression value="init" />
                     </compare-right-value>
                 </predicate>
