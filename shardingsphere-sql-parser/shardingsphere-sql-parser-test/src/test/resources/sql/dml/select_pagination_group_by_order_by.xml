@@ -27,6 +27,21 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
+        <where parameters-count="6" parameter-marker-start-index="0" start-index="105" stop-index="160" literal-stop-index="161">
+            <and-predicate>
+                <predicate start-index="111" stop-index="129">
+                    <column name="user_id" start-index="111" stop-index="119">
+                        <owner name="o" start-index="111" stop-index="111" />
+                    </column>
+                </predicate>
+                <predicate start-index="135" stop-index="160" literal-stop-index="161">
+                    <column name="order_id" start-index="135" stop-index="144">
+                        <owner name="o" start-index="135" stop-index="135" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
+
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -59,6 +74,20 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
+        <where parameters-count="6" parameter-marker-start-index="0" start-index="105" stop-index="160" literal-stop-index="161">
+            <and-predicate>
+                <predicate start-index="111" stop-index="129">
+                    <column name="user_id" start-index="111" stop-index="119">
+                        <owner name="o" start-index="111" stop-index="111" />
+                    </column>
+                </predicate>
+                <predicate start-index="135" stop-index="160" literal-stop-index="161">
+                    <column name="order_id" start-index="135" stop-index="144">
+                        <owner name="o" start-index="135" stop-index="135" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -103,6 +132,16 @@
                 <owner name="o" start-index="139" stop-index="139" />
             </column-projection>
         </projections>
+        <where parameters-count="6" parameter-marker-start-index="0" start-index="333" stop-index="354" literal-start-index="334" literal-stop-index="355">
+            <and-predicate>
+                <!-- FIXME cannot parse subquery's predicate -->
+                <predicate start-index="339" stop-index="354" literal-start-index="340" literal-stop-index="355">
+                    <column name="rownum_" start-index="339" stop-index="350" literal-start-index="340" literal-stop-index="351">
+                        <owner name="row_" start-index="339" stop-index="342" literal-start-index="340" literal-stop-index="343" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -147,6 +186,16 @@
                 <owner name="o" start-index="141" stop-index="141" />
             </column-projection>
         </projections>
+        <where parameters-count="6" parameter-marker-start-index="0" start-index="335" stop-index="356" literal-start-index="336" literal-stop-index="357">
+            <and-predicate>
+                <!-- FIXME cannot parse subquery's predicate -->
+                <predicate start-index="341" stop-index="356" literal-start-index="342" literal-stop-index="357">
+                    <column name="rownum_" start-index="341" stop-index="352" literal-start-index="342" literal-stop-index="353">
+                        <owner name="row_" start-index="341" stop-index="344" literal-start-index="342" literal-stop-index="345" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -191,6 +240,16 @@
                 <owner name="o" start-index="139" stop-index="139" />
             </column-projection>
         </projections>
+        <where parameters-count="6" parameter-marker-start-index="0" start-index="334" stop-index="355" literal-start-index="335" literal-stop-index="356">
+            <and-predicate>
+                <!-- FIXME cannot parse subquery's predicate -->
+                <predicate start-index="340" stop-index="355" literal-start-index="341" literal-stop-index="356">
+                    <column name="rownum_" start-index="340" stop-index="351" literal-start-index="341" literal-stop-index="352">
+                        <owner name="row_" start-index="340" stop-index="343" literal-start-index="341" literal-stop-index="344" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -235,6 +294,16 @@
                 <owner name="o" start-index="141" stop-index="141" />
             </column-projection>
         </projections>
+        <where parameters-count="6" parameter-marker-start-index="0" start-index="336" stop-index="357" literal-start-index="337" literal-stop-index="358">
+            <and-predicate>
+                <!-- FIXME cannot parse subquery's predicate -->
+                <predicate start-index="342" stop-index="357" literal-start-index="343" literal-stop-index="358">
+                    <column name="rownum_" start-index="342" stop-index="353" literal-start-index="343" literal-stop-index="354">
+                        <owner name="row_" start-index="342" stop-index="345" literal-start-index="343" literal-stop-index="346" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -273,6 +342,16 @@
                 <owner name="order0_" start-index="114" stop-index="120" />
             </column-projection>
         </projections>
+        <where parameters-count="6" parameter-marker-start-index="0" start-index="386" stop-index="404" literal-start-index="387" literal-stop-index="405">
+            <and-predicate>
+                <!-- FIXME cannot parse subquery's predicate -->
+                <predicate start-index="392" stop-index="404" literal-start-index="393" literal-stop-index="405">
+                    <column name="rownum_" start-index="392" stop-index="400" literal-start-index="393" literal-stop-index="401">
+                        <owner name="t" start-index="392" stop-index="392" literal-start-index="393" literal-stop-index="393" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -311,6 +390,16 @@
                 <owner name="order0_" start-index="114" stop-index="120" />
             </column-projection>
         </projections>
+        <where parameters-count="6" parameter-marker-start-index="0" start-index="386" stop-index="404" literal-start-index="387" literal-stop-index="405">
+            <and-predicate>
+                <!-- FIXME cannot parse subquery's predicate -->
+                <predicate start-index="392" stop-index="404" literal-start-index="393" literal-stop-index="405">
+                    <column name="rownum_" start-index="392" stop-index="400" literal-start-index="393" literal-stop-index="401">
+                        <owner name="t" start-index="392" stop-index="392" literal-start-index="393" literal-stop-index="393" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">

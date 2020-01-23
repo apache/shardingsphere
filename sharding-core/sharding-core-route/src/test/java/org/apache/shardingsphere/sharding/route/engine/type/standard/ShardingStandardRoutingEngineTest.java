@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
@@ -42,6 +43,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -63,7 +65,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         TablesContext tablesContext = mock(TablesContext.class);
         when(tablesContext.isSingleTable()).thenReturn(false);
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
-        ShardingStandardRoutingEngine standardRoutingEngine = new ShardingStandardRoutingEngine(null, sqlStatementContext, null);
+        ShardingStandardRoutingEngine standardRoutingEngine = new ShardingStandardRoutingEngine(null, sqlStatementContext, null, new ShardingSphereProperties(new Properties()));
         standardRoutingEngine.route(mock(ShardingRule.class));
     }
     
@@ -193,6 +195,6 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         return new ShardingStandardRoutingEngine(logicTableName, new SelectSQLStatementContext(new SelectStatement(),
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()),
-                new PaginationContext(null, null, Collections.emptyList())), shardingConditions);
+                new PaginationContext(null, null, Collections.emptyList())), shardingConditions, new ShardingSphereProperties(new Properties()));
     }
 }
