@@ -33,27 +33,27 @@ import javax.xml.bind.annotation.XmlElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedPredicateBetweenRightValue implements ExpectedPredicateRightValue {
     
+    @XmlElement(name = "between-parameter-marker-expression")
+    private ExpectedParameterMarkerExpression parameterMarkerExpression;
+    
+    @XmlElement(name = "between-literal-expression")
+    private ExpectedLiteralExpression betweenLiteralExpression;
+    
     @XmlElement(name = "between-common-expression")
     private ExpectedCommonExpression betweenCommonExpression;
     
     @XmlElement(name = "between-subquery")
     private ExpectedSubquery betweenSubquery;
     
-    @XmlElement(name = "between-literal-expression")
-    private ExpectedLiteralExpression betweenLiteralExpression;
-    
-    @XmlElement(name = "between-param-marker-expression")
-    private ExpectedParameterMarkerExpression betweenParamMarkerExpression;
-    
-    @XmlElement(name = "and-subquery")
-    private ExpectedSubquery andSubquery;
-    
-    @XmlElement(name = "and-common-expression")
-    private ExpectedCommonExpression andCommonExpression;
+    @XmlElement(name = "and-parameter-marker-expression")
+    private ExpectedParameterMarkerExpression andParameterMarkerExpression;
     
     @XmlElement(name = "and-literal-expression")
     private ExpectedLiteralExpression andLiteralExpression;
     
-    @XmlElement(name = "and-parameter-marker-expression")
-    private ExpectedParameterMarkerExpression expectedParameterMarkerExpression;
+    @XmlElement(name = "and-common-expression")
+    private ExpectedCommonExpression andCommonExpression;
+    
+    @XmlElement(name = "and-subquery")
+    private ExpectedSubquery andSubquery;
 }

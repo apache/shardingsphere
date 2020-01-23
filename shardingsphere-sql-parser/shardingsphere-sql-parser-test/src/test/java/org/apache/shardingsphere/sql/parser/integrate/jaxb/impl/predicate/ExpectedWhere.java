@@ -36,9 +36,9 @@ public final class ExpectedWhere extends AbstractExpectedSQLSegment {
     @XmlAttribute(name = "parameters-count")
     private Integer parametersCount;
     
-    @XmlElement(name = "and-predicate")
-    private List<ExpectedAndPredicate> andPredicates = new LinkedList<>();
-    
     @XmlAttribute(name = "parameter-marker-start-index")
     private Integer parameterMarkerStartIndex;
+    
+    @XmlElement(name = "and-predicate")
+    private List<ExpectedAndPredicate> andPredicates = new LinkedList<>();
 }
