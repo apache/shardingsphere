@@ -501,6 +501,13 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
+        <where parameters-count="1" parameter-marker-start-index="0" start-index="22" stop-index="38" literal-stop-index="39">
+            <and-predicate>
+                <predicate start-index="28" stop-index="38" literal-stop-index="39">
+                    <column name="ROWNUM" start-index="28" stop-index="33" />
+                </predicate>
+            </and-predicate>
+        </where>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
