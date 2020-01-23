@@ -23,7 +23,6 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpec
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.value.ExpectedPredicateBetweenRightValue;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.value.ExpectedPredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.value.ExpectedPredicateInRightValue;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.value.ExpectedPredicateRightValue;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -45,25 +44,4 @@ public final class ExpectedPredicate extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "predicate-between-right-value")
     private ExpectedPredicateBetweenRightValue betweenRightValue = new ExpectedPredicateBetweenRightValue();
-    
-    /**
-     * Find expected right value type.
-     * 
-     * @param expectedPredicateRightValue expected predicate right value
-     * @param <T> type of expected predicate right value
-     * @return right value
-     */
-    @SuppressWarnings("unchecked")
-    public <T extends ExpectedPredicateRightValue> T findExpectedRightValue(final Class<T> expectedPredicateRightValue) {
-        if (expectedPredicateRightValue.isAssignableFrom(ExpectedPredicateCompareRightValue.class)) {
-            return (T) compareRightValue;
-        }
-        if (expectedPredicateRightValue.isAssignableFrom(ExpectedPredicateInRightValue.class)) {
-            return (T) inRightValue;
-        }
-        if (expectedPredicateRightValue.isAssignableFrom(ExpectedPredicateBetweenRightValue.class)) {
-            return (T) betweenRightValue;
-        }
-        return null;
-    }
 }
