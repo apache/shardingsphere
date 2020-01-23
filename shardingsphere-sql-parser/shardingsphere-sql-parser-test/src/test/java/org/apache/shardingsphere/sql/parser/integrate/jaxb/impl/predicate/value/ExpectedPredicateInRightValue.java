@@ -34,7 +34,15 @@ import java.util.Collection;
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedPredicateInRightValue implements ExpectedPredicateRightValue {
-
+    
+    @XmlElementWrapper(name = "parameter-marker-expressions")
+    @XmlElement(name = "parameter-marker-expression")
+    private Collection<ExpectedParameterMarkerExpression> expectedParameterMarkerExpressions;
+    
+    @XmlElementWrapper(name = "literal-expressions")
+    @XmlElement(name = "literal-expression")
+    private Collection<ExpectedLiteralExpression> expectedLiteralExpressions;
+    
     @XmlElementWrapper(name = "common-expressions")
     @XmlElement(name = "common-expression")
     private Collection<ExpectedCommonExpression> expectedCommonExpressions;
@@ -42,12 +50,4 @@ public final class ExpectedPredicateInRightValue implements ExpectedPredicateRig
     @XmlElementWrapper(name = "subquery-segments")
     @XmlElement(name = "subquery-segment")
     private Collection<ExpectedSubquery> expectedSubqueries;
-
-    @XmlElementWrapper(name = "literal-expressions")
-    @XmlElement(name = "literal-expression")
-    private Collection<ExpectedLiteralExpression> expectedLiteralExpressions;
-
-    @XmlElementWrapper(name = "parameter-marker-expressions")
-    @XmlElement(name = "parameter-marker-expression")
-    private Collection<ExpectedParameterMarkerExpression> expectedParameterMarkerExpressions;
 }
