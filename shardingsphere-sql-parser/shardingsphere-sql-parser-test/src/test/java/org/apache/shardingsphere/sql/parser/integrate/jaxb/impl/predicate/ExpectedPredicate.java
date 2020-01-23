@@ -33,6 +33,9 @@ public final class ExpectedPredicate extends AbstractExpectedSQLSegment {
     @XmlElement(name = "column-left-value")
     private ExpectedColumn columnLeftValue;
     
+    @XmlElement
+    private ExpectedOperator operator;
+    
     @XmlElement(name = "column-right-value")
     private ExpectedColumn columnRightValue;
     
