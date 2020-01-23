@@ -951,6 +951,13 @@
             <and-predicate>
                 <predicate start-index="28" stop-index="55" literal-stop-index="91">
                     <column-left-value name="rule" start-index="28" stop-index="31" />
+                    <operator type="IN" />
+                    <in-right-value>
+                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}'::json" />
+                        <literal-expression value="{&quot;rule3&quot;:&quot;null3&quot;}'::json" />
+                    </in-right-value>
                 </predicate>
                 <predicate start-index="61" stop-index="128" literal-start-index="97" literal-stop-index="168">
                     <column-left-value name="start_point" start-index="61" stop-index="71" literal-start-index="97" literal-stop-index="107" />
