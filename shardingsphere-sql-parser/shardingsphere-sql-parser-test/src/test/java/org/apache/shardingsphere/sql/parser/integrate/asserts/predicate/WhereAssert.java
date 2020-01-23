@@ -192,22 +192,26 @@ public final class WhereAssert {
     private static void assertParameterMarkerExpression(final SQLStatementAssertMessage assertMessage, 
                                                         final ParameterMarkerExpressionSegment actual, final ExpectedParameterMarkerExpression expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Parameter marker index assertion error: "), actual.getParameterMarkerIndex(), is(expected.getValue()));
+        // TODO assert start index and stop index
 //        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
     
     private static void assertLiteralExpression(final SQLStatementAssertMessage assertMessage, 
                                                 final LiteralExpressionSegment actual, final ExpectedLiteralExpression expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Literal assertion error: "), actual.getLiterals().toString(), is(expected.getValue()));
+        // TODO assert start index and stop index
 //        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
     
     private static void assertCommonExpression(final SQLStatementAssertMessage assertMessage, 
                                                final ComplexExpressionSegment actual, final ExpectedCommonExpression expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Common expression text assertion error: "), actual.getText(), is(expected.getText()));
+        // TODO assert start index and stop index
 //        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
     
     private static void assertSubquery(final SQLStatementAssertMessage assertMessage, final ComplexExpressionSegment actual, final ExpectedSubquery expected, final SQLCaseType sqlCaseType) {
+        // TODO assert start index and stop index
         assertThat(assertMessage.getText("Subquery text assertion error: "), actual.getText(), is(expected.getText()));
 //        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
