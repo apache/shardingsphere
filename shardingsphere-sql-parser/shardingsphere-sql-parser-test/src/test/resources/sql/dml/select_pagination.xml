@@ -420,6 +420,16 @@
                 <owner name="order0_" start-index="114" stop-index="120" />
             </column-projection>
         </projections>
+        <where parameters-count="6" parameter-marker-start-index="0" start-index="367" stop-index="385" literal-start-index="368" literal-stop-index="386">
+            <and-predicate>
+                <!-- FIXME cannot parse subquery's predicate -->
+                <predicate start-index="373" stop-index="385" literal-start-index="374" literal-stop-index="386">
+                    <column name="rownum_" start-index="373" stop-index="381" literal-start-index="374" literal-stop-index="382">
+                        <owner name="t" start-index="373" stop-index="373" literal-start-index="374" literal-stop-index="374" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
