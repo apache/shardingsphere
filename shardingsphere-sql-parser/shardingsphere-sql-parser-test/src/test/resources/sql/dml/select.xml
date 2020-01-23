@@ -1250,6 +1250,9 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
+        <where parameters-count="0" parameter-marker-start-index="0" start-index="92" stop-index="105">
+            <!-- FIXME cannot parse subquery's predicate -->
+        </where>
     </parser-result>
     
     <parser-result sql-case-id="select_with_row_subquery">
