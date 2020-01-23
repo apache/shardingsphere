@@ -1150,6 +1150,14 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
+        <where parameters-count="0" parameter-marker-start-index="0" start-index="90" stop-index="104">
+            <and-predicate>
+                <!-- FIXME \n's index is incorrect --> 
+                <predicate start-index="97" stop-index="106">
+                    <column name="status" start-index="97" stop-index="102" />
+                </predicate>
+            </and-predicate>
+        </where>
         <encrypt-conditions>
             <condition column-name="status" table-name="t_order" operator="EQUAL">
                 <value index="0" literal="1" type="varchar" />
