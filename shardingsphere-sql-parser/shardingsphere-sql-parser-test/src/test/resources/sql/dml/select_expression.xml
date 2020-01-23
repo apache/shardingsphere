@@ -53,14 +53,14 @@
             <and-predicate>
                 <!-- FIXME cannot parse REGEXP -->
                 <!--<predicate start-index="35" stop-index="51" literal-stop-index="56">-->
-                    <!--<column name="status" start-index="35" stop-index="51" literal-stop-index="56">-->
+                    <!--<column-left-value name="status" start-index="35" stop-index="51" literal-stop-index="56">-->
                         <!--<owner name="t" start-index="35" stop-index="35" />-->
-                    <!--</column>-->
+                    <!--</column-left-value>-->
                 <!--</predicate>-->
                 <predicate start-index="57" stop-index="75"  literal-start-index="62" literal-stop-index="80">
-                    <column name="item_id" start-index="57" stop-index="65" literal-start-index="62" literal-stop-index="70">
+                    <column-left-value name="item_id" start-index="57" stop-index="65" literal-start-index="62" literal-stop-index="70">
                         <owner name="t" start-index="57" stop-index="57" literal-start-index="62" literal-stop-index="62" />
-                    </column>
+                    </column-left-value>
                 </predicate>
             </and-predicate>
         </where>
