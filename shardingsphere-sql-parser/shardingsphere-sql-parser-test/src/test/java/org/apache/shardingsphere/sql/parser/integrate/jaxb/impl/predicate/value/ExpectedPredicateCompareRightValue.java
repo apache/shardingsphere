@@ -48,8 +48,8 @@ public final class ExpectedPredicateCompareRightValue implements ExpectedPredica
     @XmlElement(name = "literal-expression")
     private ExpectedLiteralExpression literalExpression;
 
-    @XmlElement(name = "param-marker-expression")
-    private ExpectedParameterMarkerExpression paramMarkerExpression;
+    @XmlElement(name = "parameter-marker-expression")
+    private ExpectedParameterMarkerExpression parameterMarkerExpression;
 
     /**
      * Find expected expression.
@@ -61,7 +61,7 @@ public final class ExpectedPredicateCompareRightValue implements ExpectedPredica
     @SuppressWarnings("unchecked")
     public <T extends ExpectedExpressionSegment> T findExpectedExpression(final Class<T> expectedExpressionSegment) {
         if (expectedExpressionSegment.isAssignableFrom(ExpectedParameterMarkerExpression.class)) {
-            return (T) paramMarkerExpression;
+            return (T) parameterMarkerExpression;
         }
         if (expectedExpressionSegment.isAssignableFrom(ExpectedLiteralExpression.class)) {
             return (T) literalExpression;

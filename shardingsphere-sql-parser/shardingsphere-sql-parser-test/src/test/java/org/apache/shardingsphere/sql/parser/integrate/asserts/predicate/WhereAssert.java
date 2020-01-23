@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssert
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedCommonExpression;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedSubquery;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedLiteralExpression;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedParameterMarkerExpression;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.owner.ExpectedTableOwner;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedAndPredicate;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedColumn;
@@ -96,10 +95,9 @@ public final class WhereAssert {
             assertColumn(assertMessage, each.getColumn(), expectedPredicate.getColumnLeftValue(), sqlCaseType);
             if (each.getRightValue() instanceof ColumnSegment) {
                 assertColumn(assertMessage, (ColumnSegment) each.getRightValue(), expectedPredicate.getColumnRightValue(), sqlCaseType);
+            } else if (each.getRightValue() instanceof PredicateCompareRightValue) {
+//                assertCompareRightValue(assertMessage, (PredicateCompareRightValue) each.getRightValue(), expectedPredicate.getCompareRightValue());
             }
-//            if (each.getRightValue() instanceof PredicateCompareRightValue) {
-//                assertCompareRightValue(assertMessage, (PredicateCompareRightValue) each.getRightValue(), expectedPredicate.findExpectedRightValue(ExpectedPredicateCompareRightValue.class));
-//            }
             // TODO add other right value assertion
             SQLSegmentAssert.assertIs(assertMessage, each, expectedPredicate, sqlCaseType);
             count++;
@@ -130,7 +128,7 @@ public final class WhereAssert {
         if (actual.getExpression() instanceof ParameterMarkerExpressionSegment) {
             assertThat(assertMessage.getText("Parameter marker expression parameter marker index assertion error: "), 
                     ((ParameterMarkerExpressionSegment) actual.getExpression()).getParameterMarkerIndex(), 
-                    is(expected.findExpectedExpression(ExpectedParameterMarkerExpression.class).getParameterMarkerIndex()));
+                    is(expected.getParameterMarkerExpression().getParameterMarkerIndex()));
         }
         if (actual.getExpression() instanceof CommonExpressionSegment) {
             assertThat(assertMessage.getText("Common expression text assertion error: "), ((ComplexExpressionSegment) actual.getExpression()).getText(), 

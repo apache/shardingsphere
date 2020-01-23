@@ -37,17 +37,17 @@ public final class ExpectedPredicateInRightValue implements ExpectedPredicateRig
 
     @XmlElementWrapper(name = "common-expressions")
     @XmlElement(name = "common-expression")
-    private Collection<ExpectedCommonExpression> commonExpressionSegments;
+    private Collection<ExpectedCommonExpression> expectedCommonExpressions;
 
     @XmlElementWrapper(name = "subquery-segments")
     @XmlElement(name = "subquery-segment")
-    private Collection<ExpectedSubquery> subquerySegments;
+    private Collection<ExpectedSubquery> expectedSubqueries;
 
     @XmlElementWrapper(name = "literal-expressions")
     @XmlElement(name = "literal-expression")
-    private Collection<ExpectedLiteralExpression> literalExpressionSegments;
+    private Collection<ExpectedLiteralExpression> expectedLiteralExpressions;
 
-    @XmlElementWrapper(name = "param-marker-expressions")
-    @XmlElement(name = "param-marker-expression")
-    private Collection<ExpectedParameterMarkerExpression> paramMarkerExpressionSegments;
+    @XmlElementWrapper(name = "parameter-marker-expressions")
+    @XmlElement(name = "parameter-marker-expression")
+    private Collection<ExpectedParameterMarkerExpression> expectedParameterMarkerExpressions;
 }

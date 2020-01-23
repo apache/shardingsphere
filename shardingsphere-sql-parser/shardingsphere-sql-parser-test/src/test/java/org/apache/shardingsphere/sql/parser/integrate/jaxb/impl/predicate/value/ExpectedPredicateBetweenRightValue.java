@@ -42,7 +42,7 @@ public final class ExpectedPredicateBetweenRightValue implements ExpectedPredica
     @XmlElement(name = "between-literal-expression")
     private ExpectedLiteralExpression betweenLiteralExpression;
     
-    @XmlElement(name = "between-param-marker-expression")
+    @XmlElement(name = "between-parameter-marker-expression")
     private ExpectedParameterMarkerExpression betweenParamMarkerExpression;
     
     @XmlElement(name = "and-subquery")
