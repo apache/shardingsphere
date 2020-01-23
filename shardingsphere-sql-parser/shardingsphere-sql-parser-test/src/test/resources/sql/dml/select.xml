@@ -1259,6 +1259,9 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
+        <where parameters-count="0" parameter-marker-start-index="0" start-index="95" stop-index="107">
+            <!-- FIXME cannot parse subquery's predicate -->
+        </where>
     </parser-result>
     
     <parser-result sql-case-id="select_with_interval_function" parameters="12, 1000">
