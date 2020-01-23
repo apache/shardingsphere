@@ -209,6 +209,20 @@
                 <owner name="o" start-index="141" stop-index="141" />
             </column-projection>
         </projections>
+        <where parameters-count="5" parameter-marker-start-index="0" start-index="250" stop-index="305" literal-stop-index="306">
+            <and-predicate>
+                <predicate start-index="256" stop-index="274">
+                    <column name="user_id" start-index="256" stop-index="264">
+                        <owner name="o" start-index="256" stop-index="256" />
+                    </column>
+                </predicate>
+                <predicate start-index="280" stop-index="305" literal-stop-index="306">
+                    <column name="order_id" start-index="280" stop-index="289">
+                        <owner name="o" start-index="280" stop-index="280" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
