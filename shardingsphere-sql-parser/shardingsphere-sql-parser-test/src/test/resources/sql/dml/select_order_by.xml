@@ -43,14 +43,14 @@
         <where parameters-count="0" parameter-marker-start-index="0" start-index="42" stop-index="92">
             <and-predicate>
                 <predicate start-index="48" stop-index="70">
-                    <column name="order_id" start-index="48" stop-index="57">
+                    <column-left-value name="order_id" start-index="48" stop-index="57">
                         <owner name="o" start-index="48" stop-index="48" />
-                    </column>
+                    </column-left-value>
                 </predicate>
                 <predicate start-index="76" stop-index="92">
-                    <column name="status" start-index="76" stop-index="83">
+                    <column-left-value name="status" start-index="76" stop-index="83">
                         <owner name="o" start-index="76" stop-index="76" />
-                    </column>
+                    </column-left-value>
                 </predicate>
             </and-predicate>
         </where>
@@ -92,14 +92,14 @@
         <where parameters-count="0" parameter-marker-start-index="0" start-index="42" stop-index="92">
             <and-predicate>
                 <predicate start-index="48" stop-index="70">
-                    <column name="order_id" start-index="48" stop-index="57">
+                    <column-left-value name="order_id" start-index="48" stop-index="57">
                         <owner name="o" start-index="48" stop-index="48" />
-                    </column>
+                    </column-left-value>
                 </predicate>
                 <predicate start-index="76" stop-index="92">
-                    <column name="status" start-index="76" stop-index="83">
+                    <column-left-value name="status" start-index="76" stop-index="83">
                         <owner name="o" start-index="76" stop-index="76" />
-                    </column>
+                    </column-left-value>
                 </predicate>
             </and-predicate>
         </where>

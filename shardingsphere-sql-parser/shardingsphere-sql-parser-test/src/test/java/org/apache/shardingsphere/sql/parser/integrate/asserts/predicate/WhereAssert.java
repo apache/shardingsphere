@@ -92,7 +92,10 @@ public final class WhereAssert {
         int count = 0;
         for (PredicateSegment each: actual) {
             ExpectedPredicate expectedPredicate = expected.get(count);
-            assertColumn(assertMessage, each.getColumn(), expectedPredicate.getColumn(), sqlCaseType);
+            assertColumn(assertMessage, each.getColumn(), expectedPredicate.getColumnLeftValue(), sqlCaseType);
+//            if (each.getRightValue() instanceof ColumnSegment) {
+//                assertColumn(assertMessage, (ColumnSegment) each.getRightValue(), expectedPredicate.getColumn(), sqlCaseType);
+//            }
 //            if (each.getRightValue() instanceof PredicateCompareRightValue) {
 //                assertCompareRightValue(assertMessage, (PredicateCompareRightValue) each.getRightValue(), expectedPredicate.findExpectedRightValue(ExpectedPredicateCompareRightValue.class));
 //            }

@@ -31,17 +31,17 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class ExpectedPredicate extends AbstractExpectedSQLSegment {
     
-    @XmlElement
-    private ExpectedColumn column;
+    @XmlElement(name = "column-left-value")
+    private ExpectedColumn columnLeftValue;
     
-    @XmlElement(name = "predicate-between-right-value")
-    private ExpectedPredicateBetweenRightValue betweenRightValue = new ExpectedPredicateBetweenRightValue();
+    @XmlElement(name = "predicate-compare-right-value")
+    private ExpectedPredicateCompareRightValue compareRightValue = new ExpectedPredicateCompareRightValue();
     
     @XmlElement(name = "predicate-in-right-value")
     private ExpectedPredicateInRightValue inRightValue = new ExpectedPredicateInRightValue();
     
-    @XmlElement(name = "predicate-compare-right-value")
-    private ExpectedPredicateCompareRightValue compareRightValue = new ExpectedPredicateCompareRightValue();
+    @XmlElement(name = "predicate-between-right-value")
+    private ExpectedPredicateBetweenRightValue betweenRightValue = new ExpectedPredicateBetweenRightValue();
     
     /**
      * Find expected right value type.
