@@ -1196,6 +1196,16 @@
         <projections start-index="7" stop-index="41">
             <aggregation-projection type="SUM" inner-expression-start-index="10" alias="func_status" start-index="7" stop-index="29" />
         </projections>
+        <where parameters-count="2" parameter-marker-start-index="0" start-index="56" stop-index="89" literal-stop-index="93">
+            <and-predicate>
+                <predicate start-index="62" stop-index="72" literal-stop-index="73">
+                    <column name="user_id" start-index="62" stop-index="68" />
+                </predicate>
+                <predicate start-index="78" stop-index="89" literal-start-index="79" literal-stop-index="93">
+                    <column name="order_id" start-index="78" stop-index="85" literal-start-index="79" literal-stop-index="86" />
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="EQUAL">
