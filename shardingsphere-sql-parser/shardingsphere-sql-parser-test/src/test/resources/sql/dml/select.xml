@@ -1174,6 +1174,8 @@
             <and-predicate>
                 <predicate start-index="28" stop-index="38">
                     <column-left-value name="status" start-index="28" stop-index="33" />
+                    <!-- FIXME incorrect parse result as column type: "\"" -->
+                    <column-right-value name="\" start-delimiter="&quot;" end-delimiter="&quot;" start-index="35" stop-index="38" />
                 </predicate>
             </and-predicate>
         </where>
