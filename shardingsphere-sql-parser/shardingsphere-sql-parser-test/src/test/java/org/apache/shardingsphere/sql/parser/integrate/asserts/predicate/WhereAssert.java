@@ -21,9 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLSegmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedCommonExpression;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedSubquery;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedLiteralExpression;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.owner.ExpectedTableOwner;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedAndPredicate;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedColumn;
@@ -96,7 +93,7 @@ public final class WhereAssert {
             if (each.getRightValue() instanceof ColumnSegment) {
                 assertColumn(assertMessage, (ColumnSegment) each.getRightValue(), expectedPredicate.getColumnRightValue(), sqlCaseType);
             } else if (each.getRightValue() instanceof PredicateCompareRightValue) {
-//                assertCompareRightValue(assertMessage, (PredicateCompareRightValue) each.getRightValue(), expectedPredicate.getCompareRightValue());
+                assertCompareRightValue(assertMessage, (PredicateCompareRightValue) each.getRightValue(), expectedPredicate.getCompareRightValue(), sqlCaseType);
             }
             // TODO add other right value assertion
             SQLSegmentAssert.assertIs(assertMessage, each, expectedPredicate, sqlCaseType);
@@ -123,24 +120,22 @@ public final class WhereAssert {
         SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
     
-    private static void assertCompareRightValue(final SQLStatementAssertMessage assertMessage, final PredicateCompareRightValue actual, final ExpectedPredicateCompareRightValue expected) {
+    private static void assertCompareRightValue(final SQLStatementAssertMessage assertMessage, 
+                                                final PredicateCompareRightValue actual, final ExpectedPredicateCompareRightValue expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Right value operator assertion error: "), actual.getOperator(), is(expected.getOperator()));
         if (actual.getExpression() instanceof ParameterMarkerExpressionSegment) {
-            assertThat(assertMessage.getText("Parameter marker expression parameter marker index assertion error: "), 
-                    ((ParameterMarkerExpressionSegment) actual.getExpression()).getParameterMarkerIndex(), 
-                    is(expected.getParameterMarkerExpression().getParameterMarkerIndex()));
+            assertThat(assertMessage.getText("Parameter marker index assertion error: "), 
+                    ((ParameterMarkerExpressionSegment) actual.getExpression()).getParameterMarkerIndex(), is(expected.getParameterMarkerExpression().getParameterMarkerIndex()));
+        } else if (actual.getExpression() instanceof LiteralExpressionSegment) {
+            assertThat(assertMessage.getText("Literal assertion error: "),
+                    ((LiteralExpressionSegment) actual.getExpression()).getLiterals().toString(), is(expected.getLiteralExpression().getLiterals().toString()));
+        } else if (actual.getExpression() instanceof CommonExpressionSegment) {
+            assertThat(assertMessage.getText("Common expression text assertion error: "), 
+                    ((ComplexExpressionSegment) actual.getExpression()).getText(), is(expected.getCommonExpressionSegment().getText()));
+        } else if (actual.getExpression() instanceof SubquerySegment) {
+            assertThat(assertMessage.getText("Subquery text assertion error: "), 
+                    ((ComplexExpressionSegment) actual.getExpression()).getText(), is(expected.getSubquerySegment().getText()));
         }
-        if (actual.getExpression() instanceof CommonExpressionSegment) {
-            assertThat(assertMessage.getText("Common expression text assertion error: "), ((ComplexExpressionSegment) actual.getExpression()).getText(), 
-                    is(expected.findExpectedExpression(ExpectedCommonExpression.class).getText()));
-        }
-        if (actual.getExpression() instanceof SubquerySegment) {
-            assertThat(assertMessage.getText("Subquery text assertion error: "), ((ComplexExpressionSegment) actual.getExpression()).getText(), 
-                    is(expected.findExpectedExpression(ExpectedSubquery.class).getText()));
-        }
-        if (actual.getExpression() instanceof LiteralExpressionSegment) {
-            assertThat(assertMessage.getText("Literal assertion error: "), ((LiteralExpressionSegment) actual.getExpression()).getLiterals().toString(), 
-                    is(expected.findExpectedExpression(ExpectedLiteralExpression.class).getLiterals().toString()));
-        }
+//        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
 }
