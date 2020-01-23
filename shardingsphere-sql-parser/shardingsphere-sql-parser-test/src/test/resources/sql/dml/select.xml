@@ -970,6 +970,9 @@
                     <column-left-value name="order_id" start-index="82" stop-index="97">
                         <owner name="t_order" start-index="82" stop-index="88" />
                     </column-left-value>
+                    <column-right-value name="order_id" start-index="101" stop-index="121">
+                        <owner name="t_order_item" start-index="101" stop-index="112" />
+                    </column-right-value>
                 </predicate>
             </and-predicate>
         </where>
