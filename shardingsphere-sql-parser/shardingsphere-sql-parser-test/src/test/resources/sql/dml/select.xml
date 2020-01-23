@@ -430,9 +430,23 @@
             <and-predicate>
                 <predicate start-index="28" stop-index="45" literal-stop-index="51">
                     <column-left-value name="order_id" start-index="28" stop-index="35" />
+                    <operator type="IN" />
+                    <in-right-value>
+                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="1000" />
+                        <literal-expression value="1001" />
+                    </in-right-value>
                 </predicate>
                 <predicate start-index="51" stop-index="68" literal-start-index="57" literal-stop-index="80">
                     <column-left-value name="order_id" start-index="51" stop-index="58" literal-start-index="57" literal-stop-index="64" />
+                    <operator type="IN" />
+                    <in-right-value>
+                        <parameter-marker-expression value="2" />
+                        <parameter-marker-expression value="3" />
+                        <literal-expression value="1001" />
+                        <literal-expression value="1002" />
+                    </in-right-value>
                 </predicate>
             </and-predicate>
         </where>
