@@ -67,6 +67,18 @@
             </column-projection>
             <column-projection name="status" start-index="40" stop-index="45" />
         </projections>
+        <where parameters-count="2" parameter-marker-start-index="0" start-index="68" stop-index="109">
+            <and-predicate>
+                <predicate start-index="74" stop-index="92">
+                    <column name="user_id" start-index="74" stop-index="88">
+                        <owner name="t_order" start-index="74" stop-index="80" />
+                    </column>
+                </predicate>
+                <predicate start-index="98" stop-index="109">
+                    <column name="order_id" start-index="98" stop-index="105" />
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="EQUAL">
