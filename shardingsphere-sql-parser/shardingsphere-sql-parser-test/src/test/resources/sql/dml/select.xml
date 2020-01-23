@@ -36,9 +36,19 @@
             <and-predicate>
                 <predicate start-index="44" stop-index="54">
                     <column-left-value name="user_id" start-index="44" stop-index="50" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
                 </predicate>
                 <predicate start-index="60" stop-index="71">
                     <column-left-value name="order_id" start-index="60" stop-index="67" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
