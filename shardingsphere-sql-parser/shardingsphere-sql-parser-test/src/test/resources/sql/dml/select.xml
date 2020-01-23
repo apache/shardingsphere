@@ -1467,6 +1467,11 @@
             <and-predicate>
                 <predicate start-index="28" stop-index="38" literal-stop-index="39">
                     <column-left-value name="user_id" start-index="28" stop-index="34"  literal-stop-index="34" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="10" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
