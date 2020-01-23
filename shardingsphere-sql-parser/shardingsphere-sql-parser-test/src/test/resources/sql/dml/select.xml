@@ -1401,6 +1401,10 @@
             <and-predicate>
                 <predicate start-index="92" stop-index="101">
                     <column-left-value name="status" start-index="92" stop-index="97" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <literal-expression value="1" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
