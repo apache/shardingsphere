@@ -1297,6 +1297,13 @@
         <projections start-index="7" stop-index="37">
             <expression-projection start-index="7" stop-index="37" />
         </projections>
+        <where parameters-count="0" parameter-marker-start-index="0" start-index="57" stop-index="74">
+            <and-predicate>
+                <predicate start-index="63" stop-index="74">
+                    <column name="user_id" start-index="63" stop-index="69" />
+                </predicate>
+            </and-predicate>
+        </where>
     </parser-result>
     
     <parser-result sql-case-id="select_for_update" parameters="10">
