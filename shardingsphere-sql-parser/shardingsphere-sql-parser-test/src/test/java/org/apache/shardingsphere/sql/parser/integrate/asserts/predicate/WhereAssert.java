@@ -134,7 +134,7 @@ public final class WhereAssert {
                     ((ComplexExpressionSegment) actual.getExpression()).getText(), is(expected.getCommonExpressionSegment().getText()));
         } else if (actual.getExpression() instanceof SubquerySegment) {
             assertThat(assertMessage.getText("Subquery text assertion error: "), 
-                    ((ComplexExpressionSegment) actual.getExpression()).getText(), is(expected.getSubquerySegment().getText()));
+                    ((ComplexExpressionSegment) actual.getExpression()).getText(), is(expected.getSubquery().getText()));
         }
 //        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
