@@ -22,6 +22,20 @@
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
             <table name="t_order_item" alias="i" start-index="37" stop-index="48" />
         </tables>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <where parameters-count="1" parameter-marker-start-index="0" start-index="79" stop-index="98" literal-stop-index="101">
+            <and-predicate>
+                <predicate start-index="85" stop-index="98" literal-stop-index="101">
+                    <column name="order_id" start-index="85" stop-index="94">
+                        <owner name="o" start-index="85" stop-index="85" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -29,11 +43,6 @@
                 </condition>
             </and-condition>
         </sharding-conditions>
-        <projections start-index="7" stop-index="9">
-            <shorthand-projection start-index="7" stop-index="9">
-                <owner name="i" start-index="7" stop-index="7" />
-            </shorthand-projection>
-        </projections>
     </parser-result>
     
     <parser-result sql-case-id="select_inner_join_related_with_name" parameters="1000">
@@ -46,6 +55,15 @@
                 <owner name="t_order_item" start-index="7" stop-index="18" />
             </shorthand-projection>
         </projections>
+        <where parameters-count="1" parameter-marker-start-index="0" start-index="97" stop-index="122" literal-stop-index="125">
+            <and-predicate>
+                <predicate start-index="103" stop-index="122" literal-stop-index="125">
+                    <column name="order_id" start-index="103" stop-index="118">
+                        <owner name="t_order" start-index="103" stop-index="109" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
@@ -65,6 +83,15 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
+        <where parameters-count="1" parameter-marker-start-index="0" start-index="62" stop-index="81" literal-stop-index="84">
+            <and-predicate>
+                <predicate start-index="68" stop-index="81" literal-stop-index="84">
+                    <column name="order_id" start-index="68" stop-index="77">
+                        <owner name="o" start-index="68" stop-index="68" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="order_id" table-name="t_order" operator="EQUAL">
