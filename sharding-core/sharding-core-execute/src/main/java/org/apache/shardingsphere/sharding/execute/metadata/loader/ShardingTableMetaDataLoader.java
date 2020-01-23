@@ -91,20 +91,18 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
                     String masterDataSourceName = shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(dataNode.getDataSourceName());
                     DataSourceMetaData dataSourceMetaData = ShardingTableMetaDataLoader.this.dataSourceMetas.getDataSourceMetaData(masterDataSourceName);
                     String generateKeyColumnName = logicTableName == null ? shardingRule.findGenerateKeyColumnName(dataNode.getTableName()).orNull() : shardingRule.findGenerateKeyColumnName(logicTableName).orNull();
-                    result.addAll(load(masterDataSourceName, dataSourceMetaData, dataNode, generateKeyColumnName));
+                    result.add(load(masterDataSourceName, dataSourceMetaData, dataNode, generateKeyColumnName));
                 }
                 return result;
             }
         });
     }
     
-    private Collection<TableMetaData> load(final String dataSourceName, 
+    private TableMetaData load(final String dataSourceName, 
                                            final DataSourceMetaData dataSourceMetaData, final DataNode dataNode, final String generateKeyColumnName) throws SQLException {
-        Collection<TableMetaData> result = new LinkedList<>();
         try (Connection connection = connectionManager.getConnection(dataSourceName)) {
-            result.add(createTableMetaData(connection, dataSourceMetaData, dataNode.getTableName(), generateKeyColumnName));
+            return createTableMetaData(connection, dataSourceMetaData, dataNode.getTableName(), generateKeyColumnName);
         }
-        return result;
     }
     
     private Map<String, List<DataNode>> getDataNodeGroups(final TableRule tableRule) {
