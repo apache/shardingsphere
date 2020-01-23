@@ -274,6 +274,16 @@
                 <owner name="o" start-index="141" stop-index="141" />
             </column-projection>
         </projections>
+        <where parameters-count="6" parameter-marker-start-index="0" start-index="336" stop-index="357" literal-start-index="337" literal-stop-index="358">
+            <and-predicate>
+                <!-- FIXME cannot parse subquery's predicate -->
+                <predicate start-index="342" stop-index="357" literal-start-index="343" literal-stop-index="358">
+                    <column name="rownum_" start-index="342" stop-index="353" literal-start-index="343" literal-stop-index="354">
+                        <owner name="row_" start-index="342" stop-index="345" literal-start-index="343" literal-stop-index="346" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
