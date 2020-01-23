@@ -837,6 +837,11 @@
                     <column-left-value name="order_id" start-index="102" stop-index="111">
                         <owner name="o" start-index="102" stop-index="102" />
                     </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="1000" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
