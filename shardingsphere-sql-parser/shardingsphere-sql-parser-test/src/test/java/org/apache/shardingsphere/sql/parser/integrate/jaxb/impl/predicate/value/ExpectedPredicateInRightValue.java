@@ -28,26 +28,23 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import java.util.Collection;
+import java.util.List;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedPredicateInRightValue implements ExpectedPredicateRightValue {
     
-    @XmlElementWrapper(name = "parameter-marker-expressions")
     @XmlElement(name = "parameter-marker-expression")
-    private Collection<ExpectedParameterMarkerExpression> expectedParameterMarkerExpressions;
+    private List<ExpectedParameterMarkerExpression> parameterMarkerExpressions;
     
-    @XmlElementWrapper(name = "literal-expressions")
     @XmlElement(name = "literal-expression")
-    private Collection<ExpectedLiteralExpression> expectedLiteralExpressions;
+    private List<ExpectedLiteralExpression> literalExpressions;
     
-    @XmlElementWrapper(name = "common-expressions")
     @XmlElement(name = "common-expression")
-    private Collection<ExpectedCommonExpression> expectedCommonExpressions;
+    private List<ExpectedCommonExpression> commonExpressions;
 
-    @XmlElementWrapper(name = "subquery-segments")
-    @XmlElement(name = "subquery-segment")
-    private Collection<ExpectedSubquery> expectedSubqueries;
+    @XmlElementWrapper
+    @XmlElement(name = "subquery")
+    private List<ExpectedSubquery> subqueries;
 }
