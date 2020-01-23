@@ -46,6 +46,9 @@ public final class MD5Encryptor implements Encryptor {
     
     @Override
     public String encrypt(final Object plaintext) {
+        if (null == plaintext) {
+            return null;
+        }
         return DigestUtils.md5Hex(String.valueOf(plaintext));
     }
     
