@@ -995,6 +995,11 @@
             <and-predicate>
                 <predicate start-index="35" stop-index="48">
                     <column-left-value name="item_id" start-delimiter="&quot;" end-delimiter="&quot;" start-index="35" stop-index="43" />
+                    <operator type="!=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
