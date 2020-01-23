@@ -279,15 +279,35 @@
             <and-predicate>
                 <predicate start-index="28" stop-index="39">
                     <column-left-value name="user_id" start-index="28" stop-index="34" />
+                    <operator type="&gt;=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
                 </predicate>
                 <predicate start-index="45" stop-index="56" literal-stop-index="57">
                     <column-left-value name="user_id" start-index="45" stop-index="51" />
+                    <operator type="&lt;=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="10" />
+                    </compare-right-value>
                 </predicate>
                 <predicate start-index="62" stop-index="74" literal-start-index="63" literal-stop-index="75">
                     <column-left-value name="order_id" start-index="62" stop-index="69" literal-start-index="63" literal-stop-index="70" />
+                    <operator type="&gt;=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" />
+                        <literal-expression value="2" />
+                    </compare-right-value>
                 </predicate>
                 <predicate start-index="80" stop-index="92" literal-start-index="81" literal-stop-index="93">
                     <column-left-value name="order_id" start-index="80" stop-index="87" literal-start-index="81" literal-stop-index="88" />
+                    <operator type="&lt;=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="3" />
+                        <literal-expression value="5" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
@@ -863,9 +883,16 @@
                 </predicate>
                 <predicate start-index="67" stop-index="134" literal-start-index="103" literal-stop-index="174">
                     <column-left-value name="start_point" start-index="67" stop-index="77" literal-start-index="103" literal-stop-index="113" />
+                    <operator type="=" />
+                    <!-- TODO assert right value -->
                 </predicate>
                 <predicate start-index="140" stop-index="151" literal-start-index="180" literal-stop-index="191">
                     <column-left-value name="order_id" start-index="140" stop-index="147" literal-start-index="180" literal-stop-index="187" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="4" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>

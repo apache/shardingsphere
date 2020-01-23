@@ -124,7 +124,7 @@ public final class WhereAssert {
     }
     
     private static void assertOperator(final SQLStatementAssertMessage assertMessage, final PredicateSegment actual, final ExpectedOperator expected) {
-        assertNotNull(assertMessage.getText("Operator assertion error: "), ((PredicateCompareRightValue) actual.getRightValue()).getOperator());
+        assertNotNull(assertMessage.getText("Operator assertion error: "), expected);
         assertThat(assertMessage.getText("Operator assertion error: "), ((PredicateCompareRightValue) actual.getRightValue()).getOperator(), is(expected.getType()));
         // TODO assert operator start index and stop index
     }
