@@ -120,17 +120,37 @@
             <and-predicate>
                 <predicate start-index="29" stop-index="40">
                     <column-left-value name="order_id" start-index="29" stop-index="36" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
                 </predicate>
                 <predicate start-index="61" stop-index="71" literal-start-index="66" literal-stop-index="76">
                     <column-left-value name="user_id" start-index="61" stop-index="67" literal-start-index="66" literal-stop-index="72" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" />
+                        <literal-expression value="3" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
             <and-predicate>
                 <predicate start-index="45" stop-index="54" literal-stop-index="59">
                     <column-left-value name="status" start-index="45" stop-index="50" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="init" />
+                    </compare-right-value>
                 </predicate>
                 <predicate start-index="61" stop-index="71" literal-start-index="66" literal-stop-index="76">
                     <column-left-value name="user_id" start-index="61" stop-index="67" literal-start-index="66" literal-stop-index="72" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" />
+                        <literal-expression value="3" />
+                    </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
