@@ -302,6 +302,16 @@
                 <owner name="order0_" start-index="114" stop-index="120" />
             </column-projection>
         </projections>
+        <where parameters-count="6" parameter-marker-start-index="0" start-index="386" stop-index="404" literal-start-index="387" literal-stop-index="405">
+            <and-predicate>
+                <!-- FIXME cannot parse subquery's predicate -->
+                <predicate start-index="392" stop-index="404" literal-start-index="393" literal-stop-index="405">
+                    <column name="rownum_" start-index="392" stop-index="400" literal-start-index="393" literal-stop-index="401">
+                        <owner name="t" start-index="392" stop-index="392" literal-start-index="393" literal-stop-index="393" />
+                    </column>
+                </predicate>
+            </and-predicate>
+        </where>
         <sharding-conditions>
             <and-condition>
                 <condition column-name="user_id" table-name="t_order" operator="IN">
@@ -340,9 +350,9 @@
                 <owner name="order0_" start-index="114" stop-index="120" />
             </column-projection>
         </projections>
-        <!-- FIXME cannot parse subquery's predicate -->
         <where parameters-count="6" parameter-marker-start-index="0" start-index="386" stop-index="404" literal-start-index="387" literal-stop-index="405">
             <and-predicate>
+                <!-- FIXME cannot parse subquery's predicate -->
                 <predicate start-index="392" stop-index="404" literal-start-index="393" literal-stop-index="405">
                     <column name="rownum_" start-index="392" stop-index="400" literal-start-index="393" literal-stop-index="401">
                         <owner name="t" start-index="392" stop-index="392" literal-start-index="393" literal-stop-index="393" />
