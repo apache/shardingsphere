@@ -524,7 +524,7 @@
                     <between-right-value>
                         <between-parameter-marker-expression value="3" />
                         <between-literal-expression value="9" />
-                        <and-parameter-marker-expression value="3" />
+                        <and-parameter-marker-expression value="4" />
                         <and-literal-expression value="10" />
                     </between-right-value>
                 </predicate>
