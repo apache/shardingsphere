@@ -30,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.projection.Project
 import org.apache.shardingsphere.sql.parser.integrate.asserts.table.AlterTableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
@@ -81,18 +80,19 @@ public final class SQLStatementAssert {
     private static void assertSelectStatement(final SQLStatementAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
         ProjectionAssert.assertIs(assertMessage, actual.getProjections(), expected.getProjections(), sqlCaseType);
         if (null == expected.getWhere()) {
-            assertFalse(assertMessage.getText("Actual where segment should not exist: "), actual.getWhere().isPresent());
+            assertFalse(assertMessage.getText("Actual where segment should not exist."), actual.getWhere().isPresent());
         } else {
             WhereAssert.assertIs(assertMessage, actual.getWhere().get(), expected.getWhere(), sqlCaseType);
         }
         if (expected.getGroupByColumns().isEmpty()) {
-            assertFalse(assertMessage.getText("Actual group by segment should not exist: "), actual.getGroupBy().isPresent());
+            assertFalse(assertMessage.getText("Actual group by segment should not exist."), actual.getGroupBy().isPresent());
         } else {
             GroupByAssert.assertIs(assertMessage, actual.getGroupBy().get().getGroupByItems(), expected.getGroupByColumns());
         }
-        Optional<OrderBySegment> orderBySegment = actual.getOrderBy();
-        if (orderBySegment.isPresent()) {
-            OrderByAssert.assertIs(assertMessage, orderBySegment.get().getOrderByItems(), expected.getOrderByColumns());
+        if (expected.getOrderByColumns().isEmpty()) {
+            assertFalse(assertMessage.getText("Actual order by segment should not exist."), actual.getOrderBy().isPresent());
+        } else {
+            OrderByAssert.assertIs(assertMessage, actual.getOrderBy().get().getOrderByItems(), expected.getOrderByColumns());
         }
         Optional<LimitSegment> limitSegment = actual.findSQLSegment(LimitSegment.class);
         if (limitSegment.isPresent()) {
