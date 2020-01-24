@@ -150,9 +150,11 @@
                 </predicate>
             </and-predicate>
         </where>
-        <group-by-columns>
-            <group-by-column name="item_id" owner="i" order-direction="ASC" />
-        </group-by-columns>
+        <group-by>
+            <column-item name="item_id">
+                <owner name="i" start-index="170" stop-index="170" literal-start-index="171" literal-stop-index="171" />
+            </column-item>
+        </group-by>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -197,9 +199,11 @@
                 </predicate>
             </and-predicate>
         </where>
-        <group-by-columns>
-            <group-by-column name="item_id" owner="i" order-direction="ASC" />
-        </group-by-columns>
+        <group-by>
+            <column-item name="item_id">
+                <owner name="i" start-index="170" stop-index="170" literal-start-index="171" literal-stop-index="171" />
+            </column-item>
+        </group-by>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
