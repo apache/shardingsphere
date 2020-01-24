@@ -33,7 +33,6 @@
                     <column-left-value name="user_id" start-index="105" stop-index="113">
                         <owner name="o" start-index="105" stop-index="105" />
                     </column-left-value>
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="0" />
                         <parameter-marker-expression value="1" />
@@ -82,7 +81,6 @@
                     <column-left-value name="user_id" start-index="105" stop-index="113">
                         <owner name="o" start-index="105" stop-index="105" />
                     </column-left-value>
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="0" />
                         <parameter-marker-expression value="1" />
@@ -131,7 +129,6 @@
                     <column-left-value name="user_id" start-delimiter="`" end-delimiter="`" start-index="109" stop-index="119">
                         <owner name="o" start-index="109" stop-index="109" />
                     </column-left-value>
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="0" />
                         <parameter-marker-expression value="1" />
@@ -181,7 +178,6 @@
                     <column-left-value name="user_id" start-delimiter="`" end-delimiter="`" start-index="109" stop-index="119">
                         <owner name="o" start-index="109" stop-index="109" />
                     </column-left-value>
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="0" />
                         <parameter-marker-expression value="1" />
@@ -243,7 +239,6 @@
                     <column-left-value name="user_id" start-index="256" stop-index="264">
                         <owner name="o" start-index="256" stop-index="256" />
                     </column-left-value>
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="1" />
                         <parameter-marker-expression value="2" />
@@ -292,7 +287,6 @@
                     <column-left-value name="user_id" start-index="105" stop-index="113">
                         <owner name="o" start-index="105" stop-index="105" />
                     </column-left-value>
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="0" />
                         <parameter-marker-expression value="1" />

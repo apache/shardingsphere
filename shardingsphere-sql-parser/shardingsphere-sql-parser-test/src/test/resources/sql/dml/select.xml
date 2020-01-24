@@ -394,7 +394,6 @@
             <and-predicate>
                 <predicate start-index="28" stop-index="47">
                     <column-left-value name="user_id" start-index="28" stop-index="34" />
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="0" />
                         <parameter-marker-expression value="1" />
@@ -406,7 +405,6 @@
                 </predicate>
                 <predicate start-index="53" stop-index="70" literal-stop-index="71">
                     <column-left-value name="order_id" start-index="53" stop-index="60" />
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="3" />
                         <parameter-marker-expression value="4" />
@@ -446,7 +444,6 @@
             <and-predicate>
                 <predicate start-index="28" stop-index="45" literal-stop-index="51">
                     <column-left-value name="order_id" start-index="28" stop-index="35" />
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="0" />
                         <parameter-marker-expression value="1" />
@@ -456,7 +453,6 @@
                 </predicate>
                 <predicate start-index="51" stop-index="68" literal-start-index="57" literal-stop-index="80">
                     <column-left-value name="order_id" start-index="51" stop-index="58" literal-start-index="57" literal-stop-index="64" />
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="2" />
                         <parameter-marker-expression value="3" />
@@ -502,7 +498,6 @@
                     <column-left-value name="user_id" start-index="93" stop-index="101" literal-start-index="98" literal-stop-index="106">
                         <owner name="o" start-index="93" stop-index="93" literal-start-index="98" literal-stop-index="98" />
                     </column-left-value>
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="1" />
                         <parameter-marker-expression value="2" />
@@ -550,7 +545,6 @@
                     <column-left-value name="user_id" start-index="91" stop-index="99" literal-start-index="96" literal-stop-index="104">
                         <owner name="o" start-index="91" stop-index="91" literal-start-index="96" literal-stop-index="96" />
                     </column-left-value>
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="1" />
                         <parameter-marker-expression value="2" />
@@ -595,7 +589,6 @@
                     <column-left-value name="user_id" start-index="105" stop-index="113">
                         <owner name="o" start-index="105" stop-index="105" />
                     </column-left-value>
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="0" />
                         <parameter-marker-expression value="1" />
@@ -659,7 +652,6 @@
                     <column-left-value name="user_id" start-index="153" stop-index="161">
                         <owner name="o" start-index="153" stop-index="153" />
                     </column-left-value>
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="0" />
                         <parameter-marker-expression value="1" />
@@ -723,7 +715,6 @@
                     <column-left-value name="user_id" start-index="144" stop-index="152">
                         <owner name="o" start-index="144" stop-index="144" />
                     </column-left-value>
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="0" />
                         <parameter-marker-expression value="1" />
@@ -787,7 +778,6 @@
                     <column-left-value name="user_id" start-index="144" stop-index="152">
                         <owner name="o" start-index="144" stop-index="144" />
                     </column-left-value>
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="0" />
                         <parameter-marker-expression value="1" />
@@ -846,7 +836,6 @@
                     <column-left-value name="user_id" start-index="144" stop-index="152">
                         <owner name="o" start-index="144" stop-index="144" />
                     </column-left-value>
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="0" />
                         <parameter-marker-expression value="1" />
@@ -1016,7 +1005,6 @@
             <and-predicate>
                 <predicate start-index="28" stop-index="55" literal-stop-index="91">
                     <column-left-value name="rule" start-index="28" stop-index="31" />
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="0" />
                         <parameter-marker-expression value="1" />
@@ -1070,7 +1058,6 @@
             <and-predicate>
                 <predicate start-index="28" stop-index="61" literal-stop-index="97">
                     <column-left-value name="rule" start-index="28" stop-index="31" />
-                    <operator type="BETWEEN" />
                     <between-right-value>
                         <between-parameter-marker-expression value="0" />
                         <between-literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}'::json" />

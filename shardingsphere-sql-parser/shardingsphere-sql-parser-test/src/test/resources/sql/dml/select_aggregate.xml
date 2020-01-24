@@ -132,7 +132,6 @@
                     <column-left-value name="user_id" start-index="122" stop-index="130">
                         <owner name="o" start-index="122" stop-index="122" />
                     </column-left-value>
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="0" />
                         <parameter-marker-expression value="1" />
@@ -175,7 +174,6 @@
                     <column-left-value name="user_id" start-index="125" stop-index="133">
                         <owner name="o" start-index="125" stop-index="125" />
                     </column-left-value>
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="0" />
                         <parameter-marker-expression value="1" />
