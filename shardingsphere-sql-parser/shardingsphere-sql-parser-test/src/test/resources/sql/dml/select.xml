@@ -574,6 +574,12 @@
                     <column-left-value name="order_id" start-index="115" stop-index="124" literal-start-index="120" literal-stop-index="129">
                         <owner name="o" start-index="115" stop-index="115" literal-start-index="120" literal-stop-index="120" />
                     </column-left-value>
+                    <between-right-value>
+                        <between-parameter-marker-expression value="3" />
+                        <between-literal-expression value="9" />
+                        <and-parameter-marker-expression value="4" />
+                        <and-literal-expression value="10" />
+                    </between-right-value>
                 </predicate>
             </and-predicate>
         </where>
