@@ -61,7 +61,6 @@
                     <column-left-value name="item_id" start-index="57" stop-index="65" literal-start-index="62" literal-stop-index="70">
                         <owner name="t" start-index="57" stop-index="57" literal-start-index="62" literal-stop-index="62" />
                     </column-left-value>
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="1" />
                         <parameter-marker-expression value="2" />

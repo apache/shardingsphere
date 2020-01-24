@@ -33,7 +33,6 @@
                     <column-left-value name="user_id" start-index="111" stop-index="119">
                         <owner name="o" start-index="111" stop-index="111" />
                     </column-left-value>
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="0" />
                         <parameter-marker-expression value="1" />
@@ -45,6 +44,12 @@
                     <column-left-value name="order_id" start-index="135" stop-index="144">
                         <owner name="o" start-index="135" stop-index="135" />
                     </column-left-value>
+                    <between-right-value>
+                        <between-parameter-marker-expression value="2" />
+                        <between-literal-expression value="9" />
+                        <and-parameter-marker-expression value="3" />
+                        <and-literal-expression value="10" />
+                    </between-right-value>
                 </predicate>
             </and-predicate>
         </where>
@@ -87,7 +92,6 @@
                     <column-left-value name="user_id" start-index="111" stop-index="119">
                         <owner name="o" start-index="111" stop-index="111" />
                     </column-left-value>
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="0" />
                         <parameter-marker-expression value="1" />
@@ -99,6 +103,12 @@
                     <column-left-value name="order_id" start-index="135" stop-index="144">
                         <owner name="o" start-index="135" stop-index="135" />
                     </column-left-value>
+                    <between-right-value>
+                        <between-parameter-marker-expression value="2" />
+                        <between-literal-expression value="9" />
+                        <and-parameter-marker-expression value="3" />
+                        <and-literal-expression value="10" />
+                    </between-right-value>
                 </predicate>
             </and-predicate>
         </where>
