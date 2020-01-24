@@ -19,16 +19,21 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.groupby;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLSegmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.groupby.ExpectedGroupByColumn;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.groupby.ExpectedGroupBy;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.groupby.ColumnExpectedGroupByItem;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.owner.ExpectedTableOwner;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
-
-import java.util.Collection;
-import java.util.List;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Group by assert.
@@ -39,28 +44,42 @@ import static org.junit.Assert.assertThat;
 public final class GroupByAssert {
     
     /**
-     * Assert actual group by item segments is correct with expected group by columns.
+     * Assert actual group by segment is correct with expected group by.
      * 
      * @param assertMessage assert message
-     * @param actual actual group by items
-     * @param expected expected group by items
+     * @param actual actual group by segment
+     * @param expected expected group by
+     * @param sqlCaseType SQL case type
      */
-    public static void assertIs(final SQLStatementAssertMessage assertMessage, final Collection<OrderByItemSegment> actual, final List<ExpectedGroupByColumn> expected) {
-        assertThat(assertMessage.getText("Group by items size error: "), actual.size(), is(expected.size()));
+    public static void assertIs(final SQLStatementAssertMessage assertMessage, final GroupBySegment actual, final ExpectedGroupBy expected, final SQLCaseType sqlCaseType) {
+        assertThat(assertMessage.getText("Group by items size error: "), actual.getGroupByItems().size(), is(expected.getItems().size()));
         int count = 0;
-        for (OrderByItemSegment each : actual) {
+        for (OrderByItemSegment each : actual.getGroupByItems()) {
             if (each instanceof ColumnOrderByItemSegment) {
-                assertGroupByItem(assertMessage, (ColumnOrderByItemSegment) each, expected.get(count));
+                assertColumnGroupByItem(assertMessage, (ColumnOrderByItemSegment) each, expected.getItems().get(count), sqlCaseType);
             }
+            // TODO assert other group by item
             count++;
         }
     }
     
-    private static void assertGroupByItem(final SQLStatementAssertMessage assertMessage, final ColumnOrderByItemSegment actual, final ExpectedGroupByColumn expected) {
-        assertThat(assertMessage.getText("Group by item owner assertion error: "), 
-                actual.getColumn().getOwner().isPresent() ? actual.getColumn().getOwner().get().getTableName() : null, is(expected.getOwner()));
-        assertThat(assertMessage.getText("Group by item name assertion error: "), actual.getColumn().getName(), is(expected.getName()));
+    private static void assertColumnGroupByItem(final SQLStatementAssertMessage assertMessage, 
+                                                final ColumnOrderByItemSegment actual, final ColumnExpectedGroupByItem expected, final SQLCaseType sqlCaseType) {
+        assertThat(assertMessage.getText("Group by item column name assertion error: "), actual.getColumn().getName(), is(expected.getName()));
         assertThat(assertMessage.getText("Group by item order direction assertion error: "), actual.getOrderDirection().name(), is(expected.getOrderDirection()));
         // TODO assert nullOrderDirection
+        if (null != expected.getOwner()) {
+            assertTrue(assertMessage.getText("Actual owner should exist."), actual.getColumn().getOwner().isPresent());
+            assertOwner(assertMessage, actual.getColumn().getOwner().get(), expected.getOwner(), sqlCaseType);
+        } else {
+            assertFalse(assertMessage.getText("Actual owner should not exist."), actual.getColumn().getOwner().isPresent());
+        }
+    }
+    
+    private static void assertOwner(final SQLStatementAssertMessage assertMessage, final TableSegment actual, final ExpectedTableOwner expected, final SQLCaseType sqlCaseType) {
+        assertThat(assertMessage.getText("Group by column owner name assertion error: "), actual.getTableName(), is(expected.getName()));
+        assertThat(assertMessage.getText("Group by column owner name start delimiter assertion error: "), actual.getTableQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
+        assertThat(assertMessage.getText("Group by column owner name end delimiter assertion error: "), actual.getTableQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
+        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
 }

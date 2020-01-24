@@ -19,22 +19,22 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.groupby;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedDelimiterSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.owner.ExpectedTableOwner;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedGroupByColumn {
-    
-    @XmlAttribute
-    private String owner;
+public final class ColumnExpectedGroupByItem extends AbstractExpectedDelimiterSQLSegment {
     
     @XmlAttribute
     private String name;
     
     @XmlAttribute(name = "order-direction") 
     private String orderDirection;
+    
+    @XmlElement
+    private ExpectedTableOwner owner;
 }

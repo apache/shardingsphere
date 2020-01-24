@@ -81,7 +81,7 @@ public final class SQLStatementAssert {
     private static void assertSelectStatement(final SQLStatementAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
         ProjectionAssert.assertIs(assertMessage, actual.getProjections(), expected.getProjections(), sqlCaseType);
         assertWhere(assertMessage, actual, expected, sqlCaseType);
-        assertGroupBy(assertMessage, actual, expected);
+        assertGroupBy(assertMessage, actual, expected, sqlCaseType);
         assertOrderBy(assertMessage, actual, expected);
         assertLimit(assertMessage, actual, expected, sqlCaseType);
     }
@@ -95,10 +95,10 @@ public final class SQLStatementAssert {
         }
     }
     
-    private static void assertGroupBy(final SQLStatementAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected) {
-        if (!expected.getGroupByColumns().isEmpty()) {
+    private static void assertGroupBy(final SQLStatementAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
+        if (null != expected.getGroupBy()) {
             assertTrue(assertMessage.getText("Actual group by segment should exist."), actual.getGroupBy().isPresent());
-            GroupByAssert.assertIs(assertMessage, actual.getGroupBy().get().getGroupByItems(), expected.getGroupByColumns());
+            GroupByAssert.assertIs(assertMessage, actual.getGroupBy().get(), expected.getGroupBy(), sqlCaseType);
         } else {
             assertFalse(assertMessage.getText("Actual group by segment should not exist."), actual.getGroupBy().isPresent());
         }
