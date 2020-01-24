@@ -201,7 +201,7 @@
         </where>
         <group-by>
             <column-item name="item_id">
-                <owner name="i" start-index="170" stop-index="170" literal-start-index="171" literal-stop-index="171" />
+                <owner name="i" start-index="316" stop-index="316" literal-start-index="317" literal-stop-index="317" />
             </column-item>
         </group-by>
         <order-by-columns>
