@@ -46,18 +46,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="1" type="int" />
-                </condition>
-            </and-condition>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="1" literal="2" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_or_with_different_sharding_columns" parameters="1, 2">
@@ -89,18 +77,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="1" type="int" />
-                </condition>
-            </and-condition>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="1" literal="2" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_or_with_none_sharding_columns" parameters="1, 'init'">
@@ -132,11 +108,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <encrypt-conditions>
-            <condition column-name="status" table-name="t_order" operator="EQUAL">
-                <value index="1" literal="init" type="varchar" />
-            </condition>
-        </encrypt-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_or_mix_and_for_simple_pattern" parameters="1, 'init', 3">
@@ -184,26 +155,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="1" type="int" />
-                </condition>
-                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="2" literal="3" type="int" />
-                </condition>
-            </and-condition>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="2" literal="3" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
-        <encrypt-conditions>
-            <condition column-name="status" table-name="t_order" operator="EQUAL">
-                <value index="1" literal="init" type="varchar" />
-            </condition>
-        </encrypt-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_or_mix_and_for_complex_pattern" parameters="'init', 1, 2, 3, 4">
@@ -319,45 +270,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="1" literal="1" type="int" />
-                </condition>
-                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="3" literal="3" type="int" />
-                </condition>
-            </and-condition>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="1" literal="1" type="int" />
-                </condition>
-                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="4" literal="4" type="int" />
-                </condition>
-            </and-condition>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="2" literal="2" type="int" />
-                </condition>
-                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="3" literal="3" type="int" />
-                </condition>
-            </and-condition>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="2" literal="2" type="int" />
-                </condition>
-                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="4" literal="4" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
-        <encrypt-conditions>
-            <condition column-name="status" table-name="t_order" operator="EQUAL">
-                <value index="0" literal="init" type="varchar" />
-            </condition>
-        </encrypt-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_or_mix_and_with_binding_tables" parameters="1, 2, 3">
@@ -416,24 +328,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="1" type="int" />
-                </condition>
-                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="2" literal="3" type="int" />
-                </condition>
-            </and-condition>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="2" literal="3" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_or_mix_and_with_binding_and_broadcast_tables" parameters="1, 2, 3, 'init'">
@@ -513,28 +407,5 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="1" type="int" />
-                </condition>
-                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="2" literal="3" type="int" />
-                </condition>
-            </and-condition>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="2" literal="3" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
-        <encrypt-conditions>
-            <condition column-name="status" table-name="t_order" operator="EQUAL">
-                <value index="3" literal="init" type="varchar" />
-            </condition>
-        </encrypt-conditions>
     </parser-result>
 </parser-result-sets>

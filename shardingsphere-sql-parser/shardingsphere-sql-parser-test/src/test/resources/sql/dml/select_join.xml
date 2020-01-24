@@ -41,13 +41,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="1000" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_inner_join_related_with_name" parameters="1000">
@@ -74,13 +67,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="1000" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_join_using" parameters="1000">
@@ -107,12 +93,5 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="1000" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
     </parser-result>
 </parser-result-sets>

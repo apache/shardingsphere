@@ -67,11 +67,6 @@
             <order-by-column owner="o" name="order_id" order-direction="DESC" />
             <order-by-column index="1" order-direction="ASC" />
         </order-by-columns>
-        <encrypt-conditions>
-            <condition column-name="status" table-name="t_order" operator="EQUAL">
-                <value index="0" literal="init" type="varchar" />
-            </condition>
-        </encrypt-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_with_ordered_column">
@@ -125,11 +120,6 @@
             <order-by-column owner="o" name="order_id" order-direction="DESC" />
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
-        <encrypt-conditions>
-            <condition column-name="status" table-name="t_order" operator="EQUAL">
-                <value index="0" literal="init" type="varchar" />
-            </condition>
-        </encrypt-conditions>
     </parser-result>
     
     <!-- //TODO add order-by-null-type -->
