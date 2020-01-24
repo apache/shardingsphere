@@ -56,6 +56,7 @@ public final class GroupByAssert {
         int count = 0;
         for (OrderByItemSegment each : actual.getGroupByItems()) {
             if (each instanceof ColumnOrderByItemSegment) {
+                assertOrderInfo(assertMessage, each, expected.getItems().get(count));
                 assertColumnGroupByItem(assertMessage, (ColumnOrderByItemSegment) each, expected.getItems().get(count), sqlCaseType);
             }
             // TODO assert other group by item
@@ -63,11 +64,15 @@ public final class GroupByAssert {
         }
     }
     
+    private static void assertOrderInfo(final SQLStatementAssertMessage assertMessage, final OrderByItemSegment actual, final ColumnExpectedGroupByItem expected) {
+        assertThat(assertMessage.getText("Group by item order direction assertion error: "), actual.getOrderDirection().name(), is(expected.getOrderDirection()));
+        // TODO assert nullOrderDirection
+    }
+    
     private static void assertColumnGroupByItem(final SQLStatementAssertMessage assertMessage, 
                                                 final ColumnOrderByItemSegment actual, final ColumnExpectedGroupByItem expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Group by item column name assertion error: "), actual.getColumn().getName(), is(expected.getName()));
         assertThat(assertMessage.getText("Group by item order direction assertion error: "), actual.getOrderDirection().name(), is(expected.getOrderDirection()));
-        // TODO assert nullOrderDirection
         if (null != expected.getOwner()) {
             assertTrue(assertMessage.getText("Actual owner should exist."), actual.getColumn().getOwner().isPresent());
             assertOwner(assertMessage, actual.getColumn().getOwner().get(), expected.getOwner(), sqlCaseType);
