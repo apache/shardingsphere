@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.Expect
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedOperator;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedPredicate;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedWhere;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.value.ExpectedPredicateBetweenRightValue;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.value.ExpectedPredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.value.ExpectedPredicateInRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
@@ -40,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.Paramete
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
@@ -104,6 +106,9 @@ public final class WhereAssert {
             } else if (each.getRightValue() instanceof PredicateInRightValue) {
                 assertOperator(assertMessage, each, expectedPredicate.getOperator());
                 assertInRightValue(assertMessage, (PredicateInRightValue) each.getRightValue(), expectedPredicate.getInRightValue(), sqlCaseType);
+            } else if (each.getRightValue() instanceof PredicateBetweenRightValue) {
+                assertOperator(assertMessage, each, expectedPredicate.getOperator());
+                assertBetweenRightValue(assertMessage, (PredicateBetweenRightValue) each.getRightValue(), expectedPredicate.getBetweenRightValue(), sqlCaseType);
             }
             // TODO add other right value assertion
             SQLSegmentAssert.assertIs(assertMessage, each, expectedPredicate, sqlCaseType);
@@ -136,6 +141,8 @@ public final class WhereAssert {
             assertThat(assertMessage.getText("Operator assertion error: "), ((PredicateCompareRightValue) actual.getRightValue()).getOperator(), is(expected.getType()));
         } else if (actual.getRightValue() instanceof PredicateInRightValue) {
             assertThat(assertMessage.getText("Operator assertion error: "), "IN", is(expected.getType()));
+        } else if (actual.getRightValue() instanceof PredicateBetweenRightValue) {
+            assertThat(assertMessage.getText("Operator assertion error: "), "BETWEEN", is(expected.getType()));
         }
         // TODO assert operator start index and stop index
     }
@@ -183,6 +190,40 @@ public final class WhereAssert {
                 ExpressionAssert.assertSubquery(assertMessage, (ComplexExpressionSegment) each, expected.getSubqueries().get(count), sqlCaseType);
                 count++;
             }
+        }
+//        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
+    }
+    
+    private static void assertBetweenRightValue(final SQLStatementAssertMessage assertMessage,
+                                                final PredicateBetweenRightValue actual, final ExpectedPredicateBetweenRightValue expected, final SQLCaseType sqlCaseType) {
+        assertBetweenExpression(assertMessage, actual.getBetweenExpression(), expected, sqlCaseType);
+        assertAndExpression(assertMessage, actual.getAndExpression(), expected, sqlCaseType);
+//        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
+    }
+    
+    private static void assertBetweenExpression(final SQLStatementAssertMessage assertMessage, 
+                                                final ExpressionSegment actual, final ExpectedPredicateBetweenRightValue expected, final SQLCaseType sqlCaseType) {
+        if (actual instanceof ParameterMarkerExpressionSegment) {
+            ExpressionAssert.assertParameterMarkerExpression(assertMessage, (ParameterMarkerExpressionSegment) actual, expected.getBetweenParameterMarkerExpression(), sqlCaseType);
+        } else if (actual instanceof LiteralExpressionSegment) {
+            ExpressionAssert.assertLiteralExpression(assertMessage, (LiteralExpressionSegment) actual, expected.getBetweenLiteralExpression(), sqlCaseType);
+        } else if (actual instanceof CommonExpressionSegment) {
+            ExpressionAssert.assertCommonExpression(assertMessage, (ComplexExpressionSegment) actual, expected.getBetweenCommonExpression(), sqlCaseType);
+        } else if (actual instanceof SubquerySegment) {
+            ExpressionAssert.assertSubquery(assertMessage, (ComplexExpressionSegment) actual, expected.getBetweenSubquery(), sqlCaseType);
+        }
+    }
+    
+    private static void assertAndExpression(final SQLStatementAssertMessage assertMessage, 
+                                            final ExpressionSegment actual, final ExpectedPredicateBetweenRightValue expected, final SQLCaseType sqlCaseType) {
+        if (actual instanceof ParameterMarkerExpressionSegment) {
+            ExpressionAssert.assertParameterMarkerExpression(assertMessage, (ParameterMarkerExpressionSegment) actual, expected.getAndParameterMarkerExpression(), sqlCaseType);
+        } else if (actual instanceof LiteralExpressionSegment) {
+            ExpressionAssert.assertLiteralExpression(assertMessage, (LiteralExpressionSegment) actual, expected.getAndLiteralExpression(), sqlCaseType);
+        } else if (actual instanceof CommonExpressionSegment) {
+            ExpressionAssert.assertCommonExpression(assertMessage, (ComplexExpressionSegment) actual, expected.getAndCommonExpression(), sqlCaseType);
+        } else if (actual instanceof SubquerySegment) {
+            ExpressionAssert.assertSubquery(assertMessage, (ComplexExpressionSegment) actual, expected.getAndSubquery(), sqlCaseType);
         }
     }
 }
