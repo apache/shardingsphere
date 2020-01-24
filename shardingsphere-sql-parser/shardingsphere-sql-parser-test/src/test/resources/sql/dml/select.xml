@@ -294,9 +294,21 @@
             <and-predicate>
                 <predicate start-index="28" stop-index="50" literal-stop-index="51">
                     <column-left-value name="user_id" start-index="28" stop-index="34" />
+                    <between-right-value>
+                        <between-parameter-marker-expression value="0" />
+                        <between-literal-expression value="1" />
+                        <and-parameter-marker-expression value="1" />
+                        <and-literal-expression value="10" />
+                    </between-right-value>
                 </predicate>
                 <predicate start-index="56" stop-index="79" literal-start-index="57" literal-stop-index="80">
                     <column-left-value name="order_id" start-index="56" stop-index="63" literal-start-index="57" literal-stop-index="64" />
+                    <between-right-value>
+                        <between-parameter-marker-expression value="2" />
+                        <between-literal-expression value="2" />
+                        <and-parameter-marker-expression value="3" />
+                        <and-literal-expression value="5" />
+                    </between-right-value>
                 </predicate>
             </and-predicate>
         </where>
