@@ -223,9 +223,9 @@
                 </predicate>
             </and-predicate>
         </where>
-        <group-by-columns>
-            <group-by-column name="date_format(creation_date,'%y-%m-%d')" order-direction="ASC" />
-        </group-by-columns>
+        <group-by>
+            <expression-item expression="date_format(creation_date,'%y-%m-%d')" start-index="146" stop-index="183" />
+        </group-by>
     </parser-result>
     
     <parser-result sql-case-id="select_group_by_with_keyword_alias">

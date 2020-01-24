@@ -75,7 +75,7 @@ public final class GroupByAssert {
         }
         for (OrderByItemSegment each : actual.getGroupByItems()) {
             if (each instanceof ExpressionOrderByItemSegment) {
-                assertOrderInfo(assertMessage, each, expected.getIndexItems().get(count));
+                assertOrderInfo(assertMessage, each, expected.getExpressionItems().get(count));
                 assertExpressionGroupByItem(assertMessage, (ExpressionOrderByItemSegment) each, expected.getExpressionItems().get(count), sqlCaseType);
                 count++;
             }
