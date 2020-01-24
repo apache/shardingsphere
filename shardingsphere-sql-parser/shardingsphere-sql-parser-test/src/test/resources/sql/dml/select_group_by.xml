@@ -57,9 +57,9 @@
             <aggregation-projection type="MAX" alias="max_order_id" inner-expression-start-index="10" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="38" stop-index="44" />
         </projections>
-        <group-by-columns>
-            <group-by-column name="user_id" order-direction="ASC" />
-        </group-by-columns>
+        <group-by>
+            <column-item name="user_id" />
+        </group-by>
         <order-by-columns>
             <order-by-column name="user_id" order-direction="ASC" />
         </order-by-columns>
