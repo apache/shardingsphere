@@ -224,7 +224,7 @@
             </and-predicate>
         </where>
         <group-by>
-            <expression-item expression="date_format(creation_date,'%y-%m-%d')" start-index="146" stop-index="183" />
+            <expression-item expression="date_format(creation_date,'%y-%m-%d')" start-index="140" stop-index="177" literal-start-index="146" literal-stop-index="183" />
         </group-by>
     </parser-result>
     
