@@ -57,7 +57,7 @@ public final class GroupByAssert {
      * @param sqlCaseType SQL case type
      */
     public static void assertIs(final SQLStatementAssertMessage assertMessage, final GroupBySegment actual, final ExpectedGroupBy expected, final SQLCaseType sqlCaseType) {
-        assertThat(assertMessage.getText("Group by items size error: "), actual.getGroupByItems().size(), is(expected.getItemSize()));
+        assertThat(assertMessage.getText("Group by items size assertion error: "), actual.getGroupByItems().size(), is(expected.getItemSize()));
         int count = 0;
         for (OrderByItemSegment each : actual.getGroupByItems()) {
             if (each instanceof ColumnOrderByItemSegment) {
@@ -80,6 +80,7 @@ public final class GroupByAssert {
                 count++;
             }
         }
+        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
     
     private static void assertOrderInfo(final SQLStatementAssertMessage assertMessage, final OrderByItemSegment actual, final ExpectedOrderByItem expected) {
