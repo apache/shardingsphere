@@ -196,9 +196,11 @@
                 <owner name="o" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
-        <group-by-columns>
-            <group-by-column name="user_id" owner="o" alias="uid" order-direction="ASC" />
-        </group-by-columns>
+        <group-by>
+            <column-item name="user_id">
+                <owner name="o" start-index="45" stop-index="45" />
+            </column-item>
+        </group-by>
         <order-by-columns>
             <order-by-column name="user_id" owner="o" order-direction="ASC" />
         </order-by-columns>
