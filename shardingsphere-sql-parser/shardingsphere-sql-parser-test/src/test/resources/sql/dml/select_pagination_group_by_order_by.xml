@@ -152,7 +152,7 @@
         </where>
         <group-by>
             <column-item name="item_id">
-                <owner name="i" start-index="170" stop-index="170" literal-start-index="171" literal-stop-index="171" />
+                <owner name="i" start-index="314" stop-index="314" literal-start-index="315" literal-stop-index="315" />
             </column-item>
         </group-by>
         <order-by-columns>
