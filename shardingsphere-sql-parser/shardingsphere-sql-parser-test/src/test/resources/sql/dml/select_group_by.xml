@@ -25,9 +25,9 @@
             <aggregation-projection type="SUM" alias="orders_sum" inner-expression-start-index="10" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="36" stop-index="42" />
         </projections>
-        <group-by-columns>
-            <group-by-column name="user_id" order-direction="ASC" />
-        </group-by-columns>
+        <group-by>
+            <column-item name="user_id" />
+        </group-by>
         <order-by-columns>
             <order-by-column name="user_id" order-direction="ASC" />
         </order-by-columns>
@@ -41,9 +41,9 @@
             <aggregation-projection type="COUNT" alias="orders_count" inner-expression-start-index="12" start-index="7" stop-index="21" />
             <column-projection name="user_id" start-index="40" stop-index="46" />
         </projections>
-        <group-by-columns>
-            <group-by-column name="user_id" order-direction="ASC" />
-        </group-by-columns>
+        <group-by>
+            <column-item name="user_id" />
+        </group-by>
         <order-by-columns>
             <order-by-column name="user_id" order-direction="ASC" />
         </order-by-columns>
@@ -57,9 +57,9 @@
             <aggregation-projection type="MAX" alias="max_order_id" inner-expression-start-index="10" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="38" stop-index="44" />
         </projections>
-        <group-by-columns>
-            <group-by-column name="user_id" order-direction="ASC" />
-        </group-by-columns>
+        <group-by>
+            <column-item name="user_id" />
+        </group-by>
         <order-by-columns>
             <order-by-column name="user_id" order-direction="ASC" />
         </order-by-columns>
@@ -73,9 +73,9 @@
             <aggregation-projection type="MIN" alias="min_order_id" inner-expression-start-index="10" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="38" stop-index="44" />
         </projections>
-        <group-by-columns>
-            <group-by-column name="user_id" order-direction="ASC" />
-        </group-by-columns>
+        <group-by>
+            <column-item name="user_id" />
+        </group-by>
         <order-by-columns>
             <order-by-column name="user_id" order-direction="ASC" />
         </order-by-columns>
@@ -89,9 +89,9 @@
             <aggregation-projection type="AVG" alias="orders_avg" inner-expression-start-index="10" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="36" stop-index="42" />
         </projections>
-        <group-by-columns>
-            <group-by-column name="user_id" order-direction="ASC" />
-        </group-by-columns>
+        <group-by>
+            <column-item name="user_id" />
+        </group-by>
         <order-by-columns>
             <order-by-column name="user_id" order-direction="ASC" />
         </order-by-columns>
@@ -105,9 +105,9 @@
             <aggregation-projection type="SUM" inner-expression-start-index="10" alias="orders_sum" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="36" stop-index="42" />
         </projections>
-        <group-by-columns>
-            <group-by-column name="user_id" order-direction="ASC" />
-        </group-by-columns>
+        <group-by>
+            <column-item name="user_id" />
+        </group-by>
         <order-by-columns>
             <order-by-column name="orders_sum" order-direction="DESC" />
         </order-by-columns>
@@ -147,9 +147,11 @@
                 </predicate>
             </and-predicate>
         </where>
-        <group-by-columns>
-            <group-by-column name="user_id" owner="o" order-direction="ASC" />
-        </group-by-columns>
+        <group-by>
+            <column-item name="user_id">
+                <owner name="o" start-index="185" stop-index="185" literal-start-index="186" literal-stop-index="186" />
+            </column-item>
+        </group-by>
     </parser-result>
     
     <parser-result sql-case-id="select_group_by_with_limit" parameters="5">
@@ -159,9 +161,9 @@
         <projections start-index="7" stop-index="13">
             <column-projection name="user_id" start-index="7" stop-index="13" />
         </projections>
-        <group-by-columns>
-            <group-by-column name="user_id" order-direction="ASC" />
-        </group-by-columns>
+        <group-by>
+            <column-item name="user_id" />
+        </group-by>
         <order-by-columns>
             <order-by-column name="user_id" order-direction="ASC" />
         </order-by-columns>
@@ -176,9 +178,9 @@
             <column-projection name="user_id" start-index="7" stop-index="13" />
             <aggregation-projection type="SUM"  inner-expression-start-index="19" alias="orders_sum" start-index="16" stop-index="28" />
         </projections>
-        <group-by-columns>
-            <group-by-column name="user_id" order-direction="ASC" />
-        </group-by-columns>
+        <group-by>
+            <column-item name="user_id" />
+        </group-by>
         <order-by-columns>
             <order-by-column name="SUM(order_id)" order-direction="ASC" />
         </order-by-columns>
@@ -194,9 +196,11 @@
                 <owner name="o" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
-        <group-by-columns>
-            <group-by-column name="user_id" owner="o" alias="uid" order-direction="ASC" />
-        </group-by-columns>
+        <group-by>
+            <column-item name="user_id">
+                <owner name="o" start-index="45" stop-index="45" />
+            </column-item>
+        </group-by>
         <order-by-columns>
             <order-by-column name="user_id" owner="o" order-direction="ASC" />
         </order-by-columns>
@@ -223,9 +227,9 @@
                 </predicate>
             </and-predicate>
         </where>
-        <group-by-columns>
-            <group-by-column name="date_format(creation_date,'%y-%m-%d')" order-direction="ASC" />
-        </group-by-columns>
+        <group-by>
+            <expression-item expression="date_format(creation_date,'%y-%m-%d')" start-index="140" stop-index="177" literal-start-index="146" literal-stop-index="183" />
+        </group-by>
     </parser-result>
     
     <parser-result sql-case-id="select_group_by_with_keyword_alias">
@@ -236,9 +240,9 @@
             <aggregation-projection type="SUM" inner-expression-start-index="10" alias="orders_sum" start-index="7" stop-index="19" />
             <column-projection name="user_id" alias="key" start-index="36" stop-index="42" />
         </projections>
-        <group-by-columns>
-            <group-by-column name="key" alias="key" order-direction="ASC" />
-        </group-by-columns>
+        <group-by>
+            <column-item name="key" start-delimiter="`" end-delimiter="`" />
+        </group-by>
     </parser-result>
     
     <parser-result sql-case-id="select_group_by_with_count_without_column_name">
@@ -249,9 +253,9 @@
             <aggregation-projection inner-expression-start-index="12" type="COUNT" alias="orders_count" start-index="7" stop-index="21" />
             <column-projection name="user_id" start-index="40" stop-index="46" />
         </projections>
-        <group-by-columns>
-            <group-by-column index="2" order-direction="ASC" />
-        </group-by-columns>
+        <group-by>
+            <index-item index="2" start-index="70" stop-index="70" />
+        </group-by>
         <order-by-columns>
             <order-by-column index="2" order-direction="ASC" />
         </order-by-columns>

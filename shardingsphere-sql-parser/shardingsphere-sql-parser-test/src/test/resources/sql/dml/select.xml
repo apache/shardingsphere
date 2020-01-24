@@ -1132,9 +1132,9 @@
                 </predicate>
             </and-predicate>
         </where>
-        <group-by-columns>
-            <group-by-column name="order_id" order-direction="ASC" />
-        </group-by-columns>
+        <group-by>
+            <column-item name="order_id" />
+        </group-by>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
@@ -1148,9 +1148,9 @@
             <aggregation-distinct-projection type="COUNT" inner-expression-start-index="12" distinct-expression="order_id" alias="c" start-index="7" stop-index="30" />
             <column-projection name="order_id" start-index="35" stop-index="42" />
         </projections>
-        <group-by-columns>
-            <group-by-column name="order_id" order-direction="ASC" />
-        </group-by-columns>
+        <group-by>
+            <column-item name="order_id" />
+        </group-by>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
