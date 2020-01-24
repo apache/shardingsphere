@@ -34,7 +34,4 @@ public abstract class ExpectedOrderByItem extends AbstractExpectedDelimiterSQLSe
     
     @XmlAttribute(name = "order-direction") 
     private String orderDirection;
-    
-    @XmlAttribute(name = "null-order-direction")
-    private String nullOrderDirection;
 }

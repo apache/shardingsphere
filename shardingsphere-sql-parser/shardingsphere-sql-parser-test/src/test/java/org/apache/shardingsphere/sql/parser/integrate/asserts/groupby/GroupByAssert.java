@@ -84,7 +84,6 @@ public final class GroupByAssert {
     
     private static void assertOrderInfo(final SQLStatementAssertMessage assertMessage, final OrderByItemSegment actual, final ExpectedOrderByItem expected) {
         assertThat(assertMessage.getText("Group by item order direction assertion error: "), actual.getOrderDirection().name(), is(expected.getOrderDirection()));
-        assertThat(assertMessage.getText("Group by item null order direction assertion error: "), actual.getNullOrderDirection().name(), is(expected.getNullOrderDirection()));
     }
     
     private static void assertColumnGroupByItem(final SQLStatementAssertMessage assertMessage,
