@@ -204,7 +204,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
                 }
                 ExpressionSegment expressionSegment = expression.get();
                 if (i == 3 && expressionSegment instanceof ParameterMarkerExpressionSegment) {
-                    result.add(new ParameterMarkerExpressionSegment(((TerminalNodeImpl) predicateNode.getChild(2)).getSymbol().getStartIndex() + 1,
+                    result.add(new ParameterMarkerExpressionSegment(((TerminalNodeImpl) predicateNode.getChild(2)).getSymbol().getStopIndex() + 1,
                             expressionSegment.getStopIndex(), ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex()));
                 } else {
                     result.add(expressionSegment);
