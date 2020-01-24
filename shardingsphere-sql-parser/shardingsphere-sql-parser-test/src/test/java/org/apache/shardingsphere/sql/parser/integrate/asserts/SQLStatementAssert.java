@@ -32,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
@@ -44,7 +43,6 @@ import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -82,13 +80,13 @@ public final class SQLStatementAssert {
     
     private static void assertSelectStatement(final SQLStatementAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
         ProjectionAssert.assertIs(assertMessage, actual.getProjections(), expected.getProjections(), sqlCaseType);
-        Optional<WhereSegment> whereSegment = actual.getWhere();
-        if (whereSegment.isPresent()) {
-            assertNotNull(assertMessage.getText("Expected where assertion should exist: "), expected.getWhere());
-            WhereAssert.assertIs(assertMessage, whereSegment.get(), expected.getWhere(), sqlCaseType);
+        if (null == expected.getWhere()) {
+            assertFalse(assertMessage.getText("Actual where segment should not exist: "), actual.getWhere().isPresent());
+        } else {
+            WhereAssert.assertIs(assertMessage, actual.getWhere().get(), expected.getWhere(), sqlCaseType);
         }
         if (expected.getGroupByColumns().isEmpty()) {
-            assertFalse(assertMessage.getText("Actual group by segment should exist: "), actual.getGroupBy().isPresent());
+            assertFalse(assertMessage.getText("Actual group by segment should not exist: "), actual.getGroupBy().isPresent());
         } else {
             GroupByAssert.assertIs(assertMessage, actual.getGroupBy().get().getGroupByItems(), expected.getGroupByColumns());
         }
