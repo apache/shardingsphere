@@ -62,7 +62,7 @@ export default {
     ]
   },
   login: {
-    btnTxt: '登陆',
+    btnTxt: '登录',
     labelUserName: '用户名',
     labelPassword: '密码'
   },
