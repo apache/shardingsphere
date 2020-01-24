@@ -145,7 +145,6 @@ public final class WhereAssert {
     
     private static void assertCompareRightValue(final SQLStatementAssertMessage assertMessage, 
                                                 final PredicateCompareRightValue actual, final ExpectedPredicateCompareRightValue expected, final SQLCaseType sqlCaseType) {
-        assertNotNull(assertMessage.getText("Expected predicate compare right value can not be null"), expected);
         if (actual.getExpression() instanceof ParameterMarkerExpressionSegment) {
             ExpressionAssert.assertParameterMarkerExpression(assertMessage, (ParameterMarkerExpressionSegment) actual.getExpression(), expected.getParameterMarkerExpression(), sqlCaseType);
         } else if (actual.getExpression() instanceof LiteralExpressionSegment) {
