@@ -70,13 +70,5 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="item_id" table-name="t_order_item" operator="IN">
-                    <value index="1" literal="1" type="int" />
-                    <value index="2" literal="2" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
     </parser-result>
 </parser-result-sets>

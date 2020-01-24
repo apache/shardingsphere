@@ -52,16 +52,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="1" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="1" literal="1" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_with_same_table_name_and_alias_column_with_owner" parameters="1, 1">
@@ -99,16 +89,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="1" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="1" literal="1" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_not_equal_with_single_table" parameters="1">
@@ -232,16 +212,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="1" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="1" literal="1" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_equal_with_same_sharding_column" parameters="1, 2">
@@ -271,16 +241,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="1" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="1" literal="2" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_between_with_single_table" parameters="1, 10, 2, 5">
@@ -312,18 +272,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="BETWEEN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="10" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="2" type="int" />
-                    <value index="3" literal="5" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="user_id" order-direction="ASC" />
             <order-by-column name="order_id" order-direction="ASC" />
@@ -373,22 +321,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="&gt;=">
-                    <value index="0" literal="1" type="int" />
-                </condition>
-                <condition column-name="user_id" table-name="t_order" operator="&lt;=">
-                    <value index="1" literal="10" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="&gt;=">
-                    <value index="2" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="&lt;=">
-                    <value index="3" literal="5" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="user_id" order-direction="ASC" />
             <order-by-column name="order_id" order-direction="ASC" />
@@ -426,19 +358,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                    <value index="2" literal="3" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="IN">
-                    <value index="3" literal="9" type="int" />
-                    <value index="4" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="user_id" order-direction="ASC" />
             <order-by-column name="order_id" order-direction="ASC" />
@@ -474,18 +393,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1000" type="int" />
-                    <value index="1" literal="1001" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="IN">
-                    <value index="2" literal="1001" type="int" />
-                    <value index="3" literal="1002" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
@@ -530,18 +437,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="1" literal="1" type="int" />
-                    <value index="2" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="3" literal="9" type="int" />
-                    <value index="4" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_count_tilde_concat" parameters="'init', 1, 2, 9, 10">
@@ -583,18 +478,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="1" literal="1" type="int" />
-                    <value index="2" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="3" literal="9" type="int" />
-                    <value index="4" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_sharding_route_with_binding_tables" parameters="1, 2, 9, 10">
@@ -633,18 +516,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="9" type="int" />
-                    <value index="3" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
@@ -712,26 +583,9 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="9" type="int" />
-                    <value index="3" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
-        <encrypt-conditions>
-            <condition column-name="status" table-name="t_order" operator="EQUAL">
-                <value index="4" literal="init" type="varchar" />
-            </condition>
-        </encrypt-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_keyword_table_name_with_back_quotes" parameters="1, 2, 9, 10, 'init'">
@@ -781,26 +635,9 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="9" type="int" />
-                    <value index="3" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
-        <encrypt-conditions>
-            <condition column-name="status" table-name="t_order" operator="EQUAL">
-                <value index="4" literal="init" type="varchar" />
-            </condition>
-        </encrypt-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_keyword_table_name_with_double_quotes" parameters="1, 2, 9, 10, 'init'">
@@ -850,18 +687,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="9" type="int" />
-                    <value index="3" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
@@ -914,18 +739,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="9" type="int" />
-                    <value index="3" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
@@ -954,13 +767,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="item_id" table-name="t_order_item" operator="EQUAL">
-                    <value index="0" literal="1" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_with_force_index_join" parameters="1000">
@@ -987,13 +793,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="1000" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_equal_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', 100, 200, 1, 2">
@@ -1036,16 +835,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="3" literal="1" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="4" literal="2" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_in_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1, 2">
@@ -1089,16 +878,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="4" literal="1" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="5" literal="2" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_between_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
@@ -1134,13 +913,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="4" literal="1" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_with_double_quotes" parameters="1">
@@ -1467,11 +1239,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <encrypt-conditions>
-            <condition column-name="status" table-name="t_order" operator="EQUAL">
-                <value index="0" literal="\'" type="varchar" />
-            </condition>
-        </encrypt-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_escape_with_double_quota" >
@@ -1490,11 +1257,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <encrypt-conditions>
-            <condition column-name="status" table-name="t_order" operator="EQUAL">
-                <value index="0" literal="\&quot;" type="varchar" />
-            </condition>
-        </encrypt-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_with_block_comment" >
@@ -1516,11 +1278,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <encrypt-conditions>
-            <condition column-name="status" table-name="t_order" operator="EQUAL">
-                <value index="0" literal="1" type="varchar" />
-            </condition>
-        </encrypt-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_with_single_comment" >
@@ -1542,11 +1299,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <encrypt-conditions>
-            <condition column-name="status" table-name="t_order" operator="EQUAL">
-                <value index="0" literal="1" type="varchar" />
-            </condition>
-        </encrypt-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_alias_as_single_quote_string">
@@ -1594,16 +1346,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="12" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="1" literal="1000" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_with_row_subquery_without_row_keyword">
@@ -1657,16 +1399,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="12" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="1" literal="1000" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
     </parser-result>
     
     <parser-result sql-case-id="select_with_left_function">

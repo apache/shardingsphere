@@ -147,18 +147,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="9" type="int" />
-                    <value index="3" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <group-by-columns>
             <group-by-column name="user_id" owner="o" order-direction="ASC" />
         </group-by-columns>
@@ -235,14 +223,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order_item" operator="IN">
-                    <value index="0" literal="1000" type="int" />
-                    <value index="1" literal="1100" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <group-by-columns>
             <group-by-column name="date_format(creation_date,'%y-%m-%d')" order-direction="ASC" />
         </group-by-columns>

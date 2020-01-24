@@ -53,18 +53,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="9" type="int" />
-                    <value index="3" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -107,18 +95,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="9" type="int" />
-                    <value index="3" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -161,18 +137,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="9" type="int" />
-                    <value index="3" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -216,18 +180,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="9" type="int" />
-                    <value index="3" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -283,18 +235,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="1" literal="1" type="int" />
-                    <value index="2" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="3" literal="9" type="int" />
-                    <value index="4" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -337,18 +277,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="9" type="int" />
-                    <value index="3" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -393,18 +321,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="1" literal="1" type="int" />
-                    <value index="2" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="3" literal="9" type="int" />
-                    <value index="4" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -449,18 +365,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="1" literal="1" type="int" />
-                    <value index="2" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="3" literal="9" type="int" />
-                    <value index="4" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -507,18 +411,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="9" type="int" />
-                    <value index="3" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -556,18 +448,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="9" type="int" />
-                    <value index="3" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
@@ -606,18 +486,6 @@
                 </predicate>
             </and-predicate>
         </where>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="9" type="int" />
-                    <value index="3" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <order-by-columns>
             <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
