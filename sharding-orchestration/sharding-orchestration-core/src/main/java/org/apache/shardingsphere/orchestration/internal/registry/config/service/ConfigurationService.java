@@ -18,8 +18,11 @@
 package org.apache.shardingsphere.orchestration.internal.registry.config.service;
 
 import com.google.common.base.Function;
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
@@ -42,6 +45,8 @@ import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfigu
 import org.apache.shardingsphere.orchestration.yaml.swapper.DataSourceConfigurationYamlSwapper;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -80,6 +85,7 @@ public final class ConfigurationService {
         persistRuleConfiguration(shardingSchemaName, ruleConfig, isOverwrite);
         persistAuthentication(authentication, isOverwrite);
         persistProperties(props, isOverwrite);
+        persistShardingSchemaName(shardingSchemaName);
     }
     
     private void persistDataSourceConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
@@ -166,6 +172,21 @@ public final class ConfigurationService {
     
     private boolean hasProperties() {
         return !Strings.isNullOrEmpty(configCenter.get(configNode.getPropsPath()));
+    }
+    
+    private void persistShardingSchemaName(final String shardingSchemaName) {
+        String shardingSchemaNames = configCenter.get(configNode.getSchemaPath());
+        if (Strings.isNullOrEmpty(shardingSchemaNames)) {
+            configCenter.persist(configNode.getSchemaPath(), shardingSchemaName);
+            return;
+        }
+        List<String> schemaNameList = Splitter.on(",").splitToList(shardingSchemaNames);
+        if (schemaNameList.contains(shardingSchemaName)) {
+            return;
+        }
+        List<String> newArrayList = Lists.newArrayList(schemaNameList);
+        newArrayList.add(shardingSchemaName);
+        configCenter.persist(configNode.getSchemaPath(), Joiner.on(",").join(newArrayList));
     }
     
     /**
@@ -260,6 +281,10 @@ public final class ConfigurationService {
      * @return all sharding schema names
      */
     public Collection<String> getAllShardingSchemaNames() {
-        return configCenter.getChildrenKeys(configNode.getSchemaPath());
+        String shardingSchemaNames = configCenter.get(configNode.getSchemaPath());
+        if (Strings.isNullOrEmpty(shardingSchemaNames)) {
+            return Collections.emptyList();
+        }
+        return Splitter.on(",").splitToList(shardingSchemaNames);
     }
 }
