@@ -20,6 +20,9 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.groupby;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedColumnOrderByItem;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedExpressionOrderByItem;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedIndexOrderByItem;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
@@ -35,5 +38,20 @@ import java.util.List;
 public final class ExpectedGroupBy extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "column-item")
-    private List<ColumnExpectedGroupByItem> items = new LinkedList<>();
+    private List<ExpectedColumnOrderByItem> columnItems = new LinkedList<>();
+    
+    @XmlElement(name = "index-item")
+    private List<ExpectedIndexOrderByItem> indexItems = new LinkedList<>();
+    
+    @XmlElement(name = "expression-item")
+    private List<ExpectedExpressionOrderByItem> expressionItems = new LinkedList<>();
+    
+    /**
+     * Get item size.
+     * 
+     * @return item size
+     */
+    public int getItemSize() {
+        return columnItems.size() + indexItems.size() + expressionItems.size();
+    }
 }
