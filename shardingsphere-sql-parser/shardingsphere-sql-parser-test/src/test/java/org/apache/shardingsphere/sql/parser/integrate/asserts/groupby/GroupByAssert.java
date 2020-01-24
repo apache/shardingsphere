@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.groupby;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLSegmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.groupby.ExpectedGroupBy;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedColumnOrderByItem;
@@ -104,8 +105,7 @@ public final class GroupByAssert {
         assertThat(assertMessage.getText("Group by column owner name assertion error: "), actual.getTableName(), is(expected.getName()));
         assertThat(assertMessage.getText("Group by column owner name start delimiter assertion error: "), actual.getTableQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
         assertThat(assertMessage.getText("Group by column owner name end delimiter assertion error: "), actual.getTableQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
-        // TODO assert start index and stop index
-        //        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
+        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
     
     private static void assertIndexGroupByItem(final SQLStatementAssertMessage assertMessage,

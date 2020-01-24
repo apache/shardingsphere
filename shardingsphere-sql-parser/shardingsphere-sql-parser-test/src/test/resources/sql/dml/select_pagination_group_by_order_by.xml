@@ -103,7 +103,7 @@
         </where>
         <group-by>
             <column-item name="user_id">
-                <owner name="i" start-index="170" stop-index="170" literal-start-index="171" literal-stop-index="171" />
+                <owner name="i" start-index="171" stop-index="171" literal-start-index="172" literal-stop-index="172" />
             </column-item>
         </group-by>
         <order-by-columns>
