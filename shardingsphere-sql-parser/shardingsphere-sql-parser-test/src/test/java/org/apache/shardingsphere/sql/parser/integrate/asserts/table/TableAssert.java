@@ -19,10 +19,10 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.table;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLSegmentAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.table.ExpectedTable;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.owner.ExpectedSchemaOwner;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
@@ -31,7 +31,9 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Table assert.
@@ -61,8 +63,11 @@ public final class TableAssert {
     private static void assertTable(final SQLStatementAssertMessage assertMessage, final TableSegment actual, final ExpectedTable expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Table name assertion error: "), actual.getTableName(), is(expected.getName()));
         assertThat(assertMessage.getText("Table alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
-        if (actual.getOwner().isPresent()) {
+        if (null != expected.getOwner()) {
+            assertTrue(assertMessage.getText("Actual owner should exist."), actual.getOwner().isPresent());
             assertOwner(assertMessage, actual.getOwner().get(), expected.getOwner(), sqlCaseType);
+        } else {
+            assertFalse(assertMessage.getText("Actual owner should not exist."), actual.getOwner().isPresent());
         }
         assertThat(assertMessage.getText("Table start delimiter assertion error: "), actual.getTableQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
         assertThat(assertMessage.getText("Table end delimiter assertion error: "), actual.getTableQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));

@@ -174,9 +174,7 @@
     
     <parser-result sql-case-id="grant_select_column_on_table">
         <tables>
-            <table name="t_order" start-index="33" stop-index="39">
-                <owner name="ds_0" start-index="33" stop-index="36" />
-            </table>
+            <table name="t_order" start-index="33" stop-index="39" />
         </tables>
     </parser-result>
     
