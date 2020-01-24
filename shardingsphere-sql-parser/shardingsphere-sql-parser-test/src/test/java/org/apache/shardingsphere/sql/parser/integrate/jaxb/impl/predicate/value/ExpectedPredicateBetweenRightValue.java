@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlElement;
 public final class ExpectedPredicateBetweenRightValue implements ExpectedPredicateRightValue {
     
     @XmlElement(name = "between-parameter-marker-expression")
-    private ExpectedParameterMarkerExpression parameterMarkerExpression;
+    private ExpectedParameterMarkerExpression betweenParameterMarkerExpression;
     
     @XmlElement(name = "between-literal-expression")
     private ExpectedLiteralExpression betweenLiteralExpression;

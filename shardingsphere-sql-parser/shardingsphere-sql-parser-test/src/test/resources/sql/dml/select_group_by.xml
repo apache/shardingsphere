@@ -127,7 +127,6 @@
                     <column-left-value name="user_id" start-index="125" stop-index="133">
                         <owner name="o" start-index="125" stop-index="125" />
                     </column-left-value>
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="0" />
                         <parameter-marker-expression value="1" />
@@ -139,6 +138,12 @@
                     <column-left-value name="order_id" start-index="149" stop-index="158">
                         <owner name="o" start-index="149" stop-index="149" />
                     </column-left-value>
+                    <between-right-value>
+                        <between-parameter-marker-expression value="2" />
+                        <between-literal-expression value="9" />
+                        <and-parameter-marker-expression value="3" />
+                        <and-literal-expression value="10" />
+                    </between-right-value>
                 </predicate>
             </and-predicate>
         </where>
@@ -221,7 +226,6 @@
             <and-predicate>
                 <predicate start-index="112" stop-index="129" literal-stop-index="135">
                     <column-left-value name="order_id" start-index="112" stop-index="119" />
-                    <operator type="IN" />
                     <in-right-value>
                         <parameter-marker-expression value="0" />
                         <parameter-marker-expression value="1" />
