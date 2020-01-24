@@ -1132,9 +1132,9 @@
                 </predicate>
             </and-predicate>
         </where>
-        <group-by-columns>
-            <group-by-column name="order_id" order-direction="ASC" />
-        </group-by-columns>
+        <group-by>
+            <column-item name="order_id" />
+        </group-by>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
@@ -1149,7 +1149,7 @@
             <column-projection name="order_id" start-index="35" stop-index="42" />
         </projections>
         <group-by>
-            <column-item name="order_id" order-direction="ASC" />
+            <column-item name="order_id" />
         </group-by>
         <order-by-columns>
             <order-by-column name="order_id" order-direction="ASC" />
