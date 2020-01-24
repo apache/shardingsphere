@@ -105,9 +105,9 @@
             <aggregation-projection type="SUM" inner-expression-start-index="10" alias="orders_sum" start-index="7" stop-index="19" />
             <column-projection name="user_id" start-index="36" stop-index="42" />
         </projections>
-        <group-by-columns>
-            <group-by-column name="user_id" order-direction="ASC" />
-        </group-by-columns>
+        <group-by>
+            <column-item name="user_id" />
+        </group-by>
         <order-by-columns>
             <order-by-column name="orders_sum" order-direction="DESC" />
         </order-by-columns>
