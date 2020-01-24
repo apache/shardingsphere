@@ -1070,6 +1070,13 @@
             <and-predicate>
                 <predicate start-index="28" stop-index="61" literal-stop-index="97">
                     <column-left-value name="rule" start-index="28" stop-index="31" />
+                    <operator type="BETWEEN" />
+                    <between-right-value>
+                        <between-parameter-marker-expression value="0" />
+                        <between-literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}'::json" />
+                        <and-parameter-marker-expression value="1" />
+                        <and-literal-expression value="{&quot;rule3&quot;:&quot;null3&quot;}'::json" />
+                    </between-right-value>
                 </predicate>
                 <predicate start-index="67" stop-index="134" literal-start-index="103" literal-stop-index="174">
                     <column-left-value name="start_point" start-index="67" stop-index="77" literal-start-index="103" literal-stop-index="113" />
