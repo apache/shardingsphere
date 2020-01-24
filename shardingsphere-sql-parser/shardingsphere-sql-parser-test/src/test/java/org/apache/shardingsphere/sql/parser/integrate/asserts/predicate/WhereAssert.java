@@ -146,6 +146,7 @@ public final class WhereAssert {
         } else if (actual.getExpression() instanceof SubquerySegment) {
             ExpressionAssert.assertSubquery(assertMessage, (ComplexExpressionSegment) actual.getExpression(), expected.getSubquery(), sqlCaseType);
         }
+        // TODO assert start index and stop index
 //        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
     
@@ -180,6 +181,7 @@ public final class WhereAssert {
                 count++;
             }
         }
+        // TODO assert start index and stop index
 //        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
     
@@ -188,6 +190,7 @@ public final class WhereAssert {
         assertNotNull(assertMessage.getText("Expected predicate between right value can not be null"), expected);
         assertBetweenExpression(assertMessage, actual.getBetweenExpression(), expected, sqlCaseType);
         assertAndExpression(assertMessage, actual.getAndExpression(), expected, sqlCaseType);
+        // TODO assert start index and stop index
 //        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
     
