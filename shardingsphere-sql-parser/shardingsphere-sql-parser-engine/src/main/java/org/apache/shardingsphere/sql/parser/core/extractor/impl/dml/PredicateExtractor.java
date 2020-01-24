@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.core.extractor.impl.dml;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 import org.apache.shardingsphere.sql.parser.core.constant.LogicalOperator;
 import org.apache.shardingsphere.sql.parser.core.constant.Paren;
 import org.apache.shardingsphere.sql.parser.core.extractor.api.OptionalSQLSegmentExtractor;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
@@ -200,7 +202,13 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
                 if (!expression.isPresent()) {
                     return Collections.emptyList();
                 }
-                result.add(expression.get());
+                ExpressionSegment expressionSegment = expression.get();
+                if (i == 3 && expressionSegment instanceof ParameterMarkerExpressionSegment) {
+                    result.add(new ParameterMarkerExpressionSegment(((TerminalNodeImpl) predicateNode.getChild(2)).getSymbol().getStartIndex() + 1,
+                            expressionSegment.getStopIndex(), ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex()));
+                } else {
+                    result.add(expressionSegment);
+                }
             }
         }
         return result;

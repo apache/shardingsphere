@@ -49,6 +49,8 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
     private static final String SELECT_ALL_SQL = "SELECT id, cipher_pwd, assist_pwd FROM t_query_encrypt";
     
     private static final String SELECT_SQL_WITH_IN_OPERATOR = "SELECT * FROM t_query_encrypt WHERE pwd IN (?)";
+
+    private static final String SELECT_SQL_WITH_IN_OPERATOR_CONTAINS_SPACE = "SELECT * FROM t_query_encrypt WHERE pwd IN ( ? )";
     
     private static final String SELECT_SQL_FOR_CONTAINS_COLUMN = "SELECT * FROM t_encrypt_contains_column WHERE plain_pwd = ?";
     
@@ -195,7 +197,20 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
             }
         }
     }
-    
+
+    @Test
+    public void assertSelectWithInOperatorContainsSpace() throws SQLException {
+        try (PreparedStatement statement = getEncryptConnection().prepareStatement(SELECT_SQL_WITH_IN_OPERATOR_CONTAINS_SPACE)) {
+            statement.setObject(1, 'a');
+            ResultSetMetaData metaData = statement.executeQuery().getMetaData();
+            assertThat(metaData.getColumnCount(), is(2));
+            for (int i = 0; i < metaData.getColumnCount(); i++) {
+                assertThat(metaData.getColumnLabel(1), is("id"));
+                assertThat(metaData.getColumnLabel(2), is("pwd"));
+            }
+        }
+    }
+
     @Test
     public void assertSelectWithPlainColumnForContainsColumn() throws SQLException {
         try (PreparedStatement statement = getEncryptConnectionWithProps().prepareStatement(SELECT_SQL_FOR_CONTAINS_COLUMN)) {
