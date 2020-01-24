@@ -30,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.projection.Project
 import org.apache.shardingsphere.sql.parser.integrate.asserts.table.AlterTableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
@@ -44,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
@@ -87,9 +87,10 @@ public final class SQLStatementAssert {
             assertNotNull(assertMessage.getText("Expected where assertion should exist: "), expected.getWhere());
             WhereAssert.assertIs(assertMessage, whereSegment.get(), expected.getWhere(), sqlCaseType);
         }
-        Optional<GroupBySegment> groupBySegment = actual.getGroupBy();
-        if (groupBySegment.isPresent()) {
-            GroupByAssert.assertIs(assertMessage, groupBySegment.get().getGroupByItems(), expected.getGroupByColumns());
+        if (expected.getGroupByColumns().isEmpty()) {
+            assertFalse(assertMessage.getText("Actual group by segment should exist: "), actual.getGroupBy().isPresent());
+        } else {
+            GroupByAssert.assertIs(assertMessage, actual.getGroupBy().get().getGroupByItems(), expected.getGroupByColumns());
         }
         Optional<OrderBySegment> orderBySegment = actual.getOrderBy();
         if (orderBySegment.isPresent()) {
