@@ -19,16 +19,16 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.projection;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLSegmentAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.owner.ExpectedTableOwner;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedProjection;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedProjections;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.aggregation.ExpectedAggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.aggregation.ExpectedAggregationProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.column.ExpectedColumnProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.expression.ExpectedExpressionProjection;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedProjection;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedProjections;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.shorthand.ExpectedShorthandProjection;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.owner.ExpectedTableOwner;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.impl.top.ExpectedTopProjection;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
@@ -47,8 +47,9 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  *  Projection assert.
@@ -104,10 +105,11 @@ public final class ProjectionAssert {
     
     private static void assertShorthandProjection(final SQLStatementAssertMessage assertMessage, 
                                                   final ShorthandProjectionSegment actual, final ExpectedShorthandProjection expected, final SQLCaseType sqlCaseType) {
-        if (actual.getOwner().isPresent()) {
+        if (null != expected.getOwner()) {
+            assertTrue(assertMessage.getText("Actual owner should exist."), actual.getOwner().isPresent());
             assertOwner(assertMessage, actual.getOwner().get(), expected.getOwner(), sqlCaseType);
         } else {
-            assertNull(expected.getOwner());
+            assertFalse(assertMessage.getText("Actual owner should not exist."), actual.getOwner().isPresent());
         }
     }
     
@@ -117,10 +119,11 @@ public final class ProjectionAssert {
         assertThat(assertMessage.getText("Column projection start delimiter assertion error: "), actual.getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
         assertThat(assertMessage.getText("Column projection end delimiter assertion error: "), actual.getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
         assertThat(assertMessage.getText("Column projection alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
-        if (actual.getOwner().isPresent()) {
+        if (null != expected.getOwner()) {
+            assertTrue(assertMessage.getText("Actual owner should exist."), actual.getOwner().isPresent());
             assertOwner(assertMessage, actual.getOwner().get(), expected.getOwner(), sqlCaseType);
         } else {
-            assertNull(expected.getOwner());
+            assertFalse(assertMessage.getText("Actual owner should not exist."), actual.getOwner().isPresent());
         }
     }
     
