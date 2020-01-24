@@ -95,6 +95,7 @@ public final class GroupByAssert {
         } else {
             assertFalse(assertMessage.getText("Actual owner should not exist."), actual.getColumn().getOwner().isPresent());
         }
+        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
     
     private static void assertOwner(final SQLStatementAssertMessage assertMessage, final TableSegment actual, final ExpectedTableOwner expected, final SQLCaseType sqlCaseType) {
