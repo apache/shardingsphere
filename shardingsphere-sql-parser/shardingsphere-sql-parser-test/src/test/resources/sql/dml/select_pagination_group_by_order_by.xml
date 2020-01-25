@@ -106,9 +106,11 @@
                 <owner name="i" start-index="171" stop-index="171" literal-start-index="172" literal-stop-index="172" />
             </column-item>
         </group-by>
-        <order-by-columns>
-            <order-by-column name="item_id" owner="i" order-direction="DESC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id" order-direction="DESC">
+                <owner name="i" start-index="190" stop-index="190" literal-start-index="191" literal-stop-index="191" />
+            </column-item>
+        </order-by>
         <offset value="5" parameter-index="4" />
         <row-count value="3" parameter-index="5" />
     </parser-result>
