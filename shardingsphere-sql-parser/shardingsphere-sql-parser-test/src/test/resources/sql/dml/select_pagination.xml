@@ -533,9 +533,9 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <order-by-columns>
-            <order-by-column name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id" />
+        </order-by>
         <row-count value="20" parameter-index="0" />
     </parser-result>
 </parser-result-sets>
