@@ -252,9 +252,9 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <order-by-columns>
-            <order-by-column name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_with_table_star_without_table_name">
