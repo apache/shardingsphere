@@ -37,9 +37,9 @@
         <projections start-index="7" stop-index="44">
             <expression-projection alias="creation_date" start-index="7" stop-index="27" />
         </projections>
-        <order-by-columns>
-            <order-by-column name="DATE(i.creation_date)" order-direction="DESC" />
-        </order-by-columns>
+        <order-by>
+            <expression-item expression="DATE(i.creation_date)" order-direction="DESC" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_with_regexp" parameters="'init', 1, 2">
