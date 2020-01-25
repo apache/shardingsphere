@@ -1030,7 +1030,9 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="order_id" />
+            <column-item name="order_id">
+                <owner name="t_order" start-index="132" stop-index="138" />
+            </column-item>
         </order-by>
     </parser-result>
     
