@@ -946,9 +946,9 @@
         <projections start-index="16" stop-index="22" distinct-row="true">
             <column-projection name="item_id" start-index="16" stop-index="22" />
         </projections>
-        <order-by-columns>
-            <order-by-column name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_owner_column" >
@@ -1135,9 +1135,9 @@
         <group-by>
             <column-item name="order_id" />
         </group-by>
-        <order-by-columns>
-            <order-by-column name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_count_group_by" >
