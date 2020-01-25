@@ -181,6 +181,11 @@
             </shorthand-projection>
             <column-projection name="order_id" start-index="10" stop-index="17" />
         </projections>
+        <order-by>
+            <column-item name="order_id">
+                <owner name="o" start-index="48" stop-index="48" />
+            </column-item>
+        </order-by>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-direction="ASC" />
         </order-by-columns>
