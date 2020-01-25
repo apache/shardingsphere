@@ -531,9 +531,11 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
-        <order-by-columns>
-            <order-by-column owner="i" name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id">
+                <owner name="i" start-index="108" stop-index="108" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_sharding_route_with_broadcast_table" parameters="1, 2, 9, 10, 'init'">
