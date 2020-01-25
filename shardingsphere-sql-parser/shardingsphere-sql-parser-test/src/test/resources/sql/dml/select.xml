@@ -358,10 +358,10 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column name="user_id" order-direction="ASC" />
-            <order-by-column name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="user_id" />
+            <column-item name="order_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_in_with_same_sharding_column" parameters="1000, 1001, 1001, 1002">
