@@ -67,6 +67,7 @@ public final class OrderByItemAssert {
                 count++;
             }
         }
+        count = 0;
         for (OrderByItemSegment each : actual) {
             if (each instanceof IndexOrderByItemSegment) {
                 assertOrderInfo(assertMessage, each, expected.getIndexItems().get(count), type);
@@ -74,6 +75,7 @@ public final class OrderByItemAssert {
                 count++;
             }
         }
+        count = 0;
         for (OrderByItemSegment each : actual) {
             if (each instanceof ExpressionOrderByItemSegment) {
                 assertOrderInfo(assertMessage, each, expected.getExpressionItems().get(count), type);
