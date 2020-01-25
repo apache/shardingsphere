@@ -27,6 +27,30 @@
         <tables>
             <table name="t_order" alias="o" start-index="7" stop-index="13" />
         </tables>
+        <where parameters-count="3" parameter-marker-start-index="1" start-index="37" stop-index="74" literal-start-index="44" literal-stop-index="81">
+            <and-predicate>
+                <predicate start-index="43" stop-index="56" literal-start-index="50" literal-stop-index="63">
+                    <column-left-value name="order_id" start-index="43" stop-index="52" literal-start-index="50" literal-stop-index="59">
+                        <owner name="o" start-index="43" stop-index="43" literal-start-index="50" literal-stop-index="50" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="62" stop-index="74" literal-start-index="69" literal-stop-index="81">
+                    <column-left-value name="user_id" start-index="62" stop-index="70" literal-start-index="69" literal-stop-index="77">
+                        <owner name="o" start-index="62" stop-index="62" literal-start-index="69" literal-stop-index="69" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
     </parser-result>
     
     <parser-result sql-case-id="update_equal_with_geography" parameters="'2017-06-07', 100, 200, '{&quot;rule2&quot;:&quot;null2&quot;}', 3, 5, 7, 200">
