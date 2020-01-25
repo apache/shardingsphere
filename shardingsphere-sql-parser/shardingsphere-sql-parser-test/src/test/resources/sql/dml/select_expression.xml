@@ -51,7 +51,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="3" parameter-marker-start-index="0" start-index="29" stop-index="75" literal-stop-index="80">
+        <where parameters-count="3" start-index="29" stop-index="75" literal-stop-index="80">
             <and-predicate>
                 <!-- FIXME cannot parse REGEXP -->
                 <!--<predicate start-index="35" stop-index="51" literal-stop-index="56">-->

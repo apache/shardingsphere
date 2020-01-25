@@ -21,7 +21,7 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <where parameters-count="3" parameter-marker-start-index="0" start-index="20" stop-index="66" literal-stop-index="77">
+        <where parameters-count="3" start-index="20" stop-index="66" literal-stop-index="77">
             <and-predicate>
                 <predicate start-index="26" stop-index="37" literal-stop-index="40">
                     <column-left-value name="order_id" start-index="26" stop-index="33" />
@@ -55,7 +55,7 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <where parameters-count="1" parameter-marker-start-index="0" start-index="20" stop-index="33" literal-stop-index="38">
+        <where parameters-count="1" start-index="20" stop-index="33" literal-stop-index="38">
             <and-predicate>
                 <predicate start-index="26" stop-index="33" literal-stop-index="38">
                     <column-left-value name="status" start-index="26" stop-index="31" />
@@ -73,7 +73,7 @@
         <tables>
             <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="12" stop-index="20" />
         </tables>
-        <where parameters-count="0" parameter-marker-start-index="0" start-index="22" stop-index="42">
+        <where parameters-count="0" start-index="22" stop-index="42">
             <and-predicate>
                 <predicate start-index="28" stop-index="42">
                     <column-left-value name="status" start-delimiter="`" end-delimiter="`" start-index="28" stop-index="35" />
@@ -90,7 +90,7 @@
         <tables>
             <table name="t_order" start-index="33" stop-index="39" />
         </tables>
-        <where parameters-count="0" parameter-marker-start-index="0" start-index="41" stop-index="54">
+        <where parameters-count="0" start-index="41" stop-index="54">
             <and-predicate>
                 <predicate start-index="47" stop-index="54">
                     <column-left-value name="status" start-index="47" stop-index="52" />
@@ -107,7 +107,7 @@
         <tables>
             <table name="t_order" start-index="34" stop-index="40" />
         </tables>
-        <where parameters-count="0" parameter-marker-start-index="0" start-index="43" stop-index="56">
+        <where parameters-count="0" start-index="43" stop-index="56">
             <and-predicate>
                 <predicate start-index="49" stop-index="56">
                     <column-left-value name="status" start-index="49" stop-index="54" />
@@ -125,7 +125,7 @@
             <table name="o" start-index="7" stop-index="7" />
             <table name="t_order" alias="o" start-index="14" stop-index="20" />
         </tables>
-        <where parameters-count="1" parameter-marker-start-index="0" start-index="27" stop-index="40" literal-stop-index="46">
+        <where parameters-count="1" start-index="27" stop-index="40" literal-stop-index="46">
             <and-predicate>
                 <predicate start-index="33" stop-index="40" literal-stop-index="45">
                     <column-left-value name="status" start-index="33" stop-index="38" />

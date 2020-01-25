@@ -187,7 +187,7 @@
         <tables>
             <table name="t_order" start-index="7" stop-index="13" />
         </tables>
-        <where parameters-count="0" parameter-marker-start-index="0" start-index="37" stop-index="74">
+        <where parameters-count="0" start-index="37" stop-index="74">
             <and-predicate>
                 <predicate start-index="43" stop-index="57">
                     <column-left-value name="order_id" start-index="43" stop-index="50" />
@@ -211,7 +211,7 @@
         <tables>
             <table name="t_order" start-index="7" stop-index="13" />
         </tables>
-        <where parameters-count="3" parameter-marker-start-index="0" start-index="37" stop-index="88" literal-stop-index="92">
+        <where parameters-count="3" start-index="37" stop-index="88" literal-stop-index="92">
             <and-predicate>
                 <predicate start-index="44" stop-index="55" literal-stop-index="58">
                     <column-left-value name="order_id" start-index="44" stop-index="51" />

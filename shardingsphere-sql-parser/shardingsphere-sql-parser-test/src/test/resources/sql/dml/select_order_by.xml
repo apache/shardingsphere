@@ -42,7 +42,7 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
-        <where parameters-count="0" parameter-marker-start-index="0" start-index="42" stop-index="92">
+        <where parameters-count="0" start-index="42" stop-index="92">
             <and-predicate>
                 <predicate start-index="48" stop-index="70">
                     <column-left-value name="order_id" start-index="48" stop-index="57">
@@ -99,7 +99,7 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
-        <where parameters-count="0" parameter-marker-start-index="0" start-index="42" stop-index="92">
+        <where parameters-count="0" start-index="42" stop-index="92">
             <and-predicate>
                 <predicate start-index="48" stop-index="70">
                     <column-left-value name="order_id" start-index="48" stop-index="57">
