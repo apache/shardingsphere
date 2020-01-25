@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.Alt
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.DeleteStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.InsertStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.SelectStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.TCLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.UpdateStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
@@ -35,11 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.TCLStatement;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 /**
  * SQL statement assert.
@@ -71,14 +68,7 @@ public final class SQLStatementAssert {
         } else if (actual instanceof AlterTableStatement) {
             AlterTableStatementAssert.assertIs(assertContext, (AlterTableStatement) actual, expected);
         } else if (actual instanceof TCLStatement) {
-            assertTCLStatement((TCLStatement) actual, expected);
-        }
-    }
-    
-    private static void assertTCLStatement(final TCLStatement actual, final ParserResult expected) {
-        assertThat(actual.getClass().getName(), is(expected.getTclActualStatementClassType()));
-        if (actual instanceof SetAutoCommitStatement) {
-            assertThat(((SetAutoCommitStatement) actual).isAutoCommit(), is(expected.isAutoCommit()));
+            TCLStatementAssert.assertIs((TCLStatement) actual, expected);
         }
     }
 }
