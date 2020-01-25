@@ -55,6 +55,18 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <where parameters-count="1" parameter-marker-start-index="0" start-index="20" stop-index="33" literal-stop-index="38">
+            <and-predicate>
+                <predicate start-index="26" stop-index="33" literal-stop-index="38">
+                    <column-left-value name="status" start-index="26" stop-index="31" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="init" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
     </parser-result>
     
     <parser-result sql-case-id="delete_with_special_character_without_sharding_value">
