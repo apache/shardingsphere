@@ -696,9 +696,6 @@
                 <owner name="i" start-index="221" stop-index="221" literal-start-index="227" literal-stop-index="227" />
             </column-item>
         </order-by>
-        <order-by-columns>
-            <order-by-column owner="i" name="item_id" order-direction="ASC" />
-        </order-by-columns>
     </parser-result>
     
     <parser-result sql-case-id="select_keyword_table_name_with_square_brackets" parameters="1, 2, 9, 10, 'init'">
@@ -748,9 +745,11 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column owner="i" name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id">
+                <owner name="i" start-index="221" stop-index="221" literal-start-index="227" literal-stop-index="227" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_alias_as_keyword" parameters="1">
