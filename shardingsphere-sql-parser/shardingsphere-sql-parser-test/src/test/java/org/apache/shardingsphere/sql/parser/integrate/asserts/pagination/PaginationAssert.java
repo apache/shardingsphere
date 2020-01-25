@@ -48,7 +48,7 @@ public final class PaginationAssert {
      */
     public static void assertOffset(final SQLStatementAssertMessage assertMessage, final PaginationValueSegment actual, final ExpectedPaginationValue expected, final SQLCaseType sqlCaseType) {
         if (null == actual) {
-            assertNull(assertMessage.getText("Offset should not exist: "), expected);
+            assertNull(assertMessage.getText("Offset should not exist."), expected);
             return;
         }
         if (SQLCaseType.Placeholder == sqlCaseType) {
@@ -69,7 +69,7 @@ public final class PaginationAssert {
      */
     public static void assertRowCount(final SQLStatementAssertMessage assertMessage, final PaginationValueSegment actual, final ExpectedPaginationValue expected, final SQLCaseType sqlCaseType) {
         if (null == actual) {
-            assertNull(assertMessage.getText("Row count should not exist: "), expected);
+            assertNull(assertMessage.getText("Row count should not exist."), expected);
             return;
         }
         if (SQLCaseType.Placeholder == sqlCaseType) {
