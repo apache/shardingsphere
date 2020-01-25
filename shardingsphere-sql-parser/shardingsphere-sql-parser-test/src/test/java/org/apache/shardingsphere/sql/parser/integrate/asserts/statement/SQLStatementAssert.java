@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.parameter.ParameterMarkerAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.AlterTableStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.DeleteStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.InsertStatementAssert;
@@ -29,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.Sel
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.TCLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.UpdateStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
@@ -55,8 +53,6 @@ public final class SQLStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SQLStatement actual, final ParserResult expected) {
         ParameterMarkerAssert.assertCount(assertContext, actual.getParametersCount(), expected.getParameters().size());
-        // TODO to be move TableAssert into statement details assert
-        TableAssert.assertIs(assertContext, actual.findSQLSegments(TableSegment.class), expected.getTables());
         if (actual instanceof SelectStatement) {
             SelectStatementAssert.assertIs(assertContext, (SelectStatement) actual, expected);
         } else if (actual instanceof UpdateStatement) {
