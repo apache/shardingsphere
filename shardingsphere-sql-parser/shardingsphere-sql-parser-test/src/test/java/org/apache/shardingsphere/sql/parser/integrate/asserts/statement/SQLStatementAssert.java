@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.parameter.ParameterMarkerAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.AlterTableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.AlterTableStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.DeleteStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.InsertStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.SelectStatementAssert;
@@ -69,15 +69,9 @@ public final class SQLStatementAssert {
         } else if (actual instanceof InsertStatement) {
             InsertStatementAssert.assertIs(assertContext, (InsertStatement) actual, expected);
         } else if (actual instanceof AlterTableStatement) {
-            assertAlterTableStatement(assertContext, (AlterTableStatement) actual, expected);
+            AlterTableStatementAssert.assertIs(assertContext, (AlterTableStatement) actual, expected);
         } else if (actual instanceof TCLStatement) {
             assertTCLStatement((TCLStatement) actual, expected);
-        }
-    }
-    
-    private static void assertAlterTableStatement(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final ParserResult expected) {
-        if (null != expected.getAlterTable()) {
-            AlterTableAssert.assertIs(assertContext, actual, expected.getAlterTable());
         }
     }
     
