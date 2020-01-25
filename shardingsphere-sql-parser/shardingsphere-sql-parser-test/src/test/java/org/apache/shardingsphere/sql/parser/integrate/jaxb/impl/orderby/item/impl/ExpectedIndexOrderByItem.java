@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.item.impl;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.item.ExpectedOrderByItem;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Expected expression order by item.
+ * Expected index order by item.
  *
  * @author zhangliang
  */
 @Getter
 @Setter
-public final class ExpectedExpressionOrderByItem extends ExpectedOrderByItem {
+public final class ExpectedIndexOrderByItem extends ExpectedOrderByItem {
     
     @XmlAttribute
-    private String expression;
+    private int index;
 }

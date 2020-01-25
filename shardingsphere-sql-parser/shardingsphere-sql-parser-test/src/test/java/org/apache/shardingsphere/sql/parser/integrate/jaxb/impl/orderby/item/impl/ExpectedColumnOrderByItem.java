@@ -15,23 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.item.impl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedDelimiterSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.item.ExpectedOrderByItem;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.owner.ExpectedTableOwner;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Expected order by item.
+ * Expected column order by item.
  *
  * @author zhangliang
  */
 @Getter
 @Setter
-public abstract class ExpectedOrderByItem extends AbstractExpectedDelimiterSQLSegment {
+public final class ExpectedColumnOrderByItem extends ExpectedOrderByItem {
     
-    @XmlAttribute(name = "order-direction") 
-    private String orderDirection = "ASC";
+    @XmlAttribute
+    private String name;
+    
+    @XmlElement
+    private ExpectedTableOwner owner;
 }
