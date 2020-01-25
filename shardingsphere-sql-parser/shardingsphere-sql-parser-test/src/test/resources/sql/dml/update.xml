@@ -21,6 +21,26 @@
         <tables>
             <table name="t_order" start-index="7" stop-index="13" />
         </tables>
+        <where parameters-count="3" parameter-marker-start-index="1" start-index="30" stop-index="63" literal-start-index="43" literal-stop-index="54">
+            <and-predicate>
+                <predicate start-index="36" stop-index="47" literal-start-index="43" literal-stop-index="54">
+                    <column-left-value name="order_id" start-index="36" stop-index="43" literal-start-index="43" literal-stop-index="50" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="53" stop-index="63" literal-start-index="60" literal-stop-index="70">
+                    <column-left-value name="user_id" start-index="53" stop-index="59" literal-start-index="60" literal-stop-index="66" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
     </parser-result>
     
     <parser-result sql-case-id="update_with_alias" parameters="'update', 1, 1">
