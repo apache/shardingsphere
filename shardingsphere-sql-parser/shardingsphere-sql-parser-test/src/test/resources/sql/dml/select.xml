@@ -587,9 +587,11 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column owner="i" name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id">
+                <owner name="i" start-index="230" stop-index="230" literal-start-index="236" literal-stop-index="236" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_keyword_table_name_with_back_quotes" parameters="1, 2, 9, 10, 'init'">
