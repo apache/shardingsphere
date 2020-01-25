@@ -308,9 +308,11 @@
                 <owner name="i" start-index="316" stop-index="316" literal-start-index="317" literal-stop-index="317" />
             </column-item>
         </group-by>
-        <order-by-columns>
-            <order-by-column name="item_id" owner="i" order-direction="DESC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id" order-direction="DESC">
+                <owner name="i" start-index="58" stop-index="58" />
+            </column-item>
+        </order-by>
         <offset value="6" parameter-index="5" />
         <row-count value="3" parameter-index="0" />
     </parser-result>
