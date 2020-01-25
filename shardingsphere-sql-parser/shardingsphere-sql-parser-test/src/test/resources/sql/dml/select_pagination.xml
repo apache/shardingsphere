@@ -53,9 +53,11 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column name="item_id" owner="i" order-direction="DESC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id" order-direction="DESC">
+                <owner name="i" start-index="165" stop-index="165" literal-start-index="166" literal-stop-index="166" />
+            </column-item>
+        </order-by>
         <offset value="5" parameter-index="4" />
     </parser-result>
     
