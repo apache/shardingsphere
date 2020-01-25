@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.insert.ExpectedInsertColumnsAndValues;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedOrderBy;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.pagination.ExpectedPaginationValue;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.pagination.ExpectedLimit;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedWhere;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedProjections;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.table.ExpectedAlterTable;
@@ -75,11 +75,8 @@ public final class ParserResult {
     @XmlElement(name = "order-by")
     private ExpectedOrderBy orderBy;
     
-    @XmlElement 
-    private ExpectedPaginationValue offset;
-    
-    @XmlElement(name = "row-count")
-    private ExpectedPaginationValue rowCount;
+    @XmlElement
+    private ExpectedLimit limit;
     
     @XmlElement(name = "alter-table")
     private ExpectedAlterTable alterTable;
