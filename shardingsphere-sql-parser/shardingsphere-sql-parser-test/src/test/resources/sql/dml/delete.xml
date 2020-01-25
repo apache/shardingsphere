@@ -95,6 +95,17 @@
         <tables>
             <table name="t_order" start-index="34" stop-index="40" />
         </tables>
+        <where parameters-count="0" parameter-marker-start-index="0" start-index="43" stop-index="56">
+            <and-predicate>
+                <predicate start-index="49" stop-index="56">
+                    <column-left-value name="status" start-index="49" stop-index="54" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <literal-expression value="1" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
     </parser-result>
     
     <parser-result sql-case-id="delete_with_alias" parameters="'init'">
