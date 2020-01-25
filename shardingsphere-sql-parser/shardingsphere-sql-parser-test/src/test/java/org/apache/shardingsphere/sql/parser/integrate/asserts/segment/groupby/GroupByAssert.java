@@ -15,37 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.parameter;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.groupby;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby.OrderByItemAssert;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedOrderBy;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 /**
- * Parameter marker assert.
+ * Group by assert.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ParameterMarkerAssert {
+public final class GroupByAssert {
     
     /**
-     * Assert parameter markers count.
+     * Assert actual group by segment is correct with expected group by.
      * 
      * @param assertMessage assert message
-     * @param actual actual parameter markers count
-     * @param expected expected parameter markers count
+     * @param actual actual group by segment
+     * @param expected expected group by
      * @param sqlCaseType SQL case type
      */
-    public static void assertCount(final SQLStatementAssertMessage assertMessage, final int actual, final int expected, final SQLCaseType sqlCaseType) {
-        if (SQLCaseType.Placeholder == sqlCaseType) {
-            assertThat(assertMessage.getText("Parameter markers count assertion error: "), actual, is(expected));
-        } else {
-            assertThat(assertMessage.getText("Parameter markers count assertion error: "), actual, is(0));
-        }
+    public static void assertIs(final SQLStatementAssertMessage assertMessage, final GroupBySegment actual, final ExpectedOrderBy expected, final SQLCaseType sqlCaseType) {
+        OrderByItemAssert.assertIs(assertMessage, actual.getGroupByItems(), expected, sqlCaseType, "Group by");
     }
 }

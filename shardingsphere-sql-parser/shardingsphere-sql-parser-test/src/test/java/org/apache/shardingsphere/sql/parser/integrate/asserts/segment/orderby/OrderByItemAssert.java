@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.orderby;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.owner.OwnerAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedOrderBy;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.item.impl.ExpectedColumnOrderByItem;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.item.impl.ExpectedExpressionOrderByItem;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.table;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table;
 
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;

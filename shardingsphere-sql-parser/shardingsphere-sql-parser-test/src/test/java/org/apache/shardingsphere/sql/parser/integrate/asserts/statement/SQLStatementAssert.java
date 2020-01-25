@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.statement;
 
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.groupby.GroupByAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.insert.InsertNamesAndValuesAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.orderby.OrderByAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.pagination.PaginationAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.parameter.ParameterMarkerAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.predicate.WhereAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.projection.ProjectionAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.table.AlterTableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.table.TableAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.groupby.GroupByAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.InsertNamesAndValuesAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby.OrderByAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.pagination.PaginationAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.parameter.ParameterMarkerAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.predicate.WhereAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.projection.ProjectionAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.AlterTableAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;

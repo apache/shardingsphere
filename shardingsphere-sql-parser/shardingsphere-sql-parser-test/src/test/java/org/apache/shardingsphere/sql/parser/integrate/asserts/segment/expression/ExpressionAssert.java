@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.expression;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.expression;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

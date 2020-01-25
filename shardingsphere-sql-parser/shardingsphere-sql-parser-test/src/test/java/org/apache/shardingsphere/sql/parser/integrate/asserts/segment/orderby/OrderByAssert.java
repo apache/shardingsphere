@@ -15,33 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.groupby;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.orderby.OrderByItemAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedOrderBy;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 /**
- * Group by assert.
+ * Order by assert.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GroupByAssert {
+public final class OrderByAssert {
     
     /**
-     * Assert actual group by segment is correct with expected group by.
-     * 
+     * Assert actual order by segment is correct with expected order by.
+     *
      * @param assertMessage assert message
-     * @param actual actual group by segment
-     * @param expected expected group by
+     * @param actual actual order by segment
+     * @param expected expected order by
      * @param sqlCaseType SQL case type
      */
-    public static void assertIs(final SQLStatementAssertMessage assertMessage, final GroupBySegment actual, final ExpectedOrderBy expected, final SQLCaseType sqlCaseType) {
-        OrderByItemAssert.assertIs(assertMessage, actual.getGroupByItems(), expected, sqlCaseType, "Group by");
+    public static void assertIs(final SQLStatementAssertMessage assertMessage, final OrderBySegment actual, final ExpectedOrderBy expected, final SQLCaseType sqlCaseType) {
+        OrderByItemAssert.assertIs(assertMessage, actual.getOrderByItems(), expected, sqlCaseType, "Order by");
     }
 }
