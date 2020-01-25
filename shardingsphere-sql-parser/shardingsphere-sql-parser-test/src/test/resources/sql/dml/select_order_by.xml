@@ -157,9 +157,11 @@
                 <owner name="o" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
-        <order-by-columns>
-            <order-by-column owner="o" name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id">
+                <owner name="o" start-index="59" stop-index="59" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_with_multiple_stars">
