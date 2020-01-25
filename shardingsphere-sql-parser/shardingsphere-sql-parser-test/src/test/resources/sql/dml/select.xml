@@ -516,9 +516,11 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column owner="i" name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id">
+                <owner name="i" start-index="165" stop-index="165" literal-start-index="166" literal-stop-index="166" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_full_route_with_binding_tables">
