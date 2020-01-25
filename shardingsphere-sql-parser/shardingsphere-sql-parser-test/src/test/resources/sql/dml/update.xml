@@ -187,6 +187,24 @@
         <tables>
             <table name="t_order" start-index="7" stop-index="13" />
         </tables>
+        <where parameters-count="0" parameter-marker-start-index="0" start-index="37" stop-index="74">
+            <and-predicate>
+                <predicate start-index="43" stop-index="57">
+                    <column-left-value name="order_id" start-index="43" stop-index="50" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <literal-expression value="1000" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="63" stop-index="74">
+                    <column-left-value name="user_id" start-index="63" stop-index="69" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <literal-expression value="10" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
     </parser-result>
     
     <parser-result sql-case-id="update_with_or" parameters="1000, 0, 10">
