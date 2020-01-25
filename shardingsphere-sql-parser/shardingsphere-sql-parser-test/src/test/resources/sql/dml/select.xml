@@ -157,9 +157,9 @@
                 <!--</predicate>-->
             <!--</and-predicate>-->
         </where>
-        <order-by-columns>
-            <order-by-column name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_not_between_with_single_table" parameters="100000, 100001">
