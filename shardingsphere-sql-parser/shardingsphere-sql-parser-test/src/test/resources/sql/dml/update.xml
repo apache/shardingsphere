@@ -137,7 +137,7 @@
         </tables>
         <where parameters-count="3" parameter-marker-start-index="1" start-index="34" stop-index="69" literal-start-index="41" literal-stop-index="76">
             <and-predicate>
-                <predicate start-index="40" stop-index="53" literal-stop-index="60">
+                <predicate start-index="40" stop-index="53" literal-start-index="47" literal-stop-index="60">
                     <column-left-value name="order_id" start-delimiter="`" end-delimiter="`" start-index="40" stop-index="49" literal-start-index="47" literal-stop-index="56" />
                     <operator type="=" />
                     <compare-right-value>
