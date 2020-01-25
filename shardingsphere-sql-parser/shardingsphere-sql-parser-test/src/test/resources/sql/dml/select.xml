@@ -691,6 +691,11 @@
                 </predicate>
             </and-predicate>
         </where>
+        <order-by>
+            <column-item name="item_id">
+                <owner name="i" start-index="221" stop-index="221" literal-start-index="227" literal-stop-index="227" />
+            </column-item>
+        </order-by>
         <order-by-columns>
             <order-by-column owner="i" name="item_id" order-direction="ASC" />
         </order-by-columns>
