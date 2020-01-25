@@ -191,8 +191,10 @@
                 <owner name="i" start-index="173" stop-index="173" literal-start-index="174" literal-stop-index="174" />
             </column-item>
         </order-by>
-        <row-count value="3" parameter-index="4" />
-        <offset value="5" parameter-index="5" />
+        <limit start-index="188" stop-index="203" literal-start-index="189" literal-stop-index="204">
+            <row-count value="3" parameter-index="4" start-index="194" stop-index="194" literal-start-index="195" literal-stop-index="195" />
+            <offset value="5" parameter-index="5" start-index="203" stop-index="203" literal-start-index="204" literal-stop-index="204" />
+        </limit>
     </parser-result>
     
     <parser-result sql-case-id="select_pagination_with_top" parameters="3, 1, 2, 9, 10">
