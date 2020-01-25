@@ -108,9 +108,9 @@
         <group-by>
             <column-item name="user_id" />
         </group-by>
-        <order-by-columns>
-            <order-by-column name="orders_sum" order-direction="DESC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="orders_sum" order-direction="DESC" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_group_by_without_grouped_column" parameters="1, 2, 9, 10">
