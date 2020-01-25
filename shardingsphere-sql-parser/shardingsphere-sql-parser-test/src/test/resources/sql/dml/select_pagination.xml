@@ -104,7 +104,9 @@
                 <owner name="i" start-index="165" stop-index="165" literal-start-index="166" literal-stop-index="166" />
             </column-item>
         </order-by>
-        <row-count value="5" parameter-index="4" />
+        <limit start-index="180" stop-index="186" literal-start-index="181" literal-stop-index="187">
+            <row-count value="5" parameter-index="4" start-index="186" stop-index="186" literal-start-index="187" literal-stop-index="187" />
+        </limit>
     </parser-result>
     
     <parser-result sql-case-id="select_pagination_with_limit_with_back_quotes" parameters="1, 2, 9, 10, 5, 3">
