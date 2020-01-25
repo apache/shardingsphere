@@ -25,9 +25,11 @@
             <!-- TODO check expression-projection's stop-index whether include alias --> 
             <expression-projection alias="exp" start-index="7" stop-index="31" />
         </projections>
-        <order-by-columns>
-            <order-by-column owner="o" name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id">
+                <owner name="o" start-index="60" stop-index="60" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_with_date_function">
@@ -37,9 +39,9 @@
         <projections start-index="7" stop-index="44">
             <expression-projection alias="creation_date" start-index="7" stop-index="27" />
         </projections>
-        <order-by-columns>
-            <order-by-column name="DATE(i.creation_date)" order-direction="DESC" />
-        </order-by-columns>
+        <order-by>
+            <expression-item expression="DATE(i.creation_date)" order-direction="DESC" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_with_regexp" parameters="'init', 1, 2">

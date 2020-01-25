@@ -82,7 +82,7 @@ public final class SQLStatementAssert {
         ProjectionAssert.assertIs(assertMessage, actual.getProjections(), expected.getProjections(), sqlCaseType);
         assertWhere(assertMessage, actual, expected, sqlCaseType);
         assertGroupBy(assertMessage, actual, expected, sqlCaseType);
-        assertOrderBy(assertMessage, actual, expected);
+        assertOrderBy(assertMessage, actual, expected, sqlCaseType);
         assertLimit(assertMessage, actual, expected, sqlCaseType);
     }
     
@@ -104,10 +104,10 @@ public final class SQLStatementAssert {
         }
     }
     
-    private static void assertOrderBy(final SQLStatementAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected) {
-        if (!expected.getOrderByColumns().isEmpty()) {
+    private static void assertOrderBy(final SQLStatementAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
+        if (null != expected.getOrderBy()) {
             assertTrue(assertMessage.getText("Actual order by segment should exist."), actual.getOrderBy().isPresent());
-            OrderByAssert.assertIs(assertMessage, actual.getOrderBy().get().getOrderByItems(), expected.getOrderByColumns());
+            OrderByAssert.assertIs(assertMessage, actual.getOrderBy().get(), expected.getOrderBy(), sqlCaseType);
         } else {
             assertFalse(assertMessage.getText("Actual order by segment should not exist."), actual.getOrderBy().isPresent());
         }

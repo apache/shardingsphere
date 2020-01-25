@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.groupby;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedColumnOrderByItem;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedExpressionOrderByItem;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedIndexOrderByItem;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Expected group by.
+ * Expected order by.
  * 
  * @author zhangliang 
  */
 @Getter
 @Setter
-public final class ExpectedGroupBy extends AbstractExpectedSQLSegment {
+public final class ExpectedOrderBy extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "column-item")
     private List<ExpectedColumnOrderByItem> columnItems = new LinkedList<>();

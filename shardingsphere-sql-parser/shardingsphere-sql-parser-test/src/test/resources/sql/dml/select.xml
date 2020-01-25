@@ -110,9 +110,9 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_exclamation_equal_with_single_table" parameters="1">
@@ -134,9 +134,9 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_not_in_with_single_table" parameters="100000, 100001">
@@ -157,9 +157,9 @@
                 <!--</predicate>-->
             <!--</and-predicate>-->
         </where>
-        <order-by-columns>
-            <order-by-column name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_not_between_with_single_table" parameters="100000, 100001">
@@ -180,9 +180,9 @@
                 <!--</predicate>-->
             <!--</and-predicate>-->
         </where>
-        <order-by-columns>
-            <order-by-column name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_equal_with_single_table" parameters="1, 1">
@@ -272,12 +272,12 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column name="user_id" order-direction="ASC" />
-            <order-by-column name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="user_id" />
+            <column-item name="order_id" />
+        </order-by>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_comparison_symbol_with_single_table" parameters="1, 10, 2, 5">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
@@ -321,10 +321,10 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column name="user_id" order-direction="ASC" />
-            <order-by-column name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="user_id" />
+            <column-item name="order_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_in_with_single_table" parameters="1, 2, 3, 9, 10">
@@ -358,10 +358,10 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column name="user_id" order-direction="ASC" />
-            <order-by-column name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="user_id" />
+            <column-item name="order_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_in_with_same_sharding_column" parameters="1000, 1001, 1001, 1002">
@@ -393,9 +393,9 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_count_like_concat" parameters="'init', 1, 2, 9, 10">
@@ -516,9 +516,11 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column owner="i" name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id">
+                <owner name="i" start-index="165" stop-index="165" literal-start-index="166" literal-stop-index="166" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_full_route_with_binding_tables">
@@ -531,9 +533,11 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
-        <order-by-columns>
-            <order-by-column owner="i" name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id">
+                <owner name="i" start-index="108" stop-index="108" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_sharding_route_with_broadcast_table" parameters="1, 2, 9, 10, 'init'">
@@ -583,9 +587,11 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column owner="i" name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id">
+                <owner name="i" start-index="230" stop-index="230" literal-start-index="236" literal-stop-index="236" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_keyword_table_name_with_back_quotes" parameters="1, 2, 9, 10, 'init'">
@@ -635,9 +641,11 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column owner="i" name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id">
+                <owner name="i" start-index="221" stop-index="221" literal-start-index="227" literal-stop-index="227" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_keyword_table_name_with_double_quotes" parameters="1, 2, 9, 10, 'init'">
@@ -687,9 +695,11 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column owner="i" name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id">
+                <owner name="i" start-index="221" stop-index="221" literal-start-index="227" literal-stop-index="227" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_keyword_table_name_with_square_brackets" parameters="1, 2, 9, 10, 'init'">
@@ -739,9 +749,11 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column owner="i" name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id">
+                <owner name="i" start-index="221" stop-index="221" literal-start-index="227" literal-stop-index="227" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_alias_as_keyword" parameters="1">
@@ -934,9 +946,9 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_single_column" >
@@ -946,9 +958,9 @@
         <projections start-index="16" stop-index="22" distinct-row="true">
             <column-projection name="item_id" start-index="16" stop-index="22" />
         </projections>
-        <order-by-columns>
-            <order-by-column name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_owner_column" >
@@ -960,9 +972,9 @@
                 <owner name="t_order" start-index="16" stop-index="22" />
             </column-projection>
         </projections>
-        <order-by-columns>
-            <order-by-column name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_multi_column" >
@@ -974,9 +986,9 @@
             <column-projection name="user_id" start-index="26" stop-index="32" />
             <column-projection name="status" start-index="35" stop-index="40" />
         </projections>
-        <order-by-columns>
-            <order-by-column name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_star" >
@@ -997,9 +1009,9 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_owner_star">
@@ -1027,9 +1039,11 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column owner="t_order" name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id">
+                <owner name="t_order" start-index="132" stop-index="138" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_sum" >
@@ -1135,9 +1149,9 @@
         <group-by>
             <column-item name="order_id" />
         </group-by>
-        <order-by-columns>
-            <order-by-column name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_count_group_by" >
@@ -1151,9 +1165,9 @@
         <group-by>
             <column-item name="order_id" />
         </group-by>
-        <order-by-columns>
-            <order-by-column name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_function">
@@ -1163,9 +1177,9 @@
         <projections distinct-row="true" start-index="15" stop-index="23">
             <expression-projection start-index="15" stop-index="23" />
         </projections>
-        <order-by-columns>
-            <order-by-column name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_count_calculation" >

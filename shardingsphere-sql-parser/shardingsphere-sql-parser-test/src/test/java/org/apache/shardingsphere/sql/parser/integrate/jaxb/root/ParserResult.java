@@ -20,9 +20,8 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.root;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.groupby.ExpectedGroupBy;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedOrderBy;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.insert.ExpectedInsertColumnsAndValues;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedOrderByColumn;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.pagination.ExpectedPaginationValue;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedWhere;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedProjections;
@@ -68,11 +67,10 @@ public final class ParserResult {
     private ExpectedTokens tokens = new ExpectedTokens();
     
     @XmlElement(name = "group-by")
-    private ExpectedGroupBy groupBy;
+    private ExpectedOrderBy groupBy;
     
-    @XmlElementWrapper(name = "order-by-columns")
-    @XmlElement(name = "order-by-column") 
-    private List<ExpectedOrderByColumn> orderByColumns = new LinkedList<>();
+    @XmlElement(name = "order-by")
+    private ExpectedOrderBy orderBy;
     
     @XmlElement 
     private ExpectedPaginationValue offset;

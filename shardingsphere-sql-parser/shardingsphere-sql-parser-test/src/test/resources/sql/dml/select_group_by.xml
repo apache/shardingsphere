@@ -28,9 +28,9 @@
         <group-by>
             <column-item name="user_id" />
         </group-by>
-        <order-by-columns>
-            <order-by-column name="user_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="user_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_group_by_with_count">
@@ -44,9 +44,9 @@
         <group-by>
             <column-item name="user_id" />
         </group-by>
-        <order-by-columns>
-            <order-by-column name="user_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="user_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_group_by_with_max">
@@ -60,9 +60,9 @@
         <group-by>
             <column-item name="user_id" />
         </group-by>
-        <order-by-columns>
-            <order-by-column name="user_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="user_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_group_by_with_min">
@@ -76,9 +76,9 @@
         <group-by>
             <column-item name="user_id" />
         </group-by>
-        <order-by-columns>
-            <order-by-column name="user_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="user_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_group_by_with_avg">
@@ -92,9 +92,9 @@
         <group-by>
             <column-item name="user_id" />
         </group-by>
-        <order-by-columns>
-            <order-by-column name="user_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="user_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_group_by_with_order_by_desc">
@@ -108,9 +108,9 @@
         <group-by>
             <column-item name="user_id" />
         </group-by>
-        <order-by-columns>
-            <order-by-column name="orders_sum" order-direction="DESC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="orders_sum" order-direction="DESC" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_group_by_without_grouped_column" parameters="1, 2, 9, 10">
@@ -164,9 +164,9 @@
         <group-by>
             <column-item name="user_id" />
         </group-by>
-        <order-by-columns>
-            <order-by-column name="user_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="user_id" />
+        </order-by>
         <row-count value="5" parameter-index="0" />
     </parser-result>
     
@@ -181,9 +181,9 @@
         <group-by>
             <column-item name="user_id" />
         </group-by>
-        <order-by-columns>
-            <order-by-column name="SUM(order_id)" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <expression-item expression="SUM(order_id)" />
+        </order-by>
         <row-count value="5" parameter-index="0" />
     </parser-result>
     
@@ -201,9 +201,11 @@
                 <owner name="o" start-index="45" stop-index="45" />
             </column-item>
         </group-by>
-        <order-by-columns>
-            <order-by-column name="user_id" owner="o" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="user_id">
+                <owner name="o" start-index="64" stop-index="64" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_group_by_with_date_function" parameters="1000, 1100">
@@ -256,8 +258,8 @@
         <group-by>
             <index-item index="2" start-index="70" stop-index="70" />
         </group-by>
-        <order-by-columns>
-            <order-by-column index="2" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <index-item index="2" />
+        </order-by>
     </parser-result>
 </parser-result-sets>

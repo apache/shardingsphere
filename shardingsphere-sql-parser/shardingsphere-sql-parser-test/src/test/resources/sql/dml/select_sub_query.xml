@@ -41,9 +41,6 @@
             <aggregation-projection type="COUNT" alias="orders_count" />
             <shorthand-projection start-index="45" stop-index="45" />
         </projections>
-        <order-by-columns>
-            <order-by-column name="order_id" order-direction="DESC" />
-        </order-by-columns>
     </parser-result>
     
     <parser-result sql-case-id="select_sub_query_with_group_by">
@@ -53,9 +50,6 @@
         <projections start-index="50" stop-index="57">
             <column-projection name="order_id" start-index="50" stop-index="57" />
         </projections>
-        <group-by-columns>
-            <group-by-column name="order_id" order-direction="ASC" />
-        </group-by-columns>
     </parser-result>
     -->
 </parser-result-sets>

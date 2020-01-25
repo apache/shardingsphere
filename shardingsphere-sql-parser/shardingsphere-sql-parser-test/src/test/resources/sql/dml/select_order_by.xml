@@ -24,10 +24,12 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <order-by-columns>
-            <order-by-column owner="o" name="order_id" order-direction="ASC" />
-            <order-by-column index="2" order-direction="DESC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id">
+                <owner name="o" start-index="33" stop-index="33" />
+            </column-item>
+            <index-item index="2" order-direction="DESC" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_desc_and_index_asc">
@@ -63,10 +65,12 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column owner="o" name="order_id" order-direction="DESC" />
-            <order-by-column index="1" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id" order-direction="DESC">
+                <owner name="o" start-index="103" stop-index="103" />
+            </column-item>
+            <index-item index="1" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_with_ordered_column">
@@ -78,9 +82,11 @@
                 <owner name="o" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
-        <order-by-columns>
-            <order-by-column owner="o" name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id">
+                <owner name="o" start-index="59" stop-index="59" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_with_date">
@@ -115,11 +121,17 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column owner="i" name="creation_date" order-direction="DESC" />
-            <order-by-column owner="o" name="order_id" order-direction="DESC" />
-            <order-by-column owner="i" name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="creation_date" order-direction="DESC">
+                <owner name="i" start-index="103" stop-index="103" />
+            </column-item>
+            <column-item name="order_id" order-direction="DESC">
+                <owner name="o" start-index="125" stop-index="125" />
+            </column-item>
+            <column-item name="item_id">
+                <owner name="i" start-index="142" stop-index="142" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <!-- //TODO add order-by-null-type -->
@@ -132,9 +144,11 @@
                 <owner name="o" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
-        <order-by-columns>
-            <order-by-column owner="o" name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id">
+                <owner name="o" start-index="59" stop-index="59" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <!-- //TODO add order-by-null-type -->
@@ -147,9 +161,11 @@
                 <owner name="o" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
-        <order-by-columns>
-            <order-by-column owner="o" name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id">
+                <owner name="o" start-index="59" stop-index="59" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_with_multiple_stars">
@@ -163,9 +179,11 @@
             </shorthand-projection>
             <column-projection name="order_id" start-index="10" stop-index="17" />
         </projections>
-        <order-by-columns>
-            <order-by-column owner="o" name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id">
+                <owner name="o" start-index="48" stop-index="48" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_with_alias_star_alias_name">
@@ -177,9 +195,11 @@
                 <owner name="o" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
-        <order-by-columns>
-            <order-by-column owner="o" name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id">
+                <owner name="o" start-index="35" stop-index="35" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_with_star_table_alias">
@@ -189,9 +209,9 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <order-by-columns>
-            <order-by-column name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id" />
+        </order-by>
     </parser-result>
     
     <!--TODO need to add later-->
@@ -199,9 +219,6 @@
         <!--<tables>-->
             <!--<table name="t_order" alias="o" start-index="14" stop-index="20" />-->
         <!--</tables>-->
-        <!--<order-by-columns>-->
-            <!--<order-by-column name="order_id" order-direction="ASC" />-->
-        <!--</order-by-columns>-->
     <!--</parser-result>-->
     
     <parser-result sql-case-id="select_order_by_with_table_star_table_name">
@@ -213,9 +230,11 @@
                 <owner name="t_order" start-index="7" stop-index="13" />
             </shorthand-projection>
         </projections>
-        <order-by-columns>
-            <order-by-column owner="t_order" name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id">
+                <owner name="t_order" start-index="39" stop-index="45" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_with_star_no_table_alias">
@@ -225,9 +244,9 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <order-by-columns>
-            <order-by-column name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_with_table_star_without_table_name">
@@ -243,8 +262,8 @@
                 <owner name="o" start-index="12" stop-index="12" />
             </shorthand-projection>
         </projections>
-        <order-by-columns>
-            <order-by-column name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id" />
+        </order-by>
     </parser-result>
 </parser-result-sets>
