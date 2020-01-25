@@ -63,8 +63,10 @@
                 <owner name="i" start-index="190" stop-index="190" literal-start-index="191" literal-stop-index="191" />
             </column-item>
         </order-by>
-        <offset value="5" parameter-index="4" />
-        <row-count value="3" parameter-index="5" />
+        <limit start-index="205" stop-index="214" literal-start-index="206" literal-stop-index="215">
+            <offset value="5" parameter-index="4" start-index="211" stop-index="211" literal-start-index="212" literal-stop-index="212" />
+            <row-count value="3" parameter-index="5" start-index="214" stop-index="214" literal-start-index="215" literal-stop-index="215" />
+        </limit>
     </parser-result>
     
     <parser-result sql-case-id="select_pagination_with_diff_group_by_and_order_by" parameters="1, 2, 9, 10, 5, 3">
