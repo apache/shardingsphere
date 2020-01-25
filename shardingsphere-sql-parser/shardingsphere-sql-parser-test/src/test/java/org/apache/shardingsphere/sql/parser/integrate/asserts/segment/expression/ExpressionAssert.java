@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.Expe
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -46,13 +45,12 @@ public final class ExpressionAssert {
      * @param assertMessage assert message
      * @param actual actual parameter marker expression segment
      * @param expected expected parameter marker expression
-     * @param sqlCaseType SQL case type
      */
     public static void assertParameterMarkerExpression(final SQLCaseAssertMessage assertMessage, 
-                                                        final ParameterMarkerExpressionSegment actual, final ExpectedParameterMarkerExpression expected, final SQLCaseType sqlCaseType) {
+                                                        final ParameterMarkerExpressionSegment actual, final ExpectedParameterMarkerExpression expected) {
         assertThat(assertMessage.getText("Parameter marker index assertion error: "), actual.getParameterMarkerIndex(), is(expected.getValue()));
         // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
+//        SQLSegmentAssert.assertIs(assertMessage, actual, expected);
     }
     
     /**
@@ -61,13 +59,12 @@ public final class ExpressionAssert {
      * @param assertMessage assert message
      * @param actual actual literal expression segment
      * @param expected expected literal expression
-     * @param sqlCaseType SQL case type
      */
     public static void assertLiteralExpression(final SQLCaseAssertMessage assertMessage, 
-                                                final LiteralExpressionSegment actual, final ExpectedLiteralExpression expected, final SQLCaseType sqlCaseType) {
+                                                final LiteralExpressionSegment actual, final ExpectedLiteralExpression expected) {
         assertThat(assertMessage.getText("Literal assertion error: "), actual.getLiterals().toString(), is(expected.getValue()));
         // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
+//        SQLSegmentAssert.assertIs(assertMessage, actual, expected);
     }
     
     /**
@@ -76,13 +73,12 @@ public final class ExpressionAssert {
      * @param assertMessage assert message
      * @param actual actual common expression segment
      * @param expected expected common expression
-     * @param sqlCaseType SQL case type
      */
     public static void assertCommonExpression(final SQLCaseAssertMessage assertMessage, 
-                                               final ComplexExpressionSegment actual, final ExpectedCommonExpression expected, final SQLCaseType sqlCaseType) {
+                                               final ComplexExpressionSegment actual, final ExpectedCommonExpression expected) {
         assertThat(assertMessage.getText("Common expression text assertion error: "), actual.getText(), is(expected.getText()));
         // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
+//        SQLSegmentAssert.assertIs(assertMessage, actual, expected);
     }
     
     /**
@@ -91,11 +87,10 @@ public final class ExpressionAssert {
      * @param assertMessage assert message
      * @param actual actual subquery segment
      * @param expected expected subquery expression
-     * @param sqlCaseType SQL case type
      */
-    public static void assertSubquery(final SQLCaseAssertMessage assertMessage, final ComplexExpressionSegment actual, final ExpectedSubquery expected, final SQLCaseType sqlCaseType) {
+    public static void assertSubquery(final SQLCaseAssertMessage assertMessage, final ComplexExpressionSegment actual, final ExpectedSubquery expected) {
         // TODO assert start index and stop index
         assertThat(assertMessage.getText("Subquery text assertion error: "), actual.getText(), is(expected.getText()));
-//        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
+//        SQLSegmentAssert.assertIs(assertMessage, actual, expected);
     }
 }

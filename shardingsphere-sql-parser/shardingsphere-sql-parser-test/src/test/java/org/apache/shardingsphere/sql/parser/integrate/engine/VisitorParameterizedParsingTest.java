@@ -96,7 +96,7 @@ public final class VisitorParameterizedParsingTest {
         SQLCaseAssertMessage assertMessage = new SQLCaseAssertMessage(sqlCaseId, sqlCaseType);
         SQLStatement actual = (SQLStatement) new SQLVisitorEngine(databaseTypeName, parseTree).parse();
         if (!expected.isLongSQL()) {
-            SQLStatementAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
+            SQLStatementAssert.assertIs(assertMessage, actual, expected);
         }
     }
 }

@@ -83,7 +83,7 @@ public final class SQLParserParameterizedTest {
         SQLCaseAssertMessage assertMessage = new SQLCaseAssertMessage(sqlCaseId, sqlCaseType);
         SQLStatement actual = SQLParseEngineFactory.getSQLParseEngine("H2".equals(databaseType) ? "MySQL" : databaseType).parse(sql, false);
         if (!expected.isLongSQL()) {
-            SQLStatementAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
+            SQLStatementAssert.assertIs(assertMessage, actual, expected);
         }
     }
 }

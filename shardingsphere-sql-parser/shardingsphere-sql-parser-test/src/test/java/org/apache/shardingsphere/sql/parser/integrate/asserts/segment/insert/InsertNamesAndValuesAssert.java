@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertVal
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -46,9 +45,8 @@ public final class InsertNamesAndValuesAssert {
      * @param assertMessage assert message
      * @param actual actual insert statement
      * @param expected expected insert names and values
-     * @param sqlCaseType SQL case type
      */
-    public static void assertIs(final SQLCaseAssertMessage assertMessage, final InsertStatement actual, final ExpectedInsertColumnsAndValues expected, final SQLCaseType sqlCaseType) {
+    public static void assertIs(final SQLCaseAssertMessage assertMessage, final InsertStatement actual, final ExpectedInsertColumnsAndValues expected) {
         assertThat(assertMessage.getText("Insert column names assertion error: "), Joiner.on(",").join(Collections2.transform(actual.getColumns(), new Function<ColumnSegment, Object>() {
             
             @Override
@@ -57,23 +55,22 @@ public final class InsertNamesAndValuesAssert {
             }
         })), is(expected.getColumnNames()));
         assertThat(assertMessage.getText("Insert values size assertion error: "), actual.getValues().size(), is(expected.getValues().size()));
-        assertInsertValues(assertMessage, actual.getValues(), expected.getValues(), sqlCaseType);
+        assertInsertValues(assertMessage, actual.getValues(), expected.getValues());
     }
     
-    private static void assertInsertValues(final SQLCaseAssertMessage assertMessage, 
-                                           final Collection<InsertValuesSegment> actual, final Collection<ExpectedInsertValue> expected, final SQLCaseType sqlCaseType) {
+    private static void assertInsertValues(final SQLCaseAssertMessage assertMessage, final Collection<InsertValuesSegment> actual, final Collection<ExpectedInsertValue> expected) {
         assertThat(actual.size(), is(expected.size()));
         Iterator<ExpectedInsertValue> expectedIterator = expected.iterator();
         for (InsertValuesSegment each : actual) {
-            assertInsertValue(assertMessage, each, expectedIterator.next(), sqlCaseType);
+            assertInsertValue(assertMessage, each, expectedIterator.next());
         }
     }
     
-    private static void assertInsertValue(final SQLCaseAssertMessage assertMessage, final InsertValuesSegment actual, final ExpectedInsertValue expected, final SQLCaseType sqlCaseType) {
+    private static void assertInsertValue(final SQLCaseAssertMessage assertMessage, final InsertValuesSegment actual, final ExpectedInsertValue expected) {
         assertThat(assertMessage.getText("Assignments size assertion error: "), actual.getValues().size(), is(expected.getAssignments().size()));
         int i = 0;
         for (ExpressionSegment each : actual.getValues()) {
-            AssignmentAssert.assertIs(assertMessage, each, expected.getAssignments().get(i++), sqlCaseType);
+            AssignmentAssert.assertIs(assertMessage, each, expected.getAssignments().get(i++));
         }
     }
 }

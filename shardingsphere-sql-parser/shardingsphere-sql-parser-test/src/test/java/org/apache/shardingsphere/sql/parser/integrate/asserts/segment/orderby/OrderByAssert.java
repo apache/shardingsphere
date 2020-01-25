@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertMessage;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedOrderBy;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
-import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 /**
  * Order by assert.
@@ -38,9 +37,8 @@ public final class OrderByAssert {
      * @param assertMessage assert message
      * @param actual actual order by segment
      * @param expected expected order by
-     * @param sqlCaseType SQL case type
      */
-    public static void assertIs(final SQLCaseAssertMessage assertMessage, final OrderBySegment actual, final ExpectedOrderBy expected, final SQLCaseType sqlCaseType) {
-        OrderByItemAssert.assertIs(assertMessage, actual.getOrderByItems(), expected, sqlCaseType, "Order by");
+    public static void assertIs(final SQLCaseAssertMessage assertMessage, final OrderBySegment actual, final ExpectedOrderBy expected) {
+        OrderByItemAssert.assertIs(assertMessage, actual.getOrderByItems(), expected, "Order by");
     }
 }

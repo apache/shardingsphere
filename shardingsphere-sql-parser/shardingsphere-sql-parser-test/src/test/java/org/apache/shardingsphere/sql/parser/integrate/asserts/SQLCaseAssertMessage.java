@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.integrate.asserts;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistry;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistryFactory;
@@ -38,6 +39,7 @@ public final class SQLCaseAssertMessage {
     
     private final String sqlCaseId;
     
+    @Getter
     private final SQLCaseType sqlCaseType;
     
     private final SQLCasesLoader sqlCasesLoader = SQLCasesRegistry.getInstance().getSqlCasesLoader();

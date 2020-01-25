@@ -39,10 +39,9 @@ public final class ParameterMarkerAssert {
      * @param assertMessage assert message
      * @param actual actual parameter markers count
      * @param expected expected parameter markers count
-     * @param sqlCaseType SQL case type
      */
-    public static void assertCount(final SQLCaseAssertMessage assertMessage, final int actual, final int expected, final SQLCaseType sqlCaseType) {
-        if (SQLCaseType.Placeholder == sqlCaseType) {
+    public static void assertCount(final SQLCaseAssertMessage assertMessage, final int actual, final int expected) {
+        if (SQLCaseType.Placeholder == assertMessage.getSqlCaseType()) {
             assertThat(assertMessage.getText("Parameter markers count assertion error: "), actual, is(expected));
         } else {
             assertThat(assertMessage.getText("Parameter markers count assertion error: "), actual, is(0));

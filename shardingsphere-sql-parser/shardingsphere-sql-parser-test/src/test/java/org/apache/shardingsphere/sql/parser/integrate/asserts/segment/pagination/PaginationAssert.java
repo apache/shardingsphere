@@ -45,20 +45,19 @@ public final class PaginationAssert {
      * @param assertMessage assert message
      * @param actual actual offset
      * @param expected expected offset
-     * @param sqlCaseType SQL case type
      */
-    public static void assertOffset(final SQLCaseAssertMessage assertMessage, final PaginationValueSegment actual, final ExpectedPaginationValue expected, final SQLCaseType sqlCaseType) {
+    public static void assertOffset(final SQLCaseAssertMessage assertMessage, final PaginationValueSegment actual, final ExpectedPaginationValue expected) {
         if (null == actual) {
             assertNull(assertMessage.getText("Offset should not exist."), expected);
             return;
         }
-        if (SQLCaseType.Placeholder == sqlCaseType) {
+        if (SQLCaseType.Placeholder == assertMessage.getSqlCaseType()) {
             assertThat(assertMessage.getText("Offset index assertion error: "),
                     ((ParameterMarkerPaginationValueSegment) actual).getParameterIndex(), is(expected.getParameterIndex()));
         } else {
             assertThat(assertMessage.getText("Offset value assertion error: "), ((NumberLiteralPaginationValueSegment) actual).getValue(), is(expected.getValue()));
         }
-        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
+        SQLSegmentAssert.assertIs(assertMessage, actual, expected);
     }
     
     /**
@@ -67,19 +66,18 @@ public final class PaginationAssert {
      * @param assertMessage assert message
      * @param actual actual row count
      * @param expected expected row count
-     * @param sqlCaseType SQL case type
      */
-    public static void assertRowCount(final SQLCaseAssertMessage assertMessage, final PaginationValueSegment actual, final ExpectedPaginationValue expected, final SQLCaseType sqlCaseType) {
+    public static void assertRowCount(final SQLCaseAssertMessage assertMessage, final PaginationValueSegment actual, final ExpectedPaginationValue expected) {
         if (null == actual) {
             assertNull(assertMessage.getText("Row count should not exist."), expected);
             return;
         }
-        if (SQLCaseType.Placeholder == sqlCaseType) {
+        if (SQLCaseType.Placeholder == assertMessage.getSqlCaseType()) {
             assertThat(assertMessage.getText("Row count index assertion error: "),
                     ((ParameterMarkerPaginationValueSegment) actual).getParameterIndex(), is(expected.getParameterIndex()));
         } else {
             assertThat(assertMessage.getText("Row count value assertion error: "), ((NumberLiteralPaginationValueSegment) actual).getValue(), is(expected.getValue()));
         }
-        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
+        SQLSegmentAssert.assertIs(assertMessage, actual, expected);
     }
 }

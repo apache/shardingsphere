@@ -23,7 +23,6 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertMessa
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby.OrderByItemAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedOrderBy;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
-import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 /**
  * Group by assert.
@@ -39,9 +38,8 @@ public final class GroupByAssert {
      * @param assertMessage assert message
      * @param actual actual group by segment
      * @param expected expected group by
-     * @param sqlCaseType SQL case type
      */
-    public static void assertIs(final SQLCaseAssertMessage assertMessage, final GroupBySegment actual, final ExpectedOrderBy expected, final SQLCaseType sqlCaseType) {
-        OrderByItemAssert.assertIs(assertMessage, actual.getGroupByItems(), expected, sqlCaseType, "Group by");
+    public static void assertIs(final SQLCaseAssertMessage assertMessage, final GroupBySegment actual, final ExpectedOrderBy expected) {
+        OrderByItemAssert.assertIs(assertMessage, actual.getGroupByItems(), expected, "Group by");
     }
 }

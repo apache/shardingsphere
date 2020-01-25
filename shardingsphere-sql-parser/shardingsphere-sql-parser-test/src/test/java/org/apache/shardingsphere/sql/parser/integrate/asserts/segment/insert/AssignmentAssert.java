@@ -39,10 +39,9 @@ public final class AssignmentAssert {
      * @param assertMessage assert message
      * @param actual actual assignment
      * @param expected expected assignment
-     * @param sqlCaseType SQL case type
      */
-    public static void assertIs(final SQLCaseAssertMessage assertMessage, final ExpressionSegment actual, final ExpectedAssignment expected, final SQLCaseType sqlCaseType) {
-        if (SQLCaseType.Placeholder == sqlCaseType) {
+    public static void assertIs(final SQLCaseAssertMessage assertMessage, final ExpressionSegment actual, final ExpectedAssignment expected) {
+        if (SQLCaseType.Placeholder == assertMessage.getSqlCaseType()) {
             if (null == expected.getTypeForPlaceholder()) {
                 return;
             }
