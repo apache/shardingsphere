@@ -115,6 +115,26 @@
         <tables>
             <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="7" stop-index="15" />
         </tables>
+        <where parameters-count="3" parameter-marker-start-index="1" start-index="34" stop-index="69" literal-start-index="41" literal-stop-index="76">
+            <and-predicate>
+                <predicate start-index="40" stop-index="53" literal-stop-index="60">
+                    <column-left-value name="order_id" start-delimiter="`" end-delimiter="`" start-index="40" stop-index="49" literal-start-index="47" literal-stop-index="56" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="59" stop-index="69" literal-start-index="66" literal-stop-index="76">
+                    <column-left-value name="user_id" start-index="59" stop-index="65" literal-start-index="66" literal-stop-index="72" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
     </parser-result>
     
     <parser-result sql-case-id="update_with_special_comments" parameters="'update', 1, 1">
