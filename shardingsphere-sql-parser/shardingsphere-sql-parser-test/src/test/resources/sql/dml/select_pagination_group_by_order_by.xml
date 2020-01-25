@@ -392,9 +392,11 @@
                 <owner name="i" start-index="325" stop-index="325" literal-start-index="326" literal-stop-index="326" />
             </column-item>
         </group-by>
-        <order-by-columns>
-            <order-by-column name="item_id" owner="i" order-direction="DESC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id" order-direction="DESC">
+                <owner name="i" start-index="344" stop-index="344" literal-start-index="345" literal-stop-index="345" />
+            </column-item>
+        </order-by>
         <offset value="3" parameter-index="5" />
         <row-count value="5" parameter-index="4" />
     </parser-result>
