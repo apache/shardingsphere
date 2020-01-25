@@ -201,9 +201,11 @@
                 <owner name="o" start-index="45" stop-index="45" />
             </column-item>
         </group-by>
-        <order-by-columns>
-            <order-by-column name="user_id" owner="o" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="user_id">
+                <owner name="o" start-index="64" stop-index="64" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_group_by_with_date_function" parameters="1000, 1100">
