@@ -272,8 +272,8 @@
                 <owner name="o" start-index="12" stop-index="12" />
             </shorthand-projection>
         </projections>
-        <order-by-columns>
-            <order-by-column name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id" />
+        </order-by>
     </parser-result>
 </parser-result-sets>
