@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.integrate.asserts;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistry;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistryFactory;
@@ -27,17 +28,18 @@ import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
 import java.util.Collections;
 
 /**
- * SQL statement assert message.
+ * SQL case assert context.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class SQLStatementAssertMessage {
+public final class SQLCaseAssertContext {
     
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     
     private final String sqlCaseId;
     
+    @Getter
     private final SQLCaseType sqlCaseType;
     
     private final SQLCasesLoader sqlCasesLoader = SQLCasesRegistry.getInstance().getSqlCasesLoader();

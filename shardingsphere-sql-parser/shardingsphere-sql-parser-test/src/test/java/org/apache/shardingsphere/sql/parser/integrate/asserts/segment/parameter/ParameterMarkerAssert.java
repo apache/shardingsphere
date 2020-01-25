@@ -15,33 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.groupby;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.parameter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.orderby.OrderByItemAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedOrderBy;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 /**
- * Group by assert.
+ * Parameter marker assert.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GroupByAssert {
+public final class ParameterMarkerAssert {
     
     /**
-     * Assert actual group by segment is correct with expected group by.
+     * Assert parameter markers count.
      * 
-     * @param assertMessage assert message
-     * @param actual actual group by segment
-     * @param expected expected group by
-     * @param sqlCaseType SQL case type
+     * @param assertContext assert context
+     * @param actual actual parameter markers count
+     * @param expected expected parameter markers count
      */
-    public static void assertIs(final SQLStatementAssertMessage assertMessage, final GroupBySegment actual, final ExpectedOrderBy expected, final SQLCaseType sqlCaseType) {
-        OrderByItemAssert.assertIs(assertMessage, actual.getGroupByItems(), expected, sqlCaseType, "Group by");
+    public static void assertCount(final SQLCaseAssertContext assertContext, final int actual, final int expected) {
+        if (SQLCaseType.Placeholder == assertContext.getSqlCaseType()) {
+            assertThat(assertContext.getText("Parameter markers count assertion error: "), actual, is(expected));
+        } else {
+            assertThat(assertContext.getText("Parameter markers count assertion error: "), actual, is(0));
+        }
     }
 }

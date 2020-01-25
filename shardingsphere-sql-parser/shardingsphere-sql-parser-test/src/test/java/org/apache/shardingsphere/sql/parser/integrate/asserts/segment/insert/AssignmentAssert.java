@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.insert;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.insert.ExpectedAssignment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.ComplexExpressionSegment;
@@ -36,21 +36,20 @@ public final class AssignmentAssert {
     /**
      * Assert actual expression segment is correct with expected assignment.
      *
-     * @param assertMessage assert message
+     * @param assertContext assert context
      * @param actual actual assignment
      * @param expected expected assignment
-     * @param sqlCaseType SQL case type
      */
-    public static void assertIs(final SQLStatementAssertMessage assertMessage, final ExpressionSegment actual, final ExpectedAssignment expected, final SQLCaseType sqlCaseType) {
-        if (SQLCaseType.Placeholder == sqlCaseType) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ExpressionSegment actual, final ExpectedAssignment expected) {
+        if (SQLCaseType.Placeholder == assertContext.getSqlCaseType()) {
             if (null == expected.getTypeForPlaceholder()) {
                 return;
             }
-            assertThat(assertMessage.getText("SQL expression type for placeholder error: "), actual.getClass().getSimpleName(), is(expected.getTypeForPlaceholder()));
-            assertThat(assertMessage.getText("SQL expression text for placeholder error: "), getText(actual), is(expected.getTextForPlaceholder()));
+            assertThat(assertContext.getText("SQL expression type for placeholder error: "), actual.getClass().getSimpleName(), is(expected.getTypeForPlaceholder()));
+            assertThat(assertContext.getText("SQL expression text for placeholder error: "), getText(actual), is(expected.getTextForPlaceholder()));
         } else {
-            assertThat(assertMessage.getText("SQL expression type for literal error: "), actual.getClass().getSimpleName(), is(expected.getTypeForLiteral()));
-            assertThat(assertMessage.getText("SQL expression text for literal error: "), getText(actual), is(expected.getTextForLiteral()));
+            assertThat(assertContext.getText("SQL expression type for literal error: "), actual.getClass().getSimpleName(), is(expected.getTypeForLiteral()));
+            assertThat(assertContext.getText("SQL expression text for literal error: "), getText(actual), is(expected.getTextForLiteral()));
         }
     }
     

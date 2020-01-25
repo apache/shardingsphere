@@ -15,37 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.parameter;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.test.sql.SQLCaseType;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.TCLStatement;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * Parameter marker assert.
+ * TCL statement assert.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ParameterMarkerAssert {
+public final class TCLStatementAssert {
     
     /**
-     * Assert parameter markers count.
+     * Assert TCL statement is correct with expected parser result.
      * 
-     * @param assertMessage assert message
-     * @param actual actual parameter markers count
-     * @param expected expected parameter markers count
-     * @param sqlCaseType SQL case type
+     * @param actual actual TCL statement
+     * @param expected expected parser result
      */
-    public static void assertCount(final SQLStatementAssertMessage assertMessage, final int actual, final int expected, final SQLCaseType sqlCaseType) {
-        if (SQLCaseType.Placeholder == sqlCaseType) {
-            assertThat(assertMessage.getText("Parameter markers count assertion error: "), actual, is(expected));
-        } else {
-            assertThat(assertMessage.getText("Parameter markers count assertion error: "), actual, is(0));
+    public static void assertIs(final TCLStatement actual, final ParserResult expected) {
+        assertThat(actual.getClass().getName(), is(expected.getTclActualStatementClassType()));
+        if (actual instanceof SetAutoCommitStatement) {
+            assertThat(((SetAutoCommitStatement) actual).isAutoCommit(), is(expected.isAutoCommit()));
         }
     }
 }
