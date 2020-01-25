@@ -167,7 +167,9 @@
         <order-by>
             <column-item name="user_id" />
         </order-by>
-        <row-count value="5" parameter-index="0" />
+        <limit start-index="62" stop-index="68">
+            <row-count value="5" parameter-index="0" start-index="68" stop-index="68" />
+        </limit>
     </parser-result>
     
     <parser-result sql-case-id="select_group_by_with_order_by_and_limit" parameters="5">

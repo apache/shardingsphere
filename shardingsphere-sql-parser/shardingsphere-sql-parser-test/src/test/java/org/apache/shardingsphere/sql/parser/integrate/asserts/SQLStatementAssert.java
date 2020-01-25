@@ -119,8 +119,7 @@ public final class SQLStatementAssert {
             assertTrue(assertMessage.getText("Actual limit segment should exist."), limitSegment.isPresent());
             PaginationAssert.assertOffset(assertMessage, limitSegment.get().getOffset().orNull(), expected.getLimit().getOffset(), sqlCaseType);
             PaginationAssert.assertRowCount(assertMessage, limitSegment.get().getRowCount().orNull(), expected.getLimit().getRowCount(), sqlCaseType);
-            // TODO assert start index and stop index
-            //            SQLSegmentAssert.assertIs(assertMessage, limitSegment.get(), expected.getLimit(), sqlCaseType);
+            SQLSegmentAssert.assertIs(assertMessage, limitSegment.get(), expected.getLimit(), sqlCaseType);
         } else {
             assertFalse(assertMessage.getText("Actual limit segment should not exist."), limitSegment.isPresent());
         }
