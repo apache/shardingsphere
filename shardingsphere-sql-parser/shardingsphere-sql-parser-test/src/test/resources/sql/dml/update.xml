@@ -141,6 +141,26 @@
         <tables>
             <table name="t_order" start-index="33" stop-index="39" />
         </tables>
+        <where parameters-count="3" parameter-marker-start-index="1" start-index="54" stop-index="87" literal-start-index="61" literal-stop-index="94">
+            <and-predicate>
+                <predicate start-index="60" stop-index="71" literal-start-index="67" literal-stop-index="78">
+                    <column-left-value name="order_id" start-index="60" stop-index="67" literal-start-index="67" literal-stop-index="74" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="77" stop-index="87" literal-start-index="84" literal-stop-index="94">
+                    <column-left-value name="user_id" start-index="77" stop-index="83" literal-start-index="84" literal-stop-index="90" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
     </parser-result>
     
     <parser-result sql-case-id="update_without_parameters">
