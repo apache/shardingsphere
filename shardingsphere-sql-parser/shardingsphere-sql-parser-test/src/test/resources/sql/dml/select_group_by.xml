@@ -186,7 +186,9 @@
         <order-by>
             <expression-item expression="SUM(order_id)" />
         </order-by>
-        <row-count value="5" parameter-index="0" />
+        <limit start-index="97" stop-index="103">
+            <row-count value="5" parameter-index="0" start-index="103" stop-index="103" />
+        </limit>
     </parser-result>
     
     <parser-result sql-case-id="select_with_item_alias_match_order_by_and_group_by_items">
