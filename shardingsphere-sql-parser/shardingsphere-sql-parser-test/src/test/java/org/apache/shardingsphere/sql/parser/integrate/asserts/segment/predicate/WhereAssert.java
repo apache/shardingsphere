@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.predicate
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertMessage;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedAndPredicate;
@@ -70,14 +70,14 @@ public final class WhereAssert {
      * @param expected expected where segment
      * @param sqlCaseType SQL case type
      */
-    public static void assertIs(final SQLStatementAssertMessage assertMessage, final WhereSegment actual, final ExpectedWhere expected, final SQLCaseType sqlCaseType) {
+    public static void assertIs(final SQLCaseAssertMessage assertMessage, final WhereSegment actual, final ExpectedWhere expected, final SQLCaseType sqlCaseType) {
         if (SQLCaseType.Placeholder == sqlCaseType) {
             assertThat(assertMessage.getText("Parameters count in where clause assertion error: "), actual.getParametersCount(), is(expected.getParametersCount()));
         }
         assertAndPredicates(assertMessage, actual.getAndPredicates(), expected.getAndPredicates(), sqlCaseType);
     }
     
-    private static void assertAndPredicates(final SQLStatementAssertMessage assertMessage, 
+    private static void assertAndPredicates(final SQLCaseAssertMessage assertMessage, 
                                             final Collection<AndPredicate> actual, final List<ExpectedAndPredicate> expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("And predicate size assertion error: "), actual.size(), is(expected.size()));
         int count = 0;
@@ -90,7 +90,7 @@ public final class WhereAssert {
         }
     }
     
-    private static void assertPredicates(final SQLStatementAssertMessage assertMessage, 
+    private static void assertPredicates(final SQLCaseAssertMessage assertMessage, 
                                          final Collection<PredicateSegment> actual, final List<ExpectedPredicate> expected, final SQLCaseType sqlCaseType) {
         int count = 0;
         for (PredicateSegment each: actual) {
@@ -115,7 +115,7 @@ public final class WhereAssert {
         }
     }
     
-    private static void assertColumn(final SQLStatementAssertMessage assertMessage, final ColumnSegment actual, final ExpectedColumn expected, final SQLCaseType sqlCaseType) {
+    private static void assertColumn(final SQLCaseAssertMessage assertMessage, final ColumnSegment actual, final ExpectedColumn expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Column name assertion error: "), actual.getName(), is(expected.getName()));
         if (actual.getOwner().isPresent()) {
             OwnerAssert.assertTable(assertMessage, actual.getOwner().get(), expected.getOwner(), sqlCaseType);
@@ -127,7 +127,7 @@ public final class WhereAssert {
         SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
     
-    private static void assertOperator(final SQLStatementAssertMessage assertMessage, final PredicateSegment actual, final ExpectedOperator expected) {
+    private static void assertOperator(final SQLCaseAssertMessage assertMessage, final PredicateSegment actual, final ExpectedOperator expected) {
         if (actual.getRightValue() instanceof PredicateCompareRightValue) {
             assertNotNull(assertMessage.getText("Operator assertion error: "), expected);
             assertThat(assertMessage.getText("Operator assertion error: "), ((PredicateCompareRightValue) actual.getRightValue()).getOperator(), is(expected.getType()));
@@ -135,7 +135,7 @@ public final class WhereAssert {
         // TODO assert operator start index and stop index
     }
     
-    private static void assertCompareRightValue(final SQLStatementAssertMessage assertMessage, 
+    private static void assertCompareRightValue(final SQLCaseAssertMessage assertMessage, 
                                                 final PredicateCompareRightValue actual, final ExpectedPredicateCompareRightValue expected, final SQLCaseType sqlCaseType) {
         if (actual.getExpression() instanceof ParameterMarkerExpressionSegment) {
             ExpressionAssert.assertParameterMarkerExpression(assertMessage, (ParameterMarkerExpressionSegment) actual.getExpression(), expected.getParameterMarkerExpression(), sqlCaseType);
@@ -150,7 +150,7 @@ public final class WhereAssert {
 //        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
     
-    private static void assertInRightValue(final SQLStatementAssertMessage assertMessage,
+    private static void assertInRightValue(final SQLCaseAssertMessage assertMessage,
                                            final PredicateInRightValue actual, final ExpectedPredicateInRightValue expected, final SQLCaseType sqlCaseType) {
         assertNotNull(assertMessage.getText("Expected predicate in right value can not be null"), expected);
         int count = 0;
@@ -185,7 +185,7 @@ public final class WhereAssert {
 //        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
     
-    private static void assertBetweenRightValue(final SQLStatementAssertMessage assertMessage,
+    private static void assertBetweenRightValue(final SQLCaseAssertMessage assertMessage,
                                                 final PredicateBetweenRightValue actual, final ExpectedPredicateBetweenRightValue expected, final SQLCaseType sqlCaseType) {
         assertNotNull(assertMessage.getText("Expected predicate between right value can not be null"), expected);
         assertBetweenExpression(assertMessage, actual.getBetweenExpression(), expected, sqlCaseType);
@@ -194,7 +194,7 @@ public final class WhereAssert {
 //        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
     
-    private static void assertBetweenExpression(final SQLStatementAssertMessage assertMessage, 
+    private static void assertBetweenExpression(final SQLCaseAssertMessage assertMessage, 
                                                 final ExpressionSegment actual, final ExpectedPredicateBetweenRightValue expected, final SQLCaseType sqlCaseType) {
         if (actual instanceof ParameterMarkerExpressionSegment) {
             assertNotNull(assertMessage.getText("Expected between parameter marker expression can not be null"), expected.getBetweenParameterMarkerExpression());
@@ -211,7 +211,7 @@ public final class WhereAssert {
         }
     }
     
-    private static void assertAndExpression(final SQLStatementAssertMessage assertMessage, 
+    private static void assertAndExpression(final SQLCaseAssertMessage assertMessage, 
                                             final ExpressionSegment actual, final ExpectedPredicateBetweenRightValue expected, final SQLCaseType sqlCaseType) {
         if (actual instanceof ParameterMarkerExpressionSegment) {
             assertNotNull(assertMessage.getText("Expected and parameter marker expression can not be null"), expected.getBetweenParameterMarkerExpression());

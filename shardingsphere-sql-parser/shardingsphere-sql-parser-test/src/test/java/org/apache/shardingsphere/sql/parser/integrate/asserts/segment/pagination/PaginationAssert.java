@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.paginatio
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertMessage;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.pagination.ExpectedPaginationValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.PaginationValueSegment;
@@ -47,7 +47,7 @@ public final class PaginationAssert {
      * @param expected expected offset
      * @param sqlCaseType SQL case type
      */
-    public static void assertOffset(final SQLStatementAssertMessage assertMessage, final PaginationValueSegment actual, final ExpectedPaginationValue expected, final SQLCaseType sqlCaseType) {
+    public static void assertOffset(final SQLCaseAssertMessage assertMessage, final PaginationValueSegment actual, final ExpectedPaginationValue expected, final SQLCaseType sqlCaseType) {
         if (null == actual) {
             assertNull(assertMessage.getText("Offset should not exist."), expected);
             return;
@@ -69,7 +69,7 @@ public final class PaginationAssert {
      * @param expected expected row count
      * @param sqlCaseType SQL case type
      */
-    public static void assertRowCount(final SQLStatementAssertMessage assertMessage, final PaginationValueSegment actual, final ExpectedPaginationValue expected, final SQLCaseType sqlCaseType) {
+    public static void assertRowCount(final SQLCaseAssertMessage assertMessage, final PaginationValueSegment actual, final ExpectedPaginationValue expected, final SQLCaseType sqlCaseType) {
         if (null == actual) {
             assertNull(assertMessage.getText("Row count should not exist."), expected);
             return;

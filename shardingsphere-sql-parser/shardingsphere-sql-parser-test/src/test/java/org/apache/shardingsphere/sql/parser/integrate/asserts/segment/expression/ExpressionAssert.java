@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.expressio
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertMessage;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedCommonExpression;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex.ExpectedSubquery;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.ExpectedLiteralExpression;
@@ -48,7 +48,7 @@ public final class ExpressionAssert {
      * @param expected expected parameter marker expression
      * @param sqlCaseType SQL case type
      */
-    public static void assertParameterMarkerExpression(final SQLStatementAssertMessage assertMessage, 
+    public static void assertParameterMarkerExpression(final SQLCaseAssertMessage assertMessage, 
                                                         final ParameterMarkerExpressionSegment actual, final ExpectedParameterMarkerExpression expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Parameter marker index assertion error: "), actual.getParameterMarkerIndex(), is(expected.getValue()));
         // TODO assert start index and stop index
@@ -63,7 +63,7 @@ public final class ExpressionAssert {
      * @param expected expected literal expression
      * @param sqlCaseType SQL case type
      */
-    public static void assertLiteralExpression(final SQLStatementAssertMessage assertMessage, 
+    public static void assertLiteralExpression(final SQLCaseAssertMessage assertMessage, 
                                                 final LiteralExpressionSegment actual, final ExpectedLiteralExpression expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Literal assertion error: "), actual.getLiterals().toString(), is(expected.getValue()));
         // TODO assert start index and stop index
@@ -78,7 +78,7 @@ public final class ExpressionAssert {
      * @param expected expected common expression
      * @param sqlCaseType SQL case type
      */
-    public static void assertCommonExpression(final SQLStatementAssertMessage assertMessage, 
+    public static void assertCommonExpression(final SQLCaseAssertMessage assertMessage, 
                                                final ComplexExpressionSegment actual, final ExpectedCommonExpression expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Common expression text assertion error: "), actual.getText(), is(expected.getText()));
         // TODO assert start index and stop index
@@ -93,7 +93,7 @@ public final class ExpressionAssert {
      * @param expected expected subquery expression
      * @param sqlCaseType SQL case type
      */
-    public static void assertSubquery(final SQLStatementAssertMessage assertMessage, final ComplexExpressionSegment actual, final ExpectedSubquery expected, final SQLCaseType sqlCaseType) {
+    public static void assertSubquery(final SQLCaseAssertMessage assertMessage, final ComplexExpressionSegment actual, final ExpectedSubquery expected, final SQLCaseType sqlCaseType) {
         // TODO assert start index and stop index
         assertThat(assertMessage.getText("Subquery text assertion error: "), actual.getText(), is(expected.getText()));
 //        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);

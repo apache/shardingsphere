@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertMessage;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
@@ -50,7 +50,7 @@ public final class TableAssert {
      * @param expected expected tables
      * @param sqlCaseType SQL case type
      */
-    public static void assertIs(final SQLStatementAssertMessage assertMessage, final Collection<TableSegment> actual, final List<ExpectedTable> expected, final SQLCaseType sqlCaseType) {
+    public static void assertIs(final SQLCaseAssertMessage assertMessage, final Collection<TableSegment> actual, final List<ExpectedTable> expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Tables size assertion error: "), actual.size(), is(expected.size()));
         int count = 0;
         for (TableSegment each : actual) {
@@ -59,7 +59,7 @@ public final class TableAssert {
         }
     }
     
-    private static void assertTable(final SQLStatementAssertMessage assertMessage, final TableSegment actual, final ExpectedTable expected, final SQLCaseType sqlCaseType) {
+    private static void assertTable(final SQLCaseAssertMessage assertMessage, final TableSegment actual, final ExpectedTable expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Table name assertion error: "), actual.getTableName(), is(expected.getName()));
         assertThat(assertMessage.getText("Table alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
         if (null != expected.getOwner()) {

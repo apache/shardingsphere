@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.owner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertMessage;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.owner.ExpectedSchemaOwner;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.owner.ExpectedTableOwner;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
@@ -46,7 +46,7 @@ public final class OwnerAssert {
      * @param expected expected table owner
      * @param sqlCaseType SQL case type
      */
-    public static void assertTable(final SQLStatementAssertMessage assertMessage, final TableSegment actual, final ExpectedTableOwner expected, final SQLCaseType sqlCaseType) {
+    public static void assertTable(final SQLCaseAssertMessage assertMessage, final TableSegment actual, final ExpectedTableOwner expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Owner name assertion error: "), actual.getTableName(), is(expected.getName()));
         assertThat(assertMessage.getText("Owner name start delimiter assertion error: "), actual.getTableQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
         assertThat(assertMessage.getText("Owner name end delimiter assertion error: "), actual.getTableQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
@@ -61,7 +61,7 @@ public final class OwnerAssert {
      * @param expected expected schema owner
      * @param sqlCaseType SQL case type
      */
-    public static void assertSchema(final SQLStatementAssertMessage assertMessage, final SchemaSegment actual, final ExpectedSchemaOwner expected, final SQLCaseType sqlCaseType) {
+    public static void assertSchema(final SQLCaseAssertMessage assertMessage, final SchemaSegment actual, final ExpectedSchemaOwner expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Owner name assertion error: "), actual.getName(), is(expected.getName()));
         assertThat(assertMessage.getText("Owner start delimiter assertion error: "), actual.getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
         assertThat(assertMessage.getText("Owner end delimiter assertion error: "), actual.getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));

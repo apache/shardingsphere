@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.statement;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertMessage;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.groupby.GroupByAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.InsertNamesAndValuesAssert;
@@ -63,7 +63,7 @@ public final class SQLStatementAssert {
      * @param expected expected parser result
      * @param sqlCaseType SQL case type
      */
-    public static void assertIs(final SQLStatementAssertMessage assertMessage, final SQLStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
+    public static void assertIs(final SQLCaseAssertMessage assertMessage, final SQLStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
         ParameterMarkerAssert.assertCount(assertMessage, actual.getParametersCount(), expected.getParameters().size(), sqlCaseType);
         TableAssert.assertIs(assertMessage, actual.findSQLSegments(TableSegment.class), expected.getTables(), sqlCaseType);
         if (actual instanceof SelectStatement) {
@@ -80,7 +80,7 @@ public final class SQLStatementAssert {
         }
     }
     
-    private static void assertSelectStatement(final SQLStatementAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
+    private static void assertSelectStatement(final SQLCaseAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
         ProjectionAssert.assertIs(assertMessage, actual.getProjections(), expected.getProjections(), sqlCaseType);
         assertWhere(assertMessage, actual, expected, sqlCaseType);
         assertGroupBy(assertMessage, actual, expected, sqlCaseType);
@@ -88,7 +88,7 @@ public final class SQLStatementAssert {
         assertLimit(assertMessage, actual, expected, sqlCaseType);
     }
     
-    private static void assertWhere(final SQLStatementAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
+    private static void assertWhere(final SQLCaseAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
         if (null != expected.getWhere()) {
             assertTrue(assertMessage.getText("Actual where segment should exist."), actual.getWhere().isPresent());
             WhereAssert.assertIs(assertMessage, actual.getWhere().get(), expected.getWhere(), sqlCaseType);
@@ -97,7 +97,7 @@ public final class SQLStatementAssert {
         }
     }
     
-    private static void assertGroupBy(final SQLStatementAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
+    private static void assertGroupBy(final SQLCaseAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
         if (null != expected.getGroupBy()) {
             assertTrue(assertMessage.getText("Actual group by segment should exist."), actual.getGroupBy().isPresent());
             GroupByAssert.assertIs(assertMessage, actual.getGroupBy().get(), expected.getGroupBy(), sqlCaseType);
@@ -106,7 +106,7 @@ public final class SQLStatementAssert {
         }
     }
     
-    private static void assertOrderBy(final SQLStatementAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
+    private static void assertOrderBy(final SQLCaseAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
         if (null != expected.getOrderBy()) {
             assertTrue(assertMessage.getText("Actual order by segment should exist."), actual.getOrderBy().isPresent());
             OrderByAssert.assertIs(assertMessage, actual.getOrderBy().get(), expected.getOrderBy(), sqlCaseType);
@@ -115,7 +115,7 @@ public final class SQLStatementAssert {
         }
     }
     
-    private static void assertLimit(final SQLStatementAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
+    private static void assertLimit(final SQLCaseAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
         Optional<LimitSegment> limitSegment = actual.findSQLSegment(LimitSegment.class);
         if (null != expected.getLimit()) {
             assertTrue(assertMessage.getText("Actual limit segment should exist."), limitSegment.isPresent());
@@ -127,11 +127,11 @@ public final class SQLStatementAssert {
         }
     }
     
-    private static void assertInsertStatement(final SQLStatementAssertMessage assertMessage, final InsertStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
+    private static void assertInsertStatement(final SQLCaseAssertMessage assertMessage, final InsertStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
         InsertNamesAndValuesAssert.assertIs(assertMessage, actual, expected.getInsertColumnsAndValues(), sqlCaseType);
     }
     
-    private static void assertAlterTableStatement(final SQLStatementAssertMessage assertMessage, final AlterTableStatement actual, final ParserResult expected) {
+    private static void assertAlterTableStatement(final SQLCaseAssertMessage assertMessage, final AlterTableStatement actual, final ParserResult expected) {
         if (null != expected.getAlterTable()) {
             AlterTableAssert.assertIs(assertMessage, actual, expected.getAlterTable());
         }

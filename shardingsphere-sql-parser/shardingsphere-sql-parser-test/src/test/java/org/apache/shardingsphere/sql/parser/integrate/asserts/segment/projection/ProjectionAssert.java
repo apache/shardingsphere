@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.projectio
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertMessage;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedProjections;
@@ -66,7 +66,7 @@ public final class ProjectionAssert {
      * @param expected expected projections
      * @param sqlCaseType SQL case type
      */
-    public static void assertIs(final SQLStatementAssertMessage assertMessage, final ProjectionsSegment actual, final ExpectedProjections expected, final SQLCaseType sqlCaseType) {
+    public static void assertIs(final SQLCaseAssertMessage assertMessage, final ProjectionsSegment actual, final ExpectedProjections expected, final SQLCaseType sqlCaseType) {
         assertProjections(assertMessage, actual, expected, sqlCaseType);
         List<ExpectedProjection> expectedProjections = expected.getExpectedProjections();
         int count = 0;
@@ -76,13 +76,13 @@ public final class ProjectionAssert {
         }
     }
     
-    private static void assertProjections(final SQLStatementAssertMessage assertMessage, final ProjectionsSegment actual, final ExpectedProjections expected, final SQLCaseType sqlCaseType) {
+    private static void assertProjections(final SQLCaseAssertMessage assertMessage, final ProjectionsSegment actual, final ExpectedProjections expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Projections size assertion error: "), actual.getProjections().size(), is(expected.getSize()));
         assertThat(assertMessage.getText("Projections distinct row assertion error: "), actual.isDistinctRow(), is(expected.isDistinctRow()));
         SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
     
-    private static void assertProjection(final SQLStatementAssertMessage assertMessage, final ProjectionSegment actual, final ExpectedProjection expected, final SQLCaseType sqlCaseType) {
+    private static void assertProjection(final SQLCaseAssertMessage assertMessage, final ProjectionSegment actual, final ExpectedProjection expected, final SQLCaseType sqlCaseType) {
         if (actual instanceof ShorthandProjectionSegment) {
             assertThat(assertMessage.getText("Projection type assertion error: "), expected, instanceOf(ExpectedShorthandProjection.class));
             assertShorthandProjection(assertMessage, (ShorthandProjectionSegment) actual, (ExpectedShorthandProjection) expected, sqlCaseType);
@@ -102,7 +102,7 @@ public final class ProjectionAssert {
         SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
     
-    private static void assertShorthandProjection(final SQLStatementAssertMessage assertMessage, 
+    private static void assertShorthandProjection(final SQLCaseAssertMessage assertMessage, 
                                                   final ShorthandProjectionSegment actual, final ExpectedShorthandProjection expected, final SQLCaseType sqlCaseType) {
         if (null != expected.getOwner()) {
             assertTrue(assertMessage.getText("Actual owner should exist."), actual.getOwner().isPresent());
@@ -112,7 +112,7 @@ public final class ProjectionAssert {
         }
     }
     
-    private static void assertColumnProjection(final SQLStatementAssertMessage assertMessage, 
+    private static void assertColumnProjection(final SQLCaseAssertMessage assertMessage, 
                                                final ColumnProjectionSegment actual, final ExpectedColumnProjection expected, final SQLCaseType sqlCaseType) {
         assertThat(assertMessage.getText("Column projection name assertion error: "), actual.getName(), is(expected.getName()));
         assertThat(assertMessage.getText("Column projection start delimiter assertion error: "), actual.getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
@@ -126,7 +126,7 @@ public final class ProjectionAssert {
         }
     }
     
-    private static void assertAggregationProjection(final SQLStatementAssertMessage assertMessage, final AggregationProjectionSegment actual, final ExpectedAggregationProjection expected) {
+    private static void assertAggregationProjection(final SQLCaseAssertMessage assertMessage, final AggregationProjectionSegment actual, final ExpectedAggregationProjection expected) {
         assertThat(assertMessage.getText("Aggregation projection type assertion error: "), actual.getType().name(), is(expected.getType()));
         assertThat(assertMessage.getText("Aggregation projection inner expression start index assertion error: "), actual.getInnerExpressionStartIndex(), is(expected.getInnerExpressionStartIndex()));
         assertThat(assertMessage.getText("Aggregation projection alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
@@ -137,11 +137,11 @@ public final class ProjectionAssert {
         }
     }
     
-    private static void assertExpressionProjection(final SQLStatementAssertMessage assertMessage, final ExpressionProjectionSegment actual, final ExpectedExpressionProjection expected) {
+    private static void assertExpressionProjection(final SQLCaseAssertMessage assertMessage, final ExpressionProjectionSegment actual, final ExpectedExpressionProjection expected) {
         assertThat(assertMessage.getText("Expression projection alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
     }
     
-    private static void assertTopProjection(final SQLStatementAssertMessage assertMessage, final TopProjectionSegment actual, final ExpectedTopProjection expected, final SQLCaseType sqlCaseType) {
+    private static void assertTopProjection(final SQLCaseAssertMessage assertMessage, final TopProjectionSegment actual, final ExpectedTopProjection expected, final SQLCaseType sqlCaseType) {
         if (actual.getTop() instanceof NumberLiteralRowNumberValueSegment) {
             assertThat(assertMessage.getText("Expression projection top value assertion error: "), 
                     ((NumberLiteralRowNumberValueSegment) actual.getTop()).getValue(), is(expected.getTopValue().getValue()));

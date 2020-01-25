@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertMessage;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.insert.ExpectedAssignment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.ComplexExpressionSegment;
@@ -41,7 +41,7 @@ public final class AssignmentAssert {
      * @param expected expected assignment
      * @param sqlCaseType SQL case type
      */
-    public static void assertIs(final SQLStatementAssertMessage assertMessage, final ExpressionSegment actual, final ExpectedAssignment expected, final SQLCaseType sqlCaseType) {
+    public static void assertIs(final SQLCaseAssertMessage assertMessage, final ExpressionSegment actual, final ExpectedAssignment expected, final SQLCaseType sqlCaseType) {
         if (SQLCaseType.Placeholder == sqlCaseType) {
             if (null == expected.getTypeForPlaceholder()) {
                 return;

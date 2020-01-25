@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertMessage;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.ExpectedSQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
@@ -43,17 +43,17 @@ public final class SQLSegmentAssert {
      * @param expected expected SQL segment
      * @param sqlCaseType SQL case type
      */
-    public static void assertIs(final SQLStatementAssertMessage assertMessage, final SQLSegment actual, final ExpectedSQLSegment expected, final SQLCaseType sqlCaseType) {
+    public static void assertIs(final SQLCaseAssertMessage assertMessage, final SQLSegment actual, final ExpectedSQLSegment expected, final SQLCaseType sqlCaseType) {
         assertStartIndex(assertMessage, actual, expected, sqlCaseType);
         assertStopIndex(assertMessage, actual, expected, sqlCaseType);
     }
     
-    private static void assertStartIndex(final SQLStatementAssertMessage assertMessage, final SQLSegment actual, final ExpectedSQLSegment expected, final SQLCaseType sqlCaseType) {
+    private static void assertStartIndex(final SQLCaseAssertMessage assertMessage, final SQLSegment actual, final ExpectedSQLSegment expected, final SQLCaseType sqlCaseType) {
         int expectedStartIndex = SQLCaseType.Literal == sqlCaseType && null != expected.getLiteralStartIndex() ? expected.getLiteralStartIndex() : expected.getStartIndex();
         assertThat(assertMessage.getText(String.format("`%s`'s start index assertion error: ", actual.getClass().getSimpleName())), actual.getStartIndex(), is(expectedStartIndex));
     }
     
-    private static void assertStopIndex(final SQLStatementAssertMessage assertMessage, final SQLSegment actual, final ExpectedSQLSegment expected, final SQLCaseType sqlCaseType) {
+    private static void assertStopIndex(final SQLCaseAssertMessage assertMessage, final SQLSegment actual, final ExpectedSQLSegment expected, final SQLCaseType sqlCaseType) {
         int expectedStopIndex = SQLCaseType.Literal == sqlCaseType && null != expected.getLiteralStopIndex() ? expected.getLiteralStopIndex() : expected.getStopIndex();
         assertThat(assertMessage.getText(String.format("`%s`'s stop index assertion error: ", actual.getClass().getSimpleName())), actual.getStopIndex(), is(expectedStopIndex));
     }
