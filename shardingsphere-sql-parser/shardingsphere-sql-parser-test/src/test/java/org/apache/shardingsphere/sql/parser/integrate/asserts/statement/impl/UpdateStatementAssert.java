@@ -20,30 +20,30 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.InsertNamesAndValuesAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-
-import java.util.Collections;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 
 /**
- * Insert statement assert.
+ * Update statement assert.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InsertStatementAssert {
+public final class UpdateStatementAssert {
     
     /**
-     * Assert insert statement is correct with expected parser result.
-     *
-     * @param assertContext assert context
-     * @param actual actual insert statement
+     * Assert update statement is correct with expected parser result.
+     * 
+     * @param assertContext Assert context
+     * @param actual actual select statement
      * @param expected expected parser result
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final InsertStatement actual, final ParserResult expected) {
-        TableAssert.assertIs(assertContext, Collections.singletonList(actual.getTable()), expected.getTables());
-        InsertNamesAndValuesAssert.assertIs(assertContext, actual, expected.getInsertColumnsAndValues());
+    public static void assertIs(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final ParserResult expected) {
+        assertTable(assertContext, actual, expected);
+    }
+    
+    private static void assertTable(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final ParserResult expected) {
+        TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
 }

@@ -20,18 +20,19 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.statement;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.InsertNamesAndValuesAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.parameter.ParameterMarkerAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.AlterTableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.InsertStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.SelectStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.UpdateStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.TCLStatement;
 
@@ -58,21 +59,16 @@ public final class SQLStatementAssert {
         // TODO to be move TableAssert into statement details assert
         TableAssert.assertIs(assertContext, actual.findSQLSegments(TableSegment.class), expected.getTables());
         if (actual instanceof SelectStatement) {
-            SelectStatementAssert.assertSelectStatement(assertContext, (SelectStatement) actual, expected);
-        }
-        if (actual instanceof InsertStatement) {
-            InsertStatementAssert.assertInsertStatement(assertContext, (InsertStatement) actual, expected);
-        }
-        if (actual instanceof AlterTableStatement) {
+            SelectStatementAssert.assertIs(assertContext, (SelectStatement) actual, expected);
+        } else if (actual instanceof UpdateStatement) {
+            UpdateStatementAssert.assertIs(assertContext, (UpdateStatement) actual, expected);
+        } else if (actual instanceof InsertStatement) {
+            InsertStatementAssert.assertIs(assertContext, (InsertStatement) actual, expected);
+        } else if (actual instanceof AlterTableStatement) {
             assertAlterTableStatement(assertContext, (AlterTableStatement) actual, expected);
-        }
-        if (actual instanceof TCLStatement) {
+        } else if (actual instanceof TCLStatement) {
             assertTCLStatement((TCLStatement) actual, expected);
         }
-    }
-    
-    private static void assertInsertStatement(final SQLCaseAssertContext assertContext, final InsertStatement actual, final ParserResult expected) {
-        InsertNamesAndValuesAssert.assertIs(assertContext, actual, expected.getInsertColumnsAndValues());
     }
     
     private static void assertAlterTableStatement(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final ParserResult expected) {

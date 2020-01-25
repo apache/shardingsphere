@@ -50,7 +50,7 @@ public final class SelectStatementAssert {
      * @param actual actual select statement
      * @param expected expected parser result
      */
-    public static void assertSelectStatement(final SQLCaseAssertContext assertContext, final SelectStatement actual, final ParserResult expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SelectStatement actual, final ParserResult expected) {
         assertProjection(assertContext, actual, expected);
         assertTable(assertContext, actual, expected);
         assertWhere(assertContext, actual, expected);
