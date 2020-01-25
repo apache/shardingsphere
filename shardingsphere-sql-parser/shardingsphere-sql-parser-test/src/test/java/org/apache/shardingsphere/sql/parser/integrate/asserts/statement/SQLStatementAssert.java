@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.Ins
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.parameter.ParameterMarkerAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.AlterTableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.InsertStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.SelectStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
@@ -60,7 +61,7 @@ public final class SQLStatementAssert {
             SelectStatementAssert.assertSelectStatement(assertContext, (SelectStatement) actual, expected);
         }
         if (actual instanceof InsertStatement) {
-            assertInsertStatement(assertContext, (InsertStatement) actual, expected);
+            InsertStatementAssert.assertInsertStatement(assertContext, (InsertStatement) actual, expected);
         }
         if (actual instanceof AlterTableStatement) {
             assertAlterTableStatement(assertContext, (AlterTableStatement) actual, expected);
