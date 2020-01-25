@@ -164,9 +164,9 @@
         <group-by>
             <column-item name="user_id" />
         </group-by>
-        <order-by-columns>
-            <order-by-column name="user_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="user_id" />
+        </order-by>
         <row-count value="5" parameter-index="0" />
     </parser-result>
     
