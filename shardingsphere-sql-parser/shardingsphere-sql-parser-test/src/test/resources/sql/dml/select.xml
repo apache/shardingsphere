@@ -1027,9 +1027,9 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column owner="t_order" name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_sum" >
