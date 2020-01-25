@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.OrPredicateSegment;
@@ -198,17 +199,19 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         for (int i = 3; i < predicateNode.getChildCount(); i++) {
             if (RuleName.EXPR.getName().equals(predicateNode.getChild(i).getClass().getSimpleName())) {
                 Optional<? extends ExpressionSegment> expression = expressionExtractor.extract((ParserRuleContext) predicateNode.getChild(i), parameterMarkerIndexes);
-                // FIXME if some part of expr is not supported, clear all expr for IN clause
                 if (!expression.isPresent()) {
                     return Collections.emptyList();
                 }
                 ExpressionSegment expressionSegment = expression.get();
-                if (i == 3 && expressionSegment instanceof ParameterMarkerExpressionSegment) {
-                    result.add(new ParameterMarkerExpressionSegment(((TerminalNodeImpl) predicateNode.getChild(2)).getSymbol().getStopIndex() + 1,
-                            expressionSegment.getStopIndex(), ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex()));
-                } else {
-                    result.add(expressionSegment);
+                // First ExpressionSegment start index should use stop index of TerminalNodeImpl '('.
+                if (i == 3) {
+                    int startIndex = ((TerminalNodeImpl) predicateNode.getChild(2)).getSymbol().getStopIndex() + 1;
+                    int stopIndex = expressionSegment.getStopIndex();
+                    expressionSegment = expressionSegment instanceof ParameterMarkerExpressionSegment
+                            ? new ParameterMarkerExpressionSegment(startIndex, stopIndex, ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex())
+                            : new LiteralExpressionSegment(startIndex, stopIndex, ((LiteralExpressionSegment) expressionSegment).getLiterals());
                 }
+                result.add(expressionSegment);
             }
         }
         return result;
