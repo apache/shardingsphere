@@ -23,9 +23,8 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertConte
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.AlterTableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
-
-import java.util.Collections;
 
 /**
  * Alter table statement assert.
@@ -43,7 +42,7 @@ public final class AlterTableStatementAssert {
      * @param expected expected parser result
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final ParserResult expected) {
-        TableAssert.assertIs(assertContext, Collections.singletonList(actual.getTable()), expected.getTables());
+        TableAssert.assertIs(assertContext, actual.findSQLSegments(TableSegment.class), expected.getTables());
         if (null != expected.getAlterTable()) {
             AlterTableAssert.assertIs(assertContext, actual, expected.getAlterTable());
         }
