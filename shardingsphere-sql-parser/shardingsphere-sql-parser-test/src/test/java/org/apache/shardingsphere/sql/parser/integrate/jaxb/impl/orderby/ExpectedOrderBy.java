@@ -20,6 +20,9 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.item.impl.ExpectedColumnOrderByItem;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.item.impl.ExpectedExpressionOrderByItem;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.item.impl.ExpectedIndexOrderByItem;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;

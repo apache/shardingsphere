@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.pagination;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.owner.ExpectedTableOwner;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSQLSegment;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Expected column order by item.
- *
- * @author zhangliang
+ * Expected limit.
+ * 
+ * @author zhangliang 
  */
 @Getter
 @Setter
-public final class ExpectedColumnOrderByItem extends ExpectedOrderByItem {
-    
-    @XmlAttribute
-    private String name;
+public final class ExpectedLimit extends AbstractExpectedSQLSegment {
     
     @XmlElement
-    private ExpectedTableOwner owner;
+    private ExpectedPaginationValue offset;
+    
+    @XmlElement(name = "row-count")
+    private ExpectedPaginationValue rowCount;
 }

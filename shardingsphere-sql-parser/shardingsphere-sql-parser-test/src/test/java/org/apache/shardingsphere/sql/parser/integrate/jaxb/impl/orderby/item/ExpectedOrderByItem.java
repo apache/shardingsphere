@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.item;
 
 import lombok.Getter;
 import lombok.Setter;

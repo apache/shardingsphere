@@ -20,9 +20,9 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.root;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedOrderBy;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.insert.ExpectedInsertColumnsAndValues;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.pagination.ExpectedPaginationValue;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedOrderBy;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.pagination.ExpectedLimit;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedWhere;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedProjections;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.table.ExpectedAlterTable;
@@ -66,17 +66,17 @@ public final class ParserResult {
     @XmlElement
     private ExpectedTokens tokens = new ExpectedTokens();
     
+    @XmlElement(name = "where")
+    private ExpectedWhere where;
+    
     @XmlElement(name = "group-by")
     private ExpectedOrderBy groupBy;
     
     @XmlElement(name = "order-by")
     private ExpectedOrderBy orderBy;
     
-    @XmlElement 
-    private ExpectedPaginationValue offset;
-    
-    @XmlElement(name = "row-count")
-    private ExpectedPaginationValue rowCount;
+    @XmlElement
+    private ExpectedLimit limit;
     
     @XmlElement(name = "alter-table")
     private ExpectedAlterTable alterTable;
@@ -92,9 +92,6 @@ public final class ParserResult {
     
     @XmlAttribute(name = "lock-clause")
     private boolean lockClause;
-    
-    @XmlElement(name = "where")
-    private ExpectedWhere where;
     
     /**
      * Get parameters.

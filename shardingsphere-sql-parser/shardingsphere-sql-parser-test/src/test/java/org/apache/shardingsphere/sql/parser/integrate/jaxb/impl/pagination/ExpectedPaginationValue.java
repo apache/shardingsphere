@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.pagination;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSQLSegment;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -27,7 +28,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedPaginationValue {
+public final class ExpectedPaginationValue extends AbstractExpectedSQLSegment {
     
     @XmlAttribute
     private Long value;

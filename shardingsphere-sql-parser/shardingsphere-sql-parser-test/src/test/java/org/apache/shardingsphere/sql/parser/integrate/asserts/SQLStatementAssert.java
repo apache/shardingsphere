@@ -115,13 +115,13 @@ public final class SQLStatementAssert {
     
     private static void assertLimit(final SQLStatementAssertMessage assertMessage, final SelectStatement actual, final ParserResult expected, final SQLCaseType sqlCaseType) {
         Optional<LimitSegment> limitSegment = actual.findSQLSegment(LimitSegment.class);
-        if (limitSegment.isPresent()) {
-            PaginationAssert.assertOffset(assertMessage, limitSegment.get().getOffset().orNull(), expected.getOffset(), sqlCaseType);
-            PaginationAssert.assertRowCount(assertMessage, limitSegment.get().getRowCount().orNull(), expected.getRowCount(), sqlCaseType);
+        if (null != expected.getLimit()) {
+            assertTrue(assertMessage.getText("Actual limit segment should exist."), limitSegment.isPresent());
+            PaginationAssert.assertOffset(assertMessage, limitSegment.get().getOffset().orNull(), expected.getLimit().getOffset(), sqlCaseType);
+            PaginationAssert.assertRowCount(assertMessage, limitSegment.get().getRowCount().orNull(), expected.getLimit().getRowCount(), sqlCaseType);
+            SQLSegmentAssert.assertIs(assertMessage, limitSegment.get(), expected.getLimit(), sqlCaseType);
         } else {
-            // TODO assert error
-//            assertNull(assertMessage.getText("Expected offset should not exist."), expected.getOffset());
-//            assertNull(assertMessage.getText("Expected row count should not exist."), expected.getRowCount());
+            assertFalse(assertMessage.getText("Actual limit segment should not exist."), limitSegment.isPresent());
         }
     }
     

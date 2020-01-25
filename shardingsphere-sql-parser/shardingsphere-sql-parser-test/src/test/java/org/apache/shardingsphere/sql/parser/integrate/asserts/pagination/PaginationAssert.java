@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.pagination;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLSegmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.pagination.ExpectedPaginationValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
@@ -48,7 +49,7 @@ public final class PaginationAssert {
      */
     public static void assertOffset(final SQLStatementAssertMessage assertMessage, final PaginationValueSegment actual, final ExpectedPaginationValue expected, final SQLCaseType sqlCaseType) {
         if (null == actual) {
-            assertNull(assertMessage.getText("Offset should not exist: "), expected);
+            assertNull(assertMessage.getText("Offset should not exist."), expected);
             return;
         }
         if (SQLCaseType.Placeholder == sqlCaseType) {
@@ -57,6 +58,7 @@ public final class PaginationAssert {
         } else {
             assertThat(assertMessage.getText("Offset value assertion error: "), ((NumberLiteralPaginationValueSegment) actual).getValue(), is(expected.getValue()));
         }
+        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
     
     /**
@@ -69,7 +71,7 @@ public final class PaginationAssert {
      */
     public static void assertRowCount(final SQLStatementAssertMessage assertMessage, final PaginationValueSegment actual, final ExpectedPaginationValue expected, final SQLCaseType sqlCaseType) {
         if (null == actual) {
-            assertNull(assertMessage.getText("Row count should not exist: "), expected);
+            assertNull(assertMessage.getText("Row count should not exist."), expected);
             return;
         }
         if (SQLCaseType.Placeholder == sqlCaseType) {
@@ -78,5 +80,6 @@ public final class PaginationAssert {
         } else {
             assertThat(assertMessage.getText("Row count value assertion error: "), ((NumberLiteralPaginationValueSegment) actual).getValue(), is(expected.getValue()));
         }
+        SQLSegmentAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
     }
 }
