@@ -960,9 +960,9 @@
                 <owner name="t_order" start-index="16" stop-index="22" />
             </column-projection>
         </projections>
-        <order-by-columns>
-            <order-by-column name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_multi_column" >
