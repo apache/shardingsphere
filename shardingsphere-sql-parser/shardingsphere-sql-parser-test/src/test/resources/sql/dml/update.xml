@@ -33,6 +33,26 @@
         <tables>
             <table name="t_order" start-index="7" stop-index="13" />
         </tables>
+        <where parameters-count="8" parameter-marker-start-index="6" start-index="170" stop-index="203" literal-start-index="203" literal-stop-index="238">
+            <and-predicate>
+                <predicate start-index="176" stop-index="186" literal-start-index="209" literal-stop-index="219">
+                    <column-left-value name="user_id" start-index="176" stop-index="182" literal-start-index="209" literal-stop-index="215" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="6" />
+                        <literal-expression value="7" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="192" stop-index="203" literal-start-index="225" literal-stop-index="238">
+                    <column-left-value name="order_id" start-index="192" stop-index="199" literal-start-index="225" literal-stop-index="232" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="7" />
+                        <literal-expression value="200" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
     </parser-result>
     
     <parser-result sql-case-id="update_without_condition">
