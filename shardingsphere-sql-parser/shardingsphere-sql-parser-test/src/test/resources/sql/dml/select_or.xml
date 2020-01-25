@@ -24,7 +24,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="2" parameter-marker-start-index="0" start-index="22" stop-index="55">
+        <where parameters-count="2" start-index="22" stop-index="55">
             <and-predicate>
                 <predicate start-index="28" stop-index="39">
                     <column-left-value name="order_id" start-index="28" stop-index="35" />
@@ -55,7 +55,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="2" parameter-marker-start-index="0" start-index="22" stop-index="54">
+        <where parameters-count="2" start-index="22" stop-index="54">
             <and-predicate>
                 <predicate start-index="28" stop-index="39">
                     <column-left-value name="order_id" start-index="28" stop-index="35" />
@@ -86,7 +86,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="2" parameter-marker-start-index="0" start-index="22" stop-index="53" literal-stop-index="58">
+        <where parameters-count="2" start-index="22" stop-index="53" literal-stop-index="58">
             <and-predicate>
                 <predicate start-index="28" stop-index="39">
                     <column-left-value name="order_id" start-index="28" stop-index="35" />
@@ -117,7 +117,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="3" parameter-marker-start-index="0" start-index="22" stop-index="71" literal-stop-index="76">
+        <where parameters-count="3" start-index="22" stop-index="71" literal-stop-index="76">
             <and-predicate>
                 <predicate start-index="29" stop-index="40">
                     <column-left-value name="order_id" start-index="29" stop-index="36" />
@@ -164,7 +164,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="5" parameter-marker-start-index="0" start-index="22" stop-index="113" literal-stop-index="118">
+        <where parameters-count="5" start-index="22" stop-index="113" literal-stop-index="118">
             <and-predicate>
                 <predicate start-index="30" stop-index="39" literal-stop-index="44">
                     <column-left-value name="status" start-index="30" stop-index="35" />
@@ -282,7 +282,7 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
-        <where parameters-count="3" parameter-marker-start-index="0" start-index="99" stop-index="156">
+        <where parameters-count="3" start-index="99" stop-index="156">
             <and-predicate>
                 <predicate start-index="106" stop-index="119">
                     <column-left-value name="order_id" start-index="106" stop-index="115">
@@ -341,7 +341,7 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
-        <where parameters-count="4" parameter-marker-start-index="0" start-index="147" stop-index="221" literal-stop-index="226">
+        <where parameters-count="4" start-index="147" stop-index="221" literal-stop-index="226">
             <and-predicate>
                 <predicate start-index="154" stop-index="167">
                     <column-left-value name="order_id" start-index="154" stop-index="163">

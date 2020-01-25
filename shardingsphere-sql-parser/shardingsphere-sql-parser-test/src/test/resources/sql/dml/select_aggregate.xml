@@ -42,7 +42,7 @@
         <projections start-index="7" stop-index="30">
             <aggregation-projection type="COUNT" alias="orders_count" inner-expression-start-index="12" start-index="7" stop-index="14" />
         </projections>
-        <where parameters-count="0" parameter-marker-start-index="0" start-index="45" stop-index="64">
+        <where parameters-count="0" start-index="45" stop-index="64">
             <and-predicate>
                 <predicate start-index="51" stop-index="64">
                     <column-left-value name="order_id" start-index="51" stop-index="58" />
@@ -62,7 +62,7 @@
         <projections start-index="7" stop-index="30">
             <aggregation-projection type="COUNT" alias="orders_count" inner-expression-start-index="12" start-index="7" stop-index="14" />
         </projections>
-        <where parameters-count="0" parameter-marker-start-index="0" start-index="45" stop-index="66">
+        <where parameters-count="0" start-index="45" stop-index="66">
             <and-predicate>
                 <predicate start-index="51" stop-index="66">
                     <column-left-value name="order_id" start-index="51" stop-index="58" />
@@ -110,7 +110,7 @@
         <projections start-index="7" stop-index="29">
             <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="items_count" start-index="7" stop-index="14" />
         </projections>
-        <where parameters-count="4" parameter-marker-start-index="0" start-index="62" stop-index="171" literal-stop-index="172">
+        <where parameters-count="4" start-index="62" stop-index="171" literal-stop-index="172">
             <and-predicate>
                 <predicate start-index="68" stop-index="88">
                     <column-left-value name="user_id" start-index="68" stop-index="76">
@@ -162,7 +162,7 @@
         <projections start-index="7" stop-index="29">
             <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="items_count" start-index="7" stop-index="14" />
         </projections>
-        <where parameters-count="4" parameter-marker-start-index="0" start-index="119" stop-index="174" literal-stop-index="175">
+        <where parameters-count="4" start-index="119" stop-index="174" literal-stop-index="175">
             <and-predicate>
                 <predicate start-index="125" stop-index="143">
                     <column-left-value name="user_id" start-index="125" stop-index="133">
