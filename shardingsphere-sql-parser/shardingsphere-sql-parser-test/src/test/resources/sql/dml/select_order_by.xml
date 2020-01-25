@@ -24,10 +24,6 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <order-by-columns>
-            <order-by-column owner="o" name="order_id" order-direction="ASC" />
-            <order-by-column index="2" order-direction="DESC" />
-        </order-by-columns>
         <order-by>
             <column-item name="order_id">
                 <owner name="o" start-index="33" stop-index="33" />
@@ -188,9 +184,6 @@
                 <owner name="o" start-index="48" stop-index="48" />
             </column-item>
         </order-by>
-        <order-by-columns>
-            <order-by-column owner="o" name="order_id" order-direction="ASC" />
-        </order-by-columns>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_with_alias_star_alias_name">
@@ -226,9 +219,6 @@
         <!--<tables>-->
             <!--<table name="t_order" alias="o" start-index="14" stop-index="20" />-->
         <!--</tables>-->
-        <!--<order-by-columns>-->
-            <!--<order-by-column name="order_id" order-direction="ASC" />-->
-        <!--</order-by-columns>-->
     <!--</parser-result>-->
     
     <parser-result sql-case-id="select_order_by_with_table_star_table_name">
