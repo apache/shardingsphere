@@ -92,9 +92,9 @@
         <group-by>
             <column-item name="user_id" />
         </group-by>
-        <order-by-columns>
-            <order-by-column name="user_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="user_id" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_group_by_with_order_by_desc">
