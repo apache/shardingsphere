@@ -421,9 +421,11 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column name="item_id" owner="i" order-direction="DESC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="item_id" order-direction="DESC">
+                <owner name="i" start-index="325" stop-index="325" literal-start-index="326" literal-stop-index="326" />
+            </column-item>
+        </order-by>
         <row-count value="3" parameter-index="4" />
     </parser-result>
     
