@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertConte
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.parameter.ParameterMarkerAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.AlterTableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.DeleteStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.InsertStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.SelectStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.UpdateStatementAssert;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
@@ -62,6 +64,8 @@ public final class SQLStatementAssert {
             SelectStatementAssert.assertIs(assertContext, (SelectStatement) actual, expected);
         } else if (actual instanceof UpdateStatement) {
             UpdateStatementAssert.assertIs(assertContext, (UpdateStatement) actual, expected);
+        } else if (actual instanceof DeleteStatement) {
+            DeleteStatementAssert.assertIs(assertContext, (DeleteStatement) actual, expected);
         } else if (actual instanceof InsertStatement) {
             InsertStatementAssert.assertIs(assertContext, (InsertStatement) actual, expected);
         } else if (actual instanceof AlterTableStatement) {

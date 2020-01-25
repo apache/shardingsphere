@@ -22,28 +22,28 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 
 /**
- * Update statement assert.
+ * Delete statement assert.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class UpdateStatementAssert {
+public final class DeleteStatementAssert {
     
     /**
-     * Assert update statement is correct with expected parser result.
+     * Assert delete statement is correct with expected parser result.
      * 
      * @param assertContext Assert context
-     * @param actual actual update statement
+     * @param actual actual delete statement
      * @param expected expected parser result
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final ParserResult expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final ParserResult expected) {
         assertTable(assertContext, actual, expected);
     }
     
-    private static void assertTable(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final ParserResult expected) {
+    private static void assertTable(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final ParserResult expected) {
         TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
 }
