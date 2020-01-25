@@ -133,5 +133,43 @@
         <tables>
             <table name="t_order" start-index="7" stop-index="13" />
         </tables>
+        <where parameters-count="3" parameter-marker-start-index="0" start-index="37" stop-index="88" literal-stop-index="92">
+            <and-predicate>
+                <predicate start-index="44" stop-index="55" literal-stop-index="58">
+                    <column-left-value name="order_id" start-index="44" stop-index="51" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="1000" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="78" stop-index="88" literal-start-index="81" literal-stop-index="92">
+                    <column-left-value name="user_id" start-index="78" stop-index="84" literal-start-index="81" literal-stop-index="87" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" />
+                        <literal-expression value="10" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+            <and-predicate>
+                <predicate start-index="60" stop-index="71" literal-start-index="63" literal-stop-index="74">
+                    <column-left-value name="order_id" start-index="60" stop-index="67" literal-start-index="63" literal-stop-index="70" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="0" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="78" stop-index="88" literal-start-index="81" literal-stop-index="92">
+                    <column-left-value name="user_id" start-index="78" stop-index="84" literal-start-index="81" literal-stop-index="87" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" />
+                        <literal-expression value="10" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
     </parser-result>
 </parser-result-sets>
