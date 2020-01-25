@@ -123,11 +123,17 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column owner="i" name="creation_date" order-direction="DESC" />
-            <order-by-column owner="o" name="order_id" order-direction="DESC" />
-            <order-by-column owner="i" name="item_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="creation_date" order-direction="DESC">
+                <owner name="i" start-index="103" stop-index="103" />
+            </column-item>
+            <column-item name="order_id" order-direction="DESC">
+                <owner name="o" start-index="125" stop-index="125" />
+            </column-item>
+            <column-item name="item_id">
+                <owner name="i" start-index="142" stop-index="142" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <!-- //TODO add order-by-null-type -->
