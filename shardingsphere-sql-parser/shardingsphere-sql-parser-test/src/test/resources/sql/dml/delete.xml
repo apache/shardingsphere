@@ -52,5 +52,17 @@
             <table name="o" start-index="7" stop-index="7" />
             <table name="t_order" alias="o" start-index="14" stop-index="20" />
         </tables>
+        <where parameters-count="1" parameter-marker-start-index="0" start-index="27" stop-index="40" literal-stop-index="46">
+            <and-predicate>
+                <predicate start-index="33" stop-index="40" literal-stop-index="45">
+                    <column-left-value name="status" start-index="33" stop-index="38" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="init" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
     </parser-result>
 </parser-result-sets>
