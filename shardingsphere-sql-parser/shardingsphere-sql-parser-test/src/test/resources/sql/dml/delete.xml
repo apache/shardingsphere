@@ -61,6 +61,18 @@
         <tables>
             <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="12" stop-index="20" />
         </tables>
+        <where parameters-count="0" parameter-marker-start-index="0" start-index="22" stop-index="42">
+            <and-predicate>
+                <predicate start-index="28" stop-index="42">
+                    <column-left-value name="status" start-delimiter="`" end-delimiter="`" start-index="28" stop-index="35" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="init" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
     </parser-result>
     
     <parser-result sql-case-id="delete_with_special_comments_return_without_sharding_value">
