@@ -240,9 +240,11 @@
                 <owner name="t_order" start-index="7" stop-index="13" />
             </shorthand-projection>
         </projections>
-        <order-by-columns>
-            <order-by-column owner="t_order" name="order_id" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id">
+                <owner name="t_order" start-index="39" stop-index="45" />
+            </column-item>
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_with_star_no_table_alias">
