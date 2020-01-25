@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.orderby.OrderByItemAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.groupby.ExpectedGroupBy;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedOrderBy;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 
@@ -41,7 +41,7 @@ public final class GroupByAssert {
      * @param expected expected group by
      * @param sqlCaseType SQL case type
      */
-    public static void assertIs(final SQLStatementAssertMessage assertMessage, final GroupBySegment actual, final ExpectedGroupBy expected, final SQLCaseType sqlCaseType) {
+    public static void assertIs(final SQLStatementAssertMessage assertMessage, final GroupBySegment actual, final ExpectedOrderBy expected, final SQLCaseType sqlCaseType) {
         OrderByItemAssert.assertIs(assertMessage, actual.getGroupByItems(), expected, sqlCaseType, "Group by");
     }
 }

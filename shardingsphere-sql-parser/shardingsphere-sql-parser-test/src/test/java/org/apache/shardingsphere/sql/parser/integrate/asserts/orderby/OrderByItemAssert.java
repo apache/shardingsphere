@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.owner.OwnerAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.groupby.ExpectedGroupBy;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedOrderBy;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedColumnOrderByItem;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedExpressionOrderByItem;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedIndexOrderByItem;
@@ -48,7 +48,7 @@ import static org.junit.Assert.assertTrue;
 public final class OrderByItemAssert {
     
     /**
-     * Assert actual order by segment is correct with expected group by.
+     * Assert actual order by segment is correct with expected order by.
      *
      * @param assertMessage assert message
      * @param actual actual order by segments
@@ -57,7 +57,7 @@ public final class OrderByItemAssert {
      * @param type type of assertion, should be Order by or Group by
      */
     public static void assertIs(final SQLStatementAssertMessage assertMessage,
-                                final Collection<OrderByItemSegment> actual, final ExpectedGroupBy expected, final SQLCaseType sqlCaseType, final String type) {
+                                final Collection<OrderByItemSegment> actual, final ExpectedOrderBy expected, final SQLCaseType sqlCaseType, final String type) {
         assertThat(assertMessage.getText(String.format("%s items size assertion error: ", type)), actual.size(), is(expected.getItemSize()));
         int count = 0;
         for (OrderByItemSegment each : actual) {
