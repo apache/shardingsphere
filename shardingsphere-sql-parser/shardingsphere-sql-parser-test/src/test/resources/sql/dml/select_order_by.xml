@@ -69,10 +69,12 @@
                 </predicate>
             </and-predicate>
         </where>
-        <order-by-columns>
-            <order-by-column owner="o" name="order_id" order-direction="DESC" />
-            <order-by-column index="1" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <column-item name="order_id" order-direction="DESC">
+                <owner name="o" start-index="103" stop-index="103" />
+            </column-item>
+            <index-item index="1" />
+        </order-by>
     </parser-result>
     
     <parser-result sql-case-id="select_order_by_with_ordered_column">
