@@ -256,8 +256,8 @@
         <group-by>
             <index-item index="2" start-index="70" stop-index="70" />
         </group-by>
-        <order-by-columns>
-            <order-by-column index="2" order-direction="ASC" />
-        </order-by-columns>
+        <order-by>
+            <index-item index="2" />
+        </order-by>
     </parser-result>
 </parser-result-sets>
