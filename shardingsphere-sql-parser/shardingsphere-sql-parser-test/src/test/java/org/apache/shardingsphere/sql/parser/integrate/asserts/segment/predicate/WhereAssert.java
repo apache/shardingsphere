@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.predicate
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertMessage;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedAndPredicate;
@@ -65,163 +65,158 @@ public final class WhereAssert {
     /**
      * Assert actual where segment is correct with expected where.
      * 
-     * @param assertMessage assert message
+     * @param assertContext assert context
      * @param actual actual where segment
      * @param expected expected where segment
      */
-    public static void assertIs(final SQLCaseAssertMessage assertMessage, final WhereSegment actual, final ExpectedWhere expected) {
-        if (SQLCaseType.Placeholder == assertMessage.getSqlCaseType()) {
-            assertThat(assertMessage.getText("Parameters count in where clause assertion error: "), actual.getParametersCount(), is(expected.getParametersCount()));
+    public static void assertIs(final SQLCaseAssertContext assertContext, final WhereSegment actual, final ExpectedWhere expected) {
+        if (SQLCaseType.Placeholder == assertContext.getSqlCaseType()) {
+            assertThat(assertContext.getText("Parameters count in where clause assertion error: "), actual.getParametersCount(), is(expected.getParametersCount()));
         }
-        assertAndPredicates(assertMessage, actual.getAndPredicates(), expected.getAndPredicates());
+        assertAndPredicates(assertContext, actual.getAndPredicates(), expected.getAndPredicates());
     }
     
-    private static void assertAndPredicates(final SQLCaseAssertMessage assertMessage, final Collection<AndPredicate> actual, final List<ExpectedAndPredicate> expected) {
-        assertThat(assertMessage.getText("And predicate size assertion error: "), actual.size(), is(expected.size()));
+    private static void assertAndPredicates(final SQLCaseAssertContext assertContext, final Collection<AndPredicate> actual, final List<ExpectedAndPredicate> expected) {
+        assertThat(assertContext.getText("And predicate size assertion error: "), actual.size(), is(expected.size()));
         int count = 0;
         for (AndPredicate each: actual) {
             Collection<PredicateSegment> actualPredicates = each.getPredicates();
             List<ExpectedPredicate> expectedPredicates = expected.get(count).getPredicates();
-            assertThat(assertMessage.getText("Predicates size assertion error: "), actualPredicates.size(), is(expectedPredicates.size()));
-            assertPredicates(assertMessage, actualPredicates, expectedPredicates);
+            assertThat(assertContext.getText("Predicates size assertion error: "), actualPredicates.size(), is(expectedPredicates.size()));
+            assertPredicates(assertContext, actualPredicates, expectedPredicates);
             count++;
         }
     }
     
-    private static void assertPredicates(final SQLCaseAssertMessage assertMessage, final Collection<PredicateSegment> actual, final List<ExpectedPredicate> expected) {
+    private static void assertPredicates(final SQLCaseAssertContext assertContext, final Collection<PredicateSegment> actual, final List<ExpectedPredicate> expected) {
         int count = 0;
         for (PredicateSegment each: actual) {
             ExpectedPredicate expectedPredicate = expected.get(count);
             // TODO assert other type of left value 
-            assertColumn(assertMessage, each.getColumn(), expectedPredicate.getColumnLeftValue());
+            assertColumn(assertContext, each.getColumn(), expectedPredicate.getColumnLeftValue());
             if (each.getRightValue() instanceof ColumnSegment) {
-                assertColumn(assertMessage, (ColumnSegment) each.getRightValue(), expectedPredicate.getColumnRightValue());
+                assertColumn(assertContext, (ColumnSegment) each.getRightValue(), expectedPredicate.getColumnRightValue());
             } else if (each.getRightValue() instanceof PredicateCompareRightValue) {
-                assertOperator(assertMessage, each, expectedPredicate.getOperator());
-                assertCompareRightValue(assertMessage, (PredicateCompareRightValue) each.getRightValue(), expectedPredicate.getCompareRightValue());
+                assertOperator(assertContext, each, expectedPredicate.getOperator());
+                assertCompareRightValue(assertContext, (PredicateCompareRightValue) each.getRightValue(), expectedPredicate.getCompareRightValue());
             } else if (each.getRightValue() instanceof PredicateInRightValue) {
-                assertOperator(assertMessage, each, expectedPredicate.getOperator());
-                assertInRightValue(assertMessage, (PredicateInRightValue) each.getRightValue(), expectedPredicate.getInRightValue());
+                assertOperator(assertContext, each, expectedPredicate.getOperator());
+                assertInRightValue(assertContext, (PredicateInRightValue) each.getRightValue(), expectedPredicate.getInRightValue());
             } else if (each.getRightValue() instanceof PredicateBetweenRightValue) {
-                assertOperator(assertMessage, each, expectedPredicate.getOperator());
-                assertBetweenRightValue(assertMessage, (PredicateBetweenRightValue) each.getRightValue(), expectedPredicate.getBetweenRightValue());
+                assertOperator(assertContext, each, expectedPredicate.getOperator());
+                assertBetweenRightValue(assertContext, (PredicateBetweenRightValue) each.getRightValue(), expectedPredicate.getBetweenRightValue());
             }
             // TODO add other right value assertion
-            SQLSegmentAssert.assertIs(assertMessage, each, expectedPredicate);
+            SQLSegmentAssert.assertIs(assertContext, each, expectedPredicate);
             count++;
         }
     }
     
-    private static void assertColumn(final SQLCaseAssertMessage assertMessage, final ColumnSegment actual, final ExpectedColumn expected) {
-        assertThat(assertMessage.getText("Column name assertion error: "), actual.getName(), is(expected.getName()));
+    private static void assertColumn(final SQLCaseAssertContext assertContext, final ColumnSegment actual, final ExpectedColumn expected) {
+        assertThat(assertContext.getText("Column name assertion error: "), actual.getName(), is(expected.getName()));
         if (actual.getOwner().isPresent()) {
-            OwnerAssert.assertTable(assertMessage, actual.getOwner().get(), expected.getOwner());
+            OwnerAssert.assertTable(assertContext, actual.getOwner().get(), expected.getOwner());
         } else {
             assertNull(expected.getOwner());
         }
-        assertThat(assertMessage.getText("Column start delimiter assertion error: "), actual.getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
-        assertThat(assertMessage.getText("Column end delimiter assertion error: "), actual.getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
-        SQLSegmentAssert.assertIs(assertMessage, actual, expected);
+        assertThat(assertContext.getText("Column start delimiter assertion error: "), actual.getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
+        assertThat(assertContext.getText("Column end delimiter assertion error: "), actual.getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
-    private static void assertOperator(final SQLCaseAssertMessage assertMessage, final PredicateSegment actual, final ExpectedOperator expected) {
+    private static void assertOperator(final SQLCaseAssertContext assertContext, final PredicateSegment actual, final ExpectedOperator expected) {
         if (actual.getRightValue() instanceof PredicateCompareRightValue) {
-            assertNotNull(assertMessage.getText("Operator assertion error: "), expected);
-            assertThat(assertMessage.getText("Operator assertion error: "), ((PredicateCompareRightValue) actual.getRightValue()).getOperator(), is(expected.getType()));
+            assertNotNull(assertContext.getText("Operator assertion error: "), expected);
+            assertThat(assertContext.getText("Operator assertion error: "), ((PredicateCompareRightValue) actual.getRightValue()).getOperator(), is(expected.getType()));
         }
         // TODO assert operator start index and stop index
     }
     
-    private static void assertCompareRightValue(final SQLCaseAssertMessage assertMessage, 
-                                                final PredicateCompareRightValue actual, final ExpectedPredicateCompareRightValue expected) {
+    private static void assertCompareRightValue(final SQLCaseAssertContext assertContext, final PredicateCompareRightValue actual, final ExpectedPredicateCompareRightValue expected) {
         if (actual.getExpression() instanceof ParameterMarkerExpressionSegment) {
-            ExpressionAssert.assertParameterMarkerExpression(assertMessage, (ParameterMarkerExpressionSegment) actual.getExpression(), expected.getParameterMarkerExpression());
+            ExpressionAssert.assertParameterMarkerExpression(assertContext, (ParameterMarkerExpressionSegment) actual.getExpression(), expected.getParameterMarkerExpression());
         } else if (actual.getExpression() instanceof LiteralExpressionSegment) {
-            ExpressionAssert.assertLiteralExpression(assertMessage, (LiteralExpressionSegment) actual.getExpression(), expected.getLiteralExpression());
+            ExpressionAssert.assertLiteralExpression(assertContext, (LiteralExpressionSegment) actual.getExpression(), expected.getLiteralExpression());
         } else if (actual.getExpression() instanceof CommonExpressionSegment) {
-            ExpressionAssert.assertCommonExpression(assertMessage, (ComplexExpressionSegment) actual.getExpression(), expected.getCommonExpression());
+            ExpressionAssert.assertCommonExpression(assertContext, (ComplexExpressionSegment) actual.getExpression(), expected.getCommonExpression());
         } else if (actual.getExpression() instanceof SubquerySegment) {
-            ExpressionAssert.assertSubquery(assertMessage, (ComplexExpressionSegment) actual.getExpression(), expected.getSubquery());
+            ExpressionAssert.assertSubquery(assertContext, (ComplexExpressionSegment) actual.getExpression(), expected.getSubquery());
         }
         // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertMessage, actual, expected);
+//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
-    private static void assertInRightValue(final SQLCaseAssertMessage assertMessage,
-                                           final PredicateInRightValue actual, final ExpectedPredicateInRightValue expected) {
-        assertNotNull(assertMessage.getText("Expected predicate in right value can not be null"), expected);
+    private static void assertInRightValue(final SQLCaseAssertContext assertContext, final PredicateInRightValue actual, final ExpectedPredicateInRightValue expected) {
+        assertNotNull(assertContext.getText("Expected predicate in right value can not be null"), expected);
         int count = 0;
         for (ExpressionSegment each : actual.getSqlExpressions()) {
             if (each instanceof ParameterMarkerExpressionSegment) {
-                ExpressionAssert.assertParameterMarkerExpression(assertMessage, (ParameterMarkerExpressionSegment) each, expected.getParameterMarkerExpressions().get(count));
+                ExpressionAssert.assertParameterMarkerExpression(assertContext, (ParameterMarkerExpressionSegment) each, expected.getParameterMarkerExpressions().get(count));
                 count++;
             }
         }
         count = 0;
         for (ExpressionSegment each : actual.getSqlExpressions()) {
             if (each instanceof LiteralExpressionSegment) {
-                ExpressionAssert.assertLiteralExpression(assertMessage, (LiteralExpressionSegment) each, expected.getLiteralExpressions().get(count));
+                ExpressionAssert.assertLiteralExpression(assertContext, (LiteralExpressionSegment) each, expected.getLiteralExpressions().get(count));
                 count++;
             }
         }
         count = 0;
         for (ExpressionSegment each : actual.getSqlExpressions()) {
             if (each instanceof CommonExpressionSegment) {
-                ExpressionAssert.assertCommonExpression(assertMessage, (ComplexExpressionSegment) each, expected.getCommonExpressions().get(count));
+                ExpressionAssert.assertCommonExpression(assertContext, (ComplexExpressionSegment) each, expected.getCommonExpressions().get(count));
                 count++;
             }
         }
         count = 0;
         for (ExpressionSegment each : actual.getSqlExpressions()) {
             if (each instanceof SubquerySegment) {
-                ExpressionAssert.assertSubquery(assertMessage, (ComplexExpressionSegment) each, expected.getSubqueries().get(count));
+                ExpressionAssert.assertSubquery(assertContext, (ComplexExpressionSegment) each, expected.getSubqueries().get(count));
                 count++;
             }
         }
         // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertMessage, actual, expected);
+//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
-    private static void assertBetweenRightValue(final SQLCaseAssertMessage assertMessage,
-                                                final PredicateBetweenRightValue actual, final ExpectedPredicateBetweenRightValue expected) {
-        assertNotNull(assertMessage.getText("Expected predicate between right value can not be null"), expected);
-        assertBetweenExpression(assertMessage, actual.getBetweenExpression(), expected);
-        assertAndExpression(assertMessage, actual.getAndExpression(), expected);
+    private static void assertBetweenRightValue(final SQLCaseAssertContext assertContext, final PredicateBetweenRightValue actual, final ExpectedPredicateBetweenRightValue expected) {
+        assertNotNull(assertContext.getText("Expected predicate between right value can not be null"), expected);
+        assertBetweenExpression(assertContext, actual.getBetweenExpression(), expected);
+        assertAndExpression(assertContext, actual.getAndExpression(), expected);
         // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertMessage, actual, expected);
+//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
-    private static void assertBetweenExpression(final SQLCaseAssertMessage assertMessage, 
-                                                final ExpressionSegment actual, final ExpectedPredicateBetweenRightValue expected) {
+    private static void assertBetweenExpression(final SQLCaseAssertContext assertContext, final ExpressionSegment actual, final ExpectedPredicateBetweenRightValue expected) {
         if (actual instanceof ParameterMarkerExpressionSegment) {
-            assertNotNull(assertMessage.getText("Expected between parameter marker expression can not be null"), expected.getBetweenParameterMarkerExpression());
-            ExpressionAssert.assertParameterMarkerExpression(assertMessage, (ParameterMarkerExpressionSegment) actual, expected.getBetweenParameterMarkerExpression());
+            assertNotNull(assertContext.getText("Expected between parameter marker expression can not be null"), expected.getBetweenParameterMarkerExpression());
+            ExpressionAssert.assertParameterMarkerExpression(assertContext, (ParameterMarkerExpressionSegment) actual, expected.getBetweenParameterMarkerExpression());
         } else if (actual instanceof LiteralExpressionSegment) {
-            assertNotNull(assertMessage.getText("Expected between literal expression can not be null"), expected.getBetweenParameterMarkerExpression());
-            ExpressionAssert.assertLiteralExpression(assertMessage, (LiteralExpressionSegment) actual, expected.getBetweenLiteralExpression());
+            assertNotNull(assertContext.getText("Expected between literal expression can not be null"), expected.getBetweenParameterMarkerExpression());
+            ExpressionAssert.assertLiteralExpression(assertContext, (LiteralExpressionSegment) actual, expected.getBetweenLiteralExpression());
         } else if (actual instanceof CommonExpressionSegment) {
-            assertNotNull(assertMessage.getText("Expected between common expression can not be null"), expected.getBetweenParameterMarkerExpression());
-            ExpressionAssert.assertCommonExpression(assertMessage, (ComplexExpressionSegment) actual, expected.getBetweenCommonExpression());
+            assertNotNull(assertContext.getText("Expected between common expression can not be null"), expected.getBetweenParameterMarkerExpression());
+            ExpressionAssert.assertCommonExpression(assertContext, (ComplexExpressionSegment) actual, expected.getBetweenCommonExpression());
         } else if (actual instanceof SubquerySegment) {
-            assertNotNull(assertMessage.getText("Expected between subquery expression can not be null"), expected.getBetweenParameterMarkerExpression());
-            ExpressionAssert.assertSubquery(assertMessage, (ComplexExpressionSegment) actual, expected.getBetweenSubquery());
+            assertNotNull(assertContext.getText("Expected between subquery expression can not be null"), expected.getBetweenParameterMarkerExpression());
+            ExpressionAssert.assertSubquery(assertContext, (ComplexExpressionSegment) actual, expected.getBetweenSubquery());
         }
     }
     
-    private static void assertAndExpression(final SQLCaseAssertMessage assertMessage, 
-                                            final ExpressionSegment actual, final ExpectedPredicateBetweenRightValue expected) {
+    private static void assertAndExpression(final SQLCaseAssertContext assertContext, final ExpressionSegment actual, final ExpectedPredicateBetweenRightValue expected) {
         if (actual instanceof ParameterMarkerExpressionSegment) {
-            assertNotNull(assertMessage.getText("Expected and parameter marker expression can not be null"), expected.getBetweenParameterMarkerExpression());
-            ExpressionAssert.assertParameterMarkerExpression(assertMessage, (ParameterMarkerExpressionSegment) actual, expected.getAndParameterMarkerExpression());
+            assertNotNull(assertContext.getText("Expected and parameter marker expression can not be null"), expected.getBetweenParameterMarkerExpression());
+            ExpressionAssert.assertParameterMarkerExpression(assertContext, (ParameterMarkerExpressionSegment) actual, expected.getAndParameterMarkerExpression());
         } else if (actual instanceof LiteralExpressionSegment) {
-            assertNotNull(assertMessage.getText("Expected and literal expression can not be null"), expected.getBetweenParameterMarkerExpression());
-            ExpressionAssert.assertLiteralExpression(assertMessage, (LiteralExpressionSegment) actual, expected.getAndLiteralExpression());
+            assertNotNull(assertContext.getText("Expected and literal expression can not be null"), expected.getBetweenParameterMarkerExpression());
+            ExpressionAssert.assertLiteralExpression(assertContext, (LiteralExpressionSegment) actual, expected.getAndLiteralExpression());
         } else if (actual instanceof CommonExpressionSegment) {
-            assertNotNull(assertMessage.getText("Expected and common expression can not be null"), expected.getBetweenParameterMarkerExpression());
-            ExpressionAssert.assertCommonExpression(assertMessage, (ComplexExpressionSegment) actual, expected.getAndCommonExpression());
+            assertNotNull(assertContext.getText("Expected and common expression can not be null"), expected.getBetweenParameterMarkerExpression());
+            ExpressionAssert.assertCommonExpression(assertContext, (ComplexExpressionSegment) actual, expected.getAndCommonExpression());
         } else if (actual instanceof SubquerySegment) {
-            assertNotNull(assertMessage.getText("Expected and subquery expression can not be null"), expected.getBetweenParameterMarkerExpression());
-            ExpressionAssert.assertSubquery(assertMessage, (ComplexExpressionSegment) actual, expected.getAndSubquery());
+            assertNotNull(assertContext.getText("Expected and subquery expression can not be null"), expected.getBetweenParameterMarkerExpression());
+            ExpressionAssert.assertSubquery(assertContext, (ComplexExpressionSegment) actual, expected.getAndSubquery());
         }
     }
 }

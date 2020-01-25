@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertMessage;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedOrderBy;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.item.ExpectedOrderByItem;
@@ -49,70 +49,70 @@ public final class OrderByItemAssert {
     /**
      * Assert actual order by segment is correct with expected order by.
      *
-     * @param assertMessage assert message
+     * @param assertContext assert context
      * @param actual actual order by segments
      * @param expected expected order by
      * @param type type of assertion, should be Order by or Group by
      */
-    public static void assertIs(final SQLCaseAssertMessage assertMessage,
+    public static void assertIs(final SQLCaseAssertContext assertContext,
                                 final Collection<OrderByItemSegment> actual, final ExpectedOrderBy expected, final String type) {
-        assertThat(assertMessage.getText(String.format("%s items size assertion error: ", type)), actual.size(), is(expected.getItemSize()));
+        assertThat(assertContext.getText(String.format("%s items size assertion error: ", type)), actual.size(), is(expected.getItemSize()));
         int count = 0;
         for (OrderByItemSegment each : actual) {
             if (each instanceof ColumnOrderByItemSegment) {
-                assertOrderInfo(assertMessage, each, expected.getColumnItems().get(count), type);
-                assertColumnOrderByItem(assertMessage, (ColumnOrderByItemSegment) each, expected.getColumnItems().get(count), type);
+                assertOrderInfo(assertContext, each, expected.getColumnItems().get(count), type);
+                assertColumnOrderByItem(assertContext, (ColumnOrderByItemSegment) each, expected.getColumnItems().get(count), type);
                 count++;
             }
         }
         count = 0;
         for (OrderByItemSegment each : actual) {
             if (each instanceof IndexOrderByItemSegment) {
-                assertOrderInfo(assertMessage, each, expected.getIndexItems().get(count), type);
-                assertIndexOrderByItem(assertMessage, (IndexOrderByItemSegment) each, expected.getIndexItems().get(count), type);
+                assertOrderInfo(assertContext, each, expected.getIndexItems().get(count), type);
+                assertIndexOrderByItem(assertContext, (IndexOrderByItemSegment) each, expected.getIndexItems().get(count), type);
                 count++;
             }
         }
         count = 0;
         for (OrderByItemSegment each : actual) {
             if (each instanceof ExpressionOrderByItemSegment) {
-                assertOrderInfo(assertMessage, each, expected.getExpressionItems().get(count), type);
-                assertExpressionOrderByItem(assertMessage, (ExpressionOrderByItemSegment) each, expected.getExpressionItems().get(count), type);
+                assertOrderInfo(assertContext, each, expected.getExpressionItems().get(count), type);
+                assertExpressionOrderByItem(assertContext, (ExpressionOrderByItemSegment) each, expected.getExpressionItems().get(count), type);
                 count++;
             }
         }
         // TODO assert start index and stop index
-        //        SQLSegmentAssert.assertIs(assertMessage, actual, expected);
+        //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
-    private static void assertOrderInfo(final SQLCaseAssertMessage assertMessage, final OrderByItemSegment actual, final ExpectedOrderByItem expected, final String type) {
-        assertThat(assertMessage.getText(String.format("%s item order direction assertion error: ", type)), actual.getOrderDirection().name(), is(expected.getOrderDirection()));
+    private static void assertOrderInfo(final SQLCaseAssertContext assertContext, final OrderByItemSegment actual, final ExpectedOrderByItem expected, final String type) {
+        assertThat(assertContext.getText(String.format("%s item order direction assertion error: ", type)), actual.getOrderDirection().name(), is(expected.getOrderDirection()));
     }
     
-    private static void assertColumnOrderByItem(final SQLCaseAssertMessage assertMessage,
+    private static void assertColumnOrderByItem(final SQLCaseAssertContext assertContext,
                                                 final ColumnOrderByItemSegment actual, final ExpectedColumnOrderByItem expected, final String type) {
-        assertThat(assertMessage.getText(String.format("%s item column name assertion error: ", type)), actual.getColumn().getName(), is(expected.getName()));
+        assertThat(assertContext.getText(String.format("%s item column name assertion error: ", type)), actual.getColumn().getName(), is(expected.getName()));
         if (null != expected.getOwner()) {
-            assertTrue(assertMessage.getText("Actual owner should exist."), actual.getColumn().getOwner().isPresent());
-            OwnerAssert.assertTable(assertMessage, actual.getColumn().getOwner().get(), expected.getOwner());
+            assertTrue(assertContext.getText("Actual owner should exist."), actual.getColumn().getOwner().isPresent());
+            OwnerAssert.assertTable(assertContext, actual.getColumn().getOwner().get(), expected.getOwner());
         } else {
-            assertFalse(assertMessage.getText("Actual owner should not exist."), actual.getColumn().getOwner().isPresent());
+            assertFalse(assertContext.getText("Actual owner should not exist."), actual.getColumn().getOwner().isPresent());
         }
         // TODO assert start index and stop index
-        //        SQLSegmentAssert.assertIs(assertMessage, actual, expected);
+        //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
-    private static void assertIndexOrderByItem(final SQLCaseAssertMessage assertMessage,
+    private static void assertIndexOrderByItem(final SQLCaseAssertContext assertContext,
                                                final IndexOrderByItemSegment actual, final ExpectedIndexOrderByItem expected, final String type) {
-        assertThat(assertMessage.getText(String.format("%s item index assertion error: ", type)), actual.getColumnIndex(), is(expected.getIndex()));
+        assertThat(assertContext.getText(String.format("%s item index assertion error: ", type)), actual.getColumnIndex(), is(expected.getIndex()));
         // TODO assert start index and stop index
-        //        SQLSegmentAssert.assertIs(assertMessage, actual, expected);
+        //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
-    private static void assertExpressionOrderByItem(final SQLCaseAssertMessage assertMessage,
+    private static void assertExpressionOrderByItem(final SQLCaseAssertContext assertContext,
                                                     final ExpressionOrderByItemSegment actual, final ExpectedExpressionOrderByItem expected, final String type) {
-        assertThat(assertMessage.getText(String.format("%s item expression assertion error: ", type)), actual.getExpression(), is(expected.getExpression()));
+        assertThat(assertContext.getText(String.format("%s item expression assertion error: ", type)), actual.getExpression(), is(expected.getExpression()));
         // TODO assert start index and stop index
-        //        SQLSegmentAssert.assertIs(assertMessage, actual, expected);
+        //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

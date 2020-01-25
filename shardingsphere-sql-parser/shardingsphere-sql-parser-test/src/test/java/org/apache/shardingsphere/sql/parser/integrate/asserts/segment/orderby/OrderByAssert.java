@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertMessage;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedOrderBy;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 
@@ -34,11 +34,11 @@ public final class OrderByAssert {
     /**
      * Assert actual order by segment is correct with expected order by.
      *
-     * @param assertMessage assert message
+     * @param assertContext assert context
      * @param actual actual order by segment
      * @param expected expected order by
      */
-    public static void assertIs(final SQLCaseAssertMessage assertMessage, final OrderBySegment actual, final ExpectedOrderBy expected) {
-        OrderByItemAssert.assertIs(assertMessage, actual.getOrderByItems(), expected, "Order by");
+    public static void assertIs(final SQLCaseAssertContext assertContext, final OrderBySegment actual, final ExpectedOrderBy expected) {
+        OrderByItemAssert.assertIs(assertContext, actual.getOrderByItems(), expected, "Order by");
     }
 }

@@ -28,12 +28,12 @@ import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
 import java.util.Collections;
 
 /**
- * SQL case assert message.
+ * SQL case assert context.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class SQLCaseAssertMessage {
+public final class SQLCaseAssertContext {
     
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     

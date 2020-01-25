@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.groupby;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertMessage;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby.OrderByItemAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedOrderBy;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
@@ -35,11 +35,11 @@ public final class GroupByAssert {
     /**
      * Assert actual group by segment is correct with expected group by.
      * 
-     * @param assertMessage assert message
+     * @param assertContext assert context
      * @param actual actual group by segment
      * @param expected expected group by
      */
-    public static void assertIs(final SQLCaseAssertMessage assertMessage, final GroupBySegment actual, final ExpectedOrderBy expected) {
-        OrderByItemAssert.assertIs(assertMessage, actual.getGroupByItems(), expected, "Group by");
+    public static void assertIs(final SQLCaseAssertContext assertContext, final GroupBySegment actual, final ExpectedOrderBy expected) {
+        OrderByItemAssert.assertIs(assertContext, actual.getGroupByItems(), expected, "Group by");
     }
 }
