@@ -20,15 +20,9 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.orderby;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.ExpectedOrderByColumn;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
-
-import java.util.Collection;
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.groupby.ExpectedGroupBy;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 /**
  * Order by assert.
@@ -39,28 +33,14 @@ import static org.junit.Assert.assertThat;
 public final class OrderByAssert {
     
     /**
-     * Assert actual order by item segments is correct with expected order by columns.
+     * Assert actual order by segment is correct with expected order by.
      *
      * @param assertMessage assert message
-     * @param actual actual order by items
-     * @param expected expected order by items
+     * @param actual actual order by segment
+     * @param expected expected order by
+     * @param sqlCaseType SQL case type
      */
-    public static void assertIs(final SQLStatementAssertMessage assertMessage, final Collection<OrderByItemSegment> actual, final List<ExpectedOrderByColumn> expected) {
-        assertThat(assertMessage.getText("Order by items size error: "), actual.size(), is(expected.size()));
-        int count = 0;
-        for (OrderByItemSegment each : actual) {
-            if (each instanceof ColumnOrderByItemSegment) {
-                assertOrderByItem(assertMessage, (ColumnOrderByItemSegment) each, expected.get(count));
-            }
-            count++;
-        }
-    }
-    
-    private static void assertOrderByItem(final SQLStatementAssertMessage assertMessage, final ColumnOrderByItemSegment actual, final ExpectedOrderByColumn expected) {
-        assertThat(assertMessage.getText("Order by item owner assertion error: "),
-                actual.getColumn().getOwner().isPresent() ? actual.getColumn().getOwner().get().getTableName() : null, is(expected.getOwner()));
-        assertThat(assertMessage.getText("Order by item name assertion error: "), actual.getColumn().getName(), is(expected.getName()));
-        assertThat(assertMessage.getText("Order by item order direction assertion error: "), actual.getOrderDirection().name(), is(expected.getOrderDirection()));
-        // TODO assert nullOrderDirection
+    public static void assertIs(final SQLStatementAssertMessage assertMessage, final OrderBySegment actual, final ExpectedGroupBy expected, final SQLCaseType sqlCaseType) {
+        OrderByItemAssert.assertIs(assertMessage, actual.getOrderByItems(), expected, sqlCaseType, "Order by");
     }
 }
