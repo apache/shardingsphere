@@ -188,6 +188,13 @@
         <tables>
             <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="7" stop-index="15" />
         </tables>
+        <set-assignment start-index="17" stop-index="32" literal-stop-index="39">
+            <update-assignment start-index="21" stop-index="32" literal-stop-index="39">
+                <column name="status" start-delimiter="`" end-delimiter="`" start-index="21" stop-index="28" />
+                <parameter-marker-expression value="0" />
+                <literal-expression value="update" />
+            </update-assignment>
+        </set-assignment>
         <where parameters-count="3" parameter-marker-start-index="1" start-index="34" stop-index="69" literal-start-index="41" literal-stop-index="76">
             <and-predicate>
                 <predicate start-index="40" stop-index="53" literal-start-index="47" literal-stop-index="60">
