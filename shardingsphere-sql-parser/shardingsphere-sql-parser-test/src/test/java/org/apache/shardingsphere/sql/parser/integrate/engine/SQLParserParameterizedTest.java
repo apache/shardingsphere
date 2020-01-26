@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.SQLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistry;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistryFactory;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistryFactory;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
@@ -49,7 +49,7 @@ public final class SQLParserParameterizedTest {
     
     private static final SQLCasesLoader SQL_CASES_LOADER = SQLCasesRegistry.getInstance().getSqlCasesLoader();
     
-    private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = ParserResultSetRegistryFactory.getInstance().getRegistry();
+    private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
     
     private static final Properties PROPS = new Properties();
     
@@ -76,7 +76,7 @@ public final class SQLParserParameterizedTest {
     @Test
     public void assertSupportedSQL() {
         String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
-        ParserResult expected = ParserResultSetRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
+        ParserResult expected = SQLParserTestCasesRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
         if (expected.isLongSQL() && Boolean.parseBoolean(PROPS.getProperty("long.sql.skip", Boolean.TRUE.toString()))) {
             return;
         }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistry;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistryFactory;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistryFactory;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
 import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
@@ -39,7 +39,7 @@ public final class SQLCaseAssertContext {
     
     private static final SQLCasesLoader SQL_CASES_LOADER = SQLCasesRegistry.getInstance().getSqlCasesLoader();
     
-    private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = ParserResultSetRegistryFactory.getInstance().getRegistry();
+    private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
     
     private final String sqlCaseId;
     

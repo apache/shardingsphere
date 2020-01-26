@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.SQLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistry;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistryFactory;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistryFactory;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.VisitorParserResultSetRegistry;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
@@ -86,7 +86,7 @@ public final class VisitorParameterizedParsingTest {
     
     @Test
     public void assertSupportedSQL() {
-        ParserResult expected = ParserResultSetRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
+        ParserResult expected = SQLParserTestCasesRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
         if (expected.isLongSQL() && Boolean.valueOf(PROPS.getProperty("long.sql.skip", Boolean.TRUE.toString()))) {
             return;
         }
