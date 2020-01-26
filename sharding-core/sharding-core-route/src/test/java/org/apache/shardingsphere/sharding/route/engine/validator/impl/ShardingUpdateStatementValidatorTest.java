@@ -59,35 +59,35 @@ public final class ShardingUpdateStatementValidatorTest {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatement(), Collections.emptyList());
     }
-
+    
     @Test
     public void assertValidateUpdateWithoutShardingKeyAndParameters() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
         List<Object> parameters = Arrays.<Object>asList(1, 1);
         new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatement(), parameters);
     }
-
+    
     @Test
     public void assertValidateUpdateWithShardingKeyAndShardingParameterEquals() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         List<Object> parameters = Arrays.<Object>asList(1, 1);
         new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatementAndParameters(1), parameters);
     }
-
+    
     @Test(expected = ShardingSphereException.class)
     public void assertValidateUpdateWithShardingKeyAndShardingParameterNotEquals() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
         List<Object> parameters = Arrays.<Object>asList(1, 1);
         new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatementAndParameters(2), parameters);
     }
-
+    
     private UpdateStatement createUpdateStatement() {
         UpdateStatement result = new UpdateStatement();
         result.getAllSQLSegments().add(new TableSegment(0, 0, "user"));
         result.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "id"), new LiteralExpressionSegment(0, 0, "")))));
         return result;
     }
-
+    
     private UpdateStatement createUpdateStatementAndParameters(final Object shardingColumnParameter) {
         UpdateStatement result = new UpdateStatement();
         result.getAllSQLSegments().add(new TableSegment(0, 0, "user"));
