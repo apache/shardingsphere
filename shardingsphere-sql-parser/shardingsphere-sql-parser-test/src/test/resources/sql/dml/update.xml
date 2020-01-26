@@ -47,6 +47,15 @@
         <tables>
             <table name="t_order" alias="o" start-index="7" stop-index="13" />
         </tables>
+        <set-assignment start-index="20" stop-index="35" literal-stop-index="42">
+            <update-assignment start-index="24" stop-index="35" literal-stop-index="42">
+                <column name="status" start-index="24" stop-index="31">
+                    <owner name="o" start-index="24" stop-index="24" />
+                </column>
+                <parameter-marker-expression value="0" />
+                <literal-expression value="update" />
+            </update-assignment>
+        </set-assignment>
         <where parameters-count="3" parameter-marker-start-index="1" start-index="37" stop-index="74" literal-start-index="44" literal-stop-index="81">
             <and-predicate>
                 <predicate start-index="43" stop-index="56" literal-start-index="50" literal-stop-index="63">
