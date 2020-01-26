@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewri
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
@@ -47,13 +47,13 @@ public final class EncryptAssignmentParameterRewriter extends EncryptParameterRe
     @Override
     protected boolean isNeedRewriteForEncrypt(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext.getSqlStatement() instanceof UpdateStatement
-                || sqlStatementContext instanceof InsertSQLStatementContext && sqlStatementContext.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class).isPresent();
+                || sqlStatementContext instanceof InsertSQLStatementContext && sqlStatementContext.getSqlStatement().findSQLSegment(SetAssignmentSegment.class).isPresent();
     }
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        for (AssignmentSegment each : getSetAssignmentsSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
+        for (AssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
             if (each.getValue() instanceof ParameterMarkerExpressionSegment && getEncryptRule().findEncryptor(tableName, each.getColumn().getName()).isPresent()) {
                 StandardParameterBuilder standardParameterBuilder = parameterBuilder instanceof StandardParameterBuilder
                         ? (StandardParameterBuilder) parameterBuilder : ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(0);
@@ -62,9 +62,9 @@ public final class EncryptAssignmentParameterRewriter extends EncryptParameterRe
         }
     }
     
-    private SetAssignmentsSegment getSetAssignmentsSegment(final SQLStatement sqlStatement) {
+    private SetAssignmentSegment getSetAssignmentSegment(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
-            Optional<SetAssignmentsSegment> result = ((InsertStatement) sqlStatement).getSetAssignment();
+            Optional<SetAssignmentSegment> result = ((InsertStatement) sqlStatement).getSetAssignment();
             Preconditions.checkState(result.isPresent());
             return result.get();
         }

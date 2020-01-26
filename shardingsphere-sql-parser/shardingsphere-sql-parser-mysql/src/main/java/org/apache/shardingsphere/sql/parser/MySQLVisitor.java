@@ -69,7 +69,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
@@ -177,7 +177,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         for (AssignmentContext each : ctx.assignment()) {
             assignments.add((AssignmentSegment) visit(each));
         }
-        SetAssignmentsSegment segment = new SetAssignmentsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), assignments);
+        SetAssignmentSegment segment = new SetAssignmentSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), assignments);
         result.setSetAssignment(segment);
         result.getAllSQLSegments().add(segment);
         return result;

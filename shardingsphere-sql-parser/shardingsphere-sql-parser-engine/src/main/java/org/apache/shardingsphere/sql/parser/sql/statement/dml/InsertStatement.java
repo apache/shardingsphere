@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
@@ -48,7 +48,7 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
     
     private TableSegment table;
     
-    private SetAssignmentsSegment setAssignment;
+    private SetAssignmentSegment setAssignment;
     
     private InsertColumnsSegment columns;
     
@@ -68,7 +68,7 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
      * 
      * @return set assignment segment
      */
-    public Optional<SetAssignmentsSegment> getSetAssignment() {
+    public Optional<SetAssignmentSegment> getSetAssignment() {
         return Optional.fromNullable(setAssignment);
     }
     

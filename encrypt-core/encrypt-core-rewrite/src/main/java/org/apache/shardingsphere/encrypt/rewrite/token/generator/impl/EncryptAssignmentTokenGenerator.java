@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptParameterAssi
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
@@ -48,14 +48,14 @@ public final class EncryptAssignmentTokenGenerator extends BaseEncryptSQLTokenGe
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext.getSqlStatement() instanceof UpdateStatement
-                || sqlStatementContext instanceof InsertSQLStatementContext && sqlStatementContext.getSqlStatement().findSQLSegment(SetAssignmentsSegment.class).isPresent();
+                || sqlStatementContext instanceof InsertSQLStatementContext && sqlStatementContext.getSqlStatement().findSQLSegment(SetAssignmentSegment.class).isPresent();
     }
     
     @Override
     public Collection<EncryptAssignmentToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<EncryptAssignmentToken> result = new LinkedList<>();
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        for (AssignmentSegment each : getSetAssignmentsSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
+        for (AssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
             if (getEncryptRule().findEncryptor(tableName, each.getColumn().getName()).isPresent()) {
                 Optional<EncryptAssignmentToken> sqlToken = generateSQLToken(tableName, each);
                 if (sqlToken.isPresent()) {
@@ -66,9 +66,9 @@ public final class EncryptAssignmentTokenGenerator extends BaseEncryptSQLTokenGe
         return result;
     }
     
-    private SetAssignmentsSegment getSetAssignmentsSegment(final SQLStatement sqlStatement) {
+    private SetAssignmentSegment getSetAssignmentSegment(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
-            Optional<SetAssignmentsSegment> result = ((InsertStatement) sqlStatement).getSetAssignment();
+            Optional<SetAssignmentSegment> result = ((InsertStatement) sqlStatement).getSetAssignment();
             Preconditions.checkState(result.isPresent());
             return result.get();
         }

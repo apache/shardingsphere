@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -84,7 +84,7 @@ public final class ShardingUpdateStatementValidatorTest {
     private UpdateStatement createUpdateStatement() {
         UpdateStatement result = new UpdateStatement();
         result.getAllSQLSegments().add(new TableSegment(0, 0, "user"));
-        result.setSetAssignment(new SetAssignmentsSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "id"), new LiteralExpressionSegment(0, 0, "")))));
+        result.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "id"), new LiteralExpressionSegment(0, 0, "")))));
         return result;
     }
 
@@ -92,8 +92,8 @@ public final class ShardingUpdateStatementValidatorTest {
         UpdateStatement result = new UpdateStatement();
         result.getAllSQLSegments().add(new TableSegment(0, 0, "user"));
         Collection<AssignmentSegment> assignments = Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "id"), new LiteralExpressionSegment(0, 0, shardingColumnParameter)));
-        SetAssignmentsSegment setAssignmentsSegment = new SetAssignmentsSegment(0, 0, assignments);
-        result.setSetAssignment(setAssignmentsSegment);
+        SetAssignmentSegment setAssignmentSegment = new SetAssignmentSegment(0, 0, assignments);
+        result.setSetAssignment(setAssignmentSegment);
         WhereSegment where = new WhereSegment(0, 0, 1);
         where.setParameterMarkerStartIndex(0);
         AndPredicate andPre = new AndPredicate();

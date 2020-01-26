@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.core.filler.impl.dml;
 
 import org.apache.shardingsphere.sql.parser.core.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
@@ -29,10 +29,10 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
  * @author zhangliang
  * @author panjuan
  */
-public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentsSegment> {
+public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentSegment> {
     
     @Override
-    public void fill(final SetAssignmentsSegment sqlSegment, final SQLStatement sqlStatement) {
+    public void fill(final SetAssignmentSegment sqlSegment, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
             ((InsertStatement) sqlStatement).setSetAssignment(sqlSegment);
         } else if (sqlStatement instanceof UpdateStatement) {
