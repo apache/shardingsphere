@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.predicate.WhereAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.set.SetAssignmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
@@ -45,11 +46,16 @@ public final class UpdateStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final ParserResult expected) {
         assertTable(assertContext, actual, expected);
+        assertSetAssignment(assertContext, actual, expected);
         assertWhere(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final ParserResult expected) {
         TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
+    }
+    
+    private static void assertSetAssignment(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final ParserResult expected) {
+        SetAssignmentAssert.assertIs(assertContext, actual.getSetAssignment(), expected.getSetAssignment());
     }
     
     private static void assertWhere(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final ParserResult expected) {

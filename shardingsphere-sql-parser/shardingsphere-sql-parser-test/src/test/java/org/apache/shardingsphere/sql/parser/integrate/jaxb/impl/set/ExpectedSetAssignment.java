@@ -15,17 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.set;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.generic.AbstractExpectedSQLSegment;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 @Getter
 @Setter
-public final class ExpectedCommonExpression extends ExpectedBaseComplexExpression {
+public final class ExpectedSetAssignment extends AbstractExpectedSQLSegment {
     
-    @XmlAttribute(name = "literal-text")
-    private String literalText;
+    @XmlElement(name = "update-assignment")
+    private List<ExpectedUpdateAssignment> assignments = new LinkedList<>();
 }

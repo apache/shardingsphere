@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dml;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
@@ -41,7 +41,7 @@ public final class UpdateStatement extends DMLStatement implements TableSegments
     
     private final Collection<TableSegment> tables = new LinkedList<>();
     
-    private SetAssignmentsSegment setAssignment;
+    private SetAssignmentSegment setAssignment;
     
     private WhereSegment where;
     

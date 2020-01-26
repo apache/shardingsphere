@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dml;
 
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
@@ -52,7 +52,7 @@ public final class InsertStatementTest {
     @Test
     public void assertNotUseDefaultColumnsWithSetAssignment() {
         InsertStatement insertStatement = new InsertStatement();
-        insertStatement.setSetAssignment(new SetAssignmentsSegment(0, 0, Collections.<AssignmentSegment>emptyList()));
+        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.<AssignmentSegment>emptyList()));
         insertStatement.setColumns(new InsertColumnsSegment(0, 0));
         assertFalse(insertStatement.useDefaultColumns());
     }
@@ -71,7 +71,7 @@ public final class InsertStatementTest {
     public void assertGetColumnNamesForSetAssignment() {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.setSetAssignment(
-                new SetAssignmentsSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "col"), new LiteralExpressionSegment(0, 0, 1)))));
+                new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "col"), new LiteralExpressionSegment(0, 0, 1)))));
         assertThat(insertStatement.getColumnNames().size(), is(1));
         assertThat(insertStatement.getColumnNames().iterator().next(), is("col"));
     }
@@ -88,7 +88,7 @@ public final class InsertStatementTest {
     public void assertGetValueListCountWithSetAssignment() {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.setSetAssignment(
-                new SetAssignmentsSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "col"), new LiteralExpressionSegment(0, 0, 1)))));
+                new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "col"), new LiteralExpressionSegment(0, 0, 1)))));
         assertThat(insertStatement.getValueListCount(), is(1));
     }
     
@@ -103,7 +103,7 @@ public final class InsertStatementTest {
     public void assertGetValueCountForPerGroupWithSetAssignment() {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.setSetAssignment(
-                new SetAssignmentsSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "col"), new LiteralExpressionSegment(0, 0, 1)))));
+                new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "col"), new LiteralExpressionSegment(0, 0, 1)))));
         assertThat(insertStatement.getValueCountForPerGroup(), is(1));
     }
     
@@ -126,7 +126,7 @@ public final class InsertStatementTest {
     public void assertGetAllValueExpressionsWithSetAssignment() {
         InsertStatement insertStatement = new InsertStatement();
         ExpressionSegment valueSegment = new LiteralExpressionSegment(0, 0, 1);
-        insertStatement.setSetAssignment(new SetAssignmentsSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "col"), valueSegment))));
+        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "col"), valueSegment))));
         assertThat(insertStatement.getAllValueExpressions().size(), is(1));
         assertThat(insertStatement.getAllValueExpressions().iterator().next().size(), is(1));
         assertThat(insertStatement.getAllValueExpressions().iterator().next().iterator().next(), is(valueSegment));

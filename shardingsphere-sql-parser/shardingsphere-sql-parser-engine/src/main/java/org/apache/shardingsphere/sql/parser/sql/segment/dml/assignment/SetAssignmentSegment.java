@@ -24,14 +24,14 @@ import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import java.util.Collection;
 
 /**
- * Set assignments segment.
+ * Set assignment segment.
  *
  * @author zhangliang
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class SetAssignmentsSegment implements SQLSegment {
+public final class SetAssignmentSegment implements SQLSegment {
     
     private final int startIndex;
     

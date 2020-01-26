@@ -21,6 +21,13 @@
         <tables>
             <table name="t_order" start-index="7" stop-index="13" />
         </tables>
+        <set-assignment start-index="15" stop-index="28" literal-stop-index="35">
+            <update-assignment start-index="19" stop-index="28" literal-stop-index="35">
+                <column name="status" start-index="19" stop-index="24" />
+                <parameter-marker-expression value="0" />
+                <literal-expression value="update" />
+            </update-assignment>
+        </set-assignment>
         <where parameters-count="3" parameter-marker-start-index="1" start-index="30" stop-index="63" literal-start-index="43" literal-stop-index="54">
             <and-predicate>
                 <predicate start-index="36" stop-index="47" literal-start-index="43" literal-stop-index="54">
@@ -47,6 +54,15 @@
         <tables>
             <table name="t_order" alias="o" start-index="7" stop-index="13" />
         </tables>
+        <set-assignment start-index="20" stop-index="35" literal-stop-index="42">
+            <update-assignment start-index="24" stop-index="35" literal-stop-index="42">
+                <column name="status" start-index="24" stop-index="31">
+                    <owner name="o" start-index="24" stop-index="24" />
+                </column>
+                <parameter-marker-expression value="0" />
+                <literal-expression value="update" />
+            </update-assignment>
+        </set-assignment>
         <where parameters-count="3" parameter-marker-start-index="1" start-index="37" stop-index="74" literal-start-index="44" literal-stop-index="81">
             <and-predicate>
                 <predicate start-index="43" stop-index="56" literal-start-index="50" literal-stop-index="63">
@@ -77,6 +93,36 @@
         <tables>
             <table name="t_order" start-index="7" stop-index="13" />
         </tables>
+        <set-assignment start-index="15" stop-index="168" literal-stop-index="201">
+            <update-assignment start-index="19" stop-index="32" literal-stop-index="43">
+                <column name="start_time" start-index="19" stop-index="28" />
+                <parameter-marker-expression value="0" />
+                <literal-expression value="2017-06-07" />
+            </update-assignment>
+            <update-assignment start-index="35" stop-index="44" literal-start-index="46" literal-stop-index="55">
+                <column name="status" start-index="35" stop-index="40" literal-start-index="46" literal-stop-index="51" />
+                <literal-expression value="0" />
+            </update-assignment>
+            <update-assignment start-index="47" stop-index="116" literal-start-index="58" literal-stop-index="131">
+                <column name="start_point" start-index="47" stop-index="57" literal-start-index="58" literal-stop-index="68" />
+                <common-expression text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" />
+            </update-assignment>
+            <update-assignment start-index="119" stop-index="133" literal-start-index="134" literal-stop-index="166">
+                <column name="rule" start-index="119" stop-index="122" literal-start-index="134" literal-stop-index="137" />
+                <parameter-marker-expression value="3" />
+                <literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}'::json" />
+            </update-assignment>
+            <update-assignment start-index="136" stop-index="152" literal-start-index="169" literal-stop-index="185">
+                <column name="discount_type" start-index="136" stop-index="148" literal-start-index="169" literal-stop-index="181" />
+                <parameter-marker-expression value="4" />
+                <literal-expression value="3" />
+            </update-assignment>
+            <update-assignment start-index="155" stop-index="168" literal-start-index="188" literal-stop-index="201">
+                <column name="order_type" start-index="155" stop-index="164" literal-start-index="188" literal-stop-index="197" />
+                <parameter-marker-expression value="5" />
+                <literal-expression value="5" />
+            </update-assignment>
+        </set-assignment>
         <where parameters-count="8" parameter-marker-start-index="6" start-index="170" stop-index="203" literal-start-index="203" literal-stop-index="238">
             <and-predicate>
                 <predicate start-index="176" stop-index="186" literal-start-index="209" literal-stop-index="219">
@@ -103,12 +149,27 @@
         <tables>
             <table name="t_order" alias="o" start-index="7" stop-index="13" />
         </tables>
+        <set-assignment start-index="17" stop-index="41">
+            <update-assignment start-index="21" stop-index="41">
+                <column name="status" start-index="21" stop-index="28">
+                    <owner name="o" start-index="21" stop-index="21" />
+                </column>
+                <literal-expression value="finished" />
+            </update-assignment>
+        </set-assignment>
     </parser-result>
     
     <parser-result sql-case-id="update_with_extra_keywords" parameters="'update', 1, 1">
         <tables>
             <table name="t_order" start-index="27" stop-index="33" />
         </tables>
+        <set-assignment start-index="35" stop-index="48" literal-stop-index="55">
+            <update-assignment start-index="39" stop-index="48" literal-start-index="39" literal-stop-index="55">
+                <column name="status" start-index="39" stop-index="44" />
+                <parameter-marker-expression value="0" />
+                <literal-expression value="update" />
+            </update-assignment>
+        </set-assignment>
         <where parameters-count="3" parameter-marker-start-index="1" start-index="50" stop-index="83" literal-start-index="57" literal-stop-index="90">
             <and-predicate>
                 <predicate start-index="56" stop-index="67" literal-start-index="63" literal-stop-index="74">
@@ -135,6 +196,13 @@
         <tables>
             <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="7" stop-index="15" />
         </tables>
+        <set-assignment start-index="17" stop-index="32" literal-stop-index="39">
+            <update-assignment start-index="21" stop-index="32" literal-stop-index="39">
+                <column name="status" start-delimiter="`" end-delimiter="`" start-index="21" stop-index="28" />
+                <parameter-marker-expression value="0" />
+                <literal-expression value="update" />
+            </update-assignment>
+        </set-assignment>
         <where parameters-count="3" parameter-marker-start-index="1" start-index="34" stop-index="69" literal-start-index="41" literal-stop-index="76">
             <and-predicate>
                 <predicate start-index="40" stop-index="53" literal-start-index="47" literal-stop-index="60">
@@ -161,6 +229,13 @@
         <tables>
             <table name="t_order" start-index="33" stop-index="39" />
         </tables>
+        <set-assignment start-index="41" stop-index="52" literal-stop-index="59">
+            <update-assignment start-index="45" stop-index="52" literal-stop-index="59">
+                <column name="status" start-index="45" stop-index="50" />
+                <parameter-marker-expression value="0" />
+                <literal-expression value="update" />
+            </update-assignment>
+        </set-assignment>
         <where parameters-count="3" parameter-marker-start-index="1" start-index="54" stop-index="87" literal-start-index="61" literal-stop-index="94">
             <and-predicate>
                 <predicate start-index="60" stop-index="71" literal-start-index="67" literal-stop-index="78">
@@ -187,6 +262,12 @@
         <tables>
             <table name="t_order" start-index="7" stop-index="13" />
         </tables>
+        <set-assignment start-index="15" stop-index="35">
+            <update-assignment start-index="19" stop-index="35">
+                <column name="status" start-index="19" stop-index="24" />
+                <literal-expression value="update" />
+            </update-assignment>
+        </set-assignment>
         <where parameters-count="0" start-index="37" stop-index="74">
             <and-predicate>
                 <predicate start-index="43" stop-index="57">
@@ -211,6 +292,12 @@
         <tables>
             <table name="t_order" start-index="7" stop-index="13" />
         </tables>
+        <set-assignment start-index="15" stop-index="35">
+            <update-assignment start-index="19" stop-index="35">
+                <column name="status" start-index="19" stop-index="24" />
+                <literal-expression value="update" />
+            </update-assignment>
+        </set-assignment>
         <where parameters-count="3" start-index="37" stop-index="88" literal-stop-index="92">
             <and-predicate>
                 <predicate start-index="44" stop-index="55" literal-stop-index="58">
