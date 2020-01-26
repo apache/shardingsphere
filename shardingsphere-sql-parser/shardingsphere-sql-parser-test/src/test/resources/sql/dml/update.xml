@@ -77,6 +77,36 @@
         <tables>
             <table name="t_order" start-index="7" stop-index="13" />
         </tables>
+        <set-assignment start-index="15" stop-index="168" literal-stop-index="201">
+            <update-assignment start-index="19" stop-index="32" literal-stop-index="43">
+                <column name="start_time" start-index="19" stop-index="28" />
+                <parameter-marker-expression value="0" />
+                <literal-expression value="2017-06-07" />
+            </update-assignment>
+            <update-assignment start-index="35" stop-index="44" literal-start-index="46" literal-stop-index="55">
+                <column name="status" start-index="35" stop-index="40" literal-start-index="46" literal-stop-index="51" />
+                <literal-expression value="0" />
+            </update-assignment>
+            <update-assignment start-index="47" stop-index="116" literal-start-index="58" literal-stop-index="131">
+                <column name="start_point" start-index="47" stop-index="57" literal-start-index="58" literal-stop-index="68" />
+                <common-expression text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" />
+            </update-assignment>
+            <update-assignment start-index="119" stop-index="133" literal-start-index="134" literal-stop-index="166">
+                <column name="rule" start-index="119" stop-index="122" literal-start-index="134" literal-stop-index="137" />
+                <parameter-marker-expression value="3" />
+                <literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}'::json" />
+            </update-assignment>
+            <update-assignment start-index="136" stop-index="152" literal-start-index="169" literal-stop-index="185">
+                <column name="discount_type" start-index="136" stop-index="148" literal-start-index="169" literal-stop-index="181" />
+                <parameter-marker-expression value="4" />
+                <literal-expression value="3" />
+            </update-assignment>
+            <update-assignment start-index="155" stop-index="168" literal-start-index="188" literal-stop-index="201">
+                <column name="order_type" start-index="155" stop-index="164" literal-start-index="188" literal-stop-index="197" />
+                <parameter-marker-expression value="5" />
+                <literal-expression value="5" />
+            </update-assignment>
+        </set-assignment>
         <where parameters-count="8" parameter-marker-start-index="6" start-index="170" stop-index="203" literal-start-index="203" literal-stop-index="238">
             <and-predicate>
                 <predicate start-index="176" stop-index="186" literal-start-index="209" literal-stop-index="219">

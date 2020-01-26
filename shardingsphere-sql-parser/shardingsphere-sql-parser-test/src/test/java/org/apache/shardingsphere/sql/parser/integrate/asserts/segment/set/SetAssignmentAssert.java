@@ -23,15 +23,16 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertConte
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.expression.ExpressionAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.set.ExpectedUpdateAssignment;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.set.ExpectedSetAssignment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.set.ExpectedUpdateAssignment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -50,6 +51,7 @@ public final class SetAssignmentAssert {
      * @param expected expected tables
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SetAssignmentSegment actual, final ExpectedSetAssignment expected) {
+        assertNotNull(assertContext.getText("Assignments should existed."), expected);
         assertThat(assertContext.getText("Assignments size assertion error: "), actual.getAssignments().size(), is(expected.getAssignments().size()));
         int count = 0;
         for (AssignmentSegment each : actual.getAssignments()) {
@@ -65,8 +67,9 @@ public final class SetAssignmentAssert {
             ExpressionAssert.assertParameterMarkerExpression(assertContext, (ParameterMarkerExpressionSegment) actual.getValue(), expected.getParameterMarkerExpression());
         } else if (actual.getValue() instanceof LiteralExpressionSegment) {
             ExpressionAssert.assertLiteralExpression(assertContext, (LiteralExpressionSegment) actual.getValue(), expected.getLiteralExpression());
-        } else if (actual.getValue() instanceof CommonExpressionSegment) {
-            ExpressionAssert.assertCommonExpression(assertContext, (CommonExpressionSegment) actual.getValue(), expected.getCommonExpression());
+        // FIXME should be CommonExpressionProjection, not ExpressionProjectionSegment
+        } else if (actual.getValue() instanceof ExpressionProjectionSegment) {
+            ExpressionAssert.assertCommonExpression(assertContext, (ExpressionProjectionSegment) actual.getValue(), expected.getCommonExpression());
         }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }

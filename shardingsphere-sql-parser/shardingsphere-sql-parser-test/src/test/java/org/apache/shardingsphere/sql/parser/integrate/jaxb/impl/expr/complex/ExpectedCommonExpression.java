@@ -17,5 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.complex;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.xml.bind.annotation.XmlAttribute;
+
+@Getter
+@Setter
 public final class ExpectedCommonExpression extends ExpectedBaseComplexExpression {
+    
+    @XmlAttribute(name = "literal-text")
+    private String literalText;
 }

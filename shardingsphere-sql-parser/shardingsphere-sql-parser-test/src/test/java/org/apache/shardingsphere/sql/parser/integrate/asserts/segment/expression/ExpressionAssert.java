@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.expr.simple.Expe
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -49,7 +50,7 @@ public final class ExpressionAssert {
      */
     public static void assertParameterMarkerExpression(final SQLCaseAssertContext assertContext, 
                                                         final ParameterMarkerExpressionSegment actual, final ExpectedParameterMarkerExpression expected) {
-        assertNotNull(assertContext.getText("Expected parameter marker expression should exist."));
+        assertNotNull(assertContext.getText("Expected parameter marker expression should exist."), expected);
         assertThat(assertContext.getText("Parameter marker index assertion error: "), actual.getParameterMarkerIndex(), is(expected.getValue()));
         // TODO assert start index and stop index
 //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
@@ -80,7 +81,8 @@ public final class ExpressionAssert {
     public static void assertCommonExpression(final SQLCaseAssertContext assertContext, 
                                                final ComplexExpressionSegment actual, final ExpectedCommonExpression expected) {
         assertNotNull(assertContext.getText("Expected common expression should exist."));
-        assertThat(assertContext.getText("Common expression text assertion error: "), actual.getText(), is(expected.getText()));
+        String expectedText = SQLCaseType.Literal == assertContext.getSqlCaseType() && null != expected.getLiteralText() ? expected.getLiteralText() : expected.getText();
+        assertThat(assertContext.getText("Common expression text assertion error: "), actual.getText(), is(expectedText));
         // TODO assert start index and stop index
 //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
