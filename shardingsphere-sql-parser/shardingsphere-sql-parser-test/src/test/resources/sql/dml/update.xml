@@ -155,6 +155,13 @@
         <tables>
             <table name="t_order" start-index="27" stop-index="33" />
         </tables>
+        <set-assignment start-index="35" stop-index="48" literal-stop-index="55">
+            <update-assignment start-index="39" stop-index="48" literal-start-index="39" literal-stop-index="55">
+                <column name="status" start-index="39" stop-index="44" />
+                <parameter-marker-expression value="0" />
+                <literal-expression value="update" />
+            </update-assignment>
+        </set-assignment>
         <where parameters-count="3" parameter-marker-start-index="1" start-index="50" stop-index="83" literal-start-index="57" literal-stop-index="90">
             <and-predicate>
                 <predicate start-index="56" stop-index="67" literal-start-index="63" literal-stop-index="74">
