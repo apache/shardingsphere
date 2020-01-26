@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
+<expected-sql-statements>
     <parser-result sql-case-id="create_role" />
     <parser-result sql-case-id="create_roles"  />
     <parser-result sql-case-id="create_role_if_not_exists" />
@@ -30,4 +30,4 @@
     <parser-result sql-case-id="create_role_with_option" />
     <parser-result sql-case-id="create_role_with_options"  />
     <parser-result sql-case-id="create_role_authorization"  />
-</parser-result-sets>
+</expected-sql-statements>

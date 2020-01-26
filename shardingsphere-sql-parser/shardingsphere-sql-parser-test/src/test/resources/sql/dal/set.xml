@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
+<expected-sql-statements>
     <parser-result sql-case-id="set_param_equals" />
     <parser-result sql-case-id="set_param_to" />
     <parser-result sql-case-id="set_param_session" />
@@ -30,4 +30,4 @@
     <parser-result sql-case-id="set_timezone_local" />
     <parser-result sql-case-id="set_timezone_session" />
     <parser-result sql-case-id="set_timezone_local" />
-</parser-result-sets>
+</expected-sql-statements>

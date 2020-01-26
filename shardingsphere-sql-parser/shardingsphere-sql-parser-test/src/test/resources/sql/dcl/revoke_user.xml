@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
+<expected-sql-statements>
     <parser-result sql-case-id="revoke_user_without_hostname">
         <tables>
             <table name="t_order" start-index="25" stop-index="31" />
@@ -226,4 +226,4 @@
             <table name="t_order" start-index="41" stop-index="47" />
         </tables>
     </parser-result>
-</parser-result-sets>
+</expected-sql-statements>

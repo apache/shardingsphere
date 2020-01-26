@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
+<expected-sql-statements>
     <parser-result sql-case-id="truncate_table">
         <tables>
             <table name="t_log" start-index="15" stop-index="19" />
@@ -77,4 +77,4 @@
             <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="15" stop-index="23" />
         </tables>
     </parser-result>
-</parser-result-sets>
+</expected-sql-statements>

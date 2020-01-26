@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
+<expected-sql-statements>
     <parser-result sql-case-id="select_pagination_with_offset" parameters="1, 2, 9, 10, 5">
         <tables>
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
@@ -562,4 +562,4 @@
         </order-by>
         <row-count value="20" parameter-index="0" />
     </parser-result>
-</parser-result-sets>
+</expected-sql-statements>

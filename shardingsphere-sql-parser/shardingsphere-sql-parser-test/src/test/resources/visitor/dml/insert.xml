@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
+<expected-sql-statements>
     <parser-result sql-case-id="insert_with_all_placeholders" parameters="1, 1, 'init'">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
@@ -466,4 +466,4 @@
             <insert-set-token begin-position="25" />
         </tokens>
     </parser-result>
-</parser-result-sets>
+</expected-sql-statements>

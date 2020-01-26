@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
+<expected-sql-statements>
     <parser-result sql-case-id="alter_user_identified_without_hostname" />
     <parser-result sql-case-id="alter_user_identified_with_hostname" />
     <parser-result sql-case-id="alter_user_account" />
@@ -67,4 +67,4 @@
     <parser-result sql-case-id="alter_user_set_login" />
     <parser-result sql-case-id="alter_user_set_default_schema" />
     <parser-result sql-case-id="alter_user_rename" />
-</parser-result-sets>
+</expected-sql-statements>

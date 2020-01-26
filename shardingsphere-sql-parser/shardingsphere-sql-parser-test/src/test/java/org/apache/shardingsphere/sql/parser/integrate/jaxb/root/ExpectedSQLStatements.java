@@ -24,9 +24,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.LinkedList;
 import java.util.List;
 
-@XmlRootElement(name = "parser-result-sets")
+@XmlRootElement(name = "expected-sql-statements")
 @Getter
-public final class ParserResultSet {
+public final class ExpectedSQLStatements {
     
     @XmlElement(name = "parser-result")
     private List<ParserResult> parserResults = new LinkedList<>();

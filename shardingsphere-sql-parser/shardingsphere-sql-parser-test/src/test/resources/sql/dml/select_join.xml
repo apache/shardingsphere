@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
+<expected-sql-statements>
     <parser-result sql-case-id="select_inner_join_related_with_alias" parameters="1000">
         <tables>
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
@@ -94,4 +94,4 @@
             </and-predicate>
         </where>
     </parser-result>
-</parser-result-sets>
+</expected-sql-statements>

@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
+<expected-sql-statements>
     <parser-result sql-case-id="set_role" />
     <parser-result sql-case-id="set_roles" />
     <parser-result sql-case-id="set_none_role" />
@@ -24,4 +24,4 @@
     <parser-result sql-case-id="set_all_role" />
     <parser-result sql-case-id="set_all_expect_role" />
     <parser-result sql-case-id="set_all_expect_roles" />
-</parser-result-sets>
+</expected-sql-statements>

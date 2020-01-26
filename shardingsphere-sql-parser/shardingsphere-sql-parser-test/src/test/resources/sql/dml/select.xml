@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
+<expected-sql-statements>
     <parser-result sql-case-id="select_constant_without_table" >
         <projections start-index="7" stop-index="12">
             <expression-projection alias="a" start-index="7" stop-index="12" />
@@ -1509,4 +1509,4 @@
             <expression-projection start-index="7" stop-index="18" />
         </projections>
     </parser-result>
-</parser-result-sets>
+</expected-sql-statements>

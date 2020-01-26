@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResultSet;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ExpectedSQLStatements;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -69,14 +69,14 @@ public final class ParserResultSetRegistry {
     }
     
     private Map<String, ParserResult> getParserResults(final File file) {
-        ParserResultSet resultSet;
+        ExpectedSQLStatements expectedSQLStatements;
         try {
-            resultSet = (ParserResultSet) JAXBContext.newInstance(ParserResultSet.class).createUnmarshaller().unmarshal(file);
+            expectedSQLStatements = (ExpectedSQLStatements) JAXBContext.newInstance(ExpectedSQLStatements.class).createUnmarshaller().unmarshal(file);
         } catch (JAXBException ex) {
             throw new RuntimeException(ex);
         }
-        final Map<String, ParserResult> result = new HashMap<>(resultSet.getParserResults().size(), 1);
-        for (ParserResult each : resultSet.getParserResults()) {
+        final Map<String, ParserResult> result = new HashMap<>(expectedSQLStatements.getParserResults().size(), 1);
+        for (ParserResult each : expectedSQLStatements.getParserResults()) {
             result.put(each.getSqlCaseId(), each);
         }
         return result;

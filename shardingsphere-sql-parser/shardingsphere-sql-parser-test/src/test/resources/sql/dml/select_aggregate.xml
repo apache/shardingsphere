@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
+<expected-sql-statements>
     <parser-result sql-case-id="select_sum">
         <tables>
             <table name="t_order" start-index="40" stop-index="46" />
@@ -198,4 +198,4 @@
             <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="orders_count" start-index="7" stop-index="23" />
         </projections>
     </parser-result>
-</parser-result-sets>
+</expected-sql-statements>

@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
+<expected-sql-statements>
     <parser-result sql-case-id="show_index_with_index_with_table">
         <tables>
             <table name="t_order" start-index="16" stop-index="22" />
@@ -70,4 +70,4 @@
     <parser-result sql-case-id="show_all" />
     <parser-result sql-case-id="show_server_version" />
     <parser-result sql-case-id="show_transaction_isolation_level" />
-</parser-result-sets>
+</expected-sql-statements>

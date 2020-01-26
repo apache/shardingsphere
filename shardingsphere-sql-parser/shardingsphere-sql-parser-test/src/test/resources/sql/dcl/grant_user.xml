@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
+<expected-sql-statements>
     <parser-result sql-case-id="grant_user_without_hostname">
         <tables>
             <table name="t_order" start-index="40" stop-index="46" />
@@ -255,4 +255,4 @@
             <table name="t_order" start-index="27" stop-index="33" />
         </tables>
     </parser-result>
-</parser-result-sets>
+</expected-sql-statements>

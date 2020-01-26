@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
+<expected-sql-statements>
     <parser-result sql-case-id="drop_table">
         <tables>
             <table name="t_log" start-index="11" stop-index="15" />
@@ -176,4 +176,4 @@
             <index-token start-index="21" stop-index="31" table-name="t_order" />
         </tokens>
     </parser-result>
-</parser-result-sets>
+</expected-sql-statements>

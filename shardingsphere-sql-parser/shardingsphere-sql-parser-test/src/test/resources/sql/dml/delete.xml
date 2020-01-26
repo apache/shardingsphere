@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
+<expected-sql-statements>
     <parser-result sql-case-id="delete_with_sharding_value" parameters="1000, 1001, 'init'">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
@@ -138,4 +138,4 @@
             </and-predicate>
         </where>
     </parser-result>
-</parser-result-sets>
+</expected-sql-statements>

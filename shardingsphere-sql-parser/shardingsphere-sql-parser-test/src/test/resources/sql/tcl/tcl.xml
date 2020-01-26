@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
+<expected-sql-statements>
     <parser-result sql-case-id="setTransaction" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetTransactionStatement" />
     <parser-result sql-case-id="commit" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement" />
     <parser-result sql-case-id="commitWithName" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement" />
@@ -46,4 +46,4 @@
     <parser-result sql-case-id="rollbackPrepare" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement" />
     <parser-result sql-case-id="setTransactionSnapshot" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetTransactionStatement" />
     <parser-result sql-case-id="setSessionTransaction" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetTransactionStatement" />
-</parser-result-sets>
+</expected-sql-statements>
