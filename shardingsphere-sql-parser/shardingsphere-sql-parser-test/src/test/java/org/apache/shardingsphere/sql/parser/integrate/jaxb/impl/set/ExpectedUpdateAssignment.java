@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @Setter
-public final class ExpectedAssignment extends AbstractExpectedSQLSegment {
+public final class ExpectedUpdateAssignment extends AbstractExpectedSQLSegment {
     
     @XmlElement
     private ExpectedColumn column;

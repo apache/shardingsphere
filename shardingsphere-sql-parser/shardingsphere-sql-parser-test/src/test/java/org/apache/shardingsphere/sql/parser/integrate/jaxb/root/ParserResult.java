@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.orderby.Expected
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.pagination.ExpectedLimit;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.predicate.ExpectedWhere;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.projection.ExpectedProjections;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.set.ExpectedSetAssignment;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.table.ExpectedAlterTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.impl.token.ExpectedTokens;
@@ -77,6 +78,9 @@ public final class ParserResult {
     
     @XmlElement
     private ExpectedLimit limit;
+    
+    @XmlElement(name = "set-assignment")
+    private ExpectedSetAssignment setAssignment;
     
     @XmlElement(name = "alter-table")
     private ExpectedAlterTable alterTable;
