@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.root;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
