@@ -176,32 +176,24 @@ public final class WhereAssert {
     
     private static void assertBetweenExpression(final SQLCaseAssertContext assertContext, final ExpressionSegment actual, final ExpectedPredicateBetweenRightValue expected) {
         if (actual instanceof ParameterMarkerExpressionSegment) {
-            assertNotNull(assertContext.getText("Expected between parameter marker expression can not be null"), expected.getBetweenParameterMarkerExpression());
             ExpressionAssert.assertParameterMarkerExpression(assertContext, (ParameterMarkerExpressionSegment) actual, expected.getBetweenParameterMarkerExpression());
         } else if (actual instanceof LiteralExpressionSegment) {
-            assertNotNull(assertContext.getText("Expected between literal expression can not be null"), expected.getBetweenParameterMarkerExpression());
             ExpressionAssert.assertLiteralExpression(assertContext, (LiteralExpressionSegment) actual, expected.getBetweenLiteralExpression());
         } else if (actual instanceof CommonExpressionSegment) {
-            assertNotNull(assertContext.getText("Expected between common expression can not be null"), expected.getBetweenParameterMarkerExpression());
             ExpressionAssert.assertCommonExpression(assertContext, (ComplexExpressionSegment) actual, expected.getBetweenCommonExpression());
         } else if (actual instanceof SubquerySegment) {
-            assertNotNull(assertContext.getText("Expected between subquery expression can not be null"), expected.getBetweenParameterMarkerExpression());
             ExpressionAssert.assertSubquery(assertContext, (ComplexExpressionSegment) actual, expected.getBetweenSubquery());
         }
     }
     
     private static void assertAndExpression(final SQLCaseAssertContext assertContext, final ExpressionSegment actual, final ExpectedPredicateBetweenRightValue expected) {
         if (actual instanceof ParameterMarkerExpressionSegment) {
-            assertNotNull(assertContext.getText("Expected and parameter marker expression can not be null"), expected.getBetweenParameterMarkerExpression());
             ExpressionAssert.assertParameterMarkerExpression(assertContext, (ParameterMarkerExpressionSegment) actual, expected.getAndParameterMarkerExpression());
         } else if (actual instanceof LiteralExpressionSegment) {
-            assertNotNull(assertContext.getText("Expected and literal expression can not be null"), expected.getBetweenParameterMarkerExpression());
             ExpressionAssert.assertLiteralExpression(assertContext, (LiteralExpressionSegment) actual, expected.getAndLiteralExpression());
         } else if (actual instanceof CommonExpressionSegment) {
-            assertNotNull(assertContext.getText("Expected and common expression can not be null"), expected.getBetweenParameterMarkerExpression());
             ExpressionAssert.assertCommonExpression(assertContext, (ComplexExpressionSegment) actual, expected.getAndCommonExpression());
         } else if (actual instanceof SubquerySegment) {
-            assertNotNull(assertContext.getText("Expected and subquery expression can not be null"), expected.getBetweenParameterMarkerExpression());
             ExpressionAssert.assertSubquery(assertContext, (ComplexExpressionSegment) actual, expected.getAndSubquery());
         }
     }
