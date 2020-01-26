@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.AlterTableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 
@@ -41,7 +41,7 @@ public final class AlterTableStatementAssert {
      * @param actual actual alter table statement
      * @param expected expected parser result
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final ParserResult expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final SQLParserTestCase expected) {
         TableAssert.assertIs(assertContext, actual.findSQLSegments(TableSegment.class), expected.getTables());
         if (null != expected.getAlterTable()) {
             AlterTableAssert.assertIs(assertContext, actual, expected.getAlterTable());

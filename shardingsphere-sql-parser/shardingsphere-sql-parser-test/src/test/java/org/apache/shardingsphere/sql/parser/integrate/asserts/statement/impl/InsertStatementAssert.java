@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.InsertNamesAndValuesAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 
 import java.util.Collections;
@@ -42,7 +42,7 @@ public final class InsertStatementAssert {
      * @param actual actual insert statement
      * @param expected expected parser result
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final InsertStatement actual, final ParserResult expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final InsertStatement actual, final SQLParserTestCase expected) {
         TableAssert.assertIs(assertContext, Collections.singletonList(actual.getTable()), expected.getTables());
         InsertNamesAndValuesAssert.assertIs(assertContext, actual, expected.getInsertColumnsAndValues());
     }

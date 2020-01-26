@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.predicate.WhereAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 
 import static org.junit.Assert.assertFalse;
@@ -43,16 +43,16 @@ public final class DeleteStatementAssert {
      * @param actual actual delete statement
      * @param expected expected parser result
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final ParserResult expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final SQLParserTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertWhere(assertContext, actual, expected);
     }
     
-    private static void assertTable(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final ParserResult expected) {
+    private static void assertTable(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final SQLParserTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
     
-    private static void assertWhere(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final ParserResult expected) {
+    private static void assertWhere(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final SQLParserTestCase expected) {
         if (null != expected.getWhere()) {
             assertTrue(assertContext.getText("Actual where segment should exist."), actual.getWhere().isPresent());
             WhereAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhere());

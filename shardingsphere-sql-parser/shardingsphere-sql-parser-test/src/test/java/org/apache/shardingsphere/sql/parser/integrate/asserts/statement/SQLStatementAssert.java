@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.Ins
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.SelectStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.TCLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.UpdateStatementAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
@@ -51,7 +51,7 @@ public final class SQLStatementAssert {
      * @param actual actual SQL statement
      * @param expected expected parser result
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final SQLStatement actual, final ParserResult expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SQLStatement actual, final SQLParserTestCase expected) {
         ParameterMarkerAssert.assertCount(assertContext, actual.getParametersCount(), expected.getParameters().size());
         if (actual instanceof SelectStatement) {
             SelectStatementAssert.assertIs(assertContext, (SelectStatement) actual, expected);

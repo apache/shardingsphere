@@ -34,5 +34,5 @@ import java.util.List;
 public final class SQLParserTestCases {
     
     @XmlElement(name = "parser-result")
-    private List<ParserResult> parserResults = new LinkedList<>();
+    private List<SQLParserTestCase> parserResults = new LinkedList<>();
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.integrate.jaxb;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.SQLParserTestCases;
 
 import javax.xml.bind.JAXBContext;
@@ -35,26 +35,26 @@ import java.util.Map;
  */
 public final class SQLParserTestCasesRegistry {
     
-    private Map<String, ParserResult> parserResultMap;
+    private Map<String, SQLParserTestCase> sqlParserTestCases;
     
     public SQLParserTestCasesRegistry(final String rootDirectory) {
-        parserResultMap = load(rootDirectory);
+        sqlParserTestCases = load(rootDirectory);
     }
     
-    private Map<String, ParserResult> load(final String directory) {
+    private Map<String, SQLParserTestCase> load(final String directory) {
         URL url = SQLParserTestCasesRegistry.class.getClassLoader().getResource(directory);
-        Preconditions.checkNotNull(url, "Can not find parse test cases.");
+        Preconditions.checkNotNull(url, "Can not find SQL parser test cases.");
         File[] files = new File(url.getPath()).listFiles();
-        Preconditions.checkNotNull(files, "Can not find parse test cases.");
-        Map<String, ParserResult> result = new HashMap<>(Short.MAX_VALUE, 1);
+        Preconditions.checkNotNull(files, "Can not find SQL parser test cases.");
+        Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
         for (File each : files) {
             result.putAll(load(each));
         }
         return result;
     }
     
-    private Map<String, ParserResult> load(final File file) {
-        Map<String, ParserResult> result = new HashMap<>(Short.MAX_VALUE, 1);
+    private Map<String, SQLParserTestCase> load(final File file) {
+        Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             if (null != files) {
@@ -68,29 +68,29 @@ public final class SQLParserTestCasesRegistry {
         return result;
     }
     
-    private Map<String, ParserResult> getSQLParserTestCases(final File file) {
+    private Map<String, SQLParserTestCase> getSQLParserTestCases(final File file) {
         SQLParserTestCases expectedSQLStatements;
         try {
             expectedSQLStatements = (SQLParserTestCases) JAXBContext.newInstance(SQLParserTestCases.class).createUnmarshaller().unmarshal(file);
         } catch (JAXBException ex) {
             throw new RuntimeException(ex);
         }
-        final Map<String, ParserResult> result = new HashMap<>(expectedSQLStatements.getParserResults().size(), 1);
-        for (ParserResult each : expectedSQLStatements.getParserResults()) {
+        final Map<String, SQLParserTestCase> result = new HashMap<>(expectedSQLStatements.getParserResults().size(), 1);
+        for (SQLParserTestCase each : expectedSQLStatements.getParserResults()) {
             result.put(each.getSqlCaseId(), each);
         }
         return result;
     }
     
     /**
-     * Get parser result.
+     * Get SQL parser test case.
      * 
      * @param sqlCaseId SQL case ID
-     * @return parser result
+     * @return SQL parser test case
      */
-    public ParserResult get(final String sqlCaseId) {
-        Preconditions.checkState(parserResultMap.containsKey(sqlCaseId), "Can not find SQL of id: %s", sqlCaseId);
-        return parserResultMap.get(sqlCaseId);
+    public SQLParserTestCase get(final String sqlCaseId) {
+        Preconditions.checkState(sqlParserTestCases.containsKey(sqlCaseId), "Can not find SQL of id: %s", sqlCaseId);
+        return sqlParserTestCases.get(sqlCaseId);
     }
     
     /**
@@ -99,6 +99,6 @@ public final class SQLParserTestCasesRegistry {
      * @return count of all test cases
      */
     public int countAllSQLParserTestCases() {
-        return parserResultMap.size();
+        return sqlParserTestCases.size();
     }
 }

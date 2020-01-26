@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.TCLStatement;
 
@@ -40,7 +40,7 @@ public final class TCLStatementAssert {
      * @param actual actual TCL statement
      * @param expected expected parser result
      */
-    public static void assertIs(final TCLStatement actual, final ParserResult expected) {
+    public static void assertIs(final TCLStatement actual, final SQLParserTestCase expected) {
         assertThat(actual.getClass().getName(), is(expected.getTclActualStatementClassType()));
         if (actual instanceof SetAutoCommitStatement) {
             assertThat(((SetAutoCommitStatement) actual).isAutoCommit(), is(expected.isAutoCommit()));

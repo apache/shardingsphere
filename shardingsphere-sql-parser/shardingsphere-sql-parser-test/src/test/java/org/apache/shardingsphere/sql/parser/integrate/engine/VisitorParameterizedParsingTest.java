@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertConte
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistry;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistryFactory;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.VisitorSQLParserTestCasesRegistryFactory;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
@@ -86,7 +86,7 @@ public final class VisitorParameterizedParsingTest {
     
     @Test
     public void assertSupportedSQL() {
-        ParserResult expected = SQLParserTestCasesRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
+        SQLParserTestCase expected = SQLParserTestCasesRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
         if (expected.isLongSQL() && Boolean.valueOf(PROPS.getProperty("long.sql.skip", Boolean.TRUE.toString()))) {
             return;
         }

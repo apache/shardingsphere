@@ -39,10 +39,15 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * SQL parser test case.
+ * 
+ * @author zhangliang 
+ */
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ParserResult {
+public final class SQLParserTestCase {
     
     @XmlAttribute(name = "sql-case-id")
     private String sqlCaseId;

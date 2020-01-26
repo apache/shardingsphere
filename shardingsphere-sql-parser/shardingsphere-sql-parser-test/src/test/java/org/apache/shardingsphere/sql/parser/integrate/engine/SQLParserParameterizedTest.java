@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.SQLState
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistry;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistryFactory;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
@@ -76,7 +76,7 @@ public final class SQLParserParameterizedTest {
     @Test
     public void assertSupportedSQL() {
         String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
-        ParserResult expected = SQLParserTestCasesRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
+        SQLParserTestCase expected = SQLParserTestCasesRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
         if (expected.isLongSQL() && Boolean.parseBoolean(PROPS.getProperty("long.sql.skip", Boolean.TRUE.toString()))) {
             return;
         }

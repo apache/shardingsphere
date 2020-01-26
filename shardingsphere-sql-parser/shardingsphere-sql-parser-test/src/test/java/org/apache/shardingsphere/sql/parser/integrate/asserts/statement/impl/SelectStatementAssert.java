@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.pagination
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.predicate.WhereAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.projection.ProjectionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
@@ -50,7 +50,7 @@ public final class SelectStatementAssert {
      * @param actual actual select statement
      * @param expected expected parser result
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final SelectStatement actual, final ParserResult expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SQLParserTestCase expected) {
         assertProjection(assertContext, actual, expected);
         assertTable(assertContext, actual, expected);
         assertWhere(assertContext, actual, expected);
@@ -59,15 +59,15 @@ public final class SelectStatementAssert {
         assertLimit(assertContext, actual, expected);
     }
     
-    private static void assertProjection(final SQLCaseAssertContext assertContext, final SelectStatement actual, final ParserResult expected) {
+    private static void assertProjection(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SQLParserTestCase expected) {
         ProjectionAssert.assertIs(assertContext, actual.getProjections(), expected.getProjections());
     }
     
-    private static void assertTable(final SQLCaseAssertContext assertContext, final SelectStatement actual, final ParserResult expected) {
+    private static void assertTable(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SQLParserTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
     
-    private static void assertWhere(final SQLCaseAssertContext assertContext, final SelectStatement actual, final ParserResult expected) {
+    private static void assertWhere(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SQLParserTestCase expected) {
         if (null != expected.getWhere()) {
             assertTrue(assertContext.getText("Actual where segment should exist."), actual.getWhere().isPresent());
             WhereAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhere());
@@ -76,7 +76,7 @@ public final class SelectStatementAssert {
         }
     }
     
-    private static void assertGroupBy(final SQLCaseAssertContext assertContext, final SelectStatement actual, final ParserResult expected) {
+    private static void assertGroupBy(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SQLParserTestCase expected) {
         if (null != expected.getGroupBy()) {
             assertTrue(assertContext.getText("Actual group by segment should exist."), actual.getGroupBy().isPresent());
             GroupByAssert.assertIs(assertContext, actual.getGroupBy().get(), expected.getGroupBy());
@@ -85,7 +85,7 @@ public final class SelectStatementAssert {
         }
     }
     
-    private static void assertOrderBy(final SQLCaseAssertContext assertContext, final SelectStatement actual, final ParserResult expected) {
+    private static void assertOrderBy(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SQLParserTestCase expected) {
         if (null != expected.getOrderBy()) {
             assertTrue(assertContext.getText("Actual order by segment should exist."), actual.getOrderBy().isPresent());
             OrderByAssert.assertIs(assertContext, actual.getOrderBy().get(), expected.getOrderBy());
@@ -94,7 +94,7 @@ public final class SelectStatementAssert {
         }
     }
     
-    private static void assertLimit(final SQLCaseAssertContext assertContext, final SelectStatement actual, final ParserResult expected) {
+    private static void assertLimit(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SQLParserTestCase expected) {
         Optional<LimitSegment> limitSegment = actual.findSQLSegment(LimitSegment.class);
         if (null != expected.getLimit()) {
             assertTrue(assertContext.getText("Actual limit segment should exist."), limitSegment.isPresent());
