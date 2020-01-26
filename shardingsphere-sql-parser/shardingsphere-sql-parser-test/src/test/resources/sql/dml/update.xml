@@ -262,6 +262,12 @@
         <tables>
             <table name="t_order" start-index="7" stop-index="13" />
         </tables>
+        <set-assignment start-index="15" stop-index="35">
+            <update-assignment start-index="19" stop-index="35">
+                <column name="status" start-index="19" stop-index="24" />
+                <literal-expression value="update" />
+            </update-assignment>
+        </set-assignment>
         <where parameters-count="0" start-index="37" stop-index="74">
             <and-predicate>
                 <predicate start-index="43" stop-index="57">
