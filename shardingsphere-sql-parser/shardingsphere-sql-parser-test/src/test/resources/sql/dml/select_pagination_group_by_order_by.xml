@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<expected-sql-statements>
+<sql-parser-test-cases>
     <parser-result sql-case-id="select_pagination_with_group_by_and_order_by" parameters="1, 2, 9, 10, 5, 3">
         <tables>
             <table name="t_order" alias="o" start-index="22" stop-index="28" />
@@ -414,4 +414,4 @@
         <offset value="3" parameter-index="5" />
         <row-count value="5" parameter-index="4" />
     </parser-result>
-</expected-sql-statements>
+</sql-parser-test-cases>

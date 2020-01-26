@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<expected-sql-statements>
+<sql-parser-test-cases>
     <parser-result sql-case-id="deny_user">
         <tables>
             <table name="t_order" start-index="15" stop-index="21" />
@@ -52,4 +52,4 @@
             <table name="t_order" start-index="23" stop-index="29" />
         </tables>
     </parser-result>
-</expected-sql-statements>
+</sql-parser-test-cases>

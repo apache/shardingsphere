@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<expected-sql-statements>
+<sql-parser-test-cases>
     <parser-result sql-case-id="select_group_by_with_sum">
         <tables>
             <table name="t_order" start-index="49" stop-index="55" />
@@ -266,4 +266,4 @@
             <index-item index="2" />
         </order-by>
     </parser-result>
-</expected-sql-statements>
+</sql-parser-test-cases>

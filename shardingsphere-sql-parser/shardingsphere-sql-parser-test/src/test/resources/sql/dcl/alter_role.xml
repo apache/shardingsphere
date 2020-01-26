@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<expected-sql-statements>
+<sql-parser-test-cases>
     <parser-result sql-case-id="alter_no_identified_role" />
     <parser-result sql-case-id="alter_external_role"  />
     <parser-result sql-case-id="alter_global_role" />
@@ -38,4 +38,4 @@
     <parser-result sql-case-id="alter_role_add_member" />
     <parser-result sql-case-id="alter_role_drop_member"  />
     <parser-result sql-case-id="alter_role_rename" />
-</expected-sql-statements>
+</sql-parser-test-cases>

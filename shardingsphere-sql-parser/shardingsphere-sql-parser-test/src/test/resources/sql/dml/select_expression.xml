@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<expected-sql-statements>
+<sql-parser-test-cases>
     <parser-result sql-case-id="select_with_expression">
         <tables>
             <table name="t_order" alias="o" start-index="38" stop-index="44" />
@@ -73,4 +73,4 @@
             </and-predicate>
         </where>
     </parser-result>
-</expected-sql-statements>
+</sql-parser-test-cases>

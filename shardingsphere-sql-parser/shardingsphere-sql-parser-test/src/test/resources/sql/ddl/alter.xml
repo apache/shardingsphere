@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<expected-sql-statements>
+<sql-parser-test-cases>
     <parser-result sql-case-id="alter_table">
         <tables>
             <table name="t_log" start-index="12" stop-index="16" />
@@ -531,4 +531,4 @@
             <index-token start-index="12" stop-index="24" table-name="t_order"/>
         </tokens>
     </parser-result>
-</expected-sql-statements>
+</sql-parser-test-cases>

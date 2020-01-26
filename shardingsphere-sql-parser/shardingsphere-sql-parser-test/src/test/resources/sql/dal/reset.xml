@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<expected-sql-statements>
+<sql-parser-test-cases>
     <parser-result sql-case-id="reset_all" />
     <parser-result sql-case-id="reset_timezone" />
-</expected-sql-statements>
+</sql-parser-test-cases>

@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<expected-sql-statements>
+<sql-parser-test-cases>
     <parser-result sql-case-id="create_user_with_hostname" />
     <parser-result sql-case-id="create_user_without_hostname"  />
     <parser-result sql-case-id="create_user_identified_by_with_hostname" />
@@ -57,4 +57,4 @@
     <parser-result sql-case-id="create_user_with_no_login" />
     <parser-result sql-case-id="create_user_with_certificate" />
     <parser-result sql-case-id="create_user_with_asym_key" />
-</expected-sql-statements>
+</sql-parser-test-cases>

@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<expected-sql-statements>
+<sql-parser-test-cases>
     <parser-result sql-case-id="alter_login_enable" />
     <parser-result sql-case-id="alter_login_set_password"  />
     <parser-result sql-case-id="alter_login_set_hashed_password" />
@@ -27,4 +27,4 @@
     <parser-result sql-case-id="alter_login_drop_credential"  />
     <parser-result sql-case-id="alter_login_unlock" />
     <parser-result sql-case-id="alter_login_rename"  />
-</expected-sql-statements>
+</sql-parser-test-cases>

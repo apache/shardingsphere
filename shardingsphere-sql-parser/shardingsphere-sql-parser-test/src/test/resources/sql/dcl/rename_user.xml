@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<expected-sql-statements>
+<sql-parser-test-cases>
     <parser-result sql-case-id="rename_user" />
     <parser-result sql-case-id="rename_users" />
-</expected-sql-statements>
+</sql-parser-test-cases>

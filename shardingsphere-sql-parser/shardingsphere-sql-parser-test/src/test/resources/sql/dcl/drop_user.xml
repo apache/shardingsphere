@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<expected-sql-statements>
+<sql-parser-test-cases>
     <parser-result sql-case-id="drop_user_without_hostname" />
     <parser-result sql-case-id="drop_user_with_hostname" />
     <parser-result sql-case-id="drop_user_cascade" />
@@ -25,4 +25,4 @@
     <parser-result sql-case-id="drop_user" />
     <parser-result sql-case-id="drop_users" />
     <parser-result sql-case-id="drop_user_if_exists" />
-</expected-sql-statements>
+</sql-parser-test-cases>

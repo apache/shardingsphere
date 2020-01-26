@@ -24,9 +24,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.LinkedList;
 import java.util.List;
 
-@XmlRootElement(name = "expected-sql-statements")
+/**
+ * SQL parser test cases.
+ * 
+ * @author zhangliang 
+ */
+@XmlRootElement(name = "sql-parser-test-cases")
 @Getter
-public final class ExpectedSQLStatements {
+public final class SQLParserTestCases {
     
     @XmlElement(name = "parser-result")
     private List<ParserResult> parserResults = new LinkedList<>();

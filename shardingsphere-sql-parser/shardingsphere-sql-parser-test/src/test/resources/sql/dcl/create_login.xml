@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<expected-sql-statements>
+<sql-parser-test-cases>
     <parser-result sql-case-id="create_login_with_password"/>
     <parser-result sql-case-id="create_login_with_hashed_password"/>
     <parser-result sql-case-id="create_login_with_default_database"/>
@@ -24,4 +24,4 @@
     <parser-result sql-case-id="create_login_to_credential"/>
     <parser-result sql-case-id="create_login_with_certificate"/>
     <parser-result sql-case-id="create_login_with_asym_key"/>
-</expected-sql-statements>
+</sql-parser-test-cases>

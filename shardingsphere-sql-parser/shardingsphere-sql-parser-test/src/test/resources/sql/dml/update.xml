@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<expected-sql-statements>
+<sql-parser-test-cases>
     <parser-result sql-case-id="update_without_alias" parameters="'update', 1, 1">
         <tables>
             <table name="t_order" start-index="7" stop-index="13" />
@@ -337,4 +337,4 @@
             </and-predicate>
         </where>
     </parser-result>
-</expected-sql-statements>
+</sql-parser-test-cases>

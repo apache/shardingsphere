@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<expected-sql-statements>
+<sql-parser-test-cases>
     <parser-result sql-case-id="select_order_by_asc_and_index_desc">
         <tables>
             <table name="t_order" alias="o" start-index="14" stop-index="20" />
@@ -266,4 +266,4 @@
             <column-item name="item_id" />
         </order-by>
     </parser-result>
-</expected-sql-statements>
+</sql-parser-test-cases>

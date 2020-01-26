@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ExpectedSQLStatements;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.SQLParserTestCases;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -69,9 +69,9 @@ public final class ParserResultSetRegistry {
     }
     
     private Map<String, ParserResult> getParserResults(final File file) {
-        ExpectedSQLStatements expectedSQLStatements;
+        SQLParserTestCases expectedSQLStatements;
         try {
-            expectedSQLStatements = (ExpectedSQLStatements) JAXBContext.newInstance(ExpectedSQLStatements.class).createUnmarshaller().unmarshal(file);
+            expectedSQLStatements = (SQLParserTestCases) JAXBContext.newInstance(SQLParserTestCases.class).createUnmarshaller().unmarshal(file);
         } catch (JAXBException ex) {
             throw new RuntimeException(ex);
         }

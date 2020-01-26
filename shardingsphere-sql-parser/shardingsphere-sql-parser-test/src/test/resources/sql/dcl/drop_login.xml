@@ -16,6 +16,6 @@
   ~ limitations under the License.
   -->
 
-<expected-sql-statements>
+<sql-parser-test-cases>
     <parser-result sql-case-id="drop_login" />
-</expected-sql-statements>
+</sql-parser-test-cases>
