@@ -43,22 +43,22 @@ public final class ExpectedProjections extends AbstractExpectedSQLSegment {
     private boolean distinctRow;
     
     @XmlElement(name = "shorthand-projection")
-    private Collection<ExpectedShorthandProjection> shorthandProjections = new LinkedList<>();
+    private final Collection<ExpectedShorthandProjection> shorthandProjections = new LinkedList<>();
     
     @XmlElement(name = "column-projection")
-    private Collection<ExpectedColumnProjection> columnProjections = new LinkedList<>();
+    private final Collection<ExpectedColumnProjection> columnProjections = new LinkedList<>();
     
     @XmlElement(name = "aggregation-projection")
-    private Collection<ExpectedAggregationProjection> aggregationProjections = new LinkedList<>();
+    private final Collection<ExpectedAggregationProjection> aggregationProjections = new LinkedList<>();
     
     @XmlElement(name = "aggregation-distinct-projection")
-    private Collection<ExpectedAggregationDistinctProjection> aggregationDistinctProjections = new LinkedList<>();
+    private final Collection<ExpectedAggregationDistinctProjection> aggregationDistinctProjections = new LinkedList<>();
     
     @XmlElement(name = "expression-projection")
-    private Collection<ExpectedExpressionProjection> expressionProjections = new LinkedList<>();
+    private final Collection<ExpectedExpressionProjection> expressionProjections = new LinkedList<>();
     
     @XmlElement(name = "top-projection")
-    private Collection<ExpectedTopProjection> topProjections = new LinkedList<>();
+    private final Collection<ExpectedTopProjection> topProjections = new LinkedList<>();
     
     /**
      * Get size.

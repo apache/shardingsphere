@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -27,10 +26,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Getter
-@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedInsertValue {
     
     @XmlElement(name = "assignment")
-    private List<ExpectedAssignment> assignments = new LinkedList<>();
+    private final List<ExpectedAssignment> assignments = new LinkedList<>();
 }

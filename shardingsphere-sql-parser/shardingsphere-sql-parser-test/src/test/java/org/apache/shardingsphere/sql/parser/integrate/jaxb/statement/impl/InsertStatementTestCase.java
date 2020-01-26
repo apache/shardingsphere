@@ -39,7 +39,7 @@ public final class InsertStatementTestCase extends SQLParserTestCase {
     
     @XmlElementWrapper
     @XmlElement(name = "table")
-    private List<ExpectedTable> tables = new LinkedList<>();
+    private final List<ExpectedTable> tables = new LinkedList<>();
     
     @XmlElement(name = "insert-columns-and-values")
     private ExpectedInsertColumnsAndValues insertColumnsAndValues = new ExpectedInsertColumnsAndValues();

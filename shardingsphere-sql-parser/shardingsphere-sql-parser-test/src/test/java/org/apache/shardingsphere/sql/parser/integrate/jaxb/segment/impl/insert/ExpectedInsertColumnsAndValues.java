@@ -28,9 +28,9 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedInsertColumnsAndValues {
     
     @XmlAttribute(name = "column-names")
@@ -38,5 +38,5 @@ public final class ExpectedInsertColumnsAndValues {
     
     @XmlElementWrapper(name = "insert-values")
     @XmlElement(name = "insert-value")
-    private List<ExpectedInsertValue> values = new LinkedList<>();
+    private final List<ExpectedInsertValue> values = new LinkedList<>();
 }

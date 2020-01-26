@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -26,11 +25,10 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
-@Getter
-@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
+@Getter
 public final class ExpectedAndPredicate {
     
     @XmlElement(name = "predicate")
-    private List<ExpectedPredicate> predicates = new LinkedList<>();
+    private final List<ExpectedPredicate> predicates = new LinkedList<>();
 }

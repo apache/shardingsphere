@@ -44,13 +44,13 @@ public final class SelectStatementTestCase extends SQLParserTestCase {
     
     @XmlElementWrapper
     @XmlElement(name = "table")
-    private List<ExpectedTable> tables = new LinkedList<>();
+    private final List<ExpectedTable> tables = new LinkedList<>();
     
     @XmlElement(name = "projections")
-    private ExpectedProjections projections = new ExpectedProjections();
+    private final ExpectedProjections projections = new ExpectedProjections();
     
     @XmlElement
-    private ExpectedTokens tokens = new ExpectedTokens();
+    private final ExpectedTokens tokens = new ExpectedTokens();
     
     @XmlElement(name = "where")
     private ExpectedWhere where;

@@ -40,9 +40,9 @@ public final class ExpectedAlterTable {
     
     @XmlElementWrapper(name = "add-columns")
     @XmlElement(name = "add-column")
-    private List<ExpectedColumnDefinition> addColumns = new ArrayList<>();
+    private final List<ExpectedColumnDefinition> addColumns = new ArrayList<>();
     
     @XmlElementWrapper(name = "position-changed-columns")
     @XmlElement(name = "position-changed-column")
-    private List<ExpectedColumnPosition> positionChangedColumns = new ArrayList<>();
+    private final List<ExpectedColumnPosition> positionChangedColumns = new ArrayList<>();
 }

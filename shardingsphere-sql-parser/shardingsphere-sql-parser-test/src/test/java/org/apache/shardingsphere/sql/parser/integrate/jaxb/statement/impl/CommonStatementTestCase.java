@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
@@ -33,14 +32,13 @@ import java.util.List;
  * @author zhangliang 
  */
 @Getter
-@Setter
 public final class CommonStatementTestCase extends SQLParserTestCase {
     
     @XmlElementWrapper
     @XmlElement(name = "table")
-    private List<ExpectedTable> tables = new LinkedList<>();
+    private final List<ExpectedTable> tables = new LinkedList<>();
     
     @XmlElementWrapper
     @XmlElement(name = "schema")
-    private List<ExpectedTable> schemas = new LinkedList<>();
+    private final List<ExpectedTable> schemas = new LinkedList<>();
 }

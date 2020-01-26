@@ -40,7 +40,7 @@ public final class UpdateStatementTestCase extends SQLParserTestCase {
     
     @XmlElementWrapper
     @XmlElement(name = "table")
-    private List<ExpectedTable> tables = new LinkedList<>();
+    private final List<ExpectedTable> tables = new LinkedList<>();
     
     @XmlElement(name = "set-assignment")
     private ExpectedSetAssignment setAssignment;

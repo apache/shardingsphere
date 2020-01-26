@@ -39,7 +39,7 @@ public final class DeleteStatementTestCase extends SQLParserTestCase {
     
     @XmlElementWrapper
     @XmlElement(name = "table")
-    private List<ExpectedTable> tables = new LinkedList<>();
+    private final List<ExpectedTable> tables = new LinkedList<>();
     
     @XmlElement(name = "where")
     private ExpectedWhere where;
