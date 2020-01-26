@@ -29,7 +29,7 @@ public final class ParserResultSetRegistryFactory {
     private static final ParserResultSetRegistryFactory INSTANCE = new ParserResultSetRegistryFactory();
     
     @Getter
-    private final ParserResultSetRegistry registry = new ParserResultSetRegistry("sql/");
+    private final SQLParserTestCasesRegistry registry = new SQLParserTestCasesRegistry("sql/");
     
     /**
      * Get singleton instance.

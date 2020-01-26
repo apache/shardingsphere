@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.core.parser.SQLParserFactory;
 import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.SQLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistry;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistry;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistryFactory;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.VisitorParserResultSetRegistry;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
@@ -55,7 +55,7 @@ public final class VisitorParameterizedParsingTest {
     
     private static final SQLCasesLoader SQL_CASES_LOADER = VisitorSQLCasesRegistry.getInstance().getSqlCasesLoader();
     
-    private static final ParserResultSetRegistry PARSER_RESULT_SET_REGISTRY = VisitorParserResultSetRegistry.getInstance().getRegistry();
+    private static final SQLParserTestCasesRegistry PARSER_RESULT_SET_REGISTRY = VisitorParserResultSetRegistry.getInstance().getRegistry();
     
     private static final Properties PROPS = new Properties();
     
@@ -80,7 +80,7 @@ public final class VisitorParameterizedParsingTest {
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        assertThat(SQL_CASES_LOADER.countAllSQLCases(), is(PARSER_RESULT_SET_REGISTRY.countAllTestCases()));
+        assertThat(SQL_CASES_LOADER.countAllSQLCases(), is(PARSER_RESULT_SET_REGISTRY.countAllSQLParserTestCases()));
         return SQL_CASES_LOADER.getSQLTestParameters();
     }
     

@@ -29,7 +29,7 @@ public final class VisitorParserResultSetRegistry {
     private static final VisitorParserResultSetRegistry INSTANCE = new VisitorParserResultSetRegistry();
     
     @Getter
-    private final ParserResultSetRegistry registry = new ParserResultSetRegistry("visitor/");
+    private final SQLParserTestCasesRegistry registry = new SQLParserTestCasesRegistry("visitor/");
     
     /**
      * Get singleton instance.

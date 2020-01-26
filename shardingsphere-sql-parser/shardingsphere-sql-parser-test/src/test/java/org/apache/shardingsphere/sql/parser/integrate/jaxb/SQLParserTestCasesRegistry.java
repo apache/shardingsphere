@@ -29,20 +29,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Parser result set registry.
+ * SQL parser test cases registry.
  *
  * @author zhangliang
  */
-public final class ParserResultSetRegistry {
+public final class SQLParserTestCasesRegistry {
     
     private Map<String, ParserResult> parserResultMap;
     
-    public ParserResultSetRegistry(final String rootDirectory) {
+    public SQLParserTestCasesRegistry(final String rootDirectory) {
         parserResultMap = load(rootDirectory);
     }
     
     private Map<String, ParserResult> load(final String directory) {
-        URL url = ParserResultSetRegistry.class.getClassLoader().getResource(directory);
+        URL url = SQLParserTestCasesRegistry.class.getClassLoader().getResource(directory);
         Preconditions.checkNotNull(url, "Can not find parse test cases.");
         File[] files = new File(url.getPath()).listFiles();
         Preconditions.checkNotNull(files, "Can not find parse test cases.");
@@ -63,12 +63,12 @@ public final class ParserResultSetRegistry {
                 }
             }
         } else {
-            result.putAll(getParserResults(file));
+            result.putAll(getSQLParserTestCases(file));
         }
         return result;
     }
     
-    private Map<String, ParserResult> getParserResults(final File file) {
+    private Map<String, ParserResult> getSQLParserTestCases(final File file) {
         SQLParserTestCases expectedSQLStatements;
         try {
             expectedSQLStatements = (SQLParserTestCases) JAXBContext.newInstance(SQLParserTestCases.class).createUnmarshaller().unmarshal(file);
@@ -94,11 +94,11 @@ public final class ParserResultSetRegistry {
     }
     
     /**
-     * Count all test cases.
+     * Count all SQL parser test cases.
      *
      * @return count of all test cases
      */
-    public int countAllTestCases() {
+    public int countAllSQLParserTestCases() {
         return parserResultMap.size();
     }
 }
