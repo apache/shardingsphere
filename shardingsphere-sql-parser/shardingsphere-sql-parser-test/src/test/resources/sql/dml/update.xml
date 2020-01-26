@@ -149,6 +149,14 @@
         <tables>
             <table name="t_order" alias="o" start-index="7" stop-index="13" />
         </tables>
+        <set-assignment start-index="17" stop-index="41">
+            <update-assignment start-index="21" stop-index="41">
+                <column name="status" start-index="21" stop-index="28">
+                    <owner name="o" start-index="21" stop-index="21" />
+                </column>
+                <literal-expression value="finished" />
+            </update-assignment>
+        </set-assignment>
     </parser-result>
     
     <parser-result sql-case-id="update_with_extra_keywords" parameters="'update', 1, 1">
