@@ -20,13 +20,13 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb;
 import lombok.Getter;
 
 /**
- * Visitor parser result set registry.
+ * Visitor SQL parser test cases registry factory.
  *
  * @author panjuan
  */
-public final class VisitorParserResultSetRegistry {
+public final class VisitorSQLParserTestCasesRegistryFactory {
     
-    private static final VisitorParserResultSetRegistry INSTANCE = new VisitorParserResultSetRegistry();
+    private static final VisitorSQLParserTestCasesRegistryFactory INSTANCE = new VisitorSQLParserTestCasesRegistryFactory();
     
     @Getter
     private final SQLParserTestCasesRegistry registry = new SQLParserTestCasesRegistry("visitor/");
@@ -36,7 +36,7 @@ public final class VisitorParserResultSetRegistry {
      *
      * @return singleton instance
      */
-    public static VisitorParserResultSetRegistry getInstance() {
+    public static VisitorSQLParserTestCasesRegistryFactory getInstance() {
         return INSTANCE;
     }
 }

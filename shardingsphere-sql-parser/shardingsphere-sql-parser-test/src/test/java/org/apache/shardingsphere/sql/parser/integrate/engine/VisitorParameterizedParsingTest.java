@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.SQLState
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistry;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistryFactory;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.VisitorParserResultSetRegistry;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.VisitorSQLParserTestCasesRegistryFactory;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
@@ -55,7 +55,7 @@ public final class VisitorParameterizedParsingTest {
     
     private static final SQLCasesLoader SQL_CASES_LOADER = VisitorSQLCasesRegistry.getInstance().getSqlCasesLoader();
     
-    private static final SQLParserTestCasesRegistry PARSER_RESULT_SET_REGISTRY = VisitorParserResultSetRegistry.getInstance().getRegistry();
+    private static final SQLParserTestCasesRegistry PARSER_RESULT_SET_REGISTRY = VisitorSQLParserTestCasesRegistryFactory.getInstance().getRegistry();
     
     private static final Properties PROPS = new Properties();
     
