@@ -17,13 +17,13 @@
   -->
 
 <sql-parser-test-cases>
-    <parser-result sql-case-id="select_constant_without_table" >
+    <select sql-case-id="select_constant_without_table" >
         <projections start-index="7" stop-index="12">
             <expression-projection alias="a" start-index="7" stop-index="12" />
         </projections>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_with_same_table_name_and_alias" parameters="1, 1">
+    <select sql-case-id="select_with_same_table_name_and_alias" parameters="1, 1">
         <tables>
             <table name="t_order" alias="t_order" start-index="22" stop-index="28" />
         </tables>
@@ -52,9 +52,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_with_same_table_name_and_alias_column_with_owner" parameters="1, 1">
+    <select sql-case-id="select_with_same_table_name_and_alias_column_with_owner" parameters="1, 1">
         <tables>
             <table name="t_order" alias="t_order" start-index="52" stop-index="58" />
         </tables>
@@ -89,9 +89,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_not_equal_with_single_table" parameters="1">
+    <select sql-case-id="select_not_equal_with_single_table" parameters="1">
         <tables>
             <table name="t_order_item" start-index="14" stop-index="25" />
         </tables>
@@ -113,9 +113,9 @@
         <order-by>
             <column-item name="item_id" />
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_exclamation_equal_with_single_table" parameters="1">
+    <select sql-case-id="select_exclamation_equal_with_single_table" parameters="1">
         <tables>
             <table name="t_order_item" start-index="14" stop-index="25" />
         </tables>
@@ -137,9 +137,9 @@
         <order-by>
             <column-item name="item_id" />
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_not_in_with_single_table" parameters="100000, 100001">
+    <select sql-case-id="select_not_in_with_single_table" parameters="100000, 100001">
         <tables>
             <table name="t_order_item" start-index="14" stop-index="25" />
         </tables>
@@ -160,9 +160,9 @@
         <order-by>
             <column-item name="item_id" />
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_not_between_with_single_table" parameters="100000, 100001">
+    <select sql-case-id="select_not_between_with_single_table" parameters="100000, 100001">
         <tables>
             <table name="t_order_item" start-index="14" stop-index="25" />
         </tables>
@@ -183,9 +183,9 @@
         <order-by>
             <column-item name="item_id" />
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_equal_with_single_table" parameters="1, 1">
+    <select sql-case-id="select_equal_with_single_table" parameters="1, 1">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
@@ -212,9 +212,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_equal_with_same_sharding_column" parameters="1, 2">
+    <select sql-case-id="select_equal_with_same_sharding_column" parameters="1, 2">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
@@ -241,9 +241,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_between_with_single_table" parameters="1, 10, 2, 5">
+    <select sql-case-id="select_between_with_single_table" parameters="1, 10, 2, 5">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
@@ -276,9 +276,9 @@
             <column-item name="user_id" />
             <column-item name="order_id" />
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_comparison_symbol_with_single_table" parameters="1, 10, 2, 5">
+    <select sql-case-id="select_comparison_symbol_with_single_table" parameters="1, 10, 2, 5">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
@@ -325,9 +325,9 @@
             <column-item name="user_id" />
             <column-item name="order_id" />
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_in_with_single_table" parameters="1, 2, 3, 9, 10">
+    <select sql-case-id="select_in_with_single_table" parameters="1, 2, 3, 9, 10">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
@@ -362,9 +362,9 @@
             <column-item name="user_id" />
             <column-item name="order_id" />
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_in_with_same_sharding_column" parameters="1000, 1001, 1001, 1002">
+    <select sql-case-id="select_in_with_same_sharding_column" parameters="1000, 1001, 1001, 1002">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
@@ -396,9 +396,9 @@
         <order-by>
             <column-item name="order_id" />
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_count_like_concat" parameters="'init', 1, 2, 9, 10">
+    <select sql-case-id="select_count_like_concat" parameters="'init', 1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o" start-index="37" stop-index="43" />
         </tables>
@@ -437,9 +437,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_count_tilde_concat" parameters="'init', 1, 2, 9, 10">
+    <select sql-case-id="select_count_tilde_concat" parameters="'init', 1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o" start-index="37" stop-index="43" />
         </tables>
@@ -478,9 +478,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_sharding_route_with_binding_tables" parameters="1, 2, 9, 10">
+    <select sql-case-id="select_sharding_route_with_binding_tables" parameters="1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
             <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
@@ -521,9 +521,9 @@
                 <owner name="i" start-index="165" stop-index="165" literal-start-index="166" literal-stop-index="166" />
             </column-item>
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_full_route_with_binding_tables">
+    <select sql-case-id="select_full_route_with_binding_tables">
         <tables>
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
             <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
@@ -538,9 +538,9 @@
                 <owner name="i" start-index="108" stop-index="108" />
             </column-item>
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_sharding_route_with_broadcast_table" parameters="1, 2, 9, 10, 'init'">
+    <select sql-case-id="select_sharding_route_with_broadcast_table" parameters="1, 2, 9, 10, 'init'">
         <tables>
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
             <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
@@ -592,9 +592,9 @@
                 <owner name="i" start-index="230" stop-index="230" literal-start-index="236" literal-stop-index="236" />
             </column-item>
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_keyword_table_name_with_back_quotes" parameters="1, 2, 9, 10, 'init'">
+    <select sql-case-id="select_keyword_table_name_with_back_quotes" parameters="1, 2, 9, 10, 'init'">
         <tables>
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
             <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
@@ -646,9 +646,9 @@
                 <owner name="i" start-index="221" stop-index="221" literal-start-index="227" literal-stop-index="227" />
             </column-item>
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_keyword_table_name_with_double_quotes" parameters="1, 2, 9, 10, 'init'">
+    <select sql-case-id="select_keyword_table_name_with_double_quotes" parameters="1, 2, 9, 10, 'init'">
         <tables>
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
             <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
@@ -700,9 +700,9 @@
                 <owner name="i" start-index="221" stop-index="221" literal-start-index="227" literal-stop-index="227" />
             </column-item>
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_keyword_table_name_with_square_brackets" parameters="1, 2, 9, 10, 'init'">
+    <select sql-case-id="select_keyword_table_name_with_square_brackets" parameters="1, 2, 9, 10, 'init'">
         <tables>
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
             <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
@@ -754,9 +754,9 @@
                 <owner name="i" start-index="221" stop-index="221" literal-start-index="227" literal-stop-index="227" />
             </column-item>
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_alias_as_keyword" parameters="1">
+    <select sql-case-id="select_alias_as_keyword" parameters="1">
         <tables>
             <table name="t_order_item" alias="length" start-index="36" stop-index="47" />
         </tables>
@@ -779,9 +779,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_with_force_index_join" parameters="1000">
+    <select sql-case-id="select_with_force_index_join" parameters="1000">
         <tables>
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
             <table name="t_order_item" alias="i" start-index="56" stop-index="67" />
@@ -805,9 +805,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_equal_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', 100, 200, 1, 2">
+    <select sql-case-id="select_equal_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', 100, 200, 1, 2">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
@@ -847,9 +847,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_in_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1, 2">
+    <select sql-case-id="select_in_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1, 2">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
@@ -890,9 +890,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_between_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
+    <select sql-case-id="select_between_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
@@ -925,9 +925,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_with_double_quotes" parameters="1">
+    <select sql-case-id="select_with_double_quotes" parameters="1">
         <tables>
             <table name="t_order_item" start-delimiter="&quot;" end-delimiter="&quot;" start-index="14" stop-index="27" />
         </tables>
@@ -949,9 +949,9 @@
         <order-by>
             <column-item name="item_id" />
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_distinct_with_single_column" >
+    <select sql-case-id="select_distinct_with_single_column" >
         <tables>
             <table name="t_order_item" start-index="29" stop-index="40" />
         </tables>
@@ -961,9 +961,9 @@
         <order-by>
             <column-item name="item_id" />
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_distinct_with_owner_column" >
+    <select sql-case-id="select_distinct_with_owner_column" >
         <tables>
             <table name="t_order" start-index="38" stop-index="44" />
         </tables>
@@ -975,9 +975,9 @@
         <order-by>
             <column-item name="order_id" />
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_distinct_with_multi_column" >
+    <select sql-case-id="select_distinct_with_multi_column" >
         <tables>
             <table name="t_order" start-index="47" stop-index="53" />
         </tables>
@@ -989,9 +989,9 @@
         <order-by>
             <column-item name="order_id" />
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_distinct_with_star" >
+    <select sql-case-id="select_distinct_with_star" >
         <tables>
             <table name="t_order" start-index="23" stop-index="29" />
         </tables>
@@ -1012,9 +1012,9 @@
         <order-by>
             <column-item name="order_id" />
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_distinct_with_owner_star">
+    <select sql-case-id="select_distinct_with_owner_star">
         <tables>
             <table name="t_order" start-index="54" stop-index="60" />
             <table name="t_order_item" start-index="63" stop-index="74" />
@@ -1044,9 +1044,9 @@
                 <owner name="t_order" start-index="132" stop-index="138" />
             </column-item>
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_distinct_with_sum" >
+    <select sql-case-id="select_distinct_with_sum" >
         <tables>
             <table name="t_order" start-index="37" stop-index="43" />
         </tables>
@@ -1064,9 +1064,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_distinct_with_count">
+    <select sql-case-id="select_distinct_with_count">
         <tables>
             <table name="t_order" start-index="39" stop-index="45" />
         </tables>
@@ -1084,9 +1084,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_distinct_with_avg">
+    <select sql-case-id="select_distinct_with_avg">
         <tables>
             <table name="t_order" start-index="35" stop-index="41" />
         </tables>
@@ -1104,9 +1104,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_distinct_with_count_sum" >
+    <select sql-case-id="select_distinct_with_count_sum" >
         <tables>
             <table name="t_order" start-index="61" stop-index="67" />
         </tables>
@@ -1125,9 +1125,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_distinct_with_single_count_group_by" >
+    <select sql-case-id="select_distinct_with_single_count_group_by" >
          <tables>
             <table name="t_order" start-index="49" stop-index="55" />
         </tables>
@@ -1152,9 +1152,9 @@
         <order-by>
             <column-item name="order_id" />
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_distinct_with_count_group_by" >
+    <select sql-case-id="select_distinct_with_count_group_by" >
         <tables>
             <table name="t_order" start-index="49" stop-index="55" />
         </tables>
@@ -1168,9 +1168,9 @@
         <order-by>
             <column-item name="order_id" />
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_distinct_function">
+    <select sql-case-id="select_distinct_function">
         <tables>
             <table name="t_order_item" start-index="30" stop-index="41" />
         </tables>
@@ -1180,9 +1180,9 @@
         <order-by>
             <column-item name="item_id" />
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_distinct_with_count_calculation" >
+    <select sql-case-id="select_distinct_with_count_calculation" >
         <tables>
             <table name="t_order" start-index="49" stop-index="55" />
         </tables>
@@ -1200,9 +1200,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_distinct_with_aggregation_functions" >
+    <select sql-case-id="select_distinct_with_aggregation_functions" >
         <tables>
             <table name="t_order" start-index="77" stop-index="83" />
         </tables>
@@ -1222,9 +1222,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_with_schema" >
+    <select sql-case-id="select_with_schema" >
         <tables>
             <table name="t_order" start-index="14" stop-index="24">
                 <owner name="db1" start-index="14" stop-index="16" />
@@ -1233,9 +1233,9 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_escape_with_single_quota" >
+    <select sql-case-id="select_escape_with_single_quota" >
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
@@ -1253,9 +1253,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_escape_with_double_quota" >
+    <select sql-case-id="select_escape_with_double_quota" >
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
@@ -1271,9 +1271,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_with_block_comment" >
+    <select sql-case-id="select_with_block_comment" >
         <tables>
             <table name="t_order" start-index="83" stop-index="89" />
         </tables>
@@ -1292,9 +1292,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_with_single_comment" >
+    <select sql-case-id="select_with_single_comment" >
         <tables>
             <table name="t_order" start-index="78" stop-index="84" />
         </tables>
@@ -1313,27 +1313,27 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_alias_as_single_quote_string">
+    <select sql-case-id="select_alias_as_single_quote_string">
         <tables>
             <table name="t_order" start-index="31" stop-index="37" />
         </tables>
         <projections start-index="7" stop-index="24">
             <column-projection alias="status" name="status" start-index="7" stop-index="12" />
         </projections>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_alias_as_string_double_quote">
+    <select sql-case-id="select_alias_as_string_double_quote">
         <tables>
             <table name="t_order" start-index="31" stop-index="37" />
         </tables>
         <projections start-index="7" stop-index="24">
             <column-projection name="status" alias="status" start-index="7" stop-index="12" />
         </projections>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_special_function_nested" parameters="12, 1000">
+    <select sql-case-id="select_special_function_nested" parameters="12, 1000">
         <tables>
             <table name="t_order" start-index="48" stop-index="54" />
         </tables>
@@ -1360,9 +1360,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_with_row_subquery_without_row_keyword">
+    <select sql-case-id="select_with_row_subquery_without_row_keyword">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
@@ -1372,9 +1372,9 @@
         <where parameters-count="0" start-index="92" stop-index="105">
             <!-- FIXME cannot parse subquery's predicate -->
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_with_row_subquery">
+    <select sql-case-id="select_with_row_subquery">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
@@ -1384,9 +1384,9 @@
         <where parameters-count="0" start-index="95" stop-index="107">
             <!-- FIXME cannot parse subquery's predicate -->
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_with_interval_function" parameters="12, 1000">
+    <select sql-case-id="select_with_interval_function" parameters="12, 1000">
         <tables>
             <table name="t_order" start-index="45" stop-index="51" />
         </tables>
@@ -1413,9 +1413,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_with_left_function">
+    <select sql-case-id="select_with_left_function">
         <tables>
             <table name="t_order_item" start-index="44" stop-index="55" />
         </tables>
@@ -1433,9 +1433,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_for_update" parameters="10">
+    <select sql-case-id="select_for_update" parameters="10">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
@@ -1454,15 +1454,15 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_database">
+    <select sql-case-id="select_database">
         <projections start-index="7" stop-index="16">
             <expression-projection start-index="7" stop-index="16" />
         </projections>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_with_mod_function">
+    <select sql-case-id="select_with_mod_function">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
@@ -1472,9 +1472,9 @@
         <where parameters-count="0" start-index="22" stop-index="47">
             <!-- FIXME cannot parse expr in left value -->
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_with_date_format_function">
+    <select sql-case-id="select_with_date_format_function">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
@@ -1487,9 +1487,9 @@
                 <!--<predicate start-index="28" stop-index="79" />-->
             <!--</and-predicate>-->
         </where>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_with_spatial_function">
+    <select sql-case-id="select_with_spatial_function">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
@@ -1502,11 +1502,11 @@
                 <!--<predicate start-index="28" stop-index="106" />-->
             <!--</and-predicate>-->
         </where>
-    </parser-result>
+    </select>
 
-    <parser-result sql-case-id="select_current_user">
+    <select sql-case-id="select_current_user">
         <projections start-index="7" stop-index="18">
             <expression-projection start-index="7" stop-index="18" />
         </projections>
-    </parser-result>
+    </select>
 </sql-parser-test-cases>

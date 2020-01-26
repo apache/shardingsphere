@@ -68,14 +68,32 @@ public final class SQLParserTestCasesRegistry {
     }
     
     private Map<String, SQLParserTestCase> getSQLParserTestCases(final File file) {
-        SQLParserTestCases expectedSQLStatements;
+        SQLParserTestCases sqlParserTestCases;
         try {
-            expectedSQLStatements = (SQLParserTestCases) JAXBContext.newInstance(SQLParserTestCases.class).createUnmarshaller().unmarshal(file);
+            sqlParserTestCases = (SQLParserTestCases) JAXBContext.newInstance(SQLParserTestCases.class).createUnmarshaller().unmarshal(file);
         } catch (JAXBException ex) {
             throw new RuntimeException(ex);
         }
-        final Map<String, SQLParserTestCase> result = new HashMap<>(expectedSQLStatements.getParserResults().size(), 1);
-        for (SQLParserTestCase each : expectedSQLStatements.getParserResults()) {
+        Map<String, SQLParserTestCase> result = new HashMap<>();
+        for (SQLParserTestCase each : sqlParserTestCases.getSelectTestCases()) {
+            result.put(each.getSqlCaseId(), each);
+        }
+        for (SQLParserTestCase each : sqlParserTestCases.getUpdateTestCases()) {
+            result.put(each.getSqlCaseId(), each);
+        }
+        for (SQLParserTestCase each : sqlParserTestCases.getDeleteTestCases()) {
+            result.put(each.getSqlCaseId(), each);
+        }
+        for (SQLParserTestCase each : sqlParserTestCases.getInsertTestCases()) {
+            result.put(each.getSqlCaseId(), each);
+        }
+        for (SQLParserTestCase each : sqlParserTestCases.getAlterTableTestCases()) {
+            result.put(each.getSqlCaseId(), each);
+        }
+        for (SQLParserTestCase each : sqlParserTestCases.getTclTestCases()) {
+            result.put(each.getSqlCaseId(), each);
+        }
+        for (SQLParserTestCase each : sqlParserTestCases.getCommonTestCases()) {
             result.put(each.getSqlCaseId(), each);
         }
         return result;

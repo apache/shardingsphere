@@ -17,5 +17,5 @@
   -->
 
 <sql-parser-test-cases>
-    <parser-result sql-case-id="show_table_status" />
+    <common sql-case-id="show_table_status" />
 </sql-parser-test-cases>

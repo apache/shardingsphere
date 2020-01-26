@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertConte
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.predicate.WhereAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.set.SetAssignmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.UpdateStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 
 import static org.junit.Assert.assertFalse;
@@ -44,21 +44,21 @@ public final class UpdateStatementAssert {
      * @param actual actual update statement
      * @param expected expected parser result
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final SQLParserTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertSetAssignment(assertContext, actual, expected);
         assertWhere(assertContext, actual, expected);
     }
     
-    private static void assertTable(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final SQLParserTestCase expected) {
+    private static void assertTable(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
     
-    private static void assertSetAssignment(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final SQLParserTestCase expected) {
+    private static void assertSetAssignment(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
         SetAssignmentAssert.assertIs(assertContext, actual.getSetAssignment(), expected.getSetAssignment());
     }
     
-    private static void assertWhere(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final SQLParserTestCase expected) {
+    private static void assertWhere(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
         if (null != expected.getWhere()) {
             assertTrue(assertContext.getText("Actual where segment should exist."), actual.getWhere().isPresent());
             WhereAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhere());

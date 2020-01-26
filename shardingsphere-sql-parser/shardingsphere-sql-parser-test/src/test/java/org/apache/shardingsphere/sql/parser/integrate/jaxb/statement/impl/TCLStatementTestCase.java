@@ -15,43 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl;
 
-import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import java.util.Collections;
-import java.util.List;
 
 /**
- * SQL parser test case.
+ * TCL statement test case.
  * 
  * @author zhangliang 
  */
-@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public abstract class SQLParserTestCase {
+public final class TCLStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "sql-case-id")
-    private String sqlCaseId;
+    @XmlAttribute(name = "tcl-actual-statement-class-type")
+    private String tclActualStatementClassType;
     
-    @XmlAttribute(name = "long-sql")
-    private boolean longSQL;
-    
-    @XmlAttribute
-    private String parameters;
-    
-    /**
-     * Get parameters.
-     * 
-     * @return parameters
-     */
-    public List<String> getParameters() {
-        return null == parameters ? Collections.<String>emptyList() : Splitter.on(",").trimResults().splitToList(parameters);
-    }
+    @XmlAttribute(name = "auto-commit")
+    private boolean autoCommit;
 }

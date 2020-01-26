@@ -17,6 +17,6 @@
   -->
 
 <sql-parser-test-cases>
-    <parser-result sql-case-id="reset_all" />
-    <parser-result sql-case-id="reset_timezone" />
+    <common sql-case-id="reset_all" />
+    <common sql-case-id="reset_timezone" />
 </sql-parser-test-cases>

@@ -18,7 +18,13 @@
 package org.apache.shardingsphere.sql.parser.integrate.jaxb;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.AlterTableStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.CommonStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.DeleteStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.InsertStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.SelectStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.TCLStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.UpdateStatementTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -34,6 +40,24 @@ import java.util.List;
 @Getter
 public final class SQLParserTestCases {
     
-    @XmlElement(name = "parser-result")
-    private List<SQLParserTestCase> parserResults = new LinkedList<>();
+    @XmlElement(name = "select")
+    private final List<SelectStatementTestCase> selectTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "update")
+    private final List<UpdateStatementTestCase> updateTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "delete")
+    private final List<DeleteStatementTestCase> deleteTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "insert")
+    private final List<InsertStatementTestCase> insertTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-table")
+    private final List<AlterTableStatementTestCase> alterTableTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "tcl")
+    private final List<TCLStatementTestCase> tclTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "common")
+    private final List<CommonStatementTestCase> commonTestCases = new LinkedList<>();
 }

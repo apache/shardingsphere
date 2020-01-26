@@ -15,43 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl;
 
-import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedWhere;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import java.util.Collections;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
- * SQL parser test case.
+ * Delete statement test case.
  * 
  * @author zhangliang 
  */
-@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public abstract class SQLParserTestCase {
+public final class DeleteStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "sql-case-id")
-    private String sqlCaseId;
+    @XmlElementWrapper
+    @XmlElement(name = "table")
+    private List<ExpectedTable> tables = new LinkedList<>();
     
-    @XmlAttribute(name = "long-sql")
-    private boolean longSQL;
-    
-    @XmlAttribute
-    private String parameters;
-    
-    /**
-     * Get parameters.
-     * 
-     * @return parameters
-     */
-    public List<String> getParameters() {
-        return null == parameters ? Collections.<String>emptyList() : Splitter.on(",").trimResults().splitToList(parameters);
-    }
+    @XmlElement(name = "where")
+    private ExpectedWhere where;
 }

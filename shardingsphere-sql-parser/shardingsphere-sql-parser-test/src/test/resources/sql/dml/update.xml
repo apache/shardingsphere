@@ -17,7 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <parser-result sql-case-id="update_without_alias" parameters="'update', 1, 1">
+    <update sql-case-id="update_without_alias" parameters="'update', 1, 1">
         <tables>
             <table name="t_order" start-index="7" stop-index="13" />
         </tables>
@@ -48,9 +48,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </update>
     
-    <parser-result sql-case-id="update_with_alias" parameters="'update', 1, 1">
+    <update sql-case-id="update_with_alias" parameters="'update', 1, 1">
         <tables>
             <table name="t_order" alias="o" start-index="7" stop-index="13" />
         </tables>
@@ -87,9 +87,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </update>
     
-    <parser-result sql-case-id="update_equal_with_geography" parameters="'2017-06-07', 100, 200, '{&quot;rule2&quot;:&quot;null2&quot;}', 3, 5, 7, 200">
+    <update sql-case-id="update_equal_with_geography" parameters="'2017-06-07', 100, 200, '{&quot;rule2&quot;:&quot;null2&quot;}', 3, 5, 7, 200">
         <tables>
             <table name="t_order" start-index="7" stop-index="13" />
         </tables>
@@ -143,9 +143,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </update>
     
-    <parser-result sql-case-id="update_without_condition">
+    <update sql-case-id="update_without_condition">
         <tables>
             <table name="t_order" alias="o" start-index="7" stop-index="13" />
         </tables>
@@ -157,9 +157,9 @@
                 <literal-expression value="finished" />
             </update-assignment>
         </set-assignment>
-    </parser-result>
+    </update>
     
-    <parser-result sql-case-id="update_with_extra_keywords" parameters="'update', 1, 1">
+    <update sql-case-id="update_with_extra_keywords" parameters="'update', 1, 1">
         <tables>
             <table name="t_order" start-index="27" stop-index="33" />
         </tables>
@@ -190,9 +190,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </update>
     
-    <parser-result sql-case-id="update_with_special_character" parameters="'update', 1, 1">
+    <update sql-case-id="update_with_special_character" parameters="'update', 1, 1">
         <tables>
             <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="7" stop-index="15" />
         </tables>
@@ -223,9 +223,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </update>
     
-    <parser-result sql-case-id="update_with_special_comments" parameters="'update', 1, 1">
+    <update sql-case-id="update_with_special_comments" parameters="'update', 1, 1">
         <tables>
             <table name="t_order" start-index="33" stop-index="39" />
         </tables>
@@ -256,9 +256,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </update>
     
-    <parser-result sql-case-id="update_without_parameters">
+    <update sql-case-id="update_without_parameters">
         <tables>
             <table name="t_order" start-index="7" stop-index="13" />
         </tables>
@@ -286,9 +286,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </update>
     
-    <parser-result sql-case-id="update_with_or" parameters="1000, 0, 10">
+    <update sql-case-id="update_with_or" parameters="1000, 0, 10">
         <tables>
             <table name="t_order" start-index="7" stop-index="13" />
         </tables>
@@ -336,5 +336,5 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </update>
 </sql-parser-test-cases>

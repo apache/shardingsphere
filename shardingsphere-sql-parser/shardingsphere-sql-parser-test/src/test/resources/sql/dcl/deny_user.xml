@@ -17,39 +17,39 @@
   -->
 
 <sql-parser-test-cases>
-    <parser-result sql-case-id="deny_user">
+    <common sql-case-id="deny_user">
         <tables>
             <table name="t_order" start-index="15" stop-index="21" />
         </tables>
-    </parser-result>
+    </common>
     
-    <parser-result sql-case-id="deny_select">
+    <common sql-case-id="deny_select">
         <tables>
             <table name="t_order" start-index="15" stop-index="21" />
         </tables>
-    </parser-result>
+    </common>
     
-    <parser-result sql-case-id="deny_select_column">
+    <common sql-case-id="deny_select_column">
         <tables>
             <table name="t_order" start-index="26" stop-index="32" />
         </tables>
-    </parser-result>
+    </common>
     
-    <parser-result sql-case-id="deny_select_to_users">
+    <common sql-case-id="deny_select_to_users">
         <tables>
             <table name="t_order" start-index="26" stop-index="32" />
         </tables>
-    </parser-result>
+    </common>
     
-    <parser-result sql-case-id="deny_crud">
+    <common sql-case-id="deny_crud">
         <tables>
             <table name="t_order" start-index="39" stop-index="45" />
         </tables>
-    </parser-result>
+    </common>
     
-    <parser-result sql-case-id="deny_all">
+    <common sql-case-id="deny_all">
         <tables>
             <table name="t_order" start-index="23" stop-index="29" />
         </tables>
-    </parser-result>
+    </common>
 </sql-parser-test-cases>

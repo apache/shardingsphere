@@ -17,7 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <parser-result sql-case-id="select_with_expression">
+    <select sql-case-id="select_with_expression">
         <tables>
             <table name="t_order" alias="o" start-index="38" stop-index="44" />
         </tables>
@@ -30,9 +30,9 @@
                 <owner name="o" start-index="60" stop-index="60" />
             </column-item>
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_with_date_function">
+    <select sql-case-id="select_with_date_function">
         <tables>
             <table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="51" stop-index="64" />
         </tables>
@@ -42,9 +42,9 @@
         <order-by>
             <expression-item expression="DATE(i.creation_date)" order-direction="DESC" />
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_with_regexp" parameters="'init', 1, 2">
+    <select sql-case-id="select_with_regexp" parameters="'init', 1, 2">
         <tables>
             <table name="t_order_item" alias="t" start-index="14" stop-index="25" />
         </tables>
@@ -72,5 +72,5 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </select>
 </sql-parser-test-cases>

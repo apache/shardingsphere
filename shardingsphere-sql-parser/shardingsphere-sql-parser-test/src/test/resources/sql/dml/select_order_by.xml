@@ -17,7 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <parser-result sql-case-id="select_order_by_asc_and_index_desc">
+    <select sql-case-id="select_order_by_asc_and_index_desc">
         <tables>
             <table name="t_order" alias="o" start-index="14" stop-index="20" />
         </tables>
@@ -30,9 +30,9 @@
             </column-item>
             <index-item index="2" order-direction="DESC" />
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_order_by_desc_and_index_asc">
+    <select sql-case-id="select_order_by_desc_and_index_asc">
         <tables>
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
             <table name="t_order_item" alias="i" start-index="27" stop-index="38" />
@@ -71,9 +71,9 @@
             </column-item>
             <index-item index="1" />
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_order_by_with_ordered_column">
+    <select sql-case-id="select_order_by_with_ordered_column">
         <tables>
             <table name="t_order" alias="o" start-index="40" stop-index="46" />
         </tables>
@@ -87,9 +87,9 @@
                 <owner name="o" start-index="59" stop-index="59" />
             </column-item>
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_order_by_with_date">
+    <select sql-case-id="select_order_by_with_date">
         <tables>
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
             <table name="t_order_item" alias="i" start-index="27" stop-index="38" />
@@ -132,10 +132,10 @@
                 <owner name="i" start-index="142" stop-index="142" />
             </column-item>
         </order-by>
-    </parser-result>
+    </select>
     
     <!-- //TODO add order-by-null-type -->
-    <parser-result sql-case-id="select_order_by_for_nulls_first">
+    <select sql-case-id="select_order_by_for_nulls_first">
         <tables>
             <table name="t_order" alias="o" start-index="40" stop-index="46" />
         </tables>
@@ -149,10 +149,10 @@
                 <owner name="o" start-index="59" stop-index="59" />
             </column-item>
         </order-by>
-    </parser-result>
+    </select>
     
     <!-- //TODO add order-by-null-type -->
-    <parser-result sql-case-id="select_order_by_for_nulls_last">
+    <select sql-case-id="select_order_by_for_nulls_last">
         <tables>
             <table name="t_order" alias="o" start-index="40" stop-index="46" />
         </tables>
@@ -166,9 +166,9 @@
                 <owner name="o" start-index="59" stop-index="59" />
             </column-item>
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_order_by_with_multiple_stars">
+    <select sql-case-id="select_order_by_with_multiple_stars">
         <tables>
             <table name="t_order" alias="o" start-index="29" stop-index="35" />
         </tables>
@@ -184,9 +184,9 @@
                 <owner name="o" start-index="48" stop-index="48" />
             </column-item>
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_order_by_with_alias_star_alias_name">
+    <select sql-case-id="select_order_by_with_alias_star_alias_name">
         <tables>
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
         </tables>
@@ -200,9 +200,9 @@
                 <owner name="o" start-index="35" stop-index="35" />
             </column-item>
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_order_by_with_star_table_alias">
+    <select sql-case-id="select_order_by_with_star_table_alias">
         <tables>
             <table name="t_order" alias="o" start-index="14" stop-index="20" />
         </tables>
@@ -212,16 +212,16 @@
         <order-by>
             <column-item name="order_id" />
         </order-by>
-    </parser-result>
+    </select>
     
     <!--TODO need to add later-->
-    <!--<parser-result sql-case-id="select_order_by_with_parameter" parameters="order_id">-->
+    <!--<select sql-case-id="select_order_by_with_parameter" parameters="order_id">-->
         <!--<tables>-->
             <!--<table name="t_order" alias="o" start-index="14" stop-index="20" />-->
         <!--</tables>-->
-    <!--</parser-result>-->
+    <!--</select>-->
     
-    <parser-result sql-case-id="select_order_by_with_table_star_table_name">
+    <select sql-case-id="select_order_by_with_table_star_table_name">
         <tables>
             <table name="t_order" start-index="22" stop-index="28" />
         </tables>
@@ -235,9 +235,9 @@
                 <owner name="t_order" start-index="39" stop-index="45" />
             </column-item>
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_order_by_with_star_no_table_alias">
+    <select sql-case-id="select_order_by_with_star_no_table_alias">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
@@ -247,9 +247,9 @@
         <order-by>
             <column-item name="order_id" />
         </order-by>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_order_by_with_table_star_without_table_name">
+    <select sql-case-id="select_order_by_with_table_star_without_table_name">
         <tables>
             <table name="t_order" alias="o" start-index="21" stop-index="27" />
             <table name="t_order_item" alias="i" start-index="36" stop-index="47" />
@@ -265,5 +265,5 @@
         <order-by>
             <column-item name="item_id" />
         </order-by>
-    </parser-result>
+    </select>
 </sql-parser-test-cases>
