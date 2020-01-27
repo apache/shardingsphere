@@ -123,6 +123,17 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <columns start-index="20" stop-index="70">
+            <column name="order_id" start-index="21" stop-index="36">
+                <owner name="t_order" start-index="21" stop-index="27" />
+            </column>
+            <column name="user_id" start-index="39" stop-index="53">
+                <owner name="t_order" start-index="39" stop-index="45" />
+            </column>
+            <column name="status" start-index="56" stop-index="69">
+                <owner name="t_order" start-index="56" stop-index="62" />
+            </column>
+        </columns>
         <insert-columns-and-values column-names="order_id,user_id,status">
             <insert-values>
                 <insert-value>
@@ -262,6 +273,11 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <columns start-index="20" stop-index="46">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="user_id" start-index="31" stop-index="37" />
+            <column name="status" start-index="40" stop-index="45" />
+        </columns>
         <insert-columns-and-values column-names="order_id,user_id,status">
             <insert-values>
                 <insert-value>
