@@ -57,22 +57,11 @@
         <tables>
             <table name="t_log" start-index="26" stop-index="30" />
         </tables>
-        <tokens>
-            <index-token start-index="11" stop-index="21" table-name="t_log" />
-        </tokens>
     </common>
     
-    <common sql-case-id="drop_index_without_on">
-        <tokens>
-            <index-token start-index="11" stop-index="21" table-name="t_order" />
-        </tokens>
-    </common>
+    <common sql-case-id="drop_index_without_on" />
     
-    <common sql-case-id="drop_index_if_exists">
-        <tokens>
-            <index-token start-index="21" stop-index="31" table-name="t_order" />
-        </tokens>
-    </common>
+    <common sql-case-id="drop_index_if_exists" />
     
     <common sql-case-id="drop_table_with_space">
         <tables>
@@ -103,24 +92,14 @@
         <tables>
             <table name="t_order" start-index="50" stop-index="56" />
         </tables>
-        <tokens>
-            <index-token start-index="23" stop-index="33" table-name="t_order" />
-        </tokens>
     </common>
     
-    <common sql-case-id="drop_index_only_with_name">
-        <tokens>
-            <index-token start-index="11" stop-index="21" table-name="t_order" />
-        </tokens>
-    </common>
+    <common sql-case-id="drop_index_only_with_name" />
     
     <common sql-case-id="drop_index_with_back_quota">
         <tables>
             <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="28" stop-index="36" />
         </tables>
-        <tokens>
-            <index-token start-index="11" stop-index="23" table-name="t_order"/>
-        </tokens>
     </common>
     
     <common sql-case-id="drop_table_with_quota">
@@ -129,11 +108,7 @@
         </tables>
     </common>
     
-    <common sql-case-id="drop_index_with_quota">
-        <tokens>
-            <index-token start-index="11" stop-index="23" table-name="t_order" />
-        </tokens>
-    </common>
+    <common sql-case-id="drop_index_with_quota" />
     
     <common sql-case-id="drop_table_with_double_quota">
         <tables>
@@ -141,17 +116,8 @@
         </tables>
     </common>
     
-    <common sql-case-id="drop_index_with_double_quota">
-        <tokens>
-            <index-token start-index="11" stop-index="23" table-name="t_order" />
-        </tokens>
-    </common>
-    
-    <common sql-case-id="drop_index_concurrently">
-        <tokens>
-            <index-token start-index="24" stop-index="34" table-name="t_order" />
-        </tokens>
-    </common>
+    <common sql-case-id="drop_index_with_double_quota" />
+    <common sql-case-id="drop_index_concurrently" />
     
     <common sql-case-id="drop_table_with_bracket">
         <tables>
@@ -163,17 +129,11 @@
         <tables>
             <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="28" stop-index="36" />
         </tables>
-        <tokens>
-            <index-token start-index="11" stop-index="23" table-name="t_order" />
-        </tokens>
     </common>
     
     <common sql-case-id="drop_index_if_exists_on_table">
         <tables>
             <table name="t_order" start-index="36" stop-index="42" />
         </tables>
-        <tokens>
-            <index-token start-index="21" stop-index="31" table-name="t_order" />
-        </tokens>
     </common>
 </sql-parser-test-cases>

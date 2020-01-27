@@ -148,9 +148,6 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <tokens>
-            <insert-set-token begin-position="20" />
-        </tokens>
     </insert>
     
     <insert sql-case-id="insert_with_partial_placeholders" parameters="1, 1">
@@ -172,9 +169,6 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <tokens>
-            <insert-set-token begin-position="55" />
-        </tokens>
     </insert>
     
     <insert sql-case-id="insert_with_generate_key_column" parameters="10000, 1000, 10">
@@ -214,18 +208,12 @@
         <tables>
             <table name="t_order_item" start-index="12" stop-index="23" />
         </tables>
-        <tokens>
-            <insert-set-token begin-position="25" />
-        </tokens>
     </insert>
     
     <insert sql-case-id="insert_set_without_generate_key_column" parameters="1000, 10">
         <tables>
             <table name="t_order_item" start-index="12" stop-index="23" />
         </tables>
-        <tokens>
-            <insert-set-token begin-position="25" />
-        </tokens>
     </insert>
     
     <insert sql-case-id="insert_on_duplicate_key_update" parameters="1, 1, 'init'">
@@ -247,9 +235,6 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <tokens>
-            <insert-set-token begin-position="20" />
-        </tokens>
     </insert>
     
     <!--<insert sql-case-id="insert_on_duplicate_key_update_with_table_identifier" parameters="1, 1, 'init'">-->
@@ -531,9 +516,6 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <tokens>
-            <insert-set-token begin-position="20" />
-        </tokens>
     </insert>
     
     <insert sql-case-id="insert_all_with_all_placeholders" parameters="1, 1, 'init', 1, 1, 'init', 1, 1, 'init'">

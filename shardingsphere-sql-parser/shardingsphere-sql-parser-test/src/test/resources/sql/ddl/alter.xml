@@ -229,68 +229,42 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <tokens>
-            <index-token start-index="30" stop-index="40" table-name="t_order"/>
-        </tokens>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_fulltext_index">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <tokens>
-            <index-token start-index="39" stop-index="49" table-name="t_order"/>
-        </tokens>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_composite_index">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <tokens>
-            <index-token start-index="30" stop-index="40" table-name="t_order"/>
-        </tokens>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_indexes">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <tokens>
-            <index-token start-index="30" stop-index="40" table-name="t_order"/>
-            <index-token start-index="63" stop-index="73" table-name="t_order"/>
-            <index-token start-index="96" stop-index="106" table-name="t_order"/>
-        </tokens>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_drop_index">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <tokens>
-            <index-token start-index="31" stop-index="41" table-name="t_order"/>
-        </tokens>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_drop_indexes">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <tokens>
-            <index-token start-index="31" stop-index="41" table-name="t_order"/>
-            <index-token start-index="55" stop-index="65" table-name="t_order"/>
-            <index-token start-index="79" stop-index="89" table-name="t_order"/>
-        </tokens>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_rename_index">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <tokens>
-            <index-token start-index="33" stop-index="47" table-name="t_order"/>
-            <index-token start-index="52" stop-index="62" table-name="t_order"/>
-        </tokens>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_composite_operate_columns">
@@ -381,23 +355,9 @@
         </tables>
     </alter-table>
     
-    <common sql-case-id="alter_index">
-        <tokens>
-            <index-token start-index="12" stop-index="22" table-name="t_order" />
-        </tokens>
-    </common>
-    
-    <common sql-case-id="alter_index_with_space">
-        <tokens>
-            <index-token start-index="24" stop-index="34" table-name="t_order" />
-        </tokens>
-    </common>
-    
-    <common sql-case-id="alter_index_with_quota">
-        <tokens>
-            <index-token start-index="12" stop-index="24" table-name="t_order" />
-        </tokens>
-    </common>
+    <common sql-case-id="alter_index" />
+    <common sql-case-id="alter_index_with_space" />
+    <common sql-case-id="alter_index_with_quota" />
     
     <alter-table sql-case-id="alter_table_with_row_level">
         <tables>
@@ -458,9 +418,6 @@
         <!--<tables>-->
             <!--<table name="t_order" start-index="12" stop-index="18" />-->
         <!--</tables>-->
-        <!--<tokens>-->
-            <!--<index-token begin-position="48" table-name="order_index" />-->
-        <!--</tokens>-->
     <!--</common>-->
     
     <alter-table sql-case-id="alter_table_with_bracket">
@@ -518,17 +475,11 @@
         <tables>
             <table name="t_order" start-index="27" stop-index="33" />
         </tables>
-        <tokens>
-            <index-token start-index="12" stop-index="22" table-name="t_order" />
-        </tokens>
     </common>
     
     <common sql-case-id="alter_index_with_quota_bracket">
         <tables>
             <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="29" stop-index="37" />
         </tables>
-        <tokens>
-            <index-token start-index="12" stop-index="24" table-name="t_order"/>
-        </tokens>
     </common>
 </sql-parser-test-cases>
