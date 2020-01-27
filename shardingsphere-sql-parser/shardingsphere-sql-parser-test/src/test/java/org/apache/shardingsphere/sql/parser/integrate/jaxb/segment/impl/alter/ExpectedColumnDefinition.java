@@ -15,34 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.token;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.alter;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import javax.xml.bind.annotation.XmlAttribute;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedTokens {
+
+public class ExpectedColumnDefinition {
     
-    @XmlElement(name = "table-token")
-    private List<ExpectedTableToken> tableTokens = new LinkedList<>();
+    @XmlAttribute
+    private String name;
     
-    @XmlElement(name = "index-token")
-    private List<ExpectedIndexToken> indexTokens = new LinkedList<>();
+    @XmlAttribute
+    private String type;
     
-    @XmlElement(name = "generated-key-token")
-    private ExpectedGeneratedKeyToken generatedKeyToken;
-    
-    @XmlElement(name = "insert-set-token")
-    private ExpectedInsertSetToken insertSetToken;
-    
-    @XmlElement(name = "insert-column-token")
-    private ExpectedInsertColumnToken insertColumnToken;
+    @XmlAttribute(name = "primary-key")
+    private boolean primaryKey;
 }

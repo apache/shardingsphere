@@ -63,18 +63,12 @@
         <tables>
             <table name="t_log" start-index="28" stop-index="32" />
         </tables>
-        <tokens>
-            <index-token start-index="13" stop-index="23" table-name="t_log" />
-        </tokens>
     </common>
     
     <common sql-case-id="create_unique_index">
         <tables>
             <table name="t_log" start-index="35" stop-index="39" />
         </tables>
-        <tokens>
-            <index-token start-index="20" stop-index="30" table-name="t_log" />
-        </tokens>
     </common>
     
     <common sql-case-id="create_table_with_space">
@@ -205,27 +199,18 @@
         <tables>
             <table name="t_order" start-index="13" stop-index="19" />
         </tables>
-        <tokens>
-            <index-token start-index="138" stop-index="148" table-name="t_order" />
-        </tokens>
     </common>
     
     <common sql-case-id="create_table_with_out_of_line_composite_index">
         <tables>
             <table name="t_order" start-index="13" stop-index="19" />
         </tables>
-        <tokens>
-            <index-token start-index="138" stop-index="148" table-name="t_order" />
-        </tokens>
     </common>
     
     <common sql-case-id="create_table_with_out_of_line_btree_index">
         <tables>
             <table name="t_order" start-index="13" stop-index="19" />
         </tables>
-        <tokens>
-            <index-token start-index="138" stop-index="148" table-name="t_order"/>
-        </tokens>
     </common>
     
     <common sql-case-id="create_table_with_comment">
@@ -258,36 +243,24 @@
         <tables>
             <table name="t_order" start-index="52" stop-index="58" />
         </tables>
-        <tokens>
-            <index-token start-index="25" stop-index="35" table-name="t_order" />
-        </tokens>
     </common>
     
     <common sql-case-id="create_index_with_back_quota">
         <tables>
             <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="30" stop-index="38" />
         </tables>
-        <tokens>
-            <index-token start-index="13" stop-index="25" table-name="t_order" />
-        </tokens>
     </common>
     
     <common sql-case-id="create_composite_index">
         <tables>
             <table name="t_order" start-index="28" stop-index="34" />
         </tables>
-        <tokens>
-            <index-token start-index="13" stop-index="23" table-name="t_order" />
-        </tokens>
     </common>
     
     <common sql-case-id="create_btree_index">
         <tables>
             <table name="t_order" start-index="40" stop-index="46" />
         </tables>
-        <tokens>
-            <index-token start-index="13" stop-index="23" table-name="t_order" />
-        </tokens>
     </common>
     
     <common sql-case-id="create_table_with_quota">
@@ -359,9 +332,6 @@
         <tables>
             <table name="t_order" start-index="13" stop-index="19" />
         </tables>
-        <tokens>
-            <index-token start-index="66" stop-index="76" table-name="t_order"/>
-        </tokens>
     </common>
     
     <common sql-case-id="create_table_with_create_index">
@@ -369,9 +339,6 @@
             <table name="t_order" start-index="13" stop-index="19" />
             <table name="t_order" start-index="95" stop-index="101" />
         </tables>
-        <tokens>
-            <index-token start-index="80" stop-index="90" table-name="t_order"/>
-        </tokens>
     </common>
     
     <common sql-case-id="create_table_with_partition_oracle">
@@ -384,18 +351,12 @@
         <tables>
             <table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="30" stop-index="38" />
         </tables>
-        <tokens>
-            <index-token start-index="13" stop-index="25" table-name="t_order"/>
-        </tokens>
     </common>
     
     <common sql-case-id="create_index_with_function">
         <tables>
             <table name="t_order" start-index="33" stop-index="39" />
         </tables>
-        <tokens>
-            <index-token start-index="13" stop-index="28" table-name="t_order"/>
-        </tokens>
     </common>
     
     <common sql-case-id="create_table_with_double_quota">
@@ -440,9 +401,6 @@
         <tables>
             <table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="30" stop-index="38" />
         </tables>
-        <tokens>
-            <index-token start-index="13" stop-index="25" table-name="t_order"/>
-        </tokens>
     </common>
     
     <common sql-case-id="create_index_with_double_quota_and_uescape">
@@ -450,36 +408,24 @@
             <!-- FIXME table index error -->
             <table name="u&amp;t_order" start-index="58" stop-index="68" />
         </tables>
-        <tokens>
-            <index-token start-index="13" stop-index="53" table-name="u&amp;t_order"/>
-        </tokens>
     </common>
     
     <common sql-case-id="create_index_concurrently">
         <tables>
             <table name="t_order" start-index="41" stop-index="47" />
         </tables>
-        <tokens>
-            <index-token start-index="26" stop-index="36" table-name="t_order" />
-        </tokens>
     </common>
     
     <common sql-case-id="create_index_if_not_exists">
         <tables>
             <table name="t_order" start-index="42" stop-index="48" />
         </tables>
-        <tokens>
-            <index-token start-index="27" stop-index="37" table-name="t_order" />
-        </tokens>
     </common>
     
     <common sql-case-id="create_index_using_btree">
         <tables>
             <table name="t_order" start-index="28" stop-index="34" />
         </tables>
-        <tokens>
-            <index-token start-index="13" stop-index="23" table-name="t_order" />
-        </tokens>
     </common>
     
     <common sql-case-id="create_table_with_bracket">
@@ -529,9 +475,6 @@
         <tables>
             <table name="t_order" start-index="13" stop-index="19" />
         </tables>
-        <tokens>
-            <index-token start-index="41" stop-index="51" table-name="t_order" />
-        </tokens>
     </common>
     
     <common sql-case-id="create_table_with_inline_check_sqlserver">
@@ -550,8 +493,5 @@
         <tables>
             <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="30" stop-index="38" />
         </tables>
-        <tokens>
-            <index-token start-index="13" stop-index="25" table-name="t_order" />
-        </tokens>
     </common>
 </sql-parser-test-cases>

@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.paginati
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedWhere;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.projection.ExpectedProjections;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.token.ExpectedTokens;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -48,9 +47,6 @@ public final class SelectStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "projections")
     private final ExpectedProjections projections = new ExpectedProjections();
-    
-    @XmlElement
-    private final ExpectedTokens tokens = new ExpectedTokens();
     
     @XmlElement(name = "where")
     private ExpectedWhere where;
