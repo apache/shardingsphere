@@ -16,9 +16,9 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
+<sql-parser-test-cases>
     <!-- TODO cannot pass,add later 
-    <parser-result sql-case-id="select_sub_query_with_multiple_tables" parameters="1, 2">
+    <select sql-case-id="select_sub_query_with_multiple_tables" parameters="1, 2">
         <tables>
             <table name="t_order" alias="o" start-index="33" stop-index="39" />
             <table name="t_order_item" alias="i" start-index="44" stop-index="55" />
@@ -29,11 +29,11 @@
                 <value index="1" literal="2" type="int" />
             </condition>
         </conditions>
-    </parser-result>
+    </select>
     -->
     
     <!-- TODO do not support ORDER BY or ORDER BY in subquery for now, add later
-    <parser-result sql-case-id="select_sub_query_with_order_by">
+    <select sql-case-id="select_sub_query_with_order_by">
         <tables>
             <table name="t_order" start-index="52" stop-index="58" />
         </tables>
@@ -41,15 +41,15 @@
             <aggregation-projection type="COUNT" alias="orders_count" />
             <shorthand-projection start-index="45" stop-index="45" />
         </projections>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_sub_query_with_group_by">
+    <select sql-case-id="select_sub_query_with_group_by">
         <tables>
             <table name="t_order_item" start-index="64" stop-index="75" />
         </tables>
         <projections start-index="50" stop-index="57">
             <column-projection name="order_id" start-index="50" stop-index="57" />
         </projections>
-    </parser-result>
+    </select>
     -->
-</parser-result-sets>
+</sql-parser-test-cases>

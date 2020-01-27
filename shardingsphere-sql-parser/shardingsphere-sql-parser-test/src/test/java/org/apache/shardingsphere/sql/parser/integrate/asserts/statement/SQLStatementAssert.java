@@ -27,7 +27,13 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.Ins
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.SelectStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.TCLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.UpdateStatementAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.AlterTableStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.DeleteStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.InsertStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.SelectStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.TCLStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.UpdateStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
@@ -51,20 +57,20 @@ public final class SQLStatementAssert {
      * @param actual actual SQL statement
      * @param expected expected parser result
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final SQLStatement actual, final ParserResult expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SQLStatement actual, final SQLParserTestCase expected) {
         ParameterMarkerAssert.assertCount(assertContext, actual.getParametersCount(), expected.getParameters().size());
         if (actual instanceof SelectStatement) {
-            SelectStatementAssert.assertIs(assertContext, (SelectStatement) actual, expected);
+            SelectStatementAssert.assertIs(assertContext, (SelectStatement) actual, (SelectStatementTestCase) expected);
         } else if (actual instanceof UpdateStatement) {
-            UpdateStatementAssert.assertIs(assertContext, (UpdateStatement) actual, expected);
+            UpdateStatementAssert.assertIs(assertContext, (UpdateStatement) actual, (UpdateStatementTestCase) expected);
         } else if (actual instanceof DeleteStatement) {
-            DeleteStatementAssert.assertIs(assertContext, (DeleteStatement) actual, expected);
+            DeleteStatementAssert.assertIs(assertContext, (DeleteStatement) actual, (DeleteStatementTestCase) expected);
         } else if (actual instanceof InsertStatement) {
-            InsertStatementAssert.assertIs(assertContext, (InsertStatement) actual, expected);
+            InsertStatementAssert.assertIs(assertContext, (InsertStatement) actual, (InsertStatementTestCase) expected);
         } else if (actual instanceof AlterTableStatement) {
-            AlterTableStatementAssert.assertIs(assertContext, (AlterTableStatement) actual, expected);
+            AlterTableStatementAssert.assertIs(assertContext, (AlterTableStatement) actual, (AlterTableStatementTestCase) expected);
         } else if (actual instanceof TCLStatement) {
-            TCLStatementAssert.assertIs((TCLStatement) actual, expected);
+            TCLStatementAssert.assertIs((TCLStatement) actual, (TCLStatementTestCase) expected);
         }
     }
 }

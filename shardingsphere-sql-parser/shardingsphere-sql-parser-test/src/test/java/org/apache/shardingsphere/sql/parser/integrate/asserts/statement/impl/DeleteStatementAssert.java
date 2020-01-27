@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.predicate.WhereAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.DeleteStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 
 import static org.junit.Assert.assertFalse;
@@ -41,18 +41,18 @@ public final class DeleteStatementAssert {
      * 
      * @param assertContext Assert context
      * @param actual actual delete statement
-     * @param expected expected parser result
+     * @param expected expected delete statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final ParserResult expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertWhere(assertContext, actual, expected);
     }
     
-    private static void assertTable(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final ParserResult expected) {
+    private static void assertTable(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
     
-    private static void assertWhere(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final ParserResult expected) {
+    private static void assertWhere(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
         if (null != expected.getWhere()) {
             assertTrue(assertContext.getText("Actual where segment should exist."), actual.getWhere().isPresent());
             WhereAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhere());

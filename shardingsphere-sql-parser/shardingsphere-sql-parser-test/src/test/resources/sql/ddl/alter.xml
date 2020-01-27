@@ -16,38 +16,38 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
-    <parser-result sql-case-id="alter_table">
+<sql-parser-test-cases>
+    <alter-table sql-case-id="alter_table">
         <tables>
             <table name="t_log" start-index="12" stop-index="16" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_if_exists_only">
+    <alter-table sql-case-id="alter_table_if_exists_only">
         <tables>
             <table name="t_log" start-index="27" stop-index="31" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_with_force">
+    <alter-table sql-case-id="alter_table_with_force">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_with_space">
+    <alter-table sql-case-id="alter_table_with_space">
         <tables>
             <table name="t_order" start-index="24" stop-index="30" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_with_back_quota">
+    <alter-table sql-case-id="alter_table_with_back_quota">
         <tables>
             <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="12" stop-index="20" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_add_column">
+    <alter-table sql-case-id="alter_table_add_column">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
@@ -56,9 +56,9 @@
                 <add-column name="column4" type="VARCHAR" />
             </add-columns>
         </alter-table>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_add_columns">
+    <alter-table sql-case-id="alter_table_add_columns">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
@@ -69,9 +69,9 @@
                 <add-column name="column6" type="VARCHAR" />
             </add-columns>
         </alter-table>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_add_column_with_first">
+    <alter-table sql-case-id="alter_table_add_column_with_first">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
@@ -83,9 +83,9 @@
                 <position-changed-column start-index="44" column-name="column3" />
             </position-changed-columns>
         </alter-table>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_add_column_with_after">
+    <alter-table sql-case-id="alter_table_add_column_with_after">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
@@ -97,9 +97,9 @@
                 <position-changed-column start-index="44" column-name="column4" after-column="order_id"/>
             </position-changed-columns>
         </alter-table>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_add_column_with_first_after">
+    <alter-table sql-case-id="alter_table_add_column_with_first_after">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
@@ -117,33 +117,33 @@
                 <position-changed-column start-index="145" column-name="column8" after-column="column6"/>
             </position-changed-columns>
         </alter-table>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_modify_column">
+    <alter-table sql-case-id="alter_table_modify_column">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_modify_columns">
+    <alter-table sql-case-id="alter_table_modify_columns">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_modify_column_with_first">
+    <alter-table sql-case-id="alter_table_modify_column_with_first">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_modify_column_with_after">
+    <alter-table sql-case-id="alter_table_modify_column_with_after">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_modify_column_with_first_after">
+    <alter-table sql-case-id="alter_table_modify_column_with_first_after">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
@@ -153,106 +153,106 @@
                 <position-changed-column start-index="72" column-name="user_id" after-column="status" />
             </position-changed-columns>
         </alter-table>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_drop_column">
+    <alter-table sql-case-id="alter_table_drop_column">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
         <alter-table drop-columns="user_id" />
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_drop_columns">
+    <alter-table sql-case-id="alter_table_drop_columns">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
         <alter-table drop-columns="user_id,column5" />
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_change_column">
+    <alter-table sql-case-id="alter_table_change_column">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_add_primary_key">
+    <alter-table sql-case-id="alter_table_add_primary_key">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_add_composite_primary_key">
+    <alter-table sql-case-id="alter_table_add_composite_primary_key">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_add_unique_key">
+    <alter-table sql-case-id="alter_table_add_unique_key">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_add_foreign_key">
+    <alter-table sql-case-id="alter_table_add_foreign_key">
         <tables>
             <table name="t_order_item" start-index="12" stop-index="23" />
             <table name="t_order" start-index="86" stop-index="92" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_add_constraints">
+    <alter-table sql-case-id="alter_table_add_constraints">
         <tables>
             <table name="t_order_item" start-index="12" stop-index="23" />
             <table name="t_order" start-index="113" stop-index="119" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_drop_primary_key">
+    <alter-table sql-case-id="alter_table_drop_primary_key">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_drop_foreign_key">
+    <alter-table sql-case-id="alter_table_drop_foreign_key">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_drop_constraints">
+    <alter-table sql-case-id="alter_table_drop_constraints">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_add_index">
+    <alter-table sql-case-id="alter_table_add_index">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
         <tokens>
             <index-token start-index="30" stop-index="40" table-name="t_order"/>
         </tokens>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_add_fulltext_index">
+    <alter-table sql-case-id="alter_table_add_fulltext_index">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
         <tokens>
             <index-token start-index="39" stop-index="49" table-name="t_order"/>
         </tokens>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_add_composite_index">
+    <alter-table sql-case-id="alter_table_add_composite_index">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
         <tokens>
             <index-token start-index="30" stop-index="40" table-name="t_order"/>
         </tokens>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_add_indexes">
+    <alter-table sql-case-id="alter_table_add_indexes">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
@@ -261,18 +261,18 @@
             <index-token start-index="63" stop-index="73" table-name="t_order"/>
             <index-token start-index="96" stop-index="106" table-name="t_order"/>
         </tokens>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_drop_index">
+    <alter-table sql-case-id="alter_table_drop_index">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
         <tokens>
             <index-token start-index="31" stop-index="41" table-name="t_order"/>
         </tokens>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_drop_indexes">
+    <alter-table sql-case-id="alter_table_drop_indexes">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
@@ -281,9 +281,9 @@
             <index-token start-index="55" stop-index="65" table-name="t_order"/>
             <index-token start-index="79" stop-index="89" table-name="t_order"/>
         </tokens>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_rename_index">
+    <alter-table sql-case-id="alter_table_rename_index">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
@@ -291,9 +291,9 @@
             <index-token start-index="33" stop-index="47" table-name="t_order"/>
             <index-token start-index="52" stop-index="62" table-name="t_order"/>
         </tokens>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_composite_operate_columns">
+    <alter-table sql-case-id="alter_table_composite_operate_columns">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
@@ -304,21 +304,21 @@
                 <add-column name="column6" type="VARCHAR" />
             </add-columns>
         </alter-table>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_with_quota">
+    <alter-table sql-case-id="alter_table_with_quota">
         <tables>
             <table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="12" stop-index="20" />
         </tables>
-    </parser-result>
+    </alter-table>
        
-    <parser-result sql-case-id="alter_table_add_check">
+    <alter-table sql-case-id="alter_table_add_check">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_add_columns_oracle">
+    <alter-table sql-case-id="alter_table_add_columns_oracle">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
@@ -329,147 +329,147 @@
                 <add-column name="column6" type="VARCHAR2" />
             </add-columns>
         </alter-table>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_modify_columns_oracle">
+    <alter-table sql-case-id="alter_table_modify_columns_oracle">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_drop_columns_oracle">
+    <alter-table sql-case-id="alter_table_drop_columns_oracle">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
         <alter-table drop-columns="user_id,column5" />
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_add_primary_foreign_key">
+    <alter-table sql-case-id="alter_table_add_primary_foreign_key">
         <tables>
             <table name="t_order_item" start-index="12" stop-index="23" />
             <table name="t_order" start-index="125" stop-index="131" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_add_composite_primary_key_oracle">
+    <alter-table sql-case-id="alter_table_add_composite_primary_key_oracle">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
        
-    <parser-result sql-case-id="alter_table_drop_unique_key">
+    <alter-table sql-case-id="alter_table_drop_unique_key">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_drop_constraint">
+    <alter-table sql-case-id="alter_table_drop_constraint">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_drop_primary_key_unique_key">
+    <alter-table sql-case-id="alter_table_drop_primary_key_unique_key">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
         
-    <parser-result sql-case-id="alter_table_rename_constraint">
+    <alter-table sql-case-id="alter_table_rename_constraint">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_index">
+    <common sql-case-id="alter_index">
         <tokens>
             <index-token start-index="12" stop-index="22" table-name="t_order" />
         </tokens>
-    </parser-result>
+    </common>
     
-    <parser-result sql-case-id="alter_index_with_space">
+    <common sql-case-id="alter_index_with_space">
         <tokens>
             <index-token start-index="24" stop-index="34" table-name="t_order" />
         </tokens>
-    </parser-result>
+    </common>
     
-    <parser-result sql-case-id="alter_index_with_quota">
+    <common sql-case-id="alter_index_with_quota">
         <tokens>
             <index-token start-index="12" stop-index="24" table-name="t_order" />
         </tokens>
-    </parser-result>
+    </common>
     
-    <parser-result sql-case-id="alter_table_with_row_level">
+    <alter-table sql-case-id="alter_table_with_row_level">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_with_double_quota">
+    <alter-table sql-case-id="alter_table_with_double_quota">
         <tables>
             <table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="12" stop-index="20" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_alter_column">
+    <alter-table sql-case-id="alter_table_alter_column">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_alter_columns">
+    <alter-table sql-case-id="alter_table_alter_columns">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_add_foreign_key_with_cascade">
+    <alter-table sql-case-id="alter_table_add_foreign_key_with_cascade">
         <tables>
             <table name="t_order_item" start-index="12" stop-index="23" />
             <table name="t_order" start-index="86" stop-index="92" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_drop_constraints_postgresql">
+    <alter-table sql-case-id="alter_table_drop_constraints_postgresql">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_rename_constraints">
+    <alter-table sql-case-id="alter_table_rename_constraints">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_rename_table">
+    <alter-table sql-case-id="alter_table_rename_table">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_rename_column">
+    <alter-table sql-case-id="alter_table_rename_column">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <!--<parser-result sql-case-id="create_table_with_exist_index">-->
+    <!--<common sql-case-id="create_table_with_exist_index">-->
         <!--<tables>-->
             <!--<table name="t_order" start-index="12" stop-index="18" />-->
         <!--</tables>-->
         <!--<tokens>-->
             <!--<index-token begin-position="48" table-name="order_index" />-->
         <!--</tokens>-->
-    <!--</parser-result>-->
+    <!--</common>-->
     
-    <parser-result sql-case-id="alter_table_with_bracket">
+    <alter-table sql-case-id="alter_table_with_bracket">
         <tables>
             <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="12" stop-index="20" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_add_columns_sqlserver">
+    <alter-table sql-case-id="alter_table_add_columns_sqlserver">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
@@ -480,55 +480,55 @@
                 <add-column name="column6" type="VARCHAR" />
             </add-columns>
         </alter-table>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_alter_column">
+    <alter-table sql-case-id="alter_table_alter_column">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_drop_columns_sqlserver">
+    <alter-table sql-case-id="alter_table_drop_columns_sqlserver">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
         <alter-table drop-columns="user_id,column5" />
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_add_composite_primary_key_sqlserver">
+    <alter-table sql-case-id="alter_table_add_composite_primary_key_sqlserver">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_add_constraints_sqlserver">
+    <alter-table sql-case-id="alter_table_add_constraints_sqlserver">
         <tables>
             <table name="t_order_item" start-index="12" stop-index="23" />
             <table name="t_order" start-index="128" stop-index="134" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_table_drop_constraints_sqlserver">
+    <alter-table sql-case-id="alter_table_drop_constraints_sqlserver">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-    </parser-result>
+    </alter-table>
     
-    <parser-result sql-case-id="alter_index_rebuild">
+    <common sql-case-id="alter_index_rebuild">
         <tables>
             <table name="t_order" start-index="27" stop-index="33" />
         </tables>
         <tokens>
             <index-token start-index="12" stop-index="22" table-name="t_order" />
         </tokens>
-    </parser-result>
+    </common>
     
-    <parser-result sql-case-id="alter_index_with_quota_bracket">
+    <common sql-case-id="alter_index_with_quota_bracket">
         <tables>
             <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="29" stop-index="37" />
         </tables>
         <tokens>
             <index-token start-index="12" stop-index="24" table-name="t_order"/>
         </tokens>
-    </parser-result>
-</parser-result-sets>
+    </common>
+</sql-parser-test-cases>

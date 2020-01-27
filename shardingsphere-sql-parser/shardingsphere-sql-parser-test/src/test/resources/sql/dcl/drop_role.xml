@@ -16,8 +16,8 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
-    <parser-result sql-case-id="drop_role" />
-    <parser-result sql-case-id="drop_roles"  />
-    <parser-result sql-case-id="drop_role_if_exists" />
-</parser-result-sets>
+<sql-parser-test-cases>
+    <common sql-case-id="drop_role" />
+    <common sql-case-id="drop_roles"  />
+    <common sql-case-id="drop_role_if_exists" />
+</sql-parser-test-cases>

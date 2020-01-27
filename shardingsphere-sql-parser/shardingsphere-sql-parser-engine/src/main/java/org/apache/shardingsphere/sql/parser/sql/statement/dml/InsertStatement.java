@@ -48,9 +48,9 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
     
     private TableSegment table;
     
-    private SetAssignmentSegment setAssignment;
-    
     private InsertColumnsSegment columns;
+    
+    private SetAssignmentSegment setAssignment;
     
     private final Collection<InsertValuesSegment> values = new LinkedList<>();
     

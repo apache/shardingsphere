@@ -16,12 +16,12 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
-    <parser-result sql-case-id="set_role" />
-    <parser-result sql-case-id="set_roles" />
-    <parser-result sql-case-id="set_none_role" />
-    <parser-result sql-case-id="set_default_role" />
-    <parser-result sql-case-id="set_all_role" />
-    <parser-result sql-case-id="set_all_expect_role" />
-    <parser-result sql-case-id="set_all_expect_roles" />
-</parser-result-sets>
+<sql-parser-test-cases>
+    <common sql-case-id="set_role" />
+    <common sql-case-id="set_roles" />
+    <common sql-case-id="set_none_role" />
+    <common sql-case-id="set_default_role" />
+    <common sql-case-id="set_all_role" />
+    <common sql-case-id="set_all_expect_role" />
+    <common sql-case-id="set_all_expect_roles" />
+</sql-parser-test-cases>

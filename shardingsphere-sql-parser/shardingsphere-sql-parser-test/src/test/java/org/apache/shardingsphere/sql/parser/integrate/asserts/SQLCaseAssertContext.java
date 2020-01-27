@@ -19,8 +19,8 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistry;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistryFactory;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistry;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistryFactory;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
 import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
@@ -37,14 +37,14 @@ public final class SQLCaseAssertContext {
     
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     
+    private static final SQLCasesLoader SQL_CASES_LOADER = SQLCasesRegistry.getInstance().getSqlCasesLoader();
+    
+    private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
+    
     private final String sqlCaseId;
     
     @Getter
     private final SQLCaseType sqlCaseType;
-    
-    private final SQLCasesLoader sqlCasesLoader = SQLCasesRegistry.getInstance().getSqlCasesLoader();
-    
-    private final ParserResultSetRegistry parserResultSetRegistry = ParserResultSetRegistryFactory.getInstance().getRegistry();
     
     /**
      * Get message text.
@@ -69,13 +69,13 @@ public final class SQLCaseAssertContext {
     private void appendSQL(final StringBuilder builder) {
         builder.append("SQL         : ");
         if (SQLCaseType.Placeholder == sqlCaseType) {
-            builder.append(sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList()));
+            builder.append(SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList()));
             builder.append(LINE_SEPARATOR);
             builder.append("SQL Params  : ");
-            builder.append(parserResultSetRegistry.get(sqlCaseId).getParameters());
+            builder.append(SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
             builder.append(LINE_SEPARATOR);
         } else {
-            builder.append(sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, parserResultSetRegistry.get(sqlCaseId).getParameters()));
+            builder.append(SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters()));
         }
     }
     

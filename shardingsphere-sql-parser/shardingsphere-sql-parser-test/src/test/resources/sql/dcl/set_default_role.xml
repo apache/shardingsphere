@@ -16,9 +16,9 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
-    <parser-result sql-case-id="set_none_role" />
-    <parser-result sql-case-id="set_all_role" />
-    <parser-result sql-case-id="set_role" />
-    <parser-result sql-case-id="set_roles_to_users" />
-</parser-result-sets>
+<sql-parser-test-cases>
+    <common sql-case-id="set_none_role" />
+    <common sql-case-id="set_all_role" />
+    <common sql-case-id="set_role" />
+    <common sql-case-id="set_roles_to_users" />
+</sql-parser-test-cases>

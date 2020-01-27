@@ -16,8 +16,8 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
-    <parser-result sql-case-id="select_pagination_with_offset" parameters="1, 2, 9, 10, 5">
+<sql-parser-test-cases>
+    <select sql-case-id="select_pagination_with_offset" parameters="1, 2, 9, 10, 5">
         <tables>
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
             <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
@@ -61,9 +61,9 @@
         <limit start-index="180" stop-index="187" literal-start-index="181" literal-stop-index="188">
             <offset value="5" parameter-index="4" start-index="187" stop-index="187" literal-start-index="188" literal-stop-index="188" />
         </limit>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_pagination_with_row_count" parameters="1, 2, 9, 10, 5">
+    <select sql-case-id="select_pagination_with_row_count" parameters="1, 2, 9, 10, 5">
         <tables>
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
             <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
@@ -107,9 +107,9 @@
         <limit start-index="180" stop-index="186" literal-start-index="181" literal-stop-index="187">
             <row-count value="5" parameter-index="4" start-index="186" stop-index="186" literal-start-index="187" literal-stop-index="187" />
         </limit>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_pagination_with_limit_with_back_quotes" parameters="1, 2, 9, 10, 5, 3">
+    <select sql-case-id="select_pagination_with_limit_with_back_quotes" parameters="1, 2, 9, 10, 5, 3">
         <tables>
             <table name="t_order" alias="o" start-delimiter="`" end-delimiter="`" start-index="16" stop-index="24" />
             <table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="33" stop-index="46" />
@@ -154,9 +154,9 @@
             <offset value="5" parameter-index="4" start-index="194" stop-index="194" literal-start-index="195" literal-stop-index="195" />
             <row-count value="3" parameter-index="5" start-index="197" stop-index="197" literal-start-index="198" literal-stop-index="198" />
         </limit>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_pagination_with_limit_and_offset_keyword" parameters="1, 2, 9, 10, 3, 5">
+    <select sql-case-id="select_pagination_with_limit_and_offset_keyword" parameters="1, 2, 9, 10, 3, 5">
         <tables>
             <table name="t_order" alias="o" start-delimiter="`" end-delimiter="`" start-index="16" stop-index="24" />
             <table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="33" stop-index="46" />
@@ -201,9 +201,9 @@
             <row-count value="3" parameter-index="4" start-index="194" stop-index="194" literal-start-index="195" literal-stop-index="195" />
             <offset value="5" parameter-index="5" start-index="203" stop-index="203" literal-start-index="204" literal-stop-index="204" />
         </limit>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_pagination_with_top" parameters="3, 1, 2, 9, 10">
+    <select sql-case-id="select_pagination_with_top" parameters="3, 1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o" start-index="167" stop-index="173" />
             <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
@@ -257,9 +257,9 @@
             </column-item>
         </order-by>
         <row-count value="3" parameter-index="0" />
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_pagination_with_offset_and_limit" parameters="1, 2, 9, 10, 5, 3">
+    <select sql-case-id="select_pagination_with_offset_and_limit" parameters="1, 2, 9, 10, 5, 3">
         <tables>
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
             <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
@@ -304,9 +304,9 @@
             <offset value="5" parameter-index="4" start-index="187" stop-index="187" literal-start-index="188" literal-stop-index="188" />
             <row-count value="3" parameter-index="5" start-index="195" stop-index="195" literal-start-index="196" literal-stop-index="196" />
         </limit>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_pagination_with_top_for_greater_than" parameters="3, 1, 2, 9, 10, 6">
+    <select sql-case-id="select_pagination_with_top_for_greater_than" parameters="3, 1, 2, 9, 10, 6">
         <tables>
             <table name="t_order" alias="o" start-index="167" stop-index="173" />
             <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
@@ -350,9 +350,9 @@
         </order-by>
         <offset value="6" parameter-index="5" />
         <row-count value="3" parameter-index="0" />
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_pagination_with_top_for_greater_than_and_equal" parameters="3, 1, 2, 9, 10, 6">
+    <select sql-case-id="select_pagination_with_top_for_greater_than_and_equal" parameters="3, 1, 2, 9, 10, 6">
         <tables>
             <table name="t_order" alias="o" start-index="167" stop-index="173" />
             <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
@@ -396,9 +396,9 @@
         </order-by>
         <offset value="6" parameter-index="5" />
         <row-count value="3" parameter-index="0" />
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_pagination_with_row_number" parameters="1, 2, 9, 10, 3">
+    <select sql-case-id="select_pagination_with_row_number" parameters="1, 2, 9, 10, 3">
         <tables>
             <table name="t_order" alias="order0_" start-index="146" stop-index="152" />
             <table name="t_order_item" alias="i" start-index="167" stop-index="178" />
@@ -443,9 +443,9 @@
             </column-item>
         </order-by>
         <row-count value="3" parameter-index="4" />
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_pagination_with_row_number_for_greater_than" parameters="1, 2, 9, 10, 5, 3">
+    <select sql-case-id="select_pagination_with_row_number_for_greater_than" parameters="1, 2, 9, 10, 5, 3">
         <tables>
             <table name="t_order" alias="order0_" start-index="146" stop-index="152" />
             <table name="t_order_item" alias="i" start-index="167" stop-index="178" />
@@ -483,9 +483,9 @@
         </order-by>
         <offset value="3" parameter-index="5" />
         <row-count value="5" parameter-index="4" />
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_pagination_with_row_number_for_greater_than_and_equal" parameters="1, 2, 9, 10, 5, 3">
+    <select sql-case-id="select_pagination_with_row_number_for_greater_than_and_equal" parameters="1, 2, 9, 10, 5, 3">
         <tables>
             <table name="t_order" alias="order0_" start-index="146" stop-index="152" />
             <table name="t_order_item" alias="i" start-index="167" stop-index="178" />
@@ -523,9 +523,9 @@
         </order-by>
         <offset value="3" parameter-index="5" />
         <row-count value="5" parameter-index="4" />
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_pagination_with_row_number_not_at_end" parameters="20">
+    <select sql-case-id="select_pagination_with_row_number_not_at_end" parameters="20">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
@@ -548,9 +548,9 @@
             <column-item name="order_id" />
         </order-by>
         <row-count value="20" parameter-index="0" />
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_pagination_with_offset_fetch" parameters="20">
+    <select sql-case-id="select_pagination_with_offset_fetch" parameters="20">
         <tables>
             <table name="t_order" start-index="14" stop-index="20" />
         </tables>
@@ -561,5 +561,5 @@
             <column-item name="order_id" />
         </order-by>
         <row-count value="20" parameter-index="0" />
-    </parser-result>
-</parser-result-sets>
+    </select>
+</sql-parser-test-cases>

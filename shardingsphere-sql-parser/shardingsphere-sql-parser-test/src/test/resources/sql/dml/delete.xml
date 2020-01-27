@@ -16,8 +16,8 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
-    <parser-result sql-case-id="delete_with_sharding_value" parameters="1000, 1001, 'init'">
+<sql-parser-test-cases>
+    <delete sql-case-id="delete_with_sharding_value" parameters="1000, 1001, 'init'">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
@@ -49,9 +49,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </delete>
     
-    <parser-result sql-case-id="delete_without_sharding_value" parameters="'init'">
+    <delete sql-case-id="delete_without_sharding_value" parameters="'init'">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
@@ -67,9 +67,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </delete>
     
-    <parser-result sql-case-id="delete_with_special_character_without_sharding_value">
+    <delete sql-case-id="delete_with_special_character_without_sharding_value">
         <tables>
             <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="12" stop-index="20" />
         </tables>
@@ -84,9 +84,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </delete>
     
-    <parser-result sql-case-id="delete_with_special_comments_return_without_sharding_value">
+    <delete sql-case-id="delete_with_special_comments_return_without_sharding_value">
         <tables>
             <table name="t_order" start-index="33" stop-index="39" />
         </tables>
@@ -101,9 +101,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </delete>
     
-    <parser-result sql-case-id="delete_with_special_comments_returning_without_sharding_value">
+    <delete sql-case-id="delete_with_special_comments_returning_without_sharding_value">
         <tables>
             <table name="t_order" start-index="34" stop-index="40" />
         </tables>
@@ -118,9 +118,9 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
+    </delete>
     
-    <parser-result sql-case-id="delete_with_alias" parameters="'init'">
+    <delete sql-case-id="delete_with_alias" parameters="'init'">
         <tables>
             <table name="o" start-index="7" stop-index="7" />
             <table name="t_order" alias="o" start-index="14" stop-index="20" />
@@ -137,5 +137,5 @@
                 </predicate>
             </and-predicate>
         </where>
-    </parser-result>
-</parser-result-sets>
+    </delete>
+</sql-parser-test-cases>

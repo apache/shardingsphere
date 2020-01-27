@@ -16,6 +16,6 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
-    <parser-result sql-case-id="drop_login" />
-</parser-result-sets>
+<sql-parser-test-cases>
+    <common sql-case-id="drop_login" />
+</sql-parser-test-cases>
