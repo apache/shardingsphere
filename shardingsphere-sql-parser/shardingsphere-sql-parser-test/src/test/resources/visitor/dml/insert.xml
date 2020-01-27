@@ -151,6 +151,8 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <!-- FIXME no insert columns should not parse the segment, and the start and stop index are incorrect -->
+        <columns start-index="20" stop-index="19" />
         <insert-columns-and-values>
             <insert-values>
                 <insert-value>
