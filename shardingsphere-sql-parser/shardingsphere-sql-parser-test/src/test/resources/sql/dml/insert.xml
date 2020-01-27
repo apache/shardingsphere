@@ -105,6 +105,11 @@
         <tables>
             <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="12" stop-index="20" />
         </tables>
+        <columns start-index="22" stop-index="54">
+            <column name="order_id" start-delimiter="`" end-delimiter="`" start-index="23" stop-index="32" />
+            <column name="user_id" start-delimiter="`" end-delimiter="`" start-index="35" stop-index="43" />
+            <column name="status" start-delimiter="`" end-delimiter="`" start-index="46" stop-index="53" />
+        </columns>
         <insert-columns-and-values column-names="order_id,user_id,status">
             <insert-values>
                 <insert-value>
