@@ -256,13 +256,10 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     
     private List<TableMetaData> getTableMetaDataList(final ShardingRule shardingRule, final Collection<String> tableNames) throws SQLException {
         Map<String, List<DataNode>> result = new LinkedHashMap<>();
+        String defaultDataSource = shardingRule.getShardingDataSourceNames().getDefaultDataSourceName();
+        result.put(defaultDataSource, new LinkedList<DataNode>());
         for (String each : tableNames) {
-            Map<String, List<DataNode>> dataNodes = getDataNodeGroups(shardingRule.getTableRule(each));
-            String dataSource = dataNodes.keySet().iterator().next();
-            if (result.isEmpty()) {
-                result.put(dataSource, new LinkedList<DataNode>());
-            }
-            result.get(dataSource).addAll(dataNodes.get(dataSource));
+            result.get(defaultDataSource).addAll(getDataNodeGroups(shardingRule.getTableRule(each)).get(defaultDataSource));
         }
         return load(result, shardingRule, null);
     }
