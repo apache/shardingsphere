@@ -422,6 +422,9 @@
         <tables>
             <table name="t_order_item" start-index="12" stop-index="23" />
         </tables>
+        <!-- FIXME no insert columns should not parse the segment, and the start and stop index are incorrect -->
+        <columns start-index="25" stop-index="24">
+        </columns>
         <insert-columns-and-values>
             <insert-values>
                 <insert-value>
