@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
@@ -62,8 +64,10 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNa
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnreservedWord_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WeightStringFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.core.constant.LogicalOperator;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.ShowLikeSegment;
@@ -80,6 +84,11 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.Paramete
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.OrPredicateSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
@@ -147,7 +156,8 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
-        // TODO :Since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
+        // TODO :FIXME, no parsing for on duplicate phrase
+        // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
         InsertStatement result = null != ctx.insertValuesClause() ? (InsertStatement) visit(ctx.insertValuesClause()) : (InsertStatement) visit(ctx.setAssignmentsClause());
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.setTable(table);
@@ -203,8 +213,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     public ASTNode visitAssignmentValue(final AssignmentValueContext ctx) {
         ExprContext expr = ctx.expr();
         if (null != expr) {
-            ASTNode value = visit(expr);
-            return createExpressionSegment(value, expr);
+            return visit(expr);
         }
         return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
@@ -212,6 +221,15 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     @Override
     public ASTNode visitBlobValue(final BlobValueContext ctx) {
         return new LiteralValue(ctx.STRING_().getText());
+    }
+    
+    @Override
+    public ASTNode visitWhereClause(final WhereClauseContext ctx) {
+        WhereSegment result = new WhereSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.setParameterMarkerStartIndex(currentParameterIndex);
+        result.getAndPredicates().addAll(((OrPredicateSegment) visit(ctx.expr())).getAndPredicates());
+        result.setParametersCount(currentParameterIndex);
+        return result;
     }
     
     // TCLStatement.g4
@@ -268,16 +286,24 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     @Override
     public ASTNode visitExpr(final ExprContext ctx) {
         BooleanPrimaryContext bool = ctx.booleanPrimary();
+        ASTNode result;
         if (null != bool) {
-            return visit(bool);
+            result = visit(bool);
+        } else if (null != ctx.logicalOperator()) {
+            result = mergePredicateSegment(visit(ctx.expr(0)), visit(ctx.expr(1)), ctx.logicalOperator().getText());
+        } else {
+            result = new LiteralValue(ctx.getText());
         }
-        return new LiteralValue(ctx.getText());
+        return createExpressionSegment(result, ctx);
     }
     
     @Override
     public ASTNode visitBooleanPrimary(final BooleanPrimaryContext ctx) {
         if (null != ctx.subquery()) {
             return new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.subquery().getText());
+        }
+        if (null != ctx.comparisonOperator()) {
+            return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ColumnSegment) visit(ctx.booleanPrimary()), (PredicateRightValue) ctx.predicate());
         }
         if (null != ctx.predicate()) {
             return visit(ctx.predicate());
@@ -322,6 +348,9 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         }
         if (null != ctx.functionCall()) {
             return visit(ctx.functionCall());
+        }
+        if (null != ctx.columnName()) {
+            return visit(ctx.columnName());
         }
         return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
@@ -547,6 +576,51 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
             result.append(ctx.getChild(i).getText());
         }
         return result.toString();
+    }
+    
+    private OrPredicateSegment mergePredicateSegment(final ASTNode left, final ASTNode right, final String operator) {
+        Optional<LogicalOperator> logicalOperator = LogicalOperator.valueFrom(operator);
+        Preconditions.checkState(logicalOperator.isPresent());
+        if (LogicalOperator.OR == logicalOperator.get()) {
+            return mergeOrPredicateSegment(left, right);
+        }
+        return mergeAndPredicateSegment(left, right);
+    }
+    
+    private OrPredicateSegment mergeOrPredicateSegment(final ASTNode left, final ASTNode right) {
+        OrPredicateSegment result = new OrPredicateSegment();
+        result.getAndPredicates().addAll(getAndPredicates(left));
+        result.getAndPredicates().addAll(getAndPredicates(right));
+        return result;
+    }
+    
+    private OrPredicateSegment mergeAndPredicateSegment(final ASTNode left, final ASTNode right) {
+        OrPredicateSegment result = new OrPredicateSegment();
+        for (AndPredicate eachLeft : getAndPredicates(left)) {
+            for (AndPredicate eachRight : getAndPredicates(right)) {
+                result.getAndPredicates().add(createAndPredicate(eachLeft, eachRight));
+            }
+        }
+        return result;
+    }
+    
+    private AndPredicate createAndPredicate(final AndPredicate left, final AndPredicate right) {
+        AndPredicate result = new AndPredicate();
+        result.getPredicates().addAll(left.getPredicates());
+        result.getPredicates().addAll(right.getPredicates());
+        return result;
+    }
+    
+    private Collection<AndPredicate> getAndPredicates(final ASTNode astNode) {
+        if (astNode instanceof OrPredicateSegment) {
+            return ((OrPredicateSegment) astNode).getAndPredicates();
+        }
+        if (astNode instanceof AndPredicate) {
+            return Collections.singleton((AndPredicate) astNode);
+        }
+        AndPredicate andPredicate = new AndPredicate();
+        andPredicate.getPredicates().add((PredicateSegment) astNode);
+        return Collections.singleton(andPredicate);
     }
     
     // TODO :FIXME, sql case id: insert_with_str_to_date

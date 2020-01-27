@@ -94,7 +94,8 @@ public final class ShardingUpdateStatementValidatorTest {
         Collection<AssignmentSegment> assignments = Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "id"), new LiteralExpressionSegment(0, 0, shardingColumnParameter)));
         SetAssignmentSegment setAssignmentSegment = new SetAssignmentSegment(0, 0, assignments);
         result.setSetAssignment(setAssignmentSegment);
-        WhereSegment where = new WhereSegment(0, 0, 1);
+        WhereSegment where = new WhereSegment(0, 0);
+        where.setParametersCount(1);
         where.setParameterMarkerStartIndex(0);
         AndPredicate andPre = new AndPredicate();
         andPre.getPredicates().add(new PredicateSegment(0, 1, new ColumnSegment(0, 0, "id"), new PredicateCompareRightValue("=", new ParameterMarkerExpressionSegment(0, 0, 0))));
