@@ -60,7 +60,7 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
      * @return insert columns segment
      */
     public Optional<InsertColumnsSegment> getInsertColumns() {
-        return Optional.of(columns);
+        return Optional.fromNullable(columns);
     }
     
     /**
