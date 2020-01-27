@@ -463,6 +463,9 @@
         <tables>
             <table name="t_blob_value_test" start-index="12" stop-index="28" />
         </tables>
+        <columns start-index="29" stop-index="34">
+            <column name="col1" start-index="30" stop-index="33" />
+        </columns>
         <insert-columns-and-values column-names="col1">
             <insert-values>
                 <insert-value>
