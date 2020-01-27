@@ -333,16 +333,22 @@
         <tables>
             <table name="t_auto_increment_table" start-index="12" stop-index="33" />
         </tables>
+        <!-- FIXME no insert columns should not parse the segment, and the start and stop index are incorrect -->
+        <columns start-index="35" stop-index="34" />
         <insert-columns-and-values>
             <insert-values>
                 <insert-value />
             </insert-values>
         </insert-columns-and-values>
     </insert>
+    
     <insert sql-case-id="insert_with_double_value">
         <tables>
             <table name="t_double_test" start-index="12" stop-index="24" />
         </tables>
+        <columns start-index="25" stop-index="30">
+            <column name="col1" start-index="26" stop-index="29" />
+        </columns>
         <columns start-index="25" stop-index="30">
             <column name="col1" start-index="26" stop-index="29" />
         </columns>
