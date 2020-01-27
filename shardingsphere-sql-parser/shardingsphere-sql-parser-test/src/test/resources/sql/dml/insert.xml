@@ -373,6 +373,12 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <columns start-index="19" stop-index="55">
+            <column name="user_id" start-index="20" stop-index="26" />
+            <column name="order_id" start-index="29" stop-index="36" />
+            <column name="start_point" start-index="39" stop-index="49" />
+            <column name="rule" start-index="51" stop-index="54" />
+        </columns>
         <insert-columns-and-values column-names="user_id,order_id,start_point,rule">
             <insert-values>
                 <insert-value>
