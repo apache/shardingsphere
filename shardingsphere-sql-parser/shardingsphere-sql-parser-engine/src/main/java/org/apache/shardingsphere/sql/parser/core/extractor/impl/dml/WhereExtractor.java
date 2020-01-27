@@ -44,7 +44,8 @@ public final class WhereExtractor implements OptionalSQLSegmentExtractor {
         if (!whereNode.isPresent()) {
             return Optional.absent();
         }
-        WhereSegment result = new WhereSegment(whereNode.get().getStart().getStartIndex(), whereNode.get().getStop().getStopIndex(), parameterMarkerIndexes.size());
+        WhereSegment result = new WhereSegment(whereNode.get().getStart().getStartIndex(), whereNode.get().getStop().getStopIndex());
+        result.setParametersCount(parameterMarkerIndexes.size());
         Optional<OrPredicateSegment> orPredicateSegment = predicateExtractor.extract(whereNode.get(), parameterMarkerIndexes);
         if (orPredicateSegment.isPresent()) {
             result.getAndPredicates().addAll(orPredicateSegment.get().getAndPredicates());

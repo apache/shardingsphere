@@ -98,7 +98,7 @@ public class SimpleJudgementEngineTest {
     @Test
     public void judgeForWhereSegment() {
         SelectStatement selectStatement = new SelectStatement();
-        WhereSegment whereSegment = new WhereSegment(0, 0, 0);
+        WhereSegment whereSegment = new WhereSegment(0, 0);
         AndPredicate andPredicate = new AndPredicate();
         andPredicate.getPredicates().addAll(Collections.singletonList(new PredicateSegment(0, 0,
                 new ColumnSegment(0, 0, "shadow"),
