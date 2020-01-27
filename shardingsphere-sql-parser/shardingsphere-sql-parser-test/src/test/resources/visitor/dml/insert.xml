@@ -382,19 +382,6 @@
         </insert-columns-and-values>
     </insert>
     
-    <insert sql-case-id="insert_with_double_value">
-        <tables>
-            <table name="t_double_test" start-index="12" stop-index="24" />
-        </tables>
-        <insert-columns-and-values column-names="col1">
-            <insert-values>
-                <insert-value>
-                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="1.22"/>
-                </insert-value>
-            </insert-values>
-        </insert-columns-and-values>
-    </insert>
-    
     <insert sql-case-id="insert_with_null_value">
         <tables>
             <table name="t_null_value_test" start-index="12" stop-index="28" />
