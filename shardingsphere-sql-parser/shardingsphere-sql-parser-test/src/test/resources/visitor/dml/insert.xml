@@ -21,6 +21,11 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <columns start-index="20" stop-index="46">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="user_id" start-index="31" stop-index="37" />
+            <column name="status" start-index="40" stop-index="45" />
+        </columns>
         <insert-columns-and-values column-names="order_id,user_id,status">
             <insert-values>
                 <insert-value>
@@ -36,6 +41,13 @@
         <tables>
             <table name="t_order_item" start-index="12" stop-index="23" />
         </tables>
+        <columns start-index="25" stop-index="75">
+            <column name="item_id" start-index="26" stop-index="32" />
+            <column name="order_id" start-index="35" stop-index="42" />
+            <column name="user_id" start-index="45" stop-index="51" />
+            <column name="status" start-index="54" stop-index="59" />
+            <column name="creation_date" start-index="62" stop-index="74" />
+        </columns>
         <insert-columns-and-values column-names="item_id,order_id,user_id,status,creation_date">
             <insert-values>
                 <insert-value>
@@ -53,6 +65,11 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <columns start-index="20" stop-index="46">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="user_id" start-index="31" stop-index="37" />
+            <column name="status" start-index="40" stop-index="45" />
+        </columns>
         <insert-columns-and-values column-names="order_id,user_id,status">
             <insert-values>
                 <insert-value>
@@ -68,6 +85,11 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <columns start-index="20" stop-index="46">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="user_id" start-index="31" stop-index="37" />
+            <column name="status" start-index="40" stop-index="45" />
+        </columns>
         <insert-columns-and-values column-names="order_id,user_id,status">
             <insert-values>
                 <insert-value>
@@ -88,6 +110,11 @@
         <tables>
             <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="12" stop-index="20" />
         </tables>
+        <columns start-index="22" stop-index="54">
+            <column name="order_id" start-delimiter="`" end-delimiter="`" start-index="23" stop-index="32" />
+            <column name="user_id" start-delimiter="`" end-delimiter="`" start-index="35" stop-index="43" />
+            <column name="status" start-delimiter="`" end-delimiter="`" start-index="46" stop-index="53" />
+        </columns>
         <insert-columns-and-values column-names="order_id,user_id,status">
             <insert-values>
                 <insert-value>
@@ -103,6 +130,17 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <columns start-index="20" stop-index="70">
+            <column name="order_id" start-index="21" stop-index="36">
+                <owner name="t_order" start-index="21" stop-index="27" />
+            </column>
+            <column name="user_id" start-index="39" stop-index="53">
+                <owner name="t_order" start-index="39" stop-index="45" />
+            </column>
+            <column name="status" start-index="56" stop-index="69">
+                <owner name="t_order" start-index="56" stop-index="62" />
+            </column>
+        </columns>
         <insert-columns-and-values column-names="order_id,user_id,status">
             <insert-values>
                 <insert-value>
@@ -118,6 +156,8 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <!-- FIXME no insert columns should not parse the segment, and the start and stop index are incorrect -->
+        <columns start-index="20" stop-index="19" />
         <insert-columns-and-values>
             <insert-values>
                 <insert-value>
@@ -133,6 +173,11 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <columns start-index="20" stop-index="46">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="user_id" start-index="31" stop-index="37" />
+            <column name="status" start-index="40" stop-index="45" />
+        </columns>
         <insert-columns-and-values column-names="order_id,user_id,status">
             <insert-values>
                 <insert-value>
@@ -148,6 +193,13 @@
         <tables>
             <table name="t_order_item" start-index="12" stop-index="23" />
         </tables>
+        <columns start-index="24" stop-index="74">
+            <column name="item_id" start-index="25" stop-index="31" />
+            <column name="order_id" start-index="34" stop-index="41" />
+            <column name="user_id" start-index="44" stop-index="50" />
+            <column name="status" start-index="53" stop-index="58" />
+            <column name="creation_date" start-index="61" stop-index="73" />
+        </columns>
         <insert-columns-and-values column-names="item_id,order_id,user_id,status,creation_date">
             <insert-values>
                 <insert-value>
@@ -165,6 +217,12 @@
         <tables>
             <table name="t_order_item" start-index="12" stop-index="23" />
         </tables>
+        <columns start-index="24" stop-index="65">
+            <column name="order_id" start-index="25" stop-index="32" />
+            <column name="user_id" start-index="35" stop-index="41" />
+            <column name="status" start-index="44" stop-index="49" />
+            <column name="creation_date" start-index="52" stop-index="64" />
+        </columns>
         <insert-columns-and-values column-names="order_id,user_id,status,creation_date">
             <insert-values>
                 <insert-value>
@@ -181,6 +239,8 @@
         <tables>
             <table name="t_order_item" start-index="12" stop-index="23" />
         </tables>
+        <!-- FIXME no insert columns should not parse the segment, and the start and stop index are incorrect -->
+        <columns start-index="25" stop-index="24" />
         <insert-columns-and-values>
             <insert-values>
                 <insert-value>
@@ -198,6 +258,8 @@
         <tables>
             <table name="t_order_item" start-index="12" stop-index="23" />
         </tables>
+        <!-- FIXME no insert columns should not parse the segment, and the start and stop index are incorrect -->
+        <columns start-index="25" stop-index="24" />
         <insert-columns-and-values>
             <insert-values>
                 <insert-value>
@@ -214,6 +276,11 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <columns start-index="20" stop-index="46">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="user_id" start-index="31" stop-index="37" />
+            <column name="status" start-index="40" stop-index="45" />
+        </columns>
         <insert-columns-and-values column-names="order_id,user_id,status">
             <insert-values>
                 <insert-value>
@@ -234,6 +301,11 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <columns start-index="20" stop-index="46">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="user_id" start-index="31" stop-index="37" />
+            <column name="status" start-index="40" stop-index="45" />
+        </columns>
         <insert-columns-and-values column-names="order_id,user_id,status">
             <insert-values>
                 <insert-value>
@@ -254,6 +326,13 @@
         <tables>
             <table name="t_order_item" start-index="12" stop-index="23" />
         </tables>
+        <columns start-index="24" stop-index="74">
+            <column name="item_id" start-index="25" stop-index="31" />
+            <column name="order_id" start-index="34" stop-index="41" />
+            <column name="user_id" start-index="44" stop-index="50" />
+            <column name="status" start-index="53" stop-index="58" />
+            <column name="creation_date" start-index="61" stop-index="73" />
+        </columns>
         <insert-columns-and-values column-names="item_id,order_id,user_id,status,creation_date">
             <insert-values>
                 <insert-value>
@@ -278,21 +357,11 @@
         <tables>
             <table name="t_auto_increment_table" start-index="12" stop-index="33" />
         </tables>
+        <!-- FIXME no insert columns should not parse the segment, and the start and stop index are incorrect -->
+        <columns start-index="35" stop-index="34" />
         <insert-columns-and-values>
             <insert-values>
                 <insert-value />
-            </insert-values>
-        </insert-columns-and-values>
-    </insert>
-    <insert sql-case-id="insert_with_double_value">
-        <tables>
-            <table name="t_double_test" start-index="12" stop-index="24" />
-        </tables>
-        <insert-columns-and-values column-names="col1">
-            <insert-values>
-                <insert-value>
-                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="1.22"/>
-                </insert-value>
             </insert-values>
         </insert-columns-and-values>
     </insert>
@@ -301,6 +370,9 @@
         <tables>
             <table name="t_double_test" start-index="12" stop-index="24" />
         </tables>
+        <columns start-index="25" stop-index="30">
+            <column name="col1" start-index="26" stop-index="29" />
+        </columns>
         <insert-columns-and-values column-names="col1">
             <insert-values>
                 <insert-value>
@@ -314,6 +386,9 @@
         <tables>
             <table name="t_null_value_test" start-index="12" stop-index="28" />
         </tables>
+        <columns start-index="29" stop-index="34">
+            <column name="col1" start-index="30" stop-index="33" />
+        </columns>
         <insert-columns-and-values column-names="col1">
             <insert-values>
                 <insert-value>
@@ -327,6 +402,9 @@
         <tables>
             <table name="t_blob_value_test" start-index="12" stop-index="28" />
         </tables>
+        <columns start-index="29" stop-index="34">
+            <column name="col1" start-index="30" stop-index="33" />
+        </columns>
         <insert-columns-and-values column-names="col1">
             <insert-values>
                 <insert-value>
@@ -340,6 +418,11 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <columns start-index="19" stop-index="51">
+            <column name="current_date" start-index="20" stop-index="31" />
+            <column name="order_id" start-index="34" stop-index="41" />
+            <column name="user_id" start-index="44" stop-index="50" />
+        </columns>
         <insert-columns-and-values column-names="current_date,order_id,user_id">
             <insert-values>
                 <insert-value>
@@ -355,6 +438,11 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <columns start-index="19" stop-index="51">
+            <column name="current_date" start-index="20" stop-index="31" />
+            <column name="order_id" start-index="34" stop-index="41" />
+            <column name="user_id" start-index="44" stop-index="50" />
+        </columns>
         <insert-columns-and-values column-names="current_date,order_id,user_id">
             <insert-values>
                 <insert-value>
@@ -370,6 +458,11 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <columns start-index="19" stop-index="51">
+            <column name="current_date" start-index="20" stop-index="31" />
+            <column name="order_id" start-index="34" stop-index="41" />
+            <column name="user_id" start-index="44" stop-index="50" />
+        </columns>
         <insert-columns-and-values column-names="current_date,order_id,user_id">
             <insert-values>
                 <insert-value>
@@ -386,6 +479,11 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <columns start-index="20" stop-index="46">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="user_id" start-index="31" stop-index="37" />
+            <column name="status" start-index="40" stop-index="45" />
+        </columns>
         <insert-columns-and-values column-names="order_id,user_id,status">
             <insert-values>
                 <insert-value>
@@ -401,6 +499,12 @@
         <tables>
             <table name="emp" start-index="12" stop-index="14" />
         </tables>
+        <columns start-index="15" stop-index="42">
+            <column name="order_id" start-index="16" stop-index="23" />
+            <column name="emp_id" start-index="25" stop-index="30" />
+            <column name="age" start-index="32" stop-index="34" />
+            <column name="salary" start-index="36" stop-index="41" />
+        </columns>
         <insert-columns-and-values column-names="order_id,emp_id,age,salary">
             <insert-values>
                 <insert-value>

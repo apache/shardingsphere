@@ -30,6 +30,11 @@ import org.apache.shardingsphere.test.sql.SQLCaseType;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+/**
+ * Assignment assert.
+ *
+ * @author zhangliang
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AssignmentAssert {
     
