@@ -55,7 +55,7 @@ public final class VisitorParameterizedParsingTest {
     
     private static final SQLCasesLoader SQL_CASES_LOADER = VisitorSQLCasesRegistry.getInstance().getSqlCasesLoader();
     
-    private static final SQLParserTestCasesRegistry PARSER_RESULT_SET_REGISTRY = VisitorSQLParserTestCasesRegistryFactory.getInstance().getRegistry();
+    private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = VisitorSQLParserTestCasesRegistryFactory.getInstance().getRegistry();
     
     private static final Properties PROPS = new Properties();
     
@@ -80,18 +80,18 @@ public final class VisitorParameterizedParsingTest {
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        assertThat(SQL_CASES_LOADER.countAllSQLCases(), is(PARSER_RESULT_SET_REGISTRY.countAllSQLParserTestCases()));
+        assertThat(SQL_CASES_LOADER.countAllSQLCases(), is(SQL_PARSER_TEST_CASES_REGISTRY.countAllSQLParserTestCases()));
         return SQL_CASES_LOADER.getSQLTestParameters();
     }
     
     @Test
     public void assertSupportedSQL() {
+        String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
         SQLParserTestCase expected = SQLParserTestCasesRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
-        if (expected.isLongSQL() && Boolean.valueOf(PROPS.getProperty("long.sql.skip", Boolean.TRUE.toString()))) {
+        if (expected.isLongSQL() && Boolean.parseBoolean(PROPS.getProperty("long.sql.skip", Boolean.TRUE.toString()))) {
             return;
         }
         String databaseTypeName = "H2".equals(databaseType) ? "MySQL" : databaseType;
-        String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, PARSER_RESULT_SET_REGISTRY.get(sqlCaseId).getParameters());
         ParseTree parseTree = SQLParserFactory.newInstance(databaseTypeName, sql).execute().getChild(0);
         SQLCaseAssertContext assertContext = new SQLCaseAssertContext(sqlCaseId, sqlCaseType);
         SQLStatement actual = (SQLStatement) new SQLVisitorEngine(databaseTypeName, parseTree).parse();
