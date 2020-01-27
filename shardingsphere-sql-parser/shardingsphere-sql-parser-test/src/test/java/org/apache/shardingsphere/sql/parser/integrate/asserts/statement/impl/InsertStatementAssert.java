@@ -20,12 +20,16 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.InsertColumnsAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.InsertNamesAndValuesAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.InsertStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 
 import java.util.Collections;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Insert statement assert.
@@ -43,7 +47,21 @@ public final class InsertStatementAssert {
      * @param expected expected insert statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
-        TableAssert.assertIs(assertContext, Collections.singletonList(actual.getTable()), expected.getTables());
+        assertTable(assertContext, actual, expected);
+        assertInsertColumns(assertContext, actual, expected);
         InsertNamesAndValuesAssert.assertIs(assertContext, actual, expected.getInsertColumnsAndValues());
+    }
+    
+    private static void assertTable(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
+        TableAssert.assertIs(assertContext, Collections.singletonList(actual.getTable()), expected.getTables());
+    }
+    
+    private static void assertInsertColumns(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
+        if (null != expected.getColumns()) {
+            assertTrue(assertContext.getText("Actual insert columns segment should exist."), actual.getInsertColumns().isPresent());
+            InsertColumnsAssert.assertIs(assertContext, actual.getInsertColumns().get(), expected.getColumns());    
+        } else {
+            assertFalse(assertContext.getText("Actual insert columns segment should not exist."), actual.getInsertColumns().isPresent());
+        }
     }
 }

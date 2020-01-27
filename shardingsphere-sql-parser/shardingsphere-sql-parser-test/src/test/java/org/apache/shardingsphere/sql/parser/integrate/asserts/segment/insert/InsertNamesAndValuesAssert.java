@@ -36,6 +36,11 @@ import java.util.Iterator;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+/**
+ * Insert names and values assert.
+ * 
+ * @author zhangliang 
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InsertNamesAndValuesAssert {
     
