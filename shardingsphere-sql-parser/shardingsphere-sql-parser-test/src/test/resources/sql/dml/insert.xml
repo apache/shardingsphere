@@ -41,6 +41,13 @@
         <tables>
             <table name="t_order_item" start-index="12" stop-index="23" />
         </tables>
+        <columns start-index="25" stop-index="75">
+            <column name="item_id" start-index="26" stop-index="32" />
+            <column name="order_id" start-index="35" stop-index="42" />
+            <column name="user_id" start-index="45" stop-index="51" />
+            <column name="status" start-index="54" stop-index="59" />
+            <column name="creation_date" start-index="62" stop-index="74" />
+        </columns>
         <insert-columns-and-values column-names="item_id,order_id,user_id,status,creation_date">
             <insert-values>
                 <insert-value>
