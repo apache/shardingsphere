@@ -570,6 +570,11 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <columns start-index="19" stop-index="45">
+            <column name="status" start-index="20" stop-index="25" />
+            <column name="order_id" start-index="28" stop-index="35" />
+            <column name="user_id" start-index="38" stop-index="44" />
+        </columns>
         <insert-columns-and-values column-names="status,order_id,user_id">
             <insert-values>
                 <insert-value>
