@@ -218,6 +218,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
             List<DataNode> actualNodeList = shardingRule.getTableRule(tableName).getActualDataNodes();
             dataNodeList.addAll(actualNodeList);
         }
+        
         List<TableMetaData> tableMetaDataList = load(getDataNodeInputGroups(dataNodeList), shardingRule, null);
         Map<String, TableMetaData> result = new HashMap<>(tableNames.size(), 1);
         Iterator<DataNode> tabNameIterator = dataNodeList.iterator();
