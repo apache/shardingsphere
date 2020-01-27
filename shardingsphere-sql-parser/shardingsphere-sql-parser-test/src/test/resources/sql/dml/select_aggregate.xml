@@ -16,71 +16,93 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
-    <parser-result sql-case-id="select_sum">
+<sql-parser-test-cases>
+    <select sql-case-id="select_sum">
         <tables>
             <table name="t_order" start-index="40" stop-index="46" />
         </tables>
         <projections start-index="7" stop-index="33">
             <aggregation-projection type="SUM" inner-expression-start-index="10" alias="user_id_sum" start-index="7" stop-index="18" />
         </projections>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_count">
+    <select sql-case-id="select_count">
         <tables>
             <table name="t_order" start-index="37" stop-index="43" />
         </tables>
         <projections start-index="7" stop-index="30">
             <aggregation-projection type="COUNT" alias="orders_count" inner-expression-start-index="12" start-index="7" stop-index="14" />
         </projections>
-    </parser-result>
-
-    <parser-result sql-case-id="select_count_with_sub">
-        <tables>
-            <table name="t_order" start-index="37" stop-index="43" />
-        </tables>
-        <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" alias="orders_count" inner-expression-start-index="12" start-index="7" stop-index="14" />
-        </projections>
-    </parser-result>
-
-    <parser-result sql-case-id="select_count_with_sub_with_whitespace">
-        <tables>
-            <table name="t_order" start-index="37" stop-index="43" />
-        </tables>
-        <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" alias="orders_count" inner-expression-start-index="12" start-index="7" stop-index="14" />
-        </projections>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_max">
+    <select sql-case-id="select_count_with_sub">
+        <tables>
+            <table name="t_order" start-index="37" stop-index="43" />
+        </tables>
+        <projections start-index="7" stop-index="30">
+            <aggregation-projection type="COUNT" alias="orders_count" inner-expression-start-index="12" start-index="7" stop-index="14" />
+        </projections>
+        <where parameters-count="0" start-index="45" stop-index="64">
+            <and-predicate>
+                <predicate start-index="51" stop-index="64">
+                    <column-left-value name="order_id" start-index="51" stop-index="58" />
+                    <operator type="&gt;" />
+                    <compare-right-value>
+                        <common-expression text="1-1" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+    
+    <select sql-case-id="select_count_with_sub_with_whitespace">
+        <tables>
+            <table name="t_order" start-index="37" stop-index="43" />
+        </tables>
+        <projections start-index="7" stop-index="30">
+            <aggregation-projection type="COUNT" alias="orders_count" inner-expression-start-index="12" start-index="7" stop-index="14" />
+        </projections>
+        <where parameters-count="0" start-index="45" stop-index="66">
+            <and-predicate>
+                <predicate start-index="51" stop-index="66">
+                    <column-left-value name="order_id" start-index="51" stop-index="58" />
+                    <operator type="&gt;" />
+                    <compare-right-value>
+                        <common-expression text="1-1" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+    
+    <select sql-case-id="select_max">
         <tables>
             <table name="t_order" start-index="40" stop-index="46" />
         </tables>
         <projections start-index="7" stop-index="33">
             <aggregation-projection type="MAX" inner-expression-start-index="10" alias="max_user_id" start-index="7" stop-index="18" />
         </projections>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_min">
+    <select sql-case-id="select_min">
         <tables>
             <table name="t_order" start-index="40" stop-index="46" />
         </tables>
         <projections start-index="7" stop-index="33">
             <aggregation-projection type="MIN" inner-expression-start-index="10" alias="min_user_id" start-index="7" stop-index="18" />
         </projections>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_avg">
+    <select sql-case-id="select_avg">
         <tables>
             <table name="t_order" start-index="40" stop-index="46" />
         </tables>
         <projections start-index="7" stop-index="33">
             <aggregation-projection type="AVG" inner-expression-start-index="10" alias="user_id_avg" start-index="7" stop-index="18" />
         </projections>
-    </parser-result>
+    </select>
     
-    <parser-result sql-case-id="select_count_with_binding_tables_without_join" parameters="1, 2, 9, 10">
+    <select sql-case-id="select_count_with_binding_tables_without_join" parameters="1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o" start-index="36" stop-index="42" />
             <table name="t_order_item" alias="i" start-index="47" stop-index="58" />
@@ -88,21 +110,51 @@
         <projections start-index="7" stop-index="29">
             <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="items_count" start-index="7" stop-index="14" />
         </projections>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="9" type="int" />
-                    <value index="3" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
-    </parser-result>
+        <where parameters-count="4" start-index="62" stop-index="171" literal-stop-index="172">
+            <and-predicate>
+                <predicate start-index="68" stop-index="88">
+                    <column-left-value name="user_id" start-index="68" stop-index="76">
+                        <owner name="o" start-index="68" stop-index="68" />
+                    </column-left-value>
+                    <column-right-value name="user_id" start-index="80" stop-index="88">
+                        <owner name="i" start-index="80" stop-index="80" />
+                    </column-right-value>
+                </predicate>
+                <predicate start-index="94" stop-index="116">
+                    <column-left-value name="order_id" start-index="94" stop-index="103">
+                        <owner name="o" start-index="94" stop-index="94" />
+                    </column-left-value>
+                    <column-right-value name="order_id" start-index="107" stop-index="116">
+                        <owner name="i" start-index="107" stop-index="107" />
+                    </column-right-value>
+                </predicate>
+                <predicate start-index="122" stop-index="140">
+                    <column-left-value name="user_id" start-index="122" stop-index="130">
+                        <owner name="o" start-index="122" stop-index="122" />
+                    </column-left-value>
+                    <in-right-value>
+                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="1" />
+                        <literal-expression value="2" />
+                    </in-right-value>
+                </predicate>
+                <predicate start-index="146" stop-index="171" literal-stop-index="172">
+                    <column-left-value name="order_id" start-index="146" stop-index="155">
+                        <owner name="o" start-index="146" stop-index="146" />
+                    </column-left-value>
+                    <between-right-value>
+                        <between-parameter-marker-expression value="2" />
+                        <between-literal-expression value="9" />
+                        <and-parameter-marker-expression value="3" />
+                        <and-literal-expression value="10" />
+                    </between-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
     
-    <parser-result sql-case-id="select_count_with_binding_tables_with_join" parameters="1, 2, 9, 10">
+    <select sql-case-id="select_count_with_binding_tables_with_join" parameters="1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o" start-index="36" stop-index="42" />
             <table name="t_order_item" alias="i" start-index="51" stop-index="62" />
@@ -110,26 +162,40 @@
         <projections start-index="7" stop-index="29">
             <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="items_count" start-index="7" stop-index="14" />
         </projections>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="IN">
-                    <value index="0" literal="1" type="int" />
-                    <value index="1" literal="2" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
-                    <value index="2" literal="9" type="int" />
-                    <value index="3" literal="10" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
-    </parser-result>
+        <where parameters-count="4" start-index="119" stop-index="174" literal-stop-index="175">
+            <and-predicate>
+                <predicate start-index="125" stop-index="143">
+                    <column-left-value name="user_id" start-index="125" stop-index="133">
+                        <owner name="o" start-index="125" stop-index="125" />
+                    </column-left-value>
+                    <in-right-value>
+                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="1" />
+                        <literal-expression value="2" />
+                    </in-right-value>
+                </predicate>
+                <predicate start-index="149" stop-index="174" literal-stop-index="175">
+                    <column-left-value name="order_id" start-index="149" stop-index="158">
+                        <owner name="o" start-index="149" stop-index="149" />
+                    </column-left-value>
+                    <between-right-value>
+                        <between-parameter-marker-expression value="2" />
+                        <between-literal-expression value="9" />
+                        <and-parameter-marker-expression value="3" />
+                        <and-literal-expression value="10" />
+                    </between-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
     
-    <parser-result sql-case-id="select_count_with_escape_character">
+    <select sql-case-id="select_count_with_escape_character">
         <tables>
             <table name="t_order" start-index="46" stop-index="52" />
         </tables>
         <projections start-index="7" stop-index="39">
             <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="orders_count" start-index="7" stop-index="23" />
         </projections>
-    </parser-result>
-</parser-result-sets>
+    </select>
+</sql-parser-test-cases>

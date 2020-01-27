@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngineFactory;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.route.DateNodeRouter;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
@@ -65,6 +66,8 @@ import java.util.List;
 public final class ShardingRouter implements DateNodeRouter {
     
     private final ShardingRule shardingRule;
+
+    private final ShardingSphereProperties properties;
     
     private final ShardingSphereMetaData metaData;
     
@@ -87,7 +90,7 @@ public final class ShardingRouter implements DateNodeRouter {
             checkSubqueryShardingValues(sqlStatementContext, shardingConditions);
             mergeShardingConditions(shardingConditions);
         }
-        ShardingRouteEngine shardingRouteEngine = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions);
+        ShardingRouteEngine shardingRouteEngine = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, properties);
         RouteResult routeResult = shardingRouteEngine.route(shardingRule);
         if (needMergeShardingValues) {
             Preconditions.checkState(1 == routeResult.getRouteUnits().size(), "Must have one sharding with subquery.");

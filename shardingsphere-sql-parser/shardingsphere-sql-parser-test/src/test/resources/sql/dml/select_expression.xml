@@ -16,8 +16,8 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
-    <parser-result sql-case-id="select_with_expression">
+<sql-parser-test-cases>
+    <select sql-case-id="select_with_expression">
         <tables>
             <table name="t_order" alias="o" start-index="38" stop-index="44" />
         </tables>
@@ -25,37 +25,52 @@
             <!-- TODO check expression-projection's stop-index whether include alias --> 
             <expression-projection alias="exp" start-index="7" stop-index="31" />
         </projections>
-        <order-by-columns>
-            <order-by-column owner="o" name="order_id" order-direction="ASC" />
-        </order-by-columns>
-    </parser-result>
+        <order-by>
+            <column-item name="order_id">
+                <owner name="o" start-index="60" stop-index="60" />
+            </column-item>
+        </order-by>
+    </select>
     
-    <parser-result sql-case-id="select_with_date_function">
+    <select sql-case-id="select_with_date_function">
         <tables>
             <table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="51" stop-index="64" />
         </tables>
         <projections start-index="7" stop-index="44">
             <expression-projection alias="creation_date" start-index="7" stop-index="27" />
         </projections>
-        <order-by-columns>
-            <order-by-column name="DATE(i.creation_date)" order-direction="DESC" />
-        </order-by-columns>
-    </parser-result>
+        <order-by>
+            <expression-item expression="DATE(i.creation_date)" order-direction="DESC" />
+        </order-by>
+    </select>
     
-    <parser-result sql-case-id="select_with_regexp" parameters="'init', 1, 2">
+    <select sql-case-id="select_with_regexp" parameters="'init', 1, 2">
         <tables>
             <table name="t_order_item" alias="t" start-index="14" stop-index="25" />
         </tables>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="item_id" table-name="t_order_item" operator="IN">
-                    <value index="1" literal="1" type="int" />
-                    <value index="2" literal="2" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
-    </parser-result>
-</parser-result-sets>
+        <where parameters-count="3" start-index="29" stop-index="75" literal-stop-index="80">
+            <and-predicate>
+                <!-- FIXME cannot parse REGEXP -->
+                <!--<predicate start-index="35" stop-index="51" literal-stop-index="56">-->
+                    <!--<column-left-value name="status" start-index="35" stop-index="51" literal-stop-index="56">-->
+                        <!--<owner name="t" start-index="35" stop-index="35" />-->
+                    <!--</column-left-value>-->
+                <!--</predicate>-->
+                <predicate start-index="57" stop-index="75"  literal-start-index="62" literal-stop-index="80">
+                    <column-left-value name="item_id" start-index="57" stop-index="65" literal-start-index="62" literal-stop-index="70">
+                        <owner name="t" start-index="57" stop-index="57" literal-start-index="62" literal-stop-index="62" />
+                    </column-left-value>
+                    <in-right-value>
+                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="2" />
+                        <literal-expression value="1" />
+                        <literal-expression value="2" />
+                    </in-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+</sql-parser-test-cases>

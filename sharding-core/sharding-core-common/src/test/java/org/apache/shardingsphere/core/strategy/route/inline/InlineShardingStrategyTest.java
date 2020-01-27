@@ -21,11 +21,13 @@ import com.google.common.collect.Lists;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -44,7 +46,7 @@ public final class InlineShardingStrategyTest {
     public void assertDoSharding() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         List<RouteValue> shardingValues = Lists.<RouteValue>newArrayList(new ListRouteValue<>("order_id", "t_order", Lists.newArrayList(0, 1, 2, 3)));
-        Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues);
+        Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ShardingSphereProperties(new Properties()));
         assertThat(actual.size(), is(4));
     }
     
@@ -52,7 +54,7 @@ public final class InlineShardingStrategyTest {
     public void assertDoShardingWithNonExistNodes() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1");
         List<RouteValue> shardingValues = Lists.<RouteValue>newArrayList(new ListRouteValue<>("order_id", "t_order", Lists.newArrayList(0, 1, 2, 3)));
-        Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues);
+        Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ShardingSphereProperties(new Properties()));
         assertThat(actual.size(), is(2));
     }
     

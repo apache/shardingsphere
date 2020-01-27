@@ -16,27 +16,34 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
-    <parser-result sql-case-id="select_inner_join_related_with_alias" parameters="1000">
+<sql-parser-test-cases>
+    <select sql-case-id="select_inner_join_related_with_alias" parameters="1000">
         <tables>
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
             <table name="t_order_item" alias="i" start-index="37" stop-index="48" />
         </tables>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="1000" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
-    </parser-result>
+        <where parameters-count="1" start-index="79" stop-index="98" literal-stop-index="101">
+            <and-predicate>
+                <predicate start-index="85" stop-index="98" literal-stop-index="101">
+                    <column-left-value name="order_id" start-index="85" stop-index="94">
+                        <owner name="o" start-index="85" stop-index="85" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="1000" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
     
-    <parser-result sql-case-id="select_inner_join_related_with_name" parameters="1000">
+    <select sql-case-id="select_inner_join_related_with_name" parameters="1000">
         <tables>
             <table name="t_order" start-index="27" stop-index="33" />
             <table name="t_order_item" start-index="40" stop-index="51" />
@@ -46,16 +53,23 @@
                 <owner name="t_order_item" start-index="7" stop-index="18" />
             </shorthand-projection>
         </projections>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="1000" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
-    </parser-result>
+        <where parameters-count="1" start-index="97" stop-index="122" literal-stop-index="125">
+            <and-predicate>
+                <predicate start-index="103" stop-index="122" literal-stop-index="125">
+                    <column-left-value name="order_id" start-index="103" stop-index="118">
+                        <owner name="t_order" start-index="103" stop-index="109" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="1000" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
     
-    <parser-result sql-case-id="select_join_using" parameters="1000">
+    <select sql-case-id="select_join_using" parameters="1000">
         <tables>
             <table name="t_order" alias="o" start-index="16" stop-index="22" />
             <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
@@ -65,12 +79,19 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
-        <sharding-conditions>
-            <and-condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="1000" type="int" />
-                </condition>
-            </and-condition>
-        </sharding-conditions>
-    </parser-result>
-</parser-result-sets>
+        <where parameters-count="1" start-index="62" stop-index="81" literal-stop-index="84">
+            <and-predicate>
+                <predicate start-index="68" stop-index="81" literal-stop-index="84">
+                    <column-left-value name="order_id" start-index="68" stop-index="77">
+                        <owner name="o" start-index="68" stop-index="68" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="1000" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+</sql-parser-test-cases>

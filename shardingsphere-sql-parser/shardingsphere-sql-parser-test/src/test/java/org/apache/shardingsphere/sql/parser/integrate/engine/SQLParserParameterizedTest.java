@@ -20,11 +20,11 @@ package org.apache.shardingsphere.sql.parser.integrate.engine;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLStatementAssertMessage;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistry;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.ParserResultSetRegistryFactory;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.root.ParserResult;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.SQLStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistry;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistryFactory;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
@@ -49,7 +49,7 @@ public final class SQLParserParameterizedTest {
     
     private static final SQLCasesLoader SQL_CASES_LOADER = SQLCasesRegistry.getInstance().getSqlCasesLoader();
     
-    private static final ParserResultSetRegistry PARSER_RESULT_SET_REGISTRY = ParserResultSetRegistryFactory.getInstance().getRegistry();
+    private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
     
     private static final Properties PROPS = new Properties();
     
@@ -69,19 +69,21 @@ public final class SQLParserParameterizedTest {
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        assertThat(SQL_CASES_LOADER.countAllSQLCases(), is(PARSER_RESULT_SET_REGISTRY.countAllTestCases()));
+        assertThat(SQL_CASES_LOADER.countAllSQLCases(), is(SQL_PARSER_TEST_CASES_REGISTRY.countAllSQLParserTestCases()));
         return SQL_CASES_LOADER.getSQLTestParameters();
     }
     
     @Test
     public void assertSupportedSQL() {
-        String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, PARSER_RESULT_SET_REGISTRY.get(sqlCaseId).getParameters());
-        ParserResult expected = ParserResultSetRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
+        String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
+        SQLParserTestCase expected = SQLParserTestCasesRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
         if (expected.isLongSQL() && Boolean.parseBoolean(PROPS.getProperty("long.sql.skip", Boolean.TRUE.toString()))) {
             return;
         }
-        SQLStatementAssertMessage assertMessage = new SQLStatementAssertMessage(sqlCaseId, sqlCaseType);
+        SQLCaseAssertContext assertContext = new SQLCaseAssertContext(sqlCaseId, sqlCaseType);
         SQLStatement actual = SQLParseEngineFactory.getSQLParseEngine("H2".equals(databaseType) ? "MySQL" : databaseType).parse(sql, false);
-        SQLStatementAssert.assertIs(assertMessage, actual, expected, sqlCaseType);
+        if (!expected.isLongSQL()) {
+            SQLStatementAssert.assertIs(assertContext, actual, expected);
+        }
     }
 }

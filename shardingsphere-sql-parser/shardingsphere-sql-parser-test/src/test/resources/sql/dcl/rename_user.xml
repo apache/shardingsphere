@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
-    <parser-result sql-case-id="rename_user" />
-    <parser-result sql-case-id="rename_users" />
-</parser-result-sets>
+<sql-parser-test-cases>
+    <common sql-case-id="rename_user" />
+    <common sql-case-id="rename_users" />
+</sql-parser-test-cases>
