@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.token;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.alter;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,14 +27,15 @@ import javax.xml.bind.annotation.XmlAttribute;
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class ExpectedColumnPosition {
+
+public class ExpectedColumnDefinition {
     
-    @XmlAttribute(name = "start-index")
-    private int startIndex;
+    @XmlAttribute
+    private String name;
     
-    @XmlAttribute(name = "column-name")
-    private String columnName;
+    @XmlAttribute
+    private String type;
     
-    @XmlAttribute(name = "after-column")
-    private String afterColumn;
+    @XmlAttribute(name = "primary-key")
+    private boolean primaryKey;
 }

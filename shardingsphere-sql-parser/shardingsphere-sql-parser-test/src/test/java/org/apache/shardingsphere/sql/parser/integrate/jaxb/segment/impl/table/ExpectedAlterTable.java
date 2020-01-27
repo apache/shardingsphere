@@ -19,8 +19,8 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.token.ExpectedColumnDefinition;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.token.ExpectedColumnPosition;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.alter.ExpectedColumnDefinition;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.alter.ExpectedColumnPosition;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
