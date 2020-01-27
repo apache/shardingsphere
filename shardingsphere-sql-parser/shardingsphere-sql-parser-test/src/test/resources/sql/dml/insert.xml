@@ -451,6 +451,9 @@
         <tables>
             <table name="t_auto_increment_table" start-index="12" stop-index="33" />
         </tables>
+        <!-- FIXME no insert columns should not parse the segment, and the start and stop index are incorrect -->
+        <columns start-index="35" stop-index="34">
+        </columns>
         <insert-columns-and-values>
             <insert-values>
                 <insert-value />
