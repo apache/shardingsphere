@@ -434,24 +434,48 @@
             <column name="status" start-index="53" stop-index="58" />
             <column name="creation_date" start-index="61" stop-index="73" />
         </columns>
-        <insert-columns-and-values column-names="item_id,order_id,user_id,status,creation_date">
-            <insert-values>
-                <insert-value>
-                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="10000"/>
-                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="1000"/>
-                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="10"/>
-                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="insert"/>
-                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="2017-08-08"/>
-                </insert-value>
-                <insert-value>
-                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="3" type-for-literal="LiteralExpressionSegment" text-for-literal="10010"/>
-                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="4" type-for-literal="LiteralExpressionSegment" text-for-literal="1001"/>
-                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="5" type-for-literal="LiteralExpressionSegment" text-for-literal="10"/>
-                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="insert"/>
-                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="2017-08-08"/>
-                </insert-value>
-            </insert-values>
-        </insert-columns-and-values>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="0" />
+                    <literal-expression value="10000" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="1" />
+                    <literal-expression value="1000" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="2" />
+                    <literal-expression value="10" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="insert" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="2017-08-08" />
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="3" />
+                    <literal-expression value="10010" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="4" />
+                    <literal-expression value="1001" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="5" />
+                    <literal-expression value="10" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="insert" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="2017-08-08" />
+                </assignment-value>
+            </value>
+        </values>
     </insert>
     
     <!--<insert sql-case-id="insert_with_batch_and_without_generate_key_column" parameters="1000, 10, 1001, 10">-->
