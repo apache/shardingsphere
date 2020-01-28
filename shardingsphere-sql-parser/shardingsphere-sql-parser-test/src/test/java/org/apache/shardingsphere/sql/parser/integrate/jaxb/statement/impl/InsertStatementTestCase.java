@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertColumns;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertColumnsAndValues;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertValues;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
@@ -45,6 +45,6 @@ public final class InsertStatementTestCase extends SQLParserTestCase {
     @XmlElement
     private ExpectedInsertColumns columns;
     
-    @XmlElement(name = "insert-columns-and-values")
-    private ExpectedInsertColumnsAndValues insertColumnsAndValues = new ExpectedInsertColumnsAndValues();
+    @XmlElement
+    private ExpectedInsertValues values;
 }
