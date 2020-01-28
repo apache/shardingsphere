@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.InsertColumnsAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.InsertValuesAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.set.SetClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.InsertStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
@@ -50,6 +51,7 @@ public final class InsertStatementAssert {
         assertTable(assertContext, actual, expected);
         assertInsertColumns(assertContext, actual, expected);
         assertInsertValues(assertContext, actual, expected);
+        assertSetClause(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
@@ -71,6 +73,15 @@ public final class InsertStatementAssert {
             InsertValuesAssert.assertIs(assertContext, actual.getValues(), expected.getValues());
         } else {
             assertTrue(assertContext.getText("Actual insert values segment should not exist."), actual.getValues().isEmpty());
+        }
+    }
+    
+    private static void assertSetClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
+        if (null != expected.getSetClause()) {
+            assertTrue(assertContext.getText("Actual set assignment segment should exist."), actual.getSetAssignment().isPresent());
+            SetClauseAssert.assertIs(assertContext, actual.getSetAssignment().get(), expected.getSetClause());
+        } else {
+            assertFalse(assertContext.getText("Actual set assignment segment should not exist."), actual.getSetAssignment().isPresent());
         }
     }
 }
