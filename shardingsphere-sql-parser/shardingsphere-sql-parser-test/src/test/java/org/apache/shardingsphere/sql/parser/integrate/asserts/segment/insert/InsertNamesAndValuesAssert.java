@@ -17,16 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert;
 
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Collections2;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertColumnsAndValues;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 
@@ -52,13 +48,6 @@ public final class InsertNamesAndValuesAssert {
      * @param expected expected insert names and values
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final InsertStatement actual, final ExpectedInsertColumnsAndValues expected) {
-        assertThat(assertContext.getText("Insert column names assertion error: "), Joiner.on(",").join(Collections2.transform(actual.getColumns(), new Function<ColumnSegment, Object>() {
-            
-            @Override
-            public Object apply(final ColumnSegment input) {
-                return input.getName();
-            }
-        })), is(expected.getColumnNames()));
         assertThat(assertContext.getText("Insert values size assertion error: "), actual.getValues().size(), is(expected.getValues().size()));
         assertInsertValues(assertContext, actual.getValues(), expected.getValues());
     }
