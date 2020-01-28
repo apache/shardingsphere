@@ -292,7 +292,6 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         return visit(ctx.tableFactor());
     }
     
-    
     @Override
     public ASTNode visitWhereClause(final WhereClauseContext ctx) {
         WhereSegment result = new WhereSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
