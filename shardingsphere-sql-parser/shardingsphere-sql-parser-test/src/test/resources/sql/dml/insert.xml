@@ -862,31 +862,30 @@
         </values>
     </insert>
     
-    <!-- FIXME -->
-    <!--<insert sql-case-id="insert_with_str_date_add" parameters="1, 1, 1">-->
-        <!--<tables>-->
-            <!--<table name="t_order" start-index="12" stop-index="18" />-->
-        <!--</tables>-->
-        <!--<columns start-index="19" stop-index="51">-->
-            <!--<column name="current_date" start-index="20" stop-index="31" />-->
-            <!--<column name="order_id" start-index="34" stop-index="41" />-->
-            <!--<column name="user_id" start-index="44" stop-index="50" />-->
-        <!--</columns>-->
-        <!--<values>-->
-            <!--<value>-->
-                <!--<assignment-value>-->
-                    <!--<parameter-marker-expression value="0" />-->
-                    <!--<common-expression text="date_add(now(),interval1second)" />-->
-                <!--</assignment-value>-->
-                <!--<assignment-value>-->
-                    <!--<parameter-marker-expression value="1" />-->
-                    <!--<literal-expression value="1" />-->
-                <!--</assignment-value>-->
-                <!--<assignment-value>-->
-                    <!--<parameter-marker-expression value="2" />-->
-                    <!--<literal-expression value="1" />-->
-                <!--</assignment-value>-->
-            <!--</value>-->
-        <!--</values>-->
-    <!--</insert>-->
+    <insert sql-case-id="insert_with_str_date_add" parameters="1, 1, 1">
+        <tables>
+            <table name="t_order" start-index="12" stop-index="18" />
+        </tables>
+        <columns start-index="19" stop-index="51">
+            <column name="current_date" start-index="20" stop-index="31" />
+            <column name="order_id" start-index="34" stop-index="41" />
+            <column name="user_id" start-index="44" stop-index="50" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="0" />
+                    <common-expression text="date_add(now(),interval?second)" literal-text="date_add(now(),interval1second)" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="1" />
+                    <literal-expression value="1" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="2" />
+                    <literal-expression value="1" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>
