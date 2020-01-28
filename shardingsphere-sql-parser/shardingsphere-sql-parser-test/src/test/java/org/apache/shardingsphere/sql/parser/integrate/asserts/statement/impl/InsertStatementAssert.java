@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.InsertColumnsAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.InsertValuesAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.InsertValuesClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.set.SetClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.InsertStatementTestCase;
@@ -50,7 +50,7 @@ public final class InsertStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertInsertColumns(assertContext, actual, expected);
-        assertInsertValues(assertContext, actual, expected);
+        assertInsertValuesClause(assertContext, actual, expected);
         assertSetClause(assertContext, actual, expected);
     }
     
@@ -67,10 +67,10 @@ public final class InsertStatementAssert {
         }
     }
     
-    private static void assertInsertValues(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
-        if (null != expected.getValues()) {
+    private static void assertInsertValuesClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
+        if (null != expected.getInsertValuesClause()) {
             assertFalse(assertContext.getText("Actual insert values segment should exist."), actual.getValues().isEmpty());
-            InsertValuesAssert.assertIs(assertContext, actual.getValues(), expected.getValues());
+            InsertValuesClauseAssert.assertIs(assertContext, actual.getValues(), expected.getInsertValuesClause());
         } else {
             assertTrue(assertContext.getText("Actual insert values segment should not exist."), actual.getValues().isEmpty());
         }

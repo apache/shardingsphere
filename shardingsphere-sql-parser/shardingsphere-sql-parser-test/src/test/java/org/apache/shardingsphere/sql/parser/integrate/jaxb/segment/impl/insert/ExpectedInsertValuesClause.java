@@ -25,12 +25,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Expected insert values.
+ * Expected insert values clause.
  *
  * @author zhangliang
  */
 @Getter
-public final class ExpectedInsertValues extends AbstractExpectedSQLSegment {
+public final class ExpectedInsertValuesClause extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "value")
     private List<ExpectedInsertValue> values = new LinkedList<>();
