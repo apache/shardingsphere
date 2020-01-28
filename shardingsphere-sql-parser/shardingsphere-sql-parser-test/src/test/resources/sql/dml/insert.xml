@@ -851,10 +851,39 @@
         </values>
     </insert>
     
-    <insert sql-case-id="insert_on_duplicate_key_update_with_base64_aesencrypt" parameters="1, 1, 'init'">
+    <insert sql-case-id="insert_on_duplicate_key_update_with_base64_aes_encrypt" parameters="1, 1, 'init'">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <set start-index="20" stop-index="111" literal-stop-index="116">
+            <assignment start-index="24" stop-index="35">
+                <column name="order_id" start-index="24" stop-index="31" />
+                <assignment-value>
+                    <parameter-marker-expression value="0" />
+                    <literal-expression value="1" />
+                </assignment-value>
+            </assignment>
+            <assignment start-index="38" stop-index="48">
+                <column name="user_id" start-index="38" stop-index="44" />
+                <assignment-value>
+                    <parameter-marker-expression value="1" />
+                    <literal-expression value="1" />
+                </assignment-value>
+            </assignment>
+            <assignment start-index="51" stop-index="111" literal-stop-index="116">
+                <column name="status" start-index="51" stop-index="56" />
+                <assignment-value>
+                    <common-expression text="convert(to_base64(aes_encrypt(?,'key'))USINGutf8)" literal-text="convert(to_base64(aes_encrypt('init','key'))USINGutf8)" />
+                </assignment-value>
+            </assignment>
+            <!-- FIXME split generic SET assignment and ON DUPLICATE KEY UPDATE  -->
+            <assignment start-index="137" stop-index="159" literal-start-index="142" literal-stop-index="164">
+                <column name="status" start-index="137" stop-index="142" literal-start-index="142" literal-stop-index="147" />
+                <assignment-value>
+                    <common-expression text="VALUES(status)" />
+                </assignment-value>
+            </assignment>
+        </set>
     </insert>
     
     <insert sql-case-id="insert_all_with_all_placeholders" parameters="1, 1, 'init', 1, 1, 'init', 1, 1, 'init'">
