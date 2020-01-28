@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.E
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -44,12 +43,12 @@ public final class InsertNamesAndValuesAssert {
      * Assert actual insert statement is correct with expected insert columns and values.
      *
      * @param assertContext assert context
-     * @param actual actual insert statement
+     * @param actual actual insert values segment
      * @param expected expected insert names and values
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final InsertStatement actual, final ExpectedInsertColumnsAndValues expected) {
-        assertThat(assertContext.getText("Insert values size assertion error: "), actual.getValues().size(), is(expected.getValues().size()));
-        assertInsertValues(assertContext, actual.getValues(), expected.getValues());
+    public static void assertIs(final SQLCaseAssertContext assertContext, final Collection<InsertValuesSegment> actual, final ExpectedInsertColumnsAndValues expected) {
+        assertThat(assertContext.getText("Insert values size assertion error: "), actual.size(), is(expected.getValues().size()));
+        assertInsertValues(assertContext, actual, expected.getValues());
     }
     
     private static void assertInsertValues(final SQLCaseAssertContext assertContext, final Collection<InsertValuesSegment> actual, final Collection<ExpectedInsertValue> expected) {

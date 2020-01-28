@@ -49,7 +49,7 @@ public final class InsertStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertInsertColumns(assertContext, actual, expected);
-        InsertNamesAndValuesAssert.assertIs(assertContext, actual, expected.getInsertColumnsAndValues());
+        InsertNamesAndValuesAssert.assertIs(assertContext, actual.getValues(), expected.getInsertColumnsAndValues());
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
