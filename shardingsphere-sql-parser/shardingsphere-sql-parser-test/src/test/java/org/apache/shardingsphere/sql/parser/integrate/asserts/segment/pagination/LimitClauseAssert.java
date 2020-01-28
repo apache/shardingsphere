@@ -32,12 +32,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Pagination assert.
+ * Limit clause assert.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PaginationAssert {
+public final class LimitClauseAssert {
     
     /**
      * Assert actual offset segment is correct with expected offset.

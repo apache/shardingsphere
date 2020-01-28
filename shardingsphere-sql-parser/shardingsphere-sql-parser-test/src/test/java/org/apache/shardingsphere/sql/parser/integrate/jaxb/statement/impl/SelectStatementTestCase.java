@@ -19,8 +19,8 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.orderby.ExpectedOrderBy;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.pagination.ExpectedLimit;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.orderby.ExpectedOrderByClause;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.pagination.ExpectedLimitClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedWhereClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.projection.ExpectedProjections;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
@@ -52,13 +52,13 @@ public final class SelectStatementTestCase extends SQLParserTestCase {
     private ExpectedWhereClause whereClause;
     
     @XmlElement(name = "group-by")
-    private ExpectedOrderBy groupBy;
+    private ExpectedOrderByClause groupByClause;
     
     @XmlElement(name = "order-by")
-    private ExpectedOrderBy orderBy;
+    private ExpectedOrderByClause orderByClause;
     
-    @XmlElement
-    private ExpectedLimit limit;
+    @XmlElement(name = "limit")
+    private ExpectedLimitClause limitClause;
     
     @XmlAttribute(name = "lock-clause")
     private boolean lockClause;

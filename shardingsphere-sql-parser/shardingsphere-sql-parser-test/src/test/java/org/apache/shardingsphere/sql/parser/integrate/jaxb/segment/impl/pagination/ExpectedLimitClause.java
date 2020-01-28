@@ -24,13 +24,13 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpec
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Expected limit.
+ * Expected limit clause.
  * 
  * @author zhangliang 
  */
 @Getter
 @Setter
-public final class ExpectedLimit extends AbstractExpectedSQLSegment {
+public final class ExpectedLimitClause extends AbstractExpectedSQLSegment {
     
     @XmlElement
     private ExpectedPaginationValue offset;

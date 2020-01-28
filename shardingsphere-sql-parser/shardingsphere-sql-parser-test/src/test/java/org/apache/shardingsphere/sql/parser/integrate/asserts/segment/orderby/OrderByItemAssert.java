@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.owner.OwnerAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.orderby.ExpectedOrderBy;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.orderby.ExpectedOrderByClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.orderby.item.ExpectedOrderByItem;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.orderby.item.impl.ExpectedColumnOrderByItem;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.orderby.item.impl.ExpectedExpressionOrderByItem;
@@ -55,7 +55,7 @@ public final class OrderByItemAssert {
      * @param type type of assertion, should be Order by or Group by
      */
     public static void assertIs(final SQLCaseAssertContext assertContext,
-                                final Collection<OrderByItemSegment> actual, final ExpectedOrderBy expected, final String type) {
+                                final Collection<OrderByItemSegment> actual, final ExpectedOrderByClause expected, final String type) {
         assertThat(assertContext.getText(String.format("%s items size assertion error: ", type)), actual.size(), is(expected.getItemSize()));
         int count = 0;
         for (OrderByItemSegment each : actual) {
