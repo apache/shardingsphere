@@ -505,16 +505,25 @@
             <column name="start_point" start-index="39" stop-index="49" />
             <column name="rule" start-index="51" stop-index="54" />
         </columns>
-        <insert-columns-and-values column-names="user_id,order_id,start_point,rule">
-            <insert-values>
-                <insert-value>
-                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="7"/>
-                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="200"/>
-                    <assignment type-for-literal="ExpressionProjectionSegment" text-for-literal="ST_GeographyFromText('SRID=4326;POINT(100 200)')"/>
-                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="{&quot;rule&quot;:&quot;null&quot;}'::json"/>
-                </insert-value>
-            </insert-values>
-        </insert-columns-and-values>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="0" />
+                    <literal-expression value="7" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="1" />
+                    <literal-expression value="200" />
+                </assignment-value>
+                <assignment-value>
+                    <common-expression text="ST_GeographyFromText('SRID=4326;POINT(100 200)')" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="2" />
+                    <literal-expression value="{&quot;rule&quot;:&quot;null&quot;}'::json" />
+                </assignment-value>
+            </value>
+        </values>
     </insert>
     
     <insert sql-case-id="insert_without_columns_and_with_generate_key_column" parameters="10000, 1000, 10">
