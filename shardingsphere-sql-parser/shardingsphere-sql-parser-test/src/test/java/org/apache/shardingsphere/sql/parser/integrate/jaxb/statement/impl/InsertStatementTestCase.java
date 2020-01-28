@@ -19,7 +19,9 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertColumnsAndValues;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertColumns;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertValues;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set.ExpectedSetClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
@@ -41,6 +43,12 @@ public final class InsertStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "table")
     private final List<ExpectedTable> tables = new LinkedList<>();
     
-    @XmlElement(name = "insert-columns-and-values")
-    private ExpectedInsertColumnsAndValues insertColumnsAndValues = new ExpectedInsertColumnsAndValues();
+    @XmlElement
+    private ExpectedInsertColumns columns;
+    
+    @XmlElement
+    private ExpectedInsertValues values;
+    
+    @XmlElement(name = "set")
+    private ExpectedSetClause setClause;
 }

@@ -40,12 +40,12 @@ import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -77,32 +77,33 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     
     @Override
     public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) throws SQLException {
-        List<TableMetaData> actualTableMetaDataList = load(getDataNodeInputGroups(getDataNodeGroups(shardingRule.getTableRule(logicTableName))), shardingRule, logicTableName);
+        final String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(logicTableName).orNull();
+        List<TableMetaData> actualTableMetaDataList = load(getDataNodeGroups(shardingRule.getTableRule(logicTableName)), shardingRule, generateKeyColumnName);
         checkUniformed(logicTableName, actualTableMetaDataList);
         return actualTableMetaDataList.iterator().next();
     }
     
-    private List<TableMetaData> load(final Collection<InputGroup<DataNode>> dataNodeGroups, final ShardingRule shardingRule, final String logicTableName) throws SQLException {
-        return executorEngine.execute(dataNodeGroups, new GroupedCallback<DataNode, TableMetaData>() {
+    private List<TableMetaData> load(final Map<String, List<DataNode>> dataNodeGroups, final ShardingRule shardingRule, final String generateKeyColumnName) throws SQLException {
+        return executorEngine.execute(getDataNodeInputGroups(dataNodeGroups), new GroupedCallback<DataNode, TableMetaData>() {
+            
             @Override
             public Collection<TableMetaData> execute(final Collection<DataNode> dataNodes, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
-                Collection<TableMetaData> result = new LinkedList<>();
-                for (DataNode dataNode : dataNodes) {
-                    String masterDataSourceName = shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(dataNode.getDataSourceName());
-                    DataSourceMetaData dataSourceMetaData = ShardingTableMetaDataLoader.this.dataSourceMetas.getDataSourceMetaData(masterDataSourceName);
-                    String generateKeyColumnName = logicTableName == null ? shardingRule.findGenerateKeyColumnName(dataNode.getTableName()).orNull() : shardingRule.findGenerateKeyColumnName(logicTableName).orNull();
-                    result.add(load(masterDataSourceName, dataSourceMetaData, dataNode, generateKeyColumnName));
-                }
-                return result;
+                String masterDataSourceName = shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(dataNodes.iterator().next().getDataSourceName());
+                DataSourceMetaData dataSourceMetaData = ShardingTableMetaDataLoader.this.dataSourceMetas.getDataSourceMetaData(masterDataSourceName);
+                return load(masterDataSourceName, dataSourceMetaData, dataNodes, generateKeyColumnName);
             }
         });
     }
     
-    private TableMetaData load(final String dataSourceName, 
-                                           final DataSourceMetaData dataSourceMetaData, final DataNode dataNode, final String generateKeyColumnName) throws SQLException {
+    private Collection<TableMetaData> load(final String dataSourceName, 
+                                           final DataSourceMetaData dataSourceMetaData, final Collection<DataNode> dataNodes, final String generateKeyColumnName) throws SQLException {
+        Collection<TableMetaData> result = new LinkedList<>();
         try (Connection connection = connectionManager.getConnection(dataSourceName)) {
-            return createTableMetaData(connection, dataSourceMetaData, dataNode.getTableName(), generateKeyColumnName);
+            for (DataNode each : dataNodes) {
+                result.add(createTableMetaData(connection, dataSourceMetaData, each.getTableName(), generateKeyColumnName));
+            }
         }
+        return result;
     }
     
     private Map<String, List<DataNode>> getDataNodeGroups(final TableRule tableRule) {
@@ -213,36 +214,53 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
             return Collections.emptyMap();
         }
         Collection<String> tableNames = loadAllTableNames(actualDefaultDataSourceName.get());
-        List<DataNode> dataNodeList = new ArrayList<DataNode>();
-        for (String tableName : tableNames) {
-            List<DataNode> actualNodeList = shardingRule.getTableRule(tableName).getActualDataNodes();
-            dataNodeList.addAll(actualNodeList);
-        }
-        
-        List<TableMetaData> tableMetaDataList = load(getDataNodeInputGroups(dataNodeList), shardingRule, null);
+        List<TableMetaData> tableMetaDataList = getTableMetaDataList(shardingRule, tableNames);
+        return loadDefaultTables(tableNames, tableMetaDataList);
+    }
+    
+    private Map<String, TableMetaData> loadDefaultTables(final Collection<String> tableNames, final List<TableMetaData> tableMetaDataList) {
         Map<String, TableMetaData> result = new HashMap<>(tableNames.size(), 1);
-        Iterator<DataNode> tabNameIterator = dataNodeList.iterator();
+        Iterator<String> tabNameIterator = tableNames.iterator();
         for (TableMetaData each : tableMetaDataList) {
-            result.put(tabNameIterator.next().getTableName(), each);
+            result.put(tabNameIterator.next(), each);
         }
         return result;
     }
     
     private Collection<String> loadAllTableNames(final String dataSourceName) throws SQLException {
-        Collection<String> result = new LinkedHashSet<>();
         DataSourceMetaData dataSourceMetaData = dataSourceMetas.getDataSourceMetaData(dataSourceName);
         String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getCatalog();
         String schemaName = null == dataSourceMetaData ? null : dataSourceMetaData.getSchema();
-        try (
-                Connection connection = connectionManager.getConnection(dataSourceName);
-                ResultSet resultSet = connection.getMetaData().getTables(catalog, schemaName, null, new String[]{"TABLE"})) {
-            while (resultSet.next()) {
-                String tableName = resultSet.getString("TABLE_NAME");
-                if (!tableName.contains("$") && !tableName.contains("/")) {
-                    result.add(tableName);
-                }
+        return loadAllTableNames(dataSourceName, catalog, schemaName);
+    }
+    
+    private Collection<String> loadAllTableNames(final String dataSourceName, final String catalog, final String schemaName) throws SQLException {
+        Collection<String> result = new LinkedHashSet<>();
+        try (Connection connection = connectionManager.getConnection(dataSourceName);
+             ResultSet resultSet = connection.getMetaData().getTables(catalog, schemaName, null, new String[]{"TABLE"})) {
+            result.addAll(loadTableName(resultSet));
+        }
+        return result;
+    }
+    
+    private Collection<String> loadTableName(final ResultSet resultSet) throws SQLException {
+        Collection<String> result = new LinkedHashSet<>();
+        while (resultSet.next()) {
+            String tableName = resultSet.getString("TABLE_NAME");
+            if (!tableName.contains("$") && !tableName.contains("/")) {
+                result.add(tableName);
             }
         }
         return result;
+    }
+    
+    private List<TableMetaData> getTableMetaDataList(final ShardingRule shardingRule, final Collection<String> tableNames) throws SQLException {
+        Map<String, List<DataNode>> result = new LinkedHashMap<>();
+        String defaultDataSource = shardingRule.getShardingDataSourceNames().getDefaultDataSourceName();
+        result.put(defaultDataSource, new LinkedList<DataNode>());
+        for (String each : tableNames) {
+            result.get(defaultDataSource).addAll(getDataNodeGroups(shardingRule.getTableRule(each)).get(defaultDataSource));
+        }
+        return load(result, shardingRule, null);
     }
 }

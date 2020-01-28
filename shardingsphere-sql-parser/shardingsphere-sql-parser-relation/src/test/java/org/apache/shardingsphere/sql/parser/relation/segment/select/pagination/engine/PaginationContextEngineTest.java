@@ -65,7 +65,9 @@ public final class PaginationContextEngineTest {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.findSQLSegment(LimitSegment.class)).thenReturn(Optional.<LimitSegment>absent());
         when(selectStatement.findSQLSegment(TopProjectionSegment.class)).thenReturn(Optional.<TopProjectionSegment>absent());
-        when(selectStatement.findSQLSegment(WhereSegment.class)).thenReturn(Optional.of(new WhereSegment(0, 10, 10)));
+        WhereSegment whereSegment = new WhereSegment(0, 10);
+        whereSegment.setParametersCount(10);
+        when(selectStatement.findSQLSegment(WhereSegment.class)).thenReturn(Optional.of(whereSegment));
         ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
         when(projectionsContext.findAlias(anyString())).thenReturn(Optional.<String>absent());
         PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(selectStatement, projectionsContext, Collections.emptyList());

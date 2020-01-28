@@ -55,6 +55,15 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
     private final Collection<InsertValuesSegment> values = new LinkedList<>();
     
     /**
+     * Get insert columns segment.
+     * 
+     * @return insert columns segment
+     */
+    public Optional<InsertColumnsSegment> getInsertColumns() {
+        return Optional.fromNullable(columns);
+    }
+    
+    /**
      * Get columns.
      * 
      * @return columns

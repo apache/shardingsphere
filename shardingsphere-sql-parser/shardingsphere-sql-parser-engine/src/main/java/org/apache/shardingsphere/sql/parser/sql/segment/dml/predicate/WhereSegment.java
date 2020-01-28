@@ -29,6 +29,7 @@ import java.util.LinkedList;
  * Where segment.
  * 
  * @author duhongjun
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
@@ -39,7 +40,7 @@ public final class WhereSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final int parametersCount;
+    private int parametersCount;
     
     private final Collection<AndPredicate> andPredicates = new LinkedList<>();
     

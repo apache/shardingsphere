@@ -15,31 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.expr.complex.ExpectedCommonExpression;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.expr.simple.ExpectedLiteralExpression;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedColumn;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
+/**
+ * Expected insert columns.
+ *
+ * @author zhangliang
+ */
 @Getter
-@Setter
-public final class ExpectedUpdateAssignment extends AbstractExpectedSQLSegment {
+public final class ExpectedInsertColumns extends AbstractExpectedSQLSegment {
     
-    @XmlElement
-    private ExpectedColumn column;
-    
-    @XmlElement(name = "parameter-marker-expression")
-    private ExpectedParameterMarkerExpression parameterMarkerExpression;
-    
-    @XmlElement(name = "literal-expression")
-    private ExpectedLiteralExpression literalExpression;
-    
-    @XmlElement(name = "common-expression")
-    private ExpectedCommonExpression commonExpression;
+    @XmlElement(name = "column")
+    private List<ExpectedColumn> columns = new LinkedList<>();
 }

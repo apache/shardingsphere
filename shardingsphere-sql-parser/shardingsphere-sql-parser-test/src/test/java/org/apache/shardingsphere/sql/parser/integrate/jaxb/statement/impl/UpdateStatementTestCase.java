@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedWhere;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set.ExpectedSetAssignment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set.ExpectedSetClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
@@ -42,8 +42,8 @@ public final class UpdateStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "table")
     private final List<ExpectedTable> tables = new LinkedList<>();
     
-    @XmlElement(name = "set-assignment")
-    private ExpectedSetAssignment setAssignment;
+    @XmlElement(name = "set")
+    private ExpectedSetClause setClause;
     
     @XmlElement(name = "where")
     private ExpectedWhere where;
