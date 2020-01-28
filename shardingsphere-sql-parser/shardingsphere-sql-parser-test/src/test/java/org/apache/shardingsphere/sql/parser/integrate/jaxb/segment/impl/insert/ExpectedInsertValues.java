@@ -18,25 +18,20 @@
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert;
 
 import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
-@XmlAccessorType(XmlAccessType.FIELD)
+/**
+ * Expected insert values.
+ *
+ * @author zhangliang
+ */
 @Getter
-@Setter
-public final class ExpectedInsertColumnsAndValues {
+public final class ExpectedInsertValues extends AbstractExpectedSQLSegment {
     
-    @XmlAttribute(name = "column-names")
-    private String columnNames = "";
-    
-    @XmlElementWrapper(name = "insert-values")
-    @XmlElement(name = "insert-value")
-    private final List<ExpectedInsertValue> values = new LinkedList<>();
+    @XmlElement(name = "value")
+    private List<ExpectedInsertValue> values = new LinkedList<>();
 }
