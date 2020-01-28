@@ -21,15 +21,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.assignment.AssignmentValueAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.column.ColumnAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.expression.ExpressionAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set.ExpectedSetClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.assignment.ExpectedAssignment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set.ExpectedSetClause;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -63,14 +60,6 @@ public final class SetClauseAssert {
     
     private static void assertAssignment(final SQLCaseAssertContext assertContext, final AssignmentSegment actual, final ExpectedAssignment expected) {
         ColumnAssert.assertIs(assertContext, actual.getColumn(), expected.getColumn());
-        if (actual.getValue() instanceof ParameterMarkerExpressionSegment) {
-            ExpressionAssert.assertParameterMarkerExpression(assertContext, (ParameterMarkerExpressionSegment) actual.getValue(), expected.getAssignmentValue().getParameterMarkerExpression());
-        } else if (actual.getValue() instanceof LiteralExpressionSegment) {
-            ExpressionAssert.assertLiteralExpression(assertContext, (LiteralExpressionSegment) actual.getValue(), expected.getAssignmentValue().getLiteralExpression());
-        // FIXME should be CommonExpressionProjection, not ExpressionProjectionSegment
-        } else if (actual.getValue() instanceof ExpressionProjectionSegment) {
-            ExpressionAssert.assertCommonExpression(assertContext, (ExpressionProjectionSegment) actual.getValue(), expected.getAssignmentValue().getCommonExpression());
-        }
-        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        AssignmentValueAssert.assertIs(assertContext, actual.getValue(), expected.getAssignmentValue());
     }
 }

@@ -20,15 +20,11 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.expression.ExpressionAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.assignment.ExpectedAssignmentValue;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.assignment.AssignmentValueAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertValue;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertValues;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
 
 import java.util.Collection;
 
@@ -63,21 +59,8 @@ public final class InsertValuesAssert {
         assertThat(assertContext.getText("Insert assignment value size assertion error: "), actual.getValues().size(), is(expected.getAssignmentValues().size()));
         int count = 0;
         for (ExpressionSegment each : actual.getValues()) {
-            assertAssignmentValue(assertContext, each, expected.getAssignmentValues().get(count));
+            AssignmentValueAssert.assertIs(assertContext, each, expected.getAssignmentValues().get(count));
             count++;
-        }
-        // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
-    }
-    
-    private static void assertAssignmentValue(final SQLCaseAssertContext assertContext, final ExpressionSegment actual, final ExpectedAssignmentValue expected) {
-        if (actual instanceof ParameterMarkerExpressionSegment) {
-            ExpressionAssert.assertParameterMarkerExpression(assertContext, (ParameterMarkerExpressionSegment) actual, expected.getParameterMarkerExpression());
-        } else if (actual instanceof LiteralExpressionSegment) {
-            ExpressionAssert.assertLiteralExpression(assertContext, (LiteralExpressionSegment) actual, expected.getLiteralExpression());
-            // FIXME should be CommonExpressionProjection, not ExpressionProjectionSegment
-        } else if (actual instanceof ExpressionProjectionSegment) {
-            ExpressionAssert.assertCommonExpression(assertContext, (ExpressionProjectionSegment) actual, expected.getCommonExpression());
         }
         // TODO assert start index and stop index
 //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
