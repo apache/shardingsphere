@@ -143,15 +143,19 @@
             <column name="user_id" start-delimiter="`" end-delimiter="`" start-index="35" stop-index="43" />
             <column name="status" start-delimiter="`" end-delimiter="`" start-index="46" stop-index="53" />
         </columns>
-        <insert-columns-and-values column-names="order_id,user_id,status">
-            <insert-values>
-                <insert-value>
-                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
-                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
-                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="insert"/>
-                </insert-value>
-            </insert-values>
-        </insert-columns-and-values>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="1" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="insert" />
+                </assignment-value>
+            </value>
+        </values>
     </insert>
     
     <insert sql-case-id="insert_with_all_placeholders_for_table_identifier" parameters="1, 1, 'init'">
