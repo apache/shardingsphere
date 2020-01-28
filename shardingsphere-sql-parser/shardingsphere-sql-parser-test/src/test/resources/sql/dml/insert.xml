@@ -239,15 +239,21 @@
             <column name="user_id" start-index="31" stop-index="37" />
             <column name="status" start-index="40" stop-index="45" />
         </columns>
-        <insert-columns-and-values column-names="order_id,user_id,status">
-            <insert-values>
-                <insert-value>
-                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
-                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
-                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="insert"/>
-                </insert-value>
-            </insert-values>
-        </insert-columns-and-values>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="0" />
+                    <literal-expression value="1" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="1" />
+                    <literal-expression value="1" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="insert" />
+                </assignment-value>
+            </value>
+        </values>
     </insert>
     
     <insert sql-case-id="insert_set_with_partial_placeholders" parameters="1, 1">
