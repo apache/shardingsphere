@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.assignment;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
