@@ -741,6 +741,29 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <set start-index="20" stop-index="60" literal-stop-index="65">
+            <assignment>
+                <column name="order_id" start-index="24" stop-index="31" />
+                <assignment-value>
+                    <parameter-marker-expression value="0" />
+                    <literal-expression value="1" />
+                </assignment-value>
+            </assignment>
+            <assignment>
+                <column name="user_id" start-index="38" stop-index="44" />
+                <assignment-value>
+                    <parameter-marker-expression value="1" />
+                    <literal-expression value="1" />
+                </assignment-value>
+            </assignment>
+            <assignment>
+                <column name="status" start-index="51" stop-index="56" />
+                <assignment-value>
+                    <parameter-marker-expression value="2" />
+                    <literal-expression value="init" />
+                </assignment-value>
+            </assignment>
+        </set>
     </insert>
     
     <insert sql-case-id="insert_set_with_all_placeholders_for_table_identifier" parameters="1, 1, 'init'">
