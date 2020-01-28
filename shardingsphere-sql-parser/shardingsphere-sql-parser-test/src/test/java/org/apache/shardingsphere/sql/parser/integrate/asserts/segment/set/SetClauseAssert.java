@@ -21,9 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.assignment.AssignmentValueAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.column.ColumnAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.assignment.ExpectedAssignment;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.assignment.AssignmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set.ExpectedSetClause;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
@@ -52,14 +50,9 @@ public final class SetClauseAssert {
         assertThat(assertContext.getText("Assignments size assertion error: "), actual.getAssignments().size(), is(expected.getAssignments().size()));
         int count = 0;
         for (AssignmentSegment each : actual.getAssignments()) {
-            assertAssignment(assertContext, each, expected.getAssignments().get(count));
+            AssignmentAssert.assertIs(assertContext, each, expected.getAssignments().get(count));
             count++;
         }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
-    }
-    
-    private static void assertAssignment(final SQLCaseAssertContext assertContext, final AssignmentSegment actual, final ExpectedAssignment expected) {
-        ColumnAssert.assertIs(assertContext, actual.getColumn(), expected.getColumn());
-        AssignmentValueAssert.assertIs(assertContext, actual.getValue(), expected.getAssignmentValue());
     }
 }

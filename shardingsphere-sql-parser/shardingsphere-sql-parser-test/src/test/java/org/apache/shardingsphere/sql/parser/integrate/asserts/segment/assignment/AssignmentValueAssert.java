@@ -39,8 +39,8 @@ public final class AssignmentValueAssert {
      * Assert actual expression segment is correct with expected assignment value.
      *
      * @param assertContext assert context
-     * @param actual actual insert values segment
-     * @param expected expected insert values
+     * @param actual actual expression segment
+     * @param expected expected assignment value
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ExpressionSegment actual, final ExpectedAssignmentValue expected) {
         if (actual instanceof ParameterMarkerExpressionSegment) {
