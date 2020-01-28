@@ -20,9 +20,9 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.predicate.WhereAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.where.WhereClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.DeleteStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.DeleteStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 
 import static org.junit.Assert.assertFalse;
@@ -45,17 +45,17 @@ public final class DeleteStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
-        assertWhere(assertContext, actual, expected);
+        assertWhereClause(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
     
-    private static void assertWhere(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
-        if (null != expected.getWhere()) {
+    private static void assertWhereClause(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
+        if (null != expected.getWhereClause()) {
             assertTrue(assertContext.getText("Actual where segment should exist."), actual.getWhere().isPresent());
-            WhereAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhere());
+            WhereClauseAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhereClause());
         } else {
             assertFalse(assertContext.getText("Actual where segment should not exist."), actual.getWhere().isPresent());
         }

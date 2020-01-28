@@ -15,36 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertColumns;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertValues;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import java.util.LinkedList;
-import java.util.List;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Insert statement test case.
+ * TCL statement test case.
  * 
  * @author zhangliang 
  */
 @Getter
 @Setter
-public final class InsertStatementTestCase extends SQLParserTestCase {
+public final class TCLStatementTestCase extends SQLParserTestCase {
     
-    @XmlElementWrapper
-    @XmlElement(name = "table")
-    private final List<ExpectedTable> tables = new LinkedList<>();
+    @XmlAttribute(name = "tcl-actual-statement-class-type")
+    private String tclActualStatementClassType;
     
-    @XmlElement
-    private ExpectedInsertColumns columns;
-    
-    @XmlElement
-    private ExpectedInsertValues values;
+    @XmlAttribute(name = "auto-commit")
+    private boolean autoCommit;
 }

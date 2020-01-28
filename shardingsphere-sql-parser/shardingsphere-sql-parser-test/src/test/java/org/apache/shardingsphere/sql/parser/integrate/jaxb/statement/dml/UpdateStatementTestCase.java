@@ -15,30 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedWhereClause;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set.ExpectedSetClause;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Update statement test case.
+ * 
+ * @author zhangliang 
+ */
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedWhere extends AbstractExpectedSQLSegment {
+public final class UpdateStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "parameters-count")
-    private int parametersCount;
+    @XmlElementWrapper
+    @XmlElement(name = "table")
+    private final List<ExpectedTable> tables = new LinkedList<>();
     
-    @XmlAttribute(name = "parameter-marker-start-index")
-    private int parameterMarkerStartIndex;
+    @XmlElement(name = "set")
+    private ExpectedSetClause setClause;
     
-    @XmlElement(name = "and-predicate")
-    private final List<ExpectedAndPredicate> andPredicates = new LinkedList<>();
+    @XmlElement(name = "where")
+    private ExpectedWhereClause whereClause;
 }

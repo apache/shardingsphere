@@ -15,24 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedColumn;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedWhereClause;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Expected insert columns.
- *
- * @author zhangliang
+ * Delete statement test case.
+ * 
+ * @author zhangliang 
  */
 @Getter
-public final class ExpectedInsertColumns extends AbstractExpectedSQLSegment {
+@Setter
+public final class DeleteStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "column")
-    private List<ExpectedColumn> columns = new LinkedList<>();
+    @XmlElementWrapper
+    @XmlElement(name = "table")
+    private final List<ExpectedTable> tables = new LinkedList<>();
+    
+    @XmlElement(name = "where")
+    private ExpectedWhereClause whereClause;
 }

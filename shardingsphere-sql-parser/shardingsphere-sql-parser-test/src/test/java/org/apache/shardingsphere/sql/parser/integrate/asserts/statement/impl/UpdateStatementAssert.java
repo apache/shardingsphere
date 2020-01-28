@@ -20,10 +20,10 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.predicate.WhereAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.set.SetAssignmentAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.where.WhereClauseAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.set.SetClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.UpdateStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.UpdateStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 
 import static org.junit.Assert.assertFalse;
@@ -46,22 +46,22 @@ public final class UpdateStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
-        assertSetAssignment(assertContext, actual, expected);
-        assertWhere(assertContext, actual, expected);
+        assertSetClause(assertContext, actual, expected);
+        assertWhereClause(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
     
-    private static void assertSetAssignment(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
-        SetAssignmentAssert.assertIs(assertContext, actual.getSetAssignment(), expected.getSetAssignment());
+    private static void assertSetClause(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
+        SetClauseAssert.assertIs(assertContext, actual.getSetAssignment(), expected.getSetClause());
     }
     
-    private static void assertWhere(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
-        if (null != expected.getWhere()) {
+    private static void assertWhereClause(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
+        if (null != expected.getWhereClause()) {
             assertTrue(assertContext.getText("Actual where segment should exist."), actual.getWhere().isPresent());
-            WhereAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhere());
+            WhereClauseAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhereClause());
         } else {
             assertFalse(assertContext.getText("Actual where segment should not exist."), actual.getWhere().isPresent());
         }

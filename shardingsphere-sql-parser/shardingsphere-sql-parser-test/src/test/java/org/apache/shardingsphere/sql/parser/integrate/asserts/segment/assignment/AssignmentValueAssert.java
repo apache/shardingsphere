@@ -15,62 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.assignment;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.expression.ExpressionAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedAssignmentValue;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertValue;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertValues;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.assignment.ExpectedAssignmentValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
 
-import java.util.Collection;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 /**
- * Insert values assert.
+ * Assignment value assert.
  * 
  * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InsertValuesAssert {
+public final class AssignmentValueAssert {
     
     /**
-     * Assert actual insert statement is correct with expected insert values.
+     * Assert actual expression segment is correct with expected assignment value.
      *
      * @param assertContext assert context
-     * @param actual actual insert values segment
-     * @param expected expected insert values
+     * @param actual actual expression segment
+     * @param expected expected assignment value
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final Collection<InsertValuesSegment> actual, final ExpectedInsertValues expected) {
-        assertThat(assertContext.getText("Insert values size assertion error: "), actual.size(), is(expected.getValues().size()));
-        int count = 0;
-        for (InsertValuesSegment each : actual) {
-            assertInsertValues(assertContext, each, expected.getValues().get(count));
-            count++;
-        }
-    }
-    
-    private static void assertInsertValues(final SQLCaseAssertContext assertContext, final InsertValuesSegment actual, final ExpectedInsertValue expected) {
-        assertThat(assertContext.getText("Insert assignment value size assertion error: "), actual.getValues().size(), is(expected.getAssignmentValues().size()));
-        int count = 0;
-        for (ExpressionSegment each : actual.getValues()) {
-            assertAssignmentValue(assertContext, each, expected.getAssignmentValues().get(count));
-            count++;
-        }
-        // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
-    }
-    
-    private static void assertAssignmentValue(final SQLCaseAssertContext assertContext, final ExpressionSegment actual, final ExpectedAssignmentValue expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ExpressionSegment actual, final ExpectedAssignmentValue expected) {
         if (actual instanceof ParameterMarkerExpressionSegment) {
             ExpressionAssert.assertParameterMarkerExpression(assertContext, (ParameterMarkerExpressionSegment) actual, expected.getParameterMarkerExpression());
         } else if (actual instanceof LiteralExpressionSegment) {
@@ -80,6 +52,6 @@ public final class InsertValuesAssert {
             ExpressionAssert.assertCommonExpression(assertContext, (ExpressionProjectionSegment) actual, expected.getCommonExpression());
         }
         // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

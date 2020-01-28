@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.predicate;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.where;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.expression
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedAndPredicate;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedOperator;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedPredicate;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedWhere;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedWhereClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.value.ExpectedPredicateBetweenRightValue;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.value.ExpectedPredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.value.ExpectedPredicateInRightValue;
@@ -53,21 +53,21 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
- *  Where assert.
+ *  Where clause assert.
  *
  * @author zhaoyanan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class WhereAssert {
+public final class WhereClauseAssert {
     
     /**
-     * Assert actual where segment is correct with expected where.
+     * Assert actual where segment is correct with expected where clause.
      * 
      * @param assertContext assert context
      * @param actual actual where segment
-     * @param expected expected where segment
+     * @param expected expected where clause
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final WhereSegment actual, final ExpectedWhere expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final WhereSegment actual, final ExpectedWhereClause expected) {
         if (SQLCaseType.Placeholder == assertContext.getSqlCaseType()) {
             assertThat(assertContext.getText("Parameters count in where clause assertion error: "), actual.getParametersCount(), is(expected.getParametersCount()));
         }

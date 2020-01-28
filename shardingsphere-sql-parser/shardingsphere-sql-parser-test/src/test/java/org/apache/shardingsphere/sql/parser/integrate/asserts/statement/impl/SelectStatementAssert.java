@@ -22,13 +22,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.groupby.GroupByAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby.OrderByAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.pagination.PaginationAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.predicate.WhereAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.groupby.GroupByClauseAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby.OrderByClauseAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.limit.LimitClauseAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.where.WhereClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.projection.ProjectionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.SelectStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.SelectStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
@@ -53,10 +53,10 @@ public final class SelectStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
         assertProjection(assertContext, actual, expected);
         assertTable(assertContext, actual, expected);
-        assertWhere(assertContext, actual, expected);
-        assertGroupBy(assertContext, actual, expected);
-        assertOrderBy(assertContext, actual, expected);
-        assertLimit(assertContext, actual, expected);
+        assertWhereClause(assertContext, actual, expected);
+        assertGroupByClause(assertContext, actual, expected);
+        assertOrderByClause(assertContext, actual, expected);
+        assertLimitClause(assertContext, actual, expected);
     }
     
     private static void assertProjection(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
@@ -67,40 +67,40 @@ public final class SelectStatementAssert {
         TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
     
-    private static void assertWhere(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
-        if (null != expected.getWhere()) {
+    private static void assertWhereClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+        if (null != expected.getWhereClause()) {
             assertTrue(assertContext.getText("Actual where segment should exist."), actual.getWhere().isPresent());
-            WhereAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhere());
+            WhereClauseAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhereClause());
         } else {
             assertFalse(assertContext.getText("Actual where segment should not exist."), actual.getWhere().isPresent());
         }
     }
     
-    private static void assertGroupBy(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
-        if (null != expected.getGroupBy()) {
+    private static void assertGroupByClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+        if (null != expected.getGroupByClause()) {
             assertTrue(assertContext.getText("Actual group by segment should exist."), actual.getGroupBy().isPresent());
-            GroupByAssert.assertIs(assertContext, actual.getGroupBy().get(), expected.getGroupBy());
+            GroupByClauseAssert.assertIs(assertContext, actual.getGroupBy().get(), expected.getGroupByClause());
         } else {
             assertFalse(assertContext.getText("Actual group by segment should not exist."), actual.getGroupBy().isPresent());
         }
     }
     
-    private static void assertOrderBy(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
-        if (null != expected.getOrderBy()) {
+    private static void assertOrderByClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+        if (null != expected.getOrderByClause()) {
             assertTrue(assertContext.getText("Actual order by segment should exist."), actual.getOrderBy().isPresent());
-            OrderByAssert.assertIs(assertContext, actual.getOrderBy().get(), expected.getOrderBy());
+            OrderByClauseAssert.assertIs(assertContext, actual.getOrderBy().get(), expected.getOrderByClause());
         } else {
             assertFalse(assertContext.getText("Actual order by segment should not exist."), actual.getOrderBy().isPresent());
         }
     }
     
-    private static void assertLimit(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+    private static void assertLimitClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
         Optional<LimitSegment> limitSegment = actual.findSQLSegment(LimitSegment.class);
-        if (null != expected.getLimit()) {
+        if (null != expected.getLimitClause()) {
             assertTrue(assertContext.getText("Actual limit segment should exist."), limitSegment.isPresent());
-            PaginationAssert.assertOffset(assertContext, limitSegment.get().getOffset().orNull(), expected.getLimit().getOffset());
-            PaginationAssert.assertRowCount(assertContext, limitSegment.get().getRowCount().orNull(), expected.getLimit().getRowCount());
-            SQLSegmentAssert.assertIs(assertContext, limitSegment.get(), expected.getLimit());
+            LimitClauseAssert.assertOffset(assertContext, limitSegment.get().getOffset().orNull(), expected.getLimitClause().getOffset());
+            LimitClauseAssert.assertRowCount(assertContext, limitSegment.get().getRowCount().orNull(), expected.getLimitClause().getRowCount());
+            SQLSegmentAssert.assertIs(assertContext, limitSegment.get(), expected.getLimitClause());
         } else {
             assertFalse(assertContext.getText("Actual limit segment should not exist."), limitSegment.isPresent());
         }

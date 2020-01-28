@@ -19,19 +19,20 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedColumn;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Expected insert values.
+ * Expected insert columns clause.
  *
  * @author zhangliang
  */
 @Getter
-public final class ExpectedInsertValues extends AbstractExpectedSQLSegment {
+public final class ExpectedInsertColumnsClause extends AbstractExpectedSQLSegment {
     
-    @XmlElement(name = "value")
-    private List<ExpectedInsertValue> values = new LinkedList<>();
+    @XmlElement(name = "column")
+    private List<ExpectedColumn> columns = new LinkedList<>();
 }

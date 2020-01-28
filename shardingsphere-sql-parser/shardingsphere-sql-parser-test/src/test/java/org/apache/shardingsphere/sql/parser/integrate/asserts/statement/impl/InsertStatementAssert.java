@@ -20,10 +20,11 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.InsertColumnsAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.InsertValuesAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.InsertColumnsClauseAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.InsertValuesClauseAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.set.SetClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.InsertStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.InsertStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 
 import java.util.Collections;
@@ -48,29 +49,39 @@ public final class InsertStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
-        assertInsertColumns(assertContext, actual, expected);
-        assertInsertValues(assertContext, actual, expected);
+        assertInsertColumnsClause(assertContext, actual, expected);
+        assertInsertValuesClause(assertContext, actual, expected);
+        assertSetClause(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         TableAssert.assertIs(assertContext, Collections.singletonList(actual.getTable()), expected.getTables());
     }
     
-    private static void assertInsertColumns(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
-        if (null != expected.getColumns()) {
+    private static void assertInsertColumnsClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
+        if (null != expected.getInsertColumnsClause()) {
             assertTrue(assertContext.getText("Actual insert columns segment should exist."), actual.getInsertColumns().isPresent());
-            InsertColumnsAssert.assertIs(assertContext, actual.getInsertColumns().get(), expected.getColumns());    
+            InsertColumnsClauseAssert.assertIs(assertContext, actual.getInsertColumns().get(), expected.getInsertColumnsClause());    
         } else {
             assertFalse(assertContext.getText("Actual insert columns segment should not exist."), actual.getInsertColumns().isPresent());
         }
     }
     
-    private static void assertInsertValues(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
-        if (null != expected.getValues()) {
+    private static void assertInsertValuesClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
+        if (null != expected.getInsertValuesClause()) {
             assertFalse(assertContext.getText("Actual insert values segment should exist."), actual.getValues().isEmpty());
-            InsertValuesAssert.assertIs(assertContext, actual.getValues(), expected.getValues());
+            InsertValuesClauseAssert.assertIs(assertContext, actual.getValues(), expected.getInsertValuesClause());
         } else {
             assertTrue(assertContext.getText("Actual insert values segment should not exist."), actual.getValues().isEmpty());
+        }
+    }
+    
+    private static void assertSetClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
+        if (null != expected.getSetClause()) {
+            assertTrue(assertContext.getText("Actual set assignment segment should exist."), actual.getSetAssignment().isPresent());
+            SetClauseAssert.assertIs(assertContext, actual.getSetAssignment().get(), expected.getSetClause());
+        } else {
+            assertFalse(assertContext.getText("Actual set assignment segment should not exist."), actual.getSetAssignment().isPresent());
         }
     }
 }

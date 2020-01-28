@@ -15,30 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.assignment;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.orderby.ExpectedOrderBy;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.column.ColumnAssert;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.assignment.ExpectedAssignment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 
 /**
- * Order by assert.
- *
- * @author zhangliang
+ * Assignment assert.
+ * 
+ * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class OrderByAssert {
+public final class AssignmentAssert {
     
     /**
-     * Assert actual order by segment is correct with expected order by.
+     * Assert actual assignment segment is correct with expected assignment.
      *
      * @param assertContext assert context
-     * @param actual actual order by segment
-     * @param expected expected order by
+     * @param actual actual assignment segment
+     * @param expected expected assignment
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final OrderBySegment actual, final ExpectedOrderBy expected) {
-        OrderByItemAssert.assertIs(assertContext, actual.getOrderByItems(), expected, "Order by");
+    public static void assertIs(final SQLCaseAssertContext assertContext, final AssignmentSegment actual, final ExpectedAssignment expected) {
+        ColumnAssert.assertIs(assertContext, actual.getColumn(), expected.getColumn());
+        // TODO assert assign operator
+        AssignmentValueAssert.assertIs(assertContext, actual.getValue(), expected.getAssignmentValue());
     }
 }

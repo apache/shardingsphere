@@ -15,31 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.limit;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.expr.complex.ExpectedCommonExpression;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.expr.simple.ExpectedLiteralExpression;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedColumn;
 
 import javax.xml.bind.annotation.XmlElement;
 
+/**
+ * Expected limit clause.
+ * 
+ * @author zhangliang 
+ */
 @Getter
 @Setter
-public final class ExpectedUpdateAssignment extends AbstractExpectedSQLSegment {
+public final class ExpectedLimitClause extends AbstractExpectedSQLSegment {
     
     @XmlElement
-    private ExpectedColumn column;
+    private ExpectedPaginationValue offset;
     
-    @XmlElement(name = "parameter-marker-expression")
-    private ExpectedParameterMarkerExpression parameterMarkerExpression;
-    
-    @XmlElement(name = "literal-expression")
-    private ExpectedLiteralExpression literalExpression;
-    
-    @XmlElement(name = "common-expression")
-    private ExpectedCommonExpression commonExpression;
+    @XmlElement(name = "row-count")
+    private ExpectedPaginationValue rowCount;
 }

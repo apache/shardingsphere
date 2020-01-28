@@ -15,30 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.limit;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.expr.complex.ExpectedCommonExpression;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.expr.simple.ExpectedLiteralExpression;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
-/**
- * Expected assignment value.
- *
- * @author zhangliang
- */
 @Getter
-public final class ExpectedAssignmentValue extends AbstractExpectedSQLSegment {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedPaginationValue extends AbstractExpectedSQLSegment {
     
-    @XmlElement(name = "parameter-marker-expression")
-    private ExpectedParameterMarkerExpression parameterMarkerExpression;
+    @XmlAttribute
+    private Long value;
     
-    @XmlElement(name = "literal-expression")
-    private ExpectedLiteralExpression literalExpression;
-    
-    @XmlElement(name = "common-expression")
-    private ExpectedCommonExpression commonExpression;
+    @XmlAttribute(name = "parameter-index")
+    private Integer parameterIndex;
 }

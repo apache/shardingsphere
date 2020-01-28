@@ -15,20 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Expected where clause.
+ * 
+ * @author zhangliang 
+ */
 @Getter
 @Setter
-public final class ExpectedSetAssignment extends AbstractExpectedSQLSegment {
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedWhereClause extends AbstractExpectedSQLSegment {
     
-    @XmlElement(name = "update-assignment")
-    private final List<ExpectedUpdateAssignment> assignments = new LinkedList<>();
+    @XmlAttribute(name = "parameters-count")
+    private int parametersCount;
+    
+    @XmlAttribute(name = "parameter-marker-start-index")
+    private int parameterMarkerStartIndex;
+    
+    @XmlElement(name = "and-predicate")
+    private final List<ExpectedAndPredicate> andPredicates = new LinkedList<>();
 }

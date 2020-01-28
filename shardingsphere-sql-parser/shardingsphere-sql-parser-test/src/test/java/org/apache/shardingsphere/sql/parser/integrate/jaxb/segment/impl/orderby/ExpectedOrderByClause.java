@@ -28,12 +28,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Expected order by.
+ * Expected order by clause.
  * 
  * @author zhangliang 
  */
 @Getter
-public final class ExpectedOrderBy extends AbstractExpectedSQLSegment {
+public final class ExpectedOrderByClause extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "column-item")
     private final List<ExpectedColumnOrderByItem> columnItems = new LinkedList<>();

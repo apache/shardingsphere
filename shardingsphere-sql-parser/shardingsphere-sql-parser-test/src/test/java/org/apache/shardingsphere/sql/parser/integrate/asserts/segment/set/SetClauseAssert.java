@@ -15,40 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.set;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.column.ColumnAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertColumns;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.assignment.AssignmentAssert;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set.ExpectedSetClause;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Insert column assert.
- * 
- * @author zhangliang 
+ * Set clause assert.
+ *
+ * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InsertColumnsAssert {
+public final class SetClauseAssert {
     
     /**
-     * Assert actual insert statement is correct with expected insert columns and values.
-     *
+     * Assert actual set assignment segment is correct with expected set assignment.
+     * 
      * @param assertContext assert context
-     * @param actual actual insert columns segment
-     * @param expected expected insert columns
+     * @param actual actual set assignment segment
+     * @param expected expected set clause
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final InsertColumnsSegment actual, final ExpectedInsertColumns expected) {
-        assertThat(assertContext.getText("Insert column size assertion error: "), actual.getColumns().size(), is(expected.getColumns().size()));
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SetAssignmentSegment actual, final ExpectedSetClause expected) {
+        assertNotNull(assertContext.getText("Assignments should existed."), expected);
+        assertThat(assertContext.getText("Assignments size assertion error: "), actual.getAssignments().size(), is(expected.getAssignments().size()));
         int count = 0;
-        for (ColumnSegment each : actual.getColumns()) {
-            ColumnAssert.assertIs(assertContext, each, expected.getColumns().get(count));
+        for (AssignmentSegment each : actual.getAssignments()) {
+            AssignmentAssert.assertIs(assertContext, each, expected.getAssignments().get(count));
             count++;
         }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
