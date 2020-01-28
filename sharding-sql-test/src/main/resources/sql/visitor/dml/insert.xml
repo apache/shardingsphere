@@ -37,7 +37,8 @@
     <sql-case id="insert_with_null_value" value="INSERT INTO t_null_value_test(col1) VALUES(null)" db-types="MySQL" />
     <sql-case id="insert_with_blob_value" value="INSERT INTO t_blob_value_test(col1) VALUES(_BINARY'This is a binary value.')" db-types="MySQL" />
     <sql-case id="insert_with_function" value="INSERT INTO t_order(current_date, order_id, user_id) VALUES (curdate(), ?, ?)" db-types="MySQL" />
-    <sql-case id="insert_with_str_date_add" value="INSERT INTO t_order(current_date, order_id, user_id) VALUES (date_add(now(),interval ? second), ?, ?)" db-types="MySQL" />
+    <!-- FIXME -->
+    <!--<sql-case id="insert_with_str_date_add" value="INSERT INTO t_order(current_date, order_id, user_id) VALUES (date_add(now(),interval ? second), ?, ?)" db-types="MySQL" />-->
     <sql-case id="insert_with_str_to_date" value="INSERT INTO t_order(current_date, order_id, user_id) VALUES (str_to_date(?, '%Y-%m-%d'), ?, ?)" db-types="MySQL" />
     <sql-case id="insert_on_duplicate_key_update" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL" />
     <sql-case id="insert_on_duplicate_key_update_with_complicated_expression" value="INSERT INTO emp(order_id,emp_id,age,salary) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE salary = VALUES(salary)+VALUES(salary)*0.2" db-types="MySQL"/>
