@@ -491,15 +491,21 @@
             <column name="order_id" start-index="34" stop-index="41" />
             <column name="user_id" start-index="44" stop-index="50" />
         </columns>
-        <insert-columns-and-values column-names="current_date,order_id,user_id">
-            <insert-values>
-                <insert-value>
-                    <assignment type-for-literal="ExpressionProjectionSegment" text-for-literal="curdate()"/>
-                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="1000"/>
-                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="10"/>
-                </insert-value>
-            </insert-values>
-        </insert-columns-and-values>
+        <values>
+            <value>
+                <assignment-value>
+                    <common-expression text="curdate()" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="0" />
+                    <literal-expression value="1000" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="1" />
+                    <literal-expression value="10" />
+                </assignment-value>
+            </value>
+        </values>
     </insert>
     
     <insert sql-case-id="insert_with_str_date_add" parameters="1, 1, 1">
