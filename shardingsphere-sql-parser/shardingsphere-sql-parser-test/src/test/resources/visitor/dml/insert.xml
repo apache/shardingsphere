@@ -512,16 +512,26 @@
             <column name="age" start-index="32" stop-index="34" />
             <column name="salary" start-index="36" stop-index="41" />
         </columns>
-        <insert-columns-and-values column-names="order_id,emp_id,age,salary">
-            <insert-values>
-                <insert-value>
-                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="0" type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
-                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="1" type-for-literal="LiteralExpressionSegment" text-for-literal="2"/>
-                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="2" type-for-literal="LiteralExpressionSegment" text-for-literal="45"/>
-                    <assignment type-for-placeholder="ParameterMarkerExpressionSegment" text-for-placeholder="3" type-for-literal="LiteralExpressionSegment" text-for-literal="2000"/>
-                </insert-value>
-            </insert-values>
-        </insert-columns-and-values>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="0" />
+                    <literal-expression value="1" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="1" />
+                    <literal-expression value="2" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="2" />
+                    <literal-expression value="45" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="3" />
+                    <literal-expression value="2000" />
+                </assignment-value>
+            </value>
+        </values>
     </insert>
     
     <insert sql-case-id="insert_on_duplicate_key_update_with_base64_aesencrypt" parameters="1, 1, 'init'">
