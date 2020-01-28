@@ -43,7 +43,7 @@ public final class InsertStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "table")
     private final List<ExpectedTable> tables = new LinkedList<>();
     
-    @XmlElement
+    @XmlElement(name = "columns")
     private ExpectedInsertColumnsClause insertColumnsClause;
     
     @XmlElement(name = "values")
