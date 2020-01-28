@@ -441,13 +441,13 @@
         <columns start-index="25" stop-index="30">
             <column name="col1" start-index="26" stop-index="29" />
         </columns>
-        <insert-columns-and-values column-names="col1">
-            <insert-values>
-                <insert-value>
-                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="1.22"/>
-                </insert-value>
-            </insert-values>
-        </insert-columns-and-values>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1.22" />
+                </assignment-value>
+            </value>
+        </values>
     </insert>
     
     <insert sql-case-id="insert_with_null_value">
