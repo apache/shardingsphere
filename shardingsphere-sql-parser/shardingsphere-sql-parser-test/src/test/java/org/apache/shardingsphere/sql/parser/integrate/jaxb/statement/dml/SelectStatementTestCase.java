@@ -15,36 +15,51 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.orderby.ExpectedOrderByClause;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.limit.ExpectedLimitClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedWhereClause;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set.ExpectedSetClause;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.projection.ExpectedProjections;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Update statement test case.
+ * Select statement test case.
  * 
  * @author zhangliang 
  */
 @Getter
 @Setter
-public final class UpdateStatementTestCase extends SQLParserTestCase {
+public final class SelectStatementTestCase extends SQLParserTestCase {
     
     @XmlElementWrapper
     @XmlElement(name = "table")
     private final List<ExpectedTable> tables = new LinkedList<>();
     
-    @XmlElement(name = "set")
-    private ExpectedSetClause setClause;
+    @XmlElement(name = "projections")
+    private final ExpectedProjections projections = new ExpectedProjections();
     
     @XmlElement(name = "where")
     private ExpectedWhereClause whereClause;
+    
+    @XmlElement(name = "group-by")
+    private ExpectedOrderByClause groupByClause;
+    
+    @XmlElement(name = "order-by")
+    private ExpectedOrderByClause orderByClause;
+    
+    @XmlElement(name = "limit")
+    private ExpectedLimitClause limitClause;
+    
+    @XmlAttribute(name = "lock-clause")
+    private boolean lockClause;
 }

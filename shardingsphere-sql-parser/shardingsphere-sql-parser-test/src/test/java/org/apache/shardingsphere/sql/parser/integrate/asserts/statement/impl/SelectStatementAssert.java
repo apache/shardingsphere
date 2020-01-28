@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.limit.Limi
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.where.WhereClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.projection.ProjectionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.SelectStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.SelectStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 

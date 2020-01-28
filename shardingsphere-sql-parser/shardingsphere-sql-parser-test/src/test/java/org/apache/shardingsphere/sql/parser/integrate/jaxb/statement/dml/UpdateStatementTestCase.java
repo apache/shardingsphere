@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedWhereClause;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set.ExpectedSetClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
@@ -29,17 +30,20 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Delete statement test case.
+ * Update statement test case.
  * 
  * @author zhangliang 
  */
 @Getter
 @Setter
-public final class DeleteStatementTestCase extends SQLParserTestCase {
+public final class UpdateStatementTestCase extends SQLParserTestCase {
     
     @XmlElementWrapper
     @XmlElement(name = "table")
     private final List<ExpectedTable> tables = new LinkedList<>();
+    
+    @XmlElement(name = "set")
+    private ExpectedSetClause setClause;
     
     @XmlElement(name = "where")
     private ExpectedWhereClause whereClause;

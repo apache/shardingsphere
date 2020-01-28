@@ -15,51 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.orderby.ExpectedOrderByClause;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.limit.ExpectedLimitClause;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedWhereClause;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.projection.ExpectedProjections;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertColumnsClause;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertValuesClause;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set.ExpectedSetClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Select statement test case.
+ * Insert statement test case.
  * 
  * @author zhangliang 
  */
 @Getter
 @Setter
-public final class SelectStatementTestCase extends SQLParserTestCase {
+public final class InsertStatementTestCase extends SQLParserTestCase {
     
     @XmlElementWrapper
     @XmlElement(name = "table")
     private final List<ExpectedTable> tables = new LinkedList<>();
     
-    @XmlElement(name = "projections")
-    private final ExpectedProjections projections = new ExpectedProjections();
+    @XmlElement(name = "columns")
+    private ExpectedInsertColumnsClause insertColumnsClause;
     
-    @XmlElement(name = "where")
-    private ExpectedWhereClause whereClause;
+    @XmlElement(name = "values")
+    private ExpectedInsertValuesClause insertValuesClause;
     
-    @XmlElement(name = "group-by")
-    private ExpectedOrderByClause groupByClause;
-    
-    @XmlElement(name = "order-by")
-    private ExpectedOrderByClause orderByClause;
-    
-    @XmlElement(name = "limit")
-    private ExpectedLimitClause limitClause;
-    
-    @XmlAttribute(name = "lock-clause")
-    private boolean lockClause;
+    @XmlElement(name = "set")
+    private ExpectedSetClause setClause;
 }

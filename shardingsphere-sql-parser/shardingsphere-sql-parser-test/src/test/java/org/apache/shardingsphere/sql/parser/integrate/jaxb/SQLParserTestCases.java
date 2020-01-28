@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.sql.parser.integrate.jaxb;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.AlterTableStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.AlterTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.CommonStatementTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.DeleteStatementTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.InsertStatementTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.SelectStatementTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.TCLStatementTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.UpdateStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.DeleteStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.InsertStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.SelectStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.TCLStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.UpdateStatementTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
