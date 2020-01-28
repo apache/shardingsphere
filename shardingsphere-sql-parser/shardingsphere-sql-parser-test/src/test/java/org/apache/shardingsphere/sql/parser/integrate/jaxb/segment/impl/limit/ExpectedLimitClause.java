@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.limit;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * TCL statement test case.
+ * Expected limit clause.
  * 
  * @author zhangliang 
  */
 @Getter
 @Setter
-public final class TCLStatementTestCase extends SQLParserTestCase {
+public final class ExpectedLimitClause extends AbstractExpectedSQLSegment {
     
-    @XmlAttribute(name = "tcl-actual-statement-class-type")
-    private String tclActualStatementClassType;
+    @XmlElement
+    private ExpectedPaginationValue offset;
     
-    @XmlAttribute(name = "auto-commit")
-    private boolean autoCommit;
+    @XmlElement(name = "row-count")
+    private ExpectedPaginationValue rowCount;
 }

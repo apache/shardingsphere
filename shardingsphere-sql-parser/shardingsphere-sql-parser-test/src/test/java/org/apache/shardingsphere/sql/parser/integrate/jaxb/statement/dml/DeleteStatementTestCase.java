@@ -15,26 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.pagination;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedWhereClause;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Expected limit.
+ * Delete statement test case.
  * 
  * @author zhangliang 
  */
 @Getter
 @Setter
-public final class ExpectedLimit extends AbstractExpectedSQLSegment {
+public final class DeleteStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement
-    private ExpectedPaginationValue offset;
+    @XmlElementWrapper
+    @XmlElement(name = "table")
+    private final List<ExpectedTable> tables = new LinkedList<>();
     
-    @XmlElement(name = "row-count")
-    private ExpectedPaginationValue rowCount;
+    @XmlElement(name = "where")
+    private ExpectedWhereClause whereClause;
 }
