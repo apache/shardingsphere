@@ -607,13 +607,13 @@
         <columns start-index="29" stop-index="34">
             <column name="col1" start-index="30" stop-index="33" />
         </columns>
-        <insert-columns-and-values column-names="col1">
-            <insert-values>
-                <insert-value>
-                    <assignment type-for-literal="CommonExpressionSegment" text-for-literal="_BINARY'This is a binary value.'"/>
-                </insert-value>
-            </insert-values>
-        </insert-columns-and-values>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="_BINARY'This is a binary value.'" />
+                </assignment-value>
+            </value>
+        </values>
     </insert>
     
     <insert sql-case-id="insert_with_function" parameters="1000, 10">
