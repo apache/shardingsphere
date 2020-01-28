@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.assignment;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.expr.complex.ExpectedCommonExpression;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.expr.simple.ExpectedLiteralExpression;
@@ -31,6 +32,7 @@ import javax.xml.bind.annotation.XmlElement;
  * @author zhangliang
  */
 @Getter
+@Setter
 public final class ExpectedAssignmentValue extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "parameter-marker-expression")
