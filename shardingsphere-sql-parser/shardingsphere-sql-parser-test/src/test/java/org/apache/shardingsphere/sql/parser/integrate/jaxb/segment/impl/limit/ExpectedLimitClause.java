@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.pagination;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.limit;
 
 import lombok.Getter;
 import lombok.Setter;
