@@ -26,6 +26,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Aggrega
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValuesContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AutoCommitValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BitExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BlobValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BooleanLiteralsContext;
@@ -34,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CastFun
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CharFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConvertFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExtractFunctionContext;
@@ -50,10 +53,13 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OwnerCo
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PositionFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PredicateContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RollbackContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAutoCommitContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowLikeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SimpleExprContext;
@@ -94,7 +100,12 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.BooleanValue;
 import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.NumberValue;
@@ -234,12 +245,42 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     
     // TCLStatement.g4
     @Override
+    public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
+        return new SetTransactionStatement();
+    }
+    
+    @Override
     public ASTNode visitSetAutoCommit(final SetAutoCommitContext ctx) {
         SetAutoCommitStatement result = new SetAutoCommitStatement();
         String autoCommitValueText = ctx.autoCommitValue().getText();
         boolean autoCommit = "1".equals(autoCommitValueText) || "ON".equals(autoCommitValueText);
         result.setAutoCommit(autoCommit);
         return result;
+    }
+    
+    @Override
+    public ASTNode visitAutoCommitValue(final AutoCommitValueContext ctx) {
+        return super.visitAutoCommitValue(ctx);
+    }
+    
+    @Override
+    public ASTNode visitBeginTransaction(final BeginTransactionContext ctx) {
+        return new BeginTransactionStatement();
+    }
+    
+    @Override
+    public ASTNode visitCommit(final CommitContext ctx) {
+        return new CommitStatement();
+    }
+    
+    @Override
+    public ASTNode visitRollback(final RollbackContext ctx) {
+        return new RollbackStatement();
+    }
+    
+    @Override
+    public ASTNode visitSavepoint(final SavepointContext ctx) {
+        return new SavepointStatement();
     }
     
     // StoreProcedure.g4
