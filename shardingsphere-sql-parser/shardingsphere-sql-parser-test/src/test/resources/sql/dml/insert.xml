@@ -602,11 +602,9 @@
         </tables>
         <!-- FIXME no insert columns should not parse the segment, and the start and stop index are incorrect -->
         <columns start-index="35" stop-index="34" />
-        <insert-columns-and-values>
-            <insert-values>
-                <insert-value />
-            </insert-values>
-        </insert-columns-and-values>
+        <values>
+            <value />
+        </values>
     </insert>
 
     <insert sql-case-id="insert_with_double_value">
