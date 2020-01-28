@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertConte
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.groupby.GroupByClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby.OrderByClauseAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.pagination.LimitClauseAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.limit.LimitClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.where.WhereClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.projection.ProjectionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;

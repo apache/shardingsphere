@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.pagination;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.limit;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
