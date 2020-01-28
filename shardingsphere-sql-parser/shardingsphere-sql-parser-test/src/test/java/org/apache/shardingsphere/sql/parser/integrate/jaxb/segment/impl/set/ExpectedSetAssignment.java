@@ -29,6 +29,6 @@ import java.util.List;
 @Setter
 public final class ExpectedSetAssignment extends AbstractExpectedSQLSegment {
     
-    @XmlElement(name = "update-assignment")
-    private final List<ExpectedUpdateAssignment> assignments = new LinkedList<>();
+    @XmlElement(name = "assignment")
+    private final List<ExpectedAssignment> assignments = new LinkedList<>();
 }

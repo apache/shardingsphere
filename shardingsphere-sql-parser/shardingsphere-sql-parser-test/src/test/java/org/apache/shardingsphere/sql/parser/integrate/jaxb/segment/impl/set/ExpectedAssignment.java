@@ -25,9 +25,14 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicat
 
 import javax.xml.bind.annotation.XmlElement;
 
+/**
+ * Expected assignment.
+ * 
+ * @author zhangliang 
+ */
 @Getter
 @Setter
-public final class ExpectedUpdateAssignment extends AbstractExpectedSQLSegment {
+public final class ExpectedAssignment extends AbstractExpectedSQLSegment {
     
     @XmlElement
     private ExpectedColumn column;

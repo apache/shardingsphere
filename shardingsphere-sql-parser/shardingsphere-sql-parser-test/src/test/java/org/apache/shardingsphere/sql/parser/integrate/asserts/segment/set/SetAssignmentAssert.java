@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegment
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set.ExpectedSetAssignment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set.ExpectedUpdateAssignment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set.ExpectedAssignment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -61,7 +61,7 @@ public final class SetAssignmentAssert {
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
-    private static void assertAssignment(final SQLCaseAssertContext assertContext, final AssignmentSegment actual, final ExpectedUpdateAssignment expected) {
+    private static void assertAssignment(final SQLCaseAssertContext assertContext, final AssignmentSegment actual, final ExpectedAssignment expected) {
         ColumnAssert.assertIs(assertContext, actual.getColumn(), expected.getColumn());
         if (actual.getValue() instanceof ParameterMarkerExpressionSegment) {
             ExpressionAssert.assertParameterMarkerExpression(assertContext, (ParameterMarkerExpressionSegment) actual.getValue(), expected.getAssignmentValue().getParameterMarkerExpression());
