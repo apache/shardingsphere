@@ -874,5 +874,33 @@
         <tables>
             <table name="t_order_item" start-index="12" stop-index="23" />
         </tables>
+        <set start-index="25" stop-index="100" literal-stop-index="104">
+            <assignment>
+                <column name="order_id" start-index="29" stop-index="36" />
+                <assignment-value>
+                    <parameter-marker-expression value="0" />
+                    <literal-expression value="1000" />
+                </assignment-value>
+            </assignment>
+            <assignment>
+                <column name="user_id" start-index="43" stop-index="49" literal-start-index="46" literal-stop-index="52" />
+                <assignment-value>
+                    <parameter-marker-expression value="1" />
+                    <literal-expression value="10" />
+                </assignment-value>
+            </assignment>
+            <assignment>
+                <column name="status" start-index="56" stop-index="61" literal-start-index="60" literal-stop-index="65" />
+                <assignment-value>
+                    <literal-expression value="insert" />
+                </assignment-value>
+            </assignment>
+            <assignment>
+                <column name="creation_date" start-index="75" stop-index="87" literal-start-index="79" literal-stop-index="91" />
+                <assignment-value>
+                    <literal-expression value="2017-08-08" />
+                </assignment-value>
+            </assignment>
+        </set>
     </insert>
 </sql-parser-test-cases>
