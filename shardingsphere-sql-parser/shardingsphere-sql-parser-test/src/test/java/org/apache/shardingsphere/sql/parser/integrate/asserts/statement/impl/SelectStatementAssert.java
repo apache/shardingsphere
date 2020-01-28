@@ -22,7 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.groupby.GroupByAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.groupby.GroupByClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby.OrderByClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.pagination.LimitClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.where.WhereClauseAssert;
@@ -79,7 +79,7 @@ public final class SelectStatementAssert {
     private static void assertGroupByClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
         if (null != expected.getGroupByClause()) {
             assertTrue(assertContext.getText("Actual group by segment should exist."), actual.getGroupBy().isPresent());
-            GroupByAssert.assertIs(assertContext, actual.getGroupBy().get(), expected.getGroupByClause());
+            GroupByClauseAssert.assertIs(assertContext, actual.getGroupBy().get(), expected.getGroupByClause());
         } else {
             assertFalse(assertContext.getText("Actual group by segment should not exist."), actual.getGroupBy().isPresent());
         }

@@ -25,19 +25,19 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.orderby.
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 
 /**
- * Group by assert.
+ * Group by clause assert.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GroupByAssert {
+public final class GroupByClauseAssert {
     
     /**
-     * Assert actual group by segment is correct with expected group by.
+     * Assert actual group by segment is correct with expected group by clause.
      * 
      * @param assertContext assert context
      * @param actual actual group by segment
-     * @param expected expected group by
+     * @param expected expected group by clause
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final GroupBySegment actual, final ExpectedOrderByClause expected) {
         OrderByItemAssert.assertIs(assertContext, actual.getGroupByItems(), expected, "Group by");
