@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.column.ColumnAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertColumns;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertColumnsClause;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 
@@ -30,21 +30,21 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * Insert column assert.
+ * Insert column clause assert.
  * 
  * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InsertColumnsAssert {
+public final class InsertColumnsClauseAssert {
     
     /**
-     * Assert actual insert statement is correct with expected insert columns and values.
+     * Assert actual insert columns segment is correct with expected insert columns clause.
      *
      * @param assertContext assert context
      * @param actual actual insert columns segment
-     * @param expected expected insert columns
+     * @param expected expected insert columns clause
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final InsertColumnsSegment actual, final ExpectedInsertColumns expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final InsertColumnsSegment actual, final ExpectedInsertColumnsClause expected) {
         assertThat(assertContext.getText("Insert column size assertion error: "), actual.getColumns().size(), is(expected.getColumns().size()));
         int count = 0;
         for (ColumnSegment each : actual.getColumns()) {

@@ -40,11 +40,11 @@ import static org.junit.Assert.assertThat;
 public final class InsertValuesClauseAssert {
     
     /**
-     * Assert actual insert statement is correct with expected insert values.
+     * Assert actual insert values segment is correct with expected insert values clause.
      *
      * @param assertContext assert context
      * @param actual actual insert values segment
-     * @param expected expected insert values
+     * @param expected expected insert values clause
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final Collection<InsertValuesSegment> actual, final ExpectedInsertValuesClause expected) {
         assertThat(assertContext.getText("Insert values size assertion error: "), actual.size(), is(expected.getValues().size()));

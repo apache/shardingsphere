@@ -26,12 +26,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Expected insert columns.
+ * Expected insert columns clause.
  *
  * @author zhangliang
  */
 @Getter
-public final class ExpectedInsertColumns extends AbstractExpectedSQLSegment {
+public final class ExpectedInsertColumnsClause extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "column")
     private List<ExpectedColumn> columns = new LinkedList<>();

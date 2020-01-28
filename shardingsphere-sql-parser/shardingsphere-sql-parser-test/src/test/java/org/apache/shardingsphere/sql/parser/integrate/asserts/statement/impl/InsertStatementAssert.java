@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.InsertColumnsAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.InsertColumnsClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.InsertValuesClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.set.SetClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
@@ -49,7 +49,7 @@ public final class InsertStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
-        assertInsertColumns(assertContext, actual, expected);
+        assertInsertColumnsClause(assertContext, actual, expected);
         assertInsertValuesClause(assertContext, actual, expected);
         assertSetClause(assertContext, actual, expected);
     }
@@ -58,10 +58,10 @@ public final class InsertStatementAssert {
         TableAssert.assertIs(assertContext, Collections.singletonList(actual.getTable()), expected.getTables());
     }
     
-    private static void assertInsertColumns(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
-        if (null != expected.getColumns()) {
+    private static void assertInsertColumnsClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
+        if (null != expected.getInsertColumnsClause()) {
             assertTrue(assertContext.getText("Actual insert columns segment should exist."), actual.getInsertColumns().isPresent());
-            InsertColumnsAssert.assertIs(assertContext, actual.getInsertColumns().get(), expected.getColumns());    
+            InsertColumnsClauseAssert.assertIs(assertContext, actual.getInsertColumns().get(), expected.getInsertColumnsClause());    
         } else {
             assertFalse(assertContext.getText("Actual insert columns segment should not exist."), actual.getInsertColumns().isPresent());
         }
