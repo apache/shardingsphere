@@ -64,12 +64,12 @@ public final class SetAssignmentAssert {
     private static void assertAssignment(final SQLCaseAssertContext assertContext, final AssignmentSegment actual, final ExpectedUpdateAssignment expected) {
         ColumnAssert.assertIs(assertContext, actual.getColumn(), expected.getColumn());
         if (actual.getValue() instanceof ParameterMarkerExpressionSegment) {
-            ExpressionAssert.assertParameterMarkerExpression(assertContext, (ParameterMarkerExpressionSegment) actual.getValue(), expected.getParameterMarkerExpression());
+            ExpressionAssert.assertParameterMarkerExpression(assertContext, (ParameterMarkerExpressionSegment) actual.getValue(), expected.getAssignmentValue().getParameterMarkerExpression());
         } else if (actual.getValue() instanceof LiteralExpressionSegment) {
-            ExpressionAssert.assertLiteralExpression(assertContext, (LiteralExpressionSegment) actual.getValue(), expected.getLiteralExpression());
+            ExpressionAssert.assertLiteralExpression(assertContext, (LiteralExpressionSegment) actual.getValue(), expected.getAssignmentValue().getLiteralExpression());
         // FIXME should be CommonExpressionProjection, not ExpressionProjectionSegment
         } else if (actual.getValue() instanceof ExpressionProjectionSegment) {
-            ExpressionAssert.assertCommonExpression(assertContext, (ExpressionProjectionSegment) actual.getValue(), expected.getCommonExpression());
+            ExpressionAssert.assertCommonExpression(assertContext, (ExpressionProjectionSegment) actual.getValue(), expected.getAssignmentValue().getCommonExpression());
         }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }

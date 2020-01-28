@@ -20,9 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.expr.complex.ExpectedCommonExpression;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.expr.simple.ExpectedLiteralExpression;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.assignment.ExpectedAssignmentValue;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedColumn;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -34,12 +32,6 @@ public final class ExpectedUpdateAssignment extends AbstractExpectedSQLSegment {
     @XmlElement
     private ExpectedColumn column;
     
-    @XmlElement(name = "parameter-marker-expression")
-    private ExpectedParameterMarkerExpression parameterMarkerExpression;
-    
-    @XmlElement(name = "literal-expression")
-    private ExpectedLiteralExpression literalExpression;
-    
-    @XmlElement(name = "common-expression")
-    private ExpectedCommonExpression commonExpression;
+    @XmlElement(name = "assignment-value")
+    private ExpectedAssignmentValue assignmentValue;
 }
