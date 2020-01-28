@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnN
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConvertFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.EscapedTableReference_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExtractFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
@@ -47,6 +48,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Identif
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IntervalExpressionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.JoinedTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OwnerContext;
@@ -66,8 +68,12 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SimpleE
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SpecialFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StringLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SubstringFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableFactorContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableReferenceContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableReferencesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnreservedWord_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WeightStringFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereClauseContext;
@@ -104,9 +110,11 @@ import org.apache.shardingsphere.sql.parser.sql.statement.tcl.BeginTransactionSt
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.BooleanValue;
+import org.apache.shardingsphere.sql.parser.sql.value.ListValue;
 import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.NumberValue;
 import org.apache.shardingsphere.sql.parser.sql.value.ParameterValue;
@@ -164,12 +172,19 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     // DCLStatement.g4
     // DDLStatement.g4
     // DMLStatement.g4
-    
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, no parsing for on duplicate phrase
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
-        InsertStatement result = null != ctx.insertValuesClause() ? (InsertStatement) visit(ctx.insertValuesClause()) : (InsertStatement) visit(ctx.setAssignmentsClause());
+        InsertStatement result;
+        if (null != ctx.insertValuesClause()) {
+            result = (InsertStatement) visit(ctx.insertValuesClause());
+        } else {
+            result = new InsertStatement();
+            SetAssignmentSegment segment = (SetAssignmentSegment) visit(ctx.setAssignmentsClause());
+            result.setSetAssignment(segment);
+            result.getAllSQLSegments().add(segment);
+        }
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.setTable(table);
         result.getAllSQLSegments().add(table);
@@ -192,16 +207,29 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     }
     
     @Override
+    public ASTNode visitUpdate(final UpdateContext ctx) {
+        UpdateStatement result = new UpdateStatement();
+        ListValue<TableSegment> tables = (ListValue<TableSegment>) visit(ctx.tableReferences());
+        SetAssignmentSegment setSegment = (SetAssignmentSegment) visit(ctx.setAssignmentsClause());
+        result.getTables().addAll(tables.getValues());
+        result.setSetAssignment(setSegment);
+        result.getAllSQLSegments().addAll(tables.getValues());
+        result.getAllSQLSegments().add(setSegment);
+        if (null != ctx.whereClause()) {
+            WhereSegment whereSegment = (WhereSegment) visit(ctx.whereClause());
+            result.setWhere(whereSegment);
+            result.getAllSQLSegments().add(whereSegment);
+        }
+        return result;
+    }
+    
+    @Override
     public ASTNode visitSetAssignmentsClause(final SetAssignmentsClauseContext ctx) {
-        InsertStatement result = new InsertStatement();
         Collection<AssignmentSegment> assignments = new LinkedList<>();
         for (AssignmentContext each : ctx.assignment()) {
             assignments.add((AssignmentSegment) visit(each));
         }
-        SetAssignmentSegment segment = new SetAssignmentSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), assignments);
-        result.setSetAssignment(segment);
-        result.getAllSQLSegments().add(segment);
-        return result;
+        return new SetAssignmentSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), assignments);
     }
     
     @Override
@@ -232,6 +260,47 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     @Override
     public ASTNode visitBlobValue(final BlobValueContext ctx) {
         return new LiteralValue(ctx.STRING_().getText());
+    }
+    
+    @Override
+    public ASTNode visitTableReferences(final TableReferencesContext ctx) {
+        ListValue<TableSegment> result = new ListValue<>(new LinkedList<TableSegment>());
+        for (EscapedTableReference_Context each : ctx.escapedTableReference_()) {
+            result.combine((ListValue<TableSegment>) visit(each));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitEscapedTableReference_(final EscapedTableReference_Context ctx) {
+        return visit(ctx.tableReference());
+    }
+    
+    @Override
+    public ASTNode visitTableReference(final TableReferenceContext ctx) {
+        ListValue<TableSegment> result = new ListValue<>(new LinkedList<TableSegment>());
+        if (null != ctx.joinedTable()) {
+            for (JoinedTableContext each : ctx.joinedTable()) {
+                result.getValues().add((TableSegment) visit(each));
+            }
+        }
+        if (null != ctx.tableFactor()) {
+            result.getValues().add((TableSegment) visit(ctx.tableFactor()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitTableFactor(final TableFactorContext ctx) {
+        if (null != ctx.tableReferences()) {
+            return visit(ctx.tableReferences());
+        }
+        return visit(ctx.tableName());
+    }
+    
+    @Override
+    public ASTNode visitJoinedTable(final JoinedTableContext ctx) {
+        return visit(ctx.tableFactor());
     }
     
     @Override
