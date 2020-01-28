@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegment
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.groupby.GroupByAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby.OrderByAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.pagination.PaginationAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.predicate.WhereAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.where.WhereClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.projection.ProjectionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.SelectStatementTestCase;
@@ -70,7 +70,7 @@ public final class SelectStatementAssert {
     private static void assertWhereClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
         if (null != expected.getWhereClause()) {
             assertTrue(assertContext.getText("Actual where segment should exist."), actual.getWhere().isPresent());
-            WhereAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhereClause());
+            WhereClauseAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhereClause());
         } else {
             assertFalse(assertContext.getText("Actual where segment should not exist."), actual.getWhere().isPresent());
         }

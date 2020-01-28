@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.predicate.WhereAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.where.WhereClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.DeleteStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
@@ -55,7 +55,7 @@ public final class DeleteStatementAssert {
     private static void assertWhereClause(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
         if (null != expected.getWhereClause()) {
             assertTrue(assertContext.getText("Actual where segment should exist."), actual.getWhere().isPresent());
-            WhereAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhereClause());
+            WhereClauseAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhereClause());
         } else {
             assertFalse(assertContext.getText("Actual where segment should not exist."), actual.getWhere().isPresent());
         }

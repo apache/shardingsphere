@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.predicate;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.where;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -53,12 +53,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
- *  Where assert.
+ *  Where clause assert.
  *
  * @author zhaoyanan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class WhereAssert {
+public final class WhereClauseAssert {
     
     /**
      * Assert actual where segment is correct with expected where.
