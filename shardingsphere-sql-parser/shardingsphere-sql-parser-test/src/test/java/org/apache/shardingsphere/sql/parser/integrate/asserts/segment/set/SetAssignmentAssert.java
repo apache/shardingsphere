@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegment
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set.ExpectedSetAssignment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set.ExpectedAssignment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.assignment.ExpectedAssignment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;

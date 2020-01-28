@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.assignment.ExpectedAssignment;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
