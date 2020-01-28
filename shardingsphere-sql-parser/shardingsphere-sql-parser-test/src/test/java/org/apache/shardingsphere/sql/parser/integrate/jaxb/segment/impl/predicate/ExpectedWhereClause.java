@@ -28,10 +28,15 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Expected where clause.
+ * 
+ * @author zhangliang 
+ */
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedWhere extends AbstractExpectedSQLSegment {
+public final class ExpectedWhereClause extends AbstractExpectedSQLSegment {
     
     @XmlAttribute(name = "parameters-count")
     private int parametersCount;

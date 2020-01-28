@@ -53,9 +53,9 @@ public final class DeleteStatementAssert {
     }
     
     private static void assertWhereClause(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
-        if (null != expected.getWhere()) {
+        if (null != expected.getWhereClause()) {
             assertTrue(assertContext.getText("Actual where segment should exist."), actual.getWhere().isPresent());
-            WhereAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhere());
+            WhereAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhereClause());
         } else {
             assertFalse(assertContext.getText("Actual where segment should not exist."), actual.getWhere().isPresent());
         }

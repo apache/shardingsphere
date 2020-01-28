@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.expression
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedAndPredicate;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedOperator;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedPredicate;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedWhere;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedWhereClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.value.ExpectedPredicateBetweenRightValue;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.value.ExpectedPredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.value.ExpectedPredicateInRightValue;
@@ -65,9 +65,9 @@ public final class WhereAssert {
      * 
      * @param assertContext assert context
      * @param actual actual where segment
-     * @param expected expected where segment
+     * @param expected expected where clause
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final WhereSegment actual, final ExpectedWhere expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final WhereSegment actual, final ExpectedWhereClause expected) {
         if (SQLCaseType.Placeholder == assertContext.getSqlCaseType()) {
             assertThat(assertContext.getText("Parameters count in where clause assertion error: "), actual.getParametersCount(), is(expected.getParametersCount()));
         }

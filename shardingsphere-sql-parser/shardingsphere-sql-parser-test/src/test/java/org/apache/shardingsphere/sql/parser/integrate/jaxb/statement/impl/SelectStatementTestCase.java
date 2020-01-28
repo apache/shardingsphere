@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.orderby.ExpectedOrderBy;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.pagination.ExpectedLimit;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedWhere;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedWhereClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.projection.ExpectedProjections;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
@@ -49,7 +49,7 @@ public final class SelectStatementTestCase extends SQLParserTestCase {
     private final ExpectedProjections projections = new ExpectedProjections();
     
     @XmlElement(name = "where")
-    private ExpectedWhere where;
+    private ExpectedWhereClause whereClause;
     
     @XmlElement(name = "group-by")
     private ExpectedOrderBy groupBy;
