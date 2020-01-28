@@ -97,20 +97,30 @@
             <column name="user_id" start-index="31" stop-index="37" />
             <column name="status" start-index="40" stop-index="45" />
         </columns>
-        <insert-columns-and-values column-names="order_id,user_id,status">
-            <insert-values>
-                <insert-value>
-                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
-                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="1"/>
-                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="insert"/>
-                </insert-value>
-                <insert-value>
-                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="2"/>
-                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="2"/>
-                    <assignment type-for-literal="LiteralExpressionSegment" text-for-literal="insert2"/>
-                </insert-value>
-            </insert-values>
-        </insert-columns-and-values>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="1" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="insert" />
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <literal-expression value="2" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="2" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="insert2" />
+                </assignment-value>
+            </value>
+        </values>
     </insert>
     
     <insert sql-case-id="insert_with_special_characters">
