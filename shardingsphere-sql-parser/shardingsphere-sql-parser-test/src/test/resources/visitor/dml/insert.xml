@@ -811,6 +811,41 @@
         <tables>
             <table name="t_order_item" start-index="12" stop-index="23" />
         </tables>
+        <set start-index="25" stop-index="113" literal-stop-index="121">
+            <assignment>
+                <column name="item_id" start-index="29" stop-index="35" />
+                <assignment-value>
+                    <parameter-marker-expression value="0" />
+                    <literal-expression value="10000" />
+                </assignment-value>
+            </assignment>
+            <assignment>
+                <column name="order_id" start-index="42" stop-index="49" literal-start-index="46" literal-stop-index="53" />
+                <assignment-value>
+                    <parameter-marker-expression value="1" />
+                    <literal-expression value="1000" />
+                </assignment-value>
+            </assignment>
+            <assignment>
+                <column name="user_id" start-index="56" stop-index="62" literal-start-index="63" literal-stop-index="69" />
+                <assignment-value>
+                    <parameter-marker-expression value="2" />
+                    <literal-expression value="10" />
+                </assignment-value>
+            </assignment>
+            <assignment>
+                <column name="status" start-index="69" stop-index="74" literal-start-index="77" literal-stop-index="82" />
+                <assignment-value>
+                    <literal-expression value="insert" />
+                </assignment-value>
+            </assignment>
+            <assignment>
+                <column name="creation_date" start-index="88" stop-index="100" literal-start-index="96" literal-stop-index="108" />
+                <assignment-value>
+                    <literal-expression value="2017-08-08" />
+                </assignment-value>
+            </assignment>
+        </set>
     </insert>
     
     <insert sql-case-id="insert_set_without_generate_key_column" parameters="1000, 10">
