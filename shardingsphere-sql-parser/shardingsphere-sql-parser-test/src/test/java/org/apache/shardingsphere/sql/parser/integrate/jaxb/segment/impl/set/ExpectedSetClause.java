@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.assignment.ExpectedAssignment;
 
@@ -26,9 +25,13 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Expected set clause.
+ * 
+ * @author zhangliang 
+ */
 @Getter
-@Setter
-public final class ExpectedSetAssignment extends AbstractExpectedSQLSegment {
+public final class ExpectedSetClause extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "assignment")
     private final List<ExpectedAssignment> assignments = new LinkedList<>();

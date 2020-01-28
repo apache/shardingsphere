@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertConte
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.expression.ExpressionAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set.ExpectedSetAssignment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set.ExpectedSetClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.assignment.ExpectedAssignment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
@@ -36,21 +36,21 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Set assignment assert.
+ * Set clause assert.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SetAssignmentAssert {
+public final class SetClauseAssert {
     
     /**
      * Assert actual set assignment segment is correct with expected set assignment.
      * 
      * @param assertContext assert context
-     * @param actual actual tables
-     * @param expected expected tables
+     * @param actual actual set assignment segment
+     * @param expected expected set clause
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final SetAssignmentSegment actual, final ExpectedSetAssignment expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SetAssignmentSegment actual, final ExpectedSetClause expected) {
         assertNotNull(assertContext.getText("Assignments should existed."), expected);
         assertThat(assertContext.getText("Assignments size assertion error: "), actual.getAssignments().size(), is(expected.getAssignments().size()));
         int count = 0;
