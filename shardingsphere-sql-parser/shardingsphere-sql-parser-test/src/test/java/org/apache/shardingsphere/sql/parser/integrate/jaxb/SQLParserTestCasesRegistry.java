@@ -87,6 +87,9 @@ public final class SQLParserTestCasesRegistry {
         for (SQLParserTestCase each : sqlParserTestCases.getInsertTestCases()) {
             result.put(each.getSqlCaseId(), each);
         }
+        for (SQLParserTestCase each : sqlParserTestCases.getCreateTableTestCases()) {
+            result.put(each.getSqlCaseId(), each);
+        }
         for (SQLParserTestCase each : sqlParserTestCases.getAlterTableTestCases()) {
             result.put(each.getSqlCaseId(), each);
         }
