@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Aggrega
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValuesContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AutoCommitValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BitExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BlobValueContext;
@@ -53,9 +52,9 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OwnerCo
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PositionFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PredicateContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SavepointContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAutoCommitContext;
@@ -256,11 +255,6 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         boolean autoCommit = "1".equals(autoCommitValueText) || "ON".equals(autoCommitValueText);
         result.setAutoCommit(autoCommit);
         return result;
-    }
-    
-    @Override
-    public ASTNode visitAutoCommitValue(final AutoCommitValueContext ctx) {
-        return super.visitAutoCommitValue(ctx);
     }
     
     @Override
