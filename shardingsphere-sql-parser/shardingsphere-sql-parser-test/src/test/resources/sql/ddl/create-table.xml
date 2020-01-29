@@ -33,6 +33,12 @@
         <tables>
             <table name="t_log" start-index="13" stop-index="17" />
         </tables>
+        <column-definition type="int" primary-key="true">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="boolean">
+            <column name="status" />
+        </column-definition>
     </create-table>
     
     <create-table sql-case-id="create_table_if_not_exists">
