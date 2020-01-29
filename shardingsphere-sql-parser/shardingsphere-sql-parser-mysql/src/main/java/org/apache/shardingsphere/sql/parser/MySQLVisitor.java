@@ -390,6 +390,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         if (null != autoCommitValueContext) {
             AutoCommitSegment autoCommitSegment = (AutoCommitSegment) visit(ctx.autoCommitValue());
             result.getAllSQLSegments().add(autoCommitSegment);
+            result.setAutoCommit(autoCommitSegment.isAutoCommit());
         }
         return result;
     }
