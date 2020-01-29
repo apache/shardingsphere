@@ -775,6 +775,27 @@
             <table name="t_order_item" start-index="13" stop-index="24" />
             <table name="t_order" start-index="250" stop-index="256" />
         </tables>
+        <column-definition type="NUMBER">
+            <column name="item_id" />
+        </column-definition>
+        <column-definition type="NUMBER">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="NUMBER">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR2">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR2">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR2">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR2">
+            <column name="column3" />
+        </column-definition>
     </create-table>
     
     <create-table sql-case-id="create_table_with_exist_index">
