@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CharFun
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConvertFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.EscapedTableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExtractFunctionContext;
@@ -47,6 +48,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertV
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IntervalExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.JoinedTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MultipleTableNames_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MultipleTablesClause_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ParameterMarkerContext;
@@ -59,6 +62,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAuto
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowLikeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SimpleExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SingleTableClause_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SpecialFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StringLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SubstringFunctionContext;
@@ -99,6 +103,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitStatement;
@@ -249,6 +254,52 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     @Override
     public ASTNode visitBlobValue(final BlobValueContext ctx) {
         return new LiteralValue(ctx.STRING_().getText());
+    }
+    
+    @Override
+    public ASTNode visitDelete(final DeleteContext ctx) {
+        DeleteStatement result = new DeleteStatement();
+        if (null != ctx.multipleTablesClause_()) {
+            ListValue<TableSegment> tables = (ListValue<TableSegment>) visit(ctx.multipleTablesClause_());
+            result.getTables().addAll(tables.getValues());
+            result.getAllSQLSegments().addAll(tables.getValues());
+        } else {
+            TableSegment table = (TableSegment) visit(ctx.singleTableClause_());
+            result.getTables().add(table);
+            result.getAllSQLSegments().add(table);
+        }
+        if (null != ctx.whereClause()) {
+            WhereSegment where = (WhereSegment) visit(ctx.whereClause());
+            result.setWhere(where);
+            result.getAllSQLSegments().add(where);
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitSingleTableClause_(final SingleTableClause_Context ctx) {
+        TableSegment result = (TableSegment) visit(ctx.tableName());
+        if (null != ctx.alias()) {
+            result.setAlias(ctx.alias().getText());
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitMultipleTablesClause_(final MultipleTablesClause_Context ctx) {
+        ListValue<TableSegment> result = new ListValue<>(new LinkedList<TableSegment>());
+        result.combine((ListValue<TableSegment>) visit(ctx.multipleTableNames_()));
+        result.combine((ListValue<TableSegment>) visit(ctx.tableReferences()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitMultipleTableNames_(final MultipleTableNames_Context ctx) {
+        ListValue<TableSegment> result = new ListValue<>(new LinkedList<TableSegment>());
+        for (TableNameContext each : ctx.tableName()) {
+            result.getValues().add((TableSegment) visit(each));
+        }
+        return result;
     }
     
     @Override
