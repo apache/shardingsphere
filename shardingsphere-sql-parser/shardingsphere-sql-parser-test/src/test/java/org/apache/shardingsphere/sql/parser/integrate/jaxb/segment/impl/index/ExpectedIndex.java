@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.index;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedDelimiterSQLSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.owner.ExpectedTableOwner;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 
+/**
+ * Expected index.
+ * 
+ * @author zhangliang 
+ */
 @Getter
 @Setter
-public final class ExpectedColumn extends AbstractExpectedDelimiterSQLSegment {
+public final class ExpectedIndex extends AbstractExpectedDelimiterSQLSegment {
     
     @XmlAttribute
     private String name;
-    
-    @XmlElement
-    private ExpectedTableOwner owner;
 }
