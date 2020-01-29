@@ -35,7 +35,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CharFun
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConvertFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.EscapedTableReference_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.EscapedTableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExtractFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
@@ -254,14 +254,14 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     @Override
     public ASTNode visitTableReferences(final TableReferencesContext ctx) {
         ListValue<TableSegment> result = new ListValue<>(new LinkedList<TableSegment>());
-        for (EscapedTableReference_Context each : ctx.escapedTableReference_()) {
+        for (EscapedTableReferenceContext each : ctx.escapedTableReference()) {
             result.combine((ListValue<TableSegment>) visit(each));
         }
         return result;
     }
     
     @Override
-    public ASTNode visitEscapedTableReference_(final EscapedTableReference_Context ctx) {
+    public ASTNode visitEscapedTableReference(final EscapedTableReferenceContext ctx) {
         return visit(ctx.tableReference());
     }
     

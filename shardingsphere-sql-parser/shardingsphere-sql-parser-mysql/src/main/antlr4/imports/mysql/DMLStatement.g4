@@ -211,10 +211,10 @@ fromClause
     ;
 
 tableReferences
-    : escapedTableReference_ (COMMA_ escapedTableReference_)*
+    : escapedTableReference (COMMA_ escapedTableReference)*
     ;
 
-escapedTableReference_
+escapedTableReference
     : tableReference  | LBE_ OJ tableReference RBE_
     ;
 
