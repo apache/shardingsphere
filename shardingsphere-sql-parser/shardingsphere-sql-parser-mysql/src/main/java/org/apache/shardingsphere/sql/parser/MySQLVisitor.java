@@ -26,6 +26,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Aggrega
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValuesContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AutoCommitValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BitExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BlobValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BooleanLiteralsContext;
@@ -34,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CastFun
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CharFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConvertFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.EscapedTableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
@@ -53,9 +56,12 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Paramet
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PositionFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PredicateContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RegularFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RollbackContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAutoCommitContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowLikeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SimpleExprContext;
@@ -97,11 +103,17 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.tcl.AutoCommitSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.BooleanValue;
 import org.apache.shardingsphere.sql.parser.sql.value.ListValue;
 import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
@@ -303,12 +315,45 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     
     // TCLStatement.g4
     @Override
+    public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
+        return new SetTransactionStatement();
+    }
+    
+    @Override
     public ASTNode visitSetAutoCommit(final SetAutoCommitContext ctx) {
         SetAutoCommitStatement result = new SetAutoCommitStatement();
-        String autoCommitValueText = ctx.autoCommitValue().getText();
-        boolean autoCommit = "1".equals(autoCommitValueText) || "ON".equals(autoCommitValueText);
-        result.setAutoCommit(autoCommit);
+        AutoCommitValueContext autoCommitValueContext = ctx.autoCommitValue();
+        if (null != autoCommitValueContext) {
+            AutoCommitSegment autoCommitSegment = (AutoCommitSegment) visit(ctx.autoCommitValue());
+            result.getAllSQLSegments().add(autoCommitSegment);
+        }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitAutoCommitValue(final AutoCommitValueContext ctx) {
+        boolean autoCommit = "1".equals(ctx.getText()) || "ON".equals(ctx.getText());
+        return new AutoCommitSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), autoCommit);
+    }
+    
+    @Override
+    public ASTNode visitBeginTransaction(final BeginTransactionContext ctx) {
+        return new BeginTransactionStatement();
+    }
+    
+    @Override
+    public ASTNode visitCommit(final CommitContext ctx) {
+        return new CommitStatement();
+    }
+    
+    @Override
+    public ASTNode visitRollback(final RollbackContext ctx) {
+        return new RollbackStatement();
+    }
+    
+    @Override
+    public ASTNode visitSavepoint(final SavepointContext ctx) {
+        return new SavepointStatement();
     }
     
     // StoreProcedure.g4
