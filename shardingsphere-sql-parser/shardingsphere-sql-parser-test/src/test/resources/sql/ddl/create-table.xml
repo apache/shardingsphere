@@ -413,6 +413,24 @@
         <tables>
             <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="13" stop-index="21" />
         </tables>
+        <column-definition type="INT">
+            <column name="order_id" start-delimiter="[" end-delimiter="]" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" start-delimiter="[" end-delimiter="]" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" start-delimiter="[" end-delimiter="]" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" start-delimiter="[" end-delimiter="]" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" start-delimiter="[" end-delimiter="]" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" start-delimiter="[" end-delimiter="]" />
+        </column-definition>
     </create-table>
     
     <create-table sql-case-id="create_table_with_identity">
