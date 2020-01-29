@@ -474,7 +474,8 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <alter-table drop-columns="user_id,column5" />
+        <drop-column name="user_id" />
+        <drop-column name="column5" />
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_composite_primary_key_sqlserver">
