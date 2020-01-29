@@ -57,6 +57,12 @@
         <tables>
             <table name="t_temp_log" start-index="37" stop-index="46" />
         </tables>
+        <column-definition type="int">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar">
+            <column name="status" />
+        </column-definition>
     </create-table>
     
     <create-table sql-case-id="create_global_temporary_table">
