@@ -93,6 +93,27 @@
         <tables>
             <table name="t_order_item" start-index="17" stop-index="28" />
         </tables>
+        <column-definition type="INT">
+            <column name="item_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
     </create-table>
     
     <create-table sql-case-id="create_table_with_back_quota">
