@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases>
-    <sql-case id="alter_table" value="ALTER TABLE t_log ADD name varchar(10)" />
-    <sql-case id="alter_table_if_exists_only" value="ALTER TABLE IF EXISTS ONLY t_log ADD name varchar" db-types="PostgreSQL" />
-</sql-cases>

@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases>
-    <sql-case id="rename_user" value="RENAME USER 'user_dev'@'localhost' TO 'user_dev'@'127.0.0.1'" db-types="MySQL" />
-</sql-cases>

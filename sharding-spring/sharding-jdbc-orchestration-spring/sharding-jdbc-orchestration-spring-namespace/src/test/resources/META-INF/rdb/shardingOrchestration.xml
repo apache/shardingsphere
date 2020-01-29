@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:orchestraion="http://shardingsphere.apache.org/schema/shardingsphere/orchestration"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd">
+    <import resource="namespace/shardingDataSourceNamespace.xml" />
+
+    <orchestraion:registry-center type="TestRegistry" id="regCenter" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" operation-timeout-milliseconds="1000" max-retries="3" />
+
+    <orchestraion:sharding-data-source id="simpleShardingOrchestration" data-source-ref="simpleShardingDataSource" registry-center-ref="regCenter" />
+    <orchestraion:sharding-data-source id="shardingRuleWithAttributesDataSourceOrchestration" data-source-ref="shardingRuleWithAttributesDataSource" registry-center-ref="regCenter" />
+    <orchestraion:sharding-data-source id="multiTableRulesDataSourceOrchestration" data-source-ref="multiTableRulesDataSource" registry-center-ref="regCenter" />
+    <orchestraion:sharding-data-source id="propsDataSourceOrchestration" data-source-ref="propsDataSource" registry-center-ref="regCenter" />
+    <orchestraion:sharding-data-source id="tableRuleWithAttributesDataSourceOrchestration" data-source-ref="tableRuleWithAttributesDataSource" registry-center-ref="regCenter" />
+    <orchestraion:sharding-data-source id="bindingTableRuleDatasourceOrchestration" data-source-ref="bindingTableRuleDatasource" registry-center-ref="regCenter" />
+    <orchestraion:sharding-data-source id="multiBindingTableRulesDatasourceOrchestration" data-source-ref="multiBindingTableRulesDatasource" registry-center-ref="regCenter" />
+    <orchestraion:sharding-data-source id="broadcastTableRuleDatasourceOrchestration" data-source-ref="broadcastTableRuleDatasource" registry-center-ref="regCenter" />
+    <orchestraion:sharding-data-source id="multiBroadcastTableRulesDatasourceOrchestration" data-source-ref="multiBroadcastTableRulesDatasource" registry-center-ref="regCenter" />
+</beans>

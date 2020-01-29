@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="SQLServer" namespace="sqlserver.dcl.alterRole">
-    <sql-case id="alter_role_add_member" value="ALTER ROLE role1 ADD MEMBER member1" />
-    <sql-case id="alter_role_drop_member" value="ALTER ROLE role1_bak DROP MEMBER member1" />
-    <sql-case id="alter_role_rename" value="ALTER ROLE role1_bak WITH NAME = role1" />
-</sql-cases>
