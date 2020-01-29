@@ -51,6 +51,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Literal
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MultipleTableNames_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MultipleTablesClause_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.NumberLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OnDuplicateKeyClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PositionFunctionContext;
@@ -168,7 +169,6 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     // DMLStatement.g4
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
-        // TODO :FIXME, no parsing for on duplicate phrase
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
         InsertStatement result;
         if (null != ctx.insertValuesClause()) {
@@ -178,6 +178,10 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
             SetAssignmentSegment segment = (SetAssignmentSegment) visit(ctx.setAssignmentsClause());
             result.setSetAssignment(segment);
             result.getAllSQLSegments().add(segment);
+        }
+        if (null != ctx.onDuplicateKeyClause()) {
+            ListValue<AssignmentSegment> segments = (ListValue<AssignmentSegment>) visit(ctx.onDuplicateKeyClause());
+            result.getAllSQLSegments().addAll(segments.getValues());
         }
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.setTable(table);
@@ -197,6 +201,15 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         Collection<InsertValuesSegment> insertValuesSegments = createInsertValuesSegments(ctx.assignmentValues());
         result.getValues().addAll(insertValuesSegments);
         result.getAllSQLSegments().addAll(insertValuesSegments);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitOnDuplicateKeyClause(final OnDuplicateKeyClauseContext ctx) {
+        ListValue<AssignmentSegment> result = new ListValue<>(new LinkedList<AssignmentSegment>());
+        for (AssignmentContext each : ctx.assignment()) {
+            result.getValues().add((AssignmentSegment) visit(each));
+        }
         return result;
     }
     

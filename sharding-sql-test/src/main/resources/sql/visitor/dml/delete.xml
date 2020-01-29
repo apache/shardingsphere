@@ -17,5 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="delete_with_sharding_value" value="DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status=?" db-types="MySQL" />
+<!--    <sql-case id="delete_with_sharding_value" value="DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status=?" db-types="MySQL" />-->
 </sql-cases>
