@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.definition.ExpectedColumnDefinition;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.definition.ExpectedColumnPosition;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.index.ExpectedIndex;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
@@ -31,24 +29,20 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Alter table statement test case.
+ * Create table statement test case.
  * 
  * @author zhangliang 
  */
 @Getter
-@Setter
-public final class AlterTableStatementTestCase extends SQLParserTestCase {
+public final class CreateTableStatementTestCase extends SQLParserTestCase {
     
     @XmlElementWrapper
     @XmlElement(name = "table")
     private final List<ExpectedTable> tables = new LinkedList<>();
     
-    @XmlElement(name = "add-column")
-    private final List<ExpectedColumnDefinition> addColumns = new LinkedList<>();
+    @XmlElement(name = "column-definition")
+    private final List<ExpectedColumnDefinition> columnDefinitions = new LinkedList<>();
     
-    @XmlElement(name = "position-changed-column")
-    private final List<ExpectedColumnPosition> positionChangedColumns = new LinkedList<>();
-    
-    @XmlElement(name = "drop-column")
-    private final List<ExpectedColumn> dropColumns = new LinkedList<>();
+    @XmlElement(name = "index")
+    private final List<ExpectedIndex> indexes = new LinkedList<>();
 }
