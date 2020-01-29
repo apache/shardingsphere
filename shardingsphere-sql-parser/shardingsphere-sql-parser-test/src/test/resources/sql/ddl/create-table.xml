@@ -144,6 +144,24 @@
         <tables>
             <table name="t_order" start-index="23" stop-index="29" />
         </tables>
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
     </create-table>
     
     <create-table sql-case-id="create_table_with_column_not_null">
