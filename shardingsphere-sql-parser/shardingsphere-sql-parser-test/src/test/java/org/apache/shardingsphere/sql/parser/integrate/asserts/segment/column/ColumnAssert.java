@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.owner.OwnerAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedColumn;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -42,8 +42,8 @@ public final class ColumnAssert {
      * Assert actual column segment is correct with expected column.
      *
      * @param assertContext assert context
-     * @param actual actual tables
-     * @param expected expected tables
+     * @param actual actual column segment
+     * @param expected expected column
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ColumnSegment actual, final ExpectedColumn expected) {
         assertThat(assertContext.getText("Column name assertion error: "), actual.getName(), is(expected.getName()));

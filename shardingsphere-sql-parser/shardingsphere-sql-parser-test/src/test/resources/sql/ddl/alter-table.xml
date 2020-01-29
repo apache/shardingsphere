@@ -139,7 +139,7 @@
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
     </alter-table>
-    
+
     <alter-table sql-case-id="alter_table_modify_columns">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
@@ -315,7 +315,7 @@
             <table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="12" stop-index="20" />
         </tables>
     </alter-table>
-       
+    
     <alter-table sql-case-id="alter_table_add_check">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
@@ -363,7 +363,7 @@
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
     </alter-table>
-       
+    
     <alter-table sql-case-id="alter_table_drop_unique_key">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
@@ -381,16 +381,12 @@
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
     </alter-table>
-        
+    
     <alter-table sql-case-id="alter_table_rename_constraint">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
     </alter-table>
-    
-    <common sql-case-id="alter_index" />
-    <common sql-case-id="alter_index_with_space" />
-    <common sql-case-id="alter_index_with_quota" />
     
     <alter-table sql-case-id="alter_table_with_row_level">
         <tables>
@@ -447,12 +443,6 @@
         </tables>
     </alter-table>
     
-    <!--<common sql-case-id="create_table_with_exist_index">-->
-        <!--<tables>-->
-            <!--<table name="t_order" start-index="12" stop-index="18" />-->
-        <!--</tables>-->
-    <!--</common>-->
-    
     <alter-table sql-case-id="alter_table_with_bracket">
         <tables>
             <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="12" stop-index="20" />
@@ -506,16 +496,4 @@
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
     </alter-table>
-    
-    <common sql-case-id="alter_index_rebuild">
-        <tables>
-            <table name="t_order" start-index="27" stop-index="33" />
-        </tables>
-    </common>
-    
-    <common sql-case-id="alter_index_with_quota_bracket">
-        <tables>
-            <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="29" stop-index="37" />
-        </tables>
-    </common>
 </sql-parser-test-cases>
