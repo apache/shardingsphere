@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertColumns;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertValues;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedWhereClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.set.ExpectedSetClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
@@ -31,24 +30,21 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Insert statement test case.
+ * Update statement test case.
  * 
  * @author zhangliang 
  */
 @Getter
 @Setter
-public final class InsertStatementTestCase extends SQLParserTestCase {
+public final class UpdateStatementTestCase extends SQLParserTestCase {
     
     @XmlElementWrapper
     @XmlElement(name = "table")
     private final List<ExpectedTable> tables = new LinkedList<>();
     
-    @XmlElement
-    private ExpectedInsertColumns columns;
-    
-    @XmlElement
-    private ExpectedInsertValues values;
-    
     @XmlElement(name = "set")
     private ExpectedSetClause setClause;
+    
+    @XmlElement(name = "where")
+    private ExpectedWhereClause whereClause;
 }

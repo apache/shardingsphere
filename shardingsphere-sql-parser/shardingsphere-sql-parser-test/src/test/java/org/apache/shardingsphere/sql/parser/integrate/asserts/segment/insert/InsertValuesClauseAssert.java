@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.assignment.AssignmentValueAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertValue;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertValues;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertValuesClause;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 
@@ -32,21 +32,21 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * Insert values assert.
+ * Insert values clause assert.
  * 
  * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InsertValuesAssert {
+public final class InsertValuesClauseAssert {
     
     /**
-     * Assert actual insert statement is correct with expected insert values.
+     * Assert actual insert values segment is correct with expected insert values clause.
      *
      * @param assertContext assert context
      * @param actual actual insert values segment
-     * @param expected expected insert values
+     * @param expected expected insert values clause
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final Collection<InsertValuesSegment> actual, final ExpectedInsertValues expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final Collection<InsertValuesSegment> actual, final ExpectedInsertValuesClause expected) {
         assertThat(assertContext.getText("Insert values size assertion error: "), actual.size(), is(expected.getValues().size()));
         int count = 0;
         for (InsertValuesSegment each : actual) {

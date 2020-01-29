@@ -21,12 +21,18 @@
         <tables>
             <table name="t_log" start-index="12" stop-index="16" />
         </tables>
+        <add-column type="varchar">
+            <column name="name" />
+        </add-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_if_exists_only">
         <tables>
             <table name="t_log" start-index="27" stop-index="31" />
         </tables>
+        <add-column type="varchar">
+            <column name="name" />
+        </add-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_with_force">
@@ -51,72 +57,81 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <alter-table>
-            <add-columns>
-                <add-column name="column4" type="VARCHAR" />
-            </add-columns>
-        </alter-table>
+        <add-column type="VARCHAR">
+            <column name="column4" />
+        </add-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_columns">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <alter-table>
-            <add-columns>
-                <add-column name="column4" type="VARCHAR" />
-                <add-column name="column5" type="VARCHAR" />
-                <add-column name="column6" type="VARCHAR" />
-            </add-columns>
-        </alter-table>
+        <add-column type="VARCHAR">
+            <column name="column4" />
+        </add-column>
+        <add-column name="column5" type="VARCHAR">
+            <column name="column5" />
+        </add-column>
+        <add-column type="VARCHAR">
+            <column name="column6" />
+        </add-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_column_with_first">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <alter-table>
-            <add-columns>
-                <add-column name="column3" type="VARCHAR" />
-            </add-columns>
-            <position-changed-columns>
-                <position-changed-column start-index="44" column-name="column3" />
-            </position-changed-columns>
-        </alter-table>
+        <add-column type="VARCHAR">
+            <column name="column3" />
+        </add-column>
+        <position-changed-column>
+            <column name="column3" />
+        </position-changed-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_column_with_after">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <alter-table>
-            <add-columns>
-                <add-column name="column4" type="VARCHAR" />
-            </add-columns>
-            <position-changed-columns>
-                <position-changed-column start-index="44" column-name="column4" after-column="order_id"/>
-            </position-changed-columns>
-        </alter-table>
+        <add-column type="VARCHAR">
+            <column name="column4" />
+        </add-column>
+        <position-changed-column>
+            <column name="column4" />
+            <after-column name="order_id" />
+        </position-changed-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_column_with_first_after">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <alter-table>
-            <add-columns>
-                <add-column name="column5" type="VARCHAR" />
-                <add-column name="column6" type="VARCHAR" />
-                <add-column name="column7" type="VARCHAR" />
-                <add-column name="column8" type="VARCHAR" />
-            </add-columns>
-            <position-changed-columns>
-                <position-changed-column start-index="44" column-name="column5"/>
-                <position-changed-column start-index="75" column-name="column6"/>
-                <position-changed-column start-index="106" column-name="column7" after-column="column5"/>
-                <position-changed-column start-index="145" column-name="column8" after-column="column6"/>
-            </position-changed-columns>
-        </alter-table>
+        <add-column type="VARCHAR">
+            <column name="column5" />
+        </add-column>
+        <add-column type="VARCHAR">
+            <column name="column6" />
+        </add-column>
+        <add-column type="VARCHAR">
+            <column name="column7" />
+        </add-column>
+        <add-column type="VARCHAR">
+            <column name="column8" />
+        </add-column>
+        <position-changed-column>
+            <column name="column5" />
+        </position-changed-column>
+        <position-changed-column>
+            <column name="column6" />
+        </position-changed-column>
+        <position-changed-column>
+            <column name="column7" />
+            <after-column name="column5" />
+        </position-changed-column>
+        <position-changed-column column-name="column8" after-column="column6">
+            <column name="column8" />
+            <after-column name="column6" />
+        </position-changed-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_modify_column">
@@ -135,38 +150,47 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <position-changed-column>
+            <column name="status" />
+        </position-changed-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_modify_column_with_after">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <position-changed-column>
+            <column name="status" />
+            <after-column name="order_id" />
+        </position-changed-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_modify_column_with_first_after">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <alter-table>
-            <position-changed-columns>
-                <position-changed-column start-index="46" column-name="status" />
-                <position-changed-column start-index="72" column-name="user_id" after-column="status" />
-            </position-changed-columns>
-        </alter-table>
+        <position-changed-column>
+            <column name="status" />
+        </position-changed-column>
+        <position-changed-column>
+            <column name="user_id" />
+            <after-column name="status" />
+        </position-changed-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_drop_column">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <alter-table drop-columns="user_id" />
+        <drop-column name="user_id" />
     </alter-table>
     
     <alter-table sql-case-id="alter_table_drop_columns">
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <alter-table drop-columns="user_id,column5" />
+        <drop-column name="user_id" />
+        <drop-column name="column5" />
     </alter-table>
     
     <alter-table sql-case-id="alter_table_change_column">
@@ -185,6 +209,9 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <add-column type="int">
+            <column name="status" />
+        </add-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_unique_key">
@@ -271,13 +298,16 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <alter-table drop-columns="status">
-            <add-columns>
-                <add-column name="column4" type="VARCHAR" />
-                <add-column name="column5" type="VARCHAR" />
-                <add-column name="column6" type="VARCHAR" />
-            </add-columns>
-        </alter-table>
+        <add-column type="VARCHAR">
+            <column name="column4" />
+        </add-column>
+        <add-column type="VARCHAR">
+            <column name="column5" />
+        </add-column>
+        <add-column type="VARCHAR">
+            <column name="column6" />
+        </add-column>
+        <drop-column name="status" />
     </alter-table>
     
     <alter-table sql-case-id="alter_table_with_quota">
@@ -296,13 +326,15 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <alter-table>
-            <add-columns>
-                <add-column name="column4" type="VARCHAR2" />
-                <add-column name="column5" type="VARCHAR2" />
-                <add-column name="column6" type="VARCHAR2" />
-            </add-columns>
-        </alter-table>
+        <add-column type="VARCHAR2">
+            <column name="column4" />
+        </add-column>
+        <add-column type="VARCHAR2">
+            <column name="column5" />
+        </add-column>
+        <add-column type="VARCHAR2">
+            <column name="column6" />
+        </add-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_modify_columns_oracle">
@@ -315,7 +347,8 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <alter-table drop-columns="user_id,column5" />
+        <drop-column name="user_id" />
+        <drop-column name="column5" />
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_primary_foreign_key">
@@ -430,13 +463,15 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <alter-table>
-            <add-columns>
-                <add-column name="column4" type="VARCHAR" />
-                <add-column name="column5" type="VARCHAR" />
-                <add-column name="column6" type="VARCHAR" />
-            </add-columns>
-        </alter-table>
+        <add-column type="VARCHAR">
+            <column name="column4" />
+        </add-column>
+        <add-column type="VARCHAR">
+            <column name="column5" />
+        </add-column>
+        <add-column type="VARCHAR">
+            <column name="column6" />
+        </add-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_alter_column">
@@ -449,7 +484,8 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <alter-table drop-columns="user_id,column5" />
+        <drop-column name="user_id" />
+        <drop-column name="column5" />
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_composite_primary_key_sqlserver">

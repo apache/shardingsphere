@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.limit;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedColumn;
 
 import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
- * Expected insert columns.
- *
- * @author zhangliang
+ * Expected limit clause.
+ * 
+ * @author zhangliang 
  */
 @Getter
-public final class ExpectedInsertColumns extends AbstractExpectedSQLSegment {
+@Setter
+public final class ExpectedLimitClause extends AbstractExpectedSQLSegment {
     
-    @XmlElement(name = "column")
-    private List<ExpectedColumn> columns = new LinkedList<>();
+    @XmlElement
+    private ExpectedPaginationValue offset;
+    
+    @XmlElement(name = "row-count")
+    private ExpectedPaginationValue rowCount;
 }

@@ -15,23 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert;
+package org.apache.shardingsphere.sql.parser.sql.value;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collection;
 
 /**
- * Expected insert values.
+ * List value.
  *
- * @author zhangliang
+ * @author panjuan
  */
-@Getter
-public final class ExpectedInsertValues extends AbstractExpectedSQLSegment {
+@RequiredArgsConstructor
+public final class ListValue<T> implements ASTNode {
     
-    @XmlElement(name = "value")
-    private List<ExpectedInsertValue> values = new LinkedList<>();
+    @Getter
+    private final Collection<T> values;
+    
+    /**
+     * Put all values from another list value into this one.
+     * 
+     * @param listValue list value
+     */
+    public void combine(final ListValue<T> listValue) {
+        values.addAll(listValue.getValues());
+    }
 }

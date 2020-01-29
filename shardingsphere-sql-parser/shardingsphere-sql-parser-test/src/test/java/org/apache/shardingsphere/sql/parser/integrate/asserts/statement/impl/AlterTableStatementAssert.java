@@ -20,11 +20,17 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.AlterTableAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.definition.ColumnDefinitionAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.definition.ColumnPositionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.AlterTableStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.AlterTableStatementTestCase;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Alter table statement assert.
@@ -42,9 +48,41 @@ public final class AlterTableStatementAssert {
      * @param expected expected alter table statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertTable(assertContext, actual, expected);
+        assertAddColumnDefinitions(assertContext, actual, expected);
+        assertChangeColumnPositions(assertContext, actual, expected);
+        assertDropColumns(assertContext, actual, expected);
+    }
+    
+    private static void assertTable(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.findSQLSegments(TableSegment.class), expected.getTables());
-        if (null != expected.getAlterTable()) {
-            AlterTableAssert.assertIs(assertContext, actual, expected.getAlterTable());
+    }
+    
+    private static void assertAddColumnDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Added column definitions size assertion error: "), actual.getAddedColumnDefinitions().size(), is(expected.getAddColumns().size()));
+        int count = 0;
+        for (ColumnDefinitionSegment each : actual.getAddedColumnDefinitions()) {
+            ColumnDefinitionAssert.assertIs(assertContext, each, expected.getAddColumns().get(count));
+            count++;
+        }
+    }
+    
+    private static void assertChangeColumnPositions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Changed column positions size assertion error: "), actual.getChangedPositionColumns().size(), is(expected.getPositionChangedColumns().size()));
+        int count = 0;
+        for (ColumnPositionSegment each : actual.getChangedPositionColumns()) {
+            ColumnPositionAssert.assertIs(assertContext, each, expected.getPositionChangedColumns().get(count));
+            count++;
+        }
+    }
+    
+    private static void assertDropColumns(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Drop columns size assertion error: "), actual.getDroppedColumnNames().size(), is(expected.getDropColumns().size()));
+        int count = 0;
+        for (String each : actual.getDroppedColumnNames()) {
+            assertThat(assertContext.getText("Drop column name assertion error: "), each, is(expected.getDropColumns().get(count).getName()));
+            // TODO assert column
+            count++;
         }
     }
 }

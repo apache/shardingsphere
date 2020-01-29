@@ -15,26 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.pagination;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.definition;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedColumn;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Expected limit.
+ * Expected column definition.
  * 
  * @author zhangliang 
  */
 @Getter
 @Setter
-public final class ExpectedLimit extends AbstractExpectedSQLSegment {
+public final class ExpectedColumnDefinition extends AbstractExpectedSQLSegment {
     
     @XmlElement
-    private ExpectedPaginationValue offset;
+    private ExpectedColumn column;
     
-    @XmlElement(name = "row-count")
-    private ExpectedPaginationValue rowCount;
+    @XmlAttribute
+    private String type;
+    
+    @XmlAttribute(name = "primary-key")
+    private boolean primaryKey;
 }

@@ -15,32 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.definition;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedWhere;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedColumn;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
- * Delete statement test case.
+ * Expected column position.
  * 
  * @author zhangliang 
  */
 @Getter
 @Setter
-public final class DeleteStatementTestCase extends SQLParserTestCase {
+public final class ExpectedColumnPosition extends AbstractExpectedSQLSegment {
     
-    @XmlElementWrapper
-    @XmlElement(name = "table")
-    private final List<ExpectedTable> tables = new LinkedList<>();
+    @XmlElement
+    private ExpectedColumn column;
     
-    @XmlElement(name = "where")
-    private ExpectedWhere where;
+    @XmlElement(name = "after-column")
+    private ExpectedColumn afterColumn;
 }

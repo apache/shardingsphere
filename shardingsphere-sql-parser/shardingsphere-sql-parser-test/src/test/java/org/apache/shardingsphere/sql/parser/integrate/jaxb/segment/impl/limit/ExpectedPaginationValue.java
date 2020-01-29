@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.alter;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.limit;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
-@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class ExpectedColumnPosition {
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedPaginationValue extends AbstractExpectedSQLSegment {
     
-    @XmlAttribute(name = "start-index")
-    private int startIndex;
+    @XmlAttribute
+    private Long value;
     
-    @XmlAttribute(name = "column-name")
-    private String columnName;
-    
-    @XmlAttribute(name = "after-column")
-    private String afterColumn;
+    @XmlAttribute(name = "parameter-index")
+    private Integer parameterIndex;
 }
