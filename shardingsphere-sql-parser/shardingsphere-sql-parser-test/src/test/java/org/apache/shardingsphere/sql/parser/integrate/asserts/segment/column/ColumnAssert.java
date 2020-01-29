@@ -42,8 +42,8 @@ public final class ColumnAssert {
      * Assert actual column segment is correct with expected column.
      *
      * @param assertContext assert context
-     * @param actual actual tables
-     * @param expected expected tables
+     * @param actual actual column segment
+     * @param expected expected column
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ColumnSegment actual, final ExpectedColumn expected) {
         assertThat(assertContext.getText("Column name assertion error: "), actual.getName(), is(expected.getName()));
