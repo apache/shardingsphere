@@ -303,6 +303,7 @@
         <add-column type="VARCHAR">
             <column name="column6" />
         </add-column>
+        <drop-column name="status" />
     </alter-table>
     
     <alter-table sql-case-id="alter_table_with_quota">
