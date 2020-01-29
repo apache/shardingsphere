@@ -179,12 +179,8 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <drop-column>
-            <column name="user_id" />
-        </drop-column>
-        <drop-column>
-            <column name="column5" />
-        </drop-column>
+        <drop-column name="user_id" />
+        <drop-column name="column5" />
     </alter-table>
     
     <alter-table sql-case-id="alter_table_change_column">
