@@ -126,7 +126,7 @@ gpg --keyserver hkp://pool.sks-keyservers.net --send-key 700E6065
 ### 更新版本说明
 
 ```
-https://github.com/apache/incubator-shardingsphere/blob/dev/RELEASE-NOTES.md
+https://github.com/apache/incubator-shardingsphere/blob/master/RELEASE-NOTES.md
 ```
 
 ### 创建发布分支
@@ -365,7 +365,7 @@ Hello ShardingSphere Community,
 This is a call for vote to release Apache ShardingSphere (Incubating) version ${RELEASE.VERSION}
 
 Release notes:
-https://github.com/apache/incubator-shardingsphere/blob/dev/RELEASE-NOTES.md
+https://github.com/apache/incubator-shardingsphere/blob/master/RELEASE-NOTES.md
 
 The release candidates:
 https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION}/
@@ -481,7 +481,7 @@ ShardingSphere community vote and result thread:
 https://lists.apache.org/thread.html/xxxxxxxxxxxxxxxxxxxxxxx
 
 Release notes:
-https://github.com/apache/incubator-shardingsphere/blob/dev/RELEASE-NOTES.md
+https://github.com/apache/incubator-shardingsphere/blob/master/RELEASE-NOTES.md
 
 The release candidates:
 https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION}/
@@ -574,10 +574,10 @@ svn cp https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/KEYS http
 
 ### 在Apache Staging仓库找到ShardingSphere并点击`Release`
 
-### 合并Github的release分支到`dev`, 合并完成后删除release分支
+### 合并Github的release分支到`master`, 合并完成后删除release分支
 
 ```shell
-git checkout dev
+git checkout master
 git merge origin/${RELEASE.VERSION}-release
 git push
 git push --delete origin ${RELEASE.VERSION}-release
@@ -667,7 +667,7 @@ Therefore, at the current stage, we prefer to focus on its increment instead of 
 
 Download Links: https://shardingsphere.apache.org/document/current/en/downloads/
 
-Release Notes: https://github.com/apache/incubator-shardingsphere/blob/dev/RELEASE-NOTES.md
+Release Notes: https://github.com/apache/incubator-shardingsphere/blob/master/RELEASE-NOTES.md
 
 Website: https://shardingsphere.apache.org/
 

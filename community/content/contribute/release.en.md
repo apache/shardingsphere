@@ -127,7 +127,7 @@ For encryption settings, please see [here](http://maven.apache.org/guides/mini/g
 ### Update Release Notes
 
 ```
-https://github.com/apache/incubator-shardingsphere/blob/dev/RELEASE-NOTES.md
+https://github.com/apache/incubator-shardingsphere/blob/master/RELEASE-NOTES.md
 ```
 
 ### Create Release Branch
@@ -371,7 +371,7 @@ Hello ShardingSphere Community,
 This is a call for vote to release Apache ShardingSphere (Incubating) version ${RELEASE.VERSION}
 
 Release notes:
-https://github.com/apache/incubator-shardingsphere/blob/dev/RELEASE-NOTES.md
+https://github.com/apache/incubator-shardingsphere/blob/master/RELEASE-NOTES.md
 
 The release candidates:
 https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION}/
@@ -488,7 +488,7 @@ ShardingSphere community vote and result thread:
 https://lists.apache.org/thread.html/xxxxxxxxxxxxxxxxxxxxxxx
 
 Release notes:
-https://github.com/apache/incubator-shardingsphere/blob/dev/RELEASE-NOTES.md
+https://github.com/apache/incubator-shardingsphere/blob/master/RELEASE-NOTES.md
 
 The release candidates:
 https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION}/
@@ -583,10 +583,10 @@ svn cp https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/KEYS http
 
 ### Find ShardingSphere in staging repository and click `Release`
 
-### Merge release branch to `dev` and delete release branch on Github
+### Merge release branch to `master` and delete release branch on Github
 
 ```shell
-git checkout dev
+git checkout master
 git merge origin/${RELEASE.VERSION}-release
 git push
 git push --delete origin ${RELEASE.VERSION}-release
@@ -676,7 +676,7 @@ Therefore, at the current stage, we prefer to focus on its increment instead of 
 
 Download Links: https://shardingsphere.apache.org/document/current/en/downloads/
 
-Release Notes: https://github.com/apache/incubator-shardingsphere/blob/dev/RELEASE-NOTES.md
+Release Notes: https://github.com/apache/incubator-shardingsphere/blob/master/RELEASE-NOTES.md
 
 Website: https://shardingsphere.apache.org/
 
