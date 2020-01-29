@@ -34,12 +34,12 @@ git remote add upstream https://github.com/apache/incubator-shardingsphere.git
 
 ### 创建分支
 
- - 切换到fork的dev分支，拉取最新代码，创建本次的分支。
+ - 切换到fork的master分支，拉取最新代码，创建本次的分支。
 
 ```shell
-git checkout dev
-git pull upstream dev
-git checkout -b dev-issueNo
+git checkout master
+git pull upstream master
+git checkout -b issueNo
 ```
 
  **注意** ：PR会按照squash的方式进行merge，如果不创建新分支，本地和远程的提交记录将不能保持同步。
@@ -52,12 +52,12 @@ git checkout -b dev-issueNo
 ```shell
 git add 修改代码
 git commit -m 'commit log'
-git push origin dev-issueNo
+git push origin issueNo
 ```
 
 ### 提交PR
 
- - 发送一个pull request到ShardingSphere的dev分支，请不要提交pull request至master分支中。
+ - 发送一个pull request到ShardingSphere的master分支，请不要提交pull request至master分支中。
  - 接着导师做CodeReview，然后他会与您讨论一些细节（包括设计，实现，性能等）。当导师对本次修改满意后，会将提交合并到当前开发版本的分支中。
  - 最后，恭喜您已经成为了ShardingSphere的官方贡献者！
 

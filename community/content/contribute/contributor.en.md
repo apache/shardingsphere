@@ -34,12 +34,12 @@ git remote add upstream https://github.com/apache/incubator-shardingsphere.git
 
 ### Create Branch 
 
- - Switch to forked dev branch, pull codes from upstream, then create a new branch.
+ - Switch to forked master branch, pull codes from upstream, then create a new branch.
 
 ```shell
-git checkout dev
-git pull upstream dev
-git checkout -b dev-issueNo
+git checkout master
+git pull upstream master
+git checkout -b issueNo
 ```
 
  **Notice** ：We will merge PR using squash, commit log will be different form upstream if you use old branch.
@@ -52,12 +52,12 @@ git checkout -b dev-issueNo
 ```shell
 git add modified-file-names
 git commit -m 'commit log'
-git push origin dev-issueNo
+git push origin issueNo
 ```
 
 ### Submit Pull Request
 
- - Send a pull request to the dev branch rather than the master branch of shardingsphere after it is finished.
+ - Send a pull request to the master branch rather than the master branch of shardingsphere after it is finished.
  - The mentor will do code review before discussing some details (including the design, the implementation and the performance) with you. The request will be merged into the branch of current development version after the edit is well enough.
  - At last, congratulate to be an official contributor of ShardingSphere
 
