@@ -30,6 +30,9 @@
         <tables>
             <table name="t_log" start-index="27" stop-index="31" />
         </tables>
+        <add-column type="varchar">
+            <column name="name" />
+        </add-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_with_force">
