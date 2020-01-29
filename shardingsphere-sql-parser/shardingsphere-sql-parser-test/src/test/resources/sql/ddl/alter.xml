@@ -150,6 +150,9 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
+        <position-changed-column>
+            <column name="status" />
+        </position-changed-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_modify_column_with_after">
