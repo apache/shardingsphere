@@ -184,6 +184,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     // DCLStatement.g4
     // DDLStatement.g4
     // DMLStatement.g4
+    
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
@@ -366,7 +367,11 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         if (null != ctx.tableReferences()) {
             return visit(ctx.tableReferences());
         }
-        return visit(ctx.tableName());
+        TableSegment table = (TableSegment) visit(ctx.tableName());
+        if (null != ctx.alias()) {
+            table.setAlias(ctx.alias().getText());
+        }
+        return table;
     }
     
     @Override
@@ -475,6 +480,8 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
             return visit(bool);
         } else if (null != ctx.logicalOperator()) {
             return mergePredicateSegment(visit(ctx.expr(0)), visit(ctx.expr(1)), ctx.logicalOperator().getText());
+        } else if (!ctx.expr().isEmpty()) {
+            return visit(ctx.expr(0));
         }
         return createExpressionSegment(new LiteralValue(ctx.getText()), ctx);
     }
